@@ -17,5 +17,6 @@ rule EBS_ENCRYPTION_ENABLED when %ebs_volumes !empty {
     %ebs_volumes {
         Properties.Encrypted exists
         Properties.Encrypted == true
+            <<##ERROR:EBS volume must have encryption enabled. Set 'Encrypted' to true.##>>
     }
 }

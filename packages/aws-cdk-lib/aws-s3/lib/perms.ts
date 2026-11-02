@@ -1,3 +1,13 @@
+/**
+ * Returns an ARN that represents all objects within the bucket that match
+ * the key pattern specified. To represent all keys, specify ``"*"``.
+ *
+ * Default implementation used in various places.
+ */
+export function arnForObjects(bucketArn: string, key: string): string {
+  return `${bucketArn}/${key}`;
+}
+
 export const BUCKET_READ_ACTIONS = [
   's3:GetObject*',
   's3:GetBucket*',

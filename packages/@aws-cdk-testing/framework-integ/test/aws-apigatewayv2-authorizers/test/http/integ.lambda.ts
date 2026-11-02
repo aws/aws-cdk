@@ -4,6 +4,7 @@ import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, CfnOutput } from 'aws-cdk-lib';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 /*
  * Stack verification steps:
@@ -25,10 +26,15 @@ const authHandler = new lambda.Function(stack, 'auth-function', {
   code: lambda.Code.fromAsset(path.join(__dirname, '..', 'auth-handler'), { exclude: ['*.ts'] }),
 });
 
+const authRole = new Role(stack, 'AuthRole', {
+  assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+});
+
 const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
   authorizerName: 'my-simple-authorizer',
   identitySource: ['$request.header.X-API-Key'],
   responseTypes: [HttpLambdaResponseType.SIMPLE],
+  role: authRole,
 });
 
 const defaultAuthorizer = new HttpLambdaAuthorizer('LambdaDefaultAuthorizer', authHandler, {

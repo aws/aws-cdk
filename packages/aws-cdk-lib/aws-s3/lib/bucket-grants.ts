@@ -5,6 +5,7 @@ import type { IEncryptedResource, IGrantable, IResourceWithPolicyV2 } from '../.
 import { AnyPrincipal, EncryptedResources, Grant, ResourceWithPolicies } from '../../aws-iam';
 import type * as iam from '../../aws-iam/lib/grant';
 import { FeatureFlags, Lazy, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api/index';
 
 /**
@@ -39,7 +40,7 @@ export class BucketGrants {
   }
 
   /**
-   * Grant read permissions for this bucket and it's contents to an IAM
+   * Grant read permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If encryption is used, permission to use the key to decrypt the contents
@@ -49,13 +50,11 @@ export class BucketGrants {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public read(identity: IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
-      this.bucket.bucketRef.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
+    return this.actionsOnBucketAndObjectKeys(identity, objectsKeyPattern, ...perms.BUCKET_READ_ACTIONS, ...perms.KEY_READ_ACTIONS);
   }
 
   /**
-   * Grant write permissions for this bucket and it's contents to an IAM
+   * Grant write permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If encryption is used, permission to use the key to decrypt the contents
@@ -66,9 +65,7 @@ export class BucketGrants {
    */
   public write(identity: IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
     const grantedWriteActions = allowedActionPatterns.length > 0 ? allowedActionPatterns : this.writeActions;
-    return this.grant(identity, grantedWriteActions, perms.KEY_WRITE_ACTIONS,
-      this.bucket.bucketRef.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
+    return this.actionsOnBucketAndObjectKeys(identity, objectsKeyPattern, ...grantedWriteActions, ...perms.KEY_WRITE_ACTIONS);
   }
 
   /**
@@ -79,7 +76,7 @@ export class BucketGrants {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public delete(grantee: IGrantable, objectsKeyPattern: any = '*'): Grant {
-    return this.grant(grantee, perms.BUCKET_DELETE_ACTIONS, [], this.arnForObjects(objectsKeyPattern));
+    return this.actionsOnObjectKeys(grantee, objectsKeyPattern, ...perms.BUCKET_DELETE_ACTIONS);
   }
 
   /**
@@ -109,12 +106,12 @@ export class BucketGrants {
    */
   public publicAccess(keyPrefix = '*', ...allowedActions: string[]) {
     if (this.bucket.disallowPublicAccess) {
-      throw new ValidationError("Cannot grant public access when 'blockPublicPolicy' is enabled", this.bucket);
+      throw new ValidationError(lit`CannotGrantPublicAccessWhenBlockPublicPolicyEnabled`, "Cannot grant public access when 'blockPublicPolicy' is enabled", this.bucket);
     }
 
     allowedActions = allowedActions.length > 0 ? allowedActions : ['s3:GetObject'];
 
-    return this.grant(new AnyPrincipal(), allowedActions, [], this.arnForObjects(keyPrefix));
+    return this.actionsOnObjectKeys(new AnyPrincipal(), keyPrefix, ...allowedActions);
   }
 
   /**
@@ -126,7 +123,7 @@ export class BucketGrants {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public put(identity: IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS, this.arnForObjects(objectsKeyPattern));
+    return this.actionsOnObjectKeys(identity, objectsKeyPattern, ...this.putActions, ...perms.KEY_WRITE_ACTIONS);
   }
 
   /**
@@ -138,11 +135,37 @@ export class BucketGrants {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public putAcl(identity: IGrantable, objectsKeyPattern: string = '*') {
-    return this.grant(identity, perms.BUCKET_PUT_ACL_ACTIONS, [], this.arnForObjects(objectsKeyPattern));
+    return this.actionsOnObjectKeys(identity, objectsKeyPattern, ...perms.BUCKET_PUT_ACL_ACTIONS);
   }
 
   /**
-   * Grant read and write permissions for this bucket and it's contents to an IAM
+   * Grants the given actions on the bucket's objects to the given principal.
+   *
+   * KMS actions (prefixed with `kms:`) are automatically separated and granted on the encryption key.
+   *
+   * @param identity The principal to grant permissions to.
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*').
+   * @param actions The S3 and/or KMS actions to grant.
+   */
+  public actionsOnObjectKeys(identity: IGrantable, objectsKeyPattern: string = '*', ...actions: string[]) {
+    return this.grantActions(identity, actions, this.arnForObjects(objectsKeyPattern));
+  }
+
+  /**
+   * Grants the given actions on both the bucket and the bucket's objects to the given principal.
+   *
+   * KMS actions (prefixed with `kms:`) are automatically separated and granted on the encryption key.
+   *
+   * @param identity The principal to grant permissions to.
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*').
+   * @param actions The S3 and/or KMS actions to grant.
+   */
+  public actionsOnBucketAndObjectKeys(identity: IGrantable, objectsKeyPattern: string = '*', ...actions: string[]) {
+    return this.grantActions(identity, actions, this.bucket.bucketRef.bucketArn, this.arnForObjects(objectsKeyPattern));
+  }
+
+  /**
+   * Grant read and write permissions for this bucket and its contents to an IAM
    * principal (Role/Group/User).
    *
    * If encryption is used, permission to use the key to decrypt the contents
@@ -156,11 +179,7 @@ export class BucketGrants {
     // we need unique permissions because some permissions are common between read and write key actions
     const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
 
-    return this.grant(identity,
-      bucketActions,
-      keyActions,
-      this.bucket.bucketRef.bucketArn,
-      this.arnForObjects(objectsKeyPattern));
+    return this.actionsOnBucketAndObjectKeys(identity, objectsKeyPattern, ...bucketActions, ...keyActions);
   }
 
   private get putActions(): string[] {
@@ -188,7 +207,7 @@ export class BucketGrants {
    */
   public replicationPermission(identity: IGrantable, props: GrantReplicationPermissionProps): iam.Grant {
     if (props.destinations.length === 0) {
-      throw new ValidationError('At least one destination bucket must be specified in the destinations array', this.bucket);
+      throw new ValidationError(lit`AtLeastOneDestinationBucketRequired`, 'At least one destination bucket must be specified in the destinations array', this.bucket);
     }
 
     // add permissions to the role
@@ -236,6 +255,19 @@ export class BucketGrants {
     return result;
   }
 
+  private grantActions(identity: IGrantable, actions: string[], resourceArn: string, ...otherResourceArns: string[]) {
+    const keyActions: string[] = [];
+    const bucketActions: string[] = [];
+    for (const action of actions) {
+      if (action.startsWith('kms:')) {
+        keyActions.push(action);
+      } else {
+        bucketActions.push(action);
+      }
+    }
+    return this.grant(identity, bucketActions, keyActions, resourceArn, ...otherResourceArns);
+  }
+
   private grant(
     grantee: IGrantable,
     bucketActions: string[],
@@ -262,6 +294,6 @@ export class BucketGrants {
   }
 
   private arnForObjects(keyPattern: string): string {
-    return `${this.bucket.bucketRef.bucketArn}/${keyPattern}`;
+    return perms.arnForObjects(this.bucket.bucketRef.bucketArn, keyPattern);
   }
 }

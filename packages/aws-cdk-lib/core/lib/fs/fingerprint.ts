@@ -1,22 +1,18 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
+import { FingerprintDiskCache } from './fingerprint-disk-cache';
 import { IgnoreStrategy } from './ignore';
 import type { FingerprintOptions } from './options';
 import { IgnoreMode, SymlinkFollowMode } from './options';
-import { shouldFollow } from './utils';
+import type { WalkSymlinkEntry } from './utils';
+import { walkDirectory } from './utils';
 import { UnscopedValidationError } from '../errors';
-import { Cache } from '../private/cache';
+import { lit } from '../private/literal-string';
 
-const BUFFER_SIZE = 8 * 1024;
 const CTRL_SOH = '\x01';
 const CTRL_SOT = '\x02';
 const CTRL_ETX = '\x03';
-const CR = '\r';
-const LF = '\n';
-const CRLF = `${CR}${LF}`;
-
-const fingerprintCache = new Cache<string>();
 
 /**
  * Files are fingerprinted only the first time they are encountered, to save
@@ -24,7 +20,8 @@ const fingerprintCache = new Cache<string>();
  * necessary for some reason.
  */
 export function clearLargeFileFingerprintCache() {
-  fingerprintCache.clear();
+  // No-op: caches are now per-operation and scoped to the fingerprint() call.
+  // Retained for API compatibility.
 }
 
 /**
@@ -49,143 +46,128 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   // might be symlinked). It's important that we know the absolute path, so we
   // can judge if further symlinks inside the target directory are within the
   // target or not (if we don't resolve, we would test w.r.t. the wrong path).
-  fileOrDirectory = fs.realpathSync(fileOrDirectory);
+  const root = fs.realpathSync(fileOrDirectory);
 
-  const isDir = fs.statSync(fileOrDirectory).isDirectory();
-  const rootDirectory = isDir
-    ? fileOrDirectory
-    : path.dirname(fileOrDirectory);
+  const isDir = fs.statSync(root).isDirectory();
+  const rootDirectory = isDir ? root : path.dirname(root);
 
   const ignoreMode = options.ignoreMode || IgnoreMode.GLOB;
   if (ignoreMode != IgnoreMode.GLOB) {
     _hashField(hash, 'options.ignoreMode', ignoreMode);
   }
 
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
-  _processFileOrDirectory(fileOrDirectory, isDir);
+  // Pre-resolve rootDirectory once — avoids repeated path.resolve in the hot loop
+  const resolvedRoot = path.resolve(rootDirectory);
 
-  return hash.digest('hex');
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, root);
 
-  function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
-    const stat = fs.lstatSync(realPath);
+  // Per-operation disk cache scoped to this directory
+  const cache = new FingerprintDiskCache(resolvedRoot);
 
-    if (_shouldIgnore(isRootDir, symbolicPath, realPath, stat)) {
-      return;
-    }
+  // Dispatch based on whether the root is a file or directory
+  if (isDir) {
+    walkDirectory(root, { follow, ignoreStrategy }, {
+      onFile: (entry) => hashFileContent(entry.path, entry.stats
+        ? contentFingerprintWithStats(entry.realPath, entry.stats, cache)
+        : contentFingerprintOf(entry.realPath)),
 
-    // Use relative path as hash component. Normalize it with forward slashes to ensure
-    // same hash on Windows and Linux.
-    const hashComponent = path.relative(fileOrDirectory, symbolicPath).replace(/\\/g, '/');
+      onSymlink: (entry) => hashLinkTarget(entry),
 
-    if (stat.isSymbolicLink()) {
-      const linkTarget = fs.readlinkSync(realPath);
-      const resolvedLinkTarget = path.resolve(path.dirname(realPath), linkTarget);
-      if (shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
-        _processFileOrDirectory(symbolicPath, false, resolvedLinkTarget);
-      } else {
-        _hashField(hash, `link:${hashComponent}`, linkTarget);
-      }
-    } else if (stat.isFile()) {
-      _hashField(hash, `file:${hashComponent}`, contentFingerprint(realPath));
-    } else if (stat.isDirectory()) {
-      for (const item of fs.readdirSync(realPath).sort()) {
-        _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));
-      }
-    } else {
-      throw new UnscopedValidationError(`Unable to hash ${symbolicPath}: it is neither a file nor a directory`);
-    }
+      onUnsupported: (entry) => {
+        throw new UnscopedValidationError(
+          lit`UnableToUnableHashNeither`,
+          `Unable to hash ${entry.path}: it is neither a file nor a directory`,
+        );
+      },
+    });
+  } else {
+    hashFileContent(root, contentFingerprintOf(root));
   }
 
-  function _shouldIgnore(isRootDir: boolean, symbolicPath: string, realPath: string, stat: fs.Stats) {
-    if (isRootDir) {
-      return false;
-    }
+  cache.save();
+  return hash.digest('hex');
 
-    if (stat.isDirectory()) {
-      return ignoreStrategy.completelyIgnores(symbolicPath);
-    }
+  // --- Hashing ---
 
-    if (stat.isSymbolicLink()) {
-      const linkTarget = fs.readlinkSync(symbolicPath);
-      const resolvedLinkTarget = path.resolve(path.dirname(realPath), linkTarget);
+  function hashKey(symbolicPath: string): string {
+    return path.relative(root, symbolicPath).replace(/\\/g, '/');
+  }
 
-      if (shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
-        const targetStat = fs.statSync(resolvedLinkTarget);
+  function hashFileContent(symbolicPath: string, contentHash: string) {
+    _hashField(hash, `file:${hashKey(symbolicPath)}`, contentHash);
+  }
 
-        // If we are following a directory symlink, we should use `completelyIgnores`.
-        if (targetStat.isDirectory()) {
-          return ignoreStrategy.completelyIgnores(symbolicPath);
-        }
-      }
-    }
+  /**
+   * An absolute target inside the tree is hashed relative to the root, so the asset hash does
+   * not change when the tree moves. Anything else is hashed as written.
+   */
+  function hashLinkTarget(entry: WalkSymlinkEntry) {
+    const target = entry.internal && path.isAbsolute(entry.linkTarget)
+      ? hashKey(entry.resolvedLinkTarget)
+      : entry.linkTarget;
 
-    return ignoreStrategy.ignores(symbolicPath);
+    _hashField(hash, `link:${hashKey(entry.path)}`, target);
+  }
+
+  function contentFingerprintOf(file: string): string {
+    return contentFingerprintWithStats(file, fs.statSync(file, { bigint: true }), cache);
   }
 }
 
 export function contentFingerprint(file: string): string {
-  // On windows it's particularly important to pass bigint: true to ensure that
-  // floating-point inaccuracies don't result in false matches. ( see
-  // https://github.com/nodejs/node/issues/12115#issuecomment-438741212 )
-  //
-  // Note that even if we do get a inode collision somehow, it's unlikely that
-  // both mtime and size would have a false-positive as well.
-
-  // We also must suppress typescript typechecks as we are using a version of
-  // @types/node that only supports node 10 declarations.
   const stats = fs.statSync(file, { bigint: true });
-  const cacheKey = JSON.stringify({
-    mtime_unix: stats.mtime.toUTCString(),
-    mtime_ms: stats.mtimeMs.toString(),
-    inode: stats.ino.toString(),
-    size: stats.size.toString(),
-  });
-
-  return fingerprintCache.obtain(cacheKey, () => contentFingerprintMiss(file));
+  return contentFingerprintWithStats(file, stats, undefined);
 }
+
+function contentFingerprintWithStats(file: string, stats: fs.BigIntStats, cache: FingerprintDiskCache | undefined): string {
+  const cacheKey = `${stats.ino}|${stats.mtimeMs}|${stats.size}`;
+  return cache?.obtain(cacheKey, () => contentFingerprintMiss(file)) ?? contentFingerprintMiss(file);
+}
+
+// Pre-compiled regex for CRLF normalization
+const CRLF_RE = /\r\n/g;
+const TRAILING_CR_RE = /\r$/;
+const BUFFER_SIZE = 8 * 1024;
 
 function contentFingerprintMiss(file: string): string {
   const hash = crypto.createHash('sha256');
   const buffer = Buffer.alloc(BUFFER_SIZE);
-  // eslint-disable-next-line no-bitwise
-  const fd = fs.openSync(file, fs.constants.O_DSYNC | fs.constants.O_RDONLY | fs.constants.O_SYNC);
+  const fd = fs.openSync(file, fs.constants.O_RDONLY);
   let size = 0;
   let isBinary = false;
   let lastStr = '';
   let read = 0;
   try {
     while ((read = fs.readSync(fd, buffer, 0, BUFFER_SIZE, null)) !== 0) {
-      const slicedBuffer = buffer.slice(0, read);
+      const slicedBuffer = buffer.subarray(0, read);
 
-      // Detect if file is binary by checking the first 8k bytes for the
-      // null character (git like implementation)
       if (size === 0) {
         isBinary = slicedBuffer.indexOf(0) !== -1;
       }
 
-      let dataBuffer = slicedBuffer;
-      if (!isBinary) { // Line endings normalization (CRLF -> LF)
-        const str = buffer.slice(0, read).toString();
+      if (isBinary) {
+        size += read;
+        hash.update(slicedBuffer);
+      } else {
+        const str = slicedBuffer.toString();
 
-        // We are going to normalize line endings to LF. So if the current
-        // buffer ends with CR, it could be that the next one starts with
-        // LF so we need to save it for later use.
-        if (new RegExp(`${CR}$`).test(str)) {
+        if (TRAILING_CR_RE.test(str)) {
           lastStr += str;
           continue;
         }
 
         const data = lastStr + str;
-        const normalizedData = data.replace(new RegExp(CRLF, 'g'), LF);
-        dataBuffer = Buffer.from(normalizedData);
         lastStr = '';
+        const normalizedData = data.replace(CRLF_RE, '\n');
+        const dataBuffer = Buffer.from(normalizedData);
+        size += dataBuffer.length;
+        hash.update(dataBuffer);
       }
-
-      size += dataBuffer.length;
-      hash.update(dataBuffer);
     }
 
     if (lastStr) {
+      // NOTE: This does not normalize CRLFs or account for size — this matches
+      // the original behavior. Fixing it would change the hash output.
       hash.update(Buffer.from(lastStr));
     }
   } finally {

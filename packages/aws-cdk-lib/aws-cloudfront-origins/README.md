@@ -113,6 +113,26 @@ const importedOAC = cloudfront.S3OriginAccessControl.fromOriginAccessControlId(t
 > [Note](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html): When you use OAC with S3
 bucket origins, the bucket's object ownership must be either set to Bucket owner enforced (default for new S3 buckets) or Bucket owner preferred (only if you require ACLs).
 
+#### Setting up OAC for an S3 Multi-Region Access Point origin
+
+An [S3 Multi-Region Access Point](https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiRegionAccessPoints.html) origin requires an origin access control that signs with SigV4A, and is configured as a custom origin using the Multi-Region Access Point hostname:
+
+```ts
+const oac = new cloudfront.S3OriginAccessControl(this, 'MyMrapOAC', {
+  signing: cloudfront.Signing.SIGV4A_ALWAYS,
+});
+
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('mfzwi23gnjvgw.mrap.accesspoint.s3-global.amazonaws.com', {
+      originAccessControlId: oac.originAccessControlId,
+    }),
+  },
+});
+```
+
+You must also grant CloudFront access in the Multi-Region Access Point policy and in the bucket policy of every underlying bucket. See [Restrict access to an Amazon S3 Multi-Region Access Point origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3-mrap.html).
+
 #### Setting up OAC with a SSE-KMS encrypted S3 origin
 
 If the objects in the S3 bucket origin are encrypted using server-side encryption with
@@ -583,9 +603,9 @@ const origin = new origins.LoadBalancerV2Origin(loadBalancer, {
 });
 ```
 
-Note that the `readTimeout` and `keepaliveTimeout` properties can extend their values over 60 seconds only if a limit increase request for CloudFront origin response timeout
-quota has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time. Consider that this value is
-still limited to a maximum value of 180 seconds, which is a hard limit for that quota.
+Note that `readTimeout` and `keepaliveTimeout` are governed by two separate CloudFront service quotas: `Response timeout per origin`, which defaults to
+1-120 seconds, and `Keep-alive timeout per origin`, which defaults to 1-300 seconds. Neither is a hard limit. A value above the default requires an
+approved quota increase in the target account, and without one CloudFront rejects it at deploy time.
 
 ## From an HTTP endpoint
 
@@ -927,3 +947,55 @@ new cloudfront.Distribution(this, 'MyDistribution', {
   },
 });
 ```
+
+### Function URL permissions
+
+Lambda requires both `lambda:InvokeFunctionUrl` and `lambda:InvokeFunction` for CloudFront to call a newly created function URL through OAC. `FunctionUrlOrigin.withOriginAccessControl` adds both permissions.
+
+## From a Lambda Web Function
+
+To protect an [AWS Lambda Web Function](https://docs.aws.amazon.com/lambda/latest/dg/web-functions.html) origin with Origin Access Control (OAC), set the endpoint's auth type to `IamAuth`.
+
+For a regional endpoint, use `Signing.SIGV4_ALWAYS_AMZ_AUTH`:
+
+```ts
+declare const regionalEndpointDomainName: string;
+
+const oac = new cloudfront.FunctionUrlOriginAccessControl(this, 'WebFunctionOAC', {
+  signing: cloudfront.Signing.SIGV4_ALWAYS_AMZ_AUTH,
+});
+
+new cloudfront.Distribution(this, 'MyDistribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin(regionalEndpointDomainName, {
+      originAccessControlId: oac.originAccessControlId,
+    }),
+  },
+});
+```
+
+For a global endpoint, use `Signing.SIGV4A_ALWAYS_AMZ_AUTH`:
+
+```ts
+declare const globalEndpointDomainName: string;
+
+const oac = new cloudfront.FunctionUrlOriginAccessControl(this, 'GlobalWebFunctionOAC', {
+  signing: cloudfront.Signing.SIGV4A_ALWAYS_AMZ_AUTH,
+});
+
+new cloudfront.Distribution(this, 'MyGlobalDistribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin(globalEndpointDomainName, {
+      originAccessControlId: oac.originAccessControlId,
+    }),
+  },
+});
+```
+
+If you add an origin request policy, choose one that doesn't forward the viewer's `Host` header, such as `OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER`.
+
+CloudFront forwards the viewer's `Authorization` header on GET and HEAD requests only when it's in the cache policy. If your function reads it, include it in the cache policy. See [Restrict access to an AWS Lambda Web Function origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda-web.html).
+
+### Web Function permissions
+
+Lambda requires `lambda:InvokeWebFunctionEndpoint` for CloudFront to call a Web Function endpoint through OAC. Grant it to `cloudfront.amazonaws.com` in the Web Function's resource-based policy, scoped to your distribution. See [Restrict access to an AWS Lambda Web Function origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-lambda-web.html).

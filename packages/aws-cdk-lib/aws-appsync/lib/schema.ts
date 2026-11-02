@@ -65,7 +65,7 @@ export class SchemaFile implements ISchema {
   /**
    * Generate a Schema from file
    *
-   * @returns `SchemaAsset` with immutable schema defintion
+   * @returns `SchemaAsset` with immutable schema definition
    * @param filePath the file path of the schema file
    */
   public static fromAsset(filePath: string): SchemaFile {

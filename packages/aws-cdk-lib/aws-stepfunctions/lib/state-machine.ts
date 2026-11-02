@@ -16,6 +16,7 @@ import type { Duration, IResource } from '../../core';
 import { ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -459,10 +460,10 @@ export class StateMachine extends StateMachineBase {
     addConstructMetadata(this, props);
 
     if (props.definition && props.definitionBody) {
-      throw new ValidationError('Cannot specify definition and definitionBody at the same time', this);
+      throw new ValidationError(lit`ConflictingDefinitionProperties`, 'Cannot specify definition and definitionBody at the same time', this);
     }
     if (!props.definition && !props.definitionBody) {
-      throw new ValidationError('You need to specify either definition or definitionBody', this);
+      throw new ValidationError(lit`MissingDefinition`, 'You need to specify either definition or definitionBody', this);
     }
 
     if (props.stateMachineName !== undefined) {
@@ -472,8 +473,26 @@ export class StateMachine extends StateMachineBase {
       this.validateLogOptions(props.logs);
     }
 
+    // TrustPolicy - https://docs.aws.amazon.com/step-functions/latest/dg/procedure-create-iam-role.html#prevent-cross-service-confused-deputy
+    const stack = Stack.of(this) ;
     this.role = props.role || new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('states.amazonaws.com',
+        {
+          conditions: {
+            ArnLike: {
+              'aws:SourceArn': stack.formatArn({
+                service: 'states',
+                resource: 'stateMachine',
+                resourceName: '*',
+                arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+              }),
+            },
+            StringEquals: {
+              'aws:SourceAccount': stack.account,
+            },
+          },
+        },
+      ),
     });
 
     const definitionBody = props.definitionBody ?? DefinitionBody.fromChainable(props.definition!);
@@ -573,18 +592,18 @@ export class StateMachine extends StateMachineBase {
   private validateStateMachineName(stateMachineName: string) {
     if (!Token.isUnresolved(stateMachineName)) {
       if (stateMachineName.length < 1 || stateMachineName.length > 80) {
-        throw new ValidationError(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
+        throw new ValidationError(lit`InvalidStateMachineNameLength`, `State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`, this);
       }
 
       if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
-        throw new ValidationError(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
+        throw new ValidationError(lit`InvalidStateMachineNamePattern`, `State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`, this);
       }
     }
   }
 
   private validateLogOptions(logOptions: LogOptions) {
     if (logOptions.level !== LogLevel.OFF && !logOptions.destination) {
-      throw new ValidationError('Logs destination is required when level is not OFF.', this);
+      throw new ValidationError(lit`LogsDestinationRequired`, 'Logs destination is required when level is not OFF.', this);
     }
   }
 

@@ -4,7 +4,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
+import { EKS_USE_NATIVE_OIDC_PROVIDER, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 
 class EksClusterInferenceStack extends Stack {
   constructor(scope: App, id: string) {
@@ -15,7 +15,11 @@ class EksClusterInferenceStack extends Stack {
 
     const cluster = new eks.Cluster(this, 'Cluster', {
       vpc,
-      ...getClusterVersionConfig(this),
+      // Pin to 1.32 because addAutoScalingGroupCapacity uses EksOptimizedImage
+      // which hardcodes AL2 SSM paths (amazon-linux-2-gpu/). AL2 GPU AMIs are
+      // only available for k8s 1.32 and earlier.
+      // See https://github.com/aws/aws-cdk/issues/29983
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.of('1.32')),
       albController: {
         version: eks.AlbControllerVersion.V2_5_1,
       },
@@ -37,6 +41,7 @@ const app = new App({
   postCliContext: {
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': false,
   },
 });

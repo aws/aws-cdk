@@ -1,0 +1,17 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "CrossRegionBothReferenceTest/DefaultTest": {
+      "stacks": [
+        "CrossRegionBothRefConsumerInteg"
+      ],
+      "regions": [
+        "us-east-2"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CrossRegionBothReferenceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossRegionBothReferenceTestDefaultTestDeployAssertDF898EC2"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

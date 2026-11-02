@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "files": {
-    "4acaeb41811b2c95056a45ac80701a3435d93ad9db2e53f929a50bf324f89395": {
+    "36d3bb1ec624ae59933f12ba7727bceeaeebad5e5b882e195ef64bece626c39b": {
       "displayName": "lambda-event-source-kafka-error-handling Template",
       "source": {
         "path": "lambda-event-source-kafka-error-handling.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8d416080": {
+        "current_account-current_region-c3cc4753": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4acaeb41811b2c95056a45ac80701a3435d93ad9db2e53f929a50bf324f89395.json",
+          "objectKey": "36d3bb1ec624ae59933f12ba7727bceeaeebad5e5b882e195ef64bece626c39b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -6,6 +6,7 @@ import type { IEnvironmentAware } from '../../core';
 import { CfnResource } from '../../core';
 import * as cdk from '../../core';
 import { Traits } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 
 const POLICY_FACTORY_MAP_SYMBOL = Symbol.for('cdk-resource-policy-factory');
 const ENCRYPTED_RESOURCE_FACTORY_MAP_SYMBOL = Symbol.for('cdk-encrypted-resource-factory');
@@ -169,6 +170,7 @@ export class Grant implements IDependable {
       actions: options.actions,
       resources: (options.resourceSelfArns || options.resourceArns),
       principals: [options.grantee!.grantPrincipal],
+      conditions: options.conditions,
     });
 
     const resourceResult = options.resource.addToResourcePolicy(statement);
@@ -256,7 +258,7 @@ export class Grant implements IDependable {
     }
 
     if (!addedToPrincipal.policyDependable) {
-      throw new cdk.UnscopedValidationError('Contract violation: when Principal returns statementAdded=true, it should return a dependable');
+      throw new cdk.UnscopedValidationError(lit`ContractViolationPrincipalStatementAdded`, 'Contract violation: when Principal returns statementAdded=true, it should return a dependable');
     }
 
     return new Grant({ principalStatement: statement, options, policyDependable: addedToPrincipal.policyDependable });
@@ -278,6 +280,7 @@ export class Grant implements IDependable {
       actions: options.actions,
       resources: (options.resourceSelfArns || options.resourceArns),
       principals: [options.resourcePolicyPrincipal || options.grantee!.grantPrincipal],
+      conditions: options.conditions,
     });
 
     const resourceResult = options.resource.addToResourcePolicy(statement);
@@ -374,7 +377,7 @@ export class Grant implements IDependable {
    */
   public assertSuccess(): void {
     if (!this.success) {
-      throw new cdk.UnscopedValidationError(`${describeGrant(this.options)} could not be added on either identity or resource policy.`);
+      throw new cdk.UnscopedValidationError(lit`GrantCouldNotBeAdded`, `${describeGrant(this.options)} could not be added on either identity or resource policy.`);
     }
   }
 

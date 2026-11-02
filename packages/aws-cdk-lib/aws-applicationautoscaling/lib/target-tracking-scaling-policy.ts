@@ -3,6 +3,7 @@ import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import type { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
 
 /**
@@ -97,6 +98,8 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * The metric must track utilization. Scaling out will happen if the metric is higher than
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
+   * The metric must be in the same account and region as the scaling policy.
+   *
    * Exactly one of customMetric or predefinedMetric must be specified.
    *
    * @default - No custom metric.
@@ -124,11 +127,11 @@ export class TargetTrackingScalingPolicy extends Construct {
 
   constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
-      throw new ValidationError('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
+      throw new ValidationError(lit`ExactlyOneCustomMetricPredefined`, 'Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
     }
 
     if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new ValidationError('Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
+      throw new ValidationError(lit`DirectMetricsSupportedTargetTracking`, 'Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
     }
 
     super(scope, id);
@@ -164,7 +167,17 @@ function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnS
   const c = metric.toMetricConfig().metricStat!;
 
   if (c.statistic.startsWith('p')) {
-    throw new ValidationError(`Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
+    throw new ValidationError(lit`CannotStatistic`, `Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
+  }
+
+  const stack = cdk.Stack.of(scope);
+  if (definitelyDifferent(c.account, stack.account)) {
+    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-applicationautoscaling:crossAccountMetricIgnored',
+      `target tracking can only use metrics from its own account; metric account ${JSON.stringify(c.account)} is ignored and account ${JSON.stringify(stack.account)} is used`);
+  }
+  if (definitelyDifferent(c.region, stack.region)) {
+    cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-applicationautoscaling:crossRegionMetricIgnored',
+      `target tracking can only use metrics from its own region; metric region ${JSON.stringify(c.region)} is ignored and region ${JSON.stringify(stack.region)} is used`);
   }
 
   return {
@@ -174,6 +187,15 @@ function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnS
     statistic: c.statistic,
     unit: c.unitFilter,
   };
+}
+
+/**
+ * Whether a metric's account or region is known at synth time to differ from the expected one.
+ *
+ * Returns false when either side is an unresolved token, since such values can only be compared at deploy time.
+ */
+function definitelyDifferent(value: string | undefined, expected: string): boolean {
+  return value !== undefined && !cdk.Token.isUnresolved(value) && !cdk.Token.isUnresolved(expected) && value !== expected;
 }
 
 /**

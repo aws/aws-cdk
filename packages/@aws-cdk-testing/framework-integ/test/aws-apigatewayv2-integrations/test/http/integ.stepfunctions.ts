@@ -8,10 +8,10 @@ const app = new App();
 const stack = new Stack(app, 'stepfunctions-integration');
 
 const stateMachine = new sfn.StateMachine(stack, 'RouteStateMachine', {
-  definition: new sfn.Pass(stack, 'Pass1'),
+  definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass1')),
 });
 const expressStateMachine = new sfn.StateMachine(stack, 'ExpressStateMachine', {
-  definition: new sfn.Pass(stack, 'Pass2'),
+  definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass2')),
   stateMachineType: sfn.StateMachineType.EXPRESS,
 });
 

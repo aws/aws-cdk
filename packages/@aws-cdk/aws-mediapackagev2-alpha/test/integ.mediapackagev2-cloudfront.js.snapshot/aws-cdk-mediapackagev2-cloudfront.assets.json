@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "7a1f0d4efa28d05ebc86ca59a00b1fd2c30a6f02e5cc4ed2f594ead2db9be8b2": {
+      "displayName": "aws-cdk-mediapackagev2-cloudfront Template",
+      "source": {
+        "path": "aws-cdk-mediapackagev2-cloudfront.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-77e11f33": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7a1f0d4efa28d05ebc86ca59a00b1fd2c30a6f02e5cc4ed2f594ead2db9be8b2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

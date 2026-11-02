@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "c5da3127f845b2e155a02ae82f52b66a233f62d1907ca4690c25511f3f795397": {
+      "displayName": "vpcv2-source-stack Template",
+      "source": {
+        "path": "vpcv2-source-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-87ff260c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c5da3127f845b2e155a02ae82f52b66a233f62d1907ca4690c25511f3f795397.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

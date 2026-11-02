@@ -7,10 +7,12 @@ import type * as eks from '../../aws-eks';
 import * as iam from '../../aws-iam';
 import type { IRole } from '../../aws-iam';
 import type { Duration, ITaggable } from '../../core';
-import { ArnFormat, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, Resource, Stack, TagManager, TagType, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 
 /**
  * Represents a Managed ComputeEnvironment. Batch will provision EC2 Instances to
@@ -254,7 +256,8 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * Leave this `undefined` to allow Batch to choose the latest AMIs it supports for each instance that it launches.
    *
    * @default
-   * - ECS_AL2 compatible AMI ids for non-GPU instances, ECS_AL2_NVIDIA compatible AMI ids for GPU instances
+   * - ECS_AL2 compatible AMI ids for non-GPU instances, ECS_AL2_NVIDIA compatible AMI ids for GPU instances.
+   * If the '@aws-cdk/aws-batch:defaultToAL2023' feature flag is set, ECS_AL2023 will be used instead of ECS_AL2.
    */
   readonly images?: EcsMachineImage[];
 
@@ -383,7 +386,8 @@ export interface EcsMachineImage extends MachineImage {
   /**
    * Tells Batch which instance type to launch this image on
    *
-   * @default - 'ECS_AL2' for non-gpu instances, 'ECS_AL2_NVIDIA' for gpu instances
+   * @default - 'ECS_AL2' for non-gpu instances, 'ECS_AL2_NVIDIA' for gpu instances.
+   * If the '@aws-cdk/aws-batch:defaultToAL2023' feature flag is set, 'ECS_AL2023' will be used instead of 'ECS_AL2'.
    */
   readonly imageType?: EcsMachineImageType;
 }
@@ -395,7 +399,8 @@ export interface EksMachineImage extends MachineImage{
   /**
    * Tells Batch which instance type to launch this image on
    *
-   * @default - 'EKS_AL2' for non-gpu instances, 'EKS_AL2_NVIDIA' for gpu instances
+   * @default - 'EKS_AL2' for non-gpu instances, 'EKS_AL2_NVIDIA' for gpu instances.
+   * If the '@aws-cdk/aws-batch:defaultToAL2023' feature flag is set, 'EKS_AL2023' will be used instead of 'EKS_AL2'.
    */
   readonly imageType?: EksMachineImageType;
 }
@@ -419,6 +424,11 @@ export enum EcsMachineImageType {
    * Tells Batch that this machine image runs on GPU instances
    */
   ECS_AL2_NVIDIA = 'ECS_AL2_NVIDIA',
+
+  /**
+   * Tells Batch that this machine image runs on GPU AL2023 instances
+   */
+  ECS_AL2023_NVIDIA = 'ECS_AL2023_NVIDIA',
 }
 
 /**
@@ -434,6 +444,16 @@ export enum EksMachineImageType {
    * Tells Batch that this machine image runs on GPU instances
    */
   EKS_AL2_NVIDIA = 'EKS_AL2_NVIDIA',
+
+  /**
+   * Tells Batch that this machine image runs on non-GPU AL2023 instances
+   */
+  EKS_AL2023 = 'EKS_AL2023',
+
+  /**
+   * Tells Batch that this machine image runs on GPU AL2023 instances
+   */
+  EKS_AL2023_NVIDIA = 'EKS_AL2023_NVIDIA',
 }
 
 /**
@@ -502,9 +522,31 @@ export enum DefaultInstanceClass {
 }
 
 /**
+ * Props for a ManagedEc2ComputeEnvironment
+ */
+export interface ManagedEc2ComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
+  /**
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   *
+   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
+   */
+  readonly instanceTypes?: ec2.InstanceType[];
+
+  /**
+   * The instance classes that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   * Batch will automatically choose the instance size.
+   *
+   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
+   */
+  readonly instanceClasses?: ec2.InstanceClass[];
+}
+
+/**
  * Props for a ManagedEc2EcsComputeEnvironment
  */
-export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
+export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedEc2ComputeEnvironmentProps {
   /**
    * Use batch's default instance types.
    * A simpler way to choose up-to-date instance classes based on region
@@ -528,12 +570,15 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
   /**
    * Configure which AMIs this Compute Environment can launch.
    * If you specify this property with only `image` specified, then the
-   * `imageType` will default to `ECS_AL2`. *If your image needs GPU resources,
-   * specify `ECS_AL2_NVIDIA`; otherwise, the instances will not be able to properly
-   * join the ComputeEnvironment*.
+   * `imageType` will default to `ECS_AL2` (or `ECS_AL2023` if the
+   * `@aws-cdk/aws-batch:defaultToAL2023` feature flag is set).
+   * *If your image needs GPU resources,
+   * specify `ECS_AL2_NVIDIA` or `ECS_AL2023_NVIDIA`; otherwise, the instances
+   * will not be able to properly join the ComputeEnvironment*.
    *
    * @default
-   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances
+   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances.
+   * If the '@aws-cdk/aws-batch:defaultToAL2023' feature flag is set, ECS_AL2023 will be used instead of ECS_AL2.
    */
   readonly images?: EcsMachineImage[];
 
@@ -568,23 +613,6 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - a new role will be created
    */
   readonly spotFleetRole?: iam.IRole;
-
-  /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   *
-   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
-   */
-  readonly instanceTypes?: ec2.InstanceType[];
-
-  /**
-   * The instance classes that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   * Batch will automatically choose the instance size.
-   *
-   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
-   */
-  readonly instanceClasses?: ec2.InstanceClass[];
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
@@ -629,12 +657,67 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
 }
 
 /**
+ * A ManagedComputeEnvironment that uses EC2 instances.
+ */
+interface IManagedEc2ComputeEnvironment extends IManagedComputeEnvironment {
+  /**
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   */
+  readonly instanceTypes: ec2.InstanceType[];
+
+  /**
+   * The instance classes that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   */
+  readonly instanceClasses: ec2.InstanceClass[];
+
+  /**
+   * Add an instance type to this compute environment
+   */
+  addInstanceType(instanceType: ec2.InstanceType): void;
+
+  /**
+   * Add an instance class to this compute environment
+   */
+  addInstanceClass(instanceClass: ec2.InstanceClass): void;
+}
+
+/**
+ * A ManagedComputeEnvironment that uses EC2 instances.
+ *
+ */
+abstract class ManagedEc2ComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2ComputeEnvironment {
+  public readonly instanceTypes: ec2.InstanceType[];
+  public readonly instanceClasses: ec2.InstanceClass[];
+
+  constructor(scope: Construct, id: string, props: ManagedEc2ComputeEnvironmentProps) {
+    super(scope, id, props);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.instanceTypes = props.instanceTypes ?? [];
+    this.instanceClasses = props.instanceClasses ?? [];
+  }
+
+  @MethodMetadata()
+  public addInstanceType(instanceType: ec2.InstanceType): void {
+    this.instanceTypes.push(instanceType);
+  }
+
+  @MethodMetadata()
+  public addInstanceClass(instanceClass: ec2.InstanceClass): void {
+    this.instanceClasses.push(instanceClass);
+  }
+}
+
+/**
  * A ManagedComputeEnvironment that uses ECS orchestration on EC2 instances.
  *
  * @resource AWS::Batch::ComputeEnvironment
  */
 @propertyInjectable
-export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
+export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironment implements IManagedEc2EcsComputeEnvironment {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ManagedEc2EcsComputeEnvironment';
 
@@ -665,10 +748,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       }
 
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
-        throw new ValidationError(`cannot add instance class to imported ComputeEnvironment '${id}'`, this);
+        throw new ValidationError(lit`CannotAddInstanceClassImported`, `cannot add instance class to imported ComputeEnvironment '${id}'`, this);
       }
       public addInstanceType(_instanceType: ec2.InstanceType): void {
-        throw new ValidationError(`cannot add instance type to imported ComputeEnvironment '${id}'`, this);
+        throw new ValidationError(lit`CannotAddInstanceTypeImported`, `cannot add instance type to imported ComputeEnvironment '${id}'`, this);
       }
     }
 
@@ -695,8 +778,6 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly allocationStrategy?: AllocationStrategy;
   public readonly spotBidPercentage?: number;
   public readonly spotFleetRole?: iam.IRole;
-  public readonly instanceTypes: ec2.InstanceType[];
-  public readonly instanceClasses: ec2.InstanceClass[];
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
@@ -710,7 +791,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     addConstructMetadata(this, props);
 
     if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
-      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
+      throw new ValidationError(lit`CannotDefaultInstanceClassesOptimal`, 'cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`. Please remove deprecated `useOptimalInstanceClasses`', this);
     }
 
     this.images = props.images;
@@ -723,13 +804,26 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         : undefined
     );
 
-    this.instanceTypes = props.instanceTypes ?? [];
-    this.instanceClasses = props.instanceClasses ?? [];
-    if (this.images?.find(image => image.imageType === EcsMachineImageType.ECS_AL2023) &&
-      (this.instanceClasses.includes(ec2.InstanceClass.A1) ||
-       this.instanceTypes.find(instanceType => instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE))))
-    ) {
-      throw new ValidationError('Amazon Linux 2023 does not support A1 instances.', this);
+    const hasA1Instances = this.instanceClasses.includes(ec2.InstanceClass.A1) ||
+      this.instanceTypes.some(instanceType => instanceType.sameInstanceClassAs(ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE)));
+
+    const willUseAL2023 = (!this.images || this.images.length === 0)
+      ? FeatureFlags.of(this).isEnabled(cxapi.BATCH_DEFAULT_AL2023)
+      : this.images.some(image => {
+        const resolved = image.imageType ?? (
+          FeatureFlags.of(this).isEnabled(cxapi.BATCH_DEFAULT_AL2023)
+            ? EcsMachineImageType.ECS_AL2023
+            : EcsMachineImageType.ECS_AL2
+        );
+        return [EcsMachineImageType.ECS_AL2023, EcsMachineImageType.ECS_AL2023_NVIDIA].includes(resolved);
+      });
+
+    if (willUseAL2023 && hasA1Instances) {
+      throw new ValidationError(
+        lit`AmazonLinuxSupportInstances`,
+        'Amazon Linux 2023 does not support A1 instances. To use A1 instances, explicitly set imageType to ECS_AL2 or disable the @aws-cdk/aws-batch:defaultToAL2023 feature flag.',
+        this,
+      );
     }
 
     const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
@@ -764,7 +858,11 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
         ec2Configuration: this.images?.map((image) => {
           return {
             imageIdOverride: image.image?.getImage(this).imageId,
-            imageType: image.imageType ?? EcsMachineImageType.ECS_AL2,
+            imageType: image.imageType ?? (
+              FeatureFlags.of(this).isEnabled(cxapi.BATCH_DEFAULT_AL2023)
+                ? EcsMachineImageType.ECS_AL2023
+                : EcsMachineImageType.ECS_AL2
+            ),
           };
         }),
         placementGroup: props.placementGroup?.placementGroupRef.groupName,
@@ -778,22 +876,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   public get placementGroup(): ec2.IPlacementGroup | undefined {
     return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
   }
-
-  @MethodMetadata()
-  public addInstanceType(instanceType: ec2.InstanceType): void {
-    this.instanceTypes.push(instanceType);
-  }
-
-  @MethodMetadata()
-  public addInstanceClass(instanceClass: ec2.InstanceClass): void {
-    this.instanceClasses.push(instanceClass);
-  }
 }
 
 /**
  * A ManagedComputeEnvironment that uses EKS orchestration on EC2 instances.
  */
-interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
+interface IManagedEc2EksComputeEnvironment extends IManagedEc2ComputeEnvironment {
   /**
    * The namespace of the Cluster
    *
@@ -821,7 +909,8 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * Configure which AMIs this Compute Environment can launch.
    *
    * @default
-   * EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
+   * EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances.
+   * If the '@aws-cdk/aws-batch:defaultToAL2023' feature flag is set, EKS_AL2023 will be used instead of EKS_AL2.
    */
   readonly images?: EksMachineImage[];
 
@@ -847,18 +936,6 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * @default - 100%
    */
   readonly spotBidPercentage?: number;
-
-  /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   */
-  readonly instanceTypes: ec2.InstanceType[];
-
-  /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   */
-  readonly instanceClasses: ec2.InstanceClass[];
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
@@ -900,22 +977,12 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
-
-  /**
-   * Add an instance type to this compute environment
-   */
-  addInstanceType(instanceType: ec2.InstanceType): void;
-
-  /**
-   * Add an instance class to this compute environment
-   */
-  addInstanceClass(instanceClass: ec2.InstanceClass): void;
 }
 
 /**
  * Props for a ManagedEc2EksComputeEnvironment
  */
-export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
+export interface ManagedEc2EksComputeEnvironmentProps extends ManagedEc2ComputeEnvironmentProps {
   /**
    * The namespace of the Cluster
    */
@@ -960,9 +1027,10 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @default
    * If `imageKubernetesVersion` is specified,
-   * - EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
+   * - EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances.
    * Otherwise,
-   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances,
+   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances.
+   * If the '@aws-cdk/aws-batch:defaultToAL2023' feature flag is set, EKS_AL2023 / ECS_AL2023 will be used instead.
    */
   readonly images?: EksMachineImage[];
 
@@ -988,23 +1056,6 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * @default - 100%
    */
   readonly spotBidPercentage?: number;
-
-  /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   *
-   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
-   */
-  readonly instanceTypes?: ec2.InstanceType[];
-
-  /**
-   * The instance types that this Compute Environment can launch.
-   * Which one is chosen depends on the `AllocationStrategy` used.
-   * Batch will automatically choose the instance size.
-   *
-   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
-   */
-  readonly instanceClasses?: ec2.InstanceClass[];
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
@@ -1054,7 +1105,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
  * @resource AWS::Batch::ComputeEnvironment
  */
 @propertyInjectable
-export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
+export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironment implements IManagedEc2EksComputeEnvironment {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.ManagedEc2EksComputeEnvironment';
   public readonly kubernetesNamespace?: string;
@@ -1079,8 +1130,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly images?: EksMachineImage[];
   public readonly allocationStrategy?: AllocationStrategy;
   public readonly spotBidPercentage?: number;
-  public readonly instanceTypes: ec2.InstanceType[];
-  public readonly instanceClasses: ec2.InstanceClass[];
   public readonly instanceRole?: iam.IRole;
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
@@ -1094,7 +1143,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     addConstructMetadata(this, props);
 
     if (props.defaultInstanceClasses && props.useOptimalInstanceClasses) {
-      throw new ValidationError('cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`.', this);
+      throw new ValidationError(lit`CannotDefaultInstanceClassesOptimal`, 'cannot use `defaultInstanceClasses` with `useOptimalInstanceClasses`.', this);
     }
 
     this.kubernetesNamespace = props.kubernetesNamespace;
@@ -1103,11 +1152,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(this, props.allocationStrategy, this.spot);
     if (this.allocationStrategy === AllocationStrategy.BEST_FIT) {
-      throw new ValidationError(`ManagedEc2EksComputeEnvironment '${id}' uses invalid allocation strategy 'AllocationStrategy.BEST_FIT'`, this);
+      throw new ValidationError(lit`ManagedEcEksComputeEnvironment`, `ManagedEc2EksComputeEnvironment '${id}' uses invalid allocation strategy 'AllocationStrategy.BEST_FIT'`, this);
     }
     this.spotBidPercentage = props.spotBidPercentage;
-    this.instanceTypes = props.instanceTypes ?? [];
-    this.instanceClasses = props.instanceClasses ?? [];
 
     const { instanceRole, instanceProfile } = createInstanceRoleAndProfile(this, props.instanceRole);
     this.instanceRole = instanceRole;
@@ -1140,11 +1187,23 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
         bidPercentage: this.spotBidPercentage,
         launchTemplate: this.launchTemplate ? {
           launchTemplateId: this.launchTemplate?.launchTemplateId,
+          userdataType: this.images?.some(image => {
+            const resolved = image.imageType ?? (
+              FeatureFlags.of(this).isEnabled(cxapi.BATCH_DEFAULT_AL2023)
+                ? EksMachineImageType.EKS_AL2023
+                : EksMachineImageType.EKS_AL2
+            );
+            return [EksMachineImageType.EKS_AL2023, EksMachineImageType.EKS_AL2023_NVIDIA].includes(resolved);
+          }) ? 'EKS_NODEADM' : undefined,
         } : undefined,
         ec2Configuration: this.images?.map((image) => {
           return {
             imageIdOverride: image.image?.getImage(this).imageId,
-            imageType: image.imageType ?? EksMachineImageType.EKS_AL2,
+            imageType: image.imageType ?? (
+              FeatureFlags.of(this).isEnabled(cxapi.BATCH_DEFAULT_AL2023)
+                ? EksMachineImageType.EKS_AL2023
+                : EksMachineImageType.EKS_AL2
+            ),
           };
         }),
         placementGroup: props.placementGroup?.placementGroupRef.groupName,
@@ -1157,16 +1216,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
   public get placementGroup(): ec2.IPlacementGroup | undefined {
     return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
-  }
-
-  @MethodMetadata()
-  public addInstanceType(instanceType: ec2.InstanceType): void {
-    this.instanceTypes.push(instanceType);
-  }
-
-  @MethodMetadata()
-  public addInstanceClass(instanceClass: ec2.InstanceClass): void {
-    this.instanceClasses.push(instanceClass);
   }
 }
 
@@ -1297,9 +1346,9 @@ function determineAllocationStrategy(scope: Construct, allocationStrategy?: Allo
   if (!allocationStrategy) {
     result = spot ? AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
   } else if (allocationStrategy === AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED && !spot) {
-    throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances`, scope);
+    throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' specifies 'AllocationStrategy.SPOT_PRICE_CAPACITY_OPTIMIZED' without using spot instances`, scope);
   } else if (allocationStrategy === AllocationStrategy.SPOT_CAPACITY_OPTIMIZED && !spot) {
-    throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`, scope);
+    throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' specifies 'AllocationStrategy.SPOT_CAPACITY_OPTIMIZED' without using spot instances`, scope);
   }
 
   return result;
@@ -1320,31 +1369,31 @@ function validateInstances(
 function validateSpotConfig(scope: Construct, spot?: boolean, spotBidPercentage?: number, spotFleetRole?: iam.IRole): void {
   if (spotBidPercentage) {
     if (!spot) {
-      throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' without specifying 'spot'`, scope);
+      throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' without specifying 'spot'`, scope);
     }
 
     if (!Token.isUnresolved(spotBidPercentage)) {
       if (spotBidPercentage > 100) {
-        throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' > 100`, scope);
+        throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' > 100`, scope);
       } else if (spotBidPercentage < 0) {
-        throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' < 0`, scope);
+        throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' specifies 'spotBidPercentage' < 0`, scope);
       }
     }
   }
 
   if (spotFleetRole) {
     if (!spot) {
-      throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' specifies 'spotFleetRole' without specifying 'spot'`, scope);
+      throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' specifies 'spotFleetRole' without specifying 'spot'`, scope);
     }
   }
 }
 
 function validateVCpus(scope: Construct, minvCpus: number, maxvCpus: number): void {
   if (!Token.isUnresolved(minvCpus) && minvCpus < 0) {
-    throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' has 'minvCpus' = ${minvCpus} < 0; 'minvCpus' cannot be less than zero`, scope);
+    throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' has 'minvCpus' = ${minvCpus} < 0; 'minvCpus' cannot be less than zero`, scope);
   }
   if (!Token.isUnresolved(minvCpus) && !Token.isUnresolved(maxvCpus) && minvCpus > maxvCpus) {
-    throw new ValidationError(`Managed ComputeEnvironment '${scope.node.id}' has 'minvCpus' = ${minvCpus} > 'maxvCpus' = ${maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`, scope);
+    throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' has 'minvCpus' = ${minvCpus} > 'maxvCpus' = ${maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`, scope);
   }
 }
 
@@ -1375,5 +1424,5 @@ function asPlacementGroup(x: ec2.IPlacementGroupRef, scope: IConstruct): ec2.IPl
   if ('placementGroupName' in x) {
     return x as ec2.IPlacementGroup;
   }
-  throw new ValidationError(`Provided placement group is not an instance of IPlacementGroup: ${x.constructor.name}`, scope);
+  throw new ValidationError(lit`ProvidedPlacementGroupInstancePlacement`, `Provided placement group is not an instance of IPlacementGroup: ${x.constructor.name}`, scope);
 }

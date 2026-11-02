@@ -12,7 +12,9 @@ This package contains the following custom resource handlers:
 - aws-ecs/lambda-source
 - aws-eks/custom-resource-handler
 - aws-eks/kubectl-handler
+- aws-eks-v2/kubectl-handler
 - aws-events-targets/aws-api-handler
+- aws-glue/partition-index-handler
 - aws-iam/oidc-handler
 - aws-logs/log-retention-handler
 - aws-route53/cross-account-zone-delegation-handler

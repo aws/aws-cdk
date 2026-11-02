@@ -582,7 +582,7 @@ hits a particular time. The time to wait may be taken from the execution's JSON
 state.
 
 ```ts
-// Wait until it's the time mentioned in the the state object's "triggerTime"
+// Wait until it's the time mentioned in the state object's "triggerTime"
 // field.
 const wait = new sfn.Wait(this, 'Wait For Trigger Time', {
   time: sfn.WaitTime.timestampPath('$.triggerTime'),
@@ -1280,7 +1280,7 @@ AWS Step functions integrate directly with other services, either through an opt
 Therefore, it is possible to change the `integrationPattern` of services, to enable additional functionality of the said AWS Service:
 
 ```ts
-import * as glue from "@aws-cdk/aws-glue-alpha";
+import * as glue from "aws-cdk-lib/aws-glue";
 
 declare const submitGlue: glue.Job;
 

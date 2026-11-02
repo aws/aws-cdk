@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "dac992bbc088308fd70f766aeac73c7c7adf7acd6a036e3a035f3c534a05366b": {
+      "displayName": "aws-cdk-project-macos-base26 Template",
+      "source": {
+        "path": "aws-cdk-project-macos-base26.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-38f4ad04": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "dac992bbc088308fd70f766aeac73c7c7adf7acd6a036e3a035f3c534a05366b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

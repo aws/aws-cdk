@@ -1,0 +1,17 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "PolicyIntegTest/DefaultTest": {
+      "stacks": [
+        "PolicyIntegTestStack"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "PolicyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PolicyIntegTestDefaultTestDeployAssert9E9AFC28"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

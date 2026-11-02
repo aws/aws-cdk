@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as util from 'util';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { Timers } from './timer';
 
 interface ShellOptions {
@@ -15,15 +15,14 @@ interface ShellOptions {
  * Is platform-aware, handles errors nicely.
  */
 export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
-  const [cmd, ...args] = command;
+  const [cmd] = command;
   const timer = (options.timers || new Timers()).start(cmd);
 
   await makeShellScriptExecutable(cmd);
 
   // yarn exec runs the provided command with the correct environment for the workspace.
   const child = child_process.spawn(
-    cmd,
-    args,
+    command.join(' '),
     {
       // Need this for Windows where we want .cmd and .bat to be found as well.
       shell: true,

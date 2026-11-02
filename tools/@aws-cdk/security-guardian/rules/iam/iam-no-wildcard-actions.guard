@@ -20,11 +20,15 @@ rule IAM_NO_WILDCARD_ACTIONS when %iam_policies !empty {
                 when Action exists {
                     when Action is_string {
                         Action != "*"
+                            <<##ERROR:IAM policy must not use wildcard actions. Replace '*' in Action with specific actions needed.##>>
                         Action != /\w+:\*$/
+                            <<##ERROR:IAM policy must not use wildcard actions. Replace 'service:*' in Action with specific actions needed.##>>
                     }
                     when Action is_list {
                         Action[*] != "*"
+                            <<##ERROR:IAM policy must not use wildcard actions. Replace '*' in Action with specific actions needed.##>>
                         Action[*] != /\w+:\*$/
+                            <<##ERROR:IAM policy must not use wildcard actions. Replace 'service:*' in Action with specific actions needed.##>>
                     }
                 }
             }

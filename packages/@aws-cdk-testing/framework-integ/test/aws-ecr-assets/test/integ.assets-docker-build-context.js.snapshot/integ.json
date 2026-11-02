@@ -1,0 +1,12 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "DockerBuildContextTest/DefaultTest": {
+      "stacks": [
+        "integ-assets-docker-build-context"
+      ],
+      "assertionStack": "DockerBuildContextTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DockerBuildContextTestDefaultTestDeployAssert7E73C929"
+    }
+  }
+}

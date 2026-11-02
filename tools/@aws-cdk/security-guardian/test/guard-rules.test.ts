@@ -1,10 +1,12 @@
 import { preprocessTemplates } from '../src/template-preprocessor';
 import { runCfnGuardValidation } from '../src/cfn-guard-runner';
+import { failedRules } from './junit-report';
 import * as fs from 'fs';
 import * as path from 'path';
 
 describe('Guard Rules Validation', () => {
   const templatesDir = path.join(__dirname, 'templates');
+  const ruleFixturesDir = path.join(__dirname, 'rule-fixtures');
   const outputDir = path.join(__dirname, 'guard-test-output');
   const rulesDir = path.join(__dirname, '..', 'rules');
 
@@ -37,12 +39,13 @@ describe('Guard Rules Validation', () => {
         path.join(outputDir, 'trust-scope-test.xml'),
         'Trust Scope',
         new Map(),
-        true
+        false
       );
       
       // Should detect broad principals (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
+      expect(failedRules(path.join(outputDir, 'trust-scope-test.xml'))).toContain('IAM_ROLE_NO_BROAD_PRINCIPALS');
     });
   });
 
@@ -58,19 +61,20 @@ describe('Guard Rules Validation', () => {
         path.join(outputDir, 'resource-policy-test.xml'),
         'Resource Policy',
         new Map(),
-        true
+        false
       );
       
       // Should detect root principals without conditions (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
+      expect(failedRules(path.join(outputDir, 'resource-policy-test.xml'))).toContain('RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS');
     });
   });
 
   describe('IAM Rules', () => {
-    test('IAM_NO_WILDCARD_ACTIONS - should validate existing templates for wildcard actions', async () => {
-      // Process existing templates that may contain IAM policies
-      preprocessTemplates(templatesDir, outputDir);
+    test('IAM_NO_WILDCARD_ACTIONS - should detect wildcard actions in IAM policies', async () => {
+      // Process the rule's own fixtures; no template in test/templates uses a wildcard action
+      preprocessTemplates(path.join(ruleFixturesDir, 'iam/iam-no-wildcard-actions'), outputDir);
       
       // Run validation with IAM rules
       const success = await runCfnGuardValidation(
@@ -79,12 +83,13 @@ describe('Guard Rules Validation', () => {
         path.join(outputDir, 'iam-test.xml'),
         'IAM',
         new Map(),
-        true
+        false
       );
       
       // Should detect IAM violations (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
+      expect(failedRules(path.join(outputDir, 'iam-test.xml'))).toContain('IAM_NO_WILDCARD_ACTIONS');
     });
 
     describe('IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY', () => {
@@ -99,11 +104,12 @@ describe('Guard Rules Validation', () => {
           path.join(outputDir, 'world-accessible-static-test.xml'),
           'World Accessible Static',
           new Map(),
-          true
+          false
         );
         
         // Should detect world-accessible trust policies (validation should fail)
         expect(success).toBe(false);
+        expect(failedRules(path.join(outputDir, 'world-accessible-static-test.xml'))).toContain('IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY');
       });
 
       test('Resolved: should detect Principal: "*" after intrinsic resolution', async () => {
@@ -117,11 +123,12 @@ describe('Guard Rules Validation', () => {
           path.join(outputDir, 'world-accessible-resolved-test.xml'),
           'World Accessible Resolved',
           new Map(),
-          true
+          false
         );
         
         // Should detect world-accessible trust policies (validation should fail)
         expect(success).toBe(false);
+        expect(failedRules(path.join(outputDir, 'world-accessible-resolved-test.xml'))).toContain('IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY');
       });
 
       test('Static: should not flag intrinsic functions as world-accessible', async () => {
@@ -196,12 +203,13 @@ describe('Guard Rules Validation', () => {
         path.join(outputDir, 'root-principal-test.xml'),
         'Root Principal',
         new Map(),
-        true
+        false
       );
       
       // Should detect root principals without conditions (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
+      expect(failedRules(path.join(outputDir, 'root-principal-test.xml'))).toContain('IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS');
     });
   });
 
@@ -288,7 +296,34 @@ describe('Guard Rules Validation', () => {
       // Verify XML file exists and testsuite names are replaced
       const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
       expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
-      expect(xmlContent).toContain('for Type: Failure Type');
+      expect(xmlContent).toContain('<failure message="[Type: Failure Type] IAM role trust policy must not use broadly scoped principals. Remove &apos;*&apos; from Principal and scope to specific accounts or roles.">');
+    });
+
+    test('should correctly post-process XML with enhanceXml disabled', async () => {
+      // Process templates to create files that will fail validation
+      preprocessTemplates(templatesDir, outputDir);
+      
+      const fileMapping = new Map([
+        [path.resolve(outputDir, 'CMCMK-Stack.template.json'), 'src/CMCMK-Stack.template.json'],
+        [path.resolve(outputDir, 'StagingStack-default-resourcesmax-ACCOUNT-REGION.template.json'), 'src/StagingStack.template.json']
+      ]);
+
+      const success = await runCfnGuardValidation(
+        outputDir,
+        path.join(rulesDir, 'iam/iam-role-no-broad-principals.guard'),
+        path.join(outputDir, 'xml-failure-test.xml'),
+        'Failure Type',
+        fileMapping,
+        false
+      );
+
+      expect(success).toBe(false);
+      
+      // Verify XML file exists and testsuite names are replaced
+      const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
+      expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
+      expect(xmlContent).toContain('<failure message="[Type: Failure Type] IAM_ROLE_NO_BROAD_PRINCIPALS">');
+      expect(xmlContent).toContain('##ERROR:IAM role trust policy must not use broadly scoped principals. Remove &apos;*&apos; from Principal and scope to specific accounts or roles.##');
     });
   });
 });

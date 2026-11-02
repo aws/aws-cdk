@@ -1,0 +1,629 @@
+{
+  "/aws-cdk-ses-receipt": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:36:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/Topic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ses-receipt/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ses-receipt/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "dropSpam": true
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-ses-receipt/NotificationQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ses-receipt/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/Topic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicBFC7AF6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function76856677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:38:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/Function/AllowSes": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionAllowSes1829904A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "Lambda.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/lambda.js:57:33)",
+        "WrappedClass.addAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:165:38)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:149:22)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:72:30)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:46:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:43:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/Bucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:44:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuleSetE30C6C48"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ReceiptRuleSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:135:30)",
+        "new ReceiptRuleSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:45:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet/FirstRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "after": "*",
+        "ruleSet": "*",
+        "actions": "*",
+        "receiptRuleName": "*",
+        "recipients": "*",
+        "scanEnabled": true,
+        "tlsPolicy": "Require"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet/SecondRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "after": "*",
+        "ruleSet": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "DropSpamSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DropSpamSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated.js:9:9)",
+        "new DropSpamReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:211:24)",
+        "new DropSpamReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addDropSpamRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:83:26)",
+        "new ReceiptRuleSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:141:26)"
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/AllowSes": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonLambda224e77f9a32e4b4dac32983477abba16AllowSesB42DF904"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "DropSpamSingletonFunction.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:232:40)",
+        "DropSpamSingletonFunction.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new DropSpamReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:214:16)",
+        "new DropSpamReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addDropSpamRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:83:26)",
+        "new ReceiptRuleSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:141:26)",
+        "new ReceiptRuleSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:45:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/NotificationQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NotificationQueue36610CC1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:86:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/NotificationQueue/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/NotificationQueue/awscdksesreceiptTopicE9CA2388": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topic": "*",
+        "endpoint": "*",
+        "protocol": "sqs",
+        "rawMessageDelivery": "*",
+        "filterPolicy": "*",
+        "filterPolicyWithMessageBody": "*",
+        "region": "*",
+        "deadLetterQueue": "*"
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:38:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketPolicyE9A3008A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:276:18)",
+        "S3.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/s3.js:50:27)",
+        "WrappedClass.addAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:165:38)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:149:22)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet/DropSpam/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addPermission": [
+          "*",
+          {
+            "action": "*",
+            "principal": {
+              "principalAccount": "*",
+              "assumeRoleAction": "*"
+            },
+            "sourceAccount": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet/DropSpam/Rule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "actions": "*",
+        "scanEnabled": true,
+        "ruleSet": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAction": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet/FirstRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuleSetFirstRule0A27C8CC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:135:30)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:72:30)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:46:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet/SecondRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuleSetSecondRule03178AD4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:135:30)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:72:30)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:82:28)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "DropSpamSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DropSpamSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated.js:9:9)",
+        "new DropSpamReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:211:24)",
+        "new DropSpamReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ses-receipt/NotificationQueue/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NotificationQueuePolicyCC060EA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new QueuePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/policy.js:108:13)",
+        "new QueuePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:72:27)",
+        "SqsSubscription.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns-subscriptions/lib/sqs.js:66:50)",
+        "WrappedClass.addSubscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:58:54)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:87:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/NotificationQueue/awscdksesreceiptTopicE9CA2388/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NotificationQueueawscdksesreceiptTopicE9CA2388E8E96C33"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/subscription.js:140:13)",
+        "new Subscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addSubscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:69:30)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:87:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ses-receipt/RuleSet/DropSpam/Rule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RuleSetDropSpamRule5809F51B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:135:30)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DropSpamReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule.js:219:25)",
+        "new DropSpamReceiptRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addDropSpamRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:83:26)",
+        "new ReceiptRuleSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/receipt-rule-set.js:141:26)",
+        "new ReceiptRuleSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses-actions/test/integ.actions.js:45:17)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
