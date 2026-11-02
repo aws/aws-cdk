@@ -1,0 +1,83 @@
+{
+ "Resources": {
+  "StackSet6E6355CF": {
+   "Type": "AWS::CloudFormation::StackSet",
+   "Properties": {
+    "AutoDeployment": {
+     "Enabled": true,
+     "RetainStacksOnAccountRemoval": true
+    },
+    "CallAs": "DELEGATED_ADMIN",
+    "ManagedExecution": {
+     "Active": true
+    },
+    "PermissionModel": "SERVICE_MANAGED",
+    "StackInstancesGroup": [
+     {
+      "DeploymentTargets": {
+       "AccountFilterType": "NONE",
+       "OrganizationalUnitIds": [
+        "ou-abcd-11111111"
+       ]
+      },
+      "Regions": [
+       "us-east-1"
+      ]
+     },
+     {
+      "DeploymentTargets": {
+       "AccountFilterType": "INTERSECTION",
+       "Accounts": [
+        "111111111111"
+       ],
+       "OrganizationalUnitIds": [
+        "ou-abcd-22222222"
+       ]
+      },
+      "Regions": [
+       "us-east-1"
+      ]
+     }
+    ],
+    "StackSetName": "integstacksetservicemanagedStackSetD2FEE8CA",
+    "TemplateURL": {
+     "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03018d41d7b55bfa16b4ee40ee7568f6a8641222586c56a4b4c35154594f8fe0.json"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
