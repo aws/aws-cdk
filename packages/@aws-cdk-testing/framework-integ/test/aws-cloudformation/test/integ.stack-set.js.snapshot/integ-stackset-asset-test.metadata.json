@@ -4,18 +4,16 @@
       "type": "aws:cdk:warning",
       "data": "Bucket Policy Permissions cannot be added to referenced Bucket. Please make sure your bucket has the correct permissions [ack: @aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions]",
       "trace": [
-        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:204:47",
-        "Array.forEach (<anonymous>)",
-        "StackSetStackSynthesizer.stageAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:197:27)",
-        "StackSetStackSynthesizer._bindHost (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:147:18)",
-        "LambdaStackSet._bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:308:42)",
-        "StackSetStackTemplate._bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset.js:161:27)",
-        "new StackSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/stackset.js:628:45)",
-        "new StackSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AssetTestCase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:160:9)",
-        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:188:23)",
+        "Annotations.addMessage (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "StackSetStackSynthesizer.stageAsset (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:291:47)",
+        "StackSetStackSynthesizer._bindHost (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:235:18)",
+        "LambdaStackSet._bind (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/aws-cdk-lib/aws-cloudformation/lib/stackset-stack.js:397:42)",
+        "StackSetStackTemplate._bind (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/aws-cdk-lib/aws-cloudformation/lib/stackset.js:161:27)",
+        "new StackSet (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/aws-cdk-lib/aws-cloudformation/lib/stackset.js:628:45)",
+        "new StackSet (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AssetTestCase (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:161:9)",
+        "Object.<anonymous> (/workplace/gudipatg/worktrees/aws-cdk/stackset-asset-buckets/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:189:23)",
         "Module._compile (node:internal/modules/cjs/loader:1781:14)",
         "Object..js (node:internal/modules/cjs/loader:1913:10)",
         "Module.load (node:internal/modules/cjs/loader:1505:32)",
@@ -154,13 +152,13 @@
       "data": "StackSet6E6355CF"
     }
   ],
-  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/AwsCliLayer": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-us-east-1/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {}
     }
   ],
-  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/CustomResourceHandler": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-us-east-1/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -204,7 +202,7 @@
       }
     }
   ],
-  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/CustomResource": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-us-east-1/CustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -308,16 +306,16 @@
       }
     }
   ],
-  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/AwsCliLayer/Resource": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-us-east-1/AwsCliLayer/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E"
+      "data": "assetstacksetAssetBucketDeploymentuseast1AwsCliLayerD6CF98B4"
     }
   ],
-  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/CustomResource/Default": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-us-east-1/CustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "assetstacksetAssetBucketDeployment0CustomResource9D9B9436"
+      "data": "assetstacksetAssetBucketDeploymentuseast1CustomResourceCBC708E2"
     }
   ],
   "/integ-stackset-asset-test/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
@@ -382,7 +380,7 @@
       "data": "StackSetAdminRoleDefaultPolicy96A312F6"
     }
   ],
-  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-0/AwsCliLayer/Code/AssetBucket": [
+  "/integ-stackset-asset-test/assetstackset-AssetBucketDeployment-us-east-1/AwsCliLayer/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"

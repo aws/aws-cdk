@@ -139,8 +139,9 @@ class AssetTestCase extends Stack {
     super(scope, id);
 
     const stackSetStack = new LambdaStackSet(scope, 'asset-stack-set', {
-      assetBuckets: [s3.Bucket.fromBucketName(this, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
-      assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
+      assetBuckets: cfn.StackSetAssetBuckets.fromBuckets(`asset-bucket-${deploymentAccount}`, {
+        [targetRegion]: s3.Bucket.fromBucketName(this, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`),
+      }),
     });
     new cfn.StackSet(this, 'StackSet', {
       stackSetName: assetStackSetName,

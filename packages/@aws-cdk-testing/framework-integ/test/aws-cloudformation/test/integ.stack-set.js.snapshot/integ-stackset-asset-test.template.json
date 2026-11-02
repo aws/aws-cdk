@@ -109,13 +109,13 @@
     }
    },
    "DependsOn": [
-    "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E",
-    "assetstacksetAssetBucketDeployment0CustomResource9D9B9436",
+    "assetstacksetAssetBucketDeploymentuseast1AwsCliLayerD6CF98B4",
+    "assetstacksetAssetBucketDeploymentuseast1CustomResourceCBC708E2",
     "StackSetAdminRoleDefaultPolicy96A312F6",
     "StackSetAdminRoleFDB48078"
    ]
   },
-  "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E": {
+  "assetstacksetAssetBucketDeploymentuseast1AwsCliLayerD6CF98B4": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -127,7 +127,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "assetstacksetAssetBucketDeployment0CustomResource9D9B9436": {
+  "assetstacksetAssetBucketDeploymentuseast1CustomResourceCBC708E2": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -302,7 +302,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E"
+      "Ref": "assetstacksetAssetBucketDeploymentuseast1AwsCliLayerD6CF98B4"
      }
     ],
     "MemorySize": 1024,
