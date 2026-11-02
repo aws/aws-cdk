@@ -179,12 +179,21 @@ test('OriginEndpointPolicy depends on the origin endpoint', () => {
     manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
   });
 
-  const policy = new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
     originEndpoint: origin,
+    policyDocument: new PolicyDocument({
+      statements: [new PolicyStatement({
+        sid: 'AllowCloudFront',
+        principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+        actions: ['mediapackagev2:GetObject'],
+        resources: [origin.originEndpointArn],
+      })],
+    }),
   });
 
-  const policyCfn = policy.node.defaultChild as CfnResource;
-  expect(policyCfn.obtainDependencies()).toEqual([origin.node.defaultChild]);
+  Template.fromStack(stack).hasResource('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    DependsOn: [stack.getLogicalId(origin.node.defaultChild as CfnResource)],
+  });
 });
 
 test('OriginEndpointPolicy for an imported origin endpoint has no DependsOn', () => {
@@ -194,37 +203,21 @@ test('OriginEndpointPolicy for an imported origin endpoint has no DependsOn', ()
     originEndpointName: 'MyEndpoint',
   });
 
-  const policy = new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
     originEndpoint: origin,
+    policyDocument: new PolicyDocument({
+      statements: [new PolicyStatement({
+        sid: 'AllowCloudFront',
+        principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+        actions: ['mediapackagev2:GetObject'],
+        resources: [origin.originEndpointArn],
+      })],
+    }),
   });
 
-  const policyCfn = policy.node.defaultChild as CfnResource;
-  expect(policyCfn.obtainDependencies()).toEqual([]);
-});
-
-test('OriginEndpointPolicy for an imported origin endpoint synthesizes', () => {
-  const imported = mediapackagev2.OriginEndpoint.fromOriginEndpointAttributes(stack, 'Endpoint', {
-    channelGroupName: 'MyChannelGroup',
-    channelName: 'MyChannel',
-    originEndpointName: 'MyEndpoint',
+  Template.fromStack(stack).hasResource('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    DependsOn: Match.absent(),
   });
-
-  expect(() => {
-    new mediapackagev2.OriginEndpointPolicy(stack, 'ImportedPolicy', {
-      originEndpoint: imported,
-      policyDocument: new PolicyDocument({
-        statements: [
-          new PolicyStatement({
-            effect: Effect.ALLOW,
-            principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
-            actions: ['mediapackagev2:GetObject'],
-            resources: ['*'],
-          }),
-        ],
-      }),
-    });
-    Template.fromStack(stack);
-  }).not.toThrow();
 });
 
 test('OriginEndpoint cdnAuth from constructor props is applied to policy', () => {
