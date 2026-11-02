@@ -15,17 +15,21 @@ import {
   DefaultStackSynthesizer,
   Stack,
   Stage,
+  Token,
   Validations,
 } from '../../core';
 import type { StackSynthesizer } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import * as cxapi from '../../cx-api';
-import type { StackSetStackProps } from '../lib';
+import type { OperationPreferences, StackSetStackProps } from '../lib';
 import {
   DeploymentType,
   NestedStack,
   RegionConcurrencyType,
   StackSet,
+  StackSetConcurrencyMode,
+  StackSetFailureTolerance,
+  StackSetMaxConcurrency,
   StackSetTarget,
   StackSetTemplate,
   StackSetStack,
@@ -671,13 +675,11 @@ test('passes operation preferences', () => {
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
     operationPreferences: {
-      // In reality, you would not set all of these at once, but it allows us to test all the properties in one test case
       regionConcurrencyType: RegionConcurrencyType.PARALLEL,
       regionOrder: ['us-east-1', 'us-west-2'],
-      maxConcurrentPercentage: 50,
-      maxConcurrentCount: 5,
-      failureTolerancePercentage: 10,
-      failureToleranceCount: 1,
+      maxConcurrency: StackSetMaxConcurrency.percentage(50),
+      failureTolerance: StackSetFailureTolerance.count(1),
+      concurrencyMode: StackSetConcurrencyMode.SOFT_FAILURE_TOLERANCE,
     },
   });
 
@@ -688,9 +690,8 @@ test('passes operation preferences', () => {
       RegionConcurrencyType: 'PARALLEL',
       RegionOrder: ['us-east-1', 'us-west-2'],
       MaxConcurrentPercentage: 50,
-      MaxConcurrentCount: 5,
-      FailureTolerancePercentage: 10,
       FailureToleranceCount: 1,
+      ConcurrencyMode: 'SOFT_FAILURE_TOLERANCE',
     },
     TemplateURL: {
       'Fn::Sub': 'https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a.json',
@@ -733,6 +734,96 @@ test('passes a custom region concurrency type from of() through to the template'
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
     OperationPreferences: { RegionConcurrencyType: 'CUSTOM' },
+  });
+});
+
+describe('StackSet operation preferences values', () => {
+  function renderOperationPreferences(operationPreferences: OperationPreferences) {
+    const app = new App();
+    const stack = new Stack(app);
+
+    new StackSet(stack, 'StackSet', {
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
+      operationPreferences,
+    });
+    return stack;
+  }
+
+  test.each([
+    ['count', StackSetFailureTolerance.count(2), { FailureToleranceCount: 2, FailureTolerancePercentage: Match.absent() }],
+    ['percentage', StackSetFailureTolerance.percentage(25), { FailureTolerancePercentage: 25, FailureToleranceCount: Match.absent() }],
+  ])('renders only the failure tolerance %s key', (_kind, failureTolerance, expected) => {
+    const stack = renderOperationPreferences({ failureTolerance });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      OperationPreferences: expected,
+    });
+  });
+
+  test.each([
+    ['count', StackSetMaxConcurrency.count(3), { MaxConcurrentCount: 3, MaxConcurrentPercentage: Match.absent() }],
+    ['percentage', StackSetMaxConcurrency.percentage(40), { MaxConcurrentPercentage: 40, MaxConcurrentCount: Match.absent() }],
+  ])('renders only the max concurrency %s key', (_kind, maxConcurrency, expected) => {
+    const stack = renderOperationPreferences({ maxConcurrency });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      OperationPreferences: expected,
+    });
+  });
+
+  test.each([
+    ['STRICT_FAILURE_TOLERANCE', StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE],
+    ['SOFT_FAILURE_TOLERANCE', StackSetConcurrencyMode.SOFT_FAILURE_TOLERANCE],
+  ])('renders the %s concurrency mode', (expected, concurrencyMode) => {
+    const stack = renderOperationPreferences({ concurrencyMode });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      OperationPreferences: { ConcurrencyMode: expected },
+    });
+  });
+
+  test('passes a custom concurrency mode from of() through to the template', () => {
+    const stack = renderOperationPreferences({ concurrencyMode: StackSetConcurrencyMode.of('CUSTOM') });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3030', reason: 'of() accepts values newer than the CloudFormation schema' });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      OperationPreferences: { ConcurrencyMode: 'CUSTOM' },
+    });
+  });
+
+  test.each([
+    ['failure tolerance count 0', () => ({ failureTolerance: StackSetFailureTolerance.count(0) }), { FailureToleranceCount: 0 }],
+    ['failure tolerance percentage 0', () => ({ failureTolerance: StackSetFailureTolerance.percentage(0) }), { FailureTolerancePercentage: 0 }],
+    ['failure tolerance percentage 100', () => ({ failureTolerance: StackSetFailureTolerance.percentage(100) }), { FailureTolerancePercentage: 100 }],
+    ['max concurrency count 1', () => ({ maxConcurrency: StackSetMaxConcurrency.count(1) }), { MaxConcurrentCount: 1 }],
+    ['max concurrency percentage 1', () => ({ maxConcurrency: StackSetMaxConcurrency.percentage(1) }), { MaxConcurrentPercentage: 1 }],
+    ['max concurrency percentage 100', () => ({ maxConcurrency: StackSetMaxConcurrency.percentage(100) }), { MaxConcurrentPercentage: 100 }],
+  ])('accepts the boundary value %s', (_kind, operationPreferences, expected) => {
+    const stack = renderOperationPreferences(operationPreferences());
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      OperationPreferences: expected,
+    });
+  });
+
+  test.each([
+    ['failure tolerance count', (value: number) => ({ failureTolerance: StackSetFailureTolerance.count(value) }), 'FailureToleranceCount'],
+    ['failure tolerance percentage', (value: number) => ({ failureTolerance: StackSetFailureTolerance.percentage(value) }), 'FailureTolerancePercentage'],
+    ['max concurrency count', (value: number) => ({ maxConcurrency: StackSetMaxConcurrency.count(value) }), 'MaxConcurrentCount'],
+    ['max concurrency percentage', (value: number) => ({ maxConcurrency: StackSetMaxConcurrency.percentage(value) }), 'MaxConcurrentPercentage'],
+  ])('accepts a token for the %s', (_kind, operationPreferences, key) => {
+    const app = new App();
+    const stack = new Stack(app);
+    const value = new CfnParameter(stack, 'Value', { type: 'Number' });
+
+    new StackSet(stack, 'StackSet', {
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
+      operationPreferences: operationPreferences(Token.asNumber(value.valueAsNumber)),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      OperationPreferences: { [key]: { Ref: 'Value' } },
+    });
   });
 });
 
@@ -1746,6 +1837,20 @@ describe('StackSet validation errors', () => {
       name: 'StackSetAccountsRequired',
       message: 'fromAccounts requires at least one account',
     }));
+  });
+
+  test.each([
+    [-1, 'StackSetFailureToleranceCountInvalid', 'failure tolerance count must be an integer greater than or equal to 0, got -1', (value: number) => StackSetFailureTolerance.count(value)],
+    [1.5, 'StackSetFailureToleranceCountInvalid', 'failure tolerance count must be an integer greater than or equal to 0, got 1.5', (value: number) => StackSetFailureTolerance.count(value)],
+    [-1, 'StackSetFailureTolerancePercentageInvalid', 'failure tolerance percentage must be an integer from 0 to 100, got -1', (value: number) => StackSetFailureTolerance.percentage(value)],
+    [101, 'StackSetFailureTolerancePercentageInvalid', 'failure tolerance percentage must be an integer from 0 to 100, got 101', (value: number) => StackSetFailureTolerance.percentage(value)],
+    [12.5, 'StackSetFailureTolerancePercentageInvalid', 'failure tolerance percentage must be an integer from 0 to 100, got 12.5', (value: number) => StackSetFailureTolerance.percentage(value)],
+    [0, 'StackSetMaxConcurrencyCountInvalid', 'max concurrency count must be an integer greater than or equal to 1, got 0', (value: number) => StackSetMaxConcurrency.count(value)],
+    [2.5, 'StackSetMaxConcurrencyCountInvalid', 'max concurrency count must be an integer greater than or equal to 1, got 2.5', (value: number) => StackSetMaxConcurrency.count(value)],
+    [0, 'StackSetMaxConcurrencyPercentageInvalid', 'max concurrency percentage must be an integer from 1 to 100, got 0', (value: number) => StackSetMaxConcurrency.percentage(value)],
+    [101, 'StackSetMaxConcurrencyPercentageInvalid', 'max concurrency percentage must be an integer from 1 to 100, got 101', (value: number) => StackSetMaxConcurrency.percentage(value)],
+  ])('fails with an error code when the operation preference value is %d (%s)', (value, name, message, factory) => {
+    expect(() => factory(value)).toThrow(expect.objectContaining({ name, message }));
   });
 
   test('fails with an error code when more than one account filter is specified', () => {

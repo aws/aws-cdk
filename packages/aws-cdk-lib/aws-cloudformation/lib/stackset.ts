@@ -657,29 +657,35 @@ enum CallAs {
  */
 export interface OperationPreferences {
   /**
-   * The number of stack instances that can fail before the operation is considered failed.
+   * The number or percentage of accounts, per region, in which stack operations can fail
+   * before CloudFormation stops the operation in that region.
    *
-   * @default - the CloudFormation default failure tolerance
+   * If the operation is stopped in a region, CloudFormation doesn't attempt the operation
+   * in any subsequent regions.
+   *
+   * @default - the CloudFormation default, 0 accounts
    */
-  readonly failureToleranceCount?: number;
+  readonly failureTolerance?: StackSetFailureTolerance;
   /**
-   * The percentage of stack instances that can fail before the operation is considered failed.
+   * The maximum number or percentage of accounts in which to perform the operation at one time.
    *
-   * @default - the CloudFormation default failure tolerance
+   * With `StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE`, the maximum concurrent count is
+   * at most one more than the failure tolerance count. Use
+   * `StackSetConcurrencyMode.SOFT_FAILURE_TOLERANCE` to run at this concurrency regardless of
+   * the failure tolerance.
+   *
+   * @default - the CloudFormation default, 1 account
    */
-  readonly failureTolerancePercentage?: number;
+  readonly maxConcurrency?: StackSetMaxConcurrency;
   /**
-   * The maximum number of stack instances that can be created or updated concurrently.
+   * How the concurrency level behaves while the operation runs.
    *
-   * @default - the CloudFormation default concurrency
-   */
-  readonly maxConcurrentCount?: number;
-  /**
-   * The maximum percentage of stack instances that can be created or updated concurrently.
+   * With `StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE`, the maximum concurrent count is
+   * at most one more than the failure tolerance count.
    *
-   * @default - the CloudFormation default concurrency
+   * @default - the CloudFormation default, StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE
    */
-  readonly maxConcurrentPercentage?: number;
+  readonly concurrencyMode?: StackSetConcurrencyMode;
   /**
    * Whether to deploy multiple regions sequentially or in parallel.
    *
@@ -722,6 +728,127 @@ export class RegionConcurrencyType {
 
   /**
    * @param value the CloudFormation value of the region concurrency type
+   */
+  private constructor(public readonly value: string) { }
+}
+
+/**
+ * The number or percentage of accounts, per region, in which a StackSet operation can fail
+ * before CloudFormation stops the operation in that region.
+ */
+export class StackSetFailureTolerance {
+  /**
+   * Allow the operation to fail in this number of accounts per region.
+   *
+   * @param count the number of accounts, an integer greater than or equal to 0
+   */
+  public static count(count: number): StackSetFailureTolerance {
+    if (!isIntegerInRange(count, 0)) {
+      throw new UnscopedValidationError(lit`StackSetFailureToleranceCountInvalid`, `failure tolerance count must be an integer greater than or equal to 0, got ${JSON.stringify(count)}`);
+    }
+    return new StackSetFailureTolerance(count, undefined);
+  }
+
+  /**
+   * Allow the operation to fail in this percentage of accounts per region.
+   *
+   * CloudFormation rounds the resulting number of accounts down.
+   *
+   * @param percentage the percentage of accounts, an integer from 0 to 100
+   */
+  public static percentage(percentage: number): StackSetFailureTolerance {
+    if (!isIntegerInRange(percentage, 0, 100)) {
+      throw new UnscopedValidationError(lit`StackSetFailureTolerancePercentageInvalid`, `failure tolerance percentage must be an integer from 0 to 100, got ${JSON.stringify(percentage)}`);
+    }
+    return new StackSetFailureTolerance(undefined, percentage);
+  }
+
+  /** @internal */
+  public readonly _count?: number;
+
+  /** @internal */
+  public readonly _percentage?: number;
+
+  private constructor(count: number | undefined, percentage: number | undefined) {
+    this._count = count;
+    this._percentage = percentage;
+  }
+}
+
+/**
+ * The maximum number or percentage of accounts in which CloudFormation performs a StackSet
+ * operation at one time.
+ */
+export class StackSetMaxConcurrency {
+  /**
+   * Perform the operation in at most this number of accounts at one time.
+   *
+   * @param count the number of accounts, an integer greater than or equal to 1
+   */
+  public static count(count: number): StackSetMaxConcurrency {
+    if (!isIntegerInRange(count, 1)) {
+      throw new UnscopedValidationError(lit`StackSetMaxConcurrencyCountInvalid`, `max concurrency count must be an integer greater than or equal to 1, got ${JSON.stringify(count)}`);
+    }
+    return new StackSetMaxConcurrency(count, undefined);
+  }
+
+  /**
+   * Perform the operation in at most this percentage of accounts at one time.
+   *
+   * CloudFormation rounds the resulting number of accounts down, but to no fewer than 1.
+   *
+   * @param percentage the percentage of accounts, an integer from 1 to 100
+   */
+  public static percentage(percentage: number): StackSetMaxConcurrency {
+    if (!isIntegerInRange(percentage, 1, 100)) {
+      throw new UnscopedValidationError(lit`StackSetMaxConcurrencyPercentageInvalid`, `max concurrency percentage must be an integer from 1 to 100, got ${JSON.stringify(percentage)}`);
+    }
+    return new StackSetMaxConcurrency(undefined, percentage);
+  }
+
+  /** @internal */
+  public readonly _count?: number;
+
+  /** @internal */
+  public readonly _percentage?: number;
+
+  private constructor(count: number | undefined, percentage: number | undefined) {
+    this._count = count;
+    this._percentage = percentage;
+  }
+}
+
+/**
+ * How the concurrency level of a StackSet operation behaves while the operation runs.
+ */
+export class StackSetConcurrencyMode {
+  /**
+   * Dynamically lower the concurrency so that the number of failed accounts never exceeds
+   * the failure tolerance count plus one.
+   *
+   * The initial concurrency is the lower of the maximum concurrent count and the failure
+   * tolerance count plus one, and is reduced proportionally by the number of failures.
+   *
+   * This is the default behavior.
+   */
+  public static readonly STRICT_FAILURE_TOLERANCE = new StackSetConcurrencyMode('STRICT_FAILURE_TOLERANCE');
+
+  /**
+   * Run the operation at the maximum concurrency regardless of the number of failures.
+   */
+  public static readonly SOFT_FAILURE_TOLERANCE = new StackSetConcurrencyMode('SOFT_FAILURE_TOLERANCE');
+
+  /**
+   * Use a custom concurrency mode
+   *
+   * @param value the CloudFormation value of the concurrency mode
+   */
+  public static of(value: string): StackSetConcurrencyMode {
+    return new StackSetConcurrencyMode(value);
+  }
+
+  /**
+   * @param value the CloudFormation value of the concurrency mode
    */
   private constructor(public readonly value: string) { }
 }
@@ -869,10 +996,11 @@ export class StackSet extends Resource implements IStackSet {
         Active: props.managedExecution ?? true,
       },
       operationPreferences: props.operationPreferences ? undefinedIfNoKeys({
-        failureToleranceCount: props.operationPreferences.failureToleranceCount,
-        failureTolerancePercentage: props.operationPreferences.failureTolerancePercentage,
-        maxConcurrentCount: props.operationPreferences.maxConcurrentCount,
-        maxConcurrentPercentage: props.operationPreferences.maxConcurrentPercentage,
+        failureToleranceCount: props.operationPreferences.failureTolerance?._count,
+        failureTolerancePercentage: props.operationPreferences.failureTolerance?._percentage,
+        maxConcurrentCount: props.operationPreferences.maxConcurrency?._count,
+        maxConcurrentPercentage: props.operationPreferences.maxConcurrency?._percentage,
+        concurrencyMode: props.operationPreferences.concurrencyMode?.value,
         regionConcurrencyType: props.operationPreferences.regionConcurrencyType?.value,
         regionOrder: props.operationPreferences.regionOrder,
       }) : undefined,
@@ -973,6 +1101,16 @@ export class StackSet extends Resource implements IStackSet {
       },
     };
   }
+}
+
+/**
+ * Whether a number is an integer within the given bounds, treating unresolved tokens as valid
+ */
+function isIntegerInRange(value: number, min: number, max?: number): boolean {
+  if (Token.isUnresolved(value)) {
+    return true;
+  }
+  return Number.isInteger(value) && value >= min && (max === undefined || value <= max);
 }
 
 function undefinedIfNoKeys<A extends Object>(obj: A): A | undefined {
