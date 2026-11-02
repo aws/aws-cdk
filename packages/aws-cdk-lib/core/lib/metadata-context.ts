@@ -432,8 +432,7 @@ export class CfnResourceMetadataContext {
    * values and a call that selects no `CfnResource` fail synthesis.
    */
   public set(context: CfnResourceContextProps, options: CfnResourceMetadataContextOptions = {}): void {
-    // Render now so the value written at synthesis is the one validated here,
-    // even if the caller mutates `context` afterwards.
+    // Snapshot mutable inputs before synthesis.
     const rendered: CfnResourceContextProps = renderResourceContext(context);
     this.addResourceAspect(
       (resource) => resource.addMetadata(METADATA_CONTEXT_KEY, renderResourceContext(rendered)),
@@ -523,8 +522,7 @@ export class CfnTemplateMetadataContext {
   public clear(): void {
     const metadata = this.stack.templateOptions.metadata;
     deleteContext(metadata);
-    // Unlike resource metadata, an empty template Metadata object is rendered
-    // as `Metadata: {}`; drop it so clearing leaves no trace in the template.
+    // Avoid rendering an empty top-level Metadata section.
     if (metadata !== undefined && Object.keys(metadata).length === 0) {
       this.stack.templateOptions.metadata = undefined;
     }
@@ -535,10 +533,6 @@ const NO_RESOURCE_SELECTED_ERROR = 'metadata context set() or clear() selected n
   + 'target a CfnResource or a construct whose defaultChild is a CfnResource, set a selector such as '
   + 'ConstructSelector.all() or ConstructSelector.resourcesOfType(), or call the API inside each Stage';
 
-/**
- * Applies one `CfnResourceMetadataContext.set()` or `clear()` call to the
- * `CfnResource` constructs its selector selects beneath the scope.
- */
 class CfnResourceMetadataContextAspect implements IAspect {
   private selection?: { readonly scanned: Set<IConstruct>; readonly selected: Set<IConstruct> };
   private selectedResource = false;
@@ -568,8 +562,7 @@ class CfnResourceMetadataContextAspect implements IAspect {
   }
 
   private selects(resource: CfnResource): boolean {
-    // Other aspects may add resources while aspects run, so re-run the
-    // selector when visiting a construct it has not seen yet.
+    // Re-evaluate when an earlier Aspect adds a resource.
     if (this.selection === undefined || !this.selection.scanned.has(resource)) {
       this.selection = {
         scanned: new Set(this.scope.node.findAll()),

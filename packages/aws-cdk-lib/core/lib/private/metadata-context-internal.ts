@@ -4,17 +4,8 @@ import type { CfnResourceContextProps, CfnTemplateContextProps, CfnContextRef } 
 import { Token } from '../token';
 import { lit } from './literal-string';
 
-/** The Amazon-owned key under which CloudFormation Context is stored. */
 export const METADATA_CONTEXT_KEY = 'com.aws.cloudformation.Context';
 
-/**
- * Render explicitly authored props into the advisory schema.
- *
- * The public property names are identical to the field names defined by the
- * published CloudFormation Metadata Context schema, so rendering only drops
- * absent fields and copies arrays/maps defensively. Empty strings, arrays and
- * maps are structurally valid and are kept.
- */
 export function renderResourceContext(context: CfnResourceContextProps): Record<string, any> {
   const out: Record<string, any> = {};
   if (context.why !== undefined) {
@@ -51,9 +42,6 @@ export function renderResourceContext(context: CfnResourceContextProps): Record<
   return out;
 }
 
-/**
- * Render template-level props into the advisory schema, keeping empty values.
- */
 export function renderTemplateContext(context: CfnTemplateContextProps): Record<string, any> {
   const out: Record<string, any> = {};
   if (context.arch !== undefined) {
@@ -91,11 +79,7 @@ function copyArray<T>(values: T[]): T[] {
 }
 
 export function validateResourceContext(context: CfnResourceContextProps): string[] {
-  // Every top-level field is optional in the advisory schema, which sets no
-  // minLength/minItems, so blank strings and empty arrays are structurally
-  // valid and a block may carry only trust or only deps. CDK enforces just the
-  // schema's nested requirements: trust provenance and the sparse
-  // mutability rule.
+  // Top-level fields and empty values are valid; only nested constraints need checks.
   return [...validateTrust(context.trust), ...validateMutability(context)];
 }
 
@@ -103,8 +87,6 @@ function validateTrust(trust: CfnResourceContextProps['trust']): string[] {
   if (trust === undefined) {
     return [];
   }
-  // The schema requires src and conf whenever a trust object is present; cite
-  // and note stay optional, and blank strings are structurally valid.
   const errors: string[] = [];
   if (trust.src === undefined) {
     errors.push('MetadataContext trust requires \'src\' when trust is provided');
