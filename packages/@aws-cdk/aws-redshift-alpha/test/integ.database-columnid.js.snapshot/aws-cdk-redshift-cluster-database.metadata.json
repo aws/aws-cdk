@@ -6,13 +6,17 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at Stack._silenceLiteralAzWarning (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/@aws-cdk/aws-redshift-alpha/test/integ.database-columnid.js:62:13)",
+        "    at Validations.acknowledge (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/@aws-cdk/aws-redshift-alpha/test/integ.database-columnid.js:62:13)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-redshift-cluster-database.template.json"
     }
   ],
   "/aws-cdk-redshift-cluster-database/custom-kms-key": [
