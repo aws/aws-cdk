@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
-
 type Event = {
   /**
    * AWS Region name to call the service
@@ -77,6 +75,7 @@ export const handler = async (event: Event) => {
   try {
     let credentials;
     if (event.assumeRoleArn) {
+      const { STSClient, AssumeRoleCommand } = require('@aws-sdk/client-sts');
       const stsClient = new STSClient({});
       const assumeRoleCommand = new AssumeRoleCommand({
         RoleArn: event.assumeRoleArn,
