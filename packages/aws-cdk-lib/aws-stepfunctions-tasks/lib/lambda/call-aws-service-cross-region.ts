@@ -95,9 +95,12 @@ interface CallAwsServiceCrossRegionOptions {
   readonly retryOnServiceExceptions?: boolean;
 
   /**
-   * Credentials for an IAM Role that the Lambda assumes for executing the task.
+   * Credentials for an IAM Role that the Lambda handler assumes to make the AWS SDK call.
    *
-   * @default - None (Task is executed using the Lambda's execution role)
+   * The Lambda function itself continues to run using its own execution role;
+   * these credentials are only used for the AWS SDK call made inside the handler.
+   *
+   * @default - None (the AWS SDK call is made using the Lambda's execution role)
    */
   readonly awsSdkCredentials?: sfn.Credentials;
 }
