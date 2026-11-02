@@ -9,7 +9,6 @@ const stack = new Stack(app, 'MetadataContextTestStack', {
   description: 'integ test stack for MetadataContext; exercises resource + template level context',
 });
 
-// Template-level cross-cutting context
 CfnTemplateMetadataContext.of(stack).set({
   arch: 'SQS buffer -> consumer; DLQ for poison msgs',
   must: ['all queues encrypted w/ SSE'],
@@ -19,8 +18,7 @@ CfnTemplateMetadataContext.of(stack).set({
   owner: 'framework-integ-team',
 });
 
-// Resource-level context for every queue; the queue-specific set() below
-// runs later and replaces this value on OrderQueue.
+// The queue-specific Context below replaces this default.
 CfnResourceMetadataContext.of(stack).set({
   why: 'part of the order-processing subsystem',
   deps: ['OrderProcessingSubsystem'],
@@ -28,9 +26,8 @@ CfnResourceMetadataContext.of(stack).set({
   selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
 });
 
-// Resource-level context on an L2: renders onto the primary AWS::SQS::Queue only
 const queue = new sqs.Queue(stack, 'OrderQueue', {
-  // Explicit so the template states the encryption the template-level `must` promises.
+  // Keep the configuration consistent with the template-level rule.
   encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 CfnResourceMetadataContext.of(queue).set({
@@ -41,7 +38,6 @@ CfnResourceMetadataContext.of(queue).set({
   trust: { src: CfnContextTrustSource.AUTHORED, conf: CfnContextTrustConfidence.HIGH },
 });
 
-// Context on every resource beneath the scope
 const subsystem = new Construct(stack, 'Notifications');
 new sns.Topic(subsystem, 'AlertsTopic');
 CfnResourceMetadataContext.of(subsystem).set({

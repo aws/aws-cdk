@@ -1160,9 +1160,6 @@ describe('metadata context', () => {
     });
 
     test('enum values match the advisory schema vocabulary', () => {
-      // Drift check per the schema's consumer-update strategy: these string
-      // values are FROZEN for the advisory schema. If this test fails, the emitted
-      // values no longer match the published schema.
       expect(Object.values(CfnContextMutability).sort()).toEqual([
         'change-with-constraints',
         'free-to-tune',
