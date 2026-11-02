@@ -1195,11 +1195,11 @@ describe('vpc endpoint', () => {
 
       // WHEN
       vpc.addInterfaceEndpoint('SSO Endpoint', {
-        service: InterfaceVpcEndpointAwsService.SSO,
+        service: InterfaceVpcEndpointAwsService.IAM_IDENTITY_CENTER_SSO,
       });
 
       vpc.addInterfaceEndpoint('SSO OAuth Endpoint', {
-        service: InterfaceVpcEndpointAwsService.SSO_OAUTH,
+        service: InterfaceVpcEndpointAwsService.IAM_IDENTITY_CENTER_SSO_OAUTH,
       });
 
       // THEN
