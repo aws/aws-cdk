@@ -26,9 +26,9 @@ queue_rules:
       - or:
         - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    commit_message_template: |-
-      {{ title }} (#{{ number }})
-      {{ body }}
+    commit_message_format:
+      title: pr-title
+      body: pr-body
 
   - name: priority-squash
     # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
@@ -51,9 +51,9 @@ queue_rules:
       - or:
         - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    commit_message_template: |-
-      {{ title }} (#{{ number }})
-      {{ body }}
+    commit_message_format:
+      title: pr-title
+      body: pr-body
 
   - name: default-squash
     # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
@@ -75,9 +75,9 @@ queue_rules:
       - or:
         - "-label~=pr/needs-integration-tests-deployment"
         - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    commit_message_template: |-
-      {{ title }} (#{{ number }})
-      {{ body }}
+    commit_message_format:
+      title: pr-title
+      body: pr-body
 
 pull_request_rules:
   - name: label core
