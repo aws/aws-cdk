@@ -9,6 +9,8 @@ import {
   StackSetConcurrencyMode,
   StackSetFailureTolerance,
   StackSetMaxConcurrency,
+  StackSetAutoDeployment,
+  StackSetCallAs,
   StackSetStack,
   StackSetTarget,
   StackSetTemplate,
