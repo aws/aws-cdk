@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-eks-cluster-interence-nodegroup-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksclusterinterencenodegroupintegDefaultTestDeployAssert694AC69B.template.json"
+    }
+  ],
   "/aws-cdk-eks-cluster-interence-nodegroup-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
