@@ -512,6 +512,12 @@ describe('Gateway default service role trust policy', () => {
     expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('my-gateway01-??????????'));
   });
 
+  test('trusts the service only for this gateway when a token name resolves during synthesis', () => {
+    new Gateway(stack, 'Gateway', { gatewayName: cdk.Lazy.string({ produce: () => 'My-Gateway01' }) });
+
+    expectOnlyTrustStatement(Template.fromStack(stack), gatewayArn('my-gateway01-??????????'));
+  });
+
   test('trusts the service for any gateway in the account and region, with a warning, when the name is only known at deployment', () => {
     const nameParam = new cdk.CfnParameter(stack, 'GatewayName', { type: 'String' });
     new Gateway(stack, 'Gateway', { gatewayName: nameParam.valueAsString });
@@ -533,6 +539,13 @@ describe('Gateway default service role trust policy', () => {
     Annotations.fromStack(stack).hasWarning('/TrustStack/Gateway', trustWarning);
   });
 
+  // A dynamic reference written as a plain string is not a token, so name validation rejects it
+  // before any trust policy is built.
+  test('fails for a literal name that contains a dynamic reference', () => {
+    expect(() => new Gateway(stack, 'Gateway', { gatewayName: 'gw-{{resolve:ssm:/My/GatewayName}}' }))
+      .toThrow(/Gateway name must contain only alphanumeric characters and hyphens/);
+  });
+
   // The construct never changes a caller-supplied role, so the warning must say which conditions
   // that role needs for the trust to be limited to this gateway.
   test('warns that a supplied role needs its own source account and source ARN conditions', () => {
@@ -547,6 +560,7 @@ describe('Gateway default service role trust policy', () => {
   test.each([
     ['an auto-generated name', undefined],
     ['a literal name', 'my-gateway'],
+    ['a token name that resolves during synthesis', cdk.Lazy.string({ produce: () => 'my-gateway' })],
   ])('does not warn about the trust policy for %s', (_description, gatewayName) => {
     new Gateway(stack, 'Gateway', { gatewayName });
 

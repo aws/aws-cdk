@@ -32,6 +32,14 @@ export interface GatewayArnPatternOptions {
    * @default false - the reference text is lowercased like any other resolved name
    */
   readonly dynamicReferenceIsDeployTime?: boolean;
+
+  /**
+   * Called during synthesis when the name is only known at deployment, so the pattern matches
+   * every gateway in the account and region.
+   *
+   * @default - nothing is called
+   */
+  readonly onDeployTimeName?: () => void;
 }
 
 /**
@@ -61,9 +69,11 @@ export function gatewayArnPatternForName(
         const resolvedName = stack.resolve(gatewayName);
         const knownAtSynthesis = typeof resolvedName === 'string'
           && !(options.dynamicReferenceIsDeployTime && resolvedName.includes('{{resolve:'));
-        return knownAtSynthesis
-          ? `${resolvedName.toLowerCase()}-${'?'.repeat(GATEWAY_ID_SUFFIX_LENGTH)}`
-          : '*';
+        if (knownAtSynthesis) {
+          return `${resolvedName.toLowerCase()}-${'?'.repeat(GATEWAY_ID_SUFFIX_LENGTH)}`;
+        }
+        options.onDeployTimeName?.();
+        return '*';
       },
     }),
   });

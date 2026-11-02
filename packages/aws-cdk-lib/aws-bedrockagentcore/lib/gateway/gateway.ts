@@ -617,7 +617,7 @@ export class Gateway extends GatewayBase {
     }
 
     this.kmsKey = props.kmsKey;
-    this.role = props.role ?? this.createGatewayRole(props.gatewayName);
+    this.role = props.role ?? this.createGatewayRole();
 
     if (this.kmsKey && this.role) {
       this.kmsKey.grantEncryptDecrypt(this.role);
@@ -848,22 +848,9 @@ export class Gateway extends GatewayBase {
    * - KMS encryption: Automatically grants encrypt/decrypt permissions
    *
    * For other target types, manually grant permissions using standard CDK grant methods:
-   * @param explicitName The gateway name the caller supplied, if any
    * @internal
    */
-  private createGatewayRole(explicitName?: string): iam.Role {
-    // An auto-generated name is a token too, but it always resolves during synthesis, so only a
-    // caller-supplied token can leave the trust policy unable to name this gateway.
-    if (explicitName !== undefined && Token.isUnresolved(explicitName)) {
-      Annotations.of(this).addWarningV2(
-        'aws-cdk-lib.aws-bedrockagentcore:wildcardGatewayServiceRoleTrust',
-        'The gateway name is a token. If it is only known at deployment, the trust policy of the default service role cannot name this gateway ' +
-        'and allows any gateway in this account and region (gateway/*) to assume the role. ' +
-        'To trust only this gateway, use a literal gatewayName, ' +
-        'or supply a role whose trust policy limits aws:SourceAccount and aws:SourceArn to this gateway.',
-      );
-    }
-
+  private createGatewayRole(): iam.Role {
     // The service assumes this role on behalf of the gateway and presents the gateway's ARN as
     // aws:SourceArn. The conditions sit on the only statement that trusts the service, so they
     // apply to every assumption of the role.
@@ -873,7 +860,18 @@ export class Gateway extends GatewayBase {
         conditions: {
           StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
           ArnLike: {
-            'aws:SourceArn': gatewayArnPatternForName(this, this.gatewayName, { dynamicReferenceIsDeployTime: true }),
+            'aws:SourceArn': gatewayArnPatternForName(this, this.gatewayName, {
+              dynamicReferenceIsDeployTime: true,
+              // Warn from the same decision that widens the pattern, so the warning appears exactly
+              // when the trust policy cannot name this gateway.
+              onDeployTimeName: () => Annotations.of(this).addWarningV2(
+                'aws-cdk-lib.aws-bedrockagentcore:wildcardGatewayServiceRoleTrust',
+                'The gateway name is only known at deployment, so the trust policy of the default service role cannot name this gateway ' +
+                'and allows any gateway in this account and region (gateway/*) to assume the role. ' +
+                'To trust only this gateway, use a literal gatewayName, ' +
+                'or supply a role whose trust policy limits aws:SourceAccount and aws:SourceArn to this gateway.',
+              ),
+            }),
           },
         },
       }),
