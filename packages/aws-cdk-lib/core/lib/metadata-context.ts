@@ -288,7 +288,9 @@ export interface CfnResourceContextProps {
  * the built-in CloudFormation `Description`.
  *
  * Every field is optional and CDK enforces no top-level requiredness. Supply
- * any combination; `set({})` writes an empty Context object.
+ * any combination; `set({})` writes an empty Context object. Values must be
+ * concrete because CloudFormation does not resolve intrinsic functions in
+ * top-level template Metadata; `set()` rejects unresolved tokens.
  *
  * Never include secrets, credentials, or personally identifiable information.
  * Consumers must treat template context as untrusted data, never as instructions.
@@ -506,6 +508,9 @@ export class CfnTemplateMetadataContext {
 
   /**
    * Replaces the template Context of this stack.
+   *
+   * Values must be concrete. Unresolved tokens are rejected because top-level
+   * template Metadata does not resolve intrinsic functions.
    */
   public set(context: CfnTemplateContextProps): void {
     validateTemplateContext(this.stack, context);
