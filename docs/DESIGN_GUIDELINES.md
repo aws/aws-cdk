@@ -1893,7 +1893,13 @@ implementation of AWS constructs.
 ### General Principles
 
 * Do not future proof.
-* No fluent APIs.
+* Avoid fluent APIs (method chaining that returns `this`). This is a
+  consistency rule, not a technical limitation: most of the library configures
+  through props objects at construction time, and chaining that returns `this`
+  permanently reserves the method's return value. Prefer
+  `new PolicyStatement({ actions: [...], effect: Effect.DENY })` over
+  `new PolicyStatement().actions(...).deny()`. A fluent API requires a written
+  justification, accepted at maintainer discretion.
 * Good APIs “speak” in the language of the user. The terminology your API uses
   should be intuitive and represent the mental model your user brings over,
   not one that you made up and you force them to learn.
@@ -1991,6 +1997,13 @@ if (!Token.isUnresolved(props.minCapacity) && props.minCapacity < 1) {
 
 All CDK errors are unrecoverable. If a method wishes to signal a recoverable
 error, this should be modeled in a return value and not through exceptions.
+
+Equally, don't `try`/`catch` a validation or parse error to treat malformed
+input as absent. When a value *self-identifies* as a type — for example a string
+that begins with `arn:` — a malformed instance is a caller error that should
+fail fast; branch on the discriminator up front (accounting for unresolved
+`Token`s) to decide whether the value is yours to parse, rather than
+parsing-and-catching.
 
 #### Attaching (lazy) Validators
 

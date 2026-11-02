@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "7da684c226ebca00954cc9d6f4447b2cc8c4cc7acd2f59a57cf31fda997a740d": {
+      "source": {
+        "path": "asset.7da684c226ebca00954cc9d6f4447b2cc8c4cc7acd2f59a57cf31fda997a740d.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-8f7a1944": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7da684c226ebca00954cc9d6f4447b2cc8c4cc7acd2f59a57cf31fda997a740d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "ee9bc4ab6faa6e4d02f2164a6685fb088d99a851e2b081ab0ec25a31774a9c54": {
+      "displayName": "GatewayMcpProtocolVersionsIntegTestDefaultTestDeployAssert2FAB71BB Template",
+      "source": {
+        "path": "GatewayMcpProtocolVersionsIntegTestDefaultTestDeployAssert2FAB71BB.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-30fb406a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ee9bc4ab6faa6e4d02f2164a6685fb088d99a851e2b081ab0ec25a31774a9c54.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

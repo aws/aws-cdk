@@ -2689,13 +2689,54 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
     });
   });
 
-  test('SoftwareUpdateOptions is absent when enableAutoSoftwareUpdate is not specified', () => {
+  test('SoftwareUpdateOptions is absent when neither enableAutoSoftwareUpdate nor useLatestServiceSoftwareForBlueGreen is specified', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       SoftwareUpdateOptions: Match.absent(),
+    });
+  });
+
+  test('with useLatestServiceSoftwareForBlueGreen', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      useLatestServiceSoftwareForBlueGreen: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        UseLatestServiceSoftwareForBlueGreen: true,
+      },
+    });
+  });
+
+  test('with useLatestServiceSoftwareForBlueGreen set to false', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      useLatestServiceSoftwareForBlueGreen: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        UseLatestServiceSoftwareForBlueGreen: false,
+      },
+    });
+  });
+
+  test('with both enableAutoSoftwareUpdate and useLatestServiceSoftwareForBlueGreen', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      enableAutoSoftwareUpdate: true,
+      useLatestServiceSoftwareForBlueGreen: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: true,
+        UseLatestServiceSoftwareForBlueGreen: true,
+      },
     });
   });
 

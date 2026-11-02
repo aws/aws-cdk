@@ -1397,6 +1397,77 @@ Adding a new flag looks as follows:
 
 [jest helper methods]: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/lib/feature-flags.ts
 
+## Default validation rules
+
+Every synthesized template is validated by the `CloudFormationValidatePlugin`
+(see the [Template and Policy Validation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#template-and-policy-validation)
+section of the `aws-cdk-lib` README for the user-facing behavior). On top of
+the validation engine's built-in rule set, the CDK ships its own default rules,
+written in [Rego](https://www.openpolicyagent.org/docs/latest/policy-language/)
+and loaded from `packages/aws-cdk-lib/core/lib/validation/rules/`.
+
+### When to add a default rule
+
+Default rules exist to check invariants that a single construct's own
+validation cannot. Prefer construct-level (L2) validation whenever the check
+can be expressed on the construct's own props. A default rule is the right tool
+when at least one of the following holds:
+
+- **The CloudFormation resource schema cannot express the check.** Schema
+  limits (lengths, item counts, per-field ranges, patterns) are already covered
+  by the engine's built-in rules — do not duplicate them. Default rules are for
+  *cross-field* invariants (one field constrains another) that the schema
+  cannot state.
+- **The mistake must be caught even when L2 validation is bypassed.** Because
+  the rules run on the synthesized template, they also cover resources defined
+  through L1 constructs, escape hatches, and `CfnInclude`, which L2 validation
+  never sees. Token-valued properties are already resolved at this point.
+- **The invariant spans multiple resources.** A rule can follow the template's
+  `Ref` graph to relate resources — something no single construct can validate
+  in isolation.
+
+Each rule should catch one of two failure modes: (1) configuration that is
+schema-valid but that the service API rejects at deploy time (surfacing as a
+mid-deployment CloudFormation rollback), or (2) contradictory configuration
+that the service accepts but partially ignores. Verify the behavior against the
+real service before adding a rule — probe the API directly and/or deploy a CDK
+app with the misconfiguration, and record what you observed in the PR.
+
+### Placement policy: CDK vs. the validation engine
+
+All of these rules are plain Rego over the engine's template model, so any of
+them *could* eventually be contributed upstream to the engine's built-in rule
+set. CDK-authored default rules are the fast-iteration tier: they ship and are
+fixed on every `aws-cdk-lib` release. Rules that prove generically useful can
+be upstreamed to the validation engine later.
+
+### Current rules
+
+The current rules cover Amazon GameLift resources
+(`packages/aws-cdk-lib/core/lib/validation/rules/gamelift-fleet.rego`):
+
+| Rule ID | Checks |
+|---------|--------|
+| `CDK-GameLift-001` | A fleet ingress rule's port range is not inverted (`FromPort` &le; `ToPort`) |
+| `CDK-GameLift-002` | A fleet location's capacity satisfies `MinSize` &le; `MaxSize` |
+| `CDK-GameLift-003` | A fleet location's `DesiredEC2Instances` lies within `[MinSize, MaxSize]` |
+| `CDK-GameLift-004` | An alias with `SIMPLE` routing does not carry a terminal `Message` |
+| `CDK-GameLift-005` | An alias with `TERMINAL` routing does not reference a fleet |
+| `CDK-GameLift-006` | A fleet referencing a Windows build launches server processes from `C:\game` |
+| `CDK-GameLift-007` | A fleet referencing a Linux build launches server processes from `/local/game` |
+
+The fleet rules (001–003) catch deployment failures: the GameLift API rejects
+these values, rolling back the stack mid-deployment. The alias rules (004–005)
+catch contradictory routing configuration that deploys successfully but leaves
+one of the two fields silently unused. The launch-path rules (006–007) are
+cross-resource: they join a fleet to the `AWS::GameLift::Build` it references
+and check that every server-process launch path lives under the install root
+dictated by the build's operating system. A mismatch deploys, but the fleet
+then activates into `ERROR` state because no server process can start. These
+rules only fire when the build is defined in the same template; a fleet
+referencing an imported build (a literal build ID) is not checked, since the
+build's operating system is not knowable from the template.
+
 ## Versioning and Release
 
 See [release.md](./docs/release.md) for details on how CDK versions are maintained and how

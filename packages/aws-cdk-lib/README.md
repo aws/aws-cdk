@@ -1759,6 +1759,26 @@ Validations.of(app).addPlugins(new CloudFormationValidatePlugin({
 }));
 ```
 
+In addition to the validation engine's built-in rule set, the CDK ships its
+own default rules that catch cross-field and cross-resource misconfigurations
+which pass template validation but fail (or silently misbehave) at deployment
+time. These run automatically on every synth. Their findings are reported as
+warnings unless the `@aws-cdk/core:validateAgainstDefaultRules` context key is
+set to `true`, in which case they become errors and fail synthesis. Suppress an
+individual rule by its ID using the same `acknowledge` mechanism shown above
+(for example `CloudFormation-Validate::CDK-GameLift-001`).
+
+An explicitly registered `CloudFormationValidatePlugin` still runs the CDK
+default rules in addition to your custom rules; pass
+`includeDefaultRules: false` to opt out of the default rules entirely.
+
+If you want to disable the automatic plugin registration without registering
+your own, you can do one of the following things:
+
+- Run `cdk synth --no-validation`.
+- Set `CDK_VALIDATION=false` in your environment.
+- Do `new App({ builtinCloudFormationValidation: false })`
+
 ### Additional plugins
 
 You can also add custom plugins like [cdk-nag](https://github.com/cdklabs/cdk-nag) and

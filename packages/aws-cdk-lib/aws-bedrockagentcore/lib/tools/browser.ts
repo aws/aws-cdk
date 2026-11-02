@@ -133,7 +133,8 @@ export interface IBrowserCustom extends IResource, iam.IGrantable, ec2.IConnecta
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
   /**
-   * Grants `Invoke`, `Start`, and `Update` actions on the Browser
+   * Grants the actions needed to start a browser session, connect to its
+   * automation stream and stop it again
    */
   grantUse(grantee: iam.IGrantable): iam.Grant;
 
@@ -298,13 +299,18 @@ export abstract class BrowserCustomBase extends Resource implements IBrowserCust
   }
 
   /**
-   * Grant invoke permissions on this browser to an IAM principal.
+   * Grant permissions to use this browser to an IAM principal.
+   *
+   * This includes `ConnectBrowserAutomationStream`, which is required to connect
+   * to the automation stream of a session over the Chrome DevTools Protocol.
+   * Without it, `StartBrowserSession` succeeds but the subsequent connection to
+   * the returned stream endpoint is rejected.
    *
    * [disable-awslint:no-grants]
    *
-   * @param grantee - The IAM principal to grant invoke permissions to
+   * @param grantee - The IAM principal to grant use permissions to
    * @default - Default grant configuration:
-   * - actions: ['bedrock-agentcore:StartBrowserSession', 'bedrock-agentcore:UpdateBrowserStream', 'bedrock-agentcore:StopBrowserSession']
+   * - actions: ['bedrock-agentcore:StartBrowserSession', 'bedrock-agentcore:UpdateBrowserStream', 'bedrock-agentcore:ConnectBrowserAutomationStream', 'bedrock-agentcore:StopBrowserSession']
    * - resourceArns: [this.browserArn]
    * @returns An IAM Grant object representing the granted permissions
    */
