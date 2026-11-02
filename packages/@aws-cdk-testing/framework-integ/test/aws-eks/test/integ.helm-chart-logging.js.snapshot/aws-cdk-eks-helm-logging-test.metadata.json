@@ -1,4 +1,25 @@
 {
+  "/aws-cdk-eks-helm-logging-test": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at HelmChartLoggingStack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new HelmChartLoggingStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.helm-chart-logging.js:52:21)",
+        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.helm-chart-logging.js:80:15)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-eks-helm-logging-test.template.json"
+    }
+  ],
   "/aws-cdk-eks-helm-logging-test/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -35,6 +56,18 @@
           }
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.ClusterResourceProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkekshelmloggingtestawscdkawseksClusterResourceProvider96BB681E.nested.template.json"
+    }
+  ],
+  "/aws-cdk-eks-helm-logging-test/@aws-cdk--aws-eks.KubectlProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkekshelmloggingtestawscdkawseksKubectlProvider796E7DC9.nested.template.json"
     }
   ],
   "/aws-cdk-eks-helm-logging-test/BootstrapVersion": [
@@ -86,7 +119,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }

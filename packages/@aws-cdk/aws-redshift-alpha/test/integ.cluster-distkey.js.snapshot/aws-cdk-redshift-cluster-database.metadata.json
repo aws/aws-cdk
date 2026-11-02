@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-redshift-cluster-database": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-redshift-cluster-database.template.json"
+    }
+  ],
   "/aws-cdk-redshift-cluster-database/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
