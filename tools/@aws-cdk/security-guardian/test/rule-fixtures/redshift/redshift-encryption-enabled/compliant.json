@@ -1,0 +1,15 @@
+{
+  "Description": "REDSHIFT_ENCRYPTION_ENABLED passes: the cluster enables encryption",
+  "Resources": {
+    "EncryptedCluster": {
+      "Type": "AWS::Redshift::Cluster",
+      "Properties": {
+        "ClusterType": "single-node",
+        "NodeType": "ra3.xlplus",
+        "DBName": "example",
+        "MasterUsername": "admin",
+        "Encrypted": true
+      }
+    }
+  }
+}
