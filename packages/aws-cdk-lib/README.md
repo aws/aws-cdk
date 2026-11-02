@@ -1946,7 +1946,9 @@ in `arch`, and keep rules and references out of `Description`.
 Both change the stack's template metadata immediately, and `Stack.addMetadata()`
 on the same key has the same replacement behavior, so ordinary call order
 determines the result. Every template-context field is optional; supply any
-combination, and `set({})` writes an empty Context object:
+combination, and `set({})` writes an empty Context object. Values must be
+concrete. `set()` rejects unresolved tokens because CloudFormation does not
+resolve intrinsic functions in top-level template Metadata:
 
 ```typescript
 declare const stack: Stack;
@@ -1973,8 +1975,8 @@ instructions, and continue with inline context if a reference is unavailable.
 
 ### Writing good context
 
-Every field is optional and CDK adds no requirements beyond the schema. The
-following are recommendations, not enforced rules:
+Every schema field is optional. The following are recommendations, not enforced
+rules:
 
 - Provide a `why` for every non-trivial resource so consumers understand its
   purpose. Omit Context for a trivial resource whose purpose is already obvious
@@ -1993,13 +1995,14 @@ following are recommendations, not enforced rules:
   — since context competes with resources for the CloudFormation template size
   limit.
 
-CDK enforces only the schema's nested requirements: when `trust` is supplied,
-both `src` and `conf` are required (`cite` and `note` remain optional), and in the
-sparse `mutability` map an entry must not repeat `mutable` when both are supplied
-in the same call. Blank strings, empty arrays, empty maps, and an empty Context
-object are written as given. Resource-level `set()` never throws; these checks
-fail synthesis. Template-level `set()` throws immediately when a `ref` entry has
-no `at`.
+CDK rejects unresolved template-level values so the emitted fields retain the
+schema's literal types, and enforces the schema's nested requirements: when
+`trust` is supplied, both `src` and `conf` are required (`cite` and `note` remain
+optional), and in the sparse `mutability` map an entry must not repeat `mutable`
+when both are supplied in the same call. Blank strings, empty arrays, empty
+maps, and an empty Context object are written as given. Resource-level `set()`
+never throws; its checks fail synthesis. Template-level `set()` rejects
+unresolved tokens and concrete `ref` entries without `at` immediately.
 
 ### Security
 

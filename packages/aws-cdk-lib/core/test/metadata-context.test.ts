@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
-import type { IAspect, IConstructSelector } from '../lib';
+import type { CfnTemplateContextProps, IAspect, IConstructSelector } from '../lib';
 import {
   App,
   AspectPriority,
@@ -12,6 +12,7 @@ import {
   CfnContextTrustConfidence,
   CfnContextTrustSource,
   ConstructSelector,
+  Lazy,
   NestedStack,
   CfnResourceMetadataContext,
   Stack,
@@ -112,6 +113,21 @@ describe('metadata context', () => {
       expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
         must: ['same rule', 'same rule'],
         deps: ['NetworkStack', 'NetworkStack'],
+      });
+    });
+
+    test('resolves lazy resource list values without inspecting their token encoding', () => {
+      const stack = new Stack();
+      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
+
+      CfnResourceMetadataContext.of(res).set({
+        must: Lazy.list({ produce: () => ['resolved rule'] }),
+        deps: Lazy.list({ produce: () => ['ResolvedStack'] }),
+      });
+
+      expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        must: ['resolved rule'],
+        deps: ['ResolvedStack'],
       });
     });
   });
@@ -468,6 +484,22 @@ describe('metadata context', () => {
       expect(template.Resources[stack.getLogicalId(otherQueue)].Metadata[CONTEXT_METADATA_KEY]).toEqual({
         why: 'part of the order-processing subsystem',
         must: ['queues use the security team customer managed AWS KMS key'],
+      });
+    });
+
+    test('a child scope wins at the same priority even when its set() call is registered first', () => {
+      const stack = new Stack();
+      const l2 = new Construct(stack, 'WebhookQueue');
+      const queue = new CfnResource(l2, 'Resource', { type: 'AWS::SQS::Queue' });
+
+      CfnResourceMetadataContext.of(l2).set({ why: 'child rationale' });
+      CfnResourceMetadataContext.of(stack).set(
+        { why: 'parent rationale' },
+        { selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue') },
+      );
+
+      expect(toCloudFormation(stack).Resources[stack.getLogicalId(queue)].Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        why: 'child rationale',
       });
     });
 
@@ -1026,6 +1058,38 @@ describe('metadata context', () => {
       CfnTemplateMetadataContext.of(stack).set({ arch: '', must: [], ref: [], owner: '' });
 
       expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY]).toEqual({ arch: '', must: [], ref: [], owner: '' });
+    });
+
+    test.each<{
+      readonly name: string;
+      readonly path: string;
+      readonly context: (token: string) => CfnTemplateContextProps;
+    }>([
+      { name: 'arch', path: 'arch', context: token => ({ arch: token }) },
+      { name: 'must entry', path: 'must[0]', context: token => ({ must: [token] }) },
+      { name: 'ref at', path: 'ref[0].at', context: token => ({ ref: [{ at: token }] }) },
+      { name: 'ref has', path: 'ref[0].has', context: token => ({ ref: [{ at: 'docs/context.md', has: token }] }) },
+      { name: 'ref scope', path: 'ref[0].scope', context: token => ({ ref: [{ at: 'docs/context.md', scope: token }] }) },
+      { name: 'owner', path: 'owner', context: token => ({ owner: token }) },
+    ])('throws before writing when template $name is an unresolved token', ({ path: fieldPath, context }) => {
+      const stack = new Stack();
+      const tokenTarget = new CfnResource(stack, 'TokenTarget', { type: 'AWS::Fake::Thing' });
+      const setContext = () => CfnTemplateMetadataContext.of(stack).set(context(tokenTarget.ref));
+
+      expect(setContext).toThrow(ValidationError);
+      expect(setContext).toThrow(`template MetadataContext field '${fieldPath}' cannot contain unresolved tokens`);
+      expect(stack.templateOptions.metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+    });
+
+    test('throws before inspecting an unresolved template list token', () => {
+      const stack = new Stack();
+      const setContext = () => CfnTemplateMetadataContext.of(stack).set({
+        must: Lazy.list({ produce: () => ['resolved rule'] }),
+      });
+
+      expect(setContext).toThrow(ValidationError);
+      expect(setContext).toThrow("template MetadataContext field 'must' cannot contain unresolved tokens");
+      expect(stack.templateOptions.metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
     test('a blank ref at path is structurally valid and synthesizes', () => {

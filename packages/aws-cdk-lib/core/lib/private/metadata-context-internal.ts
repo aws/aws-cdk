@@ -1,6 +1,7 @@
 import type { IConstruct } from 'constructs';
 import { ValidationError } from '../errors';
 import type { CfnResourceContextProps, CfnTemplateContextProps, CfnContextRef } from '../metadata-context';
+import { Token } from '../token';
 import { lit } from './literal-string';
 
 /** The Amazon-owned key under which CloudFormation Context is stored. */
@@ -20,7 +21,7 @@ export function renderResourceContext(context: CfnResourceContextProps): Record<
     out.why = context.why;
   }
   if (context.must !== undefined) {
-    out.must = [...context.must];
+    out.must = copyArray(context.must);
   }
   if (context.mutable !== undefined) {
     out.mutable = context.mutable;
@@ -45,7 +46,7 @@ export function renderResourceContext(context: CfnResourceContextProps): Record<
     out.trust = trust;
   }
   if (context.deps !== undefined) {
-    out.deps = [...context.deps];
+    out.deps = copyArray(context.deps);
   }
   return out;
 }
@@ -59,7 +60,7 @@ export function renderTemplateContext(context: CfnTemplateContextProps): Record<
     out.arch = context.arch;
   }
   if (context.must !== undefined) {
-    out.must = [...context.must];
+    out.must = copyArray(context.must);
   }
   if (context.ref !== undefined) {
     out.ref = context.ref.map(renderRef);
@@ -83,6 +84,10 @@ function renderRef(ref: CfnContextRef): any {
     out.scope = ref.scope;
   }
   return out;
+}
+
+function copyArray<T>(values: T[]): T[] {
+  return Token.isUnresolved(values) ? values : [...values];
 }
 
 export function validateResourceContext(context: CfnResourceContextProps): string[] {
@@ -120,13 +125,31 @@ function validateMutability(context: CfnResourceContextProps): string[] {
 }
 
 export function validateTemplateContext(scope: IConstruct, context: CfnTemplateContextProps) {
-  // Every top-level field is optional and blank strings are structurally
-  // valid. The schema does require an `at` on every rich ref object, so
-  // enforce its presence and type — but not that it is non-blank (an empty
-  // string is a valid string).
-  for (const ref of context.ref ?? []) {
+  rejectUnresolvedToken(scope, 'arch', context.arch);
+  rejectUnresolvedToken(scope, 'must', context.must);
+  for (const [index, entry] of (context.must ?? []).entries()) {
+    rejectUnresolvedToken(scope, `must[${index}]`, entry);
+  }
+
+  rejectUnresolvedToken(scope, 'ref', context.ref);
+  for (const [index, ref] of (context.ref ?? []).entries()) {
+    rejectUnresolvedToken(scope, `ref[${index}]`, ref);
     if (typeof ref.at !== 'string') {
       throw new ValidationError(lit`MissingMetadataContextRefAt`, 'MetadataContext ref entries require an \'at\' path', scope);
     }
+    rejectUnresolvedToken(scope, `ref[${index}].at`, ref.at);
+    rejectUnresolvedToken(scope, `ref[${index}].has`, ref.has);
+    rejectUnresolvedToken(scope, `ref[${index}].scope`, ref.scope);
+  }
+  rejectUnresolvedToken(scope, 'owner', context.owner);
+}
+
+function rejectUnresolvedToken(scope: IConstruct, path: string, value: any): void {
+  if (Token.isUnresolved(value)) {
+    throw new ValidationError(
+      lit`UnresolvedTokenInTemplateMetadataContext`,
+      `template MetadataContext field '${path}' cannot contain unresolved tokens because CloudFormation does not resolve intrinsic functions in template metadata`,
+      scope,
+    );
   }
 }
