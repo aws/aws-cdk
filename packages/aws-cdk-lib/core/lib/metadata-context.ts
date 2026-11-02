@@ -232,7 +232,7 @@ export interface CfnResourceContextProps {
   readonly must?: string[];
 
   /**
-   * Resource-level DEFAULT change-safety level (one token per resource).
+   * Resource-level default change-safety level (one value per resource).
    *
    * When set to `MUST_NEVER_CHANGE` or `CHANGE_WITH_CONSTRAINTS`, a `must`
    * entry documenting the constraint is recommended but not enforced.
@@ -432,7 +432,7 @@ export class CfnResourceMetadataContext {
    * values and a call that selects no `CfnResource` fail synthesis.
    */
   public set(context: CfnResourceContextProps, options: CfnResourceMetadataContextOptions = {}): void {
-    // Snapshot mutable inputs before synthesis.
+    // Validate and write the same snapshot if the caller later mutates its input.
     const rendered: CfnResourceContextProps = renderResourceContext(context);
     this.addResourceAspect(
       (resource) => resource.addMetadata(METADATA_CONTEXT_KEY, renderResourceContext(rendered)),

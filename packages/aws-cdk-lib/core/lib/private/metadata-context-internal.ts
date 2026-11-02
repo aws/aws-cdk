@@ -79,7 +79,6 @@ function copyArray<T>(values: T[]): T[] {
 }
 
 export function validateResourceContext(context: CfnResourceContextProps): string[] {
-  // Top-level fields and empty values are valid; only nested constraints need checks.
   return [...validateTrust(context.trust), ...validateMutability(context)];
 }
 
@@ -89,10 +88,10 @@ function validateTrust(trust: CfnResourceContextProps['trust']): string[] {
   }
   const errors: string[] = [];
   if (trust.src === undefined) {
-    errors.push('MetadataContext trust requires \'src\' when trust is provided');
+    errors.push('trust requires \'src\' when provided');
   }
   if (trust.conf === undefined) {
-    errors.push('MetadataContext trust requires \'conf\' when trust is provided');
+    errors.push('trust requires \'conf\' when provided');
   }
   return errors;
 }
@@ -103,7 +102,7 @@ function validateMutability(context: CfnResourceContextProps): string[] {
   }
   return Object.entries(context.mutability)
     .filter(([, level]) => level === context.mutable)
-    .map(([property]) => `MetadataContext mutability entry '${property}' must not repeat mutable ${JSON.stringify(context.mutable)}; the map records deviations only`);
+    .map(([property]) => `mutability entry '${property}' must not repeat mutable ${JSON.stringify(context.mutable)}; the map records deviations only`);
 }
 
 export function validateTemplateContext(scope: IConstruct, context: CfnTemplateContextProps) {
@@ -117,7 +116,7 @@ export function validateTemplateContext(scope: IConstruct, context: CfnTemplateC
   for (const [index, ref] of (context.ref ?? []).entries()) {
     rejectUnresolvedToken(scope, `ref[${index}]`, ref);
     if (typeof ref.at !== 'string') {
-      throw new ValidationError(lit`MissingMetadataContextRefAt`, 'MetadataContext ref entries require an \'at\' path', scope);
+      throw new ValidationError(lit`MissingMetadataContextRefAt`, 'ref entries require an \'at\' path', scope);
     }
     rejectUnresolvedToken(scope, `ref[${index}].at`, ref.at);
     rejectUnresolvedToken(scope, `ref[${index}].has`, ref.has);
@@ -130,7 +129,7 @@ function rejectUnresolvedToken(scope: IConstruct, path: string, value: any): voi
   if (Token.isUnresolved(value)) {
     throw new ValidationError(
       lit`UnresolvedTokenInTemplateMetadataContext`,
-      `template MetadataContext field '${path}' cannot contain unresolved tokens because CloudFormation does not resolve intrinsic functions in template metadata`,
+      `template context field '${path}' cannot contain unresolved tokens because CloudFormation does not resolve intrinsic functions in template metadata`,
       scope,
     );
   }

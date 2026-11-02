@@ -1633,8 +1633,8 @@ blank strings and empty arrays are structurally valid. The schema is advisory â€
 CloudFormation does not validate or enforce `Metadata` fields. CDK property names
 are the schema's field names (`why`, `must`, `mutable`, `mutability`, `trust.src`,
 `trust.conf`, `trust.cite`, `trust.note`, `deps`; `arch`, `must`, `ref`, `owner`),
-so code and template use one vocabulary. CDK adds typed enums and targeting, but
-no requirements the schema does not impose.
+so code and template use one vocabulary. CDK adds typed enums, targeting, and
+the validation described below.
 
 Context comes in two flavors, each with its own entry point:
 
@@ -1996,13 +1996,13 @@ rules:
   limit.
 
 CDK rejects unresolved template-level values so the emitted fields retain the
-schema's literal types, and enforces the schema's nested requirements: when
-`trust` is supplied, both `src` and `conf` are required (`cite` and `note` remain
-optional), and in the sparse `mutability` map an entry must not repeat `mutable`
-when both are supplied in the same call. Blank strings, empty arrays, empty
-maps, and an empty Context object are written as given. Resource-level `set()`
-never throws; its checks fail synthesis. Template-level `set()` rejects
-unresolved tokens and concrete `ref` entries without `at` immediately.
+schema's literal types. It enforces the schema requirement that `trust` include
+both `src` and `conf` when supplied (`cite` and `note` remain optional). It also
+rejects a sparse `mutability` entry that repeats `mutable` in the same call.
+Blank strings, empty arrays, empty maps, and an empty Context object are written
+as given. Resource-level `set()` never throws; its checks fail synthesis.
+Template-level `set()` rejects unresolved tokens and concrete `ref` entries
+without `at` immediately.
 
 ### Security
 
