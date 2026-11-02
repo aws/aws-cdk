@@ -251,6 +251,37 @@ new StackSet(stack, 'StackSet', {
 });
 ```
 
+#### Operation preferences
+
+`operationPreferences` controls how CloudFormation rolls a StackSet operation out across accounts and
+regions. Give the failure tolerance and the maximum concurrency either as a number of accounts or as a
+percentage of accounts, and choose how failures affect the concurrency with `concurrencyMode`.
+
+```ts
+const app = new App();
+const stack = new Stack(app, 'Admin');
+const stackSetStack = new StackSetStack(app, 'MyStackSet');
+
+new StackSet(stack, 'StackSet', {
+  target: StackSetTarget.fromAccounts({
+    regions: ['us-east-1', 'eu-west-1'],
+    accounts: ['11111111111', '22222222222'],
+  }),
+  template: StackSetTemplate.fromStackSetStack(stackSetStack),
+  operationPreferences: {
+    failureTolerance: StackSetFailureTolerance.count(1),
+    maxConcurrency: StackSetMaxConcurrency.percentage(50),
+    concurrencyMode: StackSetConcurrencyMode.SOFT_FAILURE_TOLERANCE,
+    regionConcurrencyType: RegionConcurrencyType.PARALLEL,
+  },
+});
+```
+
+With the default `StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE`, CloudFormation runs the operation
+in at most one more account than the failure tolerance count at a time, and lowers the concurrency as
+accounts fail. `StackSetConcurrencyMode.SOFT_FAILURE_TOLERANCE` keeps the maximum concurrency
+regardless of failures.
+
 #### Using File Assets
 
 You can use the StackSet's parent stack to facilitate file assets. Behind the scenes,
@@ -361,8 +392,8 @@ class BootstrapStage extends Stage {
       }),
       operationPreferences: {
         regionConcurrencyType: RegionConcurrencyType.PARALLEL,
-        maxConcurrentPercentage: 100,
-        failureTolerancePercentage: 99,
+        maxConcurrency: StackSetMaxConcurrency.percentage(100),
+        failureTolerance: StackSetFailureTolerance.percentage(99),
       },
     });
   }
