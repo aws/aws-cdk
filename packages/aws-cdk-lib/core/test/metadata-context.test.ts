@@ -1077,7 +1077,7 @@ describe('metadata context', () => {
       const setContext = () => CfnTemplateMetadataContext.of(stack).set(context(tokenTarget.ref));
 
       expect(setContext).toThrow(ValidationError);
-      expect(setContext).toThrow(`template MetadataContext field '${fieldPath}' cannot contain unresolved tokens`);
+      expect(setContext).toThrow(`template context field '${fieldPath}' cannot contain unresolved tokens`);
       expect(stack.templateOptions.metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
@@ -1088,7 +1088,7 @@ describe('metadata context', () => {
       });
 
       expect(setContext).toThrow(ValidationError);
-      expect(setContext).toThrow("template MetadataContext field 'must' cannot contain unresolved tokens");
+      expect(setContext).toThrow("template context field 'must' cannot contain unresolved tokens");
       expect(stack.templateOptions.metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
