@@ -645,16 +645,19 @@ describe('WebFunctionCode', () => {
 
       test('carries the revision configuration without the code location', () => {
         const { configuration } = original();
-        expect(Object.keys(configuration.Properties).sort()).toEqual(['BuildConfig', 'FunctionName', 'ServiceConfig']);
-        expect(Object.keys(configuration.Properties.BuildConfig)).toEqual(['RuntimeConfig']);
+        expect(Object.keys(configuration).sort()).toEqual(['BuildConfig', 'FunctionName', 'ServiceConfig']);
+        expect(Object.keys(configuration.BuildConfig)).toEqual(['RuntimeConfig']);
       });
 
-      test('passes a fingerprint of the environment, not its values', () => {
+      test('passes the configuration as the revision has it, with dynamic references made inert', () => {
         const s = new cdk.Stack();
         // The validator does not list WebFunctionRevision among the properties that accept an
         // SSM SecureString reference; the revision itself is not what this test is about.
-        cdk.Validations.of(s).acknowledge({ id: 'CloudFormation-Validate::E1027', reason: 'ssm-secure on the revision' });
+        cdk.Validations.of(s).acknowledge({ id: 'CloudFormation-Validate::E1027', reason: 'secure references on the revision' });
         const role = new iam.Role(s, 'Other', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+        const param = new cdk.CfnParameter(s, 'Env');
+        const condition = new cdk.CfnCondition(s, 'IsProd', { expression: cdk.Fn.conditionEquals(param.valueAsString, 'prod') });
+        const secret = '{{resolve:secretsmanager:db:SecretString:password}}';
         new WebFunction(s, 'TestFunction', {
           code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
           runtime: WebFunctionRuntime.NODEJS_24_X,
@@ -664,17 +667,41 @@ describe('WebFunctionCode', () => {
             SECURE: cdk.SecretValue.ssmSecure('/my/param').unsafeUnwrap(),
             PLAIN: 'plain-value',
             ROLE: role.roleArn,
-            JOINED: `joined-literal-${role.roleArn}`,
+            SUB: cdk.Fn.sub(`postgres://\${AWS::AccountId}:${secret}@host`),
+            IF: cdk.Fn.conditionIf(condition.logicalId, secret, 'none').toString(),
+            BASE64: cdk.Fn.base64(`admin:${secret}`),
+            LIST: cdk.Fn.join(',', cdk.Fn.split(',', param.valueAsString)),
+          },
+        });
+        const t = Template.fromStack(s);
+        const [copy] = Object.values(t.findResources('Custom::S3ObjectCopy'));
+        const [revision] = Object.values(t.findResources('AWS::Lambda::WebFunctionRevision'));
+        expect(JSON.stringify(copy.Properties)).not.toContain('{{resolve:');
+        const inert = (v: any) => JSON.parse(JSON.stringify(v).split('{{resolve:').join('{{resolve-ref:'));
+        expect(copy.Properties.Configuration.ServiceConfig).toEqual(inert(revision.Properties.ServiceConfig));
+        // Intrinsics stay as they are, so the template stays valid: a list-valued one in Fn::Join too.
+        expect(copy.Properties.Configuration.ServiceConfig.EnvironmentVariables.LIST)
+          .toEqual({ 'Fn::Join': [',', { 'Fn::Split': [',', { Ref: 'Env' }] }] });
+      });
+
+      test('leaves mappings and conditions for CloudFormation to resolve, so their values move the key', () => {
+        const s = new cdk.Stack();
+        const param = new cdk.CfnParameter(s, 'Env');
+        const condition = new cdk.CfnCondition(s, 'IsProd', { expression: cdk.Fn.conditionEquals(param.valueAsString, 'prod') });
+        new cdk.CfnMapping(s, 'Settings', { mapping: { prod: { level: 'warn' }, dev: { level: 'debug' } } });
+        new WebFunction(s, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          environment: {
+            LEVEL: cdk.Fn.findInMap('Settings', param.valueAsString, 'level'),
+            MODE: cdk.Fn.conditionIf(condition.logicalId, 'strict', 'lenient').toString(),
           },
         });
         const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
-        const properties = JSON.stringify(copy.Properties);
-        expect(properties).not.toContain('{{resolve:');
-        expect(properties).not.toContain('plain-value');
-        expect(properties).not.toContain('joined-literal-');
-        // A value only known at deployment is kept, so it still changes the key.
-        expect(copy.Properties.Configuration.Properties.ServiceConfig.EnvironmentVariables.ROLE).toEqual(
-          { 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] });
+        const env = copy.Properties.Configuration.ServiceConfig.EnvironmentVariables;
+        expect(env.LEVEL).toEqual({ 'Fn::FindInMap': ['Settings', { Ref: 'Env' }, 'level'] });
+        expect(env.MODE).toEqual({ 'Fn::If': ['IsProd', 'strict', 'lenient'] });
       });
 
       test('one code object bound to two functions gives each copy its own function\'s configuration', () => {
@@ -699,114 +726,14 @@ describe('WebFunctionCode', () => {
           const id = Object.keys(copies).find((logicalId) => logicalId.startsWith(fn.node.id))!;
           return copies[id];
         };
+        const config = (fn: WebFunction) => copyFor(fn).Properties.Configuration;
         const functionRef = (fn: WebFunction) => ({ Ref: stack.getLogicalId(fn.resource) });
-        const config = (fn: WebFunction) => copyFor(fn).Properties.Configuration.Properties;
         expect(config(first).FunctionName).toEqual(functionRef(first));
         expect(config(second).FunctionName).toEqual(functionRef(second));
         expect(config(first).ServiceConfig.TimeoutSeconds).toEqual(10);
         expect(config(second).ServiceConfig.TimeoutSeconds).toEqual(20);
         expect(copyFor(first).DeletionPolicy).toEqual('Retain');
         expect(copyFor(second).DeletionPolicy).toEqual('Delete');
-      });
-
-      test('passes no secure reference used inside Fn::Sub, Fn::If or Fn::Select', () => {
-        const s = new cdk.Stack();
-        cdk.Validations.of(s).acknowledge({ id: 'CloudFormation-Validate::E1027', reason: 'secure references on the revision' });
-        const role = new iam.Role(s, 'Other', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
-        const param = new cdk.CfnParameter(s, 'Env');
-        const condition = new cdk.CfnCondition(s, 'IsProd', { expression: cdk.Fn.conditionEquals(param.valueAsString, 'prod') });
-        const secret = '{{resolve:secretsmanager:db:SecretString:password}}';
-        new WebFunction(s, 'TestFunction', {
-          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
-          runtime: WebFunctionRuntime.NODEJS_24_X,
-          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
-          environment: {
-            SUB: cdk.Fn.sub(`postgres://\${AWS::AccountId}:${secret}@host`),
-            SUB_VARS: cdk.Fn.sub('postgres://${User}@host', { User: secret }),
-            IF: cdk.Fn.conditionIf(condition.logicalId, secret, 'none').toString(),
-            SELECT: cdk.Fn.select(0, [secret, role.roleArn]),
-          },
-        });
-        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
-        expect(JSON.stringify(copy.Properties)).not.toContain('{{resolve:');
-        const env = copy.Properties.Configuration.Properties.ServiceConfig.EnvironmentVariables;
-        // Placeholders and condition names stay, so the template still resolves at deployment.
-        expect(env.SUB['Fn::Sub']).toContain('${AWS::AccountId}');
-        expect(env.SUB_VARS['Fn::Sub'][0]).toContain('${User}');
-        expect(env.IF['Fn::If'][0]).toEqual('IsProd');
-        // Any other intrinsic is replaced by a hash, with the references inside it kept apart.
-        expect(typeof env.SELECT).toEqual('string');
-        expect(copy.Properties.Configuration.References)
-          .toContainEqual({ 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] });
-      });
-
-      test('passes no secure reference used inside any other intrinsic, nested or not', () => {
-        const s = new cdk.Stack();
-        cdk.Validations.of(s).acknowledge({ id: 'CloudFormation-Validate::E1027', reason: 'secure references on the revision' });
-        const secret = '{{resolve:secretsmanager:db:SecretString:password}}';
-        new WebFunction(s, 'TestFunction', {
-          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
-          runtime: WebFunctionRuntime.NODEJS_24_X,
-          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
-          environment: {
-            BASE64: cdk.Fn.base64(`admin:${secret}`),
-            SPLIT: cdk.Fn.select(1, cdk.Fn.split(':', `a:${secret}`)),
-            IN_JOIN: cdk.Fn.join('', ['x', cdk.Fn.base64(secret)]),
-            IN_SUB_VARS: cdk.Fn.sub('${V}', { V: cdk.Fn.base64(secret) }),
-          },
-        });
-        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
-        expect(JSON.stringify(copy.Properties)).not.toContain('{{resolve:');
-        expect(JSON.stringify(copy.Properties)).not.toContain('Fn::Base64');
-      });
-
-      test('keeps a reference inside a conditional branch conditional', () => {
-        const s = new cdk.Stack();
-        const param = new cdk.CfnParameter(s, 'Env');
-        const condition = new cdk.CfnCondition(s, 'IsProd', { expression: cdk.Fn.conditionEquals(param.valueAsString, 'prod') });
-        const role = new iam.Role(s, 'Other', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
-        new WebFunction(s, 'TestFunction', {
-          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
-          runtime: WebFunctionRuntime.NODEJS_24_X,
-          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
-          environment: {
-            IF: cdk.Fn.conditionIf(condition.logicalId, cdk.Fn.base64(role.roleArn), 'none').toString(),
-          },
-        });
-        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
-        expect(copy.Properties.Configuration.References).toEqual([{
-          'Fn::If': ['IsProd', [{ 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] }], []],
-        }]);
-      });
-
-      test('keeps a conditional reference inside a hashed intrinsic conditional', () => {
-        const s = new cdk.Stack();
-        const param = new cdk.CfnParameter(s, 'Env');
-        const condition = new cdk.CfnCondition(s, 'IsProd', { expression: cdk.Fn.conditionEquals(param.valueAsString, 'prod') });
-        const role = new iam.Role(s, 'Other', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
-        new WebFunction(s, 'TestFunction', {
-          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
-          runtime: WebFunctionRuntime.NODEJS_24_X,
-          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
-          environment: {
-            BASE64: cdk.Fn.base64(cdk.Fn.conditionIf(condition.logicalId, role.roleArn, 'none').toString()),
-          },
-        });
-        const [copy] = Object.values(Template.fromStack(s).findResources('Custom::S3ObjectCopy'));
-        expect(copy.Properties.Configuration.References).toEqual([{
-          'Fn::If': ['IsProd', [{ 'Fn::GetAtt': [s.getLogicalId(role.node.defaultChild as cdk.CfnElement), 'Arn'] }], []],
-        }]);
-      });
-
-      test('fails synthesis rather than pass on a dynamic reference it cannot hash', () => {
-        const s = new cdk.Stack();
-        new WebFunction(s, 'TestFunction', {
-          code: WebFunctionCode.fromAssetToProvidedBucket(owned(s), ASSET_PATH),
-          runtime: WebFunctionRuntime.NODEJS_24_X,
-          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
-          environment: { IMPORTED: cdk.Fn.importValue('{{resolve:ssm:/export/name}}') },
-        });
-        expect(() => Template.fromStack(s)).toThrow(/dynamic reference .* would reach the code copy/);
       });
 
       test('sees property overrides on the revision', () => {

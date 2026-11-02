@@ -8,7 +8,6 @@ import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { S3ObjectCopy, copyFunctionIdentity } from './private/s3-object-copy';
 import { ValidationError } from '../../core/lib/errors';
-import { md5hash } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -701,9 +700,11 @@ function retentionOf(resource: cdk.CfnResource): { onReplace: Retention; any: Re
  * The configuration of a revision that the copy's key is derived from: every rendered property
  * except the code location, which comes from the copy itself.
  *
- * The key only has to depend on the configuration, not carry it, so it is passed as a
- * fingerprint (see `fingerprint`): the copy's properties, its invocation event and its log
- * hold no environment values or dynamic references.
+ * It is passed as it is, so CloudFormation resolves it for the copy exactly as for the revision
+ * and the key changes when, and only when, the revision's configuration does. The one change is
+ * that dynamic references are made inert (`{{resolve:` becomes `{{resolve-ref:`): CloudFormation
+ * rejects some in a custom resource's properties, and the copy must not receive the values of
+ * the others. The reference's text still feeds the key.
  */
 function revisionConfiguration(resource: cdk.CfnResource): any {
   if (!CfnWebFunctionRevision.isCfnWebFunctionRevision(resource)) {
@@ -714,124 +715,20 @@ function revisionConfiguration(resource: cdk.CfnResource): any {
     const { CodeConfig: _code, ...buildConfig } = properties.BuildConfig;
     properties.BuildConfig = buildConfig;
   }
-  const references: any[] = [];
-  const result = { Properties: fingerprint(properties, references), References: references };
-  if (JSON.stringify(result).includes('{{resolve:')) {
-    throw new ValidationError(lit`WebFunctionCodeCopyDynamicReference`,
-      'A dynamic reference in the revision\'s configuration would reach the code copy. Please report this as a bug.',
-      resource);
-  }
-  return result;
+  return withInertDynamicReferences(properties);
 }
 
-const REFERENCE_INTRINSICS = ['Ref', 'Fn::GetAtt', 'Fn::ImportValue'];
-
-function intrinsicName(value: any): string | undefined {
-  if (value === null || typeof value !== 'object' || Array.isArray(value)) {
-    return undefined;
-  }
-  const keys = Object.keys(value);
-  return keys.length === 1 && (keys[0] === 'Ref' || keys[0].startsWith('Fn::')) ? keys[0] : undefined;
-}
-
-/**
- * Replaces every literal string in a resolved template value with its hash.
- *
- * CloudFormation rejects secure dynamic references (`{{resolve:secretsmanager:...}}`,
- * `{{resolve:ssm-secure:...}}`) in a custom resource's properties, and plain values would be
- * copied into its invocation event. Both are literal strings at synthesis, so hashing them keeps
- * the key's dependency on them without passing them on.
- *
- * Only references are kept: `Ref`, `Fn::GetAtt` and `Fn::ImportValue`, so a value only known at
- * deployment, such as a replaced role, still changes the key. `Fn::Join`, `Fn::Sub` and `Fn::If`
- * keep their shape, with their literals hashed (an `Fn::Sub` keeps its `${...}` placeholders,
- * and an `Fn::If` its condition, so a conditional reference stays conditional). Any other
- * intrinsic is replaced by the hash of its whole value, and the references inside it are added
- * to `references`, so they still count without being evaluated in place.
- */
-function fingerprint(value: any, references: any[]): any {
+function withInertDynamicReferences(value: any): any {
   if (typeof value === 'string') {
-    return md5hash(value);
+    return value.split('{{resolve:').join('{{resolve-ref:');
   }
   if (Array.isArray(value)) {
-    return value.map((v) => fingerprint(v, references));
+    return value.map(withInertDynamicReferences);
   }
-  if (value === null || typeof value !== 'object') {
-    return value;
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, withInertDynamicReferences(v)]));
   }
-  const name = intrinsicName(value);
-  if (name === undefined) {
-    return Object.fromEntries(Object.keys(value).map((k) => [k, fingerprint(value[k], references)]));
-  }
-  const args = value[name];
-  if (REFERENCE_INTRINSICS.includes(name)) {
-    return value;
-  }
-  switch (name) {
-    case 'Fn::Join':
-      return { 'Fn::Join': [args[0], fingerprint(args[1], references)] };
-    case 'Fn::Sub':
-      return {
-        'Fn::Sub': Array.isArray(args)
-          ? [fingerprintSubTemplate(args[0], references), fingerprint(args[1], references)]
-          : fingerprintSubTemplate(args, references),
-      };
-    case 'Fn::If': {
-      const whenTrue: any[] = [];
-      const whenFalse: any[] = [];
-      const result = { 'Fn::If': [args[0], fingerprint(args[1], whenTrue), fingerprint(args[2], whenFalse)] };
-      addConditional(references, args[0], whenTrue, whenFalse);
-      return result;
-    }
-    default:
-      collectReferences(value, references);
-      return md5hash(JSON.stringify(value));
-  }
-}
-
-/** Adds the references found inside an intrinsic that is replaced by its hash. */
-function collectReferences(value: any, references: any[]): void {
-  if (Array.isArray(value)) {
-    value.forEach((v) => collectReferences(v, references));
-    return;
-  }
-  if (value === null || typeof value !== 'object') {
-    return;
-  }
-  const name = intrinsicName(value);
-  if (name !== undefined && REFERENCE_INTRINSICS.includes(name)) {
-    references.push(value);
-  } else if (name === 'Fn::Sub') {
-    references.push(fingerprint(value, references));
-  } else if (name === 'Fn::If') {
-    const [condition, a, b] = value[name];
-    const whenTrue: any[] = [];
-    const whenFalse: any[] = [];
-    collectReferences(a, whenTrue);
-    collectReferences(b, whenFalse);
-    addConditional(references, condition, whenTrue, whenFalse);
-  } else {
-    Object.values(value).forEach((v) => collectReferences(v, references));
-  }
-}
-
-function addConditional(references: any[], condition: any, whenTrue: any[], whenFalse: any[]): void {
-  if (whenTrue.length > 0 || whenFalse.length > 0) {
-    references.push({ 'Fn::If': [condition, whenTrue, whenFalse] });
-  }
-}
-
-/**
- * Replaces the literal segments of an `Fn::Sub` template with their hashes and keeps its
- * placeholders. `${!Literal}` is an escaped literal, so it is hashed with its segment.
- */
-function fingerprintSubTemplate(template: any, references: any[]): any {
-  if (typeof template !== 'string') {
-    return fingerprint(template, references);
-  }
-  return template.split(/(\$\{(?!!)[^}]*\})/)
-    .map((segment, i) => (i % 2 === 1 || segment === '' ? segment : md5hash(segment)))
-    .join('');
+  return value;
 }
 
 const MANAGED_BUCKET_REVISIONS = new WeakMap<s3.IBucket, cdk.CfnResource[]>();
