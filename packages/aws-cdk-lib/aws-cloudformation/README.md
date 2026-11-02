@@ -174,12 +174,12 @@ new StackSet(stack, 'StackSet', {
 
 This would deploy the StackSet to `account-1`, `account-2`, `account-4` & `account-5`.
 
-#### StackSet permissions
+#### StackSet permissions (`permissionModel`)
 
 There are two modes for managing StackSet permissions (i.e. _where_ StackSets can deploy & _what_ resources they can create).
 A StackSet can either be `Service Managed` or `Self Managed`.
 
-You can control this through the `deploymentType` parameter.
+You can control this through the `permissionModel` property, using `StackSetPermissionModel`.
 
 ##### Service Managed
 
@@ -195,12 +195,12 @@ new StackSet(stack, 'StackSet', {
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
   }),
-  deploymentType: DeploymentType.serviceManaged(),
+  permissionModel: StackSetPermissionModel.serviceManaged(),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
-When you specify `serviceManaged` deployment type, automatic deployments are enabled by default.
+When you use the `serviceManaged` permission model, automatic deployments are enabled by default.
 Automatic deployments allow the StackSet to be automatically deployed to or deleted from
 AWS accounts when they are added or removed from the specified organizational units.
 
@@ -229,7 +229,7 @@ new StackSet(stack, 'StackSet', {
     regions: ['us-east-1'],
     accounts: ['11111111111'],
   }),
-  deploymentType: DeploymentType.selfManaged({
+  permissionModel: StackSetPermissionModel.selfManaged({
     executionRoleName: 'MyStackSetExecutionRole',
   }),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
@@ -294,7 +294,7 @@ Once you have granted access yourself, acknowledge it with
 ### Importing an existing StackSet
 
 You can reference a StackSet that was created outside of your app by its ID or by its ARN.
-An imported StackSet has no `role`, and neither does a service managed StackSet.
+Only a self managed `StackSet` defined in your app has an `adminRole`; an imported StackSet and a service managed StackSet have none.
 
 ```ts
 const stack = new Stack();
@@ -339,13 +339,13 @@ class BootstrapStage extends Stage {
       capabilities: [CfnCapabilities.NAMED_IAM],
       managedExecution: true,
       stackSetName: props.stacksetName,
-      deploymentType: DeploymentType.serviceManaged({
+      permissionModel: StackSetPermissionModel.serviceManaged({
         delegatedAdmin: true,
         autoDeployEnabled: true,
         autoDeployRetainStacks: false,
       }),
       operationPreferences: {
-        regionConcurrencyType: RegionConcurrencyType.PARALLEL,
+        regionConcurrencyType: StackSetRegionConcurrencyType.PARALLEL,
         maxConcurrentPercentage: 100,
         failureTolerancePercentage: 99,
       },

@@ -2,9 +2,9 @@
 import { Construct } from 'constructs';
 import { App, CfnCapabilities, Stack, Stage, StageProps, pipelines } from 'aws-cdk-lib';
 import {
-  DeploymentType,
-  RegionConcurrencyType,
   StackSet,
+  StackSetPermissionModel,
+  StackSetRegionConcurrencyType,
   StackSetStack,
   StackSetTarget,
   StackSetTemplate,

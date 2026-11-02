@@ -123,7 +123,7 @@ class TestCase extends Stack {
         regions: [targetRegion],
       }),
       template: cfn.StackSetTemplate.fromStackSetStack(stackSetStack),
-      deploymentType: cfn.DeploymentType.selfManaged({
+      permissionModel: cfn.StackSetPermissionModel.selfManaged({
         executionRoleName: props.executionRole.roleName,
         adminRole,
       }),
@@ -149,7 +149,7 @@ class AssetTestCase extends Stack {
         regions: [targetRegion],
       }),
       template: cfn.StackSetTemplate.fromStackSetStack(stackSetStack),
-      deploymentType: cfn.DeploymentType.selfManaged({
+      permissionModel: cfn.StackSetPermissionModel.selfManaged({
         executionRoleName: props.executionRole.roleName,
       }),
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
