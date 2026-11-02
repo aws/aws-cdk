@@ -53,33 +53,30 @@
     "DestinationKeyPrefix": "web-function/WebFunctionStagedAssetStackAutomaticA68429D7/",
     "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
     "Configuration": {
-     "Properties": {
-      "BuildConfig": {
-       "RuntimeConfig": {
-        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-       }
-      },
-      "FunctionName": {
-       "Ref": "AutomaticFunctionB47C23F8"
-      },
-      "ServiceConfig": {
-       "ExecutionRoleArn": {
-        "Fn::GetAtt": [
-         "AutomaticServiceRole73715D6D",
-         "Arn"
-        ]
-       },
-       "TelemetryConfig": {
-        "LoggingConfig": {
-         "LogGroup": {
-          "Ref": "AutomaticLogGroupC4AD0641"
-         }
-        }
-       },
-       "TimeoutSeconds": 30
+     "BuildConfig": {
+      "RuntimeConfig": {
+       "Runtime": "nodejs24.x"
       }
      },
-     "References": []
+     "FunctionName": {
+      "Ref": "AutomaticFunctionB47C23F8"
+     },
+     "ServiceConfig": {
+      "ExecutionRoleArn": {
+       "Fn::GetAtt": [
+        "AutomaticServiceRole73715D6D",
+        "Arn"
+       ]
+      },
+      "TelemetryConfig": {
+       "LoggingConfig": {
+        "LogGroup": {
+         "Ref": "AutomaticLogGroupC4AD0641"
+        }
+       }
+      },
+      "TimeoutSeconds": 30
+     }
     }
    },
    "DependsOn": [
@@ -626,33 +623,30 @@
     "DestinationKeyPrefix": "web-function/WebFunctionStagedAssetStackAutomaticSecondB3C75A59/",
     "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
     "Configuration": {
-     "Properties": {
-      "BuildConfig": {
-       "RuntimeConfig": {
-        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-       }
-      },
-      "FunctionName": {
-       "Ref": "AutomaticSecondFunctionAB53D7F9"
-      },
-      "ServiceConfig": {
-       "ExecutionRoleArn": {
-        "Fn::GetAtt": [
-         "AutomaticSecondServiceRoleCA7814FD",
-         "Arn"
-        ]
-       },
-       "TelemetryConfig": {
-        "LoggingConfig": {
-         "LogGroup": {
-          "Ref": "AutomaticSecondLogGroup7FE94734"
-         }
-        }
-       },
-       "TimeoutSeconds": 30
+     "BuildConfig": {
+      "RuntimeConfig": {
+       "Runtime": "nodejs24.x"
       }
      },
-     "References": []
+     "FunctionName": {
+      "Ref": "AutomaticSecondFunctionAB53D7F9"
+     },
+     "ServiceConfig": {
+      "ExecutionRoleArn": {
+       "Fn::GetAtt": [
+        "AutomaticSecondServiceRoleCA7814FD",
+        "Arn"
+       ]
+      },
+      "TelemetryConfig": {
+       "LoggingConfig": {
+        "LogGroup": {
+         "Ref": "AutomaticSecondLogGroup7FE94734"
+        }
+       }
+      },
+      "TimeoutSeconds": 30
+     }
     }
    },
    "DependsOn": [
@@ -968,33 +962,30 @@
     "DestinationKeyPrefix": "webfunctions/web-function/WebFunctionStagedAssetStackSpecificD983D53C/",
     "ContentHash": "a12bf578b0a39229104c4fad3c6e0c69c7433b72bf79241076b96637e727b21a",
     "Configuration": {
-     "Properties": {
-      "BuildConfig": {
-       "RuntimeConfig": {
-        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-       }
-      },
-      "FunctionName": {
-       "Ref": "SpecificFunction2B9945D8"
-      },
-      "ServiceConfig": {
-       "ExecutionRoleArn": {
-        "Fn::GetAtt": [
-         "SpecificServiceRole381077C9",
-         "Arn"
-        ]
-       },
-       "TelemetryConfig": {
-        "LoggingConfig": {
-         "LogGroup": {
-          "Ref": "SpecificLogGroup92FAE761"
-         }
-        }
-       },
-       "TimeoutSeconds": 30
+     "BuildConfig": {
+      "RuntimeConfig": {
+       "Runtime": "nodejs24.x"
       }
      },
-     "References": []
+     "FunctionName": {
+      "Ref": "SpecificFunction2B9945D8"
+     },
+     "ServiceConfig": {
+      "ExecutionRoleArn": {
+       "Fn::GetAtt": [
+        "SpecificServiceRole381077C9",
+        "Arn"
+       ]
+      },
+      "TelemetryConfig": {
+       "LoggingConfig": {
+        "LogGroup": {
+         "Ref": "SpecificLogGroup92FAE761"
+        }
+       }
+      },
+      "TimeoutSeconds": 30
+     }
     }
    },
    "DependsOn": [

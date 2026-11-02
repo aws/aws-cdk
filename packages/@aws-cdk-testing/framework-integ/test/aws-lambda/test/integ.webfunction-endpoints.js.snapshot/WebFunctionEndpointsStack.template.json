@@ -53,33 +53,30 @@
     "DestinationKeyPrefix": "web-function/WebFunctionEndpointsStackFunctionCD78E45E/",
     "ContentHash": "05f8cf9b9561b037c75b383c42c0967a173526dbe212fc403c1d6106494c217e",
     "Configuration": {
-     "Properties": {
-      "BuildConfig": {
-       "RuntimeConfig": {
-        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-       }
-      },
-      "FunctionName": {
-       "Ref": "Function042596DC"
-      },
-      "ServiceConfig": {
-       "ExecutionRoleArn": {
-        "Fn::GetAtt": [
-         "FunctionServiceRole675BB04A",
-         "Arn"
-        ]
-       },
-       "TelemetryConfig": {
-        "LoggingConfig": {
-         "LogGroup": {
-          "Ref": "FunctionLogGroup55B80E27"
-         }
-        }
-       },
-       "TimeoutSeconds": 30
+     "BuildConfig": {
+      "RuntimeConfig": {
+       "Runtime": "nodejs24.x"
       }
      },
-     "References": []
+     "FunctionName": {
+      "Ref": "Function042596DC"
+     },
+     "ServiceConfig": {
+      "ExecutionRoleArn": {
+       "Fn::GetAtt": [
+        "FunctionServiceRole675BB04A",
+        "Arn"
+       ]
+      },
+      "TelemetryConfig": {
+       "LoggingConfig": {
+        "LogGroup": {
+         "Ref": "FunctionLogGroup55B80E27"
+        }
+       }
+      },
+      "TimeoutSeconds": 30
+     }
     }
    },
    "DependsOn": [

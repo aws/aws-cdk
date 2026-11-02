@@ -625,56 +625,53 @@
     "DestinationKeyPrefix": "web-function/WebFunctionNetworkConnectorStackFunction4CFB0255/",
     "ContentHash": "f43caef5f59d8d69c7a740076b980608cb5d502efb430a777568820012525e43",
     "Configuration": {
-     "Properties": {
-      "BuildConfig": {
-       "RuntimeConfig": {
-        "Runtime": "ea70e0b0f76ff72b61a06c9d0f7ca9ad"
-       }
-      },
-      "FunctionName": {
-       "Ref": "Function042596DC"
-      },
-      "ServiceConfig": {
-       "EgressNetworkConnectorArn": {
-        "Fn::GetAtt": [
-         "ConnectorC537A2FB",
-         "LatestVersionArn"
-        ]
-       },
-       "EnvironmentVariables": {
-        "OBJECT_URL": {
-         "Fn::Join": [
-          "",
-          [
-           "f8eae6750519389e078e1eb1bcb3d708",
-           {
-            "Fn::GetAtt": [
-             "EgressBucket1ABE5DC5",
-             "RegionalDomainName"
-            ]
-           },
-           "68159f03775c1e8adfdef7c9f447c72a"
-          ]
-         ]
-        }
-       },
-       "ExecutionRoleArn": {
-        "Fn::GetAtt": [
-         "FunctionServiceRole675BB04A",
-         "Arn"
-        ]
-       },
-       "TelemetryConfig": {
-        "LoggingConfig": {
-         "LogGroup": {
-          "Ref": "FunctionLogGroup55B80E27"
-         }
-        }
-       },
-       "TimeoutSeconds": 30
+     "BuildConfig": {
+      "RuntimeConfig": {
+       "Runtime": "nodejs24.x"
       }
      },
-     "References": []
+     "FunctionName": {
+      "Ref": "Function042596DC"
+     },
+     "ServiceConfig": {
+      "EgressNetworkConnectorArn": {
+       "Fn::GetAtt": [
+        "ConnectorC537A2FB",
+        "LatestVersionArn"
+       ]
+      },
+      "EnvironmentVariables": {
+       "OBJECT_URL": {
+        "Fn::Join": [
+         "",
+         [
+          "https://",
+          {
+           "Fn::GetAtt": [
+            "EgressBucket1ABE5DC5",
+            "RegionalDomainName"
+           ]
+          },
+          "/egress.txt"
+         ]
+        ]
+       }
+      },
+      "ExecutionRoleArn": {
+       "Fn::GetAtt": [
+        "FunctionServiceRole675BB04A",
+        "Arn"
+       ]
+      },
+      "TelemetryConfig": {
+       "LoggingConfig": {
+        "LogGroup": {
+         "Ref": "FunctionLogGroup55B80E27"
+        }
+       }
+      },
+      "TimeoutSeconds": 30
+     }
     }
    },
    "DependsOn": [
