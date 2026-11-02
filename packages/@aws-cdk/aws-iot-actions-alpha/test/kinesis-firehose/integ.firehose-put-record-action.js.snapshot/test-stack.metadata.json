@@ -1,0 +1,280 @@
+{
+  "/test-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "test-stack.template.json"
+    }
+  ],
+  "/test-stack/TopicRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W9009": "topicRulePayload is deprecated, but we are using it for historical reasons"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at new TopicRule (/workplace/aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/topic-rule.js:126:41)",
+        "    at new TestStack (/workplace/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/kinesis-firehose/integ.firehose-put-record-action.js:45:27)",
+        "    at <anonymous> (/workplace/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/kinesis-firehose/integ.firehose-put-record-action.js:60:1)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/test-stack/MyBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/test-stack/MyStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "destination": "*"
+      }
+    }
+  ],
+  "/test-stack/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawskinesisfirehoseCidrBlocks"
+    }
+  ],
+  "/test-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/test-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/test-stack/TopicRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRule40A4EA44"
+    }
+  ],
+  "/test-stack/TopicRule/TopicRuleActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/test-stack/MyBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketF68F3FF0"
+    }
+  ],
+  "/test-stack/MyStream/S3 Destination Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-stack/MyStream/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/test-stack/MyStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyStream5C050E93"
+    }
+  ],
+  "/test-stack/TopicRule/TopicRuleActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRuleTopicRuleActionRole246C4F77"
+    }
+  ],
+  "/test-stack/TopicRule/TopicRuleActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-stack/MyStream/S3 Destination Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyStreamS3DestinationRole5E0BA960"
+    }
+  ],
+  "/test-stack/MyStream/S3 Destination Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-stack/MyStream/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyStreamLogGroupAB67AB09"
+    }
+  ],
+  "/test-stack/MyStream/LogGroup/S3Destination": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*"
+      }
+    }
+  ],
+  "/test-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687"
+    }
+  ],
+  "/test-stack/MyStream/S3 Destination Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyStreamS3DestinationRoleDefaultPolicy401EF6F2"
+    }
+  ],
+  "/test-stack/MyStream/LogGroup/S3Destination/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyStreamLogGroupS3Destination423E82A8"
+    }
+  ]
+}

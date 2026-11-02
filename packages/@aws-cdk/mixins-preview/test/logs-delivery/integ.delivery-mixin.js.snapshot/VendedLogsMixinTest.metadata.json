@@ -1,4 +1,10 @@
 {
+  "/VendedLogsMixinTest": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "VendedLogsMixinTest.template.json"
+    }
+  ],
   "/VendedLogsMixinTest/EventBus": [
     {
       "type": "aws:cdk:analytics:construct",

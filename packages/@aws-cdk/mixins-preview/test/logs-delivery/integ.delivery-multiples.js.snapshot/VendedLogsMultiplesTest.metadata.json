@@ -1,4 +1,10 @@
 {
+  "/VendedLogsMultiplesTest": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "VendedLogsMultiplesTest.template.json"
+    }
+  ],
   "/VendedLogsMultiplesTest/EventBus": [
     {
       "type": "aws:cdk:logicalId",

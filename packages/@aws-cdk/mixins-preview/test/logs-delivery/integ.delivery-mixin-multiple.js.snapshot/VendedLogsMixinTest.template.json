@@ -187,14 +187,30 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"",
+       ":*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":[\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":log-group:",
+       {
+        "Ref": "DeliveryLogGroup2A53FD53"
+       },
+       "\",\"",
        {
         "Fn::GetAtt": [
          "DeliveryLogGroup2A53FD53",
          "Arn"
         ]
        },
-       "\"},{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"",
+       "\"]},{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Condition\":{\"StringEquals\":{\"aws:SourceAccount\":\"",
        {
         "Ref": "AWS::AccountId"
        },
@@ -210,14 +226,30 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":\"",
+       ":*\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"delivery.logs.amazonaws.com\"},\"Resource\":[\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":log-group:",
+       {
+        "Ref": "DeliveryLogGroup2A53FD53"
+       },
+       "\",\"",
        {
         "Fn::GetAtt": [
          "DeliveryLogGroup2A53FD53",
          "Arn"
         ]
        },
-       "\"}],\"Version\":\"2012-10-17\"}"
+       "\"]}],\"Version\":\"2012-10-17\"}"
       ]
      ]
     },

@@ -1,16 +1,16 @@
 {
-  "version": "52.0.0",
+  "version": "55.0.0",
   "files": {
-    "d4310701b457b4597d3a2ed8afe5aa2d7260c544a329959bc184dbd86d225387": {
+    "85f12a69f133d9959d5b082da18eaf3201a14d9693942b5c13e3fb837801699e": {
       "displayName": "VendedLogsMultiplesTest Template",
       "source": {
         "path": "VendedLogsMultiplesTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a32cc41f": {
+        "current_account-current_region-44c5d34c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d4310701b457b4597d3a2ed8afe5aa2d7260c544a329959bc184dbd86d225387.json",
+          "objectKey": "85f12a69f133d9959d5b082da18eaf3201a14d9693942b5c13e3fb837801699e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
