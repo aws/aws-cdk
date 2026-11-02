@@ -15,11 +15,12 @@ interface DraftOptions {
   createdAt?: string;
   committedDate?: string;
   comments?: DraftNode['comments']['nodes'];
+  reviews?: DraftNode['reviews']['nodes'];
   labels?: string[];
   title?: string;
 }
 
-function draft(number: number, { createdAt = '2026-01-01T00:00:00Z', committedDate, comments = [], labels = [], title = `feat: draft ${number}` }: DraftOptions = {}): DraftNode {
+function draft(number: number, { createdAt = '2026-01-01T00:00:00Z', committedDate, comments = [], reviews = [], labels = [], title = `feat: draft ${number}` }: DraftOptions = {}): DraftNode {
   return {
     number,
     title,
@@ -27,6 +28,7 @@ function draft(number: number, { createdAt = '2026-01-01T00:00:00Z', committedDa
     labels: { nodes: labels.map((name) => ({ name })) },
     commits: { nodes: committedDate ? [{ commit: { committedDate } }] : [] },
     comments: { nodes: comments },
+    reviews: { nodes: reviews },
   };
 }
 
@@ -96,6 +98,43 @@ test('leaves a draft alone when it has a commit within 90 days', async () => {
 
   expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   expect(result.done).toEqual([]);
+});
+
+test.each(['APPROVED', 'CHANGES_REQUESTED'])('leaves a draft alone when a person left a %s review within 90 days', async () => {
+  const github = mockGithub([draft(115, {
+    committedDate: '2026-02-01T00:00:00Z',
+    reviews: [{ submittedAt: '2026-10-01T00:00:00Z', author: { __typename: 'User', login: 'reviewer' } }],
+  })]);
+
+  const result = await runOn(github);
+
+  expect(github.rest.issues.createComment).not.toHaveBeenCalled();
+  expect(result.done).toEqual([]);
+});
+
+test('asks for a response when the latest review is older than 90 days', async () => {
+  const github = mockGithub([draft(116, {
+    committedDate: '2026-02-01T00:00:00Z',
+    reviews: [{ submittedAt: '2026-03-01T00:00:00Z', author: { __typename: 'User', login: 'reviewer' } }],
+  })]);
+
+  const result = await runOn(github);
+
+  expect(result.done).toEqual([{ number: 116, title: 'feat: draft 116', lastActivity: new Date('2026-03-01T00:00:00Z') }]);
+});
+
+test('ignores pending reviews and reviews from bots', async () => {
+  const github = mockGithub([draft(117, {
+    committedDate: '2026-02-01T00:00:00Z',
+    reviews: [
+      { submittedAt: null, author: { __typename: 'User', login: 'reviewer' } },
+      { submittedAt: '2026-10-01T00:00:00Z', author: { __typename: 'Bot', login: 'maintainer-for-aws' } },
+    ],
+  })]);
+
+  const result = await runOn(github);
+
+  expect(result.done).toEqual([{ number: 117, title: 'feat: draft 117', lastActivity: new Date('2026-02-01T00:00:00Z') }]);
 });
 
 test('ignores comments from bots and automation accounts', async () => {

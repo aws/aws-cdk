@@ -8,9 +8,10 @@
  * the comment it adds `closing-soon`, and 5 days after that it closes the PR with
  * `closed-for-staleness`. A comment from a person before then removes the labels.
  *
- * Activity is the most recent of: PR creation, the latest commit, or the latest comment by
- * a person. Comments by bots and automation accounts don't count. GitHub's `updatedAt` is
- * not used because label sweeps by automation bump it on every PR.
+ * Activity is the most recent of: PR creation, the latest commit, or the latest comment or
+ * review (any state, including approved and changes requested) by a person. Comments and
+ * reviews by bots and automation accounts don't count. GitHub's `updatedAt` is not used
+ * because label sweeps by automation bump it on every PR.
  *
  * Drafts with `response-requested`, `closing-soon` or `no-autoclose` are skipped.
  *
@@ -45,6 +46,7 @@ const SEARCH_QUERY = `query($q: String!, $cursor: String) {
         labels(first: 50) { nodes { name } }
         commits(last: 1) { nodes { commit { committedDate } } }
         comments(last: 50) { nodes { createdAt author { __typename login } } }
+        reviews(last: 50) { nodes { submittedAt author { __typename login } } }
       }
     }
   }
@@ -62,6 +64,8 @@ export interface DraftNode {
   labels: { nodes: Array<{ name: string }> };
   commits: { nodes: Array<{ commit: { committedDate: string } }> };
   comments: { nodes: Array<{ createdAt: string; author: Author | null }> };
+  // submittedAt is null for a pending review that hasn't been submitted yet.
+  reviews: { nodes: Array<{ submittedAt: string | null; author: Author | null }> };
 }
 
 interface SearchResult {
@@ -100,6 +104,11 @@ export function lastActivity(pr: DraftNode): Date {
   for (const comment of pr.comments.nodes) {
     if (isPerson(comment.author)) {
       times.push(Date.parse(comment.createdAt));
+    }
+  }
+  for (const review of pr.reviews.nodes) {
+    if (review.submittedAt && isPerson(review.author)) {
+      times.push(Date.parse(review.submittedAt));
     }
   }
   return new Date(Math.max(...times));
