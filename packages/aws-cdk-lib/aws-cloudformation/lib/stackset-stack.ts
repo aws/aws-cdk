@@ -16,6 +16,7 @@ import {
   Annotations,
   Fn,
   Aws,
+  CfnCapabilities,
   Token,
   ValidationError,
   attachCustomSynthesis,
@@ -27,7 +28,7 @@ import type {
   DockerImageAssetSource,
   ISynthesisSession,
 } from '../../core';
-import type { IBox } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox, IReadableBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -212,6 +213,7 @@ export interface StackSetStackProps {
 export class StackSetStack extends Stack {
   public readonly templateFile: string;
   private readonly _templateUrl: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
+  private readonly _requiredCapabilities: IArrayBox<CfnCapabilities> = Box.fromArray<CfnCapabilities>([]);
   private readonly stackSetSynthesizer: StackSetStackSynthesizer;
   private host?: Stack;
 
@@ -257,7 +259,11 @@ export class StackSetStack extends Stack {
    * @param scope the StackSet that uses this stack's template
    * @internal
    */
-  public _bind(scope: Construct): { readonly templateUrl: string; readonly dependencies: IDependable[] } {
+  public _bind(scope: Construct): {
+    readonly templateUrl: string;
+    readonly dependencies: IDependable[];
+    readonly requiredCapabilities: IReadableBox<CfnCapabilities[]>;
+  } {
     const host = Stack.of(scope);
 
     if (Stage.of(host) !== Stage.of(this)) {
@@ -281,6 +287,7 @@ export class StackSetStack extends Stack {
     return {
       templateUrl: Token.asString(this._templateUrl),
       dependencies: [this.stackSetSynthesizer._assetDeployments],
+      requiredCapabilities: this._requiredCapabilities,
     };
   }
 
@@ -297,9 +304,11 @@ export class StackSetStack extends Stack {
    * Defines an asset in the host stack
    */
   private addTemplateAsset(host: Stack, session: ISynthesisSession) {
+    const template = this._toCloudFormation();
+    this._requiredCapabilities.set(requiredCapabilitiesOf(template));
     this._templateUrl.set(host.synthesizer.addFileAsset({
       packaging: FileAssetPackaging.FILE,
-      sourceHash: this.writeTemplate(session),
+      sourceHash: this.writeTemplate(session, template),
       fileName: this.templateFile,
       displayName: `${this.node.path} Template`,
     }).httpUrl);
@@ -308,9 +317,29 @@ export class StackSetStack extends Stack {
   /**
    * Writes the template file and returns its hash
    */
-  private writeTemplate(session: ISynthesisSession): string {
-    const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
+  private writeTemplate(session: ISynthesisSession, template = this._toCloudFormation()): string {
+    const cfn = JSON.stringify(template, undefined, 2);
     fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
     return crypto.createHash('sha256').update(cfn).digest('hex');
   }
+}
+
+/**
+ * The capabilities that a StackSet must acknowledge to deploy the given template
+ *
+ * IAM resources need `CAPABILITY_IAM`, or `CAPABILITY_NAMED_IAM` if they have custom names.
+ * `CAPABILITY_NAMED_IAM` covers both, so the names need not be inspected. A nested stack
+ * may contain IAM resources, and its template is not inspected, so it needs the same.
+ * Macros need `CAPABILITY_AUTO_EXPAND`.
+ */
+function requiredCapabilitiesOf(template: any): CfnCapabilities[] {
+  const resourceTypes: string[] = Object.values(template.Resources ?? {}).map((resource: any) => resource.Type);
+  const capabilities = new Array<CfnCapabilities>();
+  if (resourceTypes.some(type => type.startsWith('AWS::IAM::') || type === 'AWS::CloudFormation::Stack')) {
+    capabilities.push(CfnCapabilities.NAMED_IAM);
+  }
+  if (template.Transform !== undefined) {
+    capabilities.push(CfnCapabilities.AUTO_EXPAND);
+  }
+  return capabilities;
 }

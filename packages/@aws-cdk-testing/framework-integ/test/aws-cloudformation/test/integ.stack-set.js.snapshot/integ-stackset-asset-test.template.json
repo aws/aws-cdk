@@ -84,7 +84,7 @@
      ]
     },
     "Capabilities": [
-     "CAPABILITY_IAM"
+     "CAPABILITY_NAMED_IAM"
     ],
     "ExecutionRoleName": "AWSCloudFormationStackSetExecutionRole-integ-test",
     "ManagedExecution": {

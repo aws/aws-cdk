@@ -16,6 +16,7 @@ import {
   UnscopedValidationError,
   ValidationError,
 } from '../../core';
+import type { IReadableBox } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -81,6 +82,13 @@ interface StackSetTemplateConfig {
    * @default - no dependencies
    */
   readonly dependencies?: IDependable[];
+
+  /**
+   * The capabilities the template requires, known once the template is synthesized
+   *
+   * @default - the required capabilities are not known
+   */
+  readonly requiredCapabilities?: IReadableBox<CfnCapabilities[]>;
 }
 
 class StackSetStackTemplate extends StackSetTemplate {
@@ -625,7 +633,13 @@ export interface StackSetProps {
    * If you deploy a stack that requires certain capabilities and they are
    * not specified, the deployment will fail with a `InsufficientCapabilities` error.
    *
-   * @default - no specific capabilities
+   * For a template from `StackSetTemplate.fromStackSetStack()`, the capabilities are
+   * inferred from the synthesized template: `CAPABILITY_NAMED_IAM` if it has IAM resources
+   * or nested stacks, and `CAPABILITY_AUTO_EXPAND` if it uses macros and the StackSet is
+   * self managed. Specifying `capabilities` replaces the inferred capabilities, and
+   * `CfnCapabilities.NONE` entries are ignored.
+   *
+   * @default - for `StackSetTemplate.fromStackSetStack()`, inferred from the synthesized template; otherwise no capabilities
    */
   readonly capabilities?: CfnCapabilities[];
 }
@@ -877,7 +891,7 @@ export class StackSet extends Resource implements IStackSet {
         regionOrder: props.operationPreferences.regionOrder,
       }) : undefined,
       stackSetName: this.physicalName,
-      capabilities: props.capabilities,
+      capabilities: this.renderCapabilities(props.capabilities, template.requiredCapabilities),
       permissionModel: deploymentTypeConfig.permissionsModel,
       callAs: deploymentTypeConfig.callAs,
       templateUrl: template.templateUrl,
@@ -973,9 +987,33 @@ export class StackSet extends Resource implements IStackSet {
       },
     };
   }
+
+  /**
+   * The explicit capabilities, or else the capabilities the template requires that this
+   * StackSet's permission model supports
+   */
+  private renderCapabilities(
+    explicit: CfnCapabilities[] | undefined,
+    required: IReadableBox<CfnCapabilities[]> | undefined,
+  ): string[] | undefined {
+    if (explicit !== undefined) {
+      return Token.isUnresolved(explicit) ? explicit : undefinedIfEmpty(explicit.filter(c => c !== CfnCapabilities.NONE));
+    }
+    if (!required) {
+      return undefined;
+    }
+    // Service managed StackSets don't support macros, even with CAPABILITY_AUTO_EXPAND
+    const supportsMacros = this.permissionModel === PermissionModel.SELF_MANAGED;
+    return Token.asList(required.derive(capabilities =>
+      undefinedIfEmpty(capabilities.filter(c => supportsMacros || c !== CfnCapabilities.AUTO_EXPAND))));
+  }
 }
 
 function undefinedIfNoKeys<A extends Object>(obj: A): A | undefined {
   const allUndefined = Object.values(obj).every(val => val === undefined);
   return allUndefined ? undefined : obj;
+}
+
+function undefinedIfEmpty<A>(xs: A[]): A[] | undefined {
+  return xs.length > 0 ? xs : undefined;
 }
