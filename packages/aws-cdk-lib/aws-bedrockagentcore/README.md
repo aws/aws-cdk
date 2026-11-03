@@ -717,7 +717,9 @@ To avoid this, keep the runtime's security groups out of CloudFormation's delete
 ```typescript fixture=default
 declare const runtime: agentcore.Runtime;
 
-runtime.connections.securityGroups.forEach(sg => sg.applyRemovalPolicy(RemovalPolicy.RETAIN));
+for (const sg of runtime.connections.securityGroups) {
+  sg.applyRemovalPolicy(RemovalPolicy.RETAIN);
+}
 ```
 
 Alternatively, pass a long-lived security group managed in a separate stack through the `securityGroups` property of `RuntimeNetworkConfiguration.usingVpc()`.
