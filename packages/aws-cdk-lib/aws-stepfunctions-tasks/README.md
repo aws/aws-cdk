@@ -316,7 +316,25 @@ Other properties such as `additionalIamStatements` can be used in the same way a
 
 Note that when you use `integrationPattern.WAIT_FOR_TASK_TOKEN`, the output path changes under `Payload` property.
 
-**Note**: For cross-region and cross-account AWS API calls, use the `awsSdkCredentials` property to assume the specified role within the Lambda function.
+**Note**: For cross-region and cross-account AWS API calls, use the `awsSdkCredentials` property to assume the specified role within the Lambda function. The assumed role's credentials are only used for the AWS SDK call made inside the handler; the Lambda function itself continues to run using its own execution role.
+
+```ts
+declare const myBucket: s3.Bucket;
+declare const crossAccountRole: iam.IRole;
+const getObjectCrossAccount = new tasks.CallAwsServiceCrossRegion(this, 'GetObjectCrossAccount', {
+  region: 'ap-northeast-1',
+  service: 's3',
+  action: 'getObject',
+  parameters: {
+    Bucket: myBucket.bucketName,
+    Key: sfn.JsonPath.stringAt('$.key')
+  },
+  iamResources: [myBucket.arnForObjects('*')],
+  awsSdkCredentials: {
+    role: sfn.TaskRole.fromRole(crossAccountRole),
+  },
+});
+```
 
 ## Athena
 
