@@ -14,7 +14,7 @@ of the CDK library.
 This document describes the philosophy of how we deal with breaking changes
 coming in from there.
 
-## Types of brakage
+## Types of breakage
 
 
 Not all breakage is the same. There are 2 types of breakage:
