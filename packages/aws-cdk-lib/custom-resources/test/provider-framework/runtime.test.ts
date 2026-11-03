@@ -241,6 +241,29 @@ test('onTimeout does not log the presigned ResponseURL, nor Data when NoEcho is 
   expect(logged).toContain(MOCK_PHYSICAL_ID);
 });
 
+test('onTimeout does not log the presigned ResponseURL when NoEcho is not set, and logs Data', async () => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({ Data: { Foo: 'VISIBLE-ATTR' }, PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => ({ IsComplete: false });
+  const logMock = console.log as jest.Mock;
+  logMock.mockClear();
+
+  // WHEN
+  await simulateEvent({
+    RequestType: 'Update',
+    PhysicalResourceId: MOCK_PHYSICAL_ID,
+  });
+
+  // THEN
+  expectCloudFormationFailed('Operation timed out');
+  const timeoutLogs = logMock.mock.calls.filter(args => String(args[1]).includes('timeoutHandler'));
+  expect(timeoutLogs).toHaveLength(1);
+  const logged = timeoutLogs.map(args => args.join(' ')).join('\n');
+  expect(logged).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
+  expect(logged).toContain('VISIBLE-ATTR');
+  expect(logged).toContain(MOCK_PHYSICAL_ID);
+});
+
 test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
   // GIVEN
   mocks.onEventImplMock = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });
