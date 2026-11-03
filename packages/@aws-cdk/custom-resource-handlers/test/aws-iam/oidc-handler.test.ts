@@ -142,6 +142,56 @@ describe('custom resource provider handler', () => {
     sinon.assert.notCalled(deleteOpenIDConnectProvider);
   });
 
+  test('create with RejectUnauthorized false passed as a string by CloudFormation', async () => {
+    // WHEN
+    await invokeHandler({
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        Url: 'https://my-urlx',
+        RejectUnauthorized: 'false',
+      },
+    });
+
+    // THEN
+    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://my-urlx', false);
+  });
+
+  test('create with RejectUnauthorized true passed as a string by CloudFormation', async () => {
+    // WHEN
+    await invokeHandler({
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        Url: 'https://my-urlx',
+        RejectUnauthorized: 'true',
+      },
+    });
+
+    // THEN
+    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://my-urlx', true);
+  });
+
+  test('update with RejectUnauthorized false passed as a string by CloudFormation', async () => {
+    // WHEN
+    await invokeHandler({
+      RequestType: 'Update',
+      ResourceProperties: {
+        ServiceToken: 'Foo',
+        Url: 'https://my-urlx',
+        RejectUnauthorized: 'false',
+      },
+      OldResourceProperties: {
+        ServiceToken: 'Foo',
+        Url: 'https://my-urlx',
+        RejectUnauthorized: 'false',
+      },
+    });
+
+    // THEN
+    sinon.assert.calledOnceWithExactly(downloadThumbprint, 'https://my-urlx', false);
+  });
+
   test('update url with no thumbprint with reject unauthorized', async () => {
     // WHEN
     const response = await invokeHandler({
