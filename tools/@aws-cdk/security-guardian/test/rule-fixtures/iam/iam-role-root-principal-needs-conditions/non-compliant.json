@@ -1,0 +1,20 @@
+{
+  "Description": "IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS fires: any principal in the trusted account can assume the role",
+  "Resources": {
+    "UnconditionedRootTrustRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::123456789012:root" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
