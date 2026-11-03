@@ -49,6 +49,7 @@ new mediapackagev2.OriginEndpointPolicy(stack, 'myNamedEndpointPolicy', {
   policyDocument: new PolicyDocument({
     statements: [
       new PolicyStatement({
+        sid: 'AllowCloudFront',
         principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
         effect: Effect.ALLOW,
         actions: ['mediapackagev2:GetObject'],

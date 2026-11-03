@@ -120,7 +120,8 @@
          "myNamedEndpointA6F9DBFE",
          "Arn"
         ]
-       }
+       },
+       "Sid": "AllowCloudFront"
       }
      ],
      "Version": "2012-10-17"
