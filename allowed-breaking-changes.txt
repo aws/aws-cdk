@@ -4175,3 +4175,17 @@ new-argument:aws-cdk-lib.aws_events_targets.LogGroupTargetInput.fromObject
 
 # This interface is new; its not depended on yet
 weakened:aws-cdk-lib.PolicyViolatingResource
+
+# Removing a method that should never have been exposed
+removed:aws-cdk-lib.CfnResource.obtainResourceDependencies
+removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2.obtainResourceDependencies
+removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationOutputV2.obtainResourceDependencies
+removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationReferenceDataSourceV2.obtainResourceDependencies
+removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2.obtainResourceDependencies
+
+# AWS::DMS::MigrationProject: CloudFormation now lists MigrationProjectCreationTime as a
+# read-only property, so it moved from props to attrMigrationProjectCreationTime.
+# It was never a CreateMigrationProject input and was already deprecated.
+removed:aws-cdk-lib.aws_dms.CfnMigrationProject.migrationProjectCreationTime
+removed:aws-cdk-lib.aws_dms.CfnMigrationProjectProps.migrationProjectCreationTime
+removed:@aws-cdk/cfn-property-mixins.aws_dms.CfnMigrationProjectMixinProps.migrationProjectCreationTime

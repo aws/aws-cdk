@@ -297,6 +297,52 @@ describe('fs fingerprint', () => {
       expect(hashBefore).not.toEqual(hashAfter);
     });
 
+    test('non-normalized absolute symlink target that escapes the root is followed in EXTERNAL mode', () => {
+      // GIVEN
+      using externalDir = tempdir('fingerprint-external');
+      fs.writeFileSync(path.join(externalDir.dir, 'file.txt'), 'external content');
+
+      using dir = tempdir('fingerprint-tests');
+      // Absolute target containing a '..' segment. Before normalization the raw
+      // string would not be recognised as escaping `dir`, so it must be resolved
+      // (path.resolve) before classifying it as internal/external.
+      const nonNormalized = path.join(dir.dir, '..', path.basename(externalDir.dir), 'file.txt');
+      fs.symlinkSync(nonNormalized, path.join(dir.dir, 'ext-link.txt'));
+
+      // WHEN — the target resolves outside `dir`, so EXTERNAL mode follows it
+      const hash1 = FileSystem.fingerprint(dir.dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // Change the external file — hash should change since we follow the link
+      fs.writeFileSync(path.join(externalDir.dir, 'file.txt'), 'modified content of a different length');
+      const hash2 = FileSystem.fingerprint(dir.dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // THEN
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    test('symlink to a sibling directory sharing the root name prefix is followed in EXTERNAL mode', () => {
+      // GIVEN — two sibling dirs where one name is a string prefix of the other.
+      using parent = tempdir('fingerprint-parent');
+      const rootDir = path.join(parent.dir, 'app');
+      const siblingDir = path.join(parent.dir, 'app-sibling');
+      fs.mkdirSync(rootDir);
+      fs.mkdirSync(siblingDir);
+      fs.writeFileSync(path.join(siblingDir, 'file.txt'), 'sibling content');
+      // Link inside `app` pointing at the sibling `app-sibling` (NOT inside app).
+      fs.symlinkSync(siblingDir, path.join(rootDir, 'sibling-link'));
+
+      // WHEN
+      const hash1 = FileSystem.fingerprint(rootDir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // Change the sibling's file — hash must change because the sibling is
+      // external to `app` and therefore followed in EXTERNAL mode.
+      fs.writeFileSync(path.join(siblingDir, 'file.txt'), 'modified content of a different length');
+      const hash2 = FileSystem.fingerprint(rootDir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // THEN
+      expect(hash1).not.toEqual(hash2);
+    });
+
     test('symlink pointing to another symlink is resolved transitively', () => {
       // GIVEN
       using externalDir = tempdir('fingerprint-external');
@@ -316,6 +362,35 @@ describe('fs fingerprint', () => {
 
       // THEN — hash changes because we follow through to the real file
       expect(hash1).not.toEqual(hash2);
+    });
+
+    test('links inside the tree hash the same wherever the tree sits on disk', () => {
+      // GIVEN — two copies of one tree, in temp directories with different names. Each holds
+      // an ordinary relative link, plus one written as an absolute path that only reaches back
+      // inside the tree through `alias`, a symlink living outside it.
+      function buildTree(prefix: string) {
+        const dir = tempdir(prefix);
+        const base = fs.realpathSync(dir.dir);
+        const root = path.join(base, 'root');
+        fs.mkdirSync(root);
+        fs.writeFileSync(path.join(root, 'file.txt'), 'content');
+        fs.symlinkSync('file.txt', path.join(root, 'relative-link'));
+        fs.symlinkSync(root, path.join(base, 'alias'));
+        fs.symlinkSync(path.join(base, 'alias', 'file.txt'), path.join(root, 'absolute-link'));
+        return dir;
+      }
+
+      using treeA = buildTree('fingerprint-here');
+      using treeB = buildTree('fingerprint-there');
+
+      // WHEN
+      const rootOf = (dir: string) => path.join(fs.realpathSync(dir), 'root');
+      const hashA = FileSystem.fingerprint(rootOf(treeA.dir), { follow: SymlinkFollowMode.EXTERNAL });
+      const hashB = FileSystem.fingerprint(rootOf(treeB.dir), { follow: SymlinkFollowMode.EXTERNAL });
+
+      // THEN — identical trees, so identical hashes. Hashing an absolute link target verbatim
+      // would put the temp directory name into the hash and make these differ.
+      expect(hashA).toEqual(hashB);
     });
   });
 

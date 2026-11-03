@@ -29,5 +29,6 @@ new IntegTest(app, 'integ-project-standard-images', {
     new ImageTestStack(app, 'Standard5', LinuxBuildImage.STANDARD_5_0),
     new ImageTestStack(app, 'Standard6', LinuxBuildImage.STANDARD_6_0),
     new ImageTestStack(app, 'Standard7', LinuxBuildImage.STANDARD_7_0),
+    new ImageTestStack(app, 'Standard8', LinuxBuildImage.STANDARD_8_0),
   ],
 });

@@ -1,14 +1,18 @@
-import { SecretValue, Stack } from 'aws-cdk-lib';
+import { SecretValue, Stack, Validations } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccessControl, IamUser, NoPasswordUser, PasswordUser, UserEngine, UserGroup } from '../lib';
 
+let stack: Stack;
+beforeEach(() => {
+  stack = new Stack();
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::F3032',
+    reason: 'Required array is empty',
+  });
+});
+
 describe('UserGroup', () => {
   describe('validation errors', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test.each([
       {
         testDescription: 'when Redis user group contains non-Redis user throws validation error',
@@ -160,11 +164,6 @@ describe('UserGroup', () => {
   });
 
   describe('constructor', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test('creates Valkey user group with minimal required properties', () => {
       new UserGroup(stack, 'TestUserGroup');
 
@@ -274,11 +273,6 @@ describe('UserGroup', () => {
   });
 
   describe('properties', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test('exposes correct properties', () => {
       const user = new IamUser(stack, 'TestUser', {
         userId: 'test-user',
@@ -326,11 +320,6 @@ describe('UserGroup', () => {
   });
 
   describe('addUser', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test('adds user to group successfully', () => {
       const userGroup = new UserGroup(stack, 'TestUserGroup', {
         engine: UserEngine.VALKEY,
@@ -375,7 +364,6 @@ describe('UserGroup', () => {
 
   describe('isUserGroup', () => {
     test('returns true for UserGroup instances', () => {
-      const stack = new Stack();
       const userGroup = new UserGroup(stack, 'TestUserGroup');
 
       expect(UserGroup.isUserGroup(userGroup)).toBe(true);
@@ -390,7 +378,6 @@ describe('UserGroup', () => {
     });
 
     test('returns false for imported user groups (not actual UserGroup instances)', () => {
-      const stack = new Stack();
       const importedUserGroup = UserGroup.fromUserGroupName(stack, 'ImportedUserGroup', 'test-group');
 
       expect(UserGroup.isUserGroup(importedUserGroup)).toBe(false);
@@ -398,11 +385,6 @@ describe('UserGroup', () => {
   });
 
   describe('import methods', () => {
-    let stack: Stack;
-    beforeEach(() => {
-      stack = new Stack();
-    });
-
     test('fromUserGroupAttributes works with valid userGroupArn', () => {
       const userGroup = UserGroup.fromUserGroupAttributes(stack, 'ImportedUserGroup', {
         userGroupArn: 'arn:aws:elasticache:us-east-1:123456789012:usergroup:my-group',
@@ -548,7 +530,6 @@ describe('UserGroup', () => {
     });
 
     test('fromUserGroupAttributes preserves engine when constructed via UserEngine.of()', () => {
-      const stack = new Stack();
       const customEngine = UserEngine.of('redis');
       const imported = UserGroup.fromUserGroupAttributes(stack, 'Imported', {
         userGroupName: 'my-group',
