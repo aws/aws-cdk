@@ -82,11 +82,10 @@ export const handler = async (event: Event) => {
         RoleSessionName: `cross-region-aws-sdk-${Date.now()}`,
       });
       const res = await stsClient.send(assumeRoleCommand);
-      if (res.Credentials) {
-        credentials = res.Credentials;
-      } else {
-        throw new Error('Failed to assume role, no credentials returned');
+      if (!res.Credentials?.AccessKeyId || !res.Credentials?.SecretAccessKey || !res.Credentials?.SessionToken) {
+        throw new Error('Failed to assume role: STS returned incomplete credentials');
       }
+      credentials = res.Credentials;
     }
 
     // esbuild-disable unsupported-require-call -- not esbuildable but that's fine

@@ -259,6 +259,28 @@ describe('Cross-Region AWS SDK Handler - Lambda Payload Processing', () => {
       expect(result.TableNames).toEqual(['table1']);
     });
 
+    test('should throw when STS returns incomplete credentials', async () => {
+      // GIVEN - STS response missing SecretAccessKey
+      mockSTSSend.mockResolvedValue({
+        Credentials: {
+          AccessKeyId: 'ACCESS_KEY_ID',
+          SessionToken: 'SESSION_TOKEN',
+        },
+      });
+
+      const event = {
+        service: 'dynamodb',
+        action: 'listTables',
+        parameters: {},
+        region: 'us-west-2',
+        endpoint: 'https://dynamodb.us-west-2.amazonaws.com',
+        assumeRoleArn: 'arn:aws:iam::123456789012:role/example-role',
+      };
+
+      // WHEN / THEN
+      await expect(handler(event)).rejects.toThrow('Failed to assume role: STS returned incomplete credentials');
+    });
+
     test('should not assume role when assumeRoleArn is not provided', async () => {
       // GIVEN
       mockSend.mockResolvedValue({
