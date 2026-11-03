@@ -258,7 +258,9 @@ class StorageUnit {
 
 function convert(amount: number, fromUnit: StorageUnit, toUnit: StorageUnit, options: SizeConversionOptions = {}) {
   const rounding = options.rounding ?? SizeRoundingBehavior.FAIL;
-  if (fromUnit.inBytes === toUnit.inBytes) { return amount; }
+  if (fromUnit.inBytes === toUnit.inBytes && (options.rounding === undefined || rounding === SizeRoundingBehavior.NONE)) {
+    return amount;
+  }
   if (Token.isUnresolved(amount)) {
     throw new UnscopedValidationError(lit`MustBeSizeSpecifiedSize`, `Size must be specified as 'Size.${toUnit}()' here since its value comes from a token and cannot be converted (got Size.${fromUnit})`);
   }
