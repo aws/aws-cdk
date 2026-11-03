@@ -794,3 +794,9 @@ _cdk.json_
   }
 }
 ```
+
+
+* `@aws-cdk/aws-lambda:importedAliasMetrics`
+
+Imported aliases use the same FunctionName and Resource metric dimensions as created aliases. This is disabled for existing applications.
+Enable it explicitly after reviewing affected alarms and dashboards.
