@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
-import type { CfnTemplateContextProps, IAspect, IConstructSelector } from '../lib';
+import type { CfnTemplateMetadataContextProps, IAspect, IConstructSelector } from '../lib';
 import {
   App,
   AspectPriority,
@@ -206,10 +206,10 @@ describe('metadata context', () => {
       const lbHelper = new CfnResource(lbL2, 'SecurityGroup', { type: 'AWS::EC2::SecurityGroup' });
       const svc = new CfnResource(new Construct(l3, 'Svc'), 'Resource', { type: 'AWS::ECS::Service' });
 
-      CfnResourceMetadataContext.of(l3).set({
-        must: ['ALB idle timeout >= backend read timeout'],
-      }, {
+      CfnResourceMetadataContext.of(l3, {
         selector: ConstructSelector.resourcesOfType('AWS::ElasticLoadBalancingV2::LoadBalancer'),
+      }).set({
+        must: ['ALB idle timeout >= backend read timeout'],
       });
 
       const template = toCloudFormation(stack);
@@ -227,7 +227,7 @@ describe('metadata context', () => {
       const helper = new CfnResource(l2, 'Policy', { type: 'AWS::SQS::QueuePolicy' });
       const loose = new CfnResource(stack, 'Loose', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(stack).set({ deps: ['NetworkStack'] }, { selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(stack, { selector: ConstructSelector.all() }).set({ deps: ['NetworkStack'] });
 
       const template = toCloudFormation(stack);
       for (const resource of [primary, helper, loose]) {
@@ -242,10 +242,10 @@ describe('metadata context', () => {
       const role = new CfnResource(l2, 'ServiceRole', { type: 'AWS::IAM::Role' });
       const policy = new CfnResource(l2, 'ServiceRolePolicy', { type: 'AWS::IAM::Policy' });
 
-      CfnResourceMetadataContext.of(l2).set({
-        why: 'supporting resource for the order processor',
-      }, {
+      CfnResourceMetadataContext.of(l2, {
         selector: ConstructSelector.resourcesOfType('AWS::IAM::Role', 'AWS::IAM::Policy'),
+      }).set({
+        why: 'supporting resource for the order processor',
       });
 
       const template = toCloudFormation(stack);
@@ -264,10 +264,9 @@ describe('metadata context', () => {
       const cfnRole = new CfnResource(role, 'Resource', { type: 'AWS::IAM::Role' });
       const cfnServiceRole = new CfnResource(stack, 'ServiceRole', { type: 'AWS::IAM::Role' });
 
-      CfnResourceMetadataContext.of(stack).set(
-        { must: ['execution roles must keep the organization permissions boundary'] },
-        { selector: ConstructSelector.byId('ServiceRole') },
-      );
+      CfnResourceMetadataContext.of(stack, { selector: ConstructSelector.byId('ServiceRole') }).set({
+        must: ['execution roles must keep the organization permissions boundary'],
+      });
 
       const template = toCloudFormation(stack);
       expect(template.Resources[stack.getLogicalId(cfnRole)].Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
@@ -281,7 +280,7 @@ describe('metadata context', () => {
       const l2 = new Construct(stack, 'MyQueue');
       const primary = new CfnResource(l2, 'Resource', { type: 'AWS::SQS::Queue' });
 
-      CfnResourceMetadataContext.of(l2).set({ why: 'buffers events' }, { selector: ConstructSelector.onlyItself() });
+      CfnResourceMetadataContext.of(l2, { selector: ConstructSelector.onlyItself() }).set({ why: 'buffers events' });
 
       expect(() => synthesize(stack)).toThrow(NO_RESOURCE_SELECTED);
       expect(primary.getMetadata(CONTEXT_METADATA_KEY)).toBeUndefined();
@@ -292,7 +291,7 @@ describe('metadata context', () => {
       const group = new Construct(stack, 'Group');
       new CfnResource(group, 'Resource', { type: 'AWS::SQS::Queue' });
 
-      CfnResourceMetadataContext.of(stack).set({ why: 'grouping rationale' }, { selector: ConstructSelector.byId('Group') });
+      CfnResourceMetadataContext.of(stack, { selector: ConstructSelector.byId('Group') }).set({ why: 'grouping rationale' });
 
       expect(() => synthesize(stack)).toThrow(NO_RESOURCE_SELECTED);
     });
@@ -300,10 +299,11 @@ describe('metadata context', () => {
     test('the selector runs at synthesis, so it covers resources added after set()', () => {
       const stack = new Stack();
 
-      CfnResourceMetadataContext.of(stack).set(
-        { must: ['delivery settings must preserve in-flight messages'] },
-        { selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue') },
-      );
+      CfnResourceMetadataContext.of(stack, {
+        selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+      }).set({
+        must: ['delivery settings must preserve in-flight messages'],
+      });
       const queue = new CfnResource(stack, 'Queue', { type: 'AWS::SQS::Queue' });
 
       expect(toCloudFormation(stack).Resources[stack.getLogicalId(queue)].Metadata[CONTEXT_METADATA_KEY]).toEqual({
@@ -328,7 +328,7 @@ describe('metadata context', () => {
       const second = new CfnResource(stack, 'Second', { type: 'AWS::Fake::Thing' });
       const selector = new SelectTarget();
       selector.target = first;
-      CfnResourceMetadataContext.of(stack).set({ why: 'selected resource' }, { selector });
+      CfnResourceMetadataContext.of(stack, { selector }).set({ why: 'selected resource' });
 
       synthesize(stack, { aspectStabilization });
       expect(first.getMetadata(CONTEXT_METADATA_KEY)).toEqual({ why: 'selected resource' });
@@ -354,7 +354,7 @@ describe('metadata context', () => {
       const stack = new Stack();
       const resource = new CfnResource(stack, 'Resource', { type: 'AWS::Fake::Thing' });
       const selector = new ToggleSelector();
-      CfnResourceMetadataContext.of(resource).set({ why: 'selected resource' }, { selector });
+      CfnResourceMetadataContext.of(resource, { selector }).set({ why: 'selected resource' });
 
       expect(() => synthesize(stack, { aspectStabilization })).not.toThrow();
 
@@ -378,13 +378,12 @@ describe('metadata context', () => {
           }
         },
       }, { priority: AspectPriority.MUTATING });
-      CfnResourceMetadataContext.of(stack).set(
-        { why: 'created during Aspect traversal' },
-        {
-          selector: ConstructSelector.resourcesOfType('AWS::Fake::Created'),
-          priority: AspectPriority.DEFAULT,
-        },
-      );
+      CfnResourceMetadataContext.of(stack, {
+        selector: ConstructSelector.resourcesOfType('AWS::Fake::Created'),
+        priority: AspectPriority.DEFAULT,
+      }).set({
+        why: 'created during Aspect traversal',
+      });
 
       expect(() => synthesize(stack, { aspectStabilization })).not.toThrow();
       expect(createdResource?.getMetadata(CONTEXT_METADATA_KEY)).toEqual({ why: 'created during Aspect traversal' });
@@ -403,7 +402,7 @@ describe('metadata context', () => {
       new CfnResource(stack, 'Other', { type: 'AWS::Fake::Thing' });
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(stack).set({ why: 'custom selection' }, { selector: new SelectConstruct(res) });
+      CfnResourceMetadataContext.of(stack, { selector: new SelectConstruct(res) }).set({ why: 'custom selection' });
 
       const template = toCloudFormation(stack);
       expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({ why: 'custom selection' });
@@ -415,10 +414,11 @@ describe('metadata context', () => {
       const scope = new Construct(stack, 'SubSystem');
       new CfnResource(scope, 'Topic', { type: 'AWS::SNS::Topic' });
 
-      CfnResourceMetadataContext.of(scope).set(
-        { why: 'queue-only rationale' },
-        { selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue') },
-      );
+      CfnResourceMetadataContext.of(scope, {
+        selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+      }).set({
+        why: 'queue-only rationale',
+      });
 
       expect(() => synthesize(stack)).toThrow(NO_RESOURCE_SELECTED);
     });
@@ -427,7 +427,7 @@ describe('metadata context', () => {
       const stack = new Stack();
       const scope = new Construct(stack, 'Empty');
 
-      CfnResourceMetadataContext.of(scope).set({ why: 'no targets' }, { selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(scope, { selector: ConstructSelector.all() }).set({ why: 'no targets' });
 
       expect(() => synthesize(stack)).toThrow(NO_RESOURCE_SELECTED);
     });
@@ -437,11 +437,12 @@ describe('metadata context', () => {
       const scope = new Construct(stack, 'SubSystem');
       new CfnResource(scope, 'Queue', { type: 'AWS::SQS::Queue' });
 
-      CfnResourceMetadataContext.of(scope).set(
-        { why: 'queue rationale' },
-        { selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue') },
-      );
-      CfnResourceMetadataContext.of(scope).clear({ selector: ConstructSelector.resourcesOfType('AWS::SNS::Topic') });
+      CfnResourceMetadataContext.of(scope, {
+        selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+      }).set({ why: 'queue rationale' });
+      CfnResourceMetadataContext.of(scope, {
+        selector: ConstructSelector.resourcesOfType('AWS::SNS::Topic'),
+      }).clear();
 
       expect(() => synthesize(stack)).toThrow(NO_RESOURCE_SELECTED);
     });
@@ -467,10 +468,12 @@ describe('metadata context', () => {
       const queue = new CfnResource(l2, 'Resource', { type: 'AWS::SQS::Queue' });
       const otherQueue = new CfnResource(stack, 'OtherQueue', { type: 'AWS::SQS::Queue' });
 
-      CfnResourceMetadataContext.of(stack).set({
+      CfnResourceMetadataContext.of(stack, {
+        selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+      }).set({
         why: 'part of the order-processing subsystem',
         must: ['queues use the security team customer managed AWS KMS key'],
-      }, { selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue') });
+      });
       CfnResourceMetadataContext.of(l2).set({
         why: 'buffers webhook events for asynchronous processing',
         must: ['VisibilityTimeout must be at least six times the consumer timeout'],
@@ -493,10 +496,9 @@ describe('metadata context', () => {
       const queue = new CfnResource(l2, 'Resource', { type: 'AWS::SQS::Queue' });
 
       CfnResourceMetadataContext.of(l2).set({ why: 'child rationale' });
-      CfnResourceMetadataContext.of(stack).set(
-        { why: 'parent rationale' },
-        { selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue') },
-      );
+      CfnResourceMetadataContext.of(stack, {
+        selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+      }).set({ why: 'parent rationale' });
 
       expect(toCloudFormation(stack).Resources[stack.getLogicalId(queue)].Metadata[CONTEXT_METADATA_KEY]).toEqual({
         why: 'child rationale',
@@ -517,11 +519,11 @@ describe('metadata context', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(stack).set(
-        { why: 'applied last' },
-        { selector: ConstructSelector.all(), priority: AspectPriority.DEFAULT },
-      );
-      CfnResourceMetadataContext.of(res).set({ why: 'applied first' }, { priority: AspectPriority.MUTATING });
+      CfnResourceMetadataContext.of(stack, {
+        selector: ConstructSelector.all(),
+        priority: AspectPriority.DEFAULT,
+      }).set({ why: 'applied last' });
+      CfnResourceMetadataContext.of(res, { priority: AspectPriority.MUTATING }).set({ why: 'applied first' });
 
       expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({ why: 'applied last' });
     });
@@ -547,8 +549,8 @@ describe('metadata context', () => {
       const legacyQueue = new CfnResource(legacy, 'Queue', { type: 'AWS::SQS::Queue' });
       const legacyTopic = new CfnResource(legacy, 'Topic', { type: 'AWS::SNS::Topic' });
 
-      CfnResourceMetadataContext.of(stack).set({ deps: ['NetworkStack'] }, { selector: ConstructSelector.all() });
-      CfnResourceMetadataContext.of(legacy).clear({ selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(stack, { selector: ConstructSelector.all() }).set({ deps: ['NetworkStack'] });
+      CfnResourceMetadataContext.of(legacy, { selector: ConstructSelector.all() }).clear();
 
       const template = toCloudFormation(stack);
       expect(template.Resources[stack.getLogicalId(kept)].Metadata[CONTEXT_METADATA_KEY]).toEqual({ deps: ['NetworkStack'] });
@@ -573,7 +575,7 @@ describe('metadata context', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(stack).clear({ selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(stack, { selector: ConstructSelector.all() }).clear();
 
       expect(toCloudFormation(stack).Resources.Res.Metadata).toBeUndefined();
     });
@@ -665,7 +667,7 @@ describe('metadata context', () => {
       const nested = new NestedStack(parent, 'Child');
       new CfnResource(nested, 'Res', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(nested).set({ why: 'nested resource rationale' }, { selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(nested, { selector: ConstructSelector.all() }).set({ why: 'nested resource rationale' });
 
       expect(readNestedTemplate(app, nested).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({ why: 'nested resource rationale' });
     });
@@ -676,7 +678,7 @@ describe('metadata context', () => {
       const nested = new NestedStack(parent, 'Child');
       new CfnResource(nested, 'Res', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(parent).set({ must: ['all data encrypted w/ CMK'] }, { selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(parent, { selector: ConstructSelector.all() }).set({ must: ['all data encrypted w/ CMK'] });
 
       expect(readNestedTemplate(app, nested).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
         must: ['all data encrypted w/ CMK'],
@@ -689,7 +691,7 @@ describe('metadata context', () => {
       const stack = new Stack(stage, 'Stack');
       new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(stage).set({ why: 'stage resource' }, { selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(stage, { selector: ConstructSelector.all() }).set({ why: 'stage resource' });
 
       const template = stage.synth().getStackByName(stack.stackName).template;
       expect(template.Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({ why: 'stage resource' });
@@ -700,7 +702,7 @@ describe('metadata context', () => {
       const stage = new Stage(app, 'Deployment');
       new CfnResource(new Stack(stage, 'Stack'), 'Res', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(app).set({ why: 'outside assembly' }, { selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(app, { selector: ConstructSelector.all() }).set({ why: 'outside assembly' });
 
       expect(() => app.synth()).toThrow(NO_RESOURCE_SELECTED);
     });
@@ -708,7 +710,7 @@ describe('metadata context', () => {
     test('set() above a Stage does not reach resources inside the Stage', () => {
       const app = new App();
       new CfnResource(new Stack(app, 'RootStack'), 'RootRes', { type: 'AWS::Fake::Thing' });
-      CfnResourceMetadataContext.of(app).set({ why: 'root assembly resource' }, { selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(app, { selector: ConstructSelector.all() }).set({ why: 'root assembly resource' });
 
       const stage = new Stage(app, 'Deployment');
       const stack = new Stack(stage, 'StageStack');
@@ -755,7 +757,7 @@ describe('metadata context', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
-      CfnResourceMetadataContext.of(stack).set({}, { selector: ConstructSelector.all() });
+      CfnResourceMetadataContext.of(stack, { selector: ConstructSelector.all() }).set({});
 
       expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({});
     });
@@ -855,7 +857,7 @@ describe('metadata context', () => {
       expect(() => synthesize(stack)).not.toThrow();
     });
 
-    test('fails synthesis when a mutability entry repeats mutable in the same set() call', () => {
+    test('omits a mutability entry that repeats mutable', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
@@ -864,19 +866,27 @@ describe('metadata context', () => {
         mutability: { Name: CfnContextMutability.FREE_TO_TUNE },
       });
 
-      expect(() => synthesize(stack)).toThrow(/mutability entry 'Name' must not repeat mutable "free-to-tune"/);
+      expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        mutable: 'free-to-tune',
+      });
     });
 
-    test('allows mutability entries that deviate from mutable', () => {
+    test('keeps mutability entries that deviate from mutable', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
       CfnResourceMetadataContext.of(res).set({
         mutable: CfnContextMutability.FREE_TO_TUNE,
-        mutability: { Name: CfnContextMutability.MUST_NEVER_CHANGE },
+        mutability: {
+          Name: CfnContextMutability.FREE_TO_TUNE,
+          VisibilityTimeout: CfnContextMutability.CHANGE_WITH_CONSTRAINTS,
+        },
       });
 
-      expect(() => synthesize(stack)).not.toThrow();
+      expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
+        mutable: 'free-to-tune',
+        mutability: { VisibilityTimeout: 'change-with-constraints' },
+      });
     });
 
     test('allows mutability without a mutable', () => {
@@ -1063,7 +1073,7 @@ describe('metadata context', () => {
     test.each<{
       readonly name: string;
       readonly path: string;
-      readonly context: (token: string) => CfnTemplateContextProps;
+      readonly context: (token: string) => CfnTemplateMetadataContextProps;
     }>([
       { name: 'arch', path: 'arch', context: token => ({ arch: token }) },
       { name: 'must entry', path: 'must[0]', context: token => ({ must: [token] }) },

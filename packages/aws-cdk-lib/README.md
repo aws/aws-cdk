@@ -1682,14 +1682,15 @@ This renders a `Metadata["com.aws.cloudformation.Context"]` block on the
 `mutable` is the resource's default change-safety level. `mutability` is a
 *sparse* per-property map: list only the properties that deviate from `mutable`
 (or that are otherwise high-stakes, e.g. replacement-triggering). When both are
-supplied in the same `set()` call, an entry that repeats the `mutable` value fails
-synthesis — the map records deviations only. Both record what the team considers
-safe to change, not what CloudFormation can change in place.
+supplied, entries that repeat `mutable` are omitted; if none remain, the map is
+omitted. Both fields record what the team considers safe to change, not what
+CloudFormation can change in place.
 
 ### Targeting: exactly what receives context
 
-`set()` and `clear()` take the same `CfnResourceMetadataContextOptions`. With no
-options, `ConstructSelector.cfnResource()` selects:
+`CfnResourceMetadataContext.of()` takes the targeting options used by subsequent
+`set()` and `clear()` calls. With no options, `ConstructSelector.cfnResource()`
+selects:
 
 - the scope itself, when the scope is a `CfnResource`; or
 - the scope's immediate
@@ -1723,18 +1724,18 @@ CfnResourceMetadataContext.of(queue).set({
 });
 
 // 2. Every resource beneath the scope, helpers included.
-CfnResourceMetadataContext.of(stack).set({
-  deps: ['NetworkStack'],
-}, {
+CfnResourceMetadataContext.of(stack, {
   selector: ConstructSelector.all(),
+}).set({
+  deps: ['NetworkStack'],
 });
 
 // 3. Only resources of a specific type. The queue above also matches; see
 //    "Replacement and ordering" below for which value it keeps.
-CfnResourceMetadataContext.of(stack).set({
-  must: ['delivery settings must preserve in-flight messages'],
-}, {
+CfnResourceMetadataContext.of(stack, {
   selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+}).set({
+  must: ['delivery settings must preserve in-flight messages'],
 });
 ```
 
@@ -1752,17 +1753,17 @@ Stage; this also lets environments carry different guidance:
 // Each Stage is synthesized as its own cloud assembly and sets its own context.
 const dev = new Stage(app, 'Dev');
 new sqs.Queue(new Stack(dev, 'Orders'), 'WebhookQueue');
-CfnResourceMetadataContext.of(dev).set({
+CfnResourceMetadataContext.of(dev, { selector: ConstructSelector.all() }).set({
   why: 'development environment; data is disposable',
   mutable: CfnContextMutability.FREE_TO_TUNE,
-}, { selector: ConstructSelector.all() });
+});
 
 const prod = new Stage(app, 'Prod');
 new sqs.Queue(new Stack(prod, 'Orders'), 'WebhookQueue');
-CfnResourceMetadataContext.of(prod).set({
+CfnResourceMetadataContext.of(prod, { selector: ConstructSelector.all() }).set({
   must: ['deletion protection and backups stay enabled'],
   mutable: CfnContextMutability.REVIEW_REQUIRED,
-}, { selector: ConstructSelector.all() });
+});
 ```
 
 The queue in `Dev-Orders` renders the `why` and `mutable: free-to-tune`; the queue
@@ -1804,10 +1805,10 @@ unchanged:
 declare const lambdaFunction: lambda.Function;
 
 // The role and policies the function creates, not the function itself.
-CfnResourceMetadataContext.of(lambdaFunction).set({
-  why: 'created by lambda.Function for the order processor; change them through the function',
-}, {
+CfnResourceMetadataContext.of(lambdaFunction, {
   selector: ConstructSelector.resourcesOfType('AWS::IAM::Role', 'AWS::IAM::Policy'),
+}).set({
+  why: 'created by lambda.Function for the order processor; change them through the function',
 });
 ```
 
@@ -1819,10 +1820,10 @@ creates a load balancer, a service, and supporting resources:
 declare const service: Construct; // e.g. an ecs_patterns.ApplicationLoadBalancedFargateService
 
 // Apply this rule only to the Application Load Balancer created by the pattern.
-CfnResourceMetadataContext.of(service).set({
-  must: ['ALB idle timeout >= backend read timeout'],
-}, {
+CfnResourceMetadataContext.of(service, {
   selector: ConstructSelector.resourcesOfType('AWS::ElasticLoadBalancingV2::LoadBalancer'),
+}).set({
+  must: ['ALB idle timeout >= backend read timeout'],
 });
 ```
 
@@ -1841,11 +1842,11 @@ declare const stack: Stack;
 declare const queue: sqs.Queue;
 
 // Set on the Stack for every SQS queue.
-CfnResourceMetadataContext.of(stack).set({
+CfnResourceMetadataContext.of(stack, {
+  selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+}).set({
   why: 'part of the order-processing subsystem',
   must: ['queues use the security team customer managed KMS key'],
-}, {
-  selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
 });
 
 // Set on one queue.
@@ -1997,12 +1998,12 @@ rules:
 
 CDK rejects unresolved template-level values so the emitted fields retain the
 schema's literal types. It enforces the schema requirement that `trust` include
-both `src` and `conf` when supplied (`cite` and `note` remain optional). It also
-rejects a sparse `mutability` entry that repeats `mutable` in the same call.
-Blank strings, empty arrays, empty maps, and an empty Context object are written
-as given. Resource-level `set()` never throws; its checks fail synthesis.
-Template-level `set()` rejects unresolved tokens and concrete `ref` entries
-without `at` immediately.
+both `src` and `conf` when supplied (`cite` and `note` remain optional), and
+omits `mutability` entries that repeat `mutable`. Blank strings, empty arrays,
+empty maps, and an empty Context object are written as given. Resource-level
+`set()` never throws; missing trust fields and selectors that match no resource
+fail synthesis. Template-level `set()` rejects unresolved tokens and concrete
+`ref` entries without `at` immediately.
 
 ### Security
 

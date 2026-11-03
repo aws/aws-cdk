@@ -19,11 +19,11 @@ CfnTemplateMetadataContext.of(stack).set({
 });
 
 // The queue-specific Context below replaces this default.
-CfnResourceMetadataContext.of(stack).set({
+CfnResourceMetadataContext.of(stack, {
+  selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
+}).set({
   why: 'part of the order-processing subsystem',
   deps: ['OrderProcessingSubsystem'],
-}, {
-  selector: ConstructSelector.resourcesOfType('AWS::SQS::Queue'),
 });
 
 const queue = new sqs.Queue(stack, 'OrderQueue', {
@@ -40,10 +40,10 @@ CfnResourceMetadataContext.of(queue).set({
 
 const subsystem = new Construct(stack, 'Notifications');
 new sns.Topic(subsystem, 'AlertsTopic');
-CfnResourceMetadataContext.of(subsystem).set({
-  why: 'fan-out of alert events to oncall channels',
-}, {
+CfnResourceMetadataContext.of(subsystem, {
   selector: ConstructSelector.all(),
+}).set({
+  why: 'fan-out of alert events to oncall channels',
 });
 
 new integ.IntegTest(app, 'MetadataContextInteg', {
