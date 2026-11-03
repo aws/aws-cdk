@@ -60,7 +60,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-1",
-     "S3Key": "6335a5ca61631b3e00e6017839bbfe08d0fe3c56fc30f83b396ad96f4b8b3134.zip"
+     "S3Key": "a196f0db613daf1ad1208a6b3a922c1b54142cd98cc4aca771e8059caeaef623.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -69,7 +69,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 30
    },
    "DependsOn": [
@@ -103,6 +103,14 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": "arn:aws:states:us-east-1:12345678:stateMachine:*"
+        },
+        "StringEquals": {
+         "aws:SourceAccount": "12345678"
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"
