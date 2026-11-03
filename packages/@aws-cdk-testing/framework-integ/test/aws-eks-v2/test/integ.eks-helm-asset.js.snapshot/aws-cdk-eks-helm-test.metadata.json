@@ -11,7 +11,7 @@
         "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-helm-integ-assert/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-helm-integ-assert/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
         "    at new EksClusterStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-helm-integ-assert/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-helm-asset.js:52:20)",
-        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-helm-integ-assert/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-helm-asset.js:173:21)",
+        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-helm-integ-assert/packages/@aws-cdk-testing/framework-integ/test/aws-eks-v2/test/integ.eks-helm-asset.js:181:21)",
         "    ...node internals..."
       ]
     },

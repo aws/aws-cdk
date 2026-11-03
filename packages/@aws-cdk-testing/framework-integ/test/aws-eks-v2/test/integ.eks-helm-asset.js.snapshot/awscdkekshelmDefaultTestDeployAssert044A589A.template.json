@@ -16,7 +16,7 @@
      "StackName": "\"aws-cdk-eks-helm-test\""
     },
     "flattenResponse": "false",
-    "salt": "1793194111097"
+    "salt": "1793694705291"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -55,6 +55,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -85,6 +94,27 @@
      "ApplicationLogLevel": "FATAL"
     }
    }
+  },
+  "AwsApiCallCloudFormationdescribeStacksb1daa8dc8d55ce0d39d5e1d11c97ae39": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"HelmReleaseStatus\",\"OutputValue\":\"deployed\"}}]}}}]}}}",
+    "parameters": {
+     "StackName": "\"aws-cdk-eks-helm-test-prev\""
+    },
+    "flattenResponse": "false",
+    "salt": "1793694705291"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -92,6 +122,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallCloudFormationdescribeStacksa3a2e56222e569c527ffc6682767ebca",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacksb1daa8dc8d55ce0d39d5e1d11c97ae39": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacksb1daa8dc8d55ce0d39d5e1d11c97ae39",
      "assertion"
     ]
    }
