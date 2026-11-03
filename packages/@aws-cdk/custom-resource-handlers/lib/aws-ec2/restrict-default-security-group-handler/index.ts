@@ -90,7 +90,19 @@ async function revokeRules(groupId: string, account: string): Promise<void> {
  * Authorize both ingress and egress rules
  */
 async function authorizeRules(groupId: string, account: string): Promise<void> {
-  await ec2.authorizeSecurityGroupIngress(ingressRuleParams(groupId, account));
-  await ec2.authorizeSecurityGroupEgress(egressRuleParams(groupId));
+  try {
+    await ec2.authorizeSecurityGroupIngress(ingressRuleParams(groupId, account));
+  } catch (e: any) {
+    if (e.name !== 'InvalidPermission.Duplicate') {
+      throw (e);
+    }
+  }
+  try {
+    await ec2.authorizeSecurityGroupEgress(egressRuleParams(groupId));
+  } catch (e: any) {
+    if (e.name !== 'InvalidPermission.Duplicate') {
+      throw (e);
+    }
+  }
   return;
 }
