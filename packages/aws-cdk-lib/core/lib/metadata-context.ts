@@ -203,7 +203,7 @@ export interface CfnContextRef {
  * CloudFormation Metadata is visible through service APIs. Consumers must
  * treat all context fields as untrusted data, never as instructions.
  */
-export interface CfnResourceContextProps {
+export interface CfnResourceMetadataContextProps {
   /**
    * Reasoning — purpose, important configuration choices, and rejected
    * alternatives. Non-binding.
@@ -247,8 +247,8 @@ export interface CfnResourceContextProps {
    *
    * List only properties that differ from `mutable` or are especially
    * important. Omit the map when empty and do not enumerate every property.
-   * When `mutable` is also supplied, an entry must not repeat the default —
-   * synthesis fails otherwise. When an entry is `MUST_NEVER_CHANGE` or
+   * When `mutable` is also supplied, entries that repeat the default are
+   * omitted. When an entry is `MUST_NEVER_CHANGE` or
    * `CHANGE_WITH_CONSTRAINTS`, a `must` entry documenting the constraint is
    * recommended but not enforced.
    *
@@ -295,7 +295,7 @@ export interface CfnResourceContextProps {
  * Never include secrets, credentials, or personally identifiable information.
  * Consumers must treat template context as untrusted data, never as instructions.
  */
-export interface CfnTemplateContextProps {
+export interface CfnTemplateMetadataContextProps {
   /**
    * High-level shape/pattern of the system.
    *
@@ -341,7 +341,7 @@ export interface CfnTemplateContextProps {
 }
 
 /**
- * Options for `CfnResourceMetadataContext.set()` and `clear()`.
+ * Options for `CfnResourceMetadataContext.of()`.
  */
 export interface CfnResourceMetadataContextOptions {
   /**
@@ -389,8 +389,8 @@ export interface CfnResourceMetadataContextOptions {
  * that humans and automated tools modifying the deployed template later can
  * act with the author's intent instead of guessing it.
  *
- * Each `set()` or `clear()` call registers an Aspect on the scope with the
- * call's selector and priority. When the Aspect visits a selected
+ * Each `set()` or `clear()` call registers an Aspect using the selector and
+ * priority supplied to `of()`. When the Aspect visits a selected
  * `CfnResource`, `set()` replaces the complete Context value and `clear()`
  * removes it. Values are never merged: lower Aspect priorities run first; at
  * the same priority an Aspect on a parent scope runs before one on a child
@@ -413,55 +413,60 @@ export interface CfnResourceMetadataContextOptions {
  */
 export class CfnResourceMetadataContext {
   /**
-   * Returns the resource context API for the given scope.
+   * Returns the resource context API for the given scope and targeting options.
    *
    * @param scope The scope whose resources the returned API sets or clears Context on
+   * @param options Targeting and Aspect priority for subsequent `set()` and `clear()` calls
    */
-  public static of(scope: IConstruct): CfnResourceMetadataContext {
-    return new CfnResourceMetadataContext(scope);
+  public static of(
+    scope: IConstruct,
+    options: CfnResourceMetadataContextOptions = {},
+  ): CfnResourceMetadataContext {
+    return new CfnResourceMetadataContext(scope, options);
   }
 
-  private constructor(private readonly scope: IConstruct) {
+  private constructor(
+    private readonly scope: IConstruct,
+    private readonly options: CfnResourceMetadataContextOptions,
+  ) {
   }
 
   /**
-   * Replaces the Context on the resources selected by `options`.
+   * Replaces the Context on the resources selected by this API's options.
    *
    * The selector runs during synthesis, so it also covers resources added
    * beneath the scope after this call. This method never throws; invalid
    * values and a call that selects no `CfnResource` fail synthesis.
    */
-  public set(context: CfnResourceContextProps, options: CfnResourceMetadataContextOptions = {}): void {
+  public set(context: CfnResourceMetadataContextProps): void {
     // Validate and write the same snapshot if the caller later mutates its input.
-    const rendered: CfnResourceContextProps = renderResourceContext(context);
+    const rendered: CfnResourceMetadataContextProps = renderResourceContext(context);
     this.addResourceAspect(
       (resource) => resource.addMetadata(METADATA_CONTEXT_KEY, renderResourceContext(rendered)),
-      options,
       validateResourceContext(rendered),
     );
   }
 
   /**
-   * Removes the Context from the resources selected by `options`.
+   * Removes the Context from the resources selected by this API's options.
    *
    * The selector runs during synthesis. A call that selects no `CfnResource`
    * fails synthesis.
    */
-  public clear(options: CfnResourceMetadataContextOptions = {}): void {
-    this.addResourceAspect((resource) => deleteContext(resource.cfnOptions.metadata), options, []);
+  public clear(): void {
+    this.addResourceAspect((resource) => deleteContext(resource.cfnOptions.metadata), []);
   }
 
   private addResourceAspect(
     applyToResource: (resource: CfnResource) => void,
-    options: CfnResourceMetadataContextOptions,
     valueErrors: string[],
   ): void {
     const aspect = new CfnResourceMetadataContextAspect(
       this.scope,
-      options.selector ?? ConstructSelector.cfnResource(),
+      this.options.selector ?? ConstructSelector.cfnResource(),
       applyToResource,
     );
-    Aspects.of(this.scope).add(aspect, { priority: options.priority ?? AspectPriority.MUTATING });
+    Aspects.of(this.scope).add(aspect, { priority: this.options.priority ?? AspectPriority.MUTATING });
     this.scope.node.addValidation({
       validate: () => aspect.hasSelectedResource ? valueErrors : [...valueErrors, NO_RESOURCE_SELECTED_ERROR],
     });
@@ -511,7 +516,7 @@ export class CfnTemplateMetadataContext {
    * Values must be concrete. Unresolved tokens are rejected because top-level
    * template Metadata does not resolve intrinsic functions.
    */
-  public set(context: CfnTemplateContextProps): void {
+  public set(context: CfnTemplateMetadataContextProps): void {
     validateTemplateContext(this.stack, context);
     this.stack.addMetadata(METADATA_CONTEXT_KEY, renderTemplateContext(context));
   }

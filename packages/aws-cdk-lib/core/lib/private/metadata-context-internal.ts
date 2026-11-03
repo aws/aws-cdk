@@ -1,12 +1,12 @@
 import type { IConstruct } from 'constructs';
 import { ValidationError } from '../errors';
-import type { CfnResourceContextProps, CfnTemplateContextProps, CfnContextRef } from '../metadata-context';
+import type { CfnResourceMetadataContextProps, CfnTemplateMetadataContextProps, CfnContextRef } from '../metadata-context';
 import { Token } from '../token';
 import { lit } from './literal-string';
 
 export const METADATA_CONTEXT_KEY = 'com.aws.cloudformation.Context';
 
-export function renderResourceContext(context: CfnResourceContextProps): Record<string, any> {
+export function renderResourceContext(context: CfnResourceMetadataContextProps): Record<string, any> {
   const out: Record<string, any> = {};
   if (context.why !== undefined) {
     out.why = context.why;
@@ -18,7 +18,15 @@ export function renderResourceContext(context: CfnResourceContextProps): Record<
     out.mutable = context.mutable;
   }
   if (context.mutability !== undefined) {
-    out.mutability = { ...context.mutability };
+    if (Token.isUnresolved(context.mutability)) {
+      out.mutability = context.mutability;
+    } else {
+      const entries = Object.entries(context.mutability);
+      const deviations = entries.filter(([, level]) => level !== context.mutable);
+      if (entries.length === 0 || deviations.length > 0) {
+        out.mutability = Object.fromEntries(deviations);
+      }
+    }
   }
   if (context.trust !== undefined) {
     const trust: Record<string, any> = {};
@@ -42,7 +50,7 @@ export function renderResourceContext(context: CfnResourceContextProps): Record<
   return out;
 }
 
-export function renderTemplateContext(context: CfnTemplateContextProps): Record<string, any> {
+export function renderTemplateContext(context: CfnTemplateMetadataContextProps): Record<string, any> {
   const out: Record<string, any> = {};
   if (context.arch !== undefined) {
     out.arch = context.arch;
@@ -78,11 +86,11 @@ function copyArray<T>(values: T[]): T[] {
   return Token.isUnresolved(values) ? values : [...values];
 }
 
-export function validateResourceContext(context: CfnResourceContextProps): string[] {
-  return [...validateTrust(context.trust), ...validateMutability(context)];
+export function validateResourceContext(context: CfnResourceMetadataContextProps): string[] {
+  return validateTrust(context.trust);
 }
 
-function validateTrust(trust: CfnResourceContextProps['trust']): string[] {
+function validateTrust(trust: CfnResourceMetadataContextProps['trust']): string[] {
   if (trust === undefined) {
     return [];
   }
@@ -96,16 +104,7 @@ function validateTrust(trust: CfnResourceContextProps['trust']): string[] {
   return errors;
 }
 
-function validateMutability(context: CfnResourceContextProps): string[] {
-  if (context.mutable === undefined || context.mutability === undefined) {
-    return [];
-  }
-  return Object.entries(context.mutability)
-    .filter(([, level]) => level === context.mutable)
-    .map(([property]) => `mutability entry '${property}' must not repeat mutable ${JSON.stringify(context.mutable)}; the map records deviations only`);
-}
-
-export function validateTemplateContext(scope: IConstruct, context: CfnTemplateContextProps) {
+export function validateTemplateContext(scope: IConstruct, context: CfnTemplateMetadataContextProps) {
   rejectUnresolvedToken(scope, 'arch', context.arch);
   rejectUnresolvedToken(scope, 'must', context.must);
   for (const [index, entry] of (context.must ?? []).entries()) {
