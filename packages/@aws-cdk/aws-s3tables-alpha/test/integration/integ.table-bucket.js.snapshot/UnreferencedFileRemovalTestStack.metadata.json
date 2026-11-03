@@ -1,0 +1,97 @@
+{
+  "/UnreferencedFileRemovalTestStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket.js:54:42)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/UnreferencedFileRemovalTestStack/DefaultBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/UnreferencedFileRemovalTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket.js:83:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/UnreferencedFileRemovalTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket.js:83:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/UnreferencedFileRemovalTestStack/DefaultBucket/DefaultBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultBucket62385A75"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TableBucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table-bucket.js:375:29)",
+        "new TableBucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new UnreferencedFileRemovalTestStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket.js:40:28)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket.js:54:42)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/UnreferencedFileRemovalTestStack/Exports/Output{\"Fn::GetAtt\":[\"DefaultBucket62385A75\",\"TableBucketARN\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDefaultBucket62385A75TableBucketARN40A5C30D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "UnreferencedFileRemovalTestStack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/test/integration/integ.table-bucket.js:83:5)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import type { Construct } from 'constructs';
 import { Connections } from './connections';
 import type { ISecurityGroupRef, SecurityGroupReference } from './ec2.generated';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
-import type { IPeer } from './peer';
+import type { EgressRuleConfig, IngressRuleConfig, IPeer } from './peer';
 import { Peer } from './peer';
 import { Port } from './port';
 import type { IVpc } from './vpc';
@@ -143,11 +143,11 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     }
   }
 
-  public toIngressRuleConfig(): any {
+  public toIngressRuleConfig(): IngressRuleConfig {
     return { sourceSecurityGroupId: this.securityGroupId };
   }
 
-  public toEgressRuleConfig(): any {
+  public toEgressRuleConfig(): EgressRuleConfig {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 
@@ -633,7 +633,7 @@ export class SecurityGroup extends SecurityGroupBase {
       // to "allOutbound=true" mode, because we might have already emitted
       // EgressRule objects (which count as rules added later) and there's no way
       // to recall those. Better to prevent this for now.
-      throw new ValidationError(lit`CannotAddTrafficEgressRule`, 'Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv6) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.', this);
+      throw new ValidationError(lit`CannotAddTrafficEgressRule`, 'Cannot add an "all traffic" egress rule in this way; set allowAllOutbound=true (for ipv4) or allowAllIpv6Outbound=true (for ipv6) on the SecurityGroup instead.', this);
     }
 
     this.addDirectEgressRule(rule);

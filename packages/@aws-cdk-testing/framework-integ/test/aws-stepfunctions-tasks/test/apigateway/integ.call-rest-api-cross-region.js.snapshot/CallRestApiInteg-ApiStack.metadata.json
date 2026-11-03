@@ -11,6 +11,12 @@
       "data": "*"
     }
   ],
+  "/CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
   "/CallRestApiInteg-ApiStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -85,10 +91,22 @@
       "data": "Hello4A628BD4"
     }
   ],
-  "/CallRestApiInteg-ApiStack/Publish/Output{\"Ref\":\"MyRestApi2D1F47A9\"}": [
+  "/CallRestApiInteg-ApiStack/ExportsWriteruseast10F67B507/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PublishOutputRefMyRestApi2D1F47A9FF46E22C"
+      "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+    }
+  ],
+  "/CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
     }
   ],
   "/CallRestApiInteg-ApiStack/MyRestApi/CloudWatchRole/Resource": [
@@ -119,6 +137,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "HelloServiceRole1E55EA16"
+    }
+  ],
+  "/CallRestApiInteg-ApiStack/ExportsWriteruseast10F67B507/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsWriteruseast10F67B507DDE2E818"
     }
   ],
   "/CallRestApiInteg-ApiStack/MyRestApi/Default/ANY/ApiPermission.CallRestApiIntegApiStackMyRestApiC2593C7A.ANY..": [

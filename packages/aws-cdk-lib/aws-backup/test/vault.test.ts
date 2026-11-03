@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as sns from '../../aws-sns';
-import { ArnFormat, Duration, Stack, Fn } from '../../core';
+import { ArnFormat, CfnParameter, Duration, Lazy, Stack, Fn } from '../../core';
 import { BackupVault, BackupVaultEvents } from '../lib';
 
 let stack: Stack;
@@ -448,4 +448,37 @@ test('throws with incorrect lock configuration - changeable for', () => {
       changeableFor: Duration.days(1),
     },
   })).toThrow(/AWS Backup enforces a 72-hour cooling-off period before Vault Lock takes effect and becomes immutable/);
+});
+
+test('lock configuration with tokenized minRetention renders a reference', () => {
+  // GIVEN
+  const minRetentionDays = new CfnParameter(stack, 'MinRetentionDays', { type: 'Number', default: 30 });
+
+  // WHEN
+  new BackupVault(stack, 'Vault', {
+    lockConfiguration: {
+      minRetention: Duration.days(minRetentionDays.valueAsNumber),
+      maxRetention: Duration.days(365),
+      changeableFor: Duration.days(7),
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    LockConfiguration: {
+      ChangeableForDays: 7,
+      MaxRetentionDays: 365,
+      MinRetentionDays: { Ref: 'MinRetentionDays' },
+    },
+  });
+});
+
+test('does not throw when maxRetention and changeableFor are tokens', () => {
+  expect(() => new BackupVault(stack, 'Vault', {
+    lockConfiguration: {
+      minRetention: Duration.days(7),
+      maxRetention: Duration.days(Lazy.number({ produce: () => 365 })),
+      changeableFor: Duration.days(Lazy.number({ produce: () => 7 })),
+    },
+  })).not.toThrow();
 });

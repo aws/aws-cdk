@@ -1,11 +1,13 @@
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('When import an ECS Service', () => {
   let stack: cdk.Stack;
@@ -825,6 +827,7 @@ describe('forceNewDeployment', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'Vpc');
     cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -1012,5 +1015,346 @@ describe('forceNewDeployment', () => {
         ForceNewDeploymentNonce: 'resolved-later',
       },
     });
+  });
+});
+
+describe('forceNewDeployment constructor option', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+  });
+
+  test('should set EnableForceNewDeployment to true without a nonce when only enabled is specified', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: Match.absent(),
+      },
+    });
+  });
+
+  test('should set forceNewDeployment with enabled and nonce', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: 'my-unique-nonce-123',
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'my-unique-nonce-123',
+      },
+    });
+  });
+
+  test('should set forceNewDeployment with enabled false', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: false,
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: false,
+      },
+    });
+  });
+
+  test('should set forceNewDeployment on an Ec2Service with enabled and nonce', () => {
+    // GIVEN
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t3.micro'),
+      minCapacity: 1,
+    });
+    const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+    ec2TaskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // WHEN
+    new ecs.Ec2Service(stack, 'Ec2Service', {
+      cluster,
+      taskDefinition: ec2TaskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: 'ec2-deployment-nonce',
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'ec2-deployment-nonce',
+      },
+    });
+  });
+
+  test('should not set forceNewDeployment when not specified', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: Match.absent(),
+    });
+  });
+
+  test('should throw error when nonce is empty string', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        forceNewDeployment: {
+          enabled: true,
+          nonce: '',
+        },
+      });
+    }).toThrow(/forceNewDeployment nonce must be between 1 and 255 characters, got 0/);
+  });
+
+  test('should throw error when nonce exceeds 255 characters', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        forceNewDeployment: {
+          enabled: true,
+          nonce: 'a'.repeat(256),
+        },
+      });
+    }).toThrow(/forceNewDeployment nonce must be between 1 and 255 characters, got 256/);
+  });
+
+  test('should accept nonce with exactly 255 characters', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: 'a'.repeat(255),
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'a'.repeat(255),
+      },
+    });
+  });
+
+  test('should throw error when using CODE_DEPLOY deployment controller', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+        },
+        forceNewDeployment: {
+          enabled: true,
+        },
+      });
+    }).toThrow('forceNewDeployment requires the ECS deployment controller.');
+  });
+
+  test('should throw error when using EXTERNAL deployment controller', () => {
+    // THEN
+    expect(() => {
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: ecs.DeploymentControllerType.EXTERNAL,
+        },
+        forceNewDeployment: {
+          enabled: true,
+        },
+      });
+    }).toThrow('forceNewDeployment requires the ECS deployment controller.');
+  });
+
+  test('should accept unresolved tokens as nonce without length validation', () => {
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: cdk.Lazy.string({ produce: () => 'resolved-later' }),
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'resolved-later',
+      },
+    });
+  });
+
+  test('method call should override constructor option', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      forceNewDeployment: {
+        enabled: true,
+        nonce: 'constructor-nonce',
+      },
+    });
+
+    // WHEN
+    service.forceNewDeployment('method-nonce');
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'method-nonce',
+      },
+    });
+  });
+});
+
+describe('empty load balancers', () => {
+  let stack: cdk.Stack;
+  let service: ecs.FargateService;
+  let targetGroup: elbv2.ApplicationTargetGroup;
+
+  function setup(context?: Record<string, any>) {
+    const app = new App({ context });
+    stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Container', {
+      image: ecs.ContainerImage.fromRegistry('nginx'),
+      portMappings: [{ containerPort: 8080 }],
+    });
+    service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'Lb', { vpc });
+    targetGroup = new elbv2.ApplicationTargetGroup(stack, 'Tg', {
+      vpc,
+      port: 8080,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+    lb.addListener('Listener', { port: 80, defaultTargetGroups: [targetGroup] });
+  }
+
+  test('an attached target group renders as before', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: true });
+
+    // WHEN
+    service.attachToApplicationTargetGroup(targetGroup);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [Match.objectLike({ ContainerName: 'Container', ContainerPort: 8080 })],
+    });
+  });
+
+  test('a service with no target groups renders an empty array when the flag is enabled', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: true });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [],
+    });
+  });
+
+  test('a service with no target groups omits the property when the flag is disabled', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: false });
+
+    // THEN
+    const service1 = Template.fromStack(stack).findResources('AWS::ECS::Service');
+    expect(Object.values(service1)[0].Properties).not.toHaveProperty('LoadBalancers');
+  });
+
+  test('the property is omitted by default', () => {
+    // GIVEN
+    setup();
+
+    // THEN
+    const service1 = Template.fromStack(stack).findResources('AWS::ECS::Service');
+    expect(Object.values(service1)[0].Properties).not.toHaveProperty('LoadBalancers');
+  });
+
+  test('emptying the target groups renders an empty array when the flag is enabled', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: true });
+    service.attachToApplicationTargetGroup(targetGroup);
+
+    // WHEN
+    service.loadBalancers = [];
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LoadBalancers: [],
+    });
+  });
+
+  test('the health check grace period is not set for an empty array', () => {
+    // GIVEN
+    setup({ [cxapi.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: true });
+
+    // THEN
+    const service1 = Template.fromStack(stack).findResources('AWS::ECS::Service');
+    expect(Object.values(service1)[0].Properties).not.toHaveProperty('HealthCheckGracePeriodSeconds');
   });
 });

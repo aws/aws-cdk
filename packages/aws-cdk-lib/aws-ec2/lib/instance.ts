@@ -759,6 +759,7 @@ export class Instance extends Resource implements IInstance {
     // try to naively resolve. We need a recursion breaker in this.
     const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
     let recursing = false;
+    // eslint-disable-next-line no-restricted-syntax
     this.instance.overrideLogicalId(Lazy.uncachedString({
       produce: (context) => {
         if (recursing) { return originalLogicalId; }

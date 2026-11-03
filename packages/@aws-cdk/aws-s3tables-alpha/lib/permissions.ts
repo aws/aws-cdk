@@ -1,12 +1,12 @@
 // Table Bucket
-// Read priveleges
+// Read privileges
 export const TABLE_BUCKET_READ_ACCESS = [
   's3tables:Get*',
   's3tables:ListNamespaces',
   's3tables:ListTables',
 ];
 
-// Write priveleges
+// Write privileges
 export const TABLE_BUCKET_WRITE_ACCESS = [
   's3tables:PutTableData',
   's3tables:UpdateTableMetadataLocation',
@@ -23,11 +23,11 @@ export const TABLE_BUCKET_READ_WRITE_ACCESS = [...new Set([
 ])];
 
 // Table
-// Read priveleges
+// Read privileges
 export const TABLE_READ_ACCESS = [
   's3tables:Get*',
 ];
-// Write priveleges
+// Write privileges
 export const TABLE_WRITE_ACCESS = [
   's3tables:PutTableData',
   's3tables:UpdateTableMetadataLocation',

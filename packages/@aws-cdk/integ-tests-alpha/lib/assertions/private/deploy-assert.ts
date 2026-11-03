@@ -1,3 +1,4 @@
+import type { ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
 import { Stack, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IConstruct } from 'constructs';
@@ -7,7 +8,7 @@ import { EqualsAssertion } from '../assertions';
 import type { ActualResult, ExpectedResult } from '../common';
 import { HttpApiCall as HttpApiCall } from '../http-call';
 import { md5hash } from '../private/hash';
-import type { FetchOptions } from '../providers';
+import type { FetchOptions, ProviderOptions } from '../providers';
 import type { LambdaInvokeFunctionProps } from '../sdk';
 import { AwsApiCall, LambdaInvokeFunction } from '../sdk';
 import type { IDeployAssert } from '../types';
@@ -17,7 +18,7 @@ const DEPLOY_ASSERT_SYMBOL = Symbol.for('@aws-cdk/integ-tests.DeployAssert');
 /**
  * Options for DeployAssert
  */
-export interface DeployAssertProps {
+export interface DeployAssertProps extends ProviderOptions {
 
   /**
    * A stack to use for assertions
@@ -53,11 +54,13 @@ export class DeployAssert extends Construct implements IDeployAssert {
 
   public scope: Stack;
   private assertionIdCounts = new Map<string, number>();
+  private readonly _providerLogLevel?: ApplicationLogLevel;
 
   constructor(scope: Construct, props?: DeployAssertProps) {
     super(scope, 'Default');
 
     this.scope = props?.stack ?? new Stack(scope, 'DeployAssert');
+    this._providerLogLevel = props?.providerLogLevel;
 
     Object.defineProperty(this, DEPLOY_ASSERT_SYMBOL, { value: true });
   }
@@ -73,6 +76,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
       service,
       parameters,
       outputPaths,
+      providerLogLevel: this._providerLogLevel,
     });
   }
 
@@ -93,6 +97,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
     return new HttpApiCall(this.scope, this.uniqueAssertionId(`HttpApiCall${append}${hash}`), {
       url,
       fetchOptions: options,
+      providerLogLevel: this._providerLogLevel,
     });
   }
 
@@ -105,6 +110,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
     new EqualsAssertion(this.scope, `EqualsAssertion${id}`, {
       expected,
       actual,
+      providerLogLevel: this._providerLogLevel,
     });
   }
 

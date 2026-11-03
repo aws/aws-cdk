@@ -139,6 +139,28 @@ describe('FunctionUrlOriginAccessControl', () => {
         ],
       },
     });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
+      },
+      InvokedViaFunctionUrl: true,
+    });
   });
 
   test('Creates Lambda Function URL origin with default Origin Access Control', () => {
@@ -217,6 +239,28 @@ describe('FunctionUrlOriginAccessControl', () => {
           ],
         ],
       },
+    });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
+      },
+      InvokedViaFunctionUrl: true,
     });
   });
 
@@ -329,6 +373,28 @@ describe('FunctionUrlOriginAccessControl', () => {
           ],
         ],
       },
+    });
+
+    template.hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: {
+        'Fn::GetAtt': ['ImportedFunctionFunctionUrlB3FF8A17', 'FunctionArn'],
+      },
+      Principal: 'cloudfront.amazonaws.com',
+      SourceArn: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':cloudfront::',
+            { Ref: 'AWS::AccountId' },
+            ':distribution/',
+            { Ref: 'MyDistribution6271DFB5' },
+          ],
+        ],
+      },
+      InvokedViaFunctionUrl: true,
     });
   });
   test('Correctly creates a Lambda Function URL Origin with default properties', () => {
@@ -590,5 +656,58 @@ describe('ipAddressType', () => {
         ]),
       },
     });
+  });
+});
+
+function testFunctionUrl(): lambda.IFunctionUrl {
+  const fn = new lambda.Function(stack, 'TimeoutValidationFunction', {
+    code: lambda.Code.fromInline('exports.handler = async () => {};'),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.NODEJS_20_X,
+  });
+  return fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
+}
+
+// Both construction paths validate independently: the plain constructor and the
+// OAC variant returned by withOriginAccessControl.
+interface TimeoutProps {
+  readonly readTimeout?: Duration;
+  readonly keepaliveTimeout?: Duration;
+}
+
+const originFactories: Array<[string, (fnUrl: lambda.IFunctionUrl, props: TimeoutProps) => unknown]> = [
+  ['FunctionUrlOrigin', (fnUrl, props) => new FunctionUrlOrigin(fnUrl, props)],
+  ['FunctionUrlOrigin.withOriginAccessControl', (fnUrl, props) => FunctionUrlOrigin.withOriginAccessControl(fnUrl, props)],
+];
+
+describe.each(originFactories)('%s timeout validation', (_name, createOrigin) => {
+  test('validates readTimeout is at least 1 second', () => {
+    expect(() => {
+      createOrigin(testFunctionUrl(), { readTimeout: Duration.seconds(0) });
+    }).toThrow('readTimeout: Must be an int 1 seconds or greater; received 0.');
+  });
+
+  test.each([
+    Duration.seconds(121),
+    Duration.minutes(5),
+  ])('accepts readTimeout above the default quota, which the service validates at deploy time', (readTimeout) => {
+    expect(() => {
+      createOrigin(testFunctionUrl(), { readTimeout });
+    }).not.toThrow();
+  });
+
+  test('validates keepaliveTimeout is at least 1 second', () => {
+    expect(() => {
+      createOrigin(testFunctionUrl(), { keepaliveTimeout: Duration.seconds(0) });
+    }).toThrow('keepaliveTimeout: Must be an int 1 seconds or greater; received 0.');
+  });
+
+  test.each([
+    Duration.seconds(301),
+    Duration.minutes(10),
+  ])('accepts keepaliveTimeout above the default quota, which the service validates at deploy time', (keepaliveTimeout) => {
+    expect(() => {
+      createOrigin(testFunctionUrl(), { keepaliveTimeout });
+    }).not.toThrow();
   });
 });

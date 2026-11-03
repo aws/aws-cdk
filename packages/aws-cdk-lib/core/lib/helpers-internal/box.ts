@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { debugModeEnabled } from '../debug';
+import { captureStackTrace } from '../private/stack-trace';
 import type { IResolvable, IResolveContext } from '../resolvable';
-import { captureStackTrace } from '../stack-trace';
 
 const BOX_SYM = Symbol.for('@aws-cdk/core.Box');
 
@@ -159,6 +160,16 @@ export interface IArrayBox<A> extends IBox<Array<A>>, Iterable<A> {
    * @returns `true` if the predicate returns a truthy value for at least one element, otherwise `false`.
    */
   some(predicate: (value: A, index: number, obj: Array<A>) => unknown): boolean;
+
+  /**
+   * Determines whether the array includes a certain element, returning true or false as appropriate.
+   *
+   * Delegates to `Array.prototype.includes` on the underlying array.
+   *
+   * @param searchElement the element to search for.
+   * @returns `true` if the element is found, `false` otherwise.
+   */
+  includes(searchElement: A): boolean;
 
   /**
    * Creates a derived read-only box by applying `fn` to each element of the array.
@@ -532,13 +543,11 @@ class Computed<A, B> extends BaseReadableBox<B> {
   }
 }
 
-class State<A> extends BaseReadableBox<A> implements IBox<A> {
+export abstract class ReadonlyState<A> extends BaseReadableBox<A> {
   protected orderedTraces: Array<OrderedStackTrace> = [];
-  private readonly equals: (a: A, b: A) => boolean;
 
-  constructor(private value: A, options?: { equals?: (a: A, b: A) => boolean }) {
+  constructor(protected value: A) {
     super();
-    this.equals = options?.equals ?? ((a, b) => a === b);
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
       this.orderedTraces = [{ trace: captureStackTrace(this.constructor), seq: globalSeq++ }];
     }
@@ -552,26 +561,35 @@ class State<A> extends BaseReadableBox<A> implements IBox<A> {
     return this.value;
   }
 
-  public set(value: A): void {
-    if (this.equals(this.value, value)) {
-      return;
-    }
-    if (debugModeEnabled() && stackTraceCollectionEnabled) {
-      this.orderedTraces = [{ trace: captureStackTrace(this.set.bind(this)), seq: globalSeq++ }];
-    }
-    this.value = value;
-  }
-
-  public update(fn: (a: A) => A): void {
-    this.set(fn(this.value));
-  }
-
   public getStackTraces(): Array<StackTrace> {
     return this.orderedTraces.map((t) => t.trace);
   }
 
   public getOrderedStackTraces(): Array<OrderedStackTrace> {
     return this.orderedTraces;
+  }
+}
+
+class State<A> extends ReadonlyState<A> implements IBox<A> {
+  private readonly equals: (a: A, b: A) => boolean;
+
+  constructor(value: A, options?: { equals?: (a: A, b: A) => boolean }) {
+    super(value);
+    this.equals = options?.equals ?? ((a, b) => a === b);
+  }
+
+  public set(value: A): void {
+    if (this.equals(this.value, value)) {
+      return;
+    }
+    if (debugModeEnabled() && stackTraceCollectionEnabled) {
+      this.orderedTraces = [{ trace: captureStackTrace(State.prototype.set), seq: globalSeq++ }];
+    }
+    this.value = value;
+  }
+
+  public update(fn: (a: A) => A): void {
+    this.set(fn(this.value));
   }
 }
 
@@ -594,12 +612,12 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public push(...items: A[]): void {
     this.array.push(...items);
-    this.appendTrace(() => captureStackTrace(this.push.bind(this)));
+    this.appendTrace(() => captureStackTrace(ArrayState.prototype.push));
   }
 
   public pop(): A | undefined {
     const result = this.array.pop();
-    this.appendTrace(() => captureStackTrace(this.pop.bind(this)));
+    this.appendTrace(() => captureStackTrace(ArrayState.prototype.pop));
     return result;
   }
 
@@ -617,7 +635,7 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public splice(start: number, deleteCount: number, ...items: A[]): A[] {
     const result = this.array.splice(start, deleteCount, ...items);
-    this.appendTrace(() => captureStackTrace(this.splice.bind(this)));
+    this.appendTrace(() => captureStackTrace(ArrayState.prototype.splice));
     return result;
   }
 
@@ -629,6 +647,10 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public some(predicate: (value: A, index: number, obj: Array<A>) => unknown): boolean {
     return this.array.some(predicate);
+  }
+
+  public includes(searchElement: A): boolean {
+    return this.array.includes(searchElement);
   }
 
   public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {
@@ -660,12 +682,12 @@ class MapState<K, V> extends State<Map<K, V>> implements IMapBox<K, V> {
 
   public put(key: K, value: V): void {
     this.map.set(key, value);
-    this.appendTrace(() => captureStackTrace(this.put.bind(this)));
+    this.appendTrace(() => captureStackTrace(MapState.prototype.put));
   }
 
   public delete(key: K): boolean {
     const result = this.map.delete(key);
-    this.appendTrace(() => captureStackTrace(this.delete.bind(this)));
+    this.appendTrace(() => captureStackTrace(MapState.prototype.delete));
     return result;
   }
 
@@ -720,12 +742,12 @@ class SetState<A> extends State<Set<A>> implements ISetBox<A> {
 
   public add(value: A): void {
     this._set.add(value);
-    this.appendTrace(() => captureStackTrace(this.add.bind(this)));
+    this.appendTrace(() => captureStackTrace(SetState.prototype.add));
   }
 
   public delete(value: A): boolean {
     const result = this._set.delete(value);
-    this.appendTrace(() => captureStackTrace(this.delete.bind(this)));
+    this.appendTrace(() => captureStackTrace(SetState.prototype.delete));
     return result;
   }
 

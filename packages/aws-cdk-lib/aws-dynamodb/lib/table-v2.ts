@@ -37,6 +37,7 @@ import {
   ArnFormat,
   FeatureFlags,
   PhysicalName,
+  Resource,
   Stack,
   TagManager,
   TagType,
@@ -288,6 +289,13 @@ export interface TableOptionsV2 extends IContributorInsightsConfigurable {
    * @default - No resource policy statements are added to the created table.
    */
   readonly resourcePolicy?: PolicyDocument;
+
+  /**
+   * Resource policy to assign to DynamoDB Stream.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicastreamspecification.html#cfn-dynamodb-globaltable-replicastreamspecification-resourcepolicy
+   * @default - No resource policy statements are added to the stream.
+   */
+  readonly streamResourcePolicy?: PolicyDocument;
 }
 
 /**
@@ -725,6 +733,11 @@ export class TableV2 extends TableBaseV2 {
   public resourcePolicy?: PolicyDocument;
 
   /**
+   * Resource policy associated with this table's stream.
+   */
+  public streamResourcePolicy?: PolicyDocument;
+
+  /**
    * Grants for this table
    */
   public readonly grants: TableGrants;
@@ -832,6 +845,7 @@ export class TableV2 extends TableBaseV2 {
 
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
     this.resourcePolicy = props.resourcePolicy;
+    this.streamResourcePolicy = props.streamResourcePolicy;
 
     this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
@@ -860,13 +874,13 @@ export class TableV2 extends TableBaseV2 {
 
     props.replicas?.forEach(replica => this.addReplica(replica));
 
-    // Initialize grants with replica regions for multi-account permissions
+    // Initialize grants with replica regions for multi-account permissions.
+    // `hasIndex` deliberately omitted: `TableGrants` resolves `table.hasIndex` lazily at synth
+    // time, so indexes added after construction (`addGlobalSecondaryIndex`) are included.
+    // Deprecated resource props deliberately omitted: `TableGrants` discovers them from `table`.
     this.grants = new TableGrants({
       table: this,
       regions: Array.from(this.replicaTables.keys()),
-      hasIndex: this.hasIndex,
-      encryptedResource: this.encryptionKey ? this : undefined,
-      policyResource: this,
     });
 
     if (props.tableName) {
@@ -894,6 +908,28 @@ export class TableV2 extends TableBaseV2 {
     return {
       statementAdded: true,
       policyDependable: this.resourcePolicy,
+    };
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table's stream.
+   * A stream resource policy will be automatically created upon the first call to `addToStreamResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  @MethodMetadata()
+  public addToStreamResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.streamResourcePolicy) {
+      this.streamResourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.streamResourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.streamResourcePolicy,
     };
   }
 
@@ -1045,7 +1081,20 @@ export class TableV2 extends TableBaseV2 {
       resourcePolicy: resourcePolicy
         ? { policyDocument: resourcePolicy }
         : undefined,
+      replicaStreamSpecification: this.renderReplicaStreamSpecification(props),
       globalTableSettingsReplicationMode: this.globalTableSettingsReplicationMode,
+    };
+  }
+
+  private renderReplicaStreamSpecification(props: ReplicaTableProps): CfnGlobalTable.ReplicaStreamSpecificationProperty | undefined {
+    const streamResourcePolicy = props.region === this.region
+      ? this.streamResourcePolicy
+      : props.streamResourcePolicy;
+
+    if (!streamResourcePolicy) return undefined;
+
+    return {
+      resourcePolicy: { policyDocument: streamResourcePolicy },
     };
   }
 
@@ -1372,7 +1421,7 @@ export class TableV2 extends TableBaseV2 {
  * It inherits the schema (partition key, sort key, and indexes) from the source table.
  *
  * Permissions on the replica side are automatically configured. You must manually add
- * permissions to the source table using `sourceTable.grants.nultiAccountReplicationTo(replica.tableArn)`.
+ * permissions to the source table using `sourceTable.grants.multiAccountReplicationTo(replica.tableArn)`.
  *
  * @resource AWS::DynamoDB::GlobalTable
  */
@@ -1402,6 +1451,17 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this._resourcePolicy.set(value);
   }
   private readonly _resourcePolicy: IBox<PolicyDocument | undefined>;
+
+  /**
+   * Resource policy associated with this table's stream.
+   */
+  public get streamResourcePolicy(): PolicyDocument | undefined {
+    return this._streamResourcePolicy.getMutable();
+  }
+  public set streamResourcePolicy(value: PolicyDocument | undefined) {
+    this._streamResourcePolicy.set(value);
+  }
+  private readonly _streamResourcePolicy: IBox<PolicyDocument | undefined>;
 
   /**
    * Grants for this table
@@ -1441,6 +1501,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this._hasIndex = props.grantIndexPermissions ?? true;
 
     this._resourcePolicy = Box.fromValue<PolicyDocument | undefined>(props.resourcePolicy);
+    this._streamResourcePolicy = Box.fromValue<PolicyDocument | undefined>(props.streamResourcePolicy);
 
     this.encryptionKey = props.encryption?.tableKey;
 
@@ -1455,6 +1516,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
         contributorInsightsSpecification: props.contributorInsightsSpecification,
         pointInTimeRecoverySpecification: props.pointInTimeRecoverySpecification,
         resourcePolicy: this._resourcePolicy.derive(rp => rp ? { policyDocument: rp } : undefined),
+        replicaStreamSpecification: this._streamResourcePolicy.derive(srp => srp ? { resourcePolicy: { policyDocument: srp } } : undefined),
         sseSpecification: props.encryption?._renderReplicaSseSpecification(this, this.stack.region),
         tags: props.tags,
         globalTableSettingsReplicationMode: props.globalTableSettingsReplicationMode,
@@ -1471,8 +1533,6 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this.grants = new TableGrants({
       table: this,
       regions: [],
-      encryptedResource: this.encryptionKey ? this : undefined,
-      policyResource: this,
     });
 
     this.grants.multiAccountReplicationFrom(props.replicaSourceTable.tableArn);
@@ -1516,6 +1576,23 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     };
   }
 
+  /**
+   * Adds a statement to the resource policy associated with this table's stream.
+   */
+  @MethodMetadata()
+  public addToStreamResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.streamResourcePolicy) {
+      this.streamResourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.streamResourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.streamResourcePolicy,
+    };
+  }
+
   protected get hasIndex() {
     return this._hasIndex;
   }
@@ -1525,8 +1602,16 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     let sourceAccount = sourceStack.account;
     let sourceRegion = sourceStack.region;
 
-    // For imported tables, extract account/region from ARN instead of stack
-    if (!Token.isUnresolved(props.replicaSourceTable!.tableArn)) {
+    // For an owned table the construct's stack reflects its real environment,
+    // so the stack-based values above are authoritative (the table's own ARN is
+    // an opaque GetAtt token). For an imported table the construct's stack is
+    // the consuming stack, whose environment says nothing about where the table
+    // lives, so extract account/region from the imported ARN instead. splitArn
+    // handles concrete, partially tokenized, and fully opaque ARNs (the latter
+    // via a deploy-time Fn::Split); any component that is not statically known
+    // resolves to a token, which the per-field checks below skip rather than
+    // misvalidate against the consuming stack.
+    if (!Resource.isOwnedResource(props.replicaSourceTable!)) {
       const arnParts = this.stack.splitArn(props.replicaSourceTable!.tableArn, ArnFormat.SLASH_RESOURCE_NAME);
       if (arnParts.account) sourceAccount = arnParts.account;
       if (arnParts.region) sourceRegion = arnParts.region;

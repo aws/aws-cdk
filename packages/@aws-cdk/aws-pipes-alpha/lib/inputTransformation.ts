@@ -85,6 +85,7 @@ export class InputTransformation implements IInputTransformation {
   }
 
   private unquoteDynamicInputs(sub: string) {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
 
     /**

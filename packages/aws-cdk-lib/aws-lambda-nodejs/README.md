@@ -120,7 +120,7 @@ used by your function. Otherwise bundling will fail.
 ## Local bundling
 
 If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs22.x)
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs24.x)
 with the Docker platform based on the target architecture of the Lambda function.
 
 For macOS the recommended approach is to install `esbuild` as Docker volume performance is really poor.
@@ -288,6 +288,30 @@ an array of commands to run. Commands are chained with `&&`.
 
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
+
+### Repeated esbuild arguments
+
+Use an array value in `esbuildArgs` for options that esbuild supports repeating.
+Each value becomes a separate CLI argument using `--flag:value` syntax; an empty
+array omits the option. Single-value options must use a string or boolean instead.
+For example:
+
+```ts
+const esbuildArgs = {
+  '--alias': ['first=./first', 'second=./second'],
+  '--pure': ['console.log', 'console.debug'],
+};
+
+new nodejs.NodejsFunction(this, 'aliased-handler', {
+  bundling: {
+    esbuildArgs,
+  },
+});
+```
+
+This passes `--alias:first=./first`, `--alias:second=./second`,
+`--pure:console.log`, and `--pure:console.debug` to esbuild. Existing string and
+boolean values continue to work.
 
 ## Pre Compilation with TSC
 

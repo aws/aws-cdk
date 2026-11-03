@@ -47,7 +47,6 @@ const serviceRole = new iam.Role(stack, 'service-role', {
   assumedBy: new iam.ServicePrincipal('elasticbeanstalk.amazonaws.com'),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSElasticBeanstalkEnhancedHealth'),
-    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy'),
   ],
 });
 
@@ -94,8 +93,8 @@ const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', 
   ],
 });
 
-beanstalkEnv.addDependency(instanceProfile);
-beanstalkEnv.addDependency(beanstalkApp);
+beanstalkEnv.addResourceDependency(instanceProfile);
+beanstalkEnv.addResourceDependency(beanstalkApp);
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,

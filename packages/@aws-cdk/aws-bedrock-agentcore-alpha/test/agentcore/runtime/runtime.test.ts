@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
@@ -17,7 +18,6 @@ import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/inbound-aut
 import { LoggingDestination, LogType } from '../../../lib/runtime/observability';
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
-import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import {
   ProtocolType,
 } from '../../../lib/runtime/types';
@@ -753,7 +753,7 @@ describe('Runtime with local asset tests', () => {
 
     // If the runtime handler exists, test its properties
     if (runtimeHandler) {
-      expect(runtimeHandler.Properties.Runtime).toBe('nodejs22.x');
+      expect(runtimeHandler.Properties.Runtime).toBe('nodejs24.x');
       expect(runtimeHandler.Properties.Timeout).toBe(300);
     } else {
       // If it doesn't exist, that's also valid - just skip the test
@@ -1290,30 +1290,66 @@ describe('Runtime addEndpoint tests', () => {
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
 
-    const endpoint = runtime.addEndpoint('test_endpoint', {
+    runtime.addEndpoint('test_endpoint', {
       description: 'Test endpoint',
       version: '2',
     });
 
-    expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
-
-    app.synth();
     const template = Template.fromStack(stack);
-
-    // Should have both runtime and endpoint resources
-    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
-    template.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Name: 'test_endpoint',
+      Description: 'Test endpoint',
+      AgentRuntimeVersion: '2',
+    });
   });
 
-  test('Should add endpoint with default version', () => {
+  test('Should fall back to the runtime\'s agentRuntimeVersion when version is not provided', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
 
-    const endpoint = runtime.addEndpoint('test_endpoint');
+    runtime.addEndpoint('test_endpoint');
 
-    expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
+    const template = Template.fromStack(stack);
+    // When options.version is omitted, the endpoint uses the runtime resource's AgentRuntimeVersion attribute
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Name: 'test_endpoint',
+      AgentRuntimeVersion: Match.objectLike({
+        'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('testruntime.*'), 'AgentRuntimeVersion']),
+      }),
+    });
+  });
+
+  test('Should add multiple endpoints to the same runtime', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('endpoint_a');
+    runtime.addEndpoint('endpoint_b');
+    runtime.addEndpoint('endpoint_c');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_a' });
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_b' });
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_c' });
+  });
+
+  test('Should create a DependsOn from the endpoint to the runtime resource', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('dependent_endpoint');
+
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Properties: { Name: 'dependent_endpoint' },
+      DependsOn: Match.arrayWith([Match.stringLikeRegexp('testruntime.*')]),
+    });
   });
 });
 
@@ -1531,25 +1567,21 @@ describe('RuntimeNetworkConfiguration tests', () => {
 });
 
 describe('Runtime metrics and grant methods tests', () => {
-  let app: cdk.App;
   let stack: cdk.Stack;
   let runtime: Runtime;
-  let repository: ecr.Repository;
-  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  function alarmForMetric(id: string, metric: cloudwatch.Metric): void {
+    new cloudwatch.Alarm(stack, id, { metric, evaluationPeriods: 1, threshold: 1 });
+  }
 
   beforeEach(() => {
-    app = new cdk.App();
-    stack = new cdk.Stack(app, 'test-stack', {
-      env: {
-        account: '123456789012',
-        region: 'us-east-1',
-      },
-    });
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
 
-    repository = new ecr.Repository(stack, 'TestRepository', {
+    const repository = new ecr.Repository(stack, 'TestRepository', {
       repositoryName: 'test-agent-runtime',
     });
-    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
     runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -1557,69 +1589,107 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricInvocations metric', () => {
-    const metric = runtime.metricInvocations();
-    expect(metric.metricName).toBe('Invocations');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricInvocations() produces Invocations with Sum statistic', () => {
+    alarmForMetric('InvocAlarm', runtime.metricInvocations());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricInvocationsAggregated metric', () => {
-    const metric = runtime.metricInvocationsAggregated();
-    expect(metric.metricName).toBe('Invocations');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    // The dimension value will be tokenized in CDK
-    expect(metric.dimensions?.Resource).toBeDefined();
+  test('metricInvocationsAggregated() produces Invocations with Resource dimension', () => {
+    alarmForMetric('InvocAggAlarm', runtime.metricInvocationsAggregated());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ]),
+    });
   });
 
-  test('Should create metricThrottles metric', () => {
-    const metric = runtime.metricThrottles();
-    expect(metric.metricName).toBe('Throttles');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricThrottles() produces Throttles with Sum statistic', () => {
+    alarmForMetric('ThrottlesAlarm', runtime.metricThrottles());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Throttles',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricSystemErrors metric', () => {
-    const metric = runtime.metricSystemErrors();
-    expect(metric.metricName).toBe('SystemErrors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricSystemErrors() produces SystemErrors with Sum statistic', () => {
+    alarmForMetric('SysErrAlarm', runtime.metricSystemErrors());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'SystemErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricUserErrors metric', () => {
-    const metric = runtime.metricUserErrors();
-    expect(metric.metricName).toBe('UserErrors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricUserErrors() produces UserErrors with Sum statistic', () => {
+    alarmForMetric('UserErrAlarm', runtime.metricUserErrors());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'UserErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricLatency metric', () => {
-    const metric = runtime.metricLatency();
-    expect(metric.metricName).toBe('Latency');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Average');
+  test('metricLatency() produces Latency with Average statistic', () => {
+    alarmForMetric('LatencyAlarm', runtime.metricLatency());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+    });
   });
 
-  test('Should create metricTotalErrors metric', () => {
-    const metric = runtime.metricTotalErrors();
-    expect(metric.metricName).toBe('TotalErrors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricTotalErrors() produces TotalErrors with Sum statistic', () => {
+    alarmForMetric('TotalErrAlarm', runtime.metricTotalErrors());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'TotalErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricSessionCount metric', () => {
-    const metric = runtime.metricSessionCount();
-    expect(metric.metricName).toBe('SessionCount');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricSessionCount() produces SessionCount with Sum statistic', () => {
+    alarmForMetric('SessionCountAlarm', runtime.metricSessionCount());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'SessionCount',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricSessionsAggregated metric', () => {
-    const metric = runtime.metricSessionsAggregated();
-    expect(metric.metricName).toBe('Sessions');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    // The dimension value will be tokenized in CDK
-    expect(metric.dimensions?.Resource).toBeDefined();
+  test('metricSessionsAggregated() produces Sessions with Resource dimension', () => {
+    alarmForMetric('SessionsAggAlarm', runtime.metricSessionsAggregated());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ]),
+    });
   });
 
   test('Should grant invoke permissions', () => {

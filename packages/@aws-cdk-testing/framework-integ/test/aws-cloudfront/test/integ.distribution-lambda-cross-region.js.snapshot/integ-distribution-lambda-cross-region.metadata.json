@@ -1,0 +1,226 @@
+{
+  "/integ-distribution-lambda-cross-region": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:52:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Dist": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*",
+          "cachePolicy": "*",
+          "edgeLambdas": [
+            {
+              "functionVersion": "*",
+              "eventType": "origin-request"
+            },
+            {
+              "functionVersion": "*",
+              "eventType": "origin-response"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda/ArnReader": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new CrossRegionStringParamReaderProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated.js:57:9)",
+        "CrossRegionStringParamReaderProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated.js:54:28)",
+        "CrossRegionStringParamReaderProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated.js:45:21)",
+        "WrappedClass.createCrossRegionArnReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:518:127)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:504:34)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:53:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new CrossRegionStringParamReaderProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated.js:57:9)",
+        "CrossRegionStringParamReaderProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated.js:54:28)",
+        "CrossRegionStringParamReaderProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated.js:45:21)",
+        "WrappedClass.createCrossRegionArnReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:518:127)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:504:34)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:53:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda2/ArnReader": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Dist/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistB3B78991"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:293:34)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:66:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda/ArnReader/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaArnReaderAB4FC772"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.createCrossRegionArnReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:525:30)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:504:34)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:53:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda2/ArnReader/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Lambda2ArnReader5ACFBE1F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.createCrossRegionArnReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:525:30)",
+        "WrappedClass.createCrossRegionFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:504:34)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/experimental/edge-function.js:214:24)",
+        "new EdgeFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.distribution-lambda-cross-region.js:58:25)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

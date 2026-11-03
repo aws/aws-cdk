@@ -1,0 +1,56 @@
+{
+  "/Metrics-Test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk/packages/@aws-cdk/metrics-facade-alpha/test/integ.metrics.js:90:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/Metrics-Test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ],
+  "/Metrics-Test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/leonmk/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
+      ]
+    }
+  ]
+}
