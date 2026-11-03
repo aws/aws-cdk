@@ -1523,6 +1523,31 @@
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
    ]
+  },
+  "OciHelmReleaseStatusAB38D667": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesObjectValue",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "ClusterKubectlProviderframeworkonEvent68E0CF80",
+      "Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "ObjectType": "secret",
+    "ObjectName": "sh.helm.release.v1.s3-chart.v1",
+    "ObjectNamespace": "ack-system",
+    "JsonPath": ".metadata.labels.status",
+    "TimeoutSeconds": 300
+   },
+   "DependsOn": [
+    "Clustercharttestocichart9C188967",
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Conditions": {
@@ -1533,6 +1558,16 @@
     },
     "aws"
    ]
+  }
+ },
+ "Outputs": {
+  "HelmReleaseStatus": {
+   "Value": {
+    "Fn::GetAtt": [
+     "OciHelmReleaseStatusAB38D667",
+     "Value"
+    ]
+   }
   }
  },
  "Parameters": {
