@@ -2,6 +2,7 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Effect, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import type { CfnResource } from 'aws-cdk-lib/core';
 import { App, Stack } from 'aws-cdk-lib/core';
 import * as mediapackagev2 from '../lib';
 
@@ -164,6 +165,58 @@ test('OriginEndpointPolicy accepts initial policyDocument', () => {
         Principal: { Service: 'cloudfront.amazonaws.com' },
       }],
     },
+  });
+});
+
+test('OriginEndpointPolicy depends on the origin endpoint', () => {
+  const channel = mediapackagev2.Channel.fromChannelAttributes(stack, 'Channel', {
+    channelGroupName: 'MyChannelGroup',
+    channelName: 'MyChannel',
+  });
+  const origin = new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
+    channel,
+    segment: mediapackagev2.Segment.cmaf(),
+    manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
+  });
+
+  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+    originEndpoint: origin,
+    policyDocument: new PolicyDocument({
+      statements: [new PolicyStatement({
+        sid: 'AllowCloudFront',
+        principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+        actions: ['mediapackagev2:GetObject'],
+        resources: [origin.originEndpointArn],
+      })],
+    }),
+  });
+
+  Template.fromStack(stack).hasResource('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    DependsOn: [stack.getLogicalId(origin.node.defaultChild as CfnResource)],
+  });
+});
+
+test('OriginEndpointPolicy for an imported origin endpoint has no DependsOn', () => {
+  const origin = mediapackagev2.OriginEndpoint.fromOriginEndpointAttributes(stack, 'Endpoint', {
+    channelGroupName: 'MyChannelGroup',
+    channelName: 'MyChannel',
+    originEndpointName: 'MyEndpoint',
+  });
+
+  new mediapackagev2.OriginEndpointPolicy(stack, 'Policy', {
+    originEndpoint: origin,
+    policyDocument: new PolicyDocument({
+      statements: [new PolicyStatement({
+        sid: 'AllowCloudFront',
+        principals: [new ServicePrincipal('cloudfront.amazonaws.com')],
+        actions: ['mediapackagev2:GetObject'],
+        resources: [origin.originEndpointArn],
+      })],
+    }),
+  });
+
+  Template.fromStack(stack).hasResource('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    DependsOn: Match.absent(),
   });
 });
 
