@@ -3609,3 +3609,113 @@ describe('template synthesis with various configurations', () => {
     });
   });
 });
+
+describe('consumptionMode', () => {
+  const bootstrapServers = ['kafka-broker:9092'];
+  let stack: cdk.Stack;
+  let fn: TestFunction;
+  let secret: Secret;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    fn = new TestFunction(stack, 'Fn');
+    secret = new Secret(stack, 'Secret', { secretName: 'KafkaSecret' });
+  });
+
+  test('QUEUE mode renders ConsumptionMode without StartingPosition or MaximumBatchingWindowInSeconds', () => {
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'jobs',
+      secret,
+      consumerGroupId: 'jobs-workers',
+      consumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      batchSize: 50,
+      provisionedPollerConfig: {
+        minimumPollers: 1,
+        maximumPollers: 10,
+      },
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      SelfManagedEventSource: { Endpoints: { KafkaBootstrapServers: bootstrapServers } },
+      Topics: ['jobs'],
+      BatchSize: 50,
+      SelfManagedKafkaEventSourceConfig: {
+        ConsumerGroupId: 'jobs-workers',
+        ConsumptionMode: 'Queue',
+      },
+      ProvisionedPollerConfig: {
+        MinimumPollers: 1,
+        MaximumPollers: 10,
+      },
+      StartingPosition: Match.absent(),
+      StartingPositionTimestamp: Match.absent(),
+      MaximumBatchingWindowInSeconds: Match.absent(),
+    });
+  });
+
+  test('STREAM mode renders ConsumptionMode with StartingPosition', () => {
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'jobs',
+      secret,
+      startingPosition: lambda.StartingPosition.LATEST,
+      consumptionMode: lambda.KafkaConsumptionMode.STREAM,
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'LATEST',
+      SelfManagedKafkaEventSourceConfig: {
+        ConsumptionMode: 'Stream',
+      },
+    });
+  });
+
+  test('ConsumptionMode is not rendered when consumptionMode is not set', () => {
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'jobs',
+      secret,
+      startingPosition: lambda.StartingPosition.LATEST,
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      StartingPosition: 'LATEST',
+      SelfManagedKafkaEventSourceConfig: Match.absent(),
+    });
+  });
+
+  test.each([
+    ['startingPosition', { startingPosition: lambda.StartingPosition.TRIM_HORIZON }],
+    ['startingPosition', { startingPosition: lambda.StartingPosition.AT_TIMESTAMP, startingPositionTimestamp: 1640995200 }],
+    ['startingPositionTimestamp', { startingPositionTimestamp: 1640995200 }],
+    ['maxBatchingWindow', { maxBatchingWindow: cdk.Duration.millis(500) }],
+  ])('QUEUE mode throws when %s is set', (name, extra) => {
+    expect(() => new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'jobs',
+      secret,
+      consumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      ...extra,
+    })).toThrow(new RegExp(`${name}.* cannot be used when consumptionMode is KafkaConsumptionMode.QUEUE`));
+  });
+
+  test.each([
+    ['not set', undefined],
+    ['STREAM', lambda.KafkaConsumptionMode.STREAM],
+  ])('throws when startingPosition is missing and consumptionMode is %s', (_name, consumptionMode) => {
+    expect(() => new sources.SelfManagedKafkaEventSource({
+      bootstrapServers,
+      topic: 'jobs',
+      secret,
+      consumptionMode,
+    })).toThrow(/startingPosition must be set for SelfManagedKafkaEventSource unless consumptionMode is KafkaConsumptionMode.QUEUE/);
+  });
+
+  test('ManagedKafkaEventSource throws when startingPosition is missing', () => {
+    expect(() => new sources.ManagedKafkaEventSource({
+      clusterArn: dummyClusterArn,
+      topic: 'jobs',
+    })).toThrow(/startingPosition must be set for ManagedKafkaEventSource/);
+  });
+});

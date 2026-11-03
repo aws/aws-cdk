@@ -1037,4 +1037,15 @@ describe('DynamoEventSource', () => {
       },
     });
   });
+
+  test('throws when startingPosition is not set', () => {
+    const stack = new cdk.Stack();
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    expect(() => new sources.DynamoEventSource(table, {}))
+      .toThrow(/startingPosition must be set for DynamoEventSource/);
+  });
 });

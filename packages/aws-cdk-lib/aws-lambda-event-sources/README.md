@@ -274,10 +274,11 @@ myFunction.addEventSource(new KinesisConsumerEventSource(streamConsumer, {
 
 You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self-managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster. The following parameters will impact to the polling behavior:
 
-* __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp.
+* __startingPosition__: Will determine where to begin consumption. 'LATEST' will start at the most recent record and ignore all records that arrived prior to attaching the event source, 'TRIM_HORIZON' will start at the oldest record and ensure you process all available data, while 'AT_TIMESTAMP' will start reading records from a specified time stamp. Required, except for a self-managed Kafka event source in queue consumption mode, where it must not be set.
 * __startingPositionTimestamp__: The time stamp from which to start reading. Used in conjunction with __startingPosition__ when set to 'AT_TIMESTAMP'.
 * __batchSize__: Determines how many records are buffered before invoking your lambda function - could impact your function's memory usage (if too high) and ability to keep up with incoming data velocity (if too low).
-* __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
+* __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing. Not supported in queue consumption mode.
+* __consumptionMode__: (Self-managed Kafka only) `KafkaConsumptionMode.STREAM` (default) or `KafkaConsumptionMode.QUEUE`. See [Queue consumption mode](#queue-consumption-mode) below.
 * __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
 * __enabled__: If the Kafka event source mapping should be enabled. The default is true.
 * __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated. Available in provisioned mode only.
@@ -415,6 +416,34 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
     }),
   ],
   filterEncryption: myKey,
+}));
+```
+
+### Queue consumption mode
+
+By default Lambda reads a self-managed Kafka topic with a consumer group, which gives each partition to one poller and keeps the
+order of records in each partition. Set `consumptionMode` to `KafkaConsumptionMode.QUEUE` when each record is an
+independent unit of work and order does not matter. Lambda then uses a Kafka share group, so several pollers can
+read the same partition and throughput is no longer limited by the partition count.
+
+Queue mode needs Apache Kafka 4.2 or later with share groups enabled. It is not available for Amazon MSK. In queue mode
+`startingPosition`, `startingPositionTimestamp` and `maxBatchingWindow` must not be set, and the mode cannot be changed
+after the event source mapping is created. Records can be processed more than once and out of order, so the function
+should be idempotent. See [Polling Kafka topics in Queue mode](https://docs.aws.amazon.com/lambda/latest/dg/polling-kafka-queue.html).
+
+```ts
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { SelfManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+declare const secret: Secret;
+declare const myFunction: lambda.Function;
+
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers: ['kafka-broker-1.example.com:9092'],
+  topic: 'jobs',
+  consumerGroupId: 'jobs-workers',
+  secret: secret,
+  consumptionMode: lambda.KafkaConsumptionMode.QUEUE,
 }));
 ```
 

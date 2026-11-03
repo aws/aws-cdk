@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "07102d957dfb44a685d28c5842bc9f68f1f3f230518d673113004710c44ba283": {
+      "displayName": "lambda-event-source-kafka-self-managed-queue-mode Template",
+      "source": {
+        "path": "lambda-event-source-kafka-self-managed-queue-mode.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-762cde8b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "07102d957dfb44a685d28c5842bc9f68f1f3f230518d673113004710c44ba283.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

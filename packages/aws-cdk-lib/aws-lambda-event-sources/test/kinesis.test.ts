@@ -436,4 +436,12 @@ describe('KinesisEventSource', () => {
       'StartingPosition': 'TRIM_HORIZON',
     });
   });
+
+  test('throws when startingPosition is not set', () => {
+    const stack = new cdk.Stack();
+    const stream = new kinesis.Stream(stack, 'S');
+
+    expect(() => new sources.KinesisEventSource(stream, {}))
+      .toThrow(/startingPosition must be set for KinesisEventSource/);
+  });
 });
