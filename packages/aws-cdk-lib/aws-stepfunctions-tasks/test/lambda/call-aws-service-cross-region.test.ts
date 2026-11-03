@@ -331,7 +331,7 @@ describe('default tests', () => {
           {
             Action: 'sts:AssumeRole',
             Effect: 'Allow',
-            Resource: '*',
+            Resource: 'arn:aws:iam::123456789012:role/example-role',
           },
         ],
         Version: '2012-10-17',

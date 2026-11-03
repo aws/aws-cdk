@@ -37,12 +37,14 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "dynamodb:describeTable",
-        "sts:AssumeRole"
-       ],
+       "Action": "dynamodb:describeTable",
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": "arn:aws:iam::234567890123:role/apicalleestackicalleestackrole8c13ce427c3a2e0dd857"
       }
      ],
      "Version": "2012-10-17"

@@ -206,7 +206,7 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['sts:AssumeRole'],
-          resources: ['*'],
+          resources: [props.awsSdkCredentials.role.resource],
         }),
       ] : []),
     ].forEach((policy) => this.lambdaFunction.addToRolePolicy(policy));
