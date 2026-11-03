@@ -264,6 +264,34 @@ describe('default tests', () => {
     });
   });
 
+  test('does not grant sts:AssumeRole when awsSdkCredentials is not specified', () => {
+    // WHEN
+    const task = new tasks.CallAwsServiceCrossRegion(stack, 'GetObject', {
+      service: 's3',
+      action: 'getObject',
+      region: 'us-east-1',
+      iamResources: ['*'],
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 's3:getObject',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('with awsSdkCredentials of a specified role', () => {
     // WHEN
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');
