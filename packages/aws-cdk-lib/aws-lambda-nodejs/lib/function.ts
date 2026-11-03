@@ -244,8 +244,8 @@ function findLockFile(scope: Construct, depsLockFilePath?: string): string {
 /**
  * Searches for an entry file. Preference order is the following:
  * 1. Given entry file
- *    - if absolute, that entry file
- *    - if relative, the entry file relative to the project root
+ *    - if the file exists (either absolute, or relative to the current working directory), that entry file
+ *    - if the file exists relative to the project root, that entry file (as a path consisting of the project root path prepended to the entry file path)
  * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
  * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
  * 4. A .mjs file name as the defining file with id as suffix (defining-file.id.mjs)
