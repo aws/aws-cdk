@@ -473,16 +473,16 @@ export class BucketDeployment extends Construct {
           return undefined;
         })),
         SourceMarkersConfig: sanitize(this.sources.map((source): MarkersConfig | undefined => {
-          if (source.markersConfig) {
-            const config = { ...source.markersConfig };
-            if (config.markerEncodings && Object.keys(config.markerEncodings).length === 0) {
-              delete config.markerEncodings;
-            }
-            return config;
-          } else if (this.sources.length > 1) {
-            return {};
-          }
-          return undefined;
+          const minimalConfig = onlyDefined({
+            jsonEscape: source.markersConfig?.jsonEscape,
+            markerEncodings: onlyDefined(source.markersConfig?.markerEncodings),
+          } satisfies MarkersConfig);
+
+          // If there is something to put here, or if we need to fill the index in
+          // an array, return the current object.
+          return minimalConfig || this.sources.length > 1
+            ? { ...minimalConfig }
+            : undefined;
         })),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
@@ -1052,4 +1052,11 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
 function sanitize<A>(box: IReadableBox<Array<A>>) {
   return box.derive(arr => arr.filter(Boolean))
     .derive(arr => arr.length === 0 ? undefined : arr);
+}
+
+function onlyDefined<A extends object>(obj: A | undefined): A | undefined {
+  if (obj === undefined || Object.keys(obj).length === 0) {
+    return undefined;
+  }
+  return obj;
 }
