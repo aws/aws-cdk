@@ -1,30 +1,30 @@
 {
   "version": "55.0.0",
   "files": {
-    "05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5": {
+    "ae0fa8f616fbc13b43a2f54c04a54429328119dac07bb9999a9a19cca69650ab": {
       "displayName": "PreparelessPipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
-        "path": "asset.05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5",
+        "path": "asset.ae0fa8f616fbc13b43a2f54c04a54429328119dac07bb9999a9a19cca69650ab",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-a1532e82": {
+        "current_account-current_region-f5902977": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "05d12dee8943f1c2e2f3fbe7afdd5b9e9ab3b708590bd56da8838039d1043eb5.zip",
+          "objectKey": "ae0fa8f616fbc13b43a2f54c04a54429328119dac07bb9999a9a19cca69650ab.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "2ba2a7dc68513200067f66e232bcf58307abec6421d5b397d7e7b4e325ba454c": {
+    "50ce7a51828a21d8c87196622d3097493abc4c2af37e481a8a62e70e5696bf68": {
       "displayName": "PreparelessPipelineStack Template",
       "source": {
         "path": "PreparelessPipelineStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-fdb2ce66": {
+        "current_account-current_region-87fb4cf2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2ba2a7dc68513200067f66e232bcf58307abec6421d5b397d7e7b4e325ba454c.json",
+          "objectKey": "50ce7a51828a21d8c87196622d3097493abc4c2af37e481a8a62e70e5696bf68.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

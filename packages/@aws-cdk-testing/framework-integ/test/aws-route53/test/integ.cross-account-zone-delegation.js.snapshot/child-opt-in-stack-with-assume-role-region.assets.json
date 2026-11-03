@@ -1,31 +1,31 @@
 {
   "version": "55.0.0",
   "files": {
-    "4ef07ca35c3754ba5add0ff305cf00582177bdc26de380df788126c465b2a44e": {
+    "df92079a09988345fd1ac89b6edb7ec7d62ffb19ad71bdd6f0fd53ea0d72cd95": {
       "displayName": "child-opt-in-stack-with-assume-role-region/Custom::CrossAccountZoneDelegationCustomResourceProvider Code",
       "source": {
-        "path": "asset.4ef07ca35c3754ba5add0ff305cf00582177bdc26de380df788126c465b2a44e",
+        "path": "asset.df92079a09988345fd1ac89b6edb7ec7d62ffb19ad71bdd6f0fd53ea0d72cd95",
         "packaging": "zip"
       },
       "destinations": {
-        "234567890123-af-south-1-7493f2db": {
+        "234567890123-af-south-1-eb2e0771": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
-          "objectKey": "4ef07ca35c3754ba5add0ff305cf00582177bdc26de380df788126c465b2a44e.zip",
+          "objectKey": "df92079a09988345fd1ac89b6edb7ec7d62ffb19ad71bdd6f0fd53ea0d72cd95.zip",
           "region": "af-south-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
         }
       }
     },
-    "0c84b7b51f1bf0260fab3130acdd7dff5437098ebbace1c347cd7fce88988138": {
+    "edf9399ba2bdc50e507c66a71330dcb8627cfccdf8423d5d4fc55e02897c29f7": {
       "displayName": "child-opt-in-stack-with-assume-role-region Template",
       "source": {
         "path": "child-opt-in-stack-with-assume-role-region.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-af-south-1-f3ba3c80": {
+        "234567890123-af-south-1-c3c82a77": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
-          "objectKey": "0c84b7b51f1bf0260fab3130acdd7dff5437098ebbace1c347cd7fce88988138.json",
+          "objectKey": "edf9399ba2bdc50e507c66a71330dcb8627cfccdf8423d5d4fc55e02897c29f7.json",
           "region": "af-south-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
         }
