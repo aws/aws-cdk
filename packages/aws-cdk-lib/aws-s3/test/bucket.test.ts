@@ -1728,14 +1728,17 @@ describe('bucket', () => {
       Template.fromStack(stack).templateMatches({});
     });
 
-    test('import can specify its effective encryption mode', () => {
+    test.each([
+      [s3.BucketEncryption.DSSE_MANAGED, s3.BucketEncryption.DSSE_MANAGED],
+      [s3.BucketEncryption.UNENCRYPTED, s3.BucketEncryption.S3_MANAGED],
+    ])('import with encryption %p reports %p', (encryption, expected) => {
       const stack = new cdk.Stack();
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
         bucketName: 'my-bucket',
-        encryption: s3.BucketEncryption.DSSE_MANAGED,
+        encryption,
       });
 
-      expect(bucket.encryption).toBe(s3.BucketEncryption.DSSE_MANAGED);
+      expect(bucket.encryption).toBe(expected);
     });
 
     test('import can also be used to import arbitrary ARNs', () => {
@@ -1879,16 +1882,25 @@ describe('bucket', () => {
       });
     });
 
-    test("correctly reflects the 'encryption' property", () => {
-      cfnBucket.bucketEncryption = {
-        serverSideEncryptionConfiguration: [{
-          serverSideEncryptionByDefault: {
-            sseAlgorithm: 'aws:kms',
-          },
-        }],
-      };
+    test.each([
+      ['no encryption configuration', undefined, s3.BucketEncryption.S3_MANAGED],
+      ['a rule without a default algorithm', { serverSideEncryptionConfiguration: [{ bucketKeyEnabled: true }] }, s3.BucketEncryption.S3_MANAGED],
+      ['AES256', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }] }, s3.BucketEncryption.S3_MANAGED],
+      ['aws:kms without a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }] }, s3.BucketEncryption.KMS_MANAGED],
+      ['aws:kms with a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms', kmsMasterKeyId: 'key-id' } }] }, s3.BucketEncryption.KMS],
+      ['aws:kms:dsse without a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' } }] }, s3.BucketEncryption.DSSE_MANAGED],
+      ['aws:kms:dsse with a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse', kmsMasterKeyId: 'key-id' } }] }, s3.BucketEncryption.DSSE],
+      ['an unrecognized algorithm', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:future' } }] }, undefined],
+    ])("reflects the 'encryption' property for %s", (_description, bucketEncryption, expected) => {
+      cfnBucket.bucketEncryption = bucketEncryption;
 
-      expect(bucket.encryption).toBe(s3.BucketEncryption.KMS_MANAGED);
+      expect(bucket.encryption).toBe(expected);
+    });
+
+    test("reports an unknown 'encryption' when the configuration is unresolved", () => {
+      cfnBucket.bucketEncryption = cdk.Lazy.any({ produce: () => ({ serverSideEncryptionConfiguration: [] }) });
+
+      expect(bucket.encryption).toBeUndefined();
     });
 
     test('allows setting the RemovalPolicy of the underlying resource', () => {

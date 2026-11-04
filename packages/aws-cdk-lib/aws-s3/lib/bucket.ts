@@ -93,9 +93,14 @@ export interface IBucket extends IResource, IBucketRef {
   readonly isWebsite?: boolean;
 
   /**
-   * The effective default server-side encryption mode for this bucket.
+   * The default server-side encryption mode that S3 applies to new objects in this bucket.
    *
-   * @default - unknown for imported or unresolved buckets
+   * For a bucket defined in this app, the mode is derived from the underlying `CfnBucket`,
+   * so it includes changes made through escape hatches. S3 applies SSE-S3 to every bucket
+   * that has no default encryption rule, so such a bucket reports `S3_MANAGED` and
+   * `UNENCRYPTED` is never returned.
+   *
+   * @default - undefined when the mode cannot be determined at synthesis time, or for an imported bucket that does not specify it
    */
   readonly encryption?: BucketEncryption;
 
@@ -494,9 +499,12 @@ export interface BucketAttributes {
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
   /**
-   * The effective default server-side encryption mode for this bucket.
+   * The default server-side encryption mode of the imported bucket.
    *
-   * @default - unknown
+   * `UNENCRYPTED` is reported as `S3_MANAGED`, because S3 applies SSE-S3 to every bucket
+   * that has no default encryption rule.
+   *
+   * @default - the encryption mode of the imported bucket is unknown
    */
   readonly encryption?: BucketEncryption;
 
@@ -604,7 +612,9 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   public abstract readonly bucketDualStackDomainName: string;
 
   /**
-   * The effective default server-side encryption mode for this bucket.
+   * The default server-side encryption mode that S3 applies to new objects in this bucket.
+   *
+   * `UNENCRYPTED` is never returned; see `IBucket.encryption`.
    */
   public get encryption(): BucketEncryption | undefined {
     return undefined;
@@ -2257,7 +2267,8 @@ export class Bucket extends BucketBase {
       bucketWebsiteDomainName: attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain,
       bucketRegionalDomainName: attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`,
       bucketDualStackDomainName: attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`,
-      encryption: attrs.encryption,
+      // S3 applies SSE-S3 to every bucket without a default rule, so report one consistent mode.
+      encryption: attrs.encryption === BucketEncryption.UNENCRYPTED ? BucketEncryption.S3_MANAGED : attrs.encryption,
       encryptionKey: attrs.encryptionKey,
       isWebsite: attrs.isWebsite ?? false,
       autoCreatePolicy: false,
@@ -2333,7 +2344,7 @@ export class Bucket extends BucketBase {
       }
 
       public get encryption(): BucketEncryption | undefined {
-        return this.reflection.encryption;
+        return effectiveEncryption(this.reflection);
       }
 
       public get disallowPublicAccess(): boolean | undefined {
@@ -2526,7 +2537,7 @@ export class Bucket extends BucketBase {
   public readonly bucketRegionalDomainName: string;
 
   public get encryption(): BucketEncryption | undefined {
-    return this.reflection.encryption;
+    return effectiveEncryption(this.reflection);
   }
   public readonly encryptionKey?: kms.IKey;
   public get isWebsite(): boolean | undefined {
@@ -4020,6 +4031,36 @@ function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U
   }
 
   return list.map(callback);
+}
+
+/**
+ * Maps the default encryption rule of a CfnBucket to the mode S3 applies to new objects.
+ *
+ * - No rule, or a rule without `SSEAlgorithm`: S3 applies SSE-S3 to every bucket.
+ * - `aws:kms` / `aws:kms:dsse` without `KMSMasterKeyID`: S3 uses the AWS managed key `aws/s3`,
+ *   so the mode is `KMS_MANAGED` / `DSSE_MANAGED`. With a key ID it is `KMS` / `DSSE`.
+ * - An algorithm CDK does not model, or a rule that is unresolved at synthesis time: `undefined`.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-bucket-encryption.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-s3-bucket-serversideencryptionbydefault.html
+ */
+function effectiveEncryption(reflection: BucketReflection): BucketEncryption | undefined {
+  const rule = reflection.defaultEncryption;
+  if (rule === undefined) {
+    return undefined;
+  }
+
+  switch (rule.sseAlgorithm) {
+    case undefined:
+    case 'AES256':
+      return BucketEncryption.S3_MANAGED;
+    case 'aws:kms':
+      return rule.hasKmsMasterKeyId ? BucketEncryption.KMS : BucketEncryption.KMS_MANAGED;
+    case 'aws:kms:dsse':
+      return rule.hasKmsMasterKeyId ? BucketEncryption.DSSE : BucketEncryption.DSSE_MANAGED;
+    default:
+      return undefined;
+  }
 }
 
 /**

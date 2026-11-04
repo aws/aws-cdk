@@ -25,16 +25,33 @@ const kmsBucket = new s3.Bucket(stack, 'MyKMSBucket', {
 
 kmsBucket.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-new cdk.CfnOutput(stack, 'DSSEBucketEncryption', { value: dsseBucket.encryption! });
-new cdk.CfnOutput(stack, 'SSES3BucketEncryption', { value: sseS3Bucket.encryption! });
-new cdk.CfnOutput(stack, 'KMSBucketEncryption', { value: kmsBucket.encryption! });
-
 new s3.Bucket(stack, 'MySSECBlockedBucket', {
   encryption: s3.BucketEncryption.S3_MANAGED,
   blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-new integ.IntegTest(app, 'IntegTestDSSEBucket', {
+const test = new integ.IntegTest(app, 'IntegTestDSSEBucket', {
   testCases: [stack],
 });
+
+// Check that the encryption mode the reflection reports matches what S3 applied to each deployed bucket.
+const sseAlgorithmByEncryption: Partial<Record<s3.BucketEncryption, string>> = {
+  [s3.BucketEncryption.S3_MANAGED]: 'AES256',
+  [s3.BucketEncryption.KMS]: 'aws:kms',
+  [s3.BucketEncryption.DSSE_MANAGED]: 'aws:kms:dsse',
+};
+
+for (const bucket of [dsseBucket, sseS3Bucket, kmsBucket]) {
+  const sseAlgorithm = bucket.encryption && sseAlgorithmByEncryption[bucket.encryption];
+  if (!sseAlgorithm) {
+    throw new Error(`unexpected encryption mode ${JSON.stringify(bucket.encryption)} for ${bucket.node.path}`);
+  }
+
+  test.assertions.awsApiCall('S3', 'getBucketEncryption', { Bucket: bucket.bucketName })
+    .expect(integ.ExpectedResult.objectLike({
+      ServerSideEncryptionConfiguration: {
+        Rules: [{ ApplyServerSideEncryptionByDefault: { SSEAlgorithm: sseAlgorithm } }],
+      },
+    }));
+}

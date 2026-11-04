@@ -1,4 +1,3 @@
-import { BucketEncryption } from './bucket';
 import type { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import type { CfnKey } from '../../aws-kms';
 import { CfnKeyMatcher } from '../../aws-kms/lib/private/cfn-key-matcher';
@@ -6,6 +5,23 @@ import { Fn, Reference, Token, Tokenization, UnscopedValidationError } from '../
 import { ConstructReflection, memoizedGetter, PropertyReflection } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IBucketRef } from '../../interfaces/generated/aws-s3-interfaces.generated';
+
+/**
+ * The default server-side encryption rule declared on a CfnBucket.
+ */
+export interface DefaultEncryptionReflection {
+  /**
+   * The `SSEAlgorithm` of the default encryption rule.
+   *
+   * `undefined` when the bucket declares no default encryption rule.
+   */
+  readonly sseAlgorithm?: string;
+
+  /**
+   * Whether the rule sets a `KMSMasterKeyID`, either as a literal or as a token.
+   */
+  readonly hasKmsMasterKeyId: boolean;
+}
 
 /**
  * Provides read-only reflection on the configuration of an S3 Bucket's
@@ -122,9 +138,13 @@ export class BucketReflection {
   }
 
   /**
-   * The effective default server-side encryption mode for the bucket, if known.
+   * The default server-side encryption rule declared on the bucket.
+   *
+   * Returns `undefined` when the rule cannot be determined at synthesis time:
+   * the bucket has no CfnBucket, or the encryption configuration or its
+   * `SSEAlgorithm` is an unresolved token.
    */
-  get encryption(): BucketEncryption | undefined {
+  get defaultEncryption(): DefaultEncryptionReflection | undefined {
     if (!this._bucket) {
       return undefined;
     }
@@ -135,30 +155,15 @@ export class BucketReflection {
     }
 
     const algorithm = PropertyReflection.of(this._bucket, 'bucketEncryption.serverSideEncryptionConfiguration.0.serverSideEncryptionByDefault.sseAlgorithm');
-    const hasAlgorithm = algorithm.exists();
-    if (hasAlgorithm === undefined) {
+    if (algorithm.exists() === undefined || Token.isUnresolved(algorithm.get())) {
       return undefined;
-    }
-    if (!hasAlgorithm) {
-      return BucketEncryption.S3_MANAGED;
     }
 
-    const sseAlgorithm = algorithm.get();
-    if (Token.isUnresolved(sseAlgorithm)) {
-      return undefined;
-    }
+    // A tokenized key ID (e.g. a CfnKey ARN) still means a key is set, so only an absent key ID counts as "no key".
     const keyId = PropertyReflection.of(this._bucket, 'bucketEncryption.serverSideEncryptionConfiguration.0.serverSideEncryptionByDefault.kmsMasterKeyId');
-    const hasKeyId = keyId.exists();
-
-    switch (sseAlgorithm) {
-      case 'AES256':
-        return BucketEncryption.S3_MANAGED;
-      case 'aws:kms':
-        return hasKeyId === false ? BucketEncryption.KMS_MANAGED : BucketEncryption.KMS;
-      case 'aws:kms:dsse':
-        return hasKeyId === false ? BucketEncryption.DSSE_MANAGED : BucketEncryption.DSSE;
-      default:
-        return undefined;
-    }
+    return {
+      sseAlgorithm: algorithm.get(),
+      hasKmsMasterKeyId: keyId.exists() !== false,
+    };
   }
 }
