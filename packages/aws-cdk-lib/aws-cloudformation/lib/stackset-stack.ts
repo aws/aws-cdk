@@ -328,20 +328,21 @@ export class StackSetStack extends Stack {
  * The capabilities that a StackSet must acknowledge to deploy the given template
  *
  * IAM resources need `CAPABILITY_IAM`, or `CAPABILITY_NAMED_IAM` if they have custom names.
- * `CAPABILITY_NAMED_IAM` covers both, so the names need not be inspected. A nested stack
- * may contain IAM resources, and its template is not inspected, so it needs the same.
+ * `CAPABILITY_NAMED_IAM` covers both, so the names need not be inspected.
  * Macros, used by a `Transform` section or an `Fn::Transform` anywhere in the template,
  * need `CAPABILITY_AUTO_EXPAND`. They can add IAM resources that are not in the template,
- * so they need `CAPABILITY_NAMED_IAM` too.
+ * so they need `CAPABILITY_NAMED_IAM` too. A nested stack's template is not inspected,
+ * and it may contain IAM resources or macros, so it needs both.
  */
 function requiredCapabilitiesOf(template: any): CfnCapabilities[] {
   const resourceTypes: string[] = Object.values(template.Resources ?? {}).map((resource: any) => resource.Type);
-  const usesMacros = template.Transform !== undefined || hasKey(template, 'Fn::Transform');
+  const hasNestedStacks = resourceTypes.includes('AWS::CloudFormation::Stack');
+  const mayUseMacros = hasNestedStacks || template.Transform !== undefined || hasKey(template, 'Fn::Transform');
   const capabilities = new Array<CfnCapabilities>();
-  if (usesMacros || resourceTypes.some(type => type.startsWith('AWS::IAM::') || type === 'AWS::CloudFormation::Stack')) {
+  if (mayUseMacros || resourceTypes.some(type => type.startsWith('AWS::IAM::'))) {
     capabilities.push(CfnCapabilities.NAMED_IAM);
   }
-  if (usesMacros) {
+  if (mayUseMacros) {
     capabilities.push(CfnCapabilities.AUTO_EXPAND);
   }
   return capabilities;

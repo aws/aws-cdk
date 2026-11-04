@@ -600,7 +600,10 @@ describe('StackSet capabilities', () => {
     expect(capabilitiesOf(stack, 'late')).toEqual(['CAPABILITY_NAMED_IAM']);
   });
 
-  test('acknowledges named IAM resources for a template with a nested stack', () => {
+  test.each([
+    ['a self managed', DeploymentType.selfManaged(), ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND']],
+    ['a service managed', DeploymentType.serviceManaged(), ['CAPABILITY_NAMED_IAM']],
+  ])('acknowledges the named IAM resources and macros a nested stack may contain in %s StackSet', (_, deploymentType, expected) => {
     const app = new App();
     const stack = new Stack(app);
     const stackSetStack = new StackSetStack(app, 'StackSet', {
@@ -611,10 +614,11 @@ describe('StackSet capabilities', () => {
 
     new StackSet(stack, 'StackSet', {
       stackSetName: 'nested',
+      deploymentType,
       template: StackSetTemplate.fromStackSetStack(stackSetStack),
     });
 
-    expect(capabilitiesOf(stack, 'nested')).toEqual(['CAPABILITY_NAMED_IAM']);
+    expect(capabilitiesOf(stack, 'nested')).toEqual(expected);
   });
 
   test('acknowledges macros and the named IAM resources they may add for a template with a transform in a self managed StackSet', () => {
