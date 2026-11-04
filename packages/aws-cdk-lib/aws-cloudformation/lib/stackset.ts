@@ -599,33 +599,37 @@ enum CallAs {
  */
 export interface OperationPreferences {
   /**
-   * The number or percentage of accounts, per region, in which stack operations can fail
-   * before CloudFormation stops the operation in that region.
+   * The number or percentage of accounts per Region this operation can fail in before
+   * CloudFormation stops the operation in that Region.
    *
-   * If the operation is stopped in a region, CloudFormation doesn't attempt the operation
-   * in any subsequent regions.
+   * If the operation is stopped in a Region, CloudFormation doesn't attempt the operation in
+   * any subsequent Regions.
    *
-   * @default - the CloudFormation default, 0 accounts
+   * @default - the CloudFormation default failure tolerance
    */
   readonly failureTolerance?: StackSetFailureTolerance;
   /**
-   * The maximum number or percentage of accounts in which to perform the operation at one time.
+   * The maximum number or percentage of accounts in which to perform this operation at one time.
    *
-   * With `StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE`, the maximum concurrent count is
-   * at most one more than the failure tolerance count. Use
-   * `StackSetConcurrencyMode.SOFT_FAILURE_TOLERANCE` to run at this concurrency regardless of
-   * the failure tolerance.
+   * This is dependent on the value of `failureTolerance`. The maximum concurrent count is at
+   * most one more than the failure tolerance count.
    *
-   * @default - the CloudFormation default, 1 account
+   * Note that this setting lets you specify the maximum for operations. For large deployments,
+   * under certain circumstances the actual number of accounts acted upon concurrently may be
+   * lower due to service throttling.
+   *
+   * @default - the CloudFormation default concurrency
    */
   readonly maxConcurrency?: StackSetMaxConcurrency;
   /**
-   * How the concurrency level behaves while the operation runs.
+   * Specifies how the concurrency level behaves during the operation execution.
    *
-   * With `StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE`, the maximum concurrent count is
-   * at most one more than the failure tolerance count.
+   * `StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE` dynamically lowers the concurrency level
+   * to ensure the number of failed accounts never exceeds the failure tolerance count +1.
+   * `StackSetConcurrencyMode.SOFT_FAILURE_TOLERANCE` decouples the failure tolerance from the
+   * actual concurrency.
    *
-   * @default - the CloudFormation default, StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE
+   * @default - the CloudFormation default
    */
   readonly concurrencyMode?: StackSetConcurrencyMode;
   /**
@@ -675,12 +679,13 @@ export class RegionConcurrencyType {
 }
 
 /**
- * The number or percentage of accounts, per region, in which a StackSet operation can fail
- * before CloudFormation stops the operation in that region.
+ * The number or percentage of accounts per Region a StackSet operation can fail in before
+ * CloudFormation stops the operation in that Region.
  */
 export class StackSetFailureTolerance {
   /**
-   * Allow the operation to fail in this number of accounts per region.
+   * The number of accounts per Region this operation can fail in before CloudFormation stops
+   * the operation in that Region.
    *
    * @param count the number of accounts, an integer greater than or equal to 0
    */
@@ -692,9 +697,8 @@ export class StackSetFailureTolerance {
   }
 
   /**
-   * Allow the operation to fail in this percentage of accounts per region.
-   *
-   * CloudFormation rounds the resulting number of accounts down.
+   * The percentage of accounts per Region this stack operation can fail in before
+   * CloudFormation stops the operation in that Region.
    *
    * @param percentage the percentage of accounts, an integer from 0 to 100
    */
@@ -718,12 +722,12 @@ export class StackSetFailureTolerance {
 }
 
 /**
- * The maximum number or percentage of accounts in which CloudFormation performs a StackSet
- * operation at one time.
+ * The maximum number or percentage of accounts in which to perform a StackSet operation at
+ * one time.
  */
 export class StackSetMaxConcurrency {
   /**
-   * Perform the operation in at most this number of accounts at one time.
+   * The maximum number of accounts in which to perform this operation at one time.
    *
    * @param count the number of accounts, an integer greater than or equal to 1
    */
@@ -735,9 +739,11 @@ export class StackSetMaxConcurrency {
   }
 
   /**
-   * Perform the operation in at most this percentage of accounts at one time.
+   * The maximum percentage of accounts in which to perform this operation at one time.
    *
-   * CloudFormation rounds the resulting number of accounts down, but to no fewer than 1.
+   * When calculating the number of accounts based on the specified percentage, CloudFormation
+   * rounds down to the next whole number. This is true except in cases where rounding down
+   * would result in zero. In this case, CloudFormation sets the number as one instead.
    *
    * @param percentage the percentage of accounts, an integer from 1 to 100
    */
@@ -761,22 +767,27 @@ export class StackSetMaxConcurrency {
 }
 
 /**
- * How the concurrency level of a StackSet operation behaves while the operation runs.
+ * How the concurrency level behaves during the execution of a StackSet operation.
  */
 export class StackSetConcurrencyMode {
   /**
-   * Dynamically lower the concurrency so that the number of failed accounts never exceeds
-   * the failure tolerance count plus one.
+   * Dynamically lowers the concurrency level to ensure the number of failed accounts never
+   * exceeds the failure tolerance count +1.
    *
-   * The initial concurrency is the lower of the maximum concurrent count and the failure
-   * tolerance count plus one, and is reduced proportionally by the number of failures.
+   * The initial actual concurrency is set to the lower of either the maximum concurrent count,
+   * or the failure tolerance count +1. The actual concurrency is then reduced proportionally by
+   * the number of failures. This is the default behavior.
    *
-   * This is the default behavior.
+   * If failure tolerance or maximum concurrent accounts are set to percentages, the behavior is
+   * similar.
    */
   public static readonly STRICT_FAILURE_TOLERANCE = new StackSetConcurrencyMode('STRICT_FAILURE_TOLERANCE');
 
   /**
-   * Run the operation at the maximum concurrency regardless of the number of failures.
+   * Decouples the failure tolerance from the actual concurrency.
+   *
+   * This allows StackSet operations to run at the concurrency level set by the maximum
+   * concurrency, regardless of the number of failures.
    */
   public static readonly SOFT_FAILURE_TOLERANCE = new StackSetConcurrencyMode('SOFT_FAILURE_TOLERANCE');
 
