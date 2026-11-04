@@ -55,6 +55,7 @@ describe('default endpoint', () => {
       RevisionWeights: [{ RevisionId: { 'Fn::GetAtt': [Match.stringLikeRegexp('^FnRevision'), 'RevisionId'] }, Weight: 100 }],
     });
     expect(fn.endpoint.endpointType).toEqual(WebFunctionEndpointType.HOME_REGION);
+    expect(fn.endpoint.authType).toEqual(WebFunctionAuthType.IAM_AUTH);
   });
 
   test('keeps its name and logical ID when a property injector rebuilds the endpoint props', () => {
@@ -179,6 +180,7 @@ describe('addEndpoint', () => {
       endpointArn: 'arn:aws:lambda:us-east-1:123456789012:web-function/other/endpoint/prod',
       domainName: 'example.lambda-web.us-east-1.on.aws',
       endpointType: WebFunctionEndpointType.HOME_REGION,
+      authType: WebFunctionAuthType.IAM_AUTH,
     });
 
     expect(WebFunctionEndpoint.isWebFunctionEndpoint(fn.endpoint)).toBe(true);
@@ -436,6 +438,7 @@ describe('resource-based policy', () => {
       endpointArn: 'arn:aws:lambda:us-east-1:111111111111:web-function/existing/endpoint/prod',
       domainName: 'abc.lambda-web.global.on.aws',
       endpointType: WebFunctionEndpointType.HOME_REGION,
+      authType: WebFunctionAuthType.IAM_AUTH,
     });
     imported.grants.invoke(new ServicePrincipal('cloudfront.amazonaws.com'));
 
@@ -453,11 +456,13 @@ describe('WebFunctionEndpoint.fromWebFunctionEndpointAttributes', () => {
       endpointArn,
       domainName: 'abc.lambda-web.global.on.aws',
       endpointType: WebFunctionEndpointType.MULTI_REGION,
+      authType: WebFunctionAuthType.IAM_AUTH,
     });
 
     expect(imported.endpointArn).toEqual(endpointArn);
     expect(imported.domainName).toEqual('abc.lambda-web.global.on.aws');
     expect(imported.endpointType).toEqual(WebFunctionEndpointType.MULTI_REGION);
+    expect(imported.authType).toEqual(WebFunctionAuthType.IAM_AUTH);
     expect(imported.webFunctionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:web-function/existing');
     expect(imported.env).toEqual({ account: '123456789012', region: 'us-east-1' });
   });
@@ -469,6 +474,7 @@ describe('WebFunctionEndpoint.fromWebFunctionEndpointAttributes', () => {
       endpointArn: token,
       domainName: 'abc.lambda-web.global.on.aws',
       endpointType: WebFunctionEndpointType.HOME_REGION,
+      authType: WebFunctionAuthType.IAM_AUTH,
     });
 
     expect(stack.resolve(imported.webFunctionArn)).toEqual({
@@ -483,6 +489,7 @@ describe('WebFunctionEndpoint.fromWebFunctionEndpointAttributes', () => {
       endpointArn,
       domainName: 'abc.lambda-web.global.on.aws',
       endpointType: WebFunctionEndpointType.HOME_REGION,
+      authType: WebFunctionAuthType.IAM_AUTH,
     });
     imported.grants.invoke(caller);
 
