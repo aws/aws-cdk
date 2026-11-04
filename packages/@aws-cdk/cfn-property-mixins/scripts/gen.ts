@@ -14,7 +14,7 @@ async function main() {
   const pkgPath = path.join(__dirname, '..');
   const outputPath = path.join(pkgPath, 'lib', 'services');
 
-  const result = await cfnPropMixins.generateAll({ outputPath, packageBases: CFN_PROPERTY_MIXINS_BASE_NAMES, namespaces: ['AWS', 'Alexa'] });
+  const result = await cfnPropMixins.generateAll({ outputPath, packageBases: CFN_PROPERTY_MIXINS_BASE_NAMES, orgs: ['AWS', 'Alexa'] });
 
   await setupSubmodules(result.moduleMap, result.contributions, outputPath);
   await updateExportsAndEntryPoints(result.moduleMap, pkgPath);

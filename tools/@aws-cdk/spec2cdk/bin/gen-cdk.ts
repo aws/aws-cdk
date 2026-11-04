@@ -23,12 +23,12 @@ main().catch(e => {
 async function main() {
   const { values } = parseArgs({
     options: {
-      // Comma-separated top-level CloudFormation namespaces to generate code for, e.g. `AWS,Alexa`.
-      // Required for aws-cdk-lib. Not allowed for alpha packages, whose name already selects the namespace.
-      'namespaces': { type: 'string' },
+      // Comma-separated orgs to generate code for, e.g. `AWS,Alexa`. An org is the first part of a CloudFormation type name.
+      // Required for aws-cdk-lib. Not allowed for alpha packages, whose name already selects the services.
+      'orgs': { type: 'string' },
     },
   });
-  const namespaces = values.namespaces?.split(',').map((ns) => ns.trim());
+  const orgs = values.orgs?.split(',').map((org) => org.trim());
 
   // Generate all L1s based on config in scope-map.json
 
@@ -36,7 +36,7 @@ async function main() {
     skippedServices: [],
     scopeMapPath: moduleMapPath,
     isStable,
-    namespaces,
+    orgs,
     singleModule: isStable ? undefined : path.parse(libDir).name.replace('-alpha', ''),
   }));
 

@@ -21,7 +21,7 @@ async function main() {
     outputPath,
     packageBases: METRICS_FACADE_BASE_NAMES,
     moduleNamePrefix: '@aws-cdk/metrics-facade-alpha',
-    namespaces: ['AWS', 'Alexa'],
+    orgs: ['AWS', 'Alexa'],
   });
 
   await setupSubmodules(result.moduleMap, result.contributions, outputPath);

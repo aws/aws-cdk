@@ -20,8 +20,8 @@ async function main() {
   const outputPath = path.join(pkgPath, 'lib', 'services');
 
   const results: GeneratorResult[] = [
-    await generateEvents({ outputPath, namespaces: ['AWS', 'Alexa'] }),
-    await generateLogsDeliveryMixins({ outputPath, packageBases: MIXINS_PREVIEW_BASE_NAMES, namespaces: ['AWS', 'Alexa'] }),
+    await generateEvents({ outputPath, orgs: ['AWS', 'Alexa'] }),
+    await generateLogsDeliveryMixins({ outputPath, packageBases: MIXINS_PREVIEW_BASE_NAMES, orgs: ['AWS', 'Alexa'] }),
   ];
 
   const moduleMap = mergeModuleMaps(...results.map(r => r.moduleMap));

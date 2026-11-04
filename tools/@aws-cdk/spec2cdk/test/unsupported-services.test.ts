@@ -2,7 +2,7 @@ import type { SpecDatabase } from '@aws-cdk/service-spec-types';
 import { emptyDatabase } from '@aws-cdk/service-spec-types';
 import { queryDb } from '../lib/util';
 
-const NAMESPACES = ['AWS', 'Alexa'];
+const ORGS = ['AWS', 'Alexa'];
 
 let db: SpecDatabase;
 
@@ -19,29 +19,29 @@ beforeEach(() => {
   }
 });
 
-test('getAllServices returns only services that belong to the given namespaces', () => {
-  expect(namespaces(queryDb.getAllServices(db, NAMESPACES))).toEqual(['AWS::Some', 'Alexa::ASK']);
+test('getAllServices returns only services that belong to the given orgs', () => {
+  expect(namespaces(queryDb.getAllServices(db, ORGS))).toEqual(['AWS::Some', 'Alexa::ASK']);
   expect(namespaces(queryDb.getAllServices(db, ['Other']))).toEqual(['Other::Some']);
   expect(queryDb.getAllServices(db, [])).toEqual([]);
 });
 
-test('getAllServices returns all services without namespaces', () => {
+test('getAllServices returns all services without orgs', () => {
   expect(namespaces(queryDb.getAllServices(db))).toEqual(['AWS::Some', 'Alexa::ASK', 'Other::Some']);
 });
 
-test('getAllScopes returns only services that belong to the given namespaces', () => {
-  expect(queryDb.getAllScopes(db, NAMESPACES, 'cloudFormationNamespace').map((s) => s.namespace).sort()).toEqual(['AWS::Some', 'Alexa::ASK']);
+test('getAllScopes returns only services that belong to the given orgs', () => {
+  expect(queryDb.getAllScopes(db, ORGS, 'cloudFormationNamespace').map((s) => s.namespace).sort()).toEqual(['AWS::Some', 'Alexa::ASK']);
 });
 
-test('getServicesByGenerateServiceRequest skips requested services that do not belong to the given namespaces', () => {
+test('getServicesByGenerateServiceRequest skips requested services that do not belong to the given orgs', () => {
   const requests = [{ namespace: 'AWS::Some' }, { namespace: 'Other::Some' }];
 
-  expect(queryDb.getServicesByGenerateServiceRequest(db, requests, NAMESPACES).map(([req, s]) => [req.namespace, s.name])).toEqual([
+  expect(queryDb.getServicesByGenerateServiceRequest(db, requests, ORGS).map(([req, s]) => [req.namespace, s.name])).toEqual([
     ['AWS::Some', 'aws-some'],
   ]);
 });
 
-test('getServicesByGenerateServiceRequest returns all requested services without namespaces', () => {
+test('getServicesByGenerateServiceRequest returns all requested services without orgs', () => {
   const requests = [{ namespace: 'AWS::Some' }, { namespace: 'Other::Some' }];
 
   expect(queryDb.getServicesByGenerateServiceRequest(db, requests).map(([req, s]) => [req.namespace, s.name])).toEqual([
@@ -50,14 +50,14 @@ test('getServicesByGenerateServiceRequest returns all requested services without
   ]);
 });
 
-test('getServicesByCloudFormationNamespace skips services that do not belong to the given namespaces', () => {
-  expect(queryDb.getServicesByCloudFormationNamespace(db, ['Alexa::ASK', 'Other::Some'], NAMESPACES).map((s) => s.name)).toEqual(['alexa-ask']);
+test('getServicesByCloudFormationNamespace skips services that do not belong to the given orgs', () => {
+  expect(queryDb.getServicesByCloudFormationNamespace(db, ['Alexa::ASK', 'Other::Some'], ORGS).map((s) => s.name)).toEqual(['alexa-ask']);
 });
 
-test('a namespace matches up to the namespace separator', () => {
+test('an org matches up to the namespace separator', () => {
   db.allocate('service', { name: 'awsome-thing', shortName: 'thing', capitalized: 'Thing', cloudFormationNamespace: 'AWSome::Thing' });
 
-  expect(namespaces(queryDb.getAllServices(db, NAMESPACES))).not.toContain('AWSome::Thing');
+  expect(namespaces(queryDb.getAllServices(db, ORGS))).not.toContain('AWSome::Thing');
 });
 
 function namespaces(services: Array<{ cloudFormationNamespace: string }>) {

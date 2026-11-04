@@ -2,57 +2,35 @@ import type { Service, SpecDatabase } from '@aws-cdk/service-spec-types';
 import type { GenerateServiceRequest } from '../generate';
 import type { ModuleMapScope } from '../module-topology';
 
-/**
- * Whether the CloudFormation namespace of the service is, or is nested under, one of the given namespaces.
- *
- * For example, `AWS::S3` belongs to `AWS` and to `AWS::S3`, but not to `AWSome`.
- *
- * @param namespaces namespaces without the trailing separator, e.g. `AWS`
- */
-function belongsToNamespace(service: Service, namespaces: string[]): boolean {
-  return namespaces.some((namespace) => `${service.cloudFormationNamespace}::`.startsWith(`${namespace}::`));
+function belongsToOrg(service: Service, orgs: string[]): boolean {
+  return orgs.some((org) => `${service.cloudFormationNamespace}::`.startsWith(`${org}::`));
 }
 
-/**
- * All services that belong to one of the given namespaces.
- *
- * @param namespaces namespaces without the trailing separator, e.g. `AWS`. All services if not given.
- */
-export function getAllServices(db: SpecDatabase, namespaces?: string[]) {
+export function getAllServices(db: SpecDatabase, orgs?: string[]) {
   const services = db.all('service');
-  return namespaces ? services.filter((s) => belongsToNamespace(s, namespaces)) : services;
+  return orgs ? services.filter((s) => belongsToOrg(s, orgs)) : services;
 }
 
-export function getServicesByCloudFormationNamespace(db: SpecDatabase, cloudFormationNamespaces: string[], namespaces: string[]) {
-  return cloudFormationNamespaces
+export function getServicesByCloudFormationNamespace(db: SpecDatabase, namespaces: string[], orgs: string[]) {
+  return namespaces
     .flatMap((ns) => db.lookup('service', 'cloudFormationNamespace', 'equals', ns))
-    .filter((s) => belongsToNamespace(s, namespaces));
+    .filter((s) => belongsToOrg(s, orgs));
 }
 
-/**
- * The services of the given requests that belong to one of the given namespaces.
- *
- * @param namespaces namespaces without the trailing separator, e.g. `AWS`. All requested services if not given.
- */
 export function getServicesByGenerateServiceRequest(
   db: SpecDatabase,
   requests: GenerateServiceRequest[],
-  namespaces?: string[],
+  orgs?: string[],
 ): Array<[GenerateServiceRequest, Service]> {
   const requestMap = new Map(requests.map(s => [s.namespace, s]));
   return requests
     .flatMap((s) => db.lookup('service', 'cloudFormationNamespace', 'equals', s.namespace))
-    .filter((s) => !namespaces || belongsToNamespace(s, namespaces))
+    .filter((s) => !orgs || belongsToOrg(s, orgs))
     .map(
       (service) => [requestMap.get(service.cloudFormationNamespace)!, service] as [GenerateServiceRequest, Service],
     );
 }
 
-/**
- * The scopes of all services that belong to one of the given namespaces.
- *
- * @param namespaces namespaces without the trailing separator, e.g. `AWS`. All services if not given.
- */
-export function getAllScopes(db: SpecDatabase, namespaces?: string[], field: keyof Service = 'name'): ModuleMapScope[] {
-  return getAllServices(db, namespaces).map((s) => ({ namespace: s[field] }));
+export function getAllScopes(db: SpecDatabase, orgs?: string[], field: keyof Service = 'name'): ModuleMapScope[] {
+  return getAllServices(db, orgs).map((s) => ({ namespace: s[field] }));
 }
