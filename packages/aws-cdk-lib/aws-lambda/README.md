@@ -2291,14 +2291,15 @@ const internal = fn.addEndpoint('Internal', {
 });
 ```
 
-To reference an endpoint defined elsewhere, import it with its ARN, domain name and type.
-The domain name is assigned by the service, so it cannot be derived from the ARN:
+To reference an endpoint defined elsewhere, import it with its ARN, domain name, type and auth
+type. The domain name is assigned by the service, so it cannot be derived from the ARN:
 
 ```ts
 const endpoint = lambda.WebFunctionEndpoint.fromWebFunctionEndpointAttributes(this, 'Endpoint', {
   endpointArn: 'arn:aws:lambda:us-west-2:123456789012:web-function/my-function/endpoint/prod',
   domainName: 'abcd1234.lambda-web.us-west-2.on.aws',
   endpointType: lambda.WebFunctionEndpointType.HOME_REGION,
+  authType: lambda.WebFunctionAuthType.IAM_AUTH,
 });
 ```
 
