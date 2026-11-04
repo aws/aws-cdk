@@ -1,4 +1,5 @@
 import * as path from 'node:path';
+import { parseArgs } from 'node:util';
 import * as fs from 'fs-extra';
 import writeCloudFormationIncludeMapping from '../lib/cfn2ts/cloudformation-include';
 import { generateAll } from '../lib/cfn2ts/index';
@@ -20,12 +21,22 @@ main().catch(e => {
 });
 
 async function main() {
+  const { values } = parseArgs({
+    options: {
+      // Comma-separated orgs to generate code for, e.g. `AWS,Alexa`. An org is the first part of a CloudFormation type name.
+      // Required for aws-cdk-lib. Not allowed for alpha packages, whose name already selects the services.
+      orgs: { type: 'string' },
+    },
+  });
+  const orgs = values.orgs?.split(',').map((org) => org.trim());
+
   // Generate all L1s based on config in scope-map.json
 
   const generated = (await generateAll(libDir, {
     skippedServices: [],
     scopeMapPath: moduleMapPath,
     isStable,
+    orgs,
     singleModule: isStable ? undefined : path.parse(libDir).name.replace('-alpha', ''),
   }));
 
