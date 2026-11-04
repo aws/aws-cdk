@@ -287,6 +287,11 @@ export interface IWebFunctionEndpoint extends IResource, IWebFunctionEndpointRef
   readonly endpointType: WebFunctionEndpointType;
 
   /**
+   * How the endpoint authenticates requests.
+   */
+  readonly authType: WebFunctionAuthType;
+
+  /**
    * Grant methods for the endpoint.
    */
   readonly grants: WebFunctionEndpointGrants;
@@ -312,6 +317,15 @@ export interface WebFunctionEndpointAttributes {
    * The endpoint type.
    */
   readonly endpointType: WebFunctionEndpointType;
+
+  /**
+   * How the endpoint authenticates requests.
+   *
+   * For an imported endpoint this is taken as given: it is not verified against the
+   * deployed endpoint and must match it, because downstream constructs rely on it for
+   * a synth-time security decision. Like `domainName`, it cannot be derived from the ARN.
+   */
+  readonly authType: WebFunctionAuthType;
 }
 
 /**
@@ -322,6 +336,7 @@ export abstract class WebFunctionEndpointBase extends Resource implements IWebFu
   public abstract readonly domainName: string;
   public abstract readonly webFunctionArn: string;
   public abstract readonly endpointType: WebFunctionEndpointType;
+  public abstract readonly authType: WebFunctionAuthType;
 
   /** Grant methods for the endpoint. */
   public readonly grants: WebFunctionEndpointGrants = WebFunctionEndpointGrants.fromWebFunctionEndpoint(this);
@@ -416,6 +431,7 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
       public readonly domainName = attrs.domainName;
       public readonly webFunctionArn = functionArnOfEndpoint(attrs.endpointArn);
       public readonly endpointType = attrs.endpointType;
+      public readonly authType = attrs.authType;
     }
     return new Import(scope, id, { environmentFromArn: attrs.endpointArn });
   }
@@ -443,6 +459,9 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
 
   /** The endpoint type. */
   public readonly endpointType: WebFunctionEndpointType;
+
+  /** How the endpoint authenticates requests. */
+  public readonly authType: WebFunctionAuthType;
 
   /** The underlying L1 CfnWebFunctionEndpoint resource. Use for escape hatches. */
   public readonly resource: CfnWebFunctionEndpoint;
@@ -568,6 +587,7 @@ export class WebFunctionEndpoint extends WebFunctionEndpointBase {
     this.domainName = this.resource.attrDomainName;
     this.webFunctionArn = this.resource.attrFunctionArn;
     this.endpointType = endpointType;
+    this.authType = props.authType;
   }
 
   /** @internal */
