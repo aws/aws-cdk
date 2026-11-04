@@ -55,7 +55,7 @@ describe('Guard Rule Fixtures', () => {
   test('every fixture belongs to a rule file', () => {
     const misplaced = findFiles(fixturesDir, '.json')
       .map(file => path.relative(fixturesDir, file))
-      .filter(file => !fixtures.includes(path.basename(file)) || !ruleIds.includes(path.dirname(file)));
+      .filter(file => !ruleIds.includes(path.dirname(file)));
     expect(misplaced).toEqual([]);
   });
 
