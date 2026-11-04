@@ -19,13 +19,13 @@
   },
   "dependencies": {
     "@aws-sdk/client-sts": "3.632.0",
-    "@cdklabs/cdk-atmosphere-client": "^0.0.124"
+    "@cdklabs/cdk-atmosphere-client": "^0.0.126"
   },
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "jest": "^29",
     "ts-jest": "^29.4.15",
-    "typescript": "~5.9.3"
+    "typescript": "~6.0.3"
   },
   "license": "Apache-2.0"
 }
