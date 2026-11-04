@@ -13,10 +13,6 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
     }
   ],
   "/integ-stack-set-service-managed/BootstrapVersion": [

@@ -80,6 +80,11 @@ enum AccountFilterType {
   DIFFERENCE = 'DIFFERENCE',
 
   /**
+   * Deploys to the specified accounts in addition to the OU
+   */
+  UNION = 'UNION',
+
+  /**
    * Only deploy to accounts in an OU
    */
   NONE = 'NONE',
@@ -91,10 +96,7 @@ interface AccountFilterConfig {
 }
 
 /**
- * Narrows the accounts of the organizational units a StackSet target deploys to
- *
- * To deploy to accounts in another organizational unit as well, add another target
- * with `StackSet.addTarget()`.
+ * Refines which accounts to deploy stacks to by specifying how to use the `Accounts` and `OrganizationalUnits` properties together.
  *
  * @example
  * // deploy only to account 11111111111 of the OU
@@ -121,6 +123,22 @@ export abstract class StackSetAccountFilter {
    */
   public static difference(accounts: string[]): StackSetAccountFilter {
     return new AccountFilter('difference', AccountFilterType.DIFFERENCE, accounts);
+  }
+
+  /**
+   * Deploy to every account in the organizational units and also to the listed accounts
+   *
+   * The listed accounts can be outside the organizational units.
+   *
+   * CloudFormation documents that `UNION` is not supported for create operations when using
+   * a StackSet as a resource or the `CreateStackInstances` API.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-cloudformation-stackset-deploymenttargets.html
+   *
+   * @param accounts the AWS account IDs to deploy to in addition to the organizational units
+   */
+  public static union(accounts: string[]): StackSetAccountFilter {
+    return new AccountFilter('union', AccountFilterType.UNION, accounts);
   }
 
   /**
@@ -182,7 +200,7 @@ export interface OrganizationsTargetOptions extends StackSetTargetOptions {
   readonly organizationalUnits: string[];
 
   /**
-   * Which accounts of the organizational units to deploy to
+   * Which accounts to deploy to, in combination with the organizational units
    *
    * @default - deploys to every account in the organizational units
    */
@@ -220,14 +238,22 @@ interface TargetBindOptions {}
  *
  * `fromAccounts` deploys the stack set to specific AWS accounts. Use it with a self managed StackSet.
  *
- * `fromOrganizationalUnits` deploys the stack set to specific organizational units, optionally
- * narrowed to some of their accounts with an `accountFilter`. Use it with a service managed StackSet.
+ * `fromOrganizationalUnits` deploys the stack set to specific organizational units. With an
+ * `accountFilter` it can also include accounts from other OUs, or exclude accounts from the
+ * specified OUs. Use it with a service managed StackSet.
  *
  * @example
  * // deploy to specific accounts
  * StackSetTarget.fromAccounts({
  *   accounts: ['11111111111', '22222222222'],
  *   regions: ['us-east-1', 'us-east-2'],
+ * });
+ *
+ * // deploy to OUs and 1 additional account
+ * StackSetTarget.fromOrganizationalUnits({
+ *   regions: ['us-east-1', 'us-east-2'],
+ *   organizationalUnits: ['ou-1111111', 'ou-2222222'],
+ *   accountFilter: StackSetAccountFilter.union(['33333333333']),
  * });
  *
  * // deploy to OUs but exclude 1 account
@@ -242,7 +268,6 @@ export abstract class StackSetTarget {
    * Deploy the StackSet to a list of accounts
    *
    * Only a self managed StackSet (`DeploymentType.selfManaged()`) can use this target.
-   * A service managed StackSet throws when it gets this target.
    *
    * @example
    * StackSetTarget.fromAccounts({
@@ -257,10 +282,9 @@ export abstract class StackSetTarget {
   /**
    * Deploy the StackSet to a list of AWS Organizations organizational units.
    *
-   * You can optionally narrow the accounts with `accountFilter`.
+   * You can optionally exclude, keep only or add accounts with `accountFilter`.
    *
    * Only a service managed StackSet (`DeploymentType.serviceManaged()`) can use this target.
-   * A self managed StackSet throws when it gets this target.
    *
    * @example
    * StackSetTarget.fromOrganizationalUnits({
@@ -419,10 +443,6 @@ interface DeploymentTypeOptions {}
 
 /**
  * The permission model a StackSet uses to deploy stack instances
- *
- * The permission model decides the targets a StackSet accepts: a service managed StackSet
- * deploys to organizational units (`StackSetTarget.fromOrganizationalUnits()`), and a self
- * managed StackSet deploys to accounts (`StackSetTarget.fromAccounts()`).
  */
 export abstract class DeploymentType {
   /**

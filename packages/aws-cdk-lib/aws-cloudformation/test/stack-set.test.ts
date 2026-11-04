@@ -345,6 +345,35 @@ test('fromOrganizations default', () => {
   });
 });
 
+test('fromOrganizations with a union account filter', () => {
+  const app = new App();
+  const stack = new Stack(app);
+
+  new StackSet(stack, 'StackSet', {
+    target: StackSetTarget.fromOrganizationalUnits({
+      regions: ['us-east-1'],
+      organizationalUnits: ['ou-1111111'],
+      accountFilter: StackSetAccountFilter.union(['222222222222', '333333333333']),
+    }),
+    deploymentType: DeploymentType.serviceManaged({
+      delegatedAdmin: false,
+      autoDeployEnabled: false,
+    }),
+    template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+    StackInstancesGroup: [{
+      Regions: ['us-east-1'],
+      DeploymentTargets: {
+        AccountFilterType: 'UNION',
+        OrganizationalUnitIds: ['ou-1111111'],
+        Accounts: ['222222222222', '333333333333'],
+      },
+    }],
+  });
+});
+
 describe('organizational unit account filters', () => {
   function deploymentTargetsOf(accountFilter?: StackSetAccountFilter) {
     const app = new App();
@@ -374,6 +403,11 @@ describe('organizational unit account filters', () => {
       AccountFilterType: 'DIFFERENCE',
       Accounts: ['222222222222', '333333333333'],
     }],
+    ['union', StackSetAccountFilter.union(['222222222222', '333333333333']), {
+      OrganizationalUnitIds: ['ou-1111111'],
+      AccountFilterType: 'UNION',
+      Accounts: ['222222222222', '333333333333'],
+    }],
   ])('%s renders the matching account filter type', (_name, accountFilter, expected) => {
     expect(deploymentTargetsOf(accountFilter)).toEqual(expected);
   });
@@ -381,6 +415,7 @@ describe('organizational unit account filters', () => {
   test.each([
     ['intersection', StackSetAccountFilter.intersection],
     ['difference', StackSetAccountFilter.difference],
+    ['union', StackSetAccountFilter.union],
   ])('%s accepts a tokenized account list', (_name, factory) => {
     const app = new App();
     const stack = new Stack(app);
@@ -1632,6 +1667,7 @@ describe('StackSet validation errors', () => {
   test.each([
     ['intersection', StackSetAccountFilter.intersection],
     ['difference', StackSetAccountFilter.difference],
+    ['union', StackSetAccountFilter.union],
   ])('fails with an error code when the %s account filter has no accounts', (name, factory) => {
     expect(() => factory([])).toThrow(expect.objectContaining({
       name: 'StackSetAccountFilterAccountsRequired',

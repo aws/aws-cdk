@@ -15,23 +15,12 @@
     "StackInstancesGroup": [
      {
       "DeploymentTargets": {
-       "AccountFilterType": "NONE",
-       "OrganizationalUnitIds": [
-        "ou-abcd-11111111"
-       ]
-      },
-      "Regions": [
-       "us-east-1"
-      ]
-     },
-     {
-      "DeploymentTargets": {
        "AccountFilterType": "INTERSECTION",
        "Accounts": [
         "111111111111"
        ],
        "OrganizationalUnitIds": [
-        "ou-abcd-22222222"
+        "ou-abcd-11111111"
        ]
       },
       "Regions": [
