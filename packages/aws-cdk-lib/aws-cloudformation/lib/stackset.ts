@@ -348,7 +348,7 @@ export class StackSetAutoDeployment {
    * organizational unit.
    *
    * By default the Stack is retained in accounts that are removed from the
-   * organizational unit; set `retainStacksOnAccountRemoval` to `false` to delete it instead.
+   * organizational unit.
    */
   public static enabled(options: StackSetAutoDeploymentOptions = {}): StackSetAutoDeployment {
     return new StackSetAutoDeployment({
@@ -378,8 +378,7 @@ export class StackSetAutoDeployment {
 }
 
 /**
- * The account a service managed StackSet is created and managed from: the
- * AWS Organizations management account or a delegated administrator account.
+ * The account a service managed StackSet is created and managed from.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-delegated-admin.html
  */
@@ -393,22 +392,20 @@ export class StackSetCallAs {
 
   /**
    * The StackSet is managed from the AWS Organizations management account.
-   *
-   * This renders the CloudFormation value `SELF`.
    */
-  public static readonly MANAGEMENT_ACCOUNT = new StackSetCallAs('SELF');
+  public static readonly SELF = new StackSetCallAs('SELF');
 
   /**
    * Use a custom call-as value
    *
-   * @param value the CloudFormation value of the call-as option
+   * @param value the custom value of the call-as option
    */
   public static of(value: string): StackSetCallAs {
     return new StackSetCallAs(value);
   }
 
   /**
-   * @param value the CloudFormation value of the call-as option
+   * @param value the value of the call-as option
    */
   private constructor(public readonly value: string) { }
 }
@@ -424,15 +421,12 @@ export interface ServiceManagedOptions {
    *
    * This has no effect if {@link StackSetTarget.fromAccounts} is used
    *
-   * @default StackSetAutoDeployment.enabled() - automatic deployment is enabled and stacks are retained in removed accounts
+   * @default - automatic deployment is enabled and stacks are retained in removed accounts
    */
   readonly autoDeployment?: StackSetAutoDeployment;
 
   /**
    * The account this StackSet is created and managed from.
-   *
-   * Use `StackSetCallAs.MANAGEMENT_ACCOUNT` if you are using the AWS Organizations
-   * management account instead of a delegated administrator account.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-delegated-admin.html
    *

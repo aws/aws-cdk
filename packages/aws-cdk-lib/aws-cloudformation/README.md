@@ -222,8 +222,8 @@ that are removed from them. Use `autoDeployment` to delete the Stack from remove
 instead, or to turn automatic deployments off with `StackSetAutoDeployment.disabled()`.
 
 By default a service managed StackSet is created from a delegated administrator account. Set
-`callAs` to `StackSetCallAs.MANAGEMENT_ACCOUNT` if you deploy it from the AWS Organizations
-management account instead (CloudFormation calls this `SELF`).
+`callAs` to `StackSetCallAs.SELF` if you deploy it from the AWS Organizations management
+account instead.
 
 ```ts
 const app = new App();
@@ -237,7 +237,7 @@ new StackSet(stack, 'StackSet', {
   }),
   deploymentType: DeploymentType.serviceManaged({
     autoDeployment: StackSetAutoDeployment.enabled({ retainStacksOnAccountRemoval: false }),
-    callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+    callAs: StackSetCallAs.SELF,
   }),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
