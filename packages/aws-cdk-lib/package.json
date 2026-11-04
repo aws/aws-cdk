@@ -118,7 +118,7 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/asset-awscli-v1": "2.2.292",
+    "@aws-cdk/asset-awscli-v1": "2.2.296",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.3",
     "@aws-cdk/cloud-assembly-api": "^2.5.0",
     "@aws-cdk/cloud-assembly-schema": "^55.2.0",
