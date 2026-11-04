@@ -267,7 +267,7 @@ test('service managed stackset with options', () => {
       },
     }),
     deploymentType: DeploymentType.serviceManaged({
-      callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+      callAs: StackSetCallAs.SELF,
       autoDeployment: StackSetAutoDeployment.disabled(),
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
@@ -331,7 +331,7 @@ describe('service managed stackset call-as', () => {
   test.each([
     ['is not set', undefined, 'DELEGATED_ADMIN'],
     ['is DELEGATED_ADMIN', StackSetCallAs.DELEGATED_ADMIN, 'DELEGATED_ADMIN'],
-    ['is MANAGEMENT_ACCOUNT', StackSetCallAs.MANAGEMENT_ACCOUNT, 'SELF'],
+    ['is SELF', StackSetCallAs.SELF, 'SELF'],
     ['is a custom value', StackSetCallAs.of('SELF'), 'SELF'],
   ])('renders CallAs when it %s', (_description, callAs, expected) => {
     const app = new App();
@@ -349,12 +349,6 @@ describe('service managed stackset call-as', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
       CallAs: expected,
     });
-  });
-
-  test('exposes the CloudFormation value of each call-as option', () => {
-    expect(StackSetCallAs.DELEGATED_ADMIN.value).toEqual('DELEGATED_ADMIN');
-    expect(StackSetCallAs.MANAGEMENT_ACCOUNT.value).toEqual('SELF');
-    expect(StackSetCallAs.of('SELF').value).toEqual('SELF');
   });
 });
 
@@ -391,7 +385,7 @@ test('fromOrganizations default', () => {
       },
     }),
     deploymentType: DeploymentType.serviceManaged({
-      callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+      callAs: StackSetCallAs.SELF,
       autoDeployment: StackSetAutoDeployment.disabled(),
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
@@ -427,7 +421,7 @@ test('fromOrganizations with intersectionAccounts', () => {
       intersectionAccounts: ['222222222222', '333333333333'],
     }),
     deploymentType: DeploymentType.serviceManaged({
-      callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+      callAs: StackSetCallAs.SELF,
       autoDeployment: StackSetAutoDeployment.disabled(),
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
@@ -456,7 +450,7 @@ test('fromOrganizations with additionalAccounts', () => {
       additionalAccounts: ['222222222222', '333333333333'],
     }),
     deploymentType: DeploymentType.serviceManaged({
-      callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+      callAs: StackSetCallAs.SELF,
       autoDeployment: StackSetAutoDeployment.disabled(),
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
@@ -485,7 +479,7 @@ test('fromOrganizations with excludeAccounts', () => {
       excludeAccounts: ['222222222222', '333333333333'],
     }),
     deploymentType: DeploymentType.serviceManaged({
-      callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+      callAs: StackSetCallAs.SELF,
       autoDeployment: StackSetAutoDeployment.disabled(),
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
@@ -516,7 +510,7 @@ test('fromOrganizations throws when intersectionAccounts and excludeAccounts are
         excludeAccounts: ['333333333333'],
       }),
       deploymentType: DeploymentType.serviceManaged({
-        callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+        callAs: StackSetCallAs.SELF,
         autoDeployment: StackSetAutoDeployment.disabled(),
       }),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
@@ -537,7 +531,7 @@ test('fromOrganizations throws when intersectionAccounts and additionalAccounts 
         additionalAccounts: ['333333333333'],
       }),
       deploymentType: DeploymentType.serviceManaged({
-        callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+        callAs: StackSetCallAs.SELF,
         autoDeployment: StackSetAutoDeployment.disabled(),
       }),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
@@ -559,7 +553,7 @@ test('fromOrganizations throws when all three account filters are specified', ()
         additionalAccounts: ['333333333333'],
       }),
       deploymentType: DeploymentType.serviceManaged({
-        callAs: StackSetCallAs.MANAGEMENT_ACCOUNT,
+        callAs: StackSetCallAs.SELF,
         autoDeployment: StackSetAutoDeployment.disabled(),
       }),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
