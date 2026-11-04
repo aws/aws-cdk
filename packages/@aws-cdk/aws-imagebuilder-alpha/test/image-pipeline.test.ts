@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -570,6 +571,89 @@ describe('ImagePipeline', () => {
               ],
             },
           },
+        ]),
+      },
+    });
+  });
+
+  test('generates an execution role when the infrastructure configuration uses a parent instance', () => {
+    const infrastructureConfiguration = new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+      parentInstance: {
+        autoScalingGroup: autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'Pool', 'build-pool'),
+      },
+    });
+
+    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
+      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+      infrastructureConfiguration,
+    });
+
+    const template = Template.fromStack(stack);
+
+    expect(imagePipeline.executionRole).toBeInstanceOf(iam.Role);
+    template.hasResourceProperties('AWS::ImageBuilder::ImagePipeline', { ExecutionRole: Match.anyValue() });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: 'autoscaling:DescribeAutoScalingGroups',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: ['ec2:CreateTags', 'ec2:DeleteTags'],
+            Condition: { StringEquals: { 'ec2:ResourceTag/aws:autoscaling:groupName': 'build-pool' } },
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:us-east-1:123456789012:instance/*']],
+            },
+          },
+          {
+            Action: 'autoscaling:DetachInstances',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':autoscaling:us-east-1:123456789012:autoScalingGroup:*:autoScalingGroupName/build-pool',
+                ],
+              ],
+            },
+          },
+        ]),
+      },
+    });
+  });
+
+  test('grants parent instance permissions to a pre-defined execution role', () => {
+    const executionRole = new iam.Role(stack, 'ExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('imagebuilder.amazonaws.com'),
+    });
+    const infrastructureConfiguration = new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+      parentInstance: {
+        autoScalingGroup: autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'Pool', 'build-pool'),
+      },
+    });
+
+    const imagePipeline = new ImagePipeline(stack, 'ImagePipeline', {
+      recipe: ImageRecipe.fromImageRecipeName(stack, 'ImageRecipe', 'imported-image-recipe'),
+      infrastructureConfiguration,
+      executionRole,
+    });
+
+    const template = Template.fromStack(stack);
+
+    expect(imagePipeline.executionRole).toBe(executionRole);
+    template.resourceCountIs('AWS::IAM::Role', 2);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      Roles: [{ Ref: Match.stringLikeRegexp('^ExecutionRole') }],
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({ Action: 'autoscaling:DescribeAutoScalingGroups' }),
+          Match.objectLike({ Action: ['ec2:CreateTags', 'ec2:DeleteTags'] }),
+          Match.objectLike({ Action: 'autoscaling:DetachInstances' }),
         ]),
       },
     });

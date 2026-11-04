@@ -1135,6 +1135,7 @@ const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration
   securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', vpc.vpcDefaultSecurityGroup)],
   keyPair: ec2.KeyPair.fromKeyPairName(this, 'KeyPair', 'imagebuilder-instance-key-pair'),
   terminateInstanceOnFailure: true,
+  terminateInstanceOnCompletion: true,
   // Optional - IMDSv2 settings
   httpTokens: imagebuilder.HttpTokens.REQUIRED,
   httpPutResponseHopLimit: 1,
@@ -1158,6 +1159,63 @@ const infrastructureConfiguration = new imagebuilder.InfrastructureConfiguration
   }
 });
 ```
+
+#### Build on an instance from an Auto Scaling group
+
+Instead of launching a new instance for every build, Image Builder can take an instance that's already running in an
+Auto Scaling group, so builds skip the instance launch. Image Builder picks an `InService` instance whose SSM Agent is
+online and whose platform and architecture match the image, tags it, and detaches it from the group without lowering
+the desired capacity, so the group launches a replacement. This applies only to the build phase - test instances
+launch as usual.
+
+The build instance keeps the settings the group launched it with (instance type, instance profile, network, volumes,
+and instance metadata options), so set those in the group's launch template - the infrastructure configuration's
+`instanceTypes`, network, `httpTokens`, and `httpPutResponseHopLimit` settings apply only to test instances. Its instance
+profile needs the `AmazonSSMManagedInstanceCore` and `EC2InstanceProfileForImageBuilder` managed policies.
+
+```ts
+const buildPool = new autoscaling.AutoScalingGroup(this, 'BuildPool', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+  machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch(
+    '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
+  ),
+  role: new iam.Role(this, 'BuildPoolRole', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    managedPolicies: [
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('EC2InstanceProfileForImageBuilder')
+    ]
+  }),
+  // The build instance keeps the group's instance metadata options, so require IMDSv2 here
+  requireImdsv2: true,
+  minCapacity: 1,
+  maxCapacity: 2
+});
+
+const parentInstanceInfrastructureConfiguration = new imagebuilder.InfrastructureConfiguration(
+  this,
+  'ParentInstanceInfrastructureConfiguration',
+  {
+    parentInstance: {
+      autoScalingGroup: buildPool,
+      // Optional - how long a build waits for an available instance. By default, the build fails right away
+      capacityWaitTimeout: Duration.minutes(10)
+    }
+  }
+);
+
+new imagebuilder.ImagePipeline(this, 'ParentInstanceImagePipeline', {
+  recipe: exampleImageRecipe,
+  infrastructureConfiguration: parentInstanceInfrastructureConfiguration
+});
+```
+
+Taking an instance from the group needs an execution role that can describe the group, tag its instances, and detach
+them. The image pipeline or image creates an execution role with these permissions, scoped to the group, or adds them
+to the `executionRole` you provide unless it was imported with `mutable: false`. For an imported infrastructure
+configuration, grant these permissions to the execution role yourself. For more information, see
+[Build on an instance from an Auto Scaling group](https://docs.aws.amazon.com/imagebuilder/latest/userguide/infra-config-parent-instance.html).
 
 ### Distribution Configuration
 

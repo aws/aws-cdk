@@ -648,7 +648,14 @@ export class ImagePipeline extends ImagePipelineBase {
     this.executionRole = getExecutionRole(
       this,
       (grantee: iam.IGrantable) => this.grantDefaultExecutionRolePermissions(grantee),
-      props,
+      {
+        ...props,
+        parentInstanceAutoScalingGroup: InfrastructureConfiguration.isInfrastructureConfiguration(
+          this.infrastructureConfiguration,
+        )
+          ? this.infrastructureConfiguration._parentInstanceAutoScalingGroup
+          : undefined,
+      },
     );
 
     if (InfrastructureConfiguration.isInfrastructureConfiguration(this.infrastructureConfiguration)) {
