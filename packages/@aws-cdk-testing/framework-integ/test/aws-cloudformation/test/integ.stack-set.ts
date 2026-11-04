@@ -127,6 +127,11 @@ class TestCase extends Stack {
         executionRoleName: props.executionRole.roleName,
         adminRole,
       }),
+      operationPreferences: {
+        failureTolerance: cfn.StackSetFailureTolerance.count(1),
+        maxConcurrency: cfn.StackSetMaxConcurrency.count(2),
+        concurrencyMode: cfn.StackSetConcurrencyMode.SOFT_FAILURE_TOLERANCE,
+      },
     });
   }
 }
