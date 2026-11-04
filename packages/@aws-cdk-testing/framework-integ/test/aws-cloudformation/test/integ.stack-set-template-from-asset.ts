@@ -92,7 +92,7 @@ class TestCase extends Stack {
         regions: [targetRegion],
       }),
       template: cfn.StackSetTemplate.fromAsset(path.join(__dirname, 'stack-set-template', 'template.json')),
-      permissionModel: cfn.StackSetPermissionModel.selfManaged({
+      deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
         adminRole,
       }),

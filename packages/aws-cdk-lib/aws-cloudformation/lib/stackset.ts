@@ -115,14 +115,14 @@ export interface StackSetTargetOptions {
 /**
  * Options for deploying a StackSet to a set of Organizational Units (OUs)
  */
-export interface StackSetOrganizationsTargetOptions extends StackSetTargetOptions {
+export interface OrganizationsTargetOptions extends StackSetTargetOptions {
   /**
    * A list of organizational unit ids to deploy to. The StackSet will
    * deploy the provided Stack template to all accounts in the OU.
    * This can be further filtered by specifying either `additionalAccounts`
    * or `excludeAccounts`.
    *
-   * If the `permissionModel` is specified with `autoDeployEnabled` then
+   * If the `deploymentType` is specified with `autoDeployEnabled` then
    * the StackSet will automatically deploy the Stack to new accounts as they
    * are added to the specified `organizationalUnits`
    */
@@ -161,7 +161,7 @@ export interface StackSetOrganizationsTargetOptions extends StackSetTargetOption
 /**
  * Options for deploying a StackSet to a list of AWS accounts
  */
-export interface StackSetAccountsTargetOptions extends StackSetTargetOptions {
+export interface AccountsTargetOptions extends StackSetTargetOptions {
   /**
    * A list of AWS accounts to deploy the StackSet to
    */
@@ -224,7 +224,7 @@ export abstract class StackSetTarget {
    *   regions: ['us-east-1', 'us-east-2'],
    * });
    */
-  public static fromAccounts(options: StackSetAccountsTargetOptions): StackSetTarget {
+  public static fromAccounts(options: AccountsTargetOptions): StackSetTarget {
     return new AccountsTarget(options);
   }
 
@@ -239,7 +239,7 @@ export abstract class StackSetTarget {
    *   organizationalUnits: ['ou-1111111', 'ou-2222222'],
    * });
    */
-  public static fromOrganizationalUnits(options: StackSetOrganizationsTargetOptions): StackSetTarget {
+  public static fromOrganizationalUnits(options: OrganizationsTargetOptions): StackSetTarget {
     return new OrganizationsTarget(options);
   }
 
@@ -267,7 +267,7 @@ export abstract class StackSetTarget {
 }
 
 class AccountsTarget extends StackSetTarget {
-  constructor(private readonly options: StackSetAccountsTargetOptions) {
+  constructor(private readonly options: AccountsTargetOptions) {
     super();
 
     if (!this.options.accounts || this.options.accounts.length === 0) {
@@ -290,7 +290,7 @@ class OrganizationsTarget extends StackSetTarget {
   private readonly excludeAccounts?: string[];
   private readonly intersectionAccounts?: string[];
 
-  constructor(private readonly options: StackSetOrganizationsTargetOptions) {
+  constructor(private readonly options: OrganizationsTargetOptions) {
     super();
 
     // Normalize empty arrays to undefined — empty arrays are truthy in JS
@@ -327,7 +327,7 @@ class OrganizationsTarget extends StackSetTarget {
 /**
  * Options for StackSets that are managed by AWS Organizations.
  */
-export interface StackSetServiceManagedOptions {
+export interface ServiceManagedOptions {
   /**
    * Whether or not the StackSet should automatically create/remove the Stack
    * from AWS accounts that are added/removed from an organizational unit.
@@ -365,7 +365,7 @@ export interface StackSetServiceManagedOptions {
 /**
  * Options for StackSets that are not managed by AWS Organizations.
  */
-export interface StackSetSelfManagedOptions {
+export interface SelfManagedOptions {
   /**
    * The name of the stackset execution role that already exists in each target AWS account.
    * This role must be configured with a trust policy that allows `sts:AssumeRole` from the `adminRole`.
@@ -404,7 +404,7 @@ enum PermissionModel {
   SELF_MANAGED = 'SELF_MANAGED',
 }
 
-interface PermissionModelConfig {
+interface DeploymentTypeConfig {
   readonly permissionsModel: PermissionModel;
   readonly executionRoleName?: string;
   readonly adminRole?: iam.IRole;
@@ -413,12 +413,12 @@ interface PermissionModelConfig {
   readonly callAs?: CallAs;
 }
 
-interface PermissionModelBindOptions {}
+interface DeploymentTypeOptions {}
 
 /**
  * The permission model a StackSet uses to deploy stack instances
  */
-export abstract class StackSetPermissionModel {
+export abstract class DeploymentType {
   /**
    * StackSets deployed using service managed permissions allow you to deploy
    * StackSet instances to accounts within an AWS Organization. Using this module
@@ -433,8 +433,8 @@ export abstract class StackSetPermissionModel {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stacksets-concepts-stackset-permission-models
    */
-  public static serviceManaged(options: StackSetServiceManagedOptions = {}): StackSetPermissionModel {
-    return new ServiceManagedPermissionModel(options);
+  public static serviceManaged(options: ServiceManagedOptions = {}): DeploymentType {
+    return new ServiceManagedDeploymentType(options);
   }
 
   /**
@@ -444,24 +444,24 @@ export abstract class StackSetPermissionModel {
    * Using this model you can only deploy to AWS accounts that have the necessary IAM roles/permissions
    * pre-created.
    */
-  public static selfManaged(options: StackSetSelfManagedOptions = {}): StackSetPermissionModel {
-    return new SelfManagedPermissionModel(options);
+  public static selfManaged(options: SelfManagedOptions = {}): DeploymentType {
+    return new SelfDeploymentType(options);
   }
 
   /**
-   * Render the permission model config
+   * Render the deployment type config
    *
    * @internal
    */
-  public abstract _bind(scope: Construct, options?: PermissionModelBindOptions): PermissionModelConfig;
+  public abstract _bind(scope: Construct, options?: DeploymentTypeOptions): DeploymentTypeConfig;
 }
 
-class ServiceManagedPermissionModel extends StackSetPermissionModel {
-  constructor(private readonly options?: StackSetServiceManagedOptions) {
+class ServiceManagedDeploymentType extends DeploymentType {
+  constructor(private readonly options?: ServiceManagedOptions) {
     super();
   }
 
-  public _bind(scope: Construct, _options: PermissionModelBindOptions = {}): PermissionModelConfig {
+  public _bind(scope: Construct, _options: DeploymentTypeOptions = {}): DeploymentTypeConfig {
     const autoDeployEnabled = this.options?.autoDeployEnabled ?? true;
     if (!autoDeployEnabled && this.options?.autoDeployRetainStacks !== undefined) {
       throw new ValidationError(lit`StackSetAutoDeployRetainStacksRequiresAutoDeploy`, 'autoDeployRetainStacks only applies if autoDeploy is enabled', scope);
@@ -476,12 +476,12 @@ class ServiceManagedPermissionModel extends StackSetPermissionModel {
   }
 }
 
-class SelfManagedPermissionModel extends StackSetPermissionModel {
-  constructor(private readonly options?: StackSetSelfManagedOptions) {
+class SelfDeploymentType extends DeploymentType {
+  constructor(private readonly options?: SelfManagedOptions) {
     super();
   }
 
-  public _bind(_scope: Construct, _options: PermissionModelBindOptions = {}): PermissionModelConfig {
+  public _bind(_scope: Construct, _options: DeploymentTypeOptions = {}): DeploymentTypeConfig {
     return {
       permissionsModel: PermissionModel.SELF_MANAGED,
       adminRole: this.options?.adminRole,
@@ -521,16 +521,16 @@ export interface StackSetProps {
   readonly description?: string;
 
   /**
-   * The permission model for this StackSet. The permissions can either be managed by
-   * AWS Organizations (i.e. StackSetPermissionModel.serviceManaged()) or by the AWS account that
+   * The type of deployment for this StackSet. The deployment can either be managed by
+   * AWS Organizations (i.e. DeploymentType.serviceManaged()) or by the AWS account that
    * the StackSet is deployed from.
    *
-   * In order to use StackSetPermissionModel.serviceManaged() the account needs to either be the
+   * In order to use DeploymentType.serviceManaged() the account needs to either be the
    * organizations's management account or a delegated administrator account.
    *
-   * @default StackSetPermissionModel.selfManaged()
+   * @default DeploymentType.selfManaged()
    */
-  readonly permissionModel?: StackSetPermissionModel;
+  readonly deploymentType?: DeploymentType;
 
   /**
    * If this is `true` then StackSets will perform non-conflicting operations concurrently
@@ -553,7 +553,7 @@ export interface StackSetProps {
    *
    * @default - the CloudFormation default operation preferences
    */
-  readonly operationPreferences?: StackSetOperationPreferences;
+  readonly operationPreferences?: OperationPreferences;
 
   /**
    * The input parameters for the stack set template.
@@ -601,7 +601,7 @@ enum CallAs {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_StackSetOperationPreferences.html
  */
-export interface StackSetOperationPreferences {
+export interface OperationPreferences {
   /**
    * The number of stack instances that can fail before the operation is considered failed.
    *
@@ -629,9 +629,9 @@ export interface StackSetOperationPreferences {
   /**
    * Whether to deploy multiple regions sequentially or in parallel.
    *
-   * @default StackSetRegionConcurrencyType.SEQUENTIAL
+   * @default RegionConcurrencyType.SEQUENTIAL
    */
-  readonly regionConcurrencyType?: StackSetRegionConcurrencyType;
+  readonly regionConcurrencyType?: RegionConcurrencyType;
   /**
    * The order in which to deploy the stack instances to the regions.
    *
@@ -643,27 +643,27 @@ export interface StackSetOperationPreferences {
 /**
  * The type of concurrency to use when deploying the StackSet to regions.
  */
-export class StackSetRegionConcurrencyType {
+export class RegionConcurrencyType {
   /**
    * Deploy the StackSet to regions sequentially in the order specified in
-   * {@link StackSetOperationPreferences.regionOrder}.
+   * {@link OperationPreferences.regionOrder}.
    *
    * This is the default behavior.
    */
-  public static readonly SEQUENTIAL = new StackSetRegionConcurrencyType('SEQUENTIAL');
+  public static readonly SEQUENTIAL = new RegionConcurrencyType('SEQUENTIAL');
 
   /**
    * Deploy the StackSet to all regions in parallel.
    */
-  public static readonly PARALLEL = new StackSetRegionConcurrencyType('PARALLEL');
+  public static readonly PARALLEL = new RegionConcurrencyType('PARALLEL');
 
   /**
    * Use a custom region concurrency type
    *
    * @param value the CloudFormation value of the region concurrency type
    */
-  public static of(value: string): StackSetRegionConcurrencyType {
-    return new StackSetRegionConcurrencyType(value);
+  public static of(value: string): RegionConcurrencyType {
+    return new RegionConcurrencyType(value);
   }
 
   /**
@@ -736,8 +736,14 @@ export class StackSet extends Resource implements IStackSet {
   /**
    * The admin role that CloudFormation uses to perform StackSet operations.
    *
-   * This is the `adminRole` passed to `StackSetPermissionModel.selfManaged()`, or the role the
-   * StackSet creates when none is passed. It is `undefined` for a service managed StackSet.
+   * This is the `adminRole` passed to `DeploymentType.selfManaged()`, or the role the StackSet
+   * creates when none is passed. It is `undefined` for a service managed StackSet.
+   *
+   * This role should only have permissions to be assumed by the CloudFormation service
+   * and to assume the execution role in each individual account.
+   *
+   * When you create the execution role it must have an assume role policy statement which
+   * allows `sts:AssumeRole` from this admin role.
    *
    * To grant specific users/groups access to use this role to deploy stacksets they must have
    * a policy that allows `iam:GetRole` & `iam:PassRole` on this role resource.
@@ -763,9 +769,9 @@ export class StackSet extends Resource implements IStackSet {
 
     addConstructMetadata(this, props);
 
-    const permissionModelConfig = (props.permissionModel ?? StackSetPermissionModel.selfManaged())._bind(this);
-    if (permissionModelConfig.permissionsModel === PermissionModel.SELF_MANAGED) {
-      this.adminRole = permissionModelConfig.adminRole ?? new iam.Role(this, 'AdminRole', {
+    const deploymentTypeConfig = (props.deploymentType ?? DeploymentType.selfManaged())._bind(this);
+    if (deploymentTypeConfig.permissionsModel === PermissionModel.SELF_MANAGED) {
+      this.adminRole = deploymentTypeConfig.adminRole ?? new iam.Role(this, 'AdminRole', {
         assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com', {
           conditions: this.adminRoleTrustConditions(),
         }),
@@ -780,27 +786,27 @@ export class StackSet extends Resource implements IStackSet {
             region: '',
             account: '*',
             resource: 'role',
-            resourceName: permissionModelConfig.executionRoleName ?? 'AWSCloudFormationStackSetExecutionRole',
+            resourceName: deploymentTypeConfig.executionRoleName ?? 'AWSCloudFormationStackSetExecutionRole',
           }),
         ],
       }));
     }
 
-    if (props.capabilities?.includes(CfnCapabilities.AUTO_EXPAND) && permissionModelConfig.permissionsModel === PermissionModel.SERVICE_MANAGED) {
+    if (props.capabilities?.includes(CfnCapabilities.AUTO_EXPAND) && deploymentTypeConfig.permissionsModel === PermissionModel.SERVICE_MANAGED) {
       throw new ValidationError(lit`StackSetAutoExpandNotSupported`, 'service managed stacksets do not currently support the "AUTO_EXPAND" capability', this);
     }
 
-    this.permissionModel = permissionModelConfig.permissionsModel;
+    this.permissionModel = deploymentTypeConfig.permissionsModel;
 
     if (props.target) {
       this.addTarget(props.target);
     }
     const stackSet = new CfnStackSet(this, 'Resource', {
       autoDeployment: undefinedIfNoKeys({
-        enabled: permissionModelConfig.autoDeployEnabled,
-        retainStacksOnAccountRemoval: permissionModelConfig.autoDeployRetainStacks,
+        enabled: deploymentTypeConfig.autoDeployEnabled,
+        retainStacksOnAccountRemoval: deploymentTypeConfig.autoDeployRetainStacks,
       }),
-      executionRoleName: permissionModelConfig.executionRoleName,
+      executionRoleName: deploymentTypeConfig.executionRoleName,
       administrationRoleArn: this.adminRole?.roleArn,
       description: props.description,
       managedExecution: {
@@ -816,8 +822,8 @@ export class StackSet extends Resource implements IStackSet {
       }) : undefined,
       stackSetName: this.physicalName,
       capabilities: props.capabilities,
-      permissionModel: permissionModelConfig.permissionsModel,
-      callAs: permissionModelConfig.callAs,
+      permissionModel: deploymentTypeConfig.permissionsModel,
+      callAs: deploymentTypeConfig.callAs,
       templateUrl: props.template.templateUrl,
       stackInstancesGroup: Lazy.any({
         produce: () => {

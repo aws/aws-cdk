@@ -22,9 +22,9 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
 import * as cxapi from '../../cx-api';
 import type { StackSetStackProps } from '../lib';
 import {
+  DeploymentType,
+  RegionConcurrencyType,
   StackSet,
-  StackSetPermissionModel,
-  StackSetRegionConcurrencyType,
   StackSetTarget,
   StackSetTemplate,
   StackSetStack,
@@ -214,7 +214,7 @@ test('service managed stackset', () => {
         Param1: 'Value1',
       },
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged(),
+    deploymentType: DeploymentType.serviceManaged(),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
   });
 
@@ -255,7 +255,7 @@ test('service managed stackset with options', () => {
         Param1: 'Value1',
       },
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged({
+    deploymentType: DeploymentType.serviceManaged({
       delegatedAdmin: false,
       autoDeployEnabled: false,
     }),
@@ -295,7 +295,7 @@ test('service managed stackset throws error if autoDeployRetainStacks is provide
           Param1: 'Value1',
         },
       }),
-      permissionModel: StackSetPermissionModel.serviceManaged({
+      deploymentType: DeploymentType.serviceManaged({
         delegatedAdmin: false,
         autoDeployEnabled: false,
         autoDeployRetainStacks: true,
@@ -317,7 +317,7 @@ test('fromOrganizations default', () => {
         Param1: 'Value1',
       },
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged({
+    deploymentType: DeploymentType.serviceManaged({
       delegatedAdmin: false,
       autoDeployEnabled: false,
     }),
@@ -353,7 +353,7 @@ test('fromOrganizations with intersectionAccounts', () => {
       organizationalUnits: ['ou-1111111'],
       intersectionAccounts: ['222222222222', '333333333333'],
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged({
+    deploymentType: DeploymentType.serviceManaged({
       delegatedAdmin: false,
       autoDeployEnabled: false,
     }),
@@ -382,7 +382,7 @@ test('fromOrganizations with additionalAccounts', () => {
       organizationalUnits: ['ou-1111111'],
       additionalAccounts: ['222222222222', '333333333333'],
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged({
+    deploymentType: DeploymentType.serviceManaged({
       delegatedAdmin: false,
       autoDeployEnabled: false,
     }),
@@ -411,7 +411,7 @@ test('fromOrganizations with excludeAccounts', () => {
       organizationalUnits: ['ou-1111111'],
       excludeAccounts: ['222222222222', '333333333333'],
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged({
+    deploymentType: DeploymentType.serviceManaged({
       delegatedAdmin: false,
       autoDeployEnabled: false,
     }),
@@ -442,7 +442,7 @@ test('fromOrganizations throws when intersectionAccounts and excludeAccounts are
         intersectionAccounts: ['222222222222'],
         excludeAccounts: ['333333333333'],
       }),
-      permissionModel: StackSetPermissionModel.serviceManaged({
+      deploymentType: DeploymentType.serviceManaged({
         delegatedAdmin: false,
         autoDeployEnabled: false,
       }),
@@ -463,7 +463,7 @@ test('fromOrganizations throws when intersectionAccounts and additionalAccounts 
         intersectionAccounts: ['222222222222'],
         additionalAccounts: ['333333333333'],
       }),
-      permissionModel: StackSetPermissionModel.serviceManaged({
+      deploymentType: DeploymentType.serviceManaged({
         delegatedAdmin: false,
         autoDeployEnabled: false,
       }),
@@ -485,7 +485,7 @@ test('fromOrganizations throws when all three account filters are specified', ()
         excludeAccounts: ['222222222222'],
         additionalAccounts: ['333333333333'],
       }),
-      permissionModel: StackSetPermissionModel.serviceManaged({
+      deploymentType: DeploymentType.serviceManaged({
         delegatedAdmin: false,
         autoDeployEnabled: false,
       }),
@@ -663,7 +663,7 @@ test('passes operation preferences', () => {
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     operationPreferences: {
       // In reality, you would not set all of these at once, but it allows us to test all the properties in one test case
-      regionConcurrencyType: StackSetRegionConcurrencyType.PARALLEL,
+      regionConcurrencyType: RegionConcurrencyType.PARALLEL,
       regionOrder: ['us-east-1', 'us-west-2'],
       maxConcurrentPercentage: 50,
       maxConcurrentCount: 5,
@@ -696,8 +696,8 @@ test('passes operation preferences', () => {
 });
 
 test.each([
-  ['SEQUENTIAL', StackSetRegionConcurrencyType.SEQUENTIAL],
-  ['PARALLEL', StackSetRegionConcurrencyType.PARALLEL],
+  ['SEQUENTIAL', RegionConcurrencyType.SEQUENTIAL],
+  ['PARALLEL', RegionConcurrencyType.PARALLEL],
 ])('renders the %s region concurrency type', (expected, regionConcurrencyType) => {
   const app = new App();
   const stack = new Stack(app);
@@ -718,7 +718,7 @@ test('passes a custom region concurrency type from of() through to the template'
 
   new StackSet(stack, 'StackSet', {
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-    operationPreferences: { regionConcurrencyType: StackSetRegionConcurrencyType.of('CUSTOM') },
+    operationPreferences: { regionConcurrencyType: RegionConcurrencyType.of('CUSTOM') },
   });
   Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3030', reason: 'of() accepts values newer than the CloudFormation schema' });
 
@@ -751,7 +751,7 @@ test('empty additionalAccounts renders AccountFilterType NONE', () => {
       organizationalUnits: ['ou-1111111'],
       additionalAccounts: [],
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged(),
+    deploymentType: DeploymentType.serviceManaged(),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
   });
 
@@ -776,7 +776,7 @@ test('empty excludeAccounts renders AccountFilterType NONE', () => {
       organizationalUnits: ['ou-1111111'],
       excludeAccounts: [],
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged(),
+    deploymentType: DeploymentType.serviceManaged(),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
   });
 
@@ -801,7 +801,7 @@ test('empty intersectionAccounts renders AccountFilterType NONE', () => {
       organizationalUnits: ['ou-1111111'],
       intersectionAccounts: [],
     }),
-    permissionModel: StackSetPermissionModel.serviceManaged(),
+    deploymentType: DeploymentType.serviceManaged(),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
   });
 
@@ -860,7 +860,7 @@ test('self managed stackset depends on the policy added to a supplied admin role
 
   new StackSet(stack, 'StackSet', {
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-    permissionModel: StackSetPermissionModel.selfManaged({ adminRole }),
+    deploymentType: DeploymentType.selfManaged({ adminRole }),
   });
 
   const template = Template.fromStack(stack);
@@ -914,7 +914,7 @@ test('self managed stackset with custom execution role name uses partition-aware
       accounts: ['11111111111'],
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-    permissionModel: StackSetPermissionModel.selfManaged({
+    deploymentType: DeploymentType.selfManaged({
       executionRoleName: 'CustomExecutionRole',
     }),
   });
@@ -1189,13 +1189,13 @@ describe('StackSet asset bucket deployment dependencies', () => {
 
     new StackSet(stack, 'FirstStackSet', {
       stackSetName: 'first',
-      permissionModel: StackSetPermissionModel.serviceManaged(),
+      deploymentType: DeploymentType.serviceManaged(),
       template: StackSetTemplate.fromStackSetStack(first),
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
     });
     new StackSet(stack, 'SecondStackSet', {
       stackSetName: 'second',
-      permissionModel: StackSetPermissionModel.serviceManaged(),
+      deploymentType: DeploymentType.serviceManaged(),
       template: StackSetTemplate.fromStackSetStack(second),
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
     });
@@ -1301,7 +1301,7 @@ describe('StackSet self managed admin role', () => {
 
     const stackSet = new StackSet(stack, 'StackSet', {
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-      permissionModel: StackSetPermissionModel.selfManaged({ adminRole }),
+      deploymentType: DeploymentType.selfManaged({ adminRole }),
     });
 
     expect(stackSet.adminRole).toBe(adminRole);
@@ -1419,7 +1419,7 @@ describe('StackSet self managed admin role', () => {
 
     new StackSet(stack, 'StackSet', {
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-      permissionModel: StackSetPermissionModel.selfManaged({ adminRole }),
+      deploymentType: DeploymentType.selfManaged({ adminRole }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -1447,7 +1447,7 @@ describe('StackSet self managed admin role', () => {
         accounts: ['11111111111'],
       }),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-      permissionModel: StackSetPermissionModel.selfManaged({ adminRole }),
+      deploymentType: DeploymentType.selfManaged({ adminRole }),
     });
 
     const template = Template.fromStack(stack);
@@ -1496,7 +1496,7 @@ describe('StackSet self managed admin role', () => {
         accounts: ['11111111111'],
       }),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-      permissionModel: StackSetPermissionModel.selfManaged({ adminRole }),
+      deploymentType: DeploymentType.selfManaged({ adminRole }),
     });
 
     const template = Template.fromStack(stack);
@@ -1534,7 +1534,7 @@ test('a service managed StackSet has no admin role', () => {
   const stack = new Stack(app);
 
   const stackSet = new StackSet(stack, 'StackSet', {
-    permissionModel: StackSetPermissionModel.serviceManaged(),
+    deploymentType: DeploymentType.serviceManaged(),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
   });
 
@@ -1646,7 +1646,7 @@ describe('StackSet validation errors', () => {
     const stack = new Stack(app);
 
     expect(() => new StackSet(stack, 'StackSet', {
-      permissionModel: StackSetPermissionModel.serviceManaged({ autoDeployEnabled: false, autoDeployRetainStacks: true }),
+      deploymentType: DeploymentType.serviceManaged({ autoDeployEnabled: false, autoDeployRetainStacks: true }),
       template: templateIn(stack),
     })).toThrow(expect.objectContaining({
       name: 'StackSetAutoDeployRetainStacksRequiresAutoDeploy',
@@ -1660,7 +1660,7 @@ describe('StackSet validation errors', () => {
     const stack = new Stack(app);
 
     expect(() => new StackSet(stack, 'StackSet', {
-      permissionModel: StackSetPermissionModel.serviceManaged(),
+      deploymentType: DeploymentType.serviceManaged(),
       capabilities: [CfnCapabilities.AUTO_EXPAND],
       template: templateIn(stack),
     })).toThrow(expect.objectContaining({

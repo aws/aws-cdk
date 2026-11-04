@@ -174,12 +174,12 @@ new StackSet(stack, 'StackSet', {
 
 This would deploy the StackSet to `account-1`, `account-2`, `account-4` & `account-5`.
 
-#### StackSet permissions (`permissionModel`)
+#### StackSet permissions
 
 There are two modes for managing StackSet permissions (i.e. _where_ StackSets can deploy & _what_ resources they can create).
 A StackSet can either be `Service Managed` or `Self Managed`.
 
-You can control this through the `permissionModel` property, using `StackSetPermissionModel`.
+You can control this through the `deploymentType` parameter.
 
 ##### Service Managed
 
@@ -195,12 +195,12 @@ new StackSet(stack, 'StackSet', {
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
   }),
-  permissionModel: StackSetPermissionModel.serviceManaged(),
+  deploymentType: DeploymentType.serviceManaged(),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
-When you use the `serviceManaged` permission model, automatic deployments are enabled by default.
+When you specify `serviceManaged` deployment type, automatic deployments are enabled by default.
 Automatic deployments allow the StackSet to be automatically deployed to or deleted from
 AWS accounts when they are added or removed from the specified organizational units.
 
@@ -229,7 +229,7 @@ new StackSet(stack, 'StackSet', {
     regions: ['us-east-1'],
     accounts: ['11111111111'],
   }),
-  permissionModel: StackSetPermissionModel.selfManaged({
+  deploymentType: DeploymentType.selfManaged({
     executionRoleName: 'MyStackSetExecutionRole',
   }),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
@@ -339,13 +339,13 @@ class BootstrapStage extends Stage {
       capabilities: [CfnCapabilities.NAMED_IAM],
       managedExecution: true,
       stackSetName: props.stacksetName,
-      permissionModel: StackSetPermissionModel.serviceManaged({
+      deploymentType: DeploymentType.serviceManaged({
         delegatedAdmin: true,
         autoDeployEnabled: true,
         autoDeployRetainStacks: false,
       }),
       operationPreferences: {
-        regionConcurrencyType: StackSetRegionConcurrencyType.PARALLEL,
+        regionConcurrencyType: RegionConcurrencyType.PARALLEL,
         maxConcurrentPercentage: 100,
         failureTolerancePercentage: 99,
       },
