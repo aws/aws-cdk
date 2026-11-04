@@ -5626,6 +5626,10 @@ describe('L1 Relationships', () => {
 
   it('tokens should be passed as is', () => {
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::F3003',
+      reason: 'This test intentionally synthesizes an incomplete L1 Lambda resource to verify token pass-through',
+    });
     const role = new iam.Role(stack, 'SomeRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
