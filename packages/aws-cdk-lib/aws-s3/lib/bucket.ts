@@ -95,10 +95,14 @@ export interface IBucket extends IResource, IBucketRef {
   /**
    * The default server-side encryption mode that S3 applies to new objects in this bucket.
    *
-   * For a bucket defined in this app, the mode is derived from the underlying `CfnBucket`,
-   * so it includes changes made through escape hatches. S3 applies SSE-S3 to every bucket
-   * that has no default encryption rule, so such a bucket reports `S3_MANAGED` and
-   * `UNENCRYPTED` is never returned.
+   * For a bucket defined in this app, the mode is derived from the typed `bucketEncryption`
+   * property of the underlying `CfnBucket`, so it includes changes made by assigning that
+   * property through an escape hatch. Raw overrides made with `addPropertyOverride()` or
+   * `addOverride()` are applied only when the template is rendered and are not reflected
+   * here.
+   *
+   * S3 applies SSE-S3 to every bucket that has no default encryption rule, so such a
+   * bucket reports `S3_MANAGED` and `UNENCRYPTED` is never returned.
    *
    * @default - undefined when the mode cannot be determined at synthesis time, or for an imported bucket that does not specify it
    */
