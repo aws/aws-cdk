@@ -24,11 +24,11 @@ queue_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "-label~=pr/needs-integration-tests-deployment"
-        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    commit_message_template: |-
-      {{ title }} (#{{ number }})
-      {{ body }}
+          - "-label~=pr/needs-integration-tests-deployment"
+          - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
+    commit_message_format:
+      title: pr-title
+      body: pr-body
 
   - name: priority-squash
     # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
@@ -49,11 +49,11 @@ queue_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "-label~=pr/needs-integration-tests-deployment"
-        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    commit_message_template: |-
-      {{ title }} (#{{ number }})
-      {{ body }}
+          - "-label~=pr/needs-integration-tests-deployment"
+          - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
+    commit_message_format:
+      title: pr-title
+      body: pr-body
 
   - name: default-squash
     # batch_size: 1 enables in-place checks (no draft PRs created for testing merges)
@@ -73,11 +73,11 @@ queue_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "-label~=pr/needs-integration-tests-deployment"
-        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
-    commit_message_template: |-
-      {{ title }} (#{{ number }})
-      {{ body }}
+          - "-label~=pr/needs-integration-tests-deployment"
+          - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
+    commit_message_format:
+      title: pr-title
+      body: pr-body
 
 pull_request_rules:
   - name: label core
@@ -108,8 +108,8 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "-label~=pr/needs-integration-tests-deployment"
-        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
+          - "-label~=pr/needs-integration-tests-deployment"
+          - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
   - name: automatic priority merge
     actions:
       comment:
@@ -132,8 +132,8 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "-label~=pr/needs-integration-tests-deployment"
-        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
+          - "-label~=pr/needs-integration-tests-deployment"
+          - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
   - name: automatic merge (2+ approvers)
     actions:
       comment:
@@ -156,8 +156,8 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "-label~=pr/needs-integration-tests-deployment"
-        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
+          - "-label~=pr/needs-integration-tests-deployment"
+          - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
   - name: automatic merge (no-squash)
     actions:
       comment:
@@ -180,8 +180,8 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "-label~=pr/needs-integration-tests-deployment"
-        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
+          - "-label~=pr/needs-integration-tests-deployment"
+          - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
   - name: remove stale reviews
     actions:
       dismiss_reviews:
@@ -223,8 +223,8 @@ pull_request_rules:
       - check-success=validate-pr
       - check-success=build
       - or:
-        - "-label~=pr/needs-integration-tests-deployment"
-        - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
+          - "-label~=pr/needs-integration-tests-deployment"
+          - "check-success=Deploy integration test snapshots (requires `pr/needs-integration-tests-deployment` label)"
 priority_rules:
   - name: priority for queue `default-merge`
     conditions:
@@ -236,3 +236,5 @@ priority_rules:
       - -label~=(blocked|do-not-merge|agent-docs-review-needed|no-squash)
       - label~=priority-pr
     priority: 2250
+merge_protections_settings:
+  reporting_method: check-runs
