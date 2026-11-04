@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "InfrastructureConfigurationParentInstanceTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-infrastructure-configuration-parent-instance"
+      ],
+      "assertionStack": "InfrastructureConfigurationParentInstanceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InfrastructureConfigurationParentInstanceTestDefaultTestDeployAssert3A7766B5"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
+}
