@@ -42,6 +42,7 @@ const sseAlgorithmByEncryption: Partial<Record<s3.BucketEncryption, string>> = {
   [s3.BucketEncryption.DSSE_MANAGED]: 'aws:kms:dsse',
 };
 
+// MySSECBlockedBucket is intentionally synth-only: blockedEncryptionTypes doesn't affect the reflected encryption mode.
 for (const bucket of [dsseBucket, sseS3Bucket, kmsBucket]) {
   const sseAlgorithm = bucket.encryption && sseAlgorithmByEncryption[bucket.encryption];
   if (!sseAlgorithm) {
