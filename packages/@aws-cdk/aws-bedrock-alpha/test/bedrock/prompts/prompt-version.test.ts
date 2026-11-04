@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, Validations } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../bedrock';
 
@@ -229,6 +229,10 @@ describe('PromptVersion', () => {
     });
 
     test('handles empty description', () => {
+      Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3033',
+        reason: 'We are explicitly testing something that the validator says is not allowed',
+      });
       const prompt = new bedrock.Prompt(stack, 'TestPrompt', {
         promptName: 'test-prompt',
       });

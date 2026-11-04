@@ -1,7 +1,7 @@
 
 import * as child_process from 'child_process';
 import * as path from 'path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
@@ -120,12 +120,10 @@ async function main() {
     const includeRules = new RuleFilterSet(args.include);
     const excludeRules = new RuleFilterSet(args.exclude);
 
-    const results = [];
-
-    results.push(...ALL_RULES_LINTER.eval(assembly, {
+    const results = ALL_RULES_LINTER.eval(assembly, {
       includeRules: includeRules,
       excludeRules: excludeRules,
-    }));
+    });
 
     // Sort errors to the top (highest severity first)
     results.sort((a, b) => b.level - a.level);
@@ -163,6 +161,8 @@ async function main() {
 
       if (color) {
         console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: [${chalk.bold(`awslint:${diag.rule.code}`)}:${chalk.bold(diag.scope)}] ${diag.message}`));
+      } else {
+        console.error(`${DiagnosticLevel[diag.level].toLowerCase()}: [${`awslint:${diag.rule.code}`}:${diag.scope}] ${diag.message}`);
       }
     }
 

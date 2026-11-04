@@ -1,7 +1,7 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as events from '../../aws-events';
-import { App, Duration, Stack, TimeZone } from '../../core';
-import { BackupPlan, BackupPlanRule, BackupVault } from '../lib';
+import { App, CfnParameter, Duration, Lazy, Stack, TimeZone } from '../../core';
+import { BackupPlan, IndexActionResourceType, BackupPlanRule, BackupVault } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -375,6 +375,105 @@ test('create a plan and add rule with recoveryPointTags', () => {
   });
 });
 
+test('create a plan and add rule with indexActions', () => {
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupPlanRules: [
+      new BackupPlanRule({
+        indexActions: [{ resourceTypes: [IndexActionResourceType.S3] }],
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          RuleName: 'PlanRule0',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'PlanVault0284B0C2',
+              'BackupVaultName',
+            ],
+          },
+          IndexActions: [
+            {
+              ResourceTypes: [
+                'S3',
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  });
+});
+
+test('create a plan and add rule with EBS indexActions', () => {
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupPlanRules: [
+      new BackupPlanRule({
+        indexActions: [{ resourceTypes: [IndexActionResourceType.EBS] }],
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanRule: [
+        Match.objectLike({
+          IndexActions: [
+            {
+              ResourceTypes: [
+                'EBS',
+              ],
+            },
+          ],
+        }),
+      ],
+    },
+  });
+});
+
+test('supports a custom index action resource type not yet in CDK', () => {
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupPlanRules: [
+      new BackupPlanRule({
+        indexActions: [{ resourceTypes: [new IndexActionResourceType('EFS')] }],
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanRule: [
+        Match.objectLike({
+          IndexActions: [
+            {
+              ResourceTypes: [
+                'EFS',
+              ],
+            },
+          ],
+        }),
+      ],
+    },
+  });
+});
+
+test.each([
+  [IndexActionResourceType.S3, 'S3'],
+  [IndexActionResourceType.EBS, 'EBS'],
+])('IndexActionResourceType %s has the expected value', (resourceType, expected) => {
+  expect(resourceType.value).toEqual(expected);
+});
+
 test('throws when deleteAfter is not greater than moveToColdStorageAfter', () => {
   expect(() => new BackupPlanRule({
     deleteAfter: Duration.days(5),
@@ -439,4 +538,67 @@ test('throws when deleteAfter is not greater than 90 days past moveToColdStorage
       moveToColdStorageAfter: Duration.days(30),
     }],
   })).toThrow(/'deleteAfter' must at least 90 days later than corresponding 'moveToColdStorageAfter'\nreceived 'deleteAfter: 45' and 'moveToColdStorageAfter: 30'/);
+});
+
+test('does not throw when deleteAfter is a token and moveToColdStorageAfter is set', () => {
+  expect(() => new BackupPlanRule({
+    deleteAfter: Duration.days(Lazy.number({ produce: () => 365 })),
+    moveToColdStorageAfter: Duration.days(30),
+  })).not.toThrow();
+});
+
+test('does not throw when moveToColdStorageAfter is a token', () => {
+  expect(() => new BackupPlanRule({
+    deleteAfter: Duration.days(365),
+    moveToColdStorageAfter: Duration.days(Lazy.number({ produce: () => 30 })),
+  })).not.toThrow();
+});
+
+test('does not throw when deleteAfter is a token in combination with enableContinuousBackup', () => {
+  expect(() => new BackupPlanRule({
+    enableContinuousBackup: true,
+    deleteAfter: Duration.days(Lazy.number({ produce: () => 14 })),
+  })).not.toThrow();
+});
+
+test('does not throw when copy action durations are tokens, regardless of token creation order', () => {
+  const moveToColdStorageAfter = Duration.days(Lazy.number({ produce: () => 30 }));
+  const deleteAfter = Duration.days(Lazy.number({ produce: () => 365 }));
+  expect(() => new BackupPlanRule({
+    copyActions: [{
+      destinationBackupVault: new BackupVault(stack, 'Vault'),
+      deleteAfter,
+      moveToColdStorageAfter,
+    }],
+  })).not.toThrow();
+});
+
+test('renders a lifecycle that references a CloudFormation parameter', () => {
+  // GIVEN
+  const retentionDays = new CfnParameter(stack, 'RetentionDays', { type: 'Number', default: 365 });
+
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupPlanRules: [
+      new BackupPlanRule({
+        deleteAfter: Duration.days(retentionDays.valueAsNumber),
+        moveToColdStorageAfter: Duration.days(30),
+        scheduleExpression: events.Schedule.cron({ hour: '5', minute: '0' }),
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanRule: [
+        Match.objectLike({
+          Lifecycle: {
+            DeleteAfterDays: { Ref: 'RetentionDays' },
+            MoveToColdStorageAfterDays: 30,
+          },
+        }),
+      ],
+    },
+  });
 });

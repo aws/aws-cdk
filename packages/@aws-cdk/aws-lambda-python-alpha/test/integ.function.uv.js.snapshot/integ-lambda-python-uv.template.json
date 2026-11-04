@@ -1,58 +1,5 @@
 {
  "Resources": {
-  "myhandlerinlinepython39ServiceRoleEDE997C5": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "myhandlerinlinepython3914E0D89D": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "a7619b5a0767cd9387e81127ae9d7dcfac37b16fcab833238298680a083cd0c1.zip"
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "myhandlerinlinepython39ServiceRoleEDE997C5",
-      "Arn"
-     ]
-    },
-    "Runtime": "python3.9"
-   },
-   "DependsOn": [
-    "myhandlerinlinepython39ServiceRoleEDE997C5"
-   ]
-  },
   "myhandlerinlinepython310ServiceRoleB4606AB1": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -91,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d1402e8bd6ddcd99cc6a261efce2a2d40d549c03c77e4222d17ca9043a2363ee.zip"
+     "S3Key": "39f8f631660bd3741d0c750786fc2b011e4092e9b228a8122ae0ef63d264ea3d.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -144,7 +91,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2e3ed9b707991ea54eb1eb17c09190568825068f7439c5b029e272705be2a41f.zip"
+     "S3Key": "87fda0c50f02b06b67b4f8452abac427bbfcc1f777020d6760ba3fdbbc9fdcea.zip"
     },
     "Handler": "basic.handler",
     "Role": {
@@ -197,7 +144,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7535e03b2616a09b1db4166fb0f776e40efe33b166893f77b24a7fdf2c753a56.zip"
+     "S3Key": "d6d287ee180600f5054a843eaa677d9f8fa313ec156fe647b82de960e1f1cfaf.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -250,7 +197,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "92553e1b0e7bdf5d6b6f2d8fc664bec53f02edcdb912785555fc8cd6313ee010.zip"
+     "S3Key": "55089e155b3a34cc24d7ff3370db63d6c4ea5bd7c20d9342a6fddeceeb4d9eb9.zip"
     },
     "Handler": "basic.handler",
     "Role": {
@@ -267,14 +214,6 @@
   }
  },
  "Outputs": {
-  "ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B": {
-   "Value": {
-    "Ref": "myhandlerinlinepython3914E0D89D"
-   },
-   "Export": {
-    "Name": "integ-lambda-python-uv:ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
-   }
-  },
   "ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08": {
    "Value": {
     "Ref": "myhandlerinlinepython310CCEB365D"

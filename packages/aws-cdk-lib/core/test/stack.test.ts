@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import type { IConstruct } from 'constructs';
 import { Construct, Node } from 'constructs';
 import { flattenMeta, getWarnings, toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
@@ -17,13 +18,25 @@ import {
   Stage,
   TagManager,
   TagType,
+  Validations,
 } from '../lib';
-import { GitSource } from '../lib/git-source';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
 
 describe('stack', () => {
+  function makeCrossStackApp(context?: Record<string, unknown>): App {
+    const app = new App({ context });
+    Validations.of(app).acknowledge(
+      { id: 'CloudFormation-Validate::F3002', reason: "For cross-stack tests, we don't care about property names being valid" },
+      { id: 'CloudFormation-Validate::F3003', reason: "For cross-stack tests, we don't care about property names being valid" },
+      { id: 'CloudFormation-Validate::E9004', reason: 'We are using non-existing property names' },
+      { id: 'CloudFormation-Validate::F6101', reason: 'We are doing nonsensical type manipulations in these tests' },
+      { id: 'CloudFormation-Validate::E2001', reason: 'We are using Fn::ImportValue where they are not allowed' },
+    );
+    return app;
+  }
+
   test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {
     const stack = new Stack();
     expect(toCloudFormation(stack)).toEqual({ });
@@ -72,6 +85,20 @@ describe('stack', () => {
     expect(stack.artifactId).toBe(expected);
   });
 
+  test('getter values involving tokens return the same value every invocation', () => {
+    const app = new App({});
+
+    // WHEN
+    const stack = new Stack(app, 'Stack');
+
+    // THEN
+    expect(stack.availabilityZones).toEqual(stack.availabilityZones);
+    expect(stack.partition).toEqual(stack.partition);
+    expect(stack.urlSuffix).toEqual(stack.urlSuffix);
+    expect(stack.stackId).toEqual(stack.stackId);
+    expect(stack.notificationArns).toEqual(stack.notificationArns);
+  });
+
   test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
@@ -101,6 +128,10 @@ describe('stack', () => {
   test('when stackResourceLimit is default, should give error', () => {
     // GIVEN
     const app = new App({});
+    Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::F0007',
+      reason: 'We have our own validator',
+    });
 
     const stack = new Stack(app, 'MyStack');
 
@@ -136,10 +167,10 @@ describe('stack', () => {
 
   test('when stackResourceLimit is 0, should not give error', () => {
     // GIVEN
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackResourceLimit': 0,
-      },
+    const app = makeCrossStackApp({ '@aws-cdk/core:stackResourceLimit': 0 });
+    Validations.of(app).acknowledge({
+      id: 'CloudFormation-Validate::F0007',
+      reason: 'The point of this test is exercising stacks with more than 500 resources',
     });
 
     const stack = new Stack(app, 'MyStack');
@@ -287,7 +318,7 @@ describe('stack', () => {
 
   test('Pseudo values attached to one stack can be referenced in another stack', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const app = makeCrossStackApp({ [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const stack1 = new Stack(app, 'Stack1');
     const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
@@ -321,7 +352,7 @@ describe('stack', () => {
 
   test('Cross-stack references are detected in resource properties', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1');
     const resource1 = new CfnResource(stack1, 'Resource', { type: 'BLA' });
     const stack2 = new Stack(app, 'Stack2');
@@ -350,7 +381,7 @@ describe('stack', () => {
 
   test('Cross-stack export names account for stack name lengths', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', {
       stackName: 'SoThisCouldPotentiallyBeAVeryLongStackName',
     });
@@ -382,10 +413,8 @@ describe('stack', () => {
 
   test('Cross-stack reference export names are relative to the stack (when the flag is set)', () => {
     // GIVEN
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': 'true',
-      },
+    const app = makeCrossStackApp({
+      '@aws-cdk/core:stackRelativeExports': 'true',
     });
     const indifferentScope = new Construct(app, 'ExtraScope');
 
@@ -419,7 +448,7 @@ describe('stack', () => {
 
   test('cross-stack references in lazy tokens work', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const app = makeCrossStackApp({ [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const stack1 = new Stack(app, 'Stack1');
     const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
@@ -453,7 +482,7 @@ describe('stack', () => {
 
   test('Cross-stack use of Region and account returns nonscoped intrinsic because the two stacks must be in the same region anyway', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1');
     const stack2 = new Stack(app, 'Stack2');
 
@@ -477,7 +506,7 @@ describe('stack', () => {
 
   test('cross-stack references in strings work', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const app = makeCrossStackApp({ [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const stack1 = new Stack(app, 'Stack1');
     const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
@@ -501,7 +530,7 @@ describe('stack', () => {
 
   test('cross-stack references of lists returned from Fn::GetAtt work', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1');
     const exportResource = new CfnResource(stack1, 'exportedResource', {
       type: 'BLA',
@@ -562,7 +591,7 @@ describe('stack', () => {
 
   test('cross-stack references of nested stack lists returned from Fn::GetAtt work', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const producer = new Stack(app, 'Producer');
     const nested = new NestedStack(producer, 'Nestor');
     const exportResource = new CfnResource(nested, 'exportedResource', {
@@ -620,7 +649,7 @@ describe('stack', () => {
 
   test('cross-stack references of lists returned from Fn::GetAtt can be used with CFN intrinsics', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1');
     const exportResource = new CfnResource(stack1, 'exportedResource', {
       type: 'BLA',
@@ -686,7 +715,7 @@ describe('stack', () => {
 
   test('cross-stack references of lists returned from Fn::Ref work', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1');
     const param = new CfnParameter(stack1, 'magicParameter', {
       default: 'BLAT,BLAH',
@@ -743,7 +772,7 @@ describe('stack', () => {
 
   test('cross-region stack references, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -801,7 +830,7 @@ describe('stack', () => {
 
   test('cross-region stack references work without crossRegionReferences prop', () => {
     // GIVEN - no crossRegionReferences on consumer, strong flag (default)
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -828,7 +857,7 @@ describe('stack', () => {
 
   test('cross region stack references with multiple stacks, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -931,7 +960,7 @@ describe('stack', () => {
 
   test('cross region stack references with multiple stacks and multiple regions, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1041,7 +1070,7 @@ describe('stack', () => {
 
   test('cross-region references default to strong (ExportWriter/ExportReader) when flag is unset', () => {
     // GIVEN - no crossStackReferenceStrength context set
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1077,7 +1106,7 @@ describe('stack', () => {
 
   test('emits a single warning per app when cross-stack reference flag is unset', () => {
     // GIVEN - no context flag set, multiple consumer stacks
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1');
     const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
     const resource2 = new CfnResource(stack1, 'Resource2', { type: 'AWS::SNS::Topic' });
@@ -1106,7 +1135,7 @@ describe('stack', () => {
 
   test('no warning when cross-stack reference flag is explicitly set', () => {
     // GIVEN - context flag explicitly set to 'strong'
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' });
     const stack1 = new Stack(app, 'Stack1');
     const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
     const stack2 = new Stack(app, 'Stack2');
@@ -1129,7 +1158,7 @@ describe('stack', () => {
 
   test('emits transitional warning when cross-stack reference flag is set to both', () => {
     // GIVEN - context flag set to 'both'
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' });
     const stack1 = new Stack(app, 'Stack1');
     const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
     const stack2 = new Stack(app, 'Stack2');
@@ -1151,9 +1180,40 @@ describe('stack', () => {
     expect(relevantWarnings[0].path).toContain('Stack2');
   });
 
+  test.each(['up', 'down'])('no cross-stack reference flag warning when referencing %s across nested stacks', (direction) => {
+    // GIVEN - context flag explicitly set to 'strong'
+    const app = makeCrossStackApp();
+    const stack1 = new Stack(app, 'Stack1');
+    const stack2 = new NestedStack(stack1, 'Stack2');
+
+    // WHEN
+    if (direction === 'up') {
+      const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+      new CfnResource(stack2, 'Resource2', {
+        type: 'AWS::S3::Bucket',
+        properties: { Prop1: resource1.getAtt('Arn') },
+      });
+    } else {
+      const resource2 = new CfnResource(stack2, 'Resource2', { type: 'AWS::S3::Bucket' });
+      new CfnResource(stack1, 'Resource1', {
+        type: 'AWS::S3::Bucket',
+        properties: { Prop1: resource2.getAtt('Arn') },
+      });
+    }
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - no warning because nested stacks are not cross-stack references
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesDefaultStrong'),
+    );
+    expect(relevantWarnings).toHaveLength(0);
+  });
+
   test('cross-region strong references use ExportWriter/ExportReader', () => {
     // GIVEN - strength is explicitly 'strong'
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1189,7 +1249,7 @@ describe('stack', () => {
 
   test('cross-region both references generate ExportWriter AND Fn::GetStackOutput', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1231,7 +1291,7 @@ describe('stack', () => {
 
   test('cross-region weak references serialize STRING_LIST with Fn::Join and deserialize with Fn::Split', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1265,7 +1325,7 @@ describe('stack', () => {
 
   test('cross-account strong references emit warning and use Fn::GetStackOutput', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' });
     const producer = new Stack(app, 'Stack1', {
       env: { region: 'us-east-1', account: '111111111111' },
     });
@@ -1295,7 +1355,7 @@ describe('stack', () => {
 
   test('cross-account references from multiple consumers share a single role with multiple principals', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const producer = new Stack(app, 'Producer', {
       env: { region: 'us-east-1', account: '111111111111' },
     });
@@ -1344,7 +1404,7 @@ describe('stack', () => {
 
   test('cross-account references from a single consumer produce a single principal string', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const producer = new Stack(app, 'Producer', {
       env: { region: 'us-east-1', account: '111111111111' },
     });
@@ -1381,7 +1441,7 @@ describe('stack', () => {
 
   test('same-region weak references use Fn::GetStackOutput', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1411,7 +1471,7 @@ describe('stack', () => {
 
   test('same-region both references generate Export AND Fn::GetStackOutput', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1447,7 +1507,7 @@ describe('stack', () => {
 
   test('same-region weak references serialize STRING_LIST with Fn::Join and deserialize with Fn::Split', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1481,7 +1541,7 @@ describe('stack', () => {
 
   test('same-region both references serialize STRING_LIST with Fn::Join for publish output', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1527,7 +1587,7 @@ describe('stack', () => {
 
   test('invalid cross stack reference strength throws', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'invalid' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'invalid' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1546,7 +1606,7 @@ describe('stack', () => {
 
   test('per-resource weak override uses Fn::GetStackOutput when global is strong (same region)', () => {
     // GIVEN - global default is strong (no context set)
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1578,7 +1638,7 @@ describe('stack', () => {
 
   test('per-resource strong override uses Fn::ImportValue when global is weak (same region)', () => {
     // GIVEN - global default is weak
-    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const app = makeCrossStackApp({ [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1602,7 +1662,7 @@ describe('stack', () => {
 
   test('per-resource override only affects the overridden resource', () => {
     // GIVEN - global default is strong
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const weakResource = new CfnResource(stack1, 'WeakResource', {
       type: 'AWS::S3::Bucket',
@@ -1635,7 +1695,7 @@ describe('stack', () => {
 
   test('per-resource weak override works for cross-region references', () => {
     // GIVEN - global default is strong
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1693,7 +1753,7 @@ describe('stack', () => {
   });
 
   test('CrossStackReferences.of().consume() sets context on the scope', () => {
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack = new Stack(app, 'Stack1');
 
     // WHEN
@@ -1705,7 +1765,7 @@ describe('stack', () => {
 
   test('consumeReference weakens a single reference usage (same region)', () => {
     // GIVEN - global default is strong
-    const app = new App();
+    const app = makeCrossStackApp();
     const producerStack = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const resource = new CfnResource(producerStack, 'MyResource', { type: 'AWS::S3::Bucket' });
 
@@ -1743,7 +1803,7 @@ describe('stack', () => {
 
   test('consumeReference with explicit WEAK strength (same region)', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const resource = new CfnResource(stack1, 'MyResource', { type: 'AWS::S3::Bucket' });
 
@@ -1774,11 +1834,9 @@ describe('stack', () => {
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
     // GIVEN
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
+    const app = makeCrossStackApp({
+      '@aws-cdk/core:stackRelativeExports': true,
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
     });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
@@ -1793,7 +1851,7 @@ describe('stack', () => {
         RefToResource1: resourceA.ref,
       },
     });
-    resource2.addDependency(resourceB);
+    resource2.addResourceDependency(resourceB);
 
     // THEN
     const assembly = app.synth();
@@ -1829,13 +1887,8 @@ describe('stack', () => {
     expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
-  test('_addAssemblyDependency adds to _stackDependencies', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
+  test('cross-stack dependencies can be queried with _stackDependenciesCausedBy', () => {
+    const app = makeCrossStackApp({ '@aws-cdk/core:stackRelativeExports': true, [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const childA = new Stack(parent, 'ChildA');
@@ -1843,11 +1896,11 @@ describe('stack', () => {
     const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
     const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
 
-    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
-    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
+    resourceA.addResourceDependency(resource1);
+    resourceA.addResourceDependency(resource2);
 
-    expect(childA._obtainAssemblyDependencies({ source: resourceA }))
-      .toEqual([resource1, resource2]);
+    expect(paths(childA._stackDependenciesCausedBy(resourceA)))
+      .toEqual(paths([resource1, resource2]));
 
     const assembly = app.synth();
 
@@ -1855,21 +1908,16 @@ describe('stack', () => {
     expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
-  test('_addAssemblyDependency adds one StackDependencyReason with defaults', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
+  test('addStackDependency adds one StackDependencyReason with defaults', () => {
+    const app = makeCrossStackApp({ '@aws-cdk/core:stackRelativeExports': true, [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const childA = new Stack(parent, 'ChildA');
 
-    childA._addAssemblyDependency(child1);
+    childA.addStackDependency(child1, 'reason');
 
-    expect(childA._obtainAssemblyDependencies({ source: childA }))
-      .toEqual([child1]);
+    expect(paths(childA._stackDependenciesCausedBy(childA)))
+      .toEqual(paths([child1]));
 
     const assembly = app.synth();
 
@@ -1877,59 +1925,30 @@ describe('stack', () => {
     expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
-  test('_addAssemblyDependency raises error on cycle', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
+  test('addStackDependency raises error on cycle', () => {
+    const app = makeCrossStackApp({ '@aws-cdk/core:stackRelativeExports': true, [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const child2 = new Stack(parent, 'Child2');
 
-    child2._addAssemblyDependency(child1);
-    expect(() => child1._addAssemblyDependency(child2)).toThrow("'Parent/Child2' depends on");
+    child2.addStackDependency(child1);
+    expect(() => child1.addStackDependency(child2)).toThrow("'Parent/Child2' depends on");
   });
 
-  test('_addAssemblyDependency raises error for nested stacks', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
-    const parent = new Stack(app, 'Parent');
-    const child1 = new NestedStack(parent, 'Child1');
-    const child2 = new NestedStack(parent, 'Child2');
-
-    expect(() => child1._addAssemblyDependency(child2)).toThrow('Cannot add assembly-level');
-  });
-
-  test('_addAssemblyDependency handles duplicate dependency reasons', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
+  test('addStackDependency handles duplicate dependency reasons', () => {
+    const app = makeCrossStackApp({ '@aws-cdk/core:stackRelativeExports': true, [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const child2 = new Stack(parent, 'Child2');
 
-    child2._addAssemblyDependency(child1);
-    const depsBefore = child2._obtainAssemblyDependencies({ source: child2 });
-    child2._addAssemblyDependency(child1);
-    expect(depsBefore).toEqual(child2._obtainAssemblyDependencies({ source: child2 }));
+    child2.addStackDependency(child1);
+    const depsBefore = child2._stackDependenciesCausedBy(child2);
+    child2.addStackDependency(child1);
+    expect(depsBefore).toEqual(child2._stackDependenciesCausedBy(child2));
   });
 
   test('_removeAssemblyDependency removes one StackDependencyReason of two from _stackDependencies', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
+    const app = makeCrossStackApp({ '@aws-cdk/core:stackRelativeExports': true, [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const childA = new Stack(parent, 'ChildA');
@@ -1937,11 +1956,11 @@ describe('stack', () => {
     const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
     const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
 
-    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
-    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
-    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
+    resourceA.addResourceDependency(resource1);
+    resourceA.addResourceDependency(resource2);
+    resourceA.removeResourceDependency(resource1);
 
-    expect(childA._obtainAssemblyDependencies({ source: resourceA })).toEqual([resource2]);
+    expect(paths(childA._stackDependenciesCausedBy(resourceA))).toEqual(paths([resource2]));
 
     const assembly = app.synth();
 
@@ -1950,12 +1969,7 @@ describe('stack', () => {
   });
 
   test('_removeAssemblyDependency removes a StackDependency from _stackDependencies with the last reason', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
+    const app = makeCrossStackApp({ '@aws-cdk/core:stackRelativeExports': true, [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const childA = new Stack(parent, 'Child2');
@@ -1963,82 +1977,29 @@ describe('stack', () => {
     const resource2 = new CfnResource(child1, 'Resource2', { type: 'R2' });
     const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
 
-    childA._addAssemblyDependency(child1, { source: resourceA, target: resource1 });
-    childA._addAssemblyDependency(child1, { source: resourceA, target: resource2 });
-    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
-    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource2 });
+    resourceA.addResourceDependency(resource1);
+    resourceA.addResourceDependency(resource2);
+    resourceA.removeResourceDependency(resource1);
+    resourceA.removeResourceDependency(resource2);
 
-    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([]);
-
-    const assembly = app.synth();
-
-    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
-  });
-
-  test('_removeAssemblyDependency removes a StackDependency with default reason', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
-    const parent = new Stack(app, 'Parent');
-    const child1 = new Stack(parent, 'Child1');
-    const childA = new Stack(parent, 'Child2');
-
-    childA._addAssemblyDependency(child1);
-    childA._removeAssemblyDependency(child1);
-
-    expect(childA._obtainAssemblyDependencies({ source: childA })).toEqual([]);
+    expect(childA._stackDependenciesCausedBy(childA)).toEqual([]);
 
     const assembly = app.synth();
 
     expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
     expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
-  });
-
-  test('_removeAssemblyDependency raises an error for nested stacks', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
-    const parent = new Stack(app, 'Parent');
-    const child1 = new NestedStack(parent, 'Child1');
-    const childA = new NestedStack(parent, 'Child2');
-
-    expect(() => childA._removeAssemblyDependency(child1)).toThrow('There cannot be assembly-level');
-  });
-
-  test('_removeAssemblyDependency handles a non-matching dependency reason', () => {
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
-    });
-    const parent = new Stack(app, 'Parent');
-    const child1 = new Stack(parent, 'Child1');
-    const childA = new Stack(parent, 'Child2');
-    const resource1 = new CfnResource(child1, 'Resource1', { type: 'R1' });
-    const resourceA = new CfnResource(childA, 'ResourceA', { type: 'RA' });
-
-    childA._addAssemblyDependency(child1);
-    childA._removeAssemblyDependency(child1, { source: resourceA, target: resource1 });
   });
 
   test('automatic cross-stack references and manual exports look the same', () => {
     // GIVEN: automatic
-    const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
+    const appA = makeCrossStackApp({ '@aws-cdk/core:stackRelativeExports': true });
     const producerA = new Stack(appA, 'Producer');
     const consumerA = new Stack(appA, 'Consumer');
     const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
     new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att')}` });
 
     // GIVEN: manual
-    const appM = new App();
+    const appM = makeCrossStackApp();
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
     producerM.exportValue(resourceM.getAtt('Att'));
@@ -2052,7 +2013,7 @@ describe('stack', () => {
 
   test('automatic cross-stack references and manual list exports look the same', () => {
     // GIVEN: automatic
-    const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
+    const appA = makeCrossStackApp({ '@aws-cdk/core:stackRelativeExports': true });
     const producerA = new Stack(appA, 'Producer');
     const consumerA = new Stack(appA, 'Consumer');
     const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
@@ -2060,7 +2021,7 @@ describe('stack', () => {
     new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att', ResolutionTypeHint.STRING_LIST)}` });
 
     // GIVEN: manual
-    const appM = new App();
+    const appM = makeCrossStackApp();
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
     (resourceM as any).attrAtt = ['Foo', 'Bar'];
@@ -2076,6 +2037,10 @@ describe('stack', () => {
   test('throw error if overrideLogicalId is used and logicalId is locked', () => {
     // GIVEN: manual
     const appM = new App();
+    Validations.of(appM).acknowledge({
+      id: 'CloudFormation-Validate::F0006',
+      reason: 'Yes this is an invalid logical ID',
+    });
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
     producerM.exportValue(resourceM.getAtt('Att'));
@@ -2088,31 +2053,31 @@ describe('stack', () => {
 
   test('do not throw error if overrideLogicalId is used and logicalId is not locked', () => {
     // GIVEN: manual
-    const appM = new App();
+    const appM = makeCrossStackApp();
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
 
     // THEN - producers are the same
-    resourceM.overrideLogicalId('OVERRIDE_LOGICAL_ID');
+    resourceM.overrideLogicalId('banana');
     producerM.exportValue(resourceM.getAtt('Att'));
 
     const template = appM.synth().getStackByName(producerM.stackName).template;
     expect(template).toMatchObject({
       Outputs: {
-        ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019: {
+        ExportsOutputFnGetAttbananaAttF2F2ECCE: {
           Export: {
-            Name: 'Producer:ExportsOutputFnGetAttOVERRIDELOGICALIDAtt2DD28019',
+            Name: 'Producer:ExportsOutputFnGetAttbananaAttF2F2ECCE',
           },
           Value: {
             'Fn::GetAtt': [
-              'OVERRIDE_LOGICAL_ID',
+              'banana',
               'Att',
             ],
           },
         },
       },
       Resources: {
-        OVERRIDE_LOGICAL_ID: {
+        banana: {
           Type: 'AWS::Resource',
         },
       },
@@ -2121,7 +2086,7 @@ describe('stack', () => {
 
   test('automatic cross-stack references and manual exports look the same: nested stack edition', () => {
     // GIVEN: automatic
-    const appA = new App();
+    const appA = makeCrossStackApp();
     const producerA = new Stack(appA, 'Producer');
     const nestedA = new NestedStack(producerA, 'Nestor');
     const resourceA = new CfnResource(nestedA, 'Resource', { type: 'AWS::Resource' });
@@ -2130,7 +2095,7 @@ describe('stack', () => {
     new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att')}` });
 
     // GIVEN: manual
-    const appM = new App();
+    const appM = makeCrossStackApp();
     const producerM = new Stack(appM, 'Producer');
     const nestedM = new NestedStack(producerM, 'Nestor');
     const resourceM = new CfnResource(nestedM, 'Resource', { type: 'AWS::Resource' });
@@ -2359,7 +2324,7 @@ describe('stack', () => {
 
   test('cross-stack reference (substack references parent stack)', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const app = makeCrossStackApp({ [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false });
     const parentStack = new Stack(app, 'parent');
     const childStack = new Stack(parentStack, 'child');
 
@@ -2399,11 +2364,9 @@ describe('stack', () => {
 
   test('cross-stack reference (parent stack references substack)', () => {
     // GIVEN
-    const app = new App({
-      context: {
-        '@aws-cdk/core:stackRelativeExports': true,
-        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-      },
+    const app = makeCrossStackApp({
+      '@aws-cdk/core:stackRelativeExports': true,
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
     });
 
     const parentStack = new Stack(app, 'parent');
@@ -2461,7 +2424,7 @@ describe('stack', () => {
 
   test('stacks know about their dependencies', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1');
     const account1 = new ScopedAws(stack1).accountId;
     const stack2 = new Stack(app, 'Stack2');
@@ -2477,10 +2440,10 @@ describe('stack', () => {
 
   test('cross-account references with strong flag emit warning but still synth', () => {
     // GIVEN
-    const app = new App();
+    const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
     const account1 = new ScopedAws(stack1).accountId;
-    const stack2 = new Stack(app, 'Stack2', { env: { account: '11111111111', region: 'es-norst-2' } });
+    const stack2 = new Stack(app, 'Stack2', { env: { account: '111111111111', region: 'es-norst-2' } });
 
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
@@ -3044,7 +3007,7 @@ describe('stack', () => {
   test('account id passed in stack environment must be a string', () => {
     // GIVEN
     const envConfig: any = {
-      account: 11111111111,
+      account: 111111111111,
     };
 
     // WHEN
@@ -3128,6 +3091,41 @@ describe('stack', () => {
     // THEN
     const metadata = res.node.metadata.find(m => m.type === 'aws:cdk:creationStack');
     expect(metadata).toBeDefined();
+  });
+
+  test('stack adds template-producer metadata to the cloud assembly', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateProducerEntries = artifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    expect(templateProducerEntries).toEqual([
+      { path: '/MyStack', type: cxapi.CDK_TEMPLATE_FILE_KEY, data: stack.templateFile },
+    ]);
+  });
+
+  test('stack inside a Stage has a nested-assembly-relative template path in template-producer metadata', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stage = new Stage(app, 'MyStage');
+    const stack = new Stack(stage, 'MyStack');
+
+    // WHEN
+    const rootAssembly = app.synth();
+    const stageAssembly = rootAssembly.getNestedAssembly(stage.artifactId);
+    const artifact = stageAssembly.getStackArtifact(stack.artifactId);
+
+    // THEN — templateFile is just the filename, relative to the nested assembly directory
+    const templateProducerEntries = artifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    expect(templateProducerEntries).toEqual([
+      { path: '/MyStage/MyStack', type: cxapi.CDK_TEMPLATE_FILE_KEY, data: stack.templateFile },
+    ]);
+    expect(stack.templateFile).not.toContain('/');
   });
 });
 
@@ -3288,61 +3286,6 @@ describe('regionalFact', () => {
       },
     });
   });
-
-  test('git source metadata is not included by default', () => {
-    GitSource._clearCache();
-    const app = new App();
-    const stack = new Stack(app, 'Stack');
-    new CfnResource(stack, 'Resource', { type: 'MyResource' });
-
-    const assembly = app.synth();
-    const template = assembly.getStackByName(stack.stackName).template;
-    expect(template?.Metadata?.['AWS::CDK::Source']).toBeUndefined();
-  });
-
-  test('git source metadata is included when trackSourceCommit context is true', () => {
-    GitSource._clearCache();
-    const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
-    const stack = new Stack(app, 'Stack');
-    new CfnResource(stack, 'Resource', { type: 'MyResource' });
-
-    const assembly = app.synth();
-    const stackArtifact = assembly.getStackByName(stack.stackName);
-    const template = stackArtifact.template;
-    const source = template?.Metadata?.['AWS::CDK::Source'];
-
-    expect(source).toBeDefined();
-    expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
-    expect(source.Repository).toContain('github.com');
-    GitSource._clearCache();
-  });
-
-  test('git source metadata is included when trackSourceCommit is set on App props', () => {
-    GitSource._clearCache();
-    const app = new App({ trackSourceCommit: true });
-    const stack = new Stack(app, 'Stack');
-    new CfnResource(stack, 'Resource', { type: 'MyResource' });
-
-    const assembly = app.synth();
-    const template = assembly.getStackByName(stack.stackName).template;
-    const source = template?.Metadata?.['AWS::CDK::Source'];
-
-    expect(source).toBeDefined();
-    expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
-    GitSource._clearCache();
-  });
-
-  test('stack-level trackSourceCommit overrides app-level setting', () => {
-    GitSource._clearCache();
-    const app = new App({ trackSourceCommit: true });
-    const stack = new Stack(app, 'Stack', { trackSourceCommit: false });
-    new CfnResource(stack, 'Resource', { type: 'MyResource' });
-
-    const assembly = app.synth();
-    const template = assembly.getStackByName(stack.stackName).template;
-    expect(template?.Metadata?.['AWS::CDK::Source']).toBeUndefined();
-    GitSource._clearCache();
-  });
 });
 
 class StackWithPostProcessor extends Stack {
@@ -3372,4 +3315,8 @@ class TaggableResource extends CfnResource implements ITaggableV2 {
       },
     });
   }
+}
+
+function paths(xs: IConstruct[]): string[] {
+  return xs.map(x => x.node.path);
 }

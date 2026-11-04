@@ -514,7 +514,7 @@ export interface EventApiAttributes {
   readonly apiName?: string;
 
   /**
-   * an unique AWS AppSync Event API identifier
+   * a unique AWS AppSync Event API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   readonly apiId: string;
@@ -580,7 +580,7 @@ export class EventApi extends EventApiBase {
   }
 
   /**
-   * an unique AWS AppSync Event API identifier
+   * a unique AWS AppSync Event API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public readonly apiId: string;
@@ -715,7 +715,7 @@ export class EventApi extends EventApiBase {
     if (props.domainName) {
       this.domainNameResource = new CfnDomainName(this, 'DomainName', {
         domainName: props.domainName.domainName,
-        certificateArn: props.domainName.certificate.certificateRef.certificateId,
+        certificateArn: props.domainName.certificate.certificateRef.certificateArn,
         description: `domain for ${props.apiName} Event API`,
       });
       const domainNameAssociation = new CfnDomainNameApiAssociation(this, 'DomainAssociation', {
@@ -723,7 +723,7 @@ export class EventApi extends EventApiBase {
         apiId: this.apiId,
       });
 
-      domainNameAssociation.addDependency(this.domainNameResource);
+      domainNameAssociation.addResourceDependency(this.domainNameResource);
     }
 
     const logGroupName = `/aws/appsync/apis/${this.apiId}`;

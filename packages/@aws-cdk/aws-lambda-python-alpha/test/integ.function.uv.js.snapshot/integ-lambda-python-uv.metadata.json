@@ -3,19 +3,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:14:15)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:47:15)",
         "...node internals..."
       ]
-    }
-  ],
-  "/integ-lambda-python-uv/my_handler_inline_python_39": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/integ-lambda-python-uv/my_handler_inline_python_310": [
@@ -66,16 +56,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+        "addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -87,49 +77,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
-      ]
-    }
-  ],
-  "/integ-lambda-python-uv/my_handler_inline_python_39/ServiceRole": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
-    }
-  ],
-  "/integ-lambda-python-uv/my_handler_inline_python_39/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "myhandlerinlinepython3914E0D89D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:16:26)",
-        "...node internals..."
+        "addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -157,11 +114,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:21:27)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:49:27)",
         "...node internals..."
       ]
     }
@@ -190,11 +145,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:29:27)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:57:27)",
         "...node internals..."
       ]
     }
@@ -223,11 +176,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:35:27)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:63:27)",
         "...node internals..."
       ]
     }
@@ -256,31 +207,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:40:27)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/integ-lambda-python-uv/Exports/Output{\"Ref\":\"myhandlerinlinepython3914E0D89D\"}": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:68:27)",
         "...node internals..."
       ]
     }
@@ -293,14 +222,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Stack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "process.<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:157:51)",
         "...node internals..."
       ]
     }
@@ -313,14 +243,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Stack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "process.<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:157:51)",
         "...node internals..."
       ]
     }
@@ -333,14 +264,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Stack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "process.<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:157:51)",
         "...node internals..."
       ]
     }
@@ -353,41 +285,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Stack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "process.<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:157:51)",
         "...node internals..."
       ]
-    }
-  ],
-  "/integ-lambda-python-uv/my_handler_inline_python_39/ServiceRole/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "myhandlerinlinepython39ServiceRoleEDE997C5"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:16:26)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/integ-lambda-python-uv/my_handler_inline_python_39/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/integ-lambda-python-uv/my_handler_inline_python_310/ServiceRole/Resource": [
@@ -398,13 +306,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:21:27)",
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:49:27)",
         "...node internals..."
       ]
     }
@@ -423,13 +328,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:29:27)",
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:57:27)",
         "...node internals..."
       ]
     }
@@ -448,13 +350,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:35:27)",
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:63:27)",
         "...node internals..."
       ]
     }
@@ -473,13 +372,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:40:27)",
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.uv.js:68:27)",
         "...node internals..."
       ]
     }

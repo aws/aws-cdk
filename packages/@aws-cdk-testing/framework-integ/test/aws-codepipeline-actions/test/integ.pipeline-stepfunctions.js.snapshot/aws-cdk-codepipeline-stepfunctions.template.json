@@ -7,6 +7,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":states:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stateMachine:*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"
@@ -20,13 +49,13 @@
   "SimpleStateMachineE8E2CF40": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
+    "DefinitionString": "{\"StartAt\":\"StartState\",\"States\":{\"StartState\":{\"Type\":\"Pass\",\"End\":true}}}",
     "RoleArn": {
      "Fn::GetAtt": [
       "SimpleStateMachineRole0CBC135A",
       "Arn"
      ]
-    },
-    "DefinitionString": "{\"StartAt\":\"StartState\",\"States\":{\"StartState\":{\"Type\":\"Pass\",\"End\":true}}}"
+    }
    },
    "DependsOn": [
     "SimpleStateMachineRole0CBC135A"
@@ -265,6 +294,21 @@
   "MyPipelineAED38ECF": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "MyPipelineArtifactsBucket727923DD"
+     },
+     "Type": "S3"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "MyPipelineRoleC0D47CA4",
@@ -333,22 +377,7 @@
       ],
       "Name": "Invoke"
      }
-    ],
-    "ArtifactStore": {
-     "EncryptionKey": {
-      "Id": {
-       "Fn::GetAtt": [
-        "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
-        "Arn"
-       ]
-      },
-      "Type": "KMS"
-     },
-     "Location": {
-      "Ref": "MyPipelineArtifactsBucket727923DD"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "MyPipelineRoleDefaultPolicy34F09EFA",
