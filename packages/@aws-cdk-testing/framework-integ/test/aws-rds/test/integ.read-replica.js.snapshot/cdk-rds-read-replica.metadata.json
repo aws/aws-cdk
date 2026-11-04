@@ -1,4 +1,24 @@
 {
+  "/cdk-rds-read-replica": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at IntegTestBaseStack._silenceLiteralAzWarning (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/workplace/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:45:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-rds-read-replica.template.json"
+    }
+  ],
   "/cdk-rds-read-replica/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
