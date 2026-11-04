@@ -2,6 +2,123 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.275.0](https://github.com/aws/aws-cdk/compare/v2.274.0...v2.275.0) (2026-10-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-bedrockagentcore: AWS::BedrockAgentCore::Harness: HarnessAgentCoreMemoryRetrievalConfig.RelevanceScore type narrowed from number | string to number.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::Harness: HarnessAgentCoreMemoryRetrievalConfig.TopK type narrowed from integer | string to integer.  
+aws-codebuild: AWS::CodeBuild::ReportGroup: Id attribute removed.  
+aws-dax: AWS::DAX::SubnetGroup: Id attribute removed.  
+aws-dms: AWS::DMS::MigrationProject: InstanceProfileArn property removed (now a read-only attribute).  
+aws-dms: AWS::DMS::MigrationProject: InstanceProfileName property removed (now a read-only attribute).  
+aws-dms: AWS::DMS::MigrationProject: MigrationProjectCreationTime property removed (now a read-only attribute).  
+aws-emr: AWS::EMR::InstanceFleetConfig: Id attribute removed.  
+aws-fsx: AWS::FSx::Volume: AggregateConfiguration.Aggregates property is now immutable.  
+aws-fsx: AWS::FSx::Volume: AggregateConfiguration.ConstituentsPerAggregate property is now immutable.  
+aws-fsx: AWS::FSx::Volume: OntapConfiguration.AggregateConfiguration property is now immutable.  
+aws-fsx: AWS::FSx::Volume: OntapConfiguration.VolumeStyle property is now immutable.  
+aws-medialive: AWS::MediaLive::Input: InputNetworkLocation property type narrowed to enum (AWS | ON_PREMISES).  
+aws-medialive: AWS::MediaLive::Input: Type property type narrowed to enum (16 values).  
+aws-medialive: AWS::MediaLive::Input: Tags property type narrowed from json to Map<string, string>.  
+aws-medialive: AWS::MediaLive::Input: RouterDestinationSettings.AvailabilityZoneName property is now required.  
+aws-medialive: AWS::MediaLive::Input: RouterSettings.EncryptionType property type narrowed to enum (AUTOMATIC | SECRETS_MANAGER).  
+aws-medialive: AWS::MediaLive::InputSecurityGroup: Tags property type narrowed from json to Map<string, string>.  
+aws-mediapackagev2: AWS::MediaPackageV2::OriginEndpoint: LowLatencyHlsManifestConfiguration.FilterConfiguration type narrowed to LowLatencyHlsFilterConfiguration.  
+aws-mediapackagev2: AWS::MediaPackageV2::OriginEndpoint: MssManifestConfiguration.FilterConfiguration type narrowed to MssFilterConfiguration.
+
+### Features
+
+* **cloudfront:** add sigv4a always-amz-auth signing for origin access control ([#39216](https://github.com/aws/aws-cdk/issues/39216)) ([d9505e0](https://github.com/aws/aws-cdk/commit/d9505e0a2e3d1ef9532f4fe8c3607f6eb059d1b2)), closes [#39195](https://github.com/aws/aws-cdk/issues/39195) [#38629](https://github.com/aws/aws-cdk/issues/38629) [#39196](https://github.com/aws/aws-cdk/issues/39196) [#39195](https://github.com/aws/aws-cdk/issues/39195)
+* **core:** switch off built-in CloudFormation Validate using App prop ([#39452](https://github.com/aws/aws-cdk/issues/39452)) ([5f51a82](https://github.com/aws/aws-cdk/commit/5f51a82255436a59365cc93c38b894ad1fc6c136))
+* **lambda-nodejs:** support repeated esbuild arguments ([#39344](https://github.com/aws/aws-cdk/issues/39344)) ([d60598a](https://github.com/aws/aws-cdk/commit/d60598a6ac617e988f93598a3b051038beae5710)), closes [#32260](https://github.com/aws/aws-cdk/issues/32260) [/github.com/aws/aws-cdk/pull/39344#pullrequestreview-5638104896](https://github.com/aws//github.com/aws/aws-cdk/pull/39344/issues/pullrequestreview-5638104896)
+* update L1 CloudFormation resource definitions ([#39393](https://github.com/aws/aws-cdk/issues/39393)) ([8fb96fc](https://github.com/aws/aws-cdk/commit/8fb96fcb3f51c74fff07b60433d136fd0b63346b))
+
+
+### Bug Fixes
+
+* **core:** overly defensive plugin invocation leads to slowness ([#39451](https://github.com/aws/aws-cdk/issues/39451)) ([783a981](https://github.com/aws/aws-cdk/commit/783a981d34bc64c8130dd8d5403c4f4dec383130))
+* **stepfunctions-tasks:** use a dedicated Lambda function for each EvaluateExpression task ([#39436](https://github.com/aws/aws-cdk/issues/39436)) ([641ff6f](https://github.com/aws/aws-cdk/commit/641ff6fd4043898e2df2b585bfe1979a28d18e2d))
+* add graduate tool to lerna.json ([#39423](https://github.com/aws/aws-cdk/issues/39423)) ([3d6f9d3](https://github.com/aws/aws-cdk/commit/3d6f9d3880f3b33e32916675fe331b514164f6ed))
+* **lambda-nodejs:** preCompilation fails with TypeScript 6 or later ([#39401](https://github.com/aws/aws-cdk/issues/39401)) ([8ce48a6](https://github.com/aws/aws-cdk/commit/8ce48a6f485fef1c26241ba810e02ef693bcd0b2))
+
+## [2.274.0](https://github.com/aws/aws-cdk/compare/v2.273.0...v2.274.0) (2026-10-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-cloudwatch: AWS::CloudWatch::AnomalyDetector: Id attribute removed.  
+aws-glue: AWS::Glue::Table: Id attribute removed.  
+aws-glue: AWS::Glue::Table: IcebergInput.MetadataOperation type narrowed from json to string.  
+aws-glue: AWS::Glue::Table: IcebergTableInput.Properties type narrowed from json to Map<string, string>.  
+aws-iot: AWS::IoT::PolicyPrincipalAttachment: Id attribute removed.  
+aws-quicksight: AWS::QuickSight::Analysis: SheetLayoutGroupMember.Type type narrowed from json to string enum (ELEMENT|GROUP).  
+aws-quicksight: AWS::QuickSight::Dashboard: SheetLayoutGroupMember.Type type narrowed from json to string enum (ELEMENT|GROUP).  
+aws-quicksight: AWS::QuickSight::Template: SheetLayoutGroupMember.Type type narrowed from json to string enum (ELEMENT|GROUP).
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#39139](https://github.com/aws/aws-cdk/issues/39139)) ([8a10135](https://github.com/aws/aws-cdk/commit/8a101356261fc0b8da85e369d983ff7b5e9dc1a3))
+* **cloudfront:** add always-amz-auth signing behavior for origin access control ([#39196](https://github.com/aws/aws-cdk/issues/39196)) ([7cf79a1](https://github.com/aws/aws-cdk/commit/7cf79a17d70c7874e1f4e0029fcede323be06a49)), closes [#39195](https://github.com/aws/aws-cdk/issues/39195) [#38629](https://github.com/aws/aws-cdk/issues/38629)
+* **cloudfront:** add sigv4a signing protocol for origin access control ([#38629](https://github.com/aws/aws-cdk/issues/38629)) ([805bfbe](https://github.com/aws/aws-cdk/commit/805bfbe57b00a6fa6ad3a5a07ccd96d2d892f420)), closes [#38627](https://github.com/aws/aws-cdk/issues/38627) [#38627](https://github.com/aws/aws-cdk/issues/38627)
+* **codebuild:** add STANDARD_8_0, AMAZON_LINUX_2023_6 and AMAZON_LINUX_2023_STANDARD_4_0 images ([#37588](https://github.com/aws/aws-cdk/issues/37588)) ([3beecb3](https://github.com/aws/aws-cdk/commit/3beecb31a38da1b86ba0c6a52a4a9e3ed4f4282f)), closes [#37586](https://github.com/aws/aws-cdk/issues/37586)
+
+
+### Bug Fixes
+
+* **apigateway:** log group destination ARN causes permanent Stage drift ([#38816](https://github.com/aws/aws-cdk/issues/38816)) ([65c6aa0](https://github.com/aws/aws-cdk/commit/65c6aa07c4e389fc818ebafa91b1229acba06bd7)), closes [#38796](https://github.com/aws/aws-cdk/issues/38796)
+* **bedrockagentcore:** `Runtime` annotations cannot be acknowledged ([#38770](https://github.com/aws/aws-cdk/issues/38770)) ([165bf8b](https://github.com/aws/aws-cdk/commit/165bf8b49633251d9b25745a5f150a8db8b5ff39)), closes [#38741](https://github.com/aws/aws-cdk/issues/38741)
+* **core:** can't trace construct to template for nested stacks ([#39141](https://github.com/aws/aws-cdk/issues/39141)) ([173a2ff](https://github.com/aws/aws-cdk/commit/173a2ff9551d7c92c050bd33f775c1e4a1eb9ad8))
+* **core:** preserve unresolved Tags property tokens ([#37759](https://github.com/aws/aws-cdk/issues/37759)) ([644489c](https://github.com/aws/aws-cdk/commit/644489c24c8339a1af5e640237ff44f10f5bf207)), closes [#37734](https://github.com/aws/aws-cdk/issues/37734)
+* **core:** validations with different messages are confusingly combined ([#39132](https://github.com/aws/aws-cdk/issues/39132)) ([54fb0ea](https://github.com/aws/aws-cdk/commit/54fb0eabbf26e53a4861be664256b987d4dc96e9)), closes [#38982](https://github.com/aws/aws-cdk/issues/38982)
+* **stepfunctions:** default `StateMachine` IAM role  missing confused deputy protection best practices ([#37688](https://github.com/aws/aws-cdk/issues/37688)) ([638a681](https://github.com/aws/aws-cdk/commit/638a6819aca172d1df572ea587861cf2f6295cfa)), closes [#37567](https://github.com/aws/aws-cdk/issues/37567) [#37567](https://github.com/aws/aws-cdk/issues/37567) [#37567](https://github.com/aws/aws-cdk/issues/37567)
+
+## [2.273.0](https://github.com/aws/aws-cdk/compare/v2.272.0...v2.273.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-appstream: AWS::AppStream::StackFleetAssociation: FleetName property is now immutable.
+aws-appstream: AWS::AppStream::StackFleetAssociation: StackName property is now immutable.
+aws-appsync: AWS::AppSync::ApiCache: AtRestEncryptionEnabled property is now immutable.
+aws-appsync: AWS::AppSync::ApiCache: TransitEncryptionEnabled property is now immutable.
+aws-bedrockagentcore: AWS::BedrockAgentCore::OnlineEvaluationConfig: OutputConfig attribute removed.
+aws-cloud9: AWS::Cloud9::EnvironmentEC2: Id attribute removed.
+aws-config: AWS::Config::ConfigurationRecorder: Id attribute removed.
+aws-config: AWS::Config::OrganizationConfigRule: Id attribute removed.
+aws-datazone: AWS::DataZone::PolicyGrant: Detail property is now required.
+aws-datazone: AWS::DataZone::PolicyGrant: Principal property is now required.
+aws-directoryservice: AWS::DirectoryService::MicrosoftAD: Id attribute removed.
+aws-lambda: AWS::Lambda::NetworkConnector: VpcEgressConfiguration.NetworkProtocol property is now required.
+aws-lambda: AWS::Lambda::NetworkConnector: VpcEgressConfiguration.SecurityGroupIds property is now required.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38969](https://github.com/aws/aws-cdk/issues/38969)) ([ed0df78](https://github.com/aws/aws-cdk/commit/ed0df78359cc92b367d4bbd609bb1637b68f5573))
+* **batch:** add ConsumableResource L2 construct ([#36971](https://github.com/aws/aws-cdk/issues/36971)) ([a12f3a1](https://github.com/aws/aws-cdk/commit/a12f3a1c7ca1626c16608c126fa4a60a45ac010b))
+* **bedrockagentcore:** support runtime platformVersion ([#38924](https://github.com/aws/aws-cdk/issues/38924)) ([227423f](https://github.com/aws/aws-cdk/commit/227423f0129d829a9bdddce5af57f63469839097))
+* **cloudfront:** default Distribution behaviors to redirect HTTP to HTTPS ([#38721](https://github.com/aws/aws-cdk/issues/38721)) ([6ede006](https://github.com/aws/aws-cdk/commit/6ede0060d93bab5903a0528bdd323a56e1430003)), closes [#38599](https://github.com/aws/aws-cdk/issues/38599)
+* **opensearchservice:** add useLatestServiceSoftwareForBlueGreen support ([#38499](https://github.com/aws/aws-cdk/issues/38499)) ([6aa03e5](https://github.com/aws/aws-cdk/commit/6aa03e5444241550487c6a34011283d2599ff31e)), closes [#38664](https://github.com/aws/aws-cdk/issues/38664) [#38664](https://github.com/aws/aws-cdk/issues/38664)
+* **pipelines:** add `executionMode` support in CodePipeline L3 construct ([#35022](https://github.com/aws/aws-cdk/issues/35022)) ([7283d38](https://github.com/aws/aws-cdk/commit/7283d38c615c83b7698111e639c9773abd41b45a)), closes [#35014](https://github.com/aws/aws-cdk/issues/35014)
+
+
+### Bug Fixes
+
+* bump bundled brace-expansion to 5.0.12 ([#38929](https://github.com/aws/aws-cdk/issues/38929)) ([ff25def](https://github.com/aws/aws-cdk/commit/ff25def6c473addeafc091d93a01fcb5b5b5cb25)), closes [#38932](https://github.com/aws/aws-cdk/issues/38932)
+* **applicationautoscaling:** target tracking silently ignores custom metric account and region ([#36503](https://github.com/aws/aws-cdk/issues/36503)) ([5d10288](https://github.com/aws/aws-cdk/commit/5d1028868e59642f71af364d4b019f9d5911e455)), closes [#36401](https://github.com/aws/aws-cdk/issues/36401)
+* **bedrockagentcore:** accept aws-cn ECR image URIs in Runtime container URI validation ([#38948](https://github.com/aws/aws-cdk/issues/38948)) ([49ac618](https://github.com/aws/aws-cdk/commit/49ac618636a31bd4ecfa74e0a224ccabcfd291b2)), closes [#38947](https://github.com/aws/aws-cdk/issues/38947)
+* **cloudfront-origins:** missing OAC permissions for Function URL ([#35919](https://github.com/aws/aws-cdk/issues/35919)) ([d213cc7](https://github.com/aws/aws-cdk/commit/d213cc71761267788354887039e2d3c4f26b3032)), closes [#35872](https://github.com/aws/aws-cdk/issues/35872) [/github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.ts#L144-L153](https://github.com/aws//github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.ts/issues/L144-L153) [/github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.ts#L144-L153](https://github.com/aws//github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.ts/issues/L144-L153) [/github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts#L577](https://github.com/aws//github.com/aws/aws-cdk/blob/75139b2145010bc74e8017b23450d7af95327f49/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts/issues/L577) [#35725](https://github.com/aws/aws-cdk/issues/35725)
+* **core:** validation  E2001 inadvertently not enabled ([#38920](https://github.com/aws/aws-cdk/issues/38920)) ([0b763a7](https://github.com/aws/aws-cdk/commit/0b763a780c0a89b518d596d6b7bcde2778ffd29b))
+* **eks:** allow access policies on AccessEntryType.EC2 access entries ([#38782](https://github.com/aws/aws-cdk/issues/38782)) ([e507e07](https://github.com/aws/aws-cdk/commit/e507e07dcc2404845413e0a73c784bec0207aab3)), closes [#37496](https://github.com/aws/aws-cdk/issues/37496)
+* **s3-deployment:** `Source.data` objectKey can write outside the staging directory ([#38921](https://github.com/aws/aws-cdk/issues/38921)) ([53439f9](https://github.com/aws/aws-cdk/commit/53439f95a933165414afaae7a33faefccad8bf57))
+
 ## [2.272.0](https://github.com/aws/aws-cdk/compare/v2.271.0...v2.272.0) (2026-09-30)
 
 

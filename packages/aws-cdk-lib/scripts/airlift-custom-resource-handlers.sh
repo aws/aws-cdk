@@ -43,4 +43,8 @@ function recurse() {
   done
 }
 
+# Both destinations are produced entirely by this script; clear them so handlers
+# left over from an earlier build (e.g. another branch) are not shipped or cached.
+rm -rf $awscdklibdir/custom-resource-handlers/dist $awscdklibdir/core/lib/dist
+
 recurse $customresourcedir/dist
