@@ -4,7 +4,7 @@ import * as path from 'path';
 import type { Construct, IDependable } from 'constructs';
 import { DependencyGroup, Node } from 'constructs';
 import type { IBucket } from '../../aws-s3';
-import { Bucket } from '../../aws-s3';
+import { Bucket, CfnBucket } from '../../aws-s3';
 import { BucketDeployment, Source } from '../../aws-s3-deployment';
 import {
   Stack,
@@ -45,9 +45,10 @@ export class StackSetAssetBuckets {
    * Uses the given bucket for each region the StackSet deploys to.
    *
    * Each bucket must be named `${bucketNamePrefix}-<region>`, where `<region>` is its key in
-   * `buckets`. A bucket name that is only known at deploy time, such as the name of a bucket
-   * defined without an explicit `bucketName`, can't be checked at synthesis, so make sure it
-   * follows the same convention.
+   * `buckets`. A bucket name or prefix that is only known at deploy time, such as the name of a
+   * bucket defined without an explicit `bucketName`, can't be checked at synthesis, and the stack
+   * that contains the StackSet gets a warning. Give each bucket an explicit `bucketName` so the
+   * name is checked.
    *
    * Every region that a StackSet with file assets deploys to needs a bucket. This is checked
    * when the app is synthesized.
@@ -58,6 +59,10 @@ export class StackSetAssetBuckets {
    * `BucketDeployment`, which needs it. [disable-awslint:prefer-ref-interface]
    */
   public static fromBuckets(bucketNamePrefix: string, buckets: { [region: string]: IBucket }): StackSetAssetBuckets {
+    if (bucketNamePrefix === '') {
+      throw new UnscopedValidationError(lit`StackSetAssetBucketPrefixRequired`, 'the bucket name prefix must not be empty, the asset buckets are named "<bucketNamePrefix>-<region>"');
+    }
+
     const assetBuckets = new StackSetAssetBuckets(bucketNamePrefix, { ...buckets });
     const regions = assetBuckets._regions;
     if (regions.length === 0) {
@@ -69,9 +74,9 @@ export class StackSetAssetBuckets {
         throw new UnscopedValidationError(lit`StackSetAssetBucketRegionUnresolved`, 'asset bucket regions must be region names known at synthesis, such as \'us-east-1\', not tokens');
       }
 
-      const bucketName = buckets[region].bucketName;
-      const expectedName = assetBuckets._bucketNameFor(region);
-      if (!Token.isUnresolved(bucketName) && !Token.isUnresolved(bucketNamePrefix) && bucketName !== expectedName) {
+      const bucketName = assetBuckets.bucketNameAtSynthesis(region);
+      const expectedName = assetBuckets._expectedBucketName(region);
+      if (assetBuckets._isNameCheckable(region) && bucketName !== expectedName) {
         throw new UnscopedValidationError(lit`StackSetAssetBucketNameMismatch`,
           `the asset bucket for region ${JSON.stringify(region)} must be named ${JSON.stringify(expectedName)}, got ${JSON.stringify(bucketName)}, rename the bucket or change the bucket name prefix`);
       }
@@ -81,6 +86,19 @@ export class StackSetAssetBuckets {
   }
 
   private constructor(private readonly bucketNamePrefix: string, private readonly buckets: { [region: string]: IBucket }) { }
+
+  /**
+   * The name of the bucket for a region, if it's known at synthesis
+   *
+   * The `bucketName` attribute of a bucket defined in the app is always a token, so its
+   * name is read from the `bucketName` given to its CloudFormation resource.
+   */
+  private bucketNameAtSynthesis(region: string): string | undefined {
+    const bucket = this.buckets[region];
+    const resource = bucket.node.defaultChild;
+    const name = CfnBucket.isCfnBucket(resource) && resource.bucketName !== undefined ? resource.bucketName : bucket.bucketName;
+    return Token.isUnresolved(name) ? undefined : name;
+  }
 
   /**
    * The regions that have a bucket, sorted so that the result doesn't depend on the order of the buckets
@@ -101,12 +119,24 @@ export class StackSetAssetBuckets {
   }
 
   /**
-   * The name of the bucket for a region
+   * The name the bucket for a region must have
+   *
+   * When the prefix is a token, it's named by its parameter, so the result can be used in messages.
    *
    * @internal
    */
-  public _bucketNameFor(region: string): string {
-    return `${this.bucketNamePrefix}-${region}`;
+  public _expectedBucketName(region: string): string {
+    const prefix = Token.isUnresolved(this.bucketNamePrefix) ? '<bucketNamePrefix>' : this.bucketNamePrefix;
+    return `${prefix}-${region}`;
+  }
+
+  /**
+   * Whether the name of the bucket for a region and the prefix are both known at synthesis, so they can be compared
+   *
+   * @internal
+   */
+  public _isNameCheckable(region: string): boolean {
+    return !Token.isUnresolved(this.bucketNamePrefix) && this.bucketNameAtSynthesis(region) !== undefined;
   }
 
   /**
@@ -250,6 +280,12 @@ class StackSetStackSynthesizer extends StackSynthesizer {
         Annotations.of(host).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions',
           'Bucket Policy Permissions cannot be added to' +
             ' referenced Bucket. Please make sure your bucket has the correct permissions');
+      }
+
+      if (!this.assetBuckets!._isNameCheckable(region)) {
+        Annotations.of(host).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetBucketNameUnchecked',
+          `the name of the asset bucket for region ${JSON.stringify(region)} is not known at synthesis, so it can't be checked, ` +
+            `make sure the bucket is named ${JSON.stringify(this.assetBuckets!._expectedBucketName(region))} or give it an explicit 'bucketName'`);
       }
 
       const newBucketDeployment = new BucketDeployment(host, `${Names.uniqueId(this.boundStack)}-AssetBucketDeployment-${region}`, {

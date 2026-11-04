@@ -985,7 +985,7 @@ export class StackSet extends Resource implements IStackSet {
 
     return [...new Set(targetRegions)]
       .filter((region) => !bucketRegions.has(region))
-      .map((region) => `no asset bucket for target region ${JSON.stringify(region)}, add a bucket named ${JSON.stringify(assetBuckets._bucketNameFor(region))} to the 'assetBuckets' of the StackSetStack`);
+      .map((region) => `no asset bucket for target region ${JSON.stringify(region)}, add a bucket named ${JSON.stringify(assetBuckets._expectedBucketName(region))} to the 'assetBuckets' of the StackSetStack`);
   }
 
   /**

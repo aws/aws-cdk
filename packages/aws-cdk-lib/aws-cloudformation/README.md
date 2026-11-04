@@ -299,8 +299,14 @@ The template of the `StackSetStack` is deployed to every target region, so it fi
 its region by name: it looks for a bucket named `prefix-{Region}` in the example above, where
 `{Region}` is the region the stack instance is deployed to. Each bucket must therefore be named
 `<prefix>-<region>` after its key. `fromBuckets()` checks this for bucket names known at
-synthesis; for a bucket whose name is only known at deploy time, make sure it follows the same
-convention.
+synthesis, including the explicit `bucketName` of a bucket defined in the app. A bucket name or
+prefix that is only known at deploy time, such as the name of a bucket defined without a
+`bucketName`, can't be checked: the stack that contains the StackSet gets a warning naming the
+bucket it expects, and if the name doesn't match, the stack instances read their assets from
+whatever bucket has the expected name. Give each bucket an explicit `bucketName`, as in the
+example above. If you can't, make sure the name follows the convention, then acknowledge the
+warning with
+`Annotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetBucketNameUnchecked')`.
 
 When the app is synthesized, a StackSet whose `StackSetStack` has file assets fails validation
 for every region in its targets that has no bucket, naming the bucket it expects. Regions that
@@ -309,6 +315,10 @@ are tokens are not checked.
 You can use self-managed StackSet deployments with file assets too, but you will
 need to ensure the roles in all target accounts have access to the central asset
 bucket you pass as the property.
+
+If a bucket is encrypted with a customer managed KMS key, the target accounts also need
+`kms:Decrypt` on that key, granted in its key policy. Objects encrypted with the AWS managed
+`aws/s3` key can't be read from other accounts, so don't use it for asset buckets.
 
 The StackSet waits for the asset copies to the buckets of its template to complete before it deploys.
 If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning
