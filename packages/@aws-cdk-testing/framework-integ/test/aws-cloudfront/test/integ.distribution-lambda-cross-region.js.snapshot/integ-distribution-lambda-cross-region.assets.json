@@ -1,31 +1,31 @@
 {
   "version": "55.0.0",
   "files": {
-    "bbb303e47297d762206fa53e1acd836bfc132e33271f71dc9218c984ad1db74b": {
+    "1a52ff22773a60cca2d2e17197109c33f4f38275f4479351416723467393b907": {
       "displayName": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider Code",
       "source": {
-        "path": "asset.bbb303e47297d762206fa53e1acd836bfc132e33271f71dc9218c984ad1db74b",
+        "path": "asset.1a52ff22773a60cca2d2e17197109c33f4f38275f4479351416723467393b907",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-eu-west-1-e04c249c": {
+        "current_account-eu-west-1-42ea3924": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "bbb303e47297d762206fa53e1acd836bfc132e33271f71dc9218c984ad1db74b.zip",
+          "objectKey": "1a52ff22773a60cca2d2e17197109c33f4f38275f4479351416723467393b907.zip",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
       }
     },
-    "033b245d885bcd012c0683b7e3fd9f48e3e1949887b9ce7818553da1a3d53a97": {
+    "9b26da9c5248b0d6de4702c667685608626e9ad2283f73ac005b53532983b909": {
       "displayName": "integ-distribution-lambda-cross-region Template",
       "source": {
         "path": "integ-distribution-lambda-cross-region.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-west-1-0047b853": {
+        "current_account-eu-west-1-34ef7e2e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "033b245d885bcd012c0683b7e3fd9f48e3e1949887b9ce7818553da1a3d53a97.json",
+          "objectKey": "9b26da9c5248b0d6de4702c667685608626e9ad2283f73ac005b53532983b909.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
