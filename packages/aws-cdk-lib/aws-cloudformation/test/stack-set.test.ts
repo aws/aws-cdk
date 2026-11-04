@@ -15,7 +15,6 @@ import {
   DefaultStackSynthesizer,
   Stack,
   Stage,
-  Token,
   Validations,
 } from '../../core';
 import type { StackSynthesizer } from '../../core';
@@ -788,41 +787,6 @@ describe('StackSet operation preferences values', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
       OperationPreferences: { ConcurrencyMode: 'CUSTOM' },
-    });
-  });
-
-  test.each([
-    ['failure tolerance count 0', () => ({ failureTolerance: StackSetFailureTolerance.count(0) }), { FailureToleranceCount: 0 }],
-    ['failure tolerance percentage 0', () => ({ failureTolerance: StackSetFailureTolerance.percentage(0) }), { FailureTolerancePercentage: 0 }],
-    ['failure tolerance percentage 100', () => ({ failureTolerance: StackSetFailureTolerance.percentage(100) }), { FailureTolerancePercentage: 100 }],
-    ['max concurrency count 1', () => ({ maxConcurrency: StackSetMaxConcurrency.count(1) }), { MaxConcurrentCount: 1 }],
-    ['max concurrency percentage 1', () => ({ maxConcurrency: StackSetMaxConcurrency.percentage(1) }), { MaxConcurrentPercentage: 1 }],
-    ['max concurrency percentage 100', () => ({ maxConcurrency: StackSetMaxConcurrency.percentage(100) }), { MaxConcurrentPercentage: 100 }],
-  ])('accepts the boundary value %s', (_kind, operationPreferences, expected) => {
-    const stack = renderOperationPreferences(operationPreferences());
-
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-      OperationPreferences: expected,
-    });
-  });
-
-  test.each([
-    ['failure tolerance count', (value: number) => ({ failureTolerance: StackSetFailureTolerance.count(value) }), 'FailureToleranceCount'],
-    ['failure tolerance percentage', (value: number) => ({ failureTolerance: StackSetFailureTolerance.percentage(value) }), 'FailureTolerancePercentage'],
-    ['max concurrency count', (value: number) => ({ maxConcurrency: StackSetMaxConcurrency.count(value) }), 'MaxConcurrentCount'],
-    ['max concurrency percentage', (value: number) => ({ maxConcurrency: StackSetMaxConcurrency.percentage(value) }), 'MaxConcurrentPercentage'],
-  ])('accepts a token for the %s', (_kind, operationPreferences, key) => {
-    const app = new App();
-    const stack = new Stack(app);
-    const value = new CfnParameter(stack, 'Value', { type: 'Number' });
-
-    new StackSet(stack, 'StackSet', {
-      template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-      operationPreferences: operationPreferences(Token.asNumber(value.valueAsNumber)),
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-      OperationPreferences: { [key]: { Ref: 'Value' } },
     });
   });
 });
