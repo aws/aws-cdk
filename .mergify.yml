@@ -1,7 +1,7 @@
 # See https://doc.mergify.io
 merge_queue:
   # Required to force mergify to merge in place, see https://docs.mergify.com/merge-queue/parallel-checks/#inplace-checks-no-drafts
-  max_parallel_checks: 1
+  max_parallel_checks: 2
   dequeued_label: null
   queued_label: null
 queue_rules:
@@ -83,7 +83,7 @@ pull_request_rules:
   - name: label core
     actions:
       label:
-        add: [contribution/core]
+        add: [ contribution/core ]
     conditions:
       - author=@aws/aws-cdk-team
       - -label~="contribution/core"
