@@ -2,16 +2,17 @@ import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '../g
 import { generate, loadPatchedSpec } from '../generate';
 import { MetricsBuilder } from './builder';
 import { loadModuleMap, type GeneratorResult, type ModuleMap } from '../module-topology';
+import { getAllServices } from '../util/db';
 import type { PackageBaseNames } from '../util/jsii';
 
-export interface MetricsGenerateOptions extends Pick<Spec2CdkOptions<typeof MetricsBuilder>, 'outputPath' | 'clearOutput' | 'debug'> {
+export interface MetricsGenerateOptions extends Pick<Spec2CdkOptions<typeof MetricsBuilder>, 'outputPath' | 'clearOutput' | 'debug' | 'namespacePrefixes'> {
   readonly packageBases: PackageBaseNames;
   readonly moduleNamePrefix?: string;
 }
 
 export async function generateAll(options: MetricsGenerateOptions): Promise<GeneratorResult> {
   const db = await loadPatchedSpec();
-  const services = await db.all('service');
+  const services = getAllServices(db, options.namespacePrefixes);
   const moduleMap: ModuleMap = loadModuleMap({
     packageBases: options.packageBases,
     respectOverrides: false,

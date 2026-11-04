@@ -41,6 +41,19 @@ export interface GenerateAllOptions {
    * @default - generate all modules
    */
   readonly singleModule?: string;
+
+  /**
+   * The prefixes of the CloudFormation namespaces to generate code for, including the separator.
+   *
+   * Services with any other namespace are skipped, along with their resources.
+   *
+   * Mutually exclusive with `singleModule`, whose module name already selects the namespaces.
+   * Exactly one of the two must be specified.
+   *
+   * @example ['AWS::', 'Alexa::']
+   * @default - none, `singleModule` must be specified instead
+   */
+  readonly namespacePrefixes?: string[];
 }
 
 /**
@@ -58,13 +71,18 @@ export interface GenerateAllOptions {
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, skippedServices, isStable, singleModule }: GenerateAllOptions,
+  { scopeMapPath, skippedServices, isStable, singleModule, namespacePrefixes }: GenerateAllOptions,
 ): Promise<ModuleMap> {
+  if ((singleModule == null) === (namespacePrefixes == null)) {
+    throw new Error('Specify exactly one of namespacePrefixes and singleModule');
+  }
+
   const db = await loadPatchedSpec();
-  const allScopes = getAllScopes(db, 'cloudFormationNamespace');
+  const allScopes = getAllScopes(db, namespacePrefixes, 'cloudFormationNamespace');
 
   let scopes: ModuleMapScope[];
   if (singleModule != null) {
+    // The module name selects the namespaces
     scopes = allScopes.filter((scope) => {
       const moduleName = naming.modulePartsFromNamespace(scope.namespace).moduleName;
       return moduleName === singleModule;
@@ -109,6 +127,7 @@ export async function generateAll(
       outputPath: outPath,
       clearOutput: false,
       isStable,
+      namespacePrefixes: namespacePrefixes ?? scopes.map((scope) => `${scope.namespace}::`),
       builderProps: {
         inCdkLib: true,
         filePatterns: {

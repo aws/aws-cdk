@@ -1,4 +1,5 @@
 import * as path from 'node:path';
+import { parseArgs } from 'node:util';
 import * as fs from 'fs-extra';
 import writeCloudFormationIncludeMapping from '../lib/cfn2ts/cloudformation-include';
 import { generateAll } from '../lib/cfn2ts/index';
@@ -20,12 +21,22 @@ main().catch(e => {
 });
 
 async function main() {
+  const { values } = parseArgs({
+    options: {
+      // The prefixes of the CloudFormation namespaces to generate code for, e.g. `AWS::`. Can be repeated.
+      // Required for aws-cdk-lib. Not allowed for alpha packages, whose name already selects the namespace.
+      'namespace-prefix': { type: 'string', multiple: true },
+    },
+  });
+  const namespacePrefixes = values['namespace-prefix'];
+
   // Generate all L1s based on config in scope-map.json
 
   const generated = (await generateAll(libDir, {
     skippedServices: [],
     scopeMapPath: moduleMapPath,
     isStable,
+    namespacePrefixes,
     singleModule: isStable ? undefined : path.parse(libDir).name.replace('-alpha', ''),
   }));
 

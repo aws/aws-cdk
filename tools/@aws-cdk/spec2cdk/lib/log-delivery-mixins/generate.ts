@@ -2,9 +2,10 @@ import type { GenerateModuleMap, GenerateOptions as Spec2CdkOptions } from '../g
 import { generate, loadPatchedSpec } from '../generate';
 import { LogsDeliveryBuilder } from './builder';
 import { type GeneratorResult, loadModuleMap, type ModuleMap } from '../module-topology';
+import { getAllServices } from '../util/db';
 import type { PackageBaseNames } from '../util/jsii';
 
-export interface LogsGenerateOptions extends Pick<Spec2CdkOptions<typeof LogsDeliveryBuilder>, 'outputPath' | 'clearOutput' | 'debug'> {
+export interface LogsGenerateOptions extends Pick<Spec2CdkOptions<typeof LogsDeliveryBuilder>, 'outputPath' | 'clearOutput' | 'debug' | 'namespacePrefixes'> {
   readonly packageBases: PackageBaseNames;
 }
 
@@ -43,7 +44,7 @@ const EXCLUDED_SERVICES = new Set([
 
 export async function generateAll(options: LogsGenerateOptions): Promise<GeneratorResult> {
   const db = await loadPatchedSpec();
-  const services = await db.all('service');
+  const services = getAllServices(db, options.namespacePrefixes);
   const moduleMap: ModuleMap = loadModuleMap({
     packageBases: options.packageBases,
     respectOverrides: false,
