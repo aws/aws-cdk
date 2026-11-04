@@ -9,6 +9,7 @@ import * as s3_assets from '../../aws-s3-assets';
 import {
   Annotations as CoreAnnotations,
   App,
+  Aws,
   CfnCapabilities,
   CfnOutput,
   CfnParameter,
@@ -1402,9 +1403,50 @@ describe('StackSet asset buckets', () => {
     const stack = hostStackWith(prefix, (s) => s3.Bucket.fromBucketName(s, 'AssetBucket', 'prefix-us-east-1'));
 
     Annotations.fromStack(stack).hasWarning('/Admin', Match.stringLikeRegexp(
-      '^the name of the asset bucket for region "us-east-1" is not known at synthesis, so it can\'t be checked, ' +
-        'make sure the bucket is named "<bucketNamePrefix>-us-east-1"',
+      '^the bucket name prefix is not known at synthesis, so the name of the asset bucket for region "us-east-1" can\'t be checked, ' +
+        'make sure the bucket is named "<bucketNamePrefix>-us-east-1" or use a prefix known at synthesis ' +
+        '\\[ack: @aws-cdk/aws-cloudformation:stackSetAssetBucketNameUnchecked\\]$',
     ));
+  });
+
+  test.each([
+    ['a property override', (bucket: s3.Bucket) => (bucket.node.defaultChild as s3.CfnBucket).addPropertyOverride('BucketName', 'other-name')],
+    ['a raw override', (bucket: s3.Bucket) => (bucket.node.defaultChild as s3.CfnBucket).addOverride('Properties.BucketName', 'other-name')],
+    ['a later assignment', (bucket: s3.Bucket) => { (bucket.node.defaultChild as s3.CfnBucket).bucketName = 'other-name'; }],
+  ])('fails validation when %s renames an asset bucket in the app', (_name, rename) => {
+    let bucket: s3.Bucket | undefined;
+    const stack = hostStackWith('prefix', (s) => {
+      bucket = new s3.Bucket(s, 'AssetBucket', { bucketName: 'prefix-us-east-1' });
+      return bucket;
+    });
+    rename(bucket!);
+
+    expect(() => Template.fromStack(stack)).toThrow(expect.objectContaining({
+      name: 'ValidationFailedWithErrors',
+      message: expect.stringMatching(/the asset bucket for region "us-east-1" must be named "prefix-us-east-1", got "other-name", rename the bucket or change the bucket name prefix/),
+    }));
+  });
+
+  test('warns when an override gives an asset bucket in the app a name that is not known at synthesis', () => {
+    const stack = hostStackWith('prefix', (s) => {
+      const bucket = new s3.Bucket(s, 'AssetBucket', { bucketName: 'prefix-us-east-1' });
+      (bucket.node.defaultChild as s3.CfnBucket).addPropertyOverride('BucketName', `prefix-${Aws.REGION}`);
+      return bucket;
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Admin', Match.stringLikeRegexp(
+      '^the name of the asset bucket for region "us-east-1" is not known at synthesis',
+    ));
+  });
+
+  test('checks the name that an override gives an asset bucket in the app', () => {
+    const stack = hostStackWith('prefix', (s) => {
+      const bucket = new s3.Bucket(s, 'AssetBucket');
+      (bucket.node.defaultChild as s3.CfnBucket).addPropertyOverride('BucketName', 'prefix-us-east-1');
+      return bucket;
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('asset bucket for region'));
   });
 
   test('the unchecked asset bucket name warning can be acknowledged on the host stack', () => {

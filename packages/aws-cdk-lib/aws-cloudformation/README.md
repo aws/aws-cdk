@@ -299,7 +299,8 @@ The template of the `StackSetStack` is deployed to every target region, so it fi
 its region by name: it looks for a bucket named `prefix-{Region}` in the example above, where
 `{Region}` is the region the stack instance is deployed to. Each bucket must therefore be named
 `<prefix>-<region>` after its key. `fromBuckets()` checks this for bucket names known at
-synthesis, including the explicit `bucketName` of a bucket defined in the app. A bucket name or
+synthesis, including the explicit `bucketName` of a bucket defined in the app, and checks it again
+when the app is synthesized, so overrides of the bucket's `BucketName` are checked too. A bucket name or
 prefix that is only known at deploy time, such as the name of a bucket defined without a
 `bucketName`, can't be checked: the stack that contains the StackSet gets a warning naming the
 bucket it expects, and if the name doesn't match, the stack instances read their assets from
