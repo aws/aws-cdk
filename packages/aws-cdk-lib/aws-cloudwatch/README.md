@@ -919,6 +919,18 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
 }));
 ```
 
+The widget can show live data published within the last minute that has not been fully aggregated.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  metrics: [ /* ... */ ],
+
+  liveData: true,
+}));
+```
+
 ### Text widget
 
 A text widget shows an arbitrary piece of MarkDown. Use this to add explanations

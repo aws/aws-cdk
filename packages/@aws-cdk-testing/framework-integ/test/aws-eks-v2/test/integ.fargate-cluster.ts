@@ -1,6 +1,6 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import type * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -15,10 +15,10 @@ class EksFargateClusterStack extends Stack {
 
     new eks.FargateCluster(this, 'FargateTestCluster', {
       vpc: props?.vpc,
-      version: eks.KubernetesVersion.V1_36,
+      version: eks.KubernetesVersion.V1_37,
       prune: false,
       kubectlProviderOptions: {
-        kubectlLayer: new KubectlV36Layer(this, 'kubectlLayer'),
+        kubectlLayer: new KubectlV37Layer(this, 'kubectlLayer'),
       },
     });
   }
