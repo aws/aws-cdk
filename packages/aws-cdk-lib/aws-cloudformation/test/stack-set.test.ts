@@ -9,12 +9,15 @@ import * as s3_assets from '../../aws-s3-assets';
 import {
   Annotations as CoreAnnotations,
   App,
+  Aws,
   CfnCapabilities,
   CfnOutput,
   CfnParameter,
   DefaultStackSynthesizer,
+  Lazy,
   Stack,
   Stage,
+  Token,
   Validations,
 } from '../../core';
 import type { StackSynthesizer } from '../../core';
@@ -26,6 +29,7 @@ import {
   NestedStack,
   RegionConcurrencyType,
   StackSet,
+  StackSetAssetBuckets,
   StackSetTarget,
   StackSetTemplate,
   StackSetStack,
@@ -552,7 +556,7 @@ test('requires asset bucket to be passed', () => {
       template: StackSetTemplate.fromStackSetStack(lambdaStack),
       capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
     });
-  }).toThrow('an asset bucket must be provided to use file assets, set \'assetBuckets\' in the StackSetStack props');
+  }).toThrow('an asset bucket must be provided to use file assets, set \'assetBuckets: StackSetAssetBuckets.fromBuckets(...)\' in the StackSetStack props');
 });
 
 test('test lambda assets with one asset bucket', () => {
@@ -563,8 +567,7 @@ test('test lambda assets with one asset bucket', () => {
   });
   const stack = new Stack(app);
   const lambdaStack = new LambdaStackSet(app, 'LambdaStack', {
-    assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets')],
-    assetBucketPrefix: 'prefix',
+    assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
   });
 
   new StackSet(stack, 'StackSet', {
@@ -590,8 +593,10 @@ test('test lambda assets with two asset buckets', () => {
   });
   const stack = new Stack(app);
   const lambdaStack = new LambdaStackSet(app, 'LambdaStack', {
-    assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets'), s3.Bucket.fromBucketName(stack, 'AssetBucket2', 'integ-assets2')],
-    assetBucketPrefix: 'prefix',
+    assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', {
+      'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1'),
+      'us-west-2': s3.Bucket.fromBucketName(stack, 'AssetBucket2', 'prefix-us-west-2'),
+    }),
   });
 
   new StackSet(stack, 'StackSet', {
@@ -990,8 +995,7 @@ test('lambda asset bucket name resolves the region dynamically in the stackset t
   const stage = new Stage(app, 'Stage', { env: { account: '123456789012', region: 'us-east-1' } });
   const stack = new Stack(stage, 'Parent');
   const lambdaStack = new LambdaStackSet(stage, 'LambdaStack', {
-    assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-    assetBucketPrefix: 'prefix',
+    assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
   });
 
   new StackSet(stack, 'StackSet', {
@@ -1025,8 +1029,7 @@ test('lambda asset is staged to the parent asset bucket and copied via bucket de
   });
   const stack = new Stack(app);
   const lambdaStack = new LambdaStackSet(app, 'LambdaStack', {
-    assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets')],
-    assetBucketPrefix: 'prefix',
+    assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
   });
 
   new StackSet(stack, 'StackSet', {
@@ -1042,7 +1045,7 @@ test('lambda asset is staged to the parent asset bucket and copied via bucket de
     SourceBucketNames: [
       { 'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}' },
     ],
-    DestinationBucketName: 'integ-assets',
+    DestinationBucketName: 'prefix-us-east-1',
   });
 });
 
@@ -1065,8 +1068,7 @@ describe('StackSet template asset object keys', () => {
     const app = new App({ context: options.context });
     const stack = new Stack(app, 'Parent', { synthesizer: options.synthesizer });
     const stackSetStack = new StackSetStack(app, 'AssetStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
 
     options.addAssets(stackSetStack);
@@ -1188,12 +1190,10 @@ describe('StackSet asset bucket deployment dependencies', () => {
     const app = new App();
     const stack = new Stack(app);
     const first = new LambdaStackSet(app, 'First', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'FirstBucket', 'first-us-east-1')],
-      assetBucketPrefix: 'first',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('first', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'FirstBucket', 'first-us-east-1') }),
     });
     const second = new LambdaStackSet(app, 'Second', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'SecondBucket', 'second-us-east-1')],
-      assetBucketPrefix: 'second',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('second', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'SecondBucket', 'second-us-east-1') }),
     });
 
     new StackSet(stack, 'FirstStackSet', {
@@ -1225,8 +1225,7 @@ describe('StackSet asset bucket deployment dependencies', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSetStack = new StackSetStack(app, 'AssetStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'late-us-east-1')],
-      assetBucketPrefix: 'late',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('late', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'late-us-east-1') }),
     });
 
     new StackSet(stack, 'StackSet', {
@@ -1248,8 +1247,7 @@ describe('StackSet asset bucket deployment dependencies', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSetStack = new LambdaStackSet(app, 'AssetStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'nested-us-east-1')],
-      assetBucketPrefix: 'nested',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('nested', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'nested-us-east-1') }),
     });
 
     new StackSet(new Construct(stack, 'Group'), 'StackSet', {
@@ -1266,8 +1264,7 @@ describe('StackSet asset bucket deployment dependencies', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSetStack = new LambdaStackSet(app, 'AssetStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'imported-us-east-1')],
-      assetBucketPrefix: 'imported',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('imported', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'imported-us-east-1') }),
     });
     new StackSet(stack, 'StackSet', {
       template: StackSetTemplate.fromStackSetStack(stackSetStack),
@@ -1290,6 +1287,297 @@ describe('StackSet asset bucket deployment dependencies', () => {
     CoreAnnotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions');
 
     Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('Bucket Policy Permissions'));
+  });
+});
+
+describe('StackSet asset buckets', () => {
+  function importedBuckets(stack: Stack, regions: string[]): { [region: string]: s3.IBucket } {
+    return Object.fromEntries(regions.map((region) => [region, s3.Bucket.fromBucketName(stack, `Bucket-${region}`, `prefix-${region}`)]));
+  }
+
+  function hostTemplate(bucketRegions: string[], targetRegions: string[] = ['us-east-1']): Template {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSetStack = new LambdaStackSet(app, 'LambdaStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', importedBuckets(stack, bucketRegions)),
+    });
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: targetRegions, accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+    });
+    return Template.fromStack(stack);
+  }
+
+  function logicalIdsUnderDeployment(template: Template, region: string): string[] {
+    const prefix = `LambdaStackAssetBucketDeployment${region.replace(/-/g, '')}`;
+    return [
+      ...Object.keys(template.findResources('Custom::CDKBucketDeployment')),
+      ...Object.keys(template.findResources('AWS::Lambda::LayerVersion')),
+    ].filter((id) => id.startsWith(prefix));
+  }
+
+  test('copies the assets to each regional bucket with a deployment whose id derives from the region', () => {
+    const template = hostTemplate(['us-east-1', 'us-west-2']);
+
+    expect(Object.keys(template.findResources('Custom::CDKBucketDeployment')).sort()).toEqual([
+      expect.stringMatching(/^LambdaStackAssetBucketDeploymentuseast1CustomResource[0-9A-F]{8}$/),
+      expect.stringMatching(/^LambdaStackAssetBucketDeploymentuswest2CustomResource[0-9A-F]{8}$/),
+    ]);
+    template.hasResourceProperties('Custom::CDKBucketDeployment', { DestinationBucketName: 'prefix-us-east-1' });
+    template.hasResourceProperties('Custom::CDKBucketDeployment', { DestinationBucketName: 'prefix-us-west-2' });
+  });
+
+  test('adding a region keeps the logical ids of the existing bucket deployments', () => {
+    const before = logicalIdsUnderDeployment(hostTemplate(['us-east-1']), 'us-east-1');
+    const after = logicalIdsUnderDeployment(hostTemplate(['us-east-1', 'ap-south-1']), 'us-east-1');
+
+    expect(before).toHaveLength(2);
+    expect(after).toEqual(before);
+  });
+
+  test('maps with the same buckets in a different order synthesize the same template', () => {
+    const forward = hostTemplate(['us-east-1', 'us-west-2', 'eu-west-1']);
+    const backward = hostTemplate(['eu-west-1', 'us-west-2', 'us-east-1']);
+
+    expect(backward.toJSON()).toEqual(forward.toJSON());
+  });
+
+  test('grants the bucket deployment on the key of an owned KMS encrypted bucket it depends on', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const bucket = new s3.Bucket(stack, 'AssetBucket', {
+      bucketName: 'prefix-us-east-1',
+      encryption: s3.BucketEncryption.KMS,
+    });
+    const stackSetStack = new LambdaStackSet(app, 'LambdaStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', { 'us-east-1': bucket }),
+    });
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+    });
+
+    const template = Template.fromStack(stack);
+    const [bucketId] = Object.keys(template.findResources('AWS::S3::Bucket'));
+    const [keyId] = Object.keys(template.findResources('AWS::KMS::Key'));
+    template.hasResourceProperties('Custom::CDKBucketDeployment', { DestinationBucketName: { Ref: bucketId } });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: Match.arrayWith(['kms:Decrypt']),
+          Resource: { 'Fn::GetAtt': [keyId, 'Arn'] },
+        })]),
+      },
+    });
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('Bucket Policy Permissions'));
+  });
+
+  function hostStackWith(prefix: string, bucketOf: (stack: Stack) => s3.IBucket): Stack {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSetStack = new LambdaStackSet(app, 'LambdaStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets(prefix, { 'us-east-1': bucketOf(stack) }),
+    });
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+    });
+    return stack;
+  }
+
+  test('warns on the host stack with an acknowledgeable id when an asset bucket name is a token', () => {
+    const stack = hostStackWith('prefix', (s) => new s3.Bucket(s, 'AssetBucket'));
+
+    Annotations.fromStack(stack).hasWarning('/Admin', Match.stringLikeRegexp(
+      '^the name of the asset bucket for region "us-east-1" is not known at synthesis, so it can\'t be checked, ' +
+        'make sure the bucket is named "prefix-us-east-1" or give it an explicit \'bucketName\' ' +
+        '\\[ack: @aws-cdk/aws-cloudformation:stackSetAssetBucketNameUnchecked\\]$',
+    ));
+  });
+
+  test('warns on the host stack when the bucket name prefix is a token', () => {
+    const prefix = Lazy.string({ produce: () => 'prefix' });
+    const stack = hostStackWith(prefix, (s) => s3.Bucket.fromBucketName(s, 'AssetBucket', 'prefix-us-east-1'));
+
+    Annotations.fromStack(stack).hasWarning('/Admin', Match.stringLikeRegexp(
+      '^the bucket name prefix is not known at synthesis, so the name of the asset bucket for region "us-east-1" can\'t be checked, ' +
+        'make sure the bucket is named "<bucketNamePrefix>-us-east-1" or use a prefix known at synthesis ' +
+        '\\[ack: @aws-cdk/aws-cloudformation:stackSetAssetBucketNameUnchecked\\]$',
+    ));
+  });
+
+  test.each([
+    ['a property override', (bucket: s3.Bucket) => (bucket.node.defaultChild as s3.CfnBucket).addPropertyOverride('BucketName', 'other-name')],
+    ['a raw override', (bucket: s3.Bucket) => (bucket.node.defaultChild as s3.CfnBucket).addOverride('Properties.BucketName', 'other-name')],
+    ['a later assignment', (bucket: s3.Bucket) => { (bucket.node.defaultChild as s3.CfnBucket).bucketName = 'other-name'; }],
+  ])('fails validation when %s renames an asset bucket in the app', (_name, rename) => {
+    let bucket: s3.Bucket | undefined;
+    const stack = hostStackWith('prefix', (s) => {
+      bucket = new s3.Bucket(s, 'AssetBucket', { bucketName: 'prefix-us-east-1' });
+      return bucket;
+    });
+    rename(bucket!);
+
+    expect(() => Template.fromStack(stack)).toThrow(expect.objectContaining({
+      name: 'ValidationFailedWithErrors',
+      message: expect.stringMatching(/the asset bucket for region "us-east-1" must be named "prefix-us-east-1", got "other-name", rename the bucket or change the bucket name prefix/),
+    }));
+  });
+
+  test('warns when an override gives an asset bucket in the app a name that is not known at synthesis', () => {
+    const stack = hostStackWith('prefix', (s) => {
+      const bucket = new s3.Bucket(s, 'AssetBucket', { bucketName: 'prefix-us-east-1' });
+      (bucket.node.defaultChild as s3.CfnBucket).addPropertyOverride('BucketName', `prefix-${Aws.REGION}`);
+      return bucket;
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Admin', Match.stringLikeRegexp(
+      '^the name of the asset bucket for region "us-east-1" is not known at synthesis',
+    ));
+  });
+
+  test('checks the name that an override gives an asset bucket in the app', () => {
+    const stack = hostStackWith('prefix', (s) => {
+      const bucket = new s3.Bucket(s, 'AssetBucket');
+      (bucket.node.defaultChild as s3.CfnBucket).addPropertyOverride('BucketName', 'prefix-us-east-1');
+      return bucket;
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('asset bucket for region'));
+  });
+
+  test('the unchecked asset bucket name warning can be acknowledged on the host stack', () => {
+    const stack = hostStackWith('prefix', (s) => new s3.Bucket(s, 'AssetBucket'));
+
+    CoreAnnotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetBucketNameUnchecked');
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('asset bucket for region'));
+  });
+
+  test('does not warn about the bucket name when the bucket name and the prefix are known at synthesis', () => {
+    const stack = hostStackWith('prefix', (s) => new s3.Bucket(s, 'AssetBucket', { bucketName: 'prefix-us-east-1' }));
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('asset bucket for region'));
+  });
+
+  test('fails validation with one message for each target region without an asset bucket', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSetStack = new LambdaStackSet(app, 'LambdaStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', importedBuckets(stack, ['us-east-1'])),
+    });
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: ['us-east-1', 'us-west-2'], accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+    });
+
+    let error: any;
+    try {
+      app.synth();
+    } catch (e) {
+      error = e;
+    }
+
+    expect(error).toEqual(expect.objectContaining({ name: 'ValidationFailedWithErrors' }));
+    expect(error.message).toMatch(/\[Admin\/StackSet\] no asset bucket for target region "us-west-2", add a bucket named "prefix-us-west-2" to the 'assetBuckets' of the StackSetStack/);
+    expect(error.message).not.toMatch(/target region "us-east-1"/);
+  });
+
+  test('reports every uncovered target region, including regions of targets added later', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSetStack = new LambdaStackSet(app, 'LambdaStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', importedBuckets(stack, ['us-east-1'])),
+    });
+    const stackSet = new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: ['us-west-2'], accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+    });
+    stackSet.addTarget(StackSetTarget.fromAccounts({ regions: ['eu-west-1'], accounts: ['22222222222'] }));
+
+    expect(() => app.synth()).toThrow(expect.objectContaining({
+      name: 'ValidationFailedWithErrors',
+      message: expect.stringMatching(/region "us-west-2".*"prefix-us-west-2"[\s\S]*region "eu-west-1".*"prefix-eu-west-1"/),
+    }));
+  });
+
+  test('names the expected bucket by the prefix parameter for an uncovered region when the prefix is a token', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSetStack = new LambdaStackSet(app, 'LambdaStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets(Lazy.string({ produce: () => 'prefix' }), importedBuckets(stack, ['us-east-1'])),
+    });
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: ['us-west-2'], accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+    });
+
+    expect(() => app.synth()).toThrow(expect.objectContaining({
+      name: 'ValidationFailedWithErrors',
+      message: expect.stringMatching(/no asset bucket for target region "us-west-2", add a bucket named "<bucketNamePrefix>-us-west-2"/),
+    }));
+  });
+
+  test('fails validation for an uncovered region when the file asset is added after the StackSet', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSetStack = new StackSetStack(app, 'AssetStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', importedBuckets(stack, ['us-east-1'])),
+    });
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: ['us-west-2'], accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+    });
+    new lambda.Function(stackSetStack, 'Lambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+    });
+
+    expect(() => app.synth()).toThrow(expect.objectContaining({
+      name: 'ValidationFailedWithErrors',
+      message: expect.stringMatching(/region "us-west-2"/),
+    }));
+  });
+
+  test('does not check target regions when the StackSetStack has no file assets', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSetStack = new StackSetStack(app, 'TopicStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', importedBuckets(stack, ['us-east-1'])),
+    });
+    new CfnParameter(stackSetStack, 'Unused');
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: ['us-west-2'], accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+    });
+
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test.each([
+    ['a token region', (stack: Stack) => [Token.asString(new CfnParameter(stack, 'Region'))]],
+    ['a token region list', (stack: Stack) => Token.asList(new CfnParameter(stack, 'Regions', { type: 'CommaDelimitedList' }))],
+  ])('does not check %s', (_name, regionsOf) => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSetStack = new LambdaStackSet(app, 'LambdaStack', {
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', importedBuckets(stack, ['us-east-1'])),
+    });
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromAccounts({ regions: regionsOf(stack), accounts: ['11111111111'] }),
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+    });
+
+    expect(() => app.synth()).not.toThrow();
   });
 });
 
@@ -1794,21 +2082,78 @@ describe('StackSet validation errors', () => {
 
     expect(() => new LambdaStackSet(app, 'LambdaStack')).toThrow(expect.objectContaining({
       name: 'AssetBucketRequired',
-      message: 'an asset bucket must be provided to use file assets, set \'assetBuckets\' in the StackSetStack props',
+      message: 'an asset bucket must be provided to use file assets, set \'assetBuckets: StackSetAssetBuckets.fromBuckets(...)\' in the StackSetStack props',
       constructPath: 'LambdaStack',
     }));
   });
 
-  test('fails with an error code when a file asset is used without an asset bucket prefix', () => {
-    const app = new App();
-    const stack = new Stack(app);
+  test('fails with an error code when no asset bucket is passed to fromBuckets', () => {
+    expect(() => StackSetAssetBuckets.fromBuckets('prefix', {})).toThrow(expect.objectContaining({
+      name: 'StackSetAssetBucketsRequired',
+      message: 'at least one asset bucket must be provided, add a bucket for each region the StackSet targets',
+    }));
+  });
 
-    expect(() => new LambdaStackSet(app, 'LambdaStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
+  test('fails with an error code when an asset bucket name does not match the prefix and region', () => {
+    const stack = new Stack(new App());
+
+    expect(() => StackSetAssetBuckets.fromBuckets('prefix', {
+      'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1'),
+      'us-west-2': s3.Bucket.fromBucketName(stack, 'AssetBucket2', 'other-bucket'),
     })).toThrow(expect.objectContaining({
-      name: 'AssetBucketPrefixRequired',
-      message: 'an asset bucket prefix must be provided to use file assets, set \'assetBucketPrefix\' in the StackSetStack props',
-      constructPath: 'LambdaStack',
+      name: 'StackSetAssetBucketNameMismatch',
+      message: 'the asset bucket for region "us-west-2" must be named "prefix-us-west-2", got "other-bucket", rename the bucket or change the bucket name prefix',
+    }));
+  });
+
+  test('fails with an error code when the explicit name of an asset bucket in the app does not match the prefix and region', () => {
+    const stack = new Stack(new App());
+
+    expect(() => StackSetAssetBuckets.fromBuckets('prefix', {
+      'us-east-1': new s3.Bucket(stack, 'AssetBucket', { bucketName: 'other-bucket' }),
+    })).toThrow(expect.objectContaining({
+      name: 'StackSetAssetBucketNameMismatch',
+      message: 'the asset bucket for region "us-east-1" must be named "prefix-us-east-1", got "other-bucket", rename the bucket or change the bucket name prefix',
+    }));
+  });
+
+  test('fails with an error code when an asset bucket region is a token', () => {
+    const stack = new Stack(new App());
+    const region = Token.asString(new CfnParameter(stack, 'Region'));
+
+    expect(() => StackSetAssetBuckets.fromBuckets('prefix', {
+      [region]: s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1'),
+    })).toThrow(expect.objectContaining({
+      name: 'StackSetAssetBucketRegionUnresolved',
+      message: 'asset bucket regions must be region names known at synthesis, such as \'us-east-1\', not tokens',
+    }));
+  });
+
+  test('accepts an asset bucket whose name is a token', () => {
+    const stack = new Stack(new App());
+
+    expect(() => StackSetAssetBuckets.fromBuckets('prefix', {
+      'us-east-1': new s3.Bucket(stack, 'AssetBucket'),
+    })).not.toThrow();
+  });
+
+  test('accepts an asset bucket name that matches a prefix that is a token', () => {
+    const stack = new Stack(new App());
+    const prefix = Token.asString(new CfnParameter(stack, 'Prefix'));
+
+    expect(() => StackSetAssetBuckets.fromBuckets(prefix, {
+      'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1'),
+    })).not.toThrow();
+  });
+
+  test('fails with an error code when the bucket name prefix is empty', () => {
+    const stack = new Stack(new App());
+
+    expect(() => StackSetAssetBuckets.fromBuckets('', {
+      'us-east-1': new s3.Bucket(stack, 'AssetBucket'),
+    })).toThrow(expect.objectContaining({
+      name: 'StackSetAssetBucketPrefixRequired',
+      message: 'the bucket name prefix must not be empty, the asset buckets are named "<bucketNamePrefix>-<region>"',
     }));
   });
 
@@ -1816,8 +2161,7 @@ describe('StackSet validation errors', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSetStack = new StackSetStack(app, 'AssetStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
 
     expect(() => stackSetStack.synthesizer.addFileAsset({ sourceHash: 'hash' })).toThrow(expect.objectContaining({
@@ -1918,8 +2262,7 @@ describe('StackSetStack hosted by the stack of its StackSets', () => {
     const app = new App();
     const stack = new Stack(app, 'Admin');
     const stackSetStack = new LambdaStackSet(app, 'StackSetStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
 
     new StackSet(stack, 'First', {
@@ -1942,8 +2285,7 @@ describe('StackSetStack hosted by the stack of its StackSets', () => {
     const app = new App();
     const stack = new Stack(app, 'Admin');
     const stackSetStack = new LambdaStackSet(app, 'StackSetStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
+      assetBuckets: StackSetAssetBuckets.fromBuckets('prefix', { 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
 
     new StackSet(stack, 'StackSet', {

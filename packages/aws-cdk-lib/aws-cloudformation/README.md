@@ -260,9 +260,9 @@ new StackSet(stack, 'StackSet', {
 
 The stack that contains the StackSet facilitates the file assets of its `StackSetStack`. It
 stages them like its own assets and copies them to the asset buckets using the `BucketDeployment`
-construct from the `aws_s3_deployment` module. You need to provide a list of buckets outside the
-scope of the CDK managed asset buckets and ensure you have permissions for the target accounts to
-pull the artifacts from the supplied bucket(s).
+construct from the `aws_s3_deployment` module. You need to provide one bucket for each region the
+StackSet deploys to, outside the scope of the CDK managed asset buckets, and ensure you have
+permissions for the target accounts to pull the artifacts from the supplied buckets.
 
 As a basic example, if using a `serviceManaged` deployment, you just need to give read
 access to the Organization. You can create the asset bucket in the stack that contains the StackSet,
@@ -284,27 +284,42 @@ bucket.addToResourcePolicy(
 );
 ```
 
-Then pass as a prop to the StackSet stack:
+Then pass it to the StackSet stack with `StackSetAssetBuckets.fromBuckets()`, keyed by the region
+it serves:
 
 ```ts
 declare const app: App;
 declare const bucket: s3.Bucket;
 const stackSetStack = new StackSetStack(app, 'MyStackSet', {
-  assetBuckets: [bucket],
-  assetBucketPrefix: "prefix",
+  assetBuckets: StackSetAssetBuckets.fromBuckets("prefix", { "us-east-1": bucket }),
 });
 ```
 
-To facilitate multi-region deployments, there is an `assetBucketPrefix` property. This
-gets added to the region the StackSet is deployed to. The stack synthesis for
-the StackSet would look for a bucket named `prefix-{Region}` in the example
-above. `{Region}` is whatever region you are deploying the StackSet to as
-defined in the `target` property of the StackSet. You will need to ensure the
-bucket name is correct based on what was previously created and then passed in.
+The template of the `StackSetStack` is deployed to every target region, so it finds the bucket of
+its region by name: it looks for a bucket named `prefix-{Region}` in the example above, where
+`{Region}` is the region the stack instance is deployed to. Each bucket must therefore be named
+`<prefix>-<region>` after its key. `fromBuckets()` checks this for bucket names known at
+synthesis, including the explicit `bucketName` of a bucket defined in the app, and checks it again
+when the app is synthesized, so overrides of the bucket's `BucketName` are checked too. A bucket name or
+prefix that is only known at deploy time, such as the name of a bucket defined without a
+`bucketName`, can't be checked: the stack that contains the StackSet gets a warning naming the
+bucket it expects, and if the name doesn't match, the stack instances read their assets from
+whatever bucket has the expected name. Give each bucket an explicit `bucketName`, as in the
+example above. If you can't, make sure the name follows the convention, then acknowledge the
+warning with
+`Annotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetBucketNameUnchecked')`.
+
+When the app is synthesized, a StackSet whose `StackSetStack` has file assets fails validation
+for every region in its targets that has no bucket, naming the bucket it expects. Regions that
+are tokens are not checked.
 
 You can use self-managed StackSet deployments with file assets too, but you will
 need to ensure the roles in all target accounts have access to the central asset
 bucket you pass as the property.
+
+If a bucket is encrypted with a customer managed KMS key, the target accounts also need
+`kms:Decrypt` on that key, granted in its key policy. Objects encrypted with the AWS managed
+`aws/s3` key can't be read from other accounts, so don't use it for asset buckets.
 
 The StackSet waits for the asset copies to the buckets of its template to complete before it deploys.
 If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning

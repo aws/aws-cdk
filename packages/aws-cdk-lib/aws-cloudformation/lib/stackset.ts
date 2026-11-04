@@ -1,6 +1,6 @@
 import type { Construct, IDependable } from 'constructs';
 import { CfnStackSet } from './cloudformation.generated';
-import type { StackSetStack } from './stackset-stack';
+import type { StackSetAssetBuckets, StackSetStack } from './stackset-stack';
 import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import type { IResource } from '../../core';
@@ -81,6 +81,20 @@ interface StackSetTemplateConfig {
    * @default - no dependencies
    */
   readonly dependencies?: IDependable[];
+
+  /**
+   * The buckets that the file assets of the template are copied to
+   *
+   * @default - the template has no asset buckets
+   */
+  readonly assetBuckets?: StackSetAssetBuckets;
+
+  /**
+   * Whether the template has file assets, evaluated when the app is validated
+   *
+   * @default - the template has no file assets
+   */
+  readonly hasFileAssets?: () => boolean;
 }
 
 class StackSetStackTemplate extends StackSetTemplate {
@@ -904,6 +918,13 @@ export class StackSet extends Resource implements IStackSet {
 
     // e.g. the file asset bucket deployments need to complete before the stackset can deploy
     stackSet.node.addDependency(...template.dependencies ?? []);
+
+    const assetBuckets = template.assetBuckets;
+    const hasFileAssets = template.hasFileAssets;
+    if (assetBuckets && hasFileAssets) {
+      // Validated after construction, so that file assets and targets added later count
+      this.node.addValidation({ validate: () => hasFileAssets() ? this.uncoveredAssetRegionErrors(assetBuckets) : [] });
+    }
   }
 
   public get stackSetRef(): StackSetReference {
@@ -950,6 +971,21 @@ export class StackSet extends Resource implements IStackSet {
         organizationalUnitIds: targetConfig.organizationalUnits,
       },
     });
+  }
+
+  /**
+   * Every region the template is deployed to needs a bucket to copy its file assets to
+   */
+  private uncoveredAssetRegionErrors(assetBuckets: StackSetAssetBuckets): string[] {
+    const bucketRegions = new Set(assetBuckets._regions);
+    const targetRegions = this.stackInstances
+      .filter((instances) => !Token.isUnresolved(instances.regions))
+      .flatMap((instances) => instances.regions)
+      .filter((region) => !Token.isUnresolved(region));
+
+    return [...new Set(targetRegions)]
+      .filter((region) => !bucketRegions.has(region))
+      .map((region) => `no asset bucket for target region ${JSON.stringify(region)}, add a bucket named ${JSON.stringify(assetBuckets._expectedBucketName(region))} to the 'assetBuckets' of the StackSetStack`);
   }
 
   /**

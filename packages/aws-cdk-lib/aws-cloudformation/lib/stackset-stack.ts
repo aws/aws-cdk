@@ -1,10 +1,10 @@
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
-import type { Construct, IDependable } from 'constructs';
+import type { Construct, IConstruct, IDependable } from 'constructs';
 import { DependencyGroup, Node } from 'constructs';
 import type { IBucket } from '../../aws-s3';
-import { Bucket } from '../../aws-s3';
+import { Bucket, CfnBucket } from '../../aws-s3';
 import { BucketDeployment, Source } from '../../aws-s3-deployment';
 import {
   Stack,
@@ -17,6 +17,7 @@ import {
   Fn,
   Aws,
   Token,
+  UnscopedValidationError,
   ValidationError,
   attachCustomSynthesis,
 } from '../../core';
@@ -31,6 +32,155 @@ import type { IBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
+
+/**
+ * The S3 buckets that the file assets of a `StackSetStack` are copied to, one for each
+ * region the StackSet deploys to.
+ *
+ * The template of a `StackSetStack` is deployed to every target region, and finds the asset
+ * bucket of its region by name, as `${bucketNamePrefix}-<region>`.
+ */
+export class StackSetAssetBuckets {
+  /**
+   * Uses the given bucket for each region the StackSet deploys to.
+   *
+   * Each bucket must be named `${bucketNamePrefix}-<region>`, where `<region>` is its key in
+   * `buckets`. A bucket name or prefix that is only known at deploy time, such as the name of a
+   * bucket defined without an explicit `bucketName`, can't be checked at synthesis, and the stack
+   * that contains the StackSet gets a warning. Give each bucket an explicit `bucketName` so the
+   * name is checked. The name is checked again when the app is synthesized, so changes to the
+   * bucket's CloudFormation resource, such as property overrides, are checked too.
+   *
+   * Every region that a StackSet with file assets deploys to needs a bucket. This is checked
+   * when the app is synthesized.
+   *
+   * @param bucketNamePrefix the common prefix of the bucket names, the template adds `-<region>` to it
+   * @param buckets the bucket for each region, keyed by the region name, such as `us-east-1`.
+   * The full bucket interface is required because the assets are copied with a
+   * `BucketDeployment`, which needs it. [disable-awslint:prefer-ref-interface]
+   */
+  public static fromBuckets(bucketNamePrefix: string, buckets: { [region: string]: IBucket }): StackSetAssetBuckets {
+    if (bucketNamePrefix === '') {
+      throw new UnscopedValidationError(lit`StackSetAssetBucketPrefixRequired`, 'the bucket name prefix must not be empty, the asset buckets are named "<bucketNamePrefix>-<region>"');
+    }
+
+    const assetBuckets = new StackSetAssetBuckets(bucketNamePrefix, { ...buckets });
+    const regions = assetBuckets._regions;
+    if (regions.length === 0) {
+      throw new UnscopedValidationError(lit`StackSetAssetBucketsRequired`, 'at least one asset bucket must be provided, add a bucket for each region the StackSet targets');
+    }
+
+    for (const region of regions) {
+      if (Token.isUnresolved(region)) {
+        throw new UnscopedValidationError(lit`StackSetAssetBucketRegionUnresolved`, 'asset bucket regions must be region names known at synthesis, such as \'us-east-1\', not tokens');
+      }
+
+      // Fail fast on the name given so far, the name the bucket is rendered with is checked again at validation
+      const resource = buckets[region].node.defaultChild;
+      const givenName = CfnBucket.isCfnBucket(resource) && resource.bucketName !== undefined ? resource.bucketName : buckets[region].bucketName;
+      if (!Token.isUnresolved(bucketNamePrefix) && !Token.isUnresolved(givenName) && givenName !== assetBuckets._expectedBucketName(region)) {
+        throw new UnscopedValidationError(lit`StackSetAssetBucketNameMismatch`, assetBuckets.nameMismatchMessage(region, givenName));
+      }
+    }
+
+    return assetBuckets;
+  }
+
+  private constructor(private readonly bucketNamePrefix: string, private readonly buckets: { [region: string]: IBucket }) { }
+
+  /**
+   * Checks the name the bucket for a region is deployed with, once the app is complete
+   *
+   * Returns the validation error when the name is known and differs from the expected one, and
+   * warns on `warningScope` when the name or the prefix isn't known at synthesis.
+   *
+   * @internal
+   */
+  public _validateBucketName(region: string, warningScope: IConstruct): string[] {
+    if (Token.isUnresolved(this.bucketNamePrefix)) {
+      this.warnUnchecked(warningScope,
+        `the bucket name prefix is not known at synthesis, so the name of the asset bucket for region ${JSON.stringify(region)} can't be checked, ` +
+          `make sure the bucket is named ${JSON.stringify(this._expectedBucketName(region))} or use a prefix known at synthesis`);
+      return [];
+    }
+
+    const name = this.renderedBucketName(region);
+    if (name === undefined) {
+      this.warnUnchecked(warningScope,
+        `the name of the asset bucket for region ${JSON.stringify(region)} is not known at synthesis, so it can't be checked, ` +
+          `make sure the bucket is named ${JSON.stringify(this._expectedBucketName(region))} or give it an explicit 'bucketName'`);
+      return [];
+    }
+
+    return name === this._expectedBucketName(region) ? [] : [this.nameMismatchMessage(region, name)];
+  }
+
+  /**
+   * The name of the bucket for a region as it's deployed, if it's known at synthesis
+   *
+   * The `bucketName` attribute of a bucket defined in the app is always a token, so its name is
+   * read from its rendered CloudFormation resource, which includes overrides.
+   */
+  private renderedBucketName(region: string): string | undefined {
+    const bucket = this.buckets[region];
+    const resource = bucket.node.defaultChild;
+    if (!CfnBucket.isCfnBucket(resource)) {
+      return Token.isUnresolved(bucket.bucketName) ? undefined : bucket.bucketName;
+    }
+
+    const rendered = Stack.of(resource).resolve(resource._toCloudFormation());
+    const name = Object.values<any>(rendered.Resources ?? {})[0]?.Properties?.BucketName;
+    return typeof name === 'string' ? name : undefined;
+  }
+
+  private nameMismatchMessage(region: string, name: string): string {
+    return `the asset bucket for region ${JSON.stringify(region)} must be named ${JSON.stringify(this._expectedBucketName(region))}, ` +
+      `got ${JSON.stringify(name)}, rename the bucket or change the bucket name prefix`;
+  }
+
+  private warnUnchecked(scope: IConstruct, message: string) {
+    Annotations.of(scope).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetBucketNameUnchecked', message);
+  }
+
+  /**
+   * The regions that have a bucket, sorted so that the result doesn't depend on the order of the buckets
+   *
+   * @internal
+   */
+  public get _regions(): string[] {
+    return Object.keys(this.buckets).sort();
+  }
+
+  /**
+   * The bucket for a region
+   *
+   * @internal
+   */
+  public _bucketFor(region: string): IBucket {
+    return this.buckets[region];
+  }
+
+  /**
+   * The name the bucket for a region must have
+   *
+   * When the prefix is a token, it's named by its parameter, so the result can be used in messages.
+   *
+   * @internal
+   */
+  public _expectedBucketName(region: string): string {
+    const prefix = Token.isUnresolved(this.bucketNamePrefix) ? '<bucketNamePrefix>' : this.bucketNamePrefix;
+    return `${prefix}-${region}`;
+  }
+
+  /**
+   * The name of the bucket for the region the template is deployed to, resolved at deploy time
+   *
+   * @internal
+   */
+  public _deployTimeBucketName(): string {
+    return Fn.join('-', [this.bucketNamePrefix, Aws.REGION]);
+  }
+}
 
 /**
  * A file asset of a StackSet stack
@@ -48,7 +198,7 @@ interface StackSetFileAsset {
  */
 class StackSetStackSynthesizer extends StackSynthesizer {
   private readonly assets = new Array<StackSetFileAsset>();
-  private readonly bucketDeployments = new Map<IBucket, BucketDeployment>();
+  private readonly bucketDeployments = new Map<string, BucketDeployment>();
   private readonly assetDeployments = new DependencyGroup();
   private host?: Stack;
   private hostAssetBucket?: IBucket;
@@ -56,10 +206,9 @@ class StackSetStackSynthesizer extends StackSynthesizer {
   /**
    * Creates a new StackSetStackSynthesizer.
    *
-   * @param assetBuckets An array of S3 buckets to use for storing assets.
-   * @param assetBucketPrefix The prefix to use for the asset bucket names.
+   * @param assetBuckets The S3 buckets to copy the file assets to, one for each region.
    */
-  constructor(private readonly assetBuckets?: IBucket[], private readonly assetBucketPrefix?: string) {
+  constructor(private readonly assetBuckets?: StackSetAssetBuckets) {
     super();
   }
 
@@ -76,6 +225,15 @@ class StackSetStackSynthesizer extends StackSynthesizer {
   }
 
   /**
+   * Whether this stack has file assets, including assets added after a StackSet uses it
+   *
+   * @internal
+   */
+  public get _hasFileAssets(): boolean {
+    return this.assets.length > 0;
+  }
+
+  /**
    * Stages the file assets in the host stack (the stack hosting StackSet construct)
    *
    * @internal
@@ -89,11 +247,7 @@ class StackSetStackSynthesizer extends StackSynthesizer {
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     if (!this.assetBuckets) {
-      throw new ValidationError(lit`AssetBucketRequired`, 'an asset bucket must be provided to use file assets, set \'assetBuckets\' in the StackSetStack props', this.boundStack);
-    }
-
-    if (!this.assetBucketPrefix) {
-      throw new ValidationError(lit`AssetBucketPrefixRequired`, 'an asset bucket prefix must be provided to use file assets, set \'assetBucketPrefix\' in the StackSetStack props', this.boundStack);
+      throw new ValidationError(lit`AssetBucketRequired`, 'an asset bucket must be provided to use file assets, set \'assetBuckets: StackSetAssetBuckets.fromBuckets(...)\' in the StackSetStack props', this.boundStack);
     }
 
     if (!asset.fileName) {
@@ -110,7 +264,7 @@ class StackSetStackSynthesizer extends StackSynthesizer {
     }
 
     // Resolve the bucket per target region at deploy time
-    const bucketName = Fn.join('-', [this.assetBucketPrefix, Aws.REGION]);
+    const bucketName = this.assetBuckets._deployTimeBucketName();
     const objectKey = Token.asString(fileAsset.objectKey);
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
     const httpUrl = `https://s3.${bucketName}/${objectKey}`;
@@ -145,12 +299,15 @@ class StackSetStackSynthesizer extends StackSynthesizer {
     // Copy the object the host synthesizer publishes, instead of re-staging a local path
     const source = Source.bucket(this.hostAssetBucket, hostLocation.objectKey);
 
-    this.assetBuckets!.forEach((assetBucket, index) => {
-      const bucketDeployment = this.bucketDeployments.get(assetBucket);
+    // In region order, so the first deployment, which defines the shared handler, doesn't depend on the order of the buckets
+    for (const region of this.assetBuckets!._regions) {
+      const bucketDeployment = this.bucketDeployments.get(region);
       if (bucketDeployment) {
         bucketDeployment.addSource(source);
-        return;
+        continue;
       }
+
+      const assetBucket = this.assetBuckets!._bucketFor(region);
 
       if (!Resource.isOwnedResource(assetBucket)) {
         Annotations.of(host).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions',
@@ -158,15 +315,18 @@ class StackSetStackSynthesizer extends StackSynthesizer {
             ' referenced Bucket. Please make sure your bucket has the correct permissions');
       }
 
-      const newBucketDeployment = new BucketDeployment(host, `${Names.uniqueId(this.boundStack)}-AssetBucketDeployment-${index}`, {
+      const newBucketDeployment = new BucketDeployment(host, `${Names.uniqueId(this.boundStack)}-AssetBucketDeployment-${region}`, {
         sources: [source],
         destinationBucket: assetBucket,
         extract: false,
         prune: false,
       });
-      this.bucketDeployments.set(assetBucket, newBucketDeployment);
+      // At validation, so the name includes overrides and changes made after the bucket was passed
+      const assetBuckets = this.assetBuckets!;
+      newBucketDeployment.node.addValidation({ validate: () => assetBuckets._validateBucketName(region, host) });
+      this.bucketDeployments.set(region, newBucketDeployment);
       this.assetDeployments.add(newBucketDeployment);
-    });
+    }
   }
 }
 
@@ -175,25 +335,13 @@ class StackSetStackSynthesizer extends StackSynthesizer {
  */
 export interface StackSetStackProps {
   /**
-   * An array of Buckets can be passed to store assets, enabling StackSetStack Asset support
+   * The S3 buckets to copy the file assets of this stack to, one for each region the StackSet deploys to
    *
-   * One Bucket is required per target region. The name must be `${assetBucketPrefix}-<region>`, where
-   * `<region>` is the region targeted by the StackSet.
+   * Required to use file assets, such as the code of a Lambda function.
    *
-   * The full bucket interface is required because the assets are copied with a
-   * `BucketDeployment`, which needs it. [disable-awslint:prefer-ref-interface]
-   *
-   * @default - No Buckets provided and Assets will not be supported.
+   * @default - file assets are not supported
    */
-  readonly assetBuckets?: IBucket[];
-  /**
-   * The common prefix for the asset bucket names used by this StackSetStack.
-   *
-   * Required if `assetBuckets` is provided.
-   *
-   * @default - No Buckets provided and Assets will not be supported.
-   */
-  readonly assetBucketPrefix?: string;
+  readonly assetBuckets?: StackSetAssetBuckets;
 }
 
 /**
@@ -213,6 +361,7 @@ export class StackSetStack extends Stack {
   public readonly templateFile: string;
   private readonly _templateUrl: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
   private readonly stackSetSynthesizer: StackSetStackSynthesizer;
+  private readonly assetBuckets?: StackSetAssetBuckets;
   private host?: Stack;
 
   /**
@@ -226,13 +375,14 @@ export class StackSetStack extends Stack {
       throw new ValidationError(lit`StackSetStackMustBeTopLevel`, 'a StackSetStack must be defined at the top level of an App or Stage, not inside a Stack', scope);
     }
 
-    const synthesizer = new StackSetStackSynthesizer(props.assetBuckets, props.assetBucketPrefix);
+    const synthesizer = new StackSetStackSynthesizer(props.assetBuckets);
     super(scope, id, {
       // The template is deployed to the accounts and regions targeted by the StackSet
       env: { account: Aws.ACCOUNT_ID, region: Aws.REGION },
       synthesizer,
     });
     this.stackSetSynthesizer = synthesizer;
+    this.assetBuckets = props.assetBuckets;
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${Names.uniqueId(this)}.stackset.template.json`;
@@ -257,7 +407,12 @@ export class StackSetStack extends Stack {
    * @param scope the StackSet that uses this stack's template
    * @internal
    */
-  public _bind(scope: Construct): { readonly templateUrl: string; readonly dependencies: IDependable[] } {
+  public _bind(scope: Construct): {
+    readonly templateUrl: string;
+    readonly dependencies: IDependable[];
+    readonly assetBuckets?: StackSetAssetBuckets;
+    readonly hasFileAssets: () => boolean;
+  } {
     const host = Stack.of(scope);
 
     if (Stage.of(host) !== Stage.of(this)) {
@@ -281,6 +436,8 @@ export class StackSetStack extends Stack {
     return {
       templateUrl: Token.asString(this._templateUrl),
       dependencies: [this.stackSetSynthesizer._assetDeployments],
+      assetBuckets: this.assetBuckets,
+      hasFileAssets: () => this.stackSetSynthesizer._hasFileAssets,
     };
   }
 
