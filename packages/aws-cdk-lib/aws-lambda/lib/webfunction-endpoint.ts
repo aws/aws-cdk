@@ -320,6 +320,10 @@ export interface WebFunctionEndpointAttributes {
 
   /**
    * How the endpoint authenticates requests.
+   *
+   * For an imported endpoint this is taken as given: it is not verified against the
+   * deployed endpoint and must match it, because downstream constructs rely on it for
+   * a synth-time security decision. Like `domainName`, it cannot be derived from the ARN.
    */
   readonly authType: WebFunctionAuthType;
 }
