@@ -669,8 +669,9 @@ export interface OperationPreferences {
   /**
    * The maximum number or percentage of accounts in which to perform this operation at one time.
    *
-   * This is dependent on the value of `failureTolerance`. The maximum concurrent count is at
-   * most one more than the failure tolerance count.
+   * This can depend on the value of `failureTolerance` depending on your `concurrencyMode`.
+   * The maximum concurrent count is at most one more than the failure tolerance count if you're
+   * using `StackSetConcurrencyMode.STRICT_FAILURE_TOLERANCE`.
    *
    * Note that this setting lets you specify the maximum for operations. For large deployments,
    * under certain circumstances the actual number of accounts acted upon concurrently may be
@@ -798,10 +799,6 @@ export class StackSetMaxConcurrency {
 
   /**
    * The maximum percentage of accounts in which to perform this operation at one time.
-   *
-   * When calculating the number of accounts based on the specified percentage, CloudFormation
-   * rounds down to the next whole number. This is true except in cases where rounding down
-   * would result in zero. In this case, CloudFormation sets the number as one instead.
    *
    * @param percentage the percentage of accounts, an integer from 1 to 100
    */
