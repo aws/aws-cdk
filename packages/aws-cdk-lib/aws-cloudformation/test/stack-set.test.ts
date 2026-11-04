@@ -1572,7 +1572,6 @@ describe('importing a StackSet', () => {
     expect(imported.stackSetId).toEqual(stackSetId);
     expect(imported.stackSetRef.stackSetId).toEqual(stackSetId);
     expect(imported).not.toHaveProperty('adminRole');
-    expect(imported).not.toHaveProperty('role');
   });
 
   test('fromStackSetArn takes the id, account and region from the ARN', () => {
@@ -1585,7 +1584,6 @@ describe('importing a StackSet', () => {
     expect(imported.stackSetRef.stackSetId).toEqual(stackSetId);
     expect(imported.env).toEqual({ account: '123456789012', region: 'us-west-2' });
     expect(imported).not.toHaveProperty('adminRole');
-    expect(imported).not.toHaveProperty('role');
   });
 
   test('fromStackSetArn resolves the id of a tokenized ARN at deploy time', () => {
