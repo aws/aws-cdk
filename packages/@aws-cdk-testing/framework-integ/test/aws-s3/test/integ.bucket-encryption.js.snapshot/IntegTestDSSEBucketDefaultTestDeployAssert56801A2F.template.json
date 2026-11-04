@@ -1,4 +1,211 @@
 {
+ "Resources": {
+  "AwsApiCallS3getBucketEncryption1e7e4e4e069ac66166b4c01489968d0b": {
+   "Type": "Custom::DeployAssert@SdkCallS3getBucketEncryption",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getBucketEncryption",
+    "expected": "{\"$ObjectLike\":{\"ServerSideEncryptionConfiguration\":{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"aws:kms:dsse\"}}]}}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-s3-bucket-encryption:ExportsOutputRefMyDSSEBucket8A2A1D0CB378E195"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1793754621221"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3:GetBucketEncryption"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetBucketEncryption"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:GetBucketEncryption"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6782def3f2c11763a959a423bbcc99a1a2a0e3576fb32aad163fb874dca0042a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallS3getBucketEncryptionf82638038b40f4aa9c23077f7349aa09": {
+   "Type": "Custom::DeployAssert@SdkCallS3getBucketEncryption",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getBucketEncryption",
+    "expected": "{\"$ObjectLike\":{\"ServerSideEncryptionConfiguration\":{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-s3-bucket-encryption:ExportsOutputRefMySSES3Bucket6973690D99FA943B"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1793754621222"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getBucketEncryptionb44c8de070c32399a9372dbb5956b7bf": {
+   "Type": "Custom::DeployAssert@SdkCallS3getBucketEncryption",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getBucketEncryption",
+    "expected": "{\"$ObjectLike\":{\"ServerSideEncryptionConfiguration\":{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"aws:kms\"}}]}}}",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-s3-bucket-encryption:ExportsOutputRefMyKMSBucketDF8715AC0EE8E2A4"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1793754621222"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallS3getBucketEncryption1e7e4e4e069ac66166b4c01489968d0b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getBucketEncryption1e7e4e4e069ac66166b4c01489968d0b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getBucketEncryptionf82638038b40f4aa9c23077f7349aa09": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getBucketEncryptionf82638038b40f4aa9c23077f7349aa09",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallS3getBucketEncryptionb44c8de070c32399a9372dbb5956b7bf": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallS3getBucketEncryptionb44c8de070c32399a9372dbb5956b7bf",
+     "assertion"
+    ]
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

@@ -1,16 +1,29 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "6782def3f2c11763a959a423bbcc99a1a2a0e3576fb32aad163fb874dca0042a": {
+      "source": {
+        "path": "asset.6782def3f2c11763a959a423bbcc99a1a2a0e3576fb32aad163fb874dca0042a.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-3dbba7d5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6782def3f2c11763a959a423bbcc99a1a2a0e3576fb32aad163fb874dca0042a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "d496963efd3685f1af1965d7ca5c03c1c237f3d27cefe6822ce019060d7f097c": {
       "displayName": "IntegTestDSSEBucketDefaultTestDeployAssert56801A2F Template",
       "source": {
         "path": "IntegTestDSSEBucketDefaultTestDeployAssert56801A2F.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-2acb0ad4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "d496963efd3685f1af1965d7ca5c03c1c237f3d27cefe6822ce019060d7f097c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
