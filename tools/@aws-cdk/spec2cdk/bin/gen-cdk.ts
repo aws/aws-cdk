@@ -25,7 +25,7 @@ async function main() {
     options: {
       // Comma-separated orgs to generate code for, e.g. `AWS,Alexa`. An org is the first part of a CloudFormation type name.
       // Required for aws-cdk-lib. Not allowed for alpha packages, whose name already selects the services.
-      'orgs': { type: 'string' },
+      orgs: { type: 'string' },
     },
   });
   const orgs = values.orgs?.split(',').map((org) => org.trim());
