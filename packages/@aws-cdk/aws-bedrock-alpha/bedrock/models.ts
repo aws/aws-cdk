@@ -105,6 +105,17 @@ export interface BedrockFoundationModelProps {
   readonly vectorDimensions?: number;
 
   /**
+   * Whether the number of vector dimensions can be chosen when the model is used
+   * by a knowledge base.
+   * Only applicable for embedding models. When true, `vectorDimensions` is
+   * passed to the knowledge base; when false, the model's dimension is fixed and
+   * `vectorDimensions` is informational only.
+   *
+   * @default false
+   */
+  readonly supportsConfigurableDimensions?: boolean;
+
+  /**
    * Embeddings models have different supported vector types.
    * Defines whether the model supports floating-point or binary vectors.
    *
@@ -302,6 +313,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     {
       supportsKnowledgeBase: true,
       vectorDimensions: 1024,
+      supportsConfigurableDimensions: true,
       supportedVectorType: [VectorType.FLOATING_POINT, VectorType.BINARY],
     },
   );
@@ -320,6 +332,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     {
       supportsKnowledgeBase: true,
       vectorDimensions: 512,
+      supportsConfigurableDimensions: true,
       supportedVectorType: [VectorType.FLOATING_POINT, VectorType.BINARY],
     },
   );
@@ -338,6 +351,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     {
       supportsKnowledgeBase: true,
       vectorDimensions: 256,
+      supportsConfigurableDimensions: true,
       supportedVectorType: [VectorType.FLOATING_POINT, VectorType.BINARY],
     },
   );
@@ -1100,7 +1114,63 @@ export class BedrockFoundationModel implements IBedrockInvokable {
    ***************************************************************************/
 
   /**
-   * OpenAI's GPT-5.6 Sol model, the most capable OpenAI model on Bedrock.
+   * OpenAI's GPT-6.1 Sol model, with performance approaching GPT-6 Astra on several
+   * demanding evaluations, at Sol pricing.
+   * Advances coding, professional work, and agentic workflows.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Coding, professional work, agentic workflows
+   */
+  public static readonly OPENAI_GPT_6_1_SOL = new BedrockFoundationModel('openai.gpt-6.1-sol', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-6 Astra model, the most capable model of the GPT-6 family.
+   * Built for complex reasoning, coding, computer use, research, and
+   * document creation.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Complex reasoning, coding, computer use, research
+   */
+  public static readonly OPENAI_GPT_6_ASTRA = new BedrockFoundationModel('openai.gpt-6-astra', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-6 Sol model, built for complex coding and agentic workflows.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Complex coding, agentic workflows
+   */
+  public static readonly OPENAI_GPT_6_SOL = new BedrockFoundationModel('openai.gpt-6-sol', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-6 Luna model, designed for focused, high-volume tasks.
+   *
+   * Features:
+   * - Cross-region support (us. and global. inference profiles only; no in-Region invocation)
+   * - Not supported by Bedrock Agents
+   * - Best for: Focused, high-volume tasks
+   */
+  public static readonly OPENAI_GPT_6_LUNA = new BedrockFoundationModel('openai.gpt-6-luna', {
+    supportsAgents: false,
+    supportsCrossRegion: true,
+  });
+
+  /**
+   * OpenAI's GPT-5.6 Sol model, the most capable model of the GPT-5.6 family.
    * Frontier reasoning and agentic performance across coding, cybersecurity,
    * and scientific research.
    *
@@ -1130,7 +1200,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
 
   /**
    * OpenAI's GPT-5.6 Luna model, fast and affordable inference.
-   * OpenAI's lowest cost model, built for high-volume tasks.
+   * The lowest cost model of the GPT-5.6 family, built for high-volume tasks.
    *
    * Features:
    * - Cross-region support (us., in. and global. inference profiles only; no in-Region invocation)
@@ -1264,6 +1334,12 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   public readonly vectorDimensions?: number;
 
   /**
+   * Whether the number of vector dimensions can be chosen when the model is used
+   * by a knowledge base. Only applicable for embedding models.
+   */
+  public readonly supportsConfigurableDimensions: boolean;
+
+  /**
    * Whether this model supports integration with Bedrock Knowledge Base.
    * When true, the model can be used for knowledge base operations.
    */
@@ -1289,6 +1365,7 @@ export class BedrockFoundationModel implements IBedrockInvokable {
     this.supportsCrossRegion = props.supportsCrossRegion ?? false;
     this.supportsAgents = props.supportsAgents ?? false;
     this.vectorDimensions = props.vectorDimensions;
+    this.supportsConfigurableDimensions = props.supportsConfigurableDimensions ?? false;
     this.supportsKnowledgeBase = props.supportsKnowledgeBase ?? false;
     this.supportedVectorType = props.supportedVectorType;
   }

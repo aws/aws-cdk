@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "RepeatedEsbuildArgsTest/DefaultTest": {
+      "stacks": [
+        "RepeatedEsbuildArgs"
+      ],
+      "assertionStack": "RepeatedEsbuildArgsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RepeatedEsbuildArgsTestDefaultTestDeployAssert58230A37"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
