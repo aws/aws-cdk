@@ -41,6 +41,15 @@ test('getServicesByGenerateServiceRequest skips requested services that do not b
   ]);
 });
 
+test('getServicesByGenerateServiceRequest returns all requested services without namespaces', () => {
+  const requests = [{ namespace: 'AWS::Some' }, { namespace: 'Other::Some' }];
+
+  expect(queryDb.getServicesByGenerateServiceRequest(db, requests).map(([req, s]) => [req.namespace, s.name])).toEqual([
+    ['AWS::Some', 'aws-some'],
+    ['Other::Some', 'other-some'],
+  ]);
+});
+
 test('getServicesByCloudFormationNamespace skips services that do not belong to the given namespaces', () => {
   expect(queryDb.getServicesByCloudFormationNamespace(db, ['Alexa::ASK', 'Other::Some'], NAMESPACES).map((s) => s.name)).toEqual(['alexa-ask']);
 });

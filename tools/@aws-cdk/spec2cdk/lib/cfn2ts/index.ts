@@ -85,7 +85,6 @@ export async function generateAll(
 
   let scopes: ModuleMapScope[];
   if (singleModule != null) {
-    // The module name selects the namespaces
     scopes = allScopes.filter((scope) => {
       const moduleName = naming.modulePartsFromNamespace(scope.namespace).moduleName;
       return moduleName === singleModule;
@@ -130,7 +129,7 @@ export async function generateAll(
       outputPath: outPath,
       clearOutput: false,
       isStable,
-      namespaces: namespaces ?? scopes.map((scope) => scope.namespace),
+      namespaces,
       builderProps: {
         inCdkLib: true,
         filePatterns: {

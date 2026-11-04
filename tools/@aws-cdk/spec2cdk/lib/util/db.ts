@@ -29,15 +29,20 @@ export function getServicesByCloudFormationNamespace(db: SpecDatabase, cloudForm
     .filter((s) => belongsToNamespace(s, namespaces));
 }
 
+/**
+ * The services of the given requests that belong to one of the given namespaces.
+ *
+ * @param namespaces namespaces without the trailing separator, e.g. `AWS`. All requested services if not given.
+ */
 export function getServicesByGenerateServiceRequest(
   db: SpecDatabase,
   requests: GenerateServiceRequest[],
-  namespaces: string[],
+  namespaces?: string[],
 ): Array<[GenerateServiceRequest, Service]> {
   const requestMap = new Map(requests.map(s => [s.namespace, s]));
   return requests
     .flatMap((s) => db.lookup('service', 'cloudFormationNamespace', 'equals', s.namespace))
-    .filter((s) => belongsToNamespace(s, namespaces))
+    .filter((s) => !namespaces || belongsToNamespace(s, namespaces))
     .map(
       (service) => [requestMap.get(service.cloudFormationNamespace)!, service] as [GenerateServiceRequest, Service],
     );

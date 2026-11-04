@@ -94,8 +94,9 @@ export interface GenerateOptions<Builder extends LBC>{
    * Services that don't belong to one of these namespaces are skipped, along with their resources.
    *
    * @example ['AWS', 'Alexa']
+   * @default - all services
    */
-  readonly namespaces: string[];
+  readonly namespaces?: string[];
 
   /**
    * Whether the modules being generated are considered stable
