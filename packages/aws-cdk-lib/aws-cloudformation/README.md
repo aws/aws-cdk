@@ -256,6 +256,35 @@ new StackSet(stack, 'StackSet', {
 });
 ```
 
+#### Capabilities
+
+Some templates can only be deployed if the StackSet acknowledges their
+[capabilities](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateStackSet.html).
+For a `StackSetStack` template, the StackSet infers them from the synthesized template:
+
+- `CAPABILITY_NAMED_IAM` if the template has IAM resources, nested stacks or macros. It covers
+  IAM resources with and without custom names, and the IAM resources that a nested stack may
+  contain or a macro may add
+- `CAPABILITY_AUTO_EXPAND` if the template has nested stacks or macros and the StackSet is self
+  managed. It covers the macros that a nested stack may use. Service managed StackSets don't
+  support macros
+
+A template uses macros if it has a `Transform` section, for example from
+`stackSetStack.addTransform()`, or an `Fn::Transform` anywhere, for example from `Fn.transform()`.
+
+If you pass `capabilities`, the StackSet acknowledges exactly those instead. Templates from
+`StackSetTemplate.fromUrl()` and `StackSetTemplate.fromAsset()` are not inspected, so pass the
+`capabilities` they need:
+
+```ts
+const stack = new Stack();
+
+new StackSet(stack, 'StackSet', {
+  template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
+  capabilities: [CfnCapabilities.ANONYMOUS_IAM],
+});
+```
+
 #### Using File Assets
 
 The stack that contains the StackSet facilitates the file assets of its `StackSetStack`. It
@@ -377,7 +406,6 @@ class BootstrapStage extends Stage {
     const stackSet = new StackSet(stack, 'StackSet', {
       template: StackSetTemplate.fromStackSetStack(bootstrap),
       target: props.initialBootstrapTarget,
-      capabilities: [CfnCapabilities.NAMED_IAM],
       managedExecution: true,
       stackSetName: props.stacksetName,
       deploymentType: DeploymentType.serviceManaged({

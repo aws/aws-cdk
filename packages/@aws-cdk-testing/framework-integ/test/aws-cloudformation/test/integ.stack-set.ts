@@ -3,7 +3,6 @@ import type { Construct } from 'constructs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import {
   App,
-  CfnCapabilities,
   Stack,
 } from 'aws-cdk-lib';
 import type { CfnResource, StackProps } from 'aws-cdk-lib';
@@ -152,7 +151,6 @@ class AssetTestCase extends Stack {
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
       }),
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
     });
   }
 }
