@@ -5,13 +5,13 @@ import { loadModuleMap, type GeneratorResult, type ModuleMap } from '../module-t
 import { getAllServices } from '../util/db';
 import type { PackageBaseNames } from '../util/jsii';
 
-export interface MixinsGenerateOptions extends Pick<Spec2CdkOptions<typeof MixinsBuilder>, 'outputPath' | 'clearOutput' | 'debug' | 'namespacePrefixes'> {
+export interface MixinsGenerateOptions extends Pick<Spec2CdkOptions<typeof MixinsBuilder>, 'outputPath' | 'clearOutput' | 'debug' | 'namespaces'> {
   readonly packageBases: PackageBaseNames;
 }
 
 export async function generateAll(options: MixinsGenerateOptions): Promise<GeneratorResult> {
   const db = await loadPatchedSpec();
-  const services = getAllServices(db, options.namespacePrefixes);
+  const services = getAllServices(db, options.namespaces);
   const moduleMap: ModuleMap = loadModuleMap({
     packageBases: options.packageBases,
     respectOverrides: false,

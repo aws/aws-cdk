@@ -89,13 +89,13 @@ export interface GenerateOptions<Builder extends LBC>{
   readonly db?: SpecDatabase;
 
   /**
-   * The prefixes of the CloudFormation namespaces to generate code for, including the separator.
+   * The CloudFormation namespaces to generate code for, without the trailing separator.
    *
-   * Services with any other namespace are skipped, along with their resources.
+   * Services that don't belong to one of these namespaces are skipped, along with their resources.
    *
-   * @example ['AWS::', 'Alexa::']
+   * @example ['AWS', 'Alexa']
    */
-  readonly namespacePrefixes: string[];
+  readonly namespaces: string[];
 
   /**
    * Whether the modules being generated are considered stable
@@ -161,7 +161,7 @@ export async function loadPatchedSpec(): Promise<SpecDatabase> {
 export async function generateAll<Builder extends LBC = typeof AwsCdkLibBuilder>(options: GenerateOptions<Builder>) {
   enableDebug(options);
   const db = await loadAwsServiceSpec();
-  const services = queryDb.getAllServices(db, options.namespacePrefixes);
+  const services = queryDb.getAllServices(db, options.namespaces);
 
   const modules: GenerateModuleMap = {};
 
@@ -213,7 +213,7 @@ async function generator<Builder extends LBC = typeof AwsCdkLibBuilder>(
   // Go through the module map
   log.info('Generating %i modules...', Object.keys(modules).length);
   for (const [moduleName, moduleOptions] of Object.entries(modules)) {
-    const services = queryDb.getServicesByGenerateServiceRequest(db, moduleOptions.services, options.namespacePrefixes);
+    const services = queryDb.getServicesByGenerateServiceRequest(db, moduleOptions.services, options.namespaces);
 
     for (const [req, s] of services) {
       log.debug(moduleName, s.name, 'ast');

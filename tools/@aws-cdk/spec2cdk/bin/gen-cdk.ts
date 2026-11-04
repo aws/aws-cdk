@@ -23,12 +23,12 @@ main().catch(e => {
 async function main() {
   const { values } = parseArgs({
     options: {
-      // The prefixes of the CloudFormation namespaces to generate code for, e.g. `AWS::`. Can be repeated.
+      // Comma-separated top-level CloudFormation namespaces to generate code for, e.g. `AWS,Alexa`.
       // Required for aws-cdk-lib. Not allowed for alpha packages, whose name already selects the namespace.
-      'namespace-prefix': { type: 'string', multiple: true },
+      'namespaces': { type: 'string' },
     },
   });
-  const namespacePrefixes = values['namespace-prefix'];
+  const namespaces = values.namespaces?.split(',').map((ns) => ns.trim());
 
   // Generate all L1s based on config in scope-map.json
 
@@ -36,7 +36,7 @@ async function main() {
     skippedServices: [],
     scopeMapPath: moduleMapPath,
     isStable,
-    namespacePrefixes,
+    namespaces,
     singleModule: isStable ? undefined : path.parse(libDir).name.replace('-alpha', ''),
   }));
 

@@ -101,7 +101,7 @@ export async function main(argv: string[]) {
     outputPath,
     clearOutput: options['clear-output'],
     debug: options.debug as boolean,
-    namespacePrefixes: ['AWS::', 'Alexa::'],
+    namespaces: ['AWS', 'Alexa'],
     builderProps: {
       filePatterns: {
         resources: options.pattern,

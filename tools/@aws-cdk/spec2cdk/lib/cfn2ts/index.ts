@@ -43,17 +43,17 @@ export interface GenerateAllOptions {
   readonly singleModule?: string;
 
   /**
-   * The prefixes of the CloudFormation namespaces to generate code for, including the separator.
+   * The CloudFormation namespaces to generate code for, without the trailing separator.
    *
-   * Services with any other namespace are skipped, along with their resources.
+   * Services that don't belong to one of these namespaces are skipped, along with their resources.
    *
    * Mutually exclusive with `singleModule`, whose module name already selects the namespaces.
    * Exactly one of the two must be specified.
    *
-   * @example ['AWS::', 'Alexa::']
+   * @example ['AWS', 'Alexa']
    * @default - none, `singleModule` must be specified instead
    */
-  readonly namespacePrefixes?: string[];
+  readonly namespaces?: string[];
 }
 
 /**
@@ -71,14 +71,17 @@ export interface GenerateAllOptions {
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, skippedServices, isStable, singleModule, namespacePrefixes }: GenerateAllOptions,
+  { scopeMapPath, skippedServices, isStable, singleModule, namespaces }: GenerateAllOptions,
 ): Promise<ModuleMap> {
-  if ((singleModule == null) === (namespacePrefixes == null)) {
-    throw new Error('Specify exactly one of namespacePrefixes and singleModule');
+  if (singleModule != null && namespaces != null) {
+    throw new Error('Specify only one of namespaces and singleModule');
+  }
+  if (singleModule == null && namespaces == null) {
+    throw new Error('Specify one of namespaces and singleModule');
   }
 
   const db = await loadPatchedSpec();
-  const allScopes = getAllScopes(db, namespacePrefixes, 'cloudFormationNamespace');
+  const allScopes = getAllScopes(db, namespaces, 'cloudFormationNamespace');
 
   let scopes: ModuleMapScope[];
   if (singleModule != null) {
@@ -127,7 +130,7 @@ export async function generateAll(
       outputPath: outPath,
       clearOutput: false,
       isStable,
-      namespacePrefixes: namespacePrefixes ?? scopes.map((scope) => `${scope.namespace}::`),
+      namespaces: namespaces ?? scopes.map((scope) => scope.namespace),
       builderProps: {
         inCdkLib: true,
         filePatterns: {

@@ -6,11 +6,11 @@ import type { GeneratorResult } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { loadModuleMap, type ModuleMap } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { getAllServices } from '@aws-cdk/spec2cdk/lib/util/db';
 
-type GenerateOptions = Pick<Spec2CdkOptions<typeof EventBridgeBuilder>, 'outputPath' | 'clearOutput' | 'debug' | 'namespacePrefixes'>;
+type GenerateOptions = Pick<Spec2CdkOptions<typeof EventBridgeBuilder>, 'outputPath' | 'clearOutput' | 'debug' | 'namespaces'>;
 
 export async function generateAll(options: GenerateOptions): Promise<GeneratorResult> {
   const db = await loadPatchedSpec();
-  const services = getAllServices(db, options.namespacePrefixes);
+  const services = getAllServices(db, options.namespaces);
   const moduleMap: ModuleMap = loadModuleMap({
     packageBases: MIXINS_PREVIEW_BASE_NAMES,
     respectOverrides: false,
