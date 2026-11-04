@@ -15,8 +15,10 @@ import {
   CfnOutput,
   CfnParameter,
   DefaultStackSynthesizer,
+  Fn,
   Stack,
   Stage,
+  Token,
   Validations,
 } from '../../core';
 import type { StackSynthesizer } from '../../core';
@@ -615,7 +617,7 @@ describe('StackSet capabilities', () => {
     expect(capabilitiesOf(stack, 'nested')).toEqual(['CAPABILITY_NAMED_IAM']);
   });
 
-  test('acknowledges macros for a template with a transform in a self managed StackSet', () => {
+  test('acknowledges macros and the named IAM resources they may add for a template with a transform in a self managed StackSet', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSetStack = new StackSetStack(app, 'StackSet');
@@ -626,10 +628,10 @@ describe('StackSet capabilities', () => {
       template: StackSetTemplate.fromStackSetStack(stackSetStack),
     });
 
-    expect(capabilitiesOf(stack, 'transform')).toEqual(['CAPABILITY_AUTO_EXPAND']);
+    expect(capabilitiesOf(stack, 'transform')).toEqual(['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND']);
   });
 
-  test('acknowledges no macros for a template with a transform in a service managed StackSet', () => {
+  test('acknowledges only the named IAM resources macros may add for a template with a transform in a service managed StackSet', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSetStack = new StackSetStack(app, 'StackSet');
@@ -641,7 +643,27 @@ describe('StackSet capabilities', () => {
       template: StackSetTemplate.fromStackSetStack(stackSetStack),
     });
 
-    expect(capabilitiesOf(stack, 'transform')).toBeUndefined();
+    expect(capabilitiesOf(stack, 'transform')).toEqual(['CAPABILITY_NAMED_IAM']);
+  });
+
+  test.each([
+    ['a self managed', DeploymentType.selfManaged(), ['CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND']],
+    ['a service managed', DeploymentType.serviceManaged(), ['CAPABILITY_NAMED_IAM']],
+  ])('acknowledges the capabilities of macros for a template with an Fn::Transform in %s StackSet', (_, deploymentType, expected) => {
+    const app = new App();
+    const stack = new Stack(app);
+    const stackSetStack = new StackSetStack(app, 'StackSet');
+    new sns.CfnTopic(stackSetStack, 'Topic', {
+      topicName: Token.asString(Fn.transform('MyMacro', { Name: 'my-topic' })),
+    });
+
+    new StackSet(stack, 'StackSet', {
+      stackSetName: 'fn-transform',
+      deploymentType,
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+    });
+
+    expect(capabilitiesOf(stack, 'fn-transform')).toEqual(expected);
   });
 
   test('StackSets of both permission models that share a template each get the capabilities of their model', () => {
@@ -709,6 +731,22 @@ describe('StackSet capabilities', () => {
     expect(capabilitiesOf(stack, 'explicit')).toEqual(['CAPABILITY_NAMED_IAM']);
   });
 
+  test('explicit capabilities from a token are passed through', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const stackSetStack = new StackSetStack(app, 'StackSet');
+    addRole(stackSetStack);
+    const capabilities = new CfnParameter(stack, 'Capabilities', { type: 'CommaDelimitedList' });
+
+    new StackSet(stack, 'StackSet', {
+      stackSetName: 'token',
+      template: StackSetTemplate.fromStackSetStack(stackSetStack),
+      capabilities: capabilities.valueAsList as CfnCapabilities[],
+    });
+
+    expect(capabilitiesOf(stack, 'token')).toEqual({ Ref: 'Capabilities' });
+  });
+
   test('a template from a URL gets no inferred capabilities', () => {
     const app = new App();
     const stack = new Stack(app);
@@ -722,17 +760,22 @@ describe('StackSet capabilities', () => {
   });
 
   test('a template from an asset gets no inferred capabilities, even if it has IAM resources', () => {
-    const templatePath = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'stackset-template-')), 'template.json');
-    fs.writeFileSync(templatePath, JSON.stringify({ Resources: { Role: { Type: 'AWS::IAM::Role' } } }));
-    const app = new App();
-    const stack = new Stack(app);
+    const templateDir = fs.mkdtempSync(path.join(os.tmpdir(), 'stackset-template-'));
+    try {
+      const templatePath = path.join(templateDir, 'template.json');
+      fs.writeFileSync(templatePath, JSON.stringify({ Resources: { Role: { Type: 'AWS::IAM::Role' } } }));
+      const app = new App();
+      const stack = new Stack(app);
 
-    new StackSet(stack, 'StackSet', {
-      stackSetName: 'asset',
-      template: StackSetTemplate.fromAsset(templatePath),
-    });
+      new StackSet(stack, 'StackSet', {
+        stackSetName: 'asset',
+        template: StackSetTemplate.fromAsset(templatePath),
+      });
 
-    expect(capabilitiesOf(stack, 'asset')).toBeUndefined();
+      expect(capabilitiesOf(stack, 'asset')).toBeUndefined();
+    } finally {
+      fs.rmSync(templateDir, { recursive: true, force: true });
+    }
   });
 });
 

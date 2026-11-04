@@ -634,9 +634,10 @@ export interface StackSetProps {
    * not specified, the deployment will fail with a `InsufficientCapabilities` error.
    *
    * For a template from `StackSetTemplate.fromStackSetStack()`, the capabilities are
-   * inferred from the synthesized template: `CAPABILITY_NAMED_IAM` if it has IAM resources
-   * or nested stacks, and `CAPABILITY_AUTO_EXPAND` if it uses macros and the StackSet is
-   * self managed. Specifying `capabilities` replaces the inferred capabilities, and
+   * inferred from the synthesized template: `CAPABILITY_NAMED_IAM` if it has IAM resources,
+   * nested stacks or macros (a `Transform` section or an `Fn::Transform` anywhere), because
+   * macros can add IAM resources, and `CAPABILITY_AUTO_EXPAND` if it uses macros and the
+   * StackSet is self managed. Specifying `capabilities` replaces the inferred capabilities, and
    * `CfnCapabilities.NONE` entries are ignored.
    *
    * @default - for `StackSetTemplate.fromStackSetStack()`, inferred from the synthesized template; otherwise no capabilities

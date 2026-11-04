@@ -262,10 +262,14 @@ Some templates can only be deployed if the StackSet acknowledges their
 [capabilities](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateStackSet.html).
 For a `StackSetStack` template, the StackSet infers them from the synthesized template:
 
-- `CAPABILITY_NAMED_IAM` if the template has IAM resources or nested stacks. It covers IAM
-  resources with and without custom names, and the IAM resources a nested stack may contain
-- `CAPABILITY_AUTO_EXPAND` if the template uses macros (a `Transform`) and the StackSet is self
-  managed. Service managed StackSets don't support macros
+- `CAPABILITY_NAMED_IAM` if the template has IAM resources, nested stacks or macros. It covers
+  IAM resources with and without custom names, and the IAM resources that a nested stack may
+  contain or a macro may add
+- `CAPABILITY_AUTO_EXPAND` if the template uses macros and the StackSet is self managed. Service
+  managed StackSets don't support macros
+
+A template uses macros if it has a `Transform` section, for example from
+`stackSetStack.addTransform()`, or an `Fn::Transform` anywhere, for example from `Fn.transform()`.
 
 If you pass `capabilities`, the StackSet acknowledges exactly those instead. Templates from
 `StackSetTemplate.fromUrl()` and `StackSetTemplate.fromAsset()` are not inspected, so pass the
