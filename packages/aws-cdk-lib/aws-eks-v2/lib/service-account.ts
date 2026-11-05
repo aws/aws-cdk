@@ -8,7 +8,7 @@ import {
   ServicePrincipal,
 } from '../../aws-iam';
 import type { RemovalPolicy } from '../../core';
-import { CfnJson, Names, RemovalPolicies } from '../../core';
+import { CfnJson, Names, RemovalPolicies, ValidationError } from '../../core';
 // import { FargateCluster } from './index';
 
 /**
@@ -81,6 +81,20 @@ export interface ServiceAccountOptions {
    * @default IdentityType.IRSA
    */
   readonly identityType?: IdentityType;
+
+  /**
+   * The target IAM role to associate with the service account.
+   *
+   * This role is assumed by using the EKS Pod Identity association role, then the credentials
+   * for this role are injected into the Pod. This enables cross-account role chaining scenarios.
+   *
+   * Only applicable when identityType is POD_IDENTITY.
+   *
+   * @default - No target role (direct role assumption)
+   * @see https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly targetRole?: IRole;
 
   /**
    * Overwrite existing service account.
@@ -158,6 +172,11 @@ export class ServiceAccount extends Construct implements IPrincipal {
       throw RangeError('All namespace names must be valid RFC 1123 DNS labels.');
     }
 
+    // Validate targetRole compatibility
+    if (props.targetRole && props.identityType !== IdentityType.POD_IDENTITY) {
+      throw new ValidationError('TargetRoleRequiresPodIdentity', 'targetRole can only be used with POD_IDENTITY identity type', this);
+    }
+
     let principal: IPrincipal;
     if (props.identityType !== IdentityType.POD_IDENTITY) {
       /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
@@ -205,6 +224,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
         namespace: props.namespace ?? 'default',
         roleArn: role.roleArn,
         serviceAccount: this.serviceAccountName,
+        targetRoleArn: props.targetRole?.roleArn,
       });
     }
 
