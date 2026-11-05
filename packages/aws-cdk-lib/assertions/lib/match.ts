@@ -10,6 +10,50 @@ import { getType } from './private/type';
  */
 export abstract class Match {
   /**
+   * Matches finite numbers or decimal numeric strings greater than the given value.
+   *
+   * Numeric strings may have surrounding whitespace, a sign, decimal point, or exponent.
+   * Empty strings, hexadecimal strings, non-finite values, and other types do not match.
+   * @param value the finite comparison value
+   */
+  public static greaterThan(value: number): Matcher {
+    return new NumericMatch('greaterThan', value, '>');
+  }
+
+  /**
+   * Matches finite numbers or decimal numeric strings greater than or equal to the given value.
+   *
+   * Numeric strings may have surrounding whitespace, a sign, decimal point, or exponent.
+   * Empty strings, hexadecimal strings, non-finite values, and other types do not match.
+   * @param value the finite comparison value
+   */
+  public static greaterThanOrEqual(value: number): Matcher {
+    return new NumericMatch('greaterThanOrEqual', value, '>=');
+  }
+
+  /**
+   * Matches finite numbers or decimal numeric strings less than the given value.
+   *
+   * Numeric strings may have surrounding whitespace, a sign, decimal point, or exponent.
+   * Empty strings, hexadecimal strings, non-finite values, and other types do not match.
+   * @param value the finite comparison value
+   */
+  public static lessThan(value: number): Matcher {
+    return new NumericMatch('lessThan', value, '<');
+  }
+
+  /**
+   * Matches finite numbers or decimal numeric strings less than or equal to the given value.
+   *
+   * Numeric strings may have surrounding whitespace, a sign, decimal point, or exponent.
+   * Empty strings, hexadecimal strings, non-finite values, and other types do not match.
+   * @param value the finite comparison value
+   */
+  public static lessThanOrEqual(value: number): Matcher {
+    return new NumericMatch('lessThanOrEqual', value, '<=');
+  }
+
+  /**
    * Use this matcher in the place of a field's value, if the field must not be present.
    */
   public static absent(): Matcher {
@@ -492,6 +536,40 @@ class StringLikeRegexpMatch extends Matcher {
       });
     }
 
+    return result;
+  }
+}
+
+class NumericMatch extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly value: number,
+    private readonly operator: string) {
+    super();
+    if (!Number.isFinite(value)) {
+      throw new AssertionError(`Expected a finite comparison value, got ${value}`);
+    }
+  }
+
+  public test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+    const isNumericString = typeof actual === 'string' &&
+      /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(actual.trim());
+    const numeric = typeof actual === 'number' || isNumericString ? Number(actual) : NaN;
+    if (!Number.isFinite(numeric)) {
+      result.recordFailure({ matcher: this, path: [], message: 'Expected a finite number or decimal numeric string' });
+      return result;
+    }
+    const matches = this.operator === '>' ? numeric > this.value :
+      this.operator === '>=' ? numeric >= this.value :
+        this.operator === '<' ? numeric < this.value : numeric <= this.value;
+    if (!matches) {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected ${actual} ${this.operator} ${this.value}`,
+      });
+    }
     return result;
   }
 }
