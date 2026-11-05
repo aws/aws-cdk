@@ -1,2 +1,2 @@
-// sortKeyComparator moved to core alongside the matcher engine; re-exported for internal assertions use.
-export * from '../../../core/lib/matcher/private/sorting';
+// sortKeyComparator moved to the internal `matching/` module alongside the matcher engine.
+export * from '../../../matching/lib/private/sorting';

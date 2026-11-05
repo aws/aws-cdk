@@ -1,10 +1,10 @@
 import type { IConstruct, MetadataEntry } from 'constructs';
 import { UnscopedValidationError } from './errors';
-import { Match } from './matcher/match';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import { appOf } from './private/core-construct-finders';
 import { lit, type LiteralString } from './private/literal-string';
+import { Match } from '../../matching/lib/match';
 
 /**
  * Options for adding an acknowledgeable warning via `Annotations.addWarningV2`
