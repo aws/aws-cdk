@@ -16,7 +16,6 @@
       }
      ]
     },
-    "KmsKeyIdentifier": "",
     "RetentionDays": 0,
     "SourceArn": {
      "Fn::GetAtt": [
