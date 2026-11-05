@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "IntegTestAlbJwtCognito/DefaultTest": {
+      "stacks": [
+        "AlbJwtCognitoStack"
+      ],
+      "assertionStack": "IntegTestAlbJwtCognito/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestAlbJwtCognitoDefaultTestDeployAssertA0A93AD7"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}
