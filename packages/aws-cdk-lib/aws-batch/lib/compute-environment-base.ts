@@ -90,7 +90,7 @@ export interface ComputeEnvironmentProps {
  */
 export abstract class ComputeEnvironmentBase extends Resource implements IComputeEnvironment {
   public abstract readonly computeEnvironmentName: string;
-  public readonly serviceRole?: iam.IRole | undefined;
+  public readonly serviceRole?: iam.IRole;
   public readonly enabled: boolean;
   public abstract readonly computeEnvironmentArn: string;
 
