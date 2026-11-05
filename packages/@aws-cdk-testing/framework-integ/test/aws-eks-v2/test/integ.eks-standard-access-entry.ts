@@ -36,7 +36,7 @@ class EksStandardAccessEntry extends Stack {
         }),
       ],
       cluster,
-      principal: role.roleArn,
+      iamPrincipal: role,
       accessEntryType: eks.AccessEntryType.STANDARD,
     });
   }
