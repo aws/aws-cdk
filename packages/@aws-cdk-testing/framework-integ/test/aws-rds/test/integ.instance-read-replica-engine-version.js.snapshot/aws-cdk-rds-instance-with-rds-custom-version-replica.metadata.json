@@ -1,0 +1,925 @@
+{
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "instanceType": "*",
+        "engine": {
+          "engineType": "*",
+          "engineVersion": {
+            "fullVersion": "*",
+            "majorVersion": "*"
+          },
+          "parameterGroupFamily": "*",
+          "singleUserRotationApplication": "*",
+          "engineFamily": "*",
+          "supportsReadReplicaBackups": "*",
+          "defaultUsername": "*"
+        },
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/InstanceReplica": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "instanceType": "*",
+        "vpc": "*",
+        "sourceDatabaseInstance": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/SubnetGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "removalPolicy": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/Secret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryptionKey": "*",
+        "secretName": "*",
+        "replicaRegions": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "username": "*",
+        "secretName": "*",
+        "encryptionKey": "*",
+        "excludeCharacters": "*",
+        "replaceOnPasswordCriteriaChanges": "*",
+        "replicaRegions": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceC1063A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:735:30)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:16:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/InstanceReplica/SubnetGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "removalPolicy": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/InstanceReplica/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/InstanceReplica/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceReplica8EF5A775"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseInstanceReadReplica (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:932:30)",
+        "new DatabaseInstanceReadReplica (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:22:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:13:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/SubnetGroup/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSubnetGroupF2CBA54F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
+        "new SubnetGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:438:50)",
+        "new DatabaseInstanceSource (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:16:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecurityGroupB4E5FA83"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:444:57)",
+        "new DatabaseInstanceSource (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:16:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/Secret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecret478E0A47"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:500:30)",
+        "new Secret (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseSecret (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
+        "new DatabaseSecret (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "renderCredentials (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:733:64)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:16:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/Secret/Attachment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "secret": "*",
+        "target": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/InstanceReplica/SubnetGroup/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceReplicaSubnetGroupA8F74F74"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
+        "new SubnetGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:438:50)",
+        "new DatabaseInstanceReadReplica (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:906:13)",
+        "new DatabaseInstanceReadReplica (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:22:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/InstanceReplica/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceReplicaSecurityGroupAD3249BD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:444:57)",
+        "new DatabaseInstanceReadReplica (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:906:13)",
+        "new DatabaseInstanceReadReplica (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:22:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-with-rds-custom-version-replica/Instance/Secret/Attachment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecretAttachment83BEE581"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecretTargetAttachment (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:690:32)",
+        "new SecretTargetAttachment (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.attach (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:308:16)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:752:38)",
+        "new DatabaseInstance (/home/laurencewarne/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/laurencewarne/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-read-replica-engine-version.js:16:24)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
