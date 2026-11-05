@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1793787277347"
+    "salt": "1793875126741"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -137,7 +137,7 @@
      "Stacks.0.Outputs.0.OutputKey",
      "Stacks.0.Outputs.0.OutputValue"
     ],
-    "salt": "1793787277348"
+    "salt": "1793875126742"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

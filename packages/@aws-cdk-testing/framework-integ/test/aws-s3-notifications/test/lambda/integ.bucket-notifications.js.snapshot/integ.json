@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "LambdaBucketNotificationsTest/DefaultTest": {
       "stacks": [
@@ -17,5 +17,6 @@
       "assertionStackName": "LambdaBucketNotificationsTestDefaultTestDeployAssertDC5450F4"
     }
   },
-  "minimumCliVersion": "2.1119.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
 }
