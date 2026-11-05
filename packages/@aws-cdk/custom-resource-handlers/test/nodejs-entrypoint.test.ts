@@ -271,12 +271,90 @@ describe('nodejs entrypoint', () => {
     });
 
     test.each([
-      [['Config.Nested'], /^Invalid makeHandler option "redactProperties": "Config\.Nested" contains '\.'; only top-level property names are supported, nested paths are not supported yet$/],
-      [[''], /entries must be non-empty strings/],
-      [[42], /entries must be non-empty strings, got 42/],
-      ['Config', /expected an array of top-level property names, got string/],
-    ])('invalid redactProperties %j fails when the handler is created', (redactProperties, error) => {
-      expect(() => entrypoint.makeHandler(async _ => undefined, { redactProperties: redactProperties as any })).toThrow(error);
+      [['Config.Nested'], 'Invalid makeHandler option "redactProperties": "Config.Nested" contains \'.\'; only top-level property names are supported, nested paths are not supported yet'],
+      [[''], 'Invalid makeHandler option "redactProperties": entries must be non-empty strings, got ""'],
+      [[42], 'Invalid makeHandler option "redactProperties": entries must be non-empty strings, got 42'],
+      ['Config', 'Invalid makeHandler option "redactProperties": expected an array of top-level property names, got string'],
+    ])('invalid redactProperties %j fails the request with an explicit reason and redacts all properties', async (redactProperties, reason) => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create', ResourceProperties: { ServiceToken: '<ServiceToken>', Config: 'SECRET-CONFIG' } });
+      let called = false;
+
+      // WHEN - creating the handler does not throw
+      const { logs, response } = await invokeHandler(event, async _ => {
+        called = true;
+      }, { redactProperties: redactProperties as any });
+
+      // THEN
+      expect(called).toBe(false);
+      expect(response.Status).toEqual('FAILED');
+      expect(response.Reason).toEqual(reason);
+      expect(logs.join('\n')).not.toContain('SECRET-CONFIG');
+      expect(JSON.parse(logs[0]).ResourceProperties).toEqual({ ServiceToken: '*****', Config: '*****' });
+    });
+
+    test('invalid redactProperties still lets the ignored DELETE after a failed CREATE succeed', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Delete',
+        PhysicalResourceId: 'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED',
+      });
+
+      // WHEN
+      const { response } = await invokeHandler(event, async _ => undefined, { redactProperties: ['Config.Nested'] });
+
+      // THEN
+      expect(response.Status).toEqual('SUCCESS');
+    });
+
+    test('the validated list is not affected by later changes to the array passed in', async () => {
+      // GIVEN
+      const redactProperties = ['Secret'];
+      const event = makeEvent({ RequestType: 'Create', ResourceProperties: { ServiceToken: '<ServiceToken>', Secret: 'SECRET-VALUE', Other: 'OTHER-VALUE' } });
+
+      // WHEN
+      const handler = entrypoint.makeHandler(async _ => undefined, { redactProperties });
+      redactProperties.length = 0;
+      redactProperties.push('Other');
+      const { logs } = await invokeHandler(event, async _ => undefined, undefined, handler);
+
+      // THEN
+      const loggedProps = JSON.parse(logs[0]).ResourceProperties;
+      expect(loggedProps.Secret).toEqual('*****');
+      expect(loggedProps.Other).toEqual('OTHER-VALUE');
+    });
+
+    test('a value nested under a property that is not listed is still logged', async () => {
+      // GIVEN - only top-level names are matched
+      const event = makeEvent({
+        RequestType: 'Create',
+        ResourceProperties: { ServiceToken: '<ServiceToken>', Outer: { Secret: 'NESTED-VALUE' } },
+      } as any);
+
+      // WHEN
+      const { logs } = await invokeHandler(event, async _ => undefined, { redactProperties: ['Secret'] });
+
+      // THEN
+      expect(JSON.parse(logs[0]).ResourceProperties.Outer).toEqual({ Secret: 'NESTED-VALUE' });
+    });
+
+    test.each([
+      ['a string', 'SECRET-STRING'],
+      ['an array', ['SECRET-1', 'SECRET-2']],
+      ['a number', 1234567],
+    ])('NoEcho response Data that is %s is logged as a single placeholder, but sent to cloudformation', async (_desc, data) => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create' });
+
+      // WHEN
+      const { logs, response } = await invokeHandler(event, async _ => ({ NoEcho: true, Data: data }));
+
+      // THEN
+      expect(response.Data).toEqual(data);
+      const responseLog = logs.find(l => l.startsWith('submit response to cloudformation'));
+      expect(responseLog).toContain('"Data":"*****"');
+      expect(responseLog).not.toContain('SECRET');
+      expect(responseLog).not.toContain('1234567');
     });
   });
 });
@@ -301,6 +379,7 @@ async function invokeHandler(
   req: AWSLambda.CloudFormationCustomResourceEvent,
   userHandler: entrypoint.Handler,
   handlerOptions?: entrypoint.MakeHandlerOptions,
+  prebuiltHandler?: ReturnType<typeof entrypoint.makeHandler>,
 ) {
   const parsedResponseUrl = url.parse(req.ResponseURL);
 
@@ -331,7 +410,7 @@ async function invokeHandler(
     actualRequest = options;
   };
 
-  const handler = entrypoint.makeHandler(userHandler, handlerOptions);
+  const handler = prebuiltHandler ?? entrypoint.makeHandler(userHandler, handlerOptions);
   await handler(req);
   if (!actualRequest || !actualResponse) {
     throw new Error('no response sent to cloudformation');

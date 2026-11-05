@@ -264,6 +264,25 @@ test('onTimeout does not log the presigned ResponseURL when NoEcho is not set, a
   expect(logged).toContain(MOCK_PHYSICAL_ID);
 });
 
+test('onTimeout with an unreadable Cause logs a sanitized summary and throws without the Cause', async () => {
+  // GIVEN - a Cause that is not the JSON the waiter produces, but contains the presigned URL
+  const logMock = console.log as jest.Mock;
+  logMock.mockClear();
+  const timeoutEvent = { Error: 'States.Timeout', Cause: `not json ${mocks.MOCK_REQUEST.ResponseURL}` };
+
+  // WHEN
+  const error = await framework.onTimeout(timeoutEvent).then(() => undefined, e => e);
+
+  // THEN
+  expect(error).toBeInstanceOf(Error);
+  expect(error).not.toBeInstanceOf(SyntaxError);
+  expect(error.message).toContain('cannot read the isComplete request from the timeout event (SyntaxError); event keys: Error, Cause');
+  expect(error.message).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
+  const logged = logMock.mock.calls.map(args => args.join(' ')).join('\n');
+  expect(logged).toContain('cannot read the isComplete request from the timeout event');
+  expect(logged).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
+});
+
 test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
   // GIVEN
   mocks.onEventImplMock = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });

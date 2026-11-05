@@ -110,7 +110,16 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
 async function onTimeout(timeoutEvent: any) {
   // the timeout event carries the full isComplete request (including the presigned
   // ResponseURL) in `Cause`, so log the parsed request in sanitized form instead.
-  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
+  let isCompleteRequest: AWSCDKAsyncCustomResource.IsCompleteRequest;
+  try {
+    isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage);
+  } catch (e: any) {
+    // never log `Cause` or the parse error message: both can contain the
+    // presigned ResponseURL (JSON.parse quotes part of its input in its message).
+    const summary = `timeoutHandler: cannot read the isComplete request from the timeout event (${e?.name ?? 'Error'}); event keys: ${timeoutEvent && typeof timeoutEvent === 'object' ? Object.keys(timeoutEvent).join(', ') : typeof timeoutEvent}`;
+    log(summary);
+    throw new Error(summary);
+  }
   const sanitizedRequest = { ...isCompleteRequest, ResponseURL: '...' };
   if (isCompleteRequest.NoEcho) {
     log('redacted timeoutHandler request', cfnResponse.redactDataFromPayload(sanitizedRequest));

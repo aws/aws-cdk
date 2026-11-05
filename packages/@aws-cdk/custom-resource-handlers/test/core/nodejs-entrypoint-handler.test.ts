@@ -189,6 +189,20 @@ describe('nodejs entrypoint', () => {
       expect(logs.join('\n')).toContain('"Attr":"*****"');
     });
 
+    test('NoEcho response Data that is not an object is logged as a single placeholder', async () => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create' });
+
+      // WHEN
+      const { logs, response } = await invokeHandler(event, async _ => ({ NoEcho: true, Data: 'SECRET-STRING' }));
+
+      // THEN
+      expect(response.Data).toEqual('SECRET-STRING');
+      const responseLog = logs.find(l => l.startsWith('submit response to cloudformation'));
+      expect(responseLog).toContain('"Data":"*****"');
+      expect(responseLog).not.toContain('SECRET');
+    });
+
     test('response Data is logged when NoEcho is not set', async () => {
       // GIVEN
       const event = makeEvent({ RequestType: 'Create' });

@@ -31,8 +31,16 @@ export interface MakeHandlerOptions {
    * plaintext before invoking the handler. Only the log output is affected; the
    * user handler always receives the real values.
    *
-   * Only top-level property names are supported. A name containing `.` is
-   * rejected, which reserves dotted names for nested paths later.
+   * Only top-level property names are supported: a value nested under a property
+   * that is not listed is still logged. A name containing `.` is rejected, which
+   * reserves dotted names for nested paths later. An invalid value fails every
+   * request with an explicit reason (and redacts all properties from that log
+   * line); it does not prevent a response from reaching CloudFormation.
+   *
+   * Scope: only the log lines this wrapper writes are redacted. Logging done by
+   * the user handler itself, and the `Reason` of a failed request (for example an
+   * error message that quotes a property value), are not. Handlers deployed
+   * through the `custom-resources` Provider framework do not use this wrapper.
    *
    * @default - no properties are redacted
    */
@@ -40,7 +48,17 @@ export interface MakeHandlerOptions {
 }
 
 export function makeHandler(userHandler: Handler, options: MakeHandlerOptions = {}) {
-  const redactProperties = validateRedactProperties(options.redactProperties, 'makeHandler option "redactProperties"');
+  // validate once, but report an invalid option per request (below) rather than
+  // throwing here: a throw at module load would leave CloudFormation without a
+  // response until the custom resource times out.
+  let redactProperties: readonly string[] | typeof REDACT_ALL;
+  let optionsError: unknown;
+  try {
+    redactProperties = validateRedactProperties(options.redactProperties, 'makeHandler option "redactProperties"');
+  } catch (e) {
+    optionsError = e;
+    redactProperties = REDACT_ALL;
+  }
 
   return async (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => {
     const sanitizedEvent = { ...event, ResponseURL: '...' };
@@ -60,6 +78,9 @@ export function makeHandler(userHandler: Handler, options: MakeHandlerOptions = 
       // invoke the user handler. this is intentionally inside the try-catch to
       // ensure that if there is an error it's reported as a failure to
       // cloudformation (otherwise cfn waits).
+      if (optionsError) {
+        throw optionsError;
+      }
       const result = await userHandler(sanitizedEvent, context);
 
       // validate user response and create the combined event
@@ -170,12 +191,13 @@ async function defaultSendHttpRequest(options: https.RequestOptions, requestBody
 }
 
 const REDACTED = '*****';
+const REDACT_ALL = Symbol('redact-all');
 
 /**
  * Validates a list of property names to redact from logs. Only top-level names are
  * supported; anything else fails with an explicit error instead of being ignored.
  */
-function validateRedactProperties(names: unknown, source: string): string[] {
+function validateRedactProperties(names: unknown, source: string): readonly string[] {
   if (names === undefined) {
     return [];
   }
@@ -190,15 +212,15 @@ function validateRedactProperties(names: unknown, source: string): string[] {
       throw new Error(`Invalid ${source}: "${name}" contains '.'; only top-level property names are supported, nested paths are not supported yet`);
     }
   }
-  return names;
+  return Object.freeze([...names]);
 }
 
 /**
  * Returns a copy of the event that is safe to log: the presigned `ResponseURL`
- * is hidden and the listed top-level properties are replaced with a placeholder
- * in both `ResourceProperties` and `OldResourceProperties`.
+ * is hidden and the listed top-level properties (or all of them) are replaced
+ * with a placeholder in both `ResourceProperties` and `OldResourceProperties`.
  */
-function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, redactProperties: string[]) {
+function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, redactProperties: readonly string[] | typeof REDACT_ALL) {
   const loggable: any = { ...event, ResponseURL: '...' };
   for (const key of ['ResourceProperties', 'OldResourceProperties']) {
     if (key in loggable) {
@@ -208,12 +230,16 @@ function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, r
   return loggable;
 }
 
-function redactPropertyValues(props: unknown, redactProperties: string[]) {
-  if (redactProperties.length === 0 || !props || typeof props !== 'object') {
+function redactPropertyValues(props: unknown, redactProperties: readonly string[] | typeof REDACT_ALL) {
+  if (!props || typeof props !== 'object') {
+    return props;
+  }
+  const names = redactProperties === REDACT_ALL ? Object.keys(props) : redactProperties;
+  if (names.length === 0) {
     return props;
   }
   const ret: Record<string, unknown> = { ...props };
-  for (const name of redactProperties) {
+  for (const name of names) {
     if (Object.prototype.hasOwnProperty.call(ret, name)) {
       ret[name] = REDACTED;
     }
@@ -222,8 +248,13 @@ function redactPropertyValues(props: unknown, redactProperties: string[]) {
 }
 
 function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {
-  if (!json.Data) {
+  if (json.Data === undefined || json.Data === null) {
     return json;
+  }
+  if (typeof json.Data !== 'object' || Array.isArray(json.Data)) {
+    // masking per key only makes sense for an object; for anything else (for
+    // example a string, whose keys are character indices) hide the whole value.
+    return { ...json, Data: REDACTED };
   }
   return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, REDACTED])) };
 }

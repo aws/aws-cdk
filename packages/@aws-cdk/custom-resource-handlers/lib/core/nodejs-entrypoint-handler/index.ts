@@ -153,8 +153,13 @@ async function defaultSendHttpRequest(options: https.RequestOptions, requestBody
  * a response that has `NoEcho` set.
  */
 function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {
-  if (!json.Data) {
+  if (json.Data === undefined || json.Data === null) {
     return json;
+  }
+  if (typeof json.Data !== 'object' || Array.isArray(json.Data)) {
+    // masking per key only makes sense for an object; for anything else (for
+    // example a string, whose keys are character indices) hide the whole value.
+    return { ...json, Data: '*****' };
   }
   return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, '*****'])) };
 }
