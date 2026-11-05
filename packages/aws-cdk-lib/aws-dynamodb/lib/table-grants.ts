@@ -67,6 +67,13 @@ export class TableGrants {
   private readonly encryptedResource?: iam.IEncryptedResource;
   private readonly policyResource?: iam.IResourceWithPolicyV2;
 
+  /**
+   * Accumulated accounts for multi-account replication grants.
+   * Used to build a single aggregated aws:SourceAccount condition at synth time.
+   */
+  private readonly replicationToAccounts: Set<string> = new Set();
+  private readonly replicationFromAccounts: Set<string> = new Set();
+
   constructor(props: TableGrantsProps) {
     this.table = props.table;
     this.encryptedResource = props.encryptedResource ?? iam.EncryptedResources.of(this.table);
@@ -226,6 +233,7 @@ export class TableGrants {
       throw new ValidationError(lit`InvalidTable`, `Invalid table ARN: ${destinationReplicaArn}. ARN must include account ID.`, this.table);
     }
 
+    // Per-account AssociateTableReplica statement (one per destination account)
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
       sid: `AllowMultiAccountReplicaAssociation${arnComponents.account}`,
       actions: ['dynamodb:AssociateTableReplica'],
@@ -233,23 +241,30 @@ export class TableGrants {
       principals: [new iam.AccountPrincipal(arnComponents.account)],
     }));
 
-    this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
-      sid: `AllowReplicationServiceReadWrite${arnComponents.account}`,
-      actions: perms.MULTI_ACCOUNT_REPLICATION_ACTIONS,
-      resources: ['*'],
-      principals: [new iam.ServicePrincipal('replication.dynamodb.amazonaws.com')],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': [stack.account, arnComponents.account],
-        },
-      },
-    }));
+    // Aggregate the destination account; create the replication service statement only once
+    this.replicationToAccounts.add(arnComponents.account);
 
-    this.encryptedResource?.grantOnKey(
-      new iam.ServicePrincipal('replication.dynamodb.amazonaws.com'),
-      ...perms.KEY_READ_ACTIONS,
-      ...perms.KEY_WRITE_ACTIONS,
-    );
+    if (this.replicationToAccounts.size === 1) {
+      this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
+        sid: 'AllowReplicationServiceReadWrite',
+        actions: perms.MULTI_ACCOUNT_REPLICATION_ACTIONS,
+        resources: ['*'],
+        principals: [new iam.ServicePrincipal('replication.dynamodb.amazonaws.com')],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': Lazy.list({
+              produce: () => [stack.account, ...Array.from(this.replicationToAccounts)],
+            }),
+          },
+        },
+      }));
+
+      this.encryptedResource?.grantOnKey(
+        new iam.ServicePrincipal('replication.dynamodb.amazonaws.com'),
+        ...perms.KEY_READ_ACTIONS,
+        ...perms.KEY_WRITE_ACTIONS,
+      );
+    }
   }
 
   /**
@@ -268,22 +283,29 @@ export class TableGrants {
       throw new ValidationError(lit`InvalidTable`, `Invalid table ARN: ${sourceReplicaArn}. ARN must include account ID.`, this.table);
     }
 
-    this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
-      sid: 'AllowReplicationService',
-      actions: perms.MULTI_ACCOUNT_REPLICATION_ACTIONS,
-      resources: ['*'],
-      principals: [new iam.ServicePrincipal('replication.dynamodb.amazonaws.com')],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': [stack.account, arnComponents.account],
-        },
-      },
-    }));
+    // Aggregate the source account; create the replication service statement only once
+    this.replicationFromAccounts.add(arnComponents.account);
 
-    this.encryptedResource?.grantOnKey(
-      new iam.ServicePrincipal('replication.dynamodb.amazonaws.com'),
-      ...perms.KEY_READ_ACTIONS,
-      ...perms.KEY_WRITE_ACTIONS,
-    );
+    if (this.replicationFromAccounts.size === 1) {
+      this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
+        sid: 'AllowReplicationService',
+        actions: perms.MULTI_ACCOUNT_REPLICATION_ACTIONS,
+        resources: ['*'],
+        principals: [new iam.ServicePrincipal('replication.dynamodb.amazonaws.com')],
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': Lazy.list({
+              produce: () => [stack.account, ...Array.from(this.replicationFromAccounts)],
+            }),
+          },
+        },
+      }));
+
+      this.encryptedResource?.grantOnKey(
+        new iam.ServicePrincipal('replication.dynamodb.amazonaws.com'),
+        ...perms.KEY_READ_ACTIONS,
+        ...perms.KEY_WRITE_ACTIONS,
+      );
+    }
   }
 }
