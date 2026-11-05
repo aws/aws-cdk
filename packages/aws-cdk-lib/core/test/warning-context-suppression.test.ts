@@ -132,7 +132,7 @@ describe('context-scoped warning suppression', () => {
     const c1 = new Construct(stack, 'C1');
 
     // WHEN — emit via the low-level API with context, acknowledge via Validations
-    Annotations.of(c1).addWarningV2('my-lib:SomeWarning', 'aiops via annotations', { service: 'aiops' });
+    Annotations.of(c1).addWarningV2('my-lib:SomeWarning', 'aiops via annotations', { context: { service: 'aiops' } });
     Validations.of(c1).acknowledge({
       id: 'my-lib:SomeWarning',
       reason: 'ok',
@@ -141,5 +141,64 @@ describe('context-scoped warning suppression', () => {
 
     // THEN
     expect(messages(app).some((m) => m.includes('aiops via annotations'))).toBe(false);
+  });
+
+  test('a filtered acknowledgement declared BEFORE the warning still suppresses only matching occurrences', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const parent = new Construct(stack, 'Parent');
+
+    // WHEN — acknowledge on the parent FIRST (exercises the emit-time Acknowledgements.has path),
+    // then emit on a child. The ack is declared on an ancestor so it is found via the ancestor
+    // path-walk; acking and emitting on the *same* construct hits the separate pre-existing
+    // searchPaths ordering bug (tracked in #38820 / fixed in #38821), which is out of scope here.
+    Validations.of(parent).acknowledge({
+      id: UNSUPPORTED,
+      reason: 'aiops actions are attached intentionally',
+      where: { service: 'aiops' },
+    });
+    const child = new Construct(parent, 'Child');
+    Validations.of(child).addWarning(UNSUPPORTED, 'aiops action ignored', { context: { service: 'aiops' } });
+    Validations.of(child).addWarning(UNSUPPORTED, 'sns action ignored', { context: { service: 'sns' } });
+
+    // THEN — only the aiops occurrence is suppressed, even though the ack preceded the warnings
+    const msgs = messages(app);
+    expect(msgs.some((m) => m.includes('sns action ignored'))).toBe(true);
+    expect(msgs.some((m) => m.includes('aiops action ignored'))).toBe(false);
+  });
+
+  test('non-string context values (numbers) are matched by equality', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Validations.of(c1).addWarning(UNSUPPORTED, 'port 8080 ignored', { context: { port: 8080 } });
+    Validations.of(c1).addWarning(UNSUPPORTED, 'port 443 ignored', { context: { port: 443 } });
+    Validations.of(c1).acknowledge({ id: UNSUPPORTED, reason: 'accept 8080', where: { port: 8080 } });
+
+    // THEN
+    const msgs = messages(app);
+    expect(msgs.some((m) => m.includes('port 8080 ignored'))).toBe(false);
+    expect(msgs.some((m) => m.includes('port 443 ignored'))).toBe(true);
+  });
+
+  test('array context values are matched by equality', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN
+    Validations.of(c1).addWarning(UNSUPPORTED, 'sns+sqs ignored', { context: { actions: ['sns', 'sqs'] } });
+    Validations.of(c1).addWarning(UNSUPPORTED, 'lambda ignored', { context: { actions: ['lambda'] } });
+    Validations.of(c1).acknowledge({ id: UNSUPPORTED, reason: 'accept sns+sqs', where: { actions: ['sns', 'sqs'] } });
+
+    // THEN
+    const msgs = messages(app);
+    expect(msgs.some((m) => m.includes('sns+sqs ignored'))).toBe(false);
+    expect(msgs.some((m) => m.includes('lambda ignored'))).toBe(true);
   });
 });

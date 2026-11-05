@@ -1,29 +1,11 @@
 import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin } from './validation';
-import { Annotations } from '../annotations';
+import { Annotations, type WarningOptions } from '../annotations';
 import { UnscopedValidationError } from '../errors';
 import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
 import { enhancedStackTrace } from '../private/stack-trace';
 import { ANNOTATION_PLUGIN_NAMESPACE, normalizeValidationIdForAnnotations, parseValidationId } from './private/validation-id';
-
-/**
- * Options for adding a warning via `Validations.addWarning`.
- */
-export interface WarningOptions {
-  /**
-   * Structured key/value context describing this specific warning occurrence.
-   *
-   * The construct chooses the keys (e.g. `{ service: 'aiops' }`). A later
-   * `acknowledge({ where })` is matched against this context to selectively
-   * suppress only the matching occurrences of the warning id, leaving the rest
-   * to warn. When omitted, the warning carries no context and can only be
-   * suppressed by an unfiltered acknowledgement.
-   *
-   * @default - no context is attached
-   */
-  readonly context?: { [key: string]: string };
-}
 
 /**
  * An acknowledgment of a validation rule, used to suppress it from output.
@@ -46,23 +28,23 @@ export interface Acknowledgment {
    * The object is treated as an **`objectLike` partial match** against the
    * context attached to each occurrence (the same semantics as
    * `template.hasResourceProperties`): every key you specify must be present
-   * with an equal value, and any key you do not mention is left unconstrained.
+   * with a matching value, and any key you do not mention is left unconstrained.
    * A warning emitted without any context is never matched by a non-empty
    * filter, so a specific filter cannot accidentally silence an undetailed
    * warning.
    *
+   * A value is matched for equality (including non-string values such as
+   * numbers, booleans, or arrays). Because the value type is `any`, richer
+   * per-key matching can be introduced later without a breaking change — a
+   * future release may accept a matcher as a value (e.g. a glob/regex) in
+   * addition to a literal, leaving existing literal callers untouched.
+   *
    * When omitted, all occurrences of the rule id are acknowledged
    * (backwards-compatible behavior).
    *
-   * Only equality on string values is expressible today. Richer matching (e.g.
-   * a glob or regex on a value) can be added later without a breaking change:
-   * the matching already runs through the framework's internal value matcher,
-   * so a future version can accept a matcher object here in addition to a plain
-   * object, leaving existing plain-object callers untouched.
-   *
    * @default - acknowledges all occurrences of the rule id
    */
-  readonly where?: { [key: string]: string };
+  readonly where?: { [key: string]: any };
 }
 
 /**
@@ -126,7 +108,7 @@ export class Validations {
    */
   public addWarning(id: string, message: string, options?: WarningOptions): void {
     id = normalizeValidationIdForAnnotations(id);
-    Annotations.of(this.scope).addWarningV2(id, message, options?.context);
+    Annotations.of(this.scope).addWarningV2(id, message, options);
   }
 
   /**

@@ -1922,9 +1922,10 @@ Validations.of(this).acknowledge({
 #### Acknowledging a subset of a warning (context filters)
 
 A single warning `id` is sometimes emitted for a range of situations. A construct
-can attach structured **context** to each occurrence (the keys are the
-construct's choice), and you can then acknowledge only the occurrences whose
-context matches — leaving the rest to still warn.
+can attach structured **context** to each occurrence (the keys and values are the
+construct's choice — values may be strings, numbers, booleans, or arrays), and you
+can then acknowledge only the occurrences whose context matches — leaving the rest
+to still warn.
 
 ```ts
 // The construct attaches context describing this specific occurrence:

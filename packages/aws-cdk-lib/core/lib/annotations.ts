@@ -7,6 +7,26 @@ import { appOf } from './private/core-construct-finders';
 import { lit, type LiteralString } from './private/literal-string';
 
 /**
+ * Options for adding an acknowledgeable warning via `Annotations.addWarningV2`
+ * or `Validations.addWarning`.
+ */
+export interface WarningOptions {
+  /**
+   * Structured context describing this specific warning occurrence.
+   *
+   * The construct chooses the keys and values (e.g. `{ service: 'aiops' }`, or
+   * richer values such as numbers or arrays). A later `acknowledge({ where })`
+   * is matched against this context as an `objectLike` partial match, to
+   * selectively suppress only the matching occurrences of the warning id while
+   * the rest continue to warn. When omitted, the warning carries no context and
+   * can only be suppressed by an unfiltered acknowledgement.
+   *
+   * @default - no context is attached
+   */
+  readonly context?: { [key: string]: any };
+}
+
+/**
  * Includes API for attaching annotations such as warning messages to constructs.
  */
 export class Annotations {
@@ -57,7 +77,7 @@ export class Annotations {
    *
    * @internal
    */
-  public _acknowledgeWarning(id: string, where?: { [key: string]: string }, message?: string): void {
+  public _acknowledgeWarning(id: string, where?: { [key: string]: any }, message?: string): void {
     Acknowledgements.of(this.scope).add(this.scope, id, where);
 
     // We don't use message currently, but encouraging people to supply it is good for documentation
@@ -86,12 +106,13 @@ export class Annotations {
    *
    * @param id the unique identifier for the warning. This can be used to acknowledge the warning
    * @param message The warning message.
-   * @param context Optional structured key/value context describing this specific
-   * occurrence (e.g. `{ service: 'aiops' }`). A `Validations.acknowledge({ where })`
-   * filter is matched against this context (as an objectLike partial match) to
-   * selectively suppress a subset of the occurrences of this id.
+   * @param options optional settings, including structured `context` describing this
+   * occurrence. A `Validations.acknowledge({ where })` filter is matched against that
+   * context (as an objectLike partial match) to selectively suppress a subset of the
+   * occurrences of this id.
    */
-  public addWarningV2(id: string, message: string, context?: { [key: string]: string }) {
+  public addWarningV2(id: string, message: string, options?: WarningOptions) {
+    const context = options?.context;
     if (!Acknowledgements.of(this.scope).has(this.scope, id, context)) {
       const data = `${message} ${ackTag(id)}`;
       this.addMessage(cxschema.ArtifactMetadataEntryType.WARN, data);
@@ -280,7 +301,7 @@ class Acknowledgements {
 
   private constructor() {}
 
-  public add(node: string | IConstruct, ack: string, where?: { [key: string]: string }) {
+  public add(node: string | IConstruct, ack: string, where?: { [key: string]: any }) {
     const nodePath = this.nodePath(node);
 
     let byId = this.acks.get(nodePath);
@@ -296,7 +317,7 @@ class Acknowledgements {
     records.push({ where });
   }
 
-  public has(node: string | IConstruct, ack: string, context?: { [key: string]: string }): boolean {
+  public has(node: string | IConstruct, ack: string, context?: { [key: string]: any }): boolean {
     const ctx = context ?? {};
     for (const candidate of this.searchPaths(this.nodePath(node))) {
       const records = this.acks.get(candidate)?.get(ack);
@@ -336,7 +357,7 @@ class Acknowledgements {
  *
  * No recursion to avoid blowing out the stack.
  */
-function removeWarningDeep(construct: IConstruct, id: string, where?: { [key: string]: string }) {
+function removeWarningDeep(construct: IConstruct, id: string, where?: { [key: string]: any }) {
   const stack = [construct];
 
   while (stack.length > 0) {
@@ -352,7 +373,7 @@ function removeWarningDeep(construct: IConstruct, id: string, where?: { [key: st
  * This uses private APIs for now; we could consider adding this functionality
  * to the constructs library itself.
  */
-function removeWarning(construct: IConstruct, id: string, where?: { [key: string]: string }) {
+function removeWarning(construct: IConstruct, id: string, where?: { [key: string]: any }) {
   const meta: MetadataEntry[] | undefined = (construct.node as any)._metadata;
   if (!meta) { return; }
 
@@ -422,10 +443,10 @@ function ackTag(id: string) {
  * match).
  */
 interface AckRecord {
-  readonly where?: { [key: string]: string };
+  readonly where?: { [key: string]: any };
 }
 
-function ackRecordMatches(record: AckRecord, context: { [key: string]: string }): boolean {
+function ackRecordMatches(record: AckRecord, context: { [key: string]: any }): boolean {
   // No filter => suppress all occurrences of the id (backwards compatible).
   if (!record.where || Object.keys(record.where).length === 0) {
     return true;
@@ -466,11 +487,11 @@ class WarningContexts {
   private static WARNING_CONTEXTS_SYM = Symbol.for('@aws-cdk/core.WarningContexts');
 
   // construct path -> full warning message -> context
-  private readonly contexts = new Map<string, Map<string, { [key: string]: string }>>();
+  private readonly contexts = new Map<string, Map<string, { [key: string]: any }>>();
 
   private constructor() {}
 
-  public record(node: IConstruct, data: string, context: { [key: string]: string }) {
+  public record(node: IConstruct, data: string, context: { [key: string]: any }) {
     const nodePath = this.nodePath(node);
     let byData = this.contexts.get(nodePath);
     if (!byData) {
@@ -480,7 +501,7 @@ class WarningContexts {
     byData.set(data, context);
   }
 
-  public get(node: IConstruct, data: string): { [key: string]: string } | undefined {
+  public get(node: IConstruct, data: string): { [key: string]: any } | undefined {
     return this.contexts.get(this.nodePath(node))?.get(data);
   }
 
