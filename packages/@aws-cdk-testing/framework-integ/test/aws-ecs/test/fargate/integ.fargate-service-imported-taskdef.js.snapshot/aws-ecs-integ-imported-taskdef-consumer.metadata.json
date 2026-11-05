@@ -1,0 +1,213 @@
+{
+  "/aws-ecs-integ-imported-taskdef-consumer": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.fargate-service-imported-taskdef.js:85:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-ecs-integ-imported-taskdef-consumer.template.json"
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/Cluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/ImportedTaskDef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/ServiceWithImportedTaskDef": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new BaseService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:532:47)",
+        "new BaseService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:212:13)",
+        "new FargateService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.fargate-service-imported-taskdef.js:72:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new BaseService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:557:47)",
+        "new BaseService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:212:13)",
+        "new FargateService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.fargate-service-imported-taskdef.js:72:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Using an imported TaskDefinition. Some validations related to ephemeralStorage, pidMode, and container configuration will be skipped.",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addInfo (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:180:14)",
+        "new FargateService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:251:44)",
+        "new FargateService (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.fargate-service-imported-taskdef.js:72:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No routeTableId was provided to the subnet at 'aws-ecs-integ-imported-taskdef-consumer/Vpc/PrivateSubnet1'. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171) [ack: @aws-cdk/aws-ec2:noSubnetRouteTableId]",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new ImportedSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1950:47)",
+        "new ImportedSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Subnet.fromSubnetAttributes (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:20)",
+        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/util.js:80:35",
+        "Array.map (<anonymous>)",
+        "ImportSubnetGroup.import (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/util.js:78:45)",
+        "new ImportedVpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1769:46)",
+        "new ImportedVpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Vpc.fromVpcAttributes (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:587:20)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.fargate-service-imported-taskdef.js:60:29)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "No routeTableId was provided to the subnet at 'aws-ecs-integ-imported-taskdef-consumer/Vpc/PrivateSubnet2'. Attempting to read its .routeTable.routeTableId will return null/undefined. (More info: https://github.com/aws/aws-cdk/pull/3171) [ack: @aws-cdk/aws-ec2:noSubnetRouteTableId]",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new ImportedSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1950:47)",
+        "new ImportedSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Subnet.fromSubnetAttributes (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:20)",
+        "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/util.js:80:35",
+        "Array.map (<anonymous>)",
+        "ImportSubnetGroup.import (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/util.js:78:45)",
+        "new ImportedVpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1769:46)",
+        "new ImportedVpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Vpc.fromVpcAttributes (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:587:20)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.fargate-service-imported-taskdef.js:60:29)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/ServiceWithImportedTaskDef/Service": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServiceWithImportedTaskDefService119AA3AC"
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/ServiceWithImportedTaskDef/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/Exports/Output{\"Fn::GetAtt\":[\"ServiceWithImportedTaskDefService119AA3AC\",\"Name\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttServiceWithImportedTaskDefService119AA3ACName0AF99025"
+    }
+  ],
+  "/aws-ecs-integ-imported-taskdef-consumer/ServiceWithImportedTaskDef/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServiceWithImportedTaskDefSecurityGroupEEC1C91D"
+    }
+  ]
+}
