@@ -201,4 +201,25 @@ describe('context-scoped warning suppression', () => {
     expect(msgs.some((m) => m.includes('sns+sqs ignored'))).toBe(false);
     expect(msgs.some((m) => m.includes('lambda ignored'))).toBe(true);
   });
+
+  test('two filtered acknowledgements on the same id each suppress their own occurrences', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    // WHEN — three occurrences of one id, then TWO separate filtered acks on that id.
+    // Suppression is "any recorded ack matches", so both filters apply.
+    Validations.of(c1).addWarning(UNSUPPORTED, 'aiops action ignored', { context: { service: 'aiops' } });
+    Validations.of(c1).addWarning(UNSUPPORTED, 'sns action ignored', { context: { service: 'sns' } });
+    Validations.of(c1).addWarning(UNSUPPORTED, 'lambda action ignored', { context: { service: 'lambda' } });
+    Validations.of(c1).acknowledge({ id: UNSUPPORTED, reason: 'accept aiops', where: { service: 'aiops' } });
+    Validations.of(c1).acknowledge({ id: UNSUPPORTED, reason: 'accept sns', where: { service: 'sns' } });
+
+    // THEN — the two acknowledged services are suppressed; lambda still warns
+    const msgs = messages(app);
+    expect(msgs.some((m) => m.includes('aiops action ignored'))).toBe(false);
+    expect(msgs.some((m) => m.includes('sns action ignored'))).toBe(false);
+    expect(msgs.some((m) => m.includes('lambda action ignored'))).toBe(true);
+  });
 });
