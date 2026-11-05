@@ -36,12 +36,12 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-stack-set-template-from-asset/StackSet/Resource",
+              "constructPath": "integ-stack-set-template-from-asset/StackSet.Resource",
               "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "integ-stack-set-template-from-asset.template.json",
-                "logicalId": "StackSet6E6355CF",
+                "logicalId": "StackSetResource",
                 "propertyPaths": [
                   "Properties.StackInstancesGroup.0.DeploymentTargets.Accounts.0"
                 ]

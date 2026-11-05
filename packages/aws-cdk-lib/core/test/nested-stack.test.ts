@@ -5,8 +5,9 @@ import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import type { CfnStack } from '../lib';
 import {
-  Stack, NestedStack, Resource, CfnResource, App, CfnOutput, FileAssetPackaging, LegacyStackSynthesizer,
+  Stack, NestedStack, Resource, CfnResource, App, CfnOutput, FileAssetPackaging, LegacyStackSynthesizer, Token,
 } from '../lib';
+import { Box } from '../lib/helpers-internal';
 import { memoizedGetter } from '../lib/helpers-internal/memoize';
 import { CfnReference } from '../lib/private/cfn-reference';
 import { prepareApp } from '../lib/private/prepare-app';
@@ -394,6 +395,47 @@ describe('nested-stack reference resolution', () => {
 /**
  * Every logical id that a template points at with `Ref` or `Fn::GetAtt`
  */
+describe('template assets prepared before parent templates are hashed', () => {
+  /**
+   * A stack whose template is deployed by another stack (like a StackSet): it hands a value
+   * to a resource of its host stack while the app is prepared.
+   */
+  class TemplateProducer extends Stack {
+    public consumer?: CfnResource;
+    private readonly value = Box.fromValue<string | undefined>(undefined);
+
+    constructor(scope: Construct, id: string, private readonly content: string) {
+      super(scope, id);
+    }
+
+    public get valueToken(): string {
+      return Token.asString(this.value);
+    }
+
+    public _prepareTemplateAsset(): CfnResource | undefined {
+      this.value.set(this.content);
+      return this.consumer;
+    }
+  }
+
+  function nestedTemplateAssetHash(content: string): string {
+    const app = new App();
+    const parent = new Stack(app, 'Parent');
+    const nested = new NestedStack(parent, 'Nested');
+    const producer = new TemplateProducer(nested, 'Producer', content);
+    producer.consumer = new CfnResource(nested, 'Consumer', { type: 'Test::Consumer', properties: { Value: producer.valueToken } });
+
+    const assembly = app.synth();
+    const assets = JSON.parse(readFileSync(path.join(assembly.directory, 'Parent.assets.json'), 'utf-8')).files;
+    const [hash] = Object.entries(assets).find(([, file]: [string, any]) => file.source.path === nested.templateFile)!;
+    return hash;
+  }
+
+  test('a stack inside a nested stack prepares its value before the nested template is hashed', () => {
+    expect(nestedTemplateAssetHash('first')).not.toEqual(nestedTemplateAssetHash('second'));
+  });
+});
+
 function referencedLogicalIds(template: any): string[] {
   const result = new Array<string>();
 

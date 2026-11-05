@@ -36,24 +36,24 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-stackset-asset-test/StackSet/Resource",
+              "constructPath": "integ-stackset-asset-test/StackSet.Resource",
               "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "integ-stackset-asset-test.template.json",
-                "logicalId": "StackSet6E6355CF",
+                "logicalId": "StackSetResource",
                 "propertyPaths": [
                   "Properties.StackInstancesGroup.0.DeploymentTargets.Accounts.0"
                 ]
               }
             },
             {
-              "constructPath": "integ-stackset-test/StackSet/Resource",
+              "constructPath": "integ-stackset-test/StackSet.Resource",
               "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "integ-stackset-test.template.json",
-                "logicalId": "StackSet6E6355CF",
+                "logicalId": "StackSetResource",
                 "propertyPaths": [
                   "Properties.StackInstancesGroup.0.DeploymentTargets.Accounts.0"
                 ]

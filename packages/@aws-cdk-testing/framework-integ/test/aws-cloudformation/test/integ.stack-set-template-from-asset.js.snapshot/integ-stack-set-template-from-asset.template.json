@@ -69,7 +69,7 @@
     ]
    }
   },
-  "StackSet6E6355CF": {
+  "StackSetResource": {
    "Type": "AWS::CloudFormation::StackSet",
    "Properties": {
     "AdministrationRoleARN": {

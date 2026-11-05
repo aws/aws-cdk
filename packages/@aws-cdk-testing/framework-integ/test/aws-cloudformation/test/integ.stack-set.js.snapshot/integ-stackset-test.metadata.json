@@ -52,6 +52,12 @@
       "data": "*"
     }
   ],
+  "/integ-stackset-test/StackSet.Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetResource"
+    }
+  ],
   "/integ-stackset-test/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -100,16 +106,40 @@
       }
     }
   ],
-  "/integ-stackset-test/StackSet/Resource": [
+  "/integ-stackset-test/StackSet/IntegStackSetSNSTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stackset-test/StackSet/AdminRoleId": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "StackSet6E6355CF"
+      "data": "AdminRoleId"
+    }
+  ],
+  "/integ-stackset-test/StackSet/AdminRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AdminRoleArn"
+    }
+  ],
+  "/integ-stackset-test/StackSet/reference-to-integstacksettestAdminRoleD699F605RoleId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetointegstacksettestAdminRoleD699F605RoleId"
     }
   ],
   "/integ-stackset-test/AdminRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AdminRoleDefaultPolicy1C2AB961"
+    }
+  ],
+  "/integ-stackset-test/StackSet/IntegStackSetSNSTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegStackSetSNSTopic360B333E"
     }
   ]
 }

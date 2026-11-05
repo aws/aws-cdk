@@ -51,6 +51,12 @@
       "data": "*"
     }
   ],
+  "/integ-stack-set-template-from-asset/StackSet.Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetResource"
+    }
+  ],
   "/integ-stack-set-template-from-asset/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -99,22 +105,16 @@
       }
     }
   ],
-  "/integ-stack-set-template-from-asset/StackSet/Resource": [
+  "/integ-stack-set-template-from-asset/StackSet.TemplateAsset/AssetBucket": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "StackSet6E6355CF"
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/integ-stack-set-template-from-asset/AdminRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AdminRoleDefaultPolicy1C2AB961"
-    }
-  ],
-  "/integ-stack-set-template-from-asset/StackSet/TemplateAsset/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ]
 }

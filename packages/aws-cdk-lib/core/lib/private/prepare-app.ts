@@ -38,16 +38,18 @@ export function prepareApp(root: IConstruct) {
   resolveReferences(root);
   writePropertyAssignmentMetadata(root);
 
-  // Depth-first (children first) list of nested stacks, since a nested stack's
-  // template hash will be reflected in its parent's template, which then
-  // changes the parent's hash, etc.
-  const nestedStacks = findAllNestedStacks(root);
-
-  if (nestedStacks.length > 0) {
-    for (const nested of nestedStacks) {
-      defineNestedStackAsset(nested);
+  // Depth-first (children first) list of stacks, since the template hash of a
+  // stack deployed by another stack (e.g. a nested stack) will be reflected in
+  // its parent's template, which then changes the parent's hash, etc.
+  const templateAssetConsumers = new Array<CfnResource>();
+  for (const stack of findAllStacks(root)) {
+    const consumer = stack._prepareTemplateAsset();
+    if (consumer) {
+      templateAssetConsumers.push(consumer);
     }
+  }
 
+  if (templateAssetConsumers.length > 0) {
     // ▷[ Given the legacy synthesizer and a 3-or-deeper nesting of nested stacks ]
     //
     // Adding nested stack assets may have added CfnParameters to the top-level
@@ -55,36 +57,23 @@ export function prepareApp(root: IConstruct) {
     // parameters need to be carried through to the right location via Nested
     // Stack parameters, which reference resolution will do.
     //
-    // Everything a nested stack asset introduces (the template URL, the stack
-    // parameters and the copied tags) is consumed by that nested stack's own
-    // `AWS::CloudFormation::Stack` resource, so only those resources need to be
-    // revisited.
+    // Everything a template asset introduces (the template URL, the stack
+    // parameters and the copied tags) is consumed by the resource that deploys
+    // the template (e.g. a nested stack's `AWS::CloudFormation::Stack` resource),
+    // so only those resources need to be revisited.
     //
     // Yes, this may add `Parameter` elements to a template whose hash has
     // already been calculated, but the invariant that if the functional part
     // of the template changes its hash will change is still upheld.
-    resolveReferencesInElements(nestedStacks.map(s => s.nestedStackResource!));
+    resolveReferencesInElements(templateAssetConsumers);
   }
 }
 
-/**
- * Prepares the assets for nested stacks in this app.
- * @returns `true` if assets were added to the parent of a nested stack, which
- * implies that another round of reference resolution is in order. If this
- * function returns `false`, we know we are done.
- */
-function defineNestedStackAsset(nestedStack: Stack) {
-  // this is needed temporarily until we move NestedStack to '@aws-cdk/core'.
-  const nested: INestedStackPrivateApi = nestedStack as any;
-  nested._prepareTemplateAsset();
-}
-
-function findAllNestedStacks(root: IConstruct) {
+function findAllStacks(root: IConstruct) {
   const result = new Array<Stack>();
 
   const includeStack = (stack: IConstruct): stack is Stack => {
     if (!STACK_TYPE.isMarked(stack)) { return false; }
-    if (!stack.nested) { return false; }
 
     // test: if we are not within a stage, then include it.
     if (!stageOf(stack)) { return true; }
@@ -92,7 +81,7 @@ function findAllNestedStacks(root: IConstruct) {
     return stageOf(stack) === root;
   };
 
-  // create a list of all nested stacks in depth-first post order this means
+  // create a list of all stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
   for (const node of iterateDfsPostorder(root)) { /* <== important to use postorder */
     if (includeStack(node)) {
@@ -101,8 +90,4 @@ function findAllNestedStacks(root: IConstruct) {
   }
 
   return result;
-}
-
-interface INestedStackPrivateApi {
-  _prepareTemplateAsset(): boolean;
 }
