@@ -31,6 +31,14 @@ export const GATEWAY_KMS_KEY_PERMS = [
 ];
 
 /**
+ * Assume role permission
+ * Required for the gateway service to assume the execution role
+ *
+ * @deprecated Use `['sts:AssumeRole']` instead
+ */
+export const GATEWAY_ASSUME_ROLE = ['sts:AssumeRole'];
+
+/**
  * Outbound auth - Workload identity permissions (API key targets)
  * Used to obtain access tokens for workload identity
  */
