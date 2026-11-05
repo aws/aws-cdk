@@ -227,6 +227,9 @@
    "sa-east-1": {
     "value": "nodejs22.x"
    },
+   "sa-west-1": {
+    "value": "nodejs22.x"
+   },
    "us-east-1": {
     "value": "nodejs22.x"
    },
