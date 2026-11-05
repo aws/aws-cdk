@@ -1514,3 +1514,12 @@ test('dynamicReferenceKey with versionStage and versionId', () => {
     versionId: 'version-id',
   })).toThrow(/were both provided but only one is allowed/);
 });
+
+// Regression coverage for issue #37996: under `exactOptionalPropertyTypes`, the
+// secret classes must stay assignable to the optional `ISecret.secretFullArn`.
+// (The `from*` import cases are covered above; this covers an owned Secret.)
+test('an owned Secret is assignable to ISecret and exposes secretFullArn equal to secretArn', () => {
+  const secret: secretsmanager.ISecret = new secretsmanager.Secret(stack, 'Secret');
+
+  expect(secret.secretFullArn).toBe(secret.secretArn);
+});
