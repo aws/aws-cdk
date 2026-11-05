@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "48.0.0",
   "files": {
-    "7bcbcac4ed21e823d8252892771a6da060dd1d6110cdf42e73693f1e5c831046": {
+    "a965a724773dbd557c6f604efd1b28536f806d6a0995a794d4f86911fe564455": {
+      "displayName": "aws-cdk-alb-log-imported-bucket-integ Template",
       "source": {
         "path": "aws-cdk-alb-log-imported-bucket-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-west-2": {
+        "current_account-us-west-2-d304184c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "7bcbcac4ed21e823d8252892771a6da060dd1d6110cdf42e73693f1e5c831046.json",
+          "objectKey": "a965a724773dbd557c6f604efd1b28536f806d6a0995a794d4f86911fe564455.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }
