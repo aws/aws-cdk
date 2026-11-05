@@ -32,8 +32,8 @@
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "keyAliasCEB16DF2": {
    "Type": "AWS::KMS::Alias",
@@ -55,7 +55,9 @@
       "Arn"
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

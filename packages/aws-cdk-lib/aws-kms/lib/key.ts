@@ -10,7 +10,6 @@ import * as cxschema from '../../cloud-assembly-schema';
 import type {
   Duration,
   IResource,
-  RemovalPolicy,
   ResourceProps,
 } from '../../core';
 import {
@@ -19,6 +18,7 @@ import {
   ContextProvider,
   FeatureFlags,
   Lazy,
+  RemovalPolicy,
   Resource,
   Stack,
   Token,
@@ -144,6 +144,15 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
+  /**
+   * The removal policy that aliases created by `addAlias` should inherit.
+   *
+   * Set by the concrete `Key` to its own resolved removal policy so that an
+   * alias is retained or destroyed together with its key. Left `undefined` for
+   * imported keys, which do not manage a removal policy.
+   */
+  protected aliasRemovalPolicy?: RemovalPolicy;
+
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
 
@@ -171,7 +180,7 @@ abstract class KeyBase extends Resource implements IKey {
   public addAlias(aliasName: string): Alias {
     const aliasId = this.aliases.length > 0 ? `Alias${aliasName}` : 'Alias';
 
-    const alias = new Alias(this, aliasId, { aliasName, targetKey: this });
+    const alias = new Alias(this, aliasId, { aliasName, targetKey: this, removalPolicy: this.aliasRemovalPolicy });
     this.aliases.push(alias);
 
     return alias;
@@ -876,6 +885,11 @@ export class Key extends KeyBase {
     this.keyArn = resource.attrArn;
     this.keyId = resource.ref;
     resource.applyRemovalPolicy(props.removalPolicy);
+
+    // Aliases created for this key inherit the key's removal policy so that the
+    // alias is retained or destroyed together with the key it points at. KMS
+    // keys default to RETAIN, which mirrors `CfnResource.applyRemovalPolicy`.
+    this.aliasRemovalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
     (props.admins ?? []).forEach((p) => this.grantAdmin(p));
 

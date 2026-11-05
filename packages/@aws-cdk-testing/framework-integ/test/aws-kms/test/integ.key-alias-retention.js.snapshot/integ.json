@@ -1,0 +1,19 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "kms-key-alias-retention/DefaultTest": {
+      "stacks": [
+        "KeyAliasRetentionStack"
+      ],
+      "hooks": {
+        "postDestroy": [
+          "aws kms delete-alias --alias-name alias/cdk-integ-kms-key-retention"
+        ]
+      },
+      "stackUpdateWorkflow": false,
+      "assertionStack": "kms-key-alias-retention/DefaultTest/DeployAssert",
+      "assertionStackName": "kmskeyaliasretentionDefaultTestDeployAssert579103E2"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

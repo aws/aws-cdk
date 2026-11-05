@@ -1,0 +1,754 @@
+{
+  "/aws-cdk-msk-auth-integ": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/CertificateAuthority": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificateAuthority"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:47:27)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "Description",
+      "data": "Signing authority for Certificates"
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Certificate": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Certificate"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:62:22)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "Description",
+      "data": "Certificate for signing requests from MSK-Cluster"
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/CertificateActivation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CertificateActivation"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:71:32)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:811:29)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:866:29)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:869:29)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster/SASLKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "alias": "*"
+      }
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterEB0386A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Cluster (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:486:30)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:76:25)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PublicSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PublicSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PublicSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
+        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1597:50)",
+        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
+        "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1595:25)",
+        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
+        "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PublicSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PublicSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PublicSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
+        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1597:50)",
+        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
+        "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1595:25)",
+        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:196:33)",
+        "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PrivateSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PrivateSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PrivateSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
+        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
+        "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
+        "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PrivateSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PrivateSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PrivateSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1647:13)",
+        "/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092: (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1092:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1434:27)",
+        "WrappedClass.<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:217:16)",
+        "NatGatewayProvider.configureNat (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/nat.js:202:18)",
+        "WrappedClass.createNatGateways (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:969:22)",
+        "new Vpc (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:886:26)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:45:21)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterSecurityGroup0921994B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:461:34)",
+        "new Cluster (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:297:21)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:76:25)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster/SASLKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterSASLKeyC4AE65F3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:700:30)",
+        "new Cluster (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:448:51)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:76:25)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster/SASLKey/Alias": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "aliasName": "*",
+        "targetKey": "*",
+        "removalPolicy": "retain"
+      }
+    }
+  ],
+  "/aws-cdk-msk-auth-integ/Cluster/SASLKey/Alias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterSASLKeyAliasCBD2665F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/alias.js:398:29)",
+        "WrappedClass.addAlias (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:152:27)",
+        "new Key (/Users/kishiel/Desktop/eks-ipv6/packages/aws-cdk-lib/aws-kms/lib/key.js:720:22)",
+        "new Cluster (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/lib/cluster.js:448:51)",
+        "new MskClusterAuthTestStack (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:76:25)",
+        "<anonymous> (/Users/kishiel/Desktop/eks-ipv6/packages/@aws-cdk/aws-msk-alpha/test/integ.cluster-authentication.js:93:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
