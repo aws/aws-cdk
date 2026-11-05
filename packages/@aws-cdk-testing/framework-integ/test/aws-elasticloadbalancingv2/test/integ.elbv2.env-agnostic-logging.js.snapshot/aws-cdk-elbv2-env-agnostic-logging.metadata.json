@@ -1,0 +1,458 @@
+{
+  "/aws-cdk-elbv2-env-agnostic-logging": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:43:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "restrictDefaultSecurityGroup": false,
+        "subnetConfiguration": [
+          {
+            "name": "*",
+            "subnetType": "Public"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/LoggingBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/ALB": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/NLB": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:811:29)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:44:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:866:29)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:44:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:869:29)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:44:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/LoggingBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LoggingBucket1E5A6F3B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:54:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/LoggingBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/ALB/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ALBAEE750D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BaseLoadBalancer (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-load-balancer.js:233:26)",
+        "new ApplicationLoadBalancer (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:282:13)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:57:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/ALB/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": false
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/NLB/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NLB55158F82"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BaseLoadBalancer (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/shared/base-load-balancer.js:233:26)",
+        "new NetworkLoadBalancer (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/nlb/network-load-balancer.js:331:13)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:63:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/NLB/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": false
+      }
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PublicSubnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PublicSubnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PublicSubnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
+        "WrappedClass.<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:44:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1305:28)",
+        "new PublicSubnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1325:27)",
+        "new PublicSubnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1330:32)",
+        "new PublicSubnet (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1574:13)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1085:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1056:30)",
+        "WrappedClass.createSubnets (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:18)",
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:861:18)"
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1345:27)",
+        "WrappedClass.<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876: (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:876:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:873:36)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:44:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/LoggingBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LoggingBucketPolicy21938756"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "WrappedClass.maybeAutoCreatePolicy (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:329:31)",
+        "WrappedClass.addToResourcePolicy (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:317:18)",
+        "WrappedClass.logAccessLogs (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:429:20)",
+        "WrappedClass.<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:61:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/ALB/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ALBSecurityGroup8B8624F8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:461:34)",
+        "new ApplicationLoadBalancer (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-load-balancer.js:308:60)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:57:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elbv2-env-agnostic-logging/NLB/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NLBSecurityGroup69CBE94F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:461:34)",
+        "new NetworkLoadBalancer (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/aws-cdk-lib/aws-elasticloadbalancingv2/lib/nlb/network-load-balancer.js:367:59)",
+        "<anonymous> (/Users/dricmoybhattacharjee/Desktop/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.elbv2.env-agnostic-logging.js:63:13)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
