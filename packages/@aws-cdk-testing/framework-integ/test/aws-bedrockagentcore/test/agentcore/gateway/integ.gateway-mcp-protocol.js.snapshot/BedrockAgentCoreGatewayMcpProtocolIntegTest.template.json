@@ -1,0 +1,413 @@
+{
+ "Resources": {
+  "McpProtocolGatewayServiceRole3DD40004": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":gateway/integ-test-mcp-protocol-gateway*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Service role for Bedrock AgentCore Gateway integ-test-mcp-protocol-gateway"
+   }
+  },
+  "McpProtocolGatewayServiceRoleDefaultPolicyD85768FE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestFunction22AD90FC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestFunction22AD90FC",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "McpProtocolGatewayServiceRoleDefaultPolicyD85768FE",
+    "Roles": [
+     {
+      "Ref": "McpProtocolGatewayServiceRole3DD40004"
+     }
+    ]
+   }
+  },
+  "McpProtocolGatewayUserPoolD42124C9": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UsernameConfiguration": {
+     "CaseSensitive": false
+    },
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "McpProtocolGatewayUserPoolResourceServerFE3C38D1": {
+   "Type": "AWS::Cognito::UserPoolResourceServer",
+   "Properties": {
+    "Identifier": "BedrockAgentCoreGatewayMcpProtocolIntegTest-McpProtocolGateway-F752A757",
+    "Name": "BedrockAgentCoreGatewayMcpProtocolIntegTest-McpProtocolGateway-F752A757",
+    "Scopes": [
+     {
+      "ScopeDescription": "Read access to gateway tools",
+      "ScopeName": "read"
+     },
+     {
+      "ScopeDescription": "Write access to gateway tools",
+      "ScopeName": "write"
+     }
+    ],
+    "UserPoolId": {
+     "Ref": "McpProtocolGatewayUserPoolD42124C9"
+    }
+   }
+  },
+  "McpProtocolGatewayUserPoolDefaultClient6FFD6AE6": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "client_credentials"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "McpProtocolGatewayUserPoolResourceServerFE3C38D1"
+        },
+        "/read"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "McpProtocolGatewayUserPoolResourceServerFE3C38D1"
+        },
+        "/write"
+       ]
+      ]
+     }
+    ],
+    "GenerateSecret": true,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "McpProtocolGatewayUserPoolD42124C9"
+    }
+   }
+  },
+  "McpProtocolGatewayUserPoolDomainC85F2B4E": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "bedrockagentcoregatewaymcpptegtest-mcpprotocolgateway-f752a757",
+    "UserPoolId": {
+     "Ref": "McpProtocolGatewayUserPoolD42124C9"
+    }
+   }
+  },
+  "McpProtocolGateway1B526651": {
+   "Type": "AWS::BedrockAgentCore::Gateway",
+   "Properties": {
+    "AuthorizerConfiguration": {
+     "CustomJWTAuthorizer": {
+      "AllowedClients": [
+       {
+        "Ref": "McpProtocolGatewayUserPoolDefaultClient6FFD6AE6"
+       }
+      ],
+      "DiscoveryUrl": {
+       "Fn::Join": [
+        "",
+        [
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
+         {
+          "Ref": "McpProtocolGatewayUserPoolD42124C9"
+         },
+         "/.well-known/openid-configuration"
+        ]
+       ]
+      }
+     }
+    },
+    "AuthorizerType": "CUSTOM_JWT",
+    "Description": "Integration test gateway with explicit MCP session/streaming configuration",
+    "Name": "integ-test-mcp-protocol-gateway",
+    "ProtocolConfiguration": {
+     "Mcp": {
+      "Instructions": "Use this gateway to connect to external MCP tools",
+      "SearchType": "SEMANTIC",
+      "SessionConfiguration": {
+       "SessionTimeoutInSeconds": 1800
+      },
+      "StreamingConfiguration": {
+       "EnableResponseStreaming": true
+      },
+      "SupportedVersions": [
+       "2025-03-26"
+      ]
+     }
+    },
+    "ProtocolType": "MCP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "McpProtocolGatewayServiceRole3DD40004",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "McpProtocolGatewayLambdaTargetC1D88771": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "Description": "Lambda target for MCP protocol configuration gateway",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "McpProtocolGateway1B526651",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "lambda-greeting-target",
+    "TargetConfiguration": {
+     "Mcp": {
+      "Lambda": {
+       "LambdaArn": {
+        "Fn::GetAtt": [
+         "TestFunction22AD90FC",
+         "Arn"
+        ]
+       },
+       "ToolSchema": {
+        "InlinePayload": [
+         {
+          "Description": "A greeting tool that returns a message",
+          "InputSchema": {
+           "Properties": {
+            "name": {
+             "Description": "Name to greet",
+             "Type": "string"
+            }
+           },
+           "Required": [
+            "name"
+           ],
+           "Type": "object"
+          },
+          "Name": "greeting_tool"
+         }
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  "TestFunctionServiceRole6ABD93C7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "TestFunction22AD90FC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\n    exports.handler = async (event) => {\n      console.log('Received event:', JSON.stringify(event));\n      return {\n        statusCode: 200,\n        body: JSON.stringify({\n          message: 'Hello from Lambda!',\n          input: event,\n        }),\n      };\n    };\n  "
+    },
+    "Description": "Lambda function for MCP protocol configuration integration test",
+    "FunctionName": "integ-test-mcp-protocol-gateway-lambda",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TestFunctionServiceRole6ABD93C7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "TestFunctionServiceRole6ABD93C7"
+   ]
+  },
+  "TestFunctionLogGroupE7744A08": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "TestFunction22AD90FC"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
