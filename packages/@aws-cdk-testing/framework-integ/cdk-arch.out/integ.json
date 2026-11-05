@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-architecture/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-architecture"
+      ],
+      "assertionStack": "integ-test-bucket-deployment-architecture/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentarchitectureDefaultTestDeployAssert19D77899"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
