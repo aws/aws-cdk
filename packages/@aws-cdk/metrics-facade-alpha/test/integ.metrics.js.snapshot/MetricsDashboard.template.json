@@ -123,7 +123,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# Scoped Metrics (from L1 CfnFunction)\"}},{\"type\":\"metric\",\"width\":8,\"height\":6,\"x\":0,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"L1 Invocations\",\"region\":\"",
+       "{\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# Scoped Metrics (from L1 CfnFunction)\",\"background\":\"transparent\"}},{\"type\":\"metric\",\"width\":8,\"height\":6,\"x\":0,\"y\":1,\"properties\":{\"view\":\"timeSeries\",\"title\":\"L1 Invocations\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -147,7 +147,7 @@
        {
         "Ref": "L1Function"
        },
-       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":7,\"properties\":{\"markdown\":\"# Scoped Metrics (from L2 Function)\"}},{\"type\":\"metric\",\"width\":8,\"height\":6,\"x\":0,\"y\":8,\"properties\":{\"view\":\"timeSeries\",\"title\":\"L2 Invocations\",\"region\":\"",
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":7,\"properties\":{\"markdown\":\"# Scoped Metrics (from L2 Function)\",\"background\":\"transparent\"}},{\"type\":\"metric\",\"width\":8,\"height\":6,\"x\":0,\"y\":8,\"properties\":{\"view\":\"timeSeries\",\"title\":\"L2 Invocations\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -171,7 +171,7 @@
        {
         "Ref": "L2FunctionA2EBE646"
        },
-       "\",{\"stat\":\"Maximum\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":14,\"properties\":{\"markdown\":\"# Unscoped Metrics (explicit dimensions)\"}},{\"type\":\"metric\",\"width\":8,\"height\":6,\"x\":0,\"y\":15,\"properties\":{\"view\":\"timeSeries\",\"title\":\"ByFunctionName - Invocations\",\"region\":\"",
+       "\",{\"stat\":\"Maximum\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":14,\"properties\":{\"markdown\":\"# Unscoped Metrics (explicit dimensions)\",\"background\":\"transparent\"}},{\"type\":\"metric\",\"width\":8,\"height\":6,\"x\":0,\"y\":15,\"properties\":{\"view\":\"timeSeries\",\"title\":\"ByFunctionName - Invocations\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -187,7 +187,7 @@
        {
         "Ref": "L2FunctionA2EBE646"
        },
-       "\",{\"stat\":\"p99\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":21,\"properties\":{\"markdown\":\"# Account-wide Metrics (empty dimension set)\"}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":22,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Account ConcurrentExecutions\",\"region\":\"",
+       "\",{\"stat\":\"p99\"}]],\"yAxis\":{}}},{\"type\":\"text\",\"width\":24,\"height\":1,\"x\":0,\"y\":21,\"properties\":{\"markdown\":\"# Account-wide Metrics (empty dimension set)\",\"background\":\"transparent\"}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":22,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Account ConcurrentExecutions\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
