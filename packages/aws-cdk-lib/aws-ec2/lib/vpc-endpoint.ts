@@ -568,7 +568,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ELASTICACHE = new InterfaceVpcEndpointAwsService('elasticache');
   public static readonly ELASTICACHE_FIPS = new InterfaceVpcEndpointAwsService('elasticache-fips');
   public static readonly ELEMENTAL_MEDIACONNECT = new InterfaceVpcEndpointAwsService('mediaconnect');
-  public static readonly EMAIL_SMTP = new InterfaceVpcEndpointAwsService('email-smtp');
+  public static readonly EMAIL_SMTP = new InterfaceVpcEndpointAwsService('email-smtp', undefined, 587);
   public static readonly EMAIL = new InterfaceVpcEndpointAwsService('email');
   public static readonly EMAIL_FIPS = new InterfaceVpcEndpointAwsService('email-fips');
   public static readonly EMR = new InterfaceVpcEndpointAwsService('elasticmapreduce');
@@ -778,7 +778,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly SERVER_MIGRATION_SERVICE_AWSCONNECTOR = new InterfaceVpcEndpointAwsService('awsconnector');
   public static readonly SERVERLESS_APPLICATION_REPOSITORY = new InterfaceVpcEndpointAwsService('serverlessrepo');
   /** @deprecated - Use InterfaceVpcEndpointAwsService.EMAIL_SMTP instead. */
-  public static readonly SES = new InterfaceVpcEndpointAwsService('email-smtp');
+  public static readonly SES = new InterfaceVpcEndpointAwsService('email-smtp', undefined, 587);
   public static readonly SHIELD = new InterfaceVpcEndpointAwsService('shield');
   public static readonly SHIELD_FIPS = new InterfaceVpcEndpointAwsService('shield-fips');
   public static readonly SIMSPACE_WEAVER = new InterfaceVpcEndpointAwsService('simspaceweaver');
