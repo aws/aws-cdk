@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "StackSetAdminRoleFDB48078": {
+  "StackSetAdminRole60BC89F6": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -42,7 +42,7 @@
     }
    }
   },
-  "StackSetAdminRoleDefaultPolicy96A312F6": {
+  "StackSetAdminRoleDefaultPolicyA86F14C6": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -66,20 +66,20 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "StackSetAdminRoleDefaultPolicy96A312F6",
+    "PolicyName": "StackSetAdminRoleDefaultPolicyA86F14C6",
     "Roles": [
      {
-      "Ref": "StackSetAdminRoleFDB48078"
+      "Ref": "StackSetAdminRole60BC89F6"
      }
     ]
    }
   },
-  "StackSet6E6355CF": {
+  "StackSetResource": {
    "Type": "AWS::CloudFormation::StackSet",
    "Properties": {
     "AdministrationRoleARN": {
      "Fn::GetAtt": [
-      "StackSetAdminRoleFDB48078",
+      "StackSetAdminRole60BC89F6",
       "Arn"
      ]
     },
@@ -105,17 +105,17 @@
     ],
     "StackSetName": "integ-stackset-asset-test",
     "TemplateURL": {
-     "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d6b910e83cd1f0f9875b16e47631a0a21a715868ac5ec131c56ed5b75a19614d.json"
+     "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/147420c35dcbb51ba513d30eff74af65afc29109d0bdd13b45558a8e08c9de0f.json"
     }
    },
    "DependsOn": [
-    "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E",
-    "assetstacksetAssetBucketDeployment0CustomResource9D9B9436",
-    "StackSetAdminRoleDefaultPolicy96A312F6",
-    "StackSetAdminRoleFDB48078"
+    "StackSetAdminRoleDefaultPolicyA86F14C6",
+    "StackSetAdminRole60BC89F6",
+    "StackSetAssetBucketDeployment0AwsCliLayer1DC61731",
+    "StackSetAssetBucketDeployment0CustomResource3D83B472"
    ]
   },
-  "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E": {
+  "StackSetAssetBucketDeployment0AwsCliLayer1DC61731": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -127,7 +127,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "assetstacksetAssetBucketDeployment0CustomResource9D9B9436": {
+  "StackSetAssetBucketDeployment0CustomResource3D83B472": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -302,7 +302,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "assetstacksetAssetBucketDeployment0AwsCliLayerDFF3671E"
+      "Ref": "StackSetAssetBucketDeployment0AwsCliLayer1DC61731"
      }
     ],
     "MemorySize": 1024,

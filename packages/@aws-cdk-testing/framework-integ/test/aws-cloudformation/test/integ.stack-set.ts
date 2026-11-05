@@ -4,6 +4,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import {
   App,
   CfnCapabilities,
+  CfnOutput,
   Stack,
 } from 'aws-cdk-lib';
 import type { CfnResource, StackProps } from 'aws-cdk-lib';
@@ -63,21 +64,21 @@ export class SupportStack extends Stack {
 }
 
 /**
- * Create a StackSetStack which just creates a simple SNS topic
+ * Create a StackSet which just creates a simple SNS topic
  */
-class MyStackSet extends cfn.StackSetStack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+class MyStackSet extends cfn.StackSet {
+  constructor(scope: Construct, id: string, props: cfn.StackSetProps) {
+    super(scope, id, props);
 
     new sns.Topic(this, 'IntegStackSetSNSTopic');
   }
 }
 
 /**
- * Create a StackSetStack that has file assets
+ * Create a StackSet that has file assets
  */
-class LambdaStackSet extends cfn.StackSetStack {
-  constructor(scope: Construct, id: string, props?: cfn.StackSetStackProps) {
+class LambdaStackSet extends cfn.StackSet {
+  constructor(scope: Construct, id: string, props: cfn.StackSetProps) {
     super(scope, id, props);
 
     new lambda.Function(this, 'Lambda', {
@@ -115,19 +116,22 @@ class TestCase extends Stack {
         }),
       },
     });
-    const stackSetStack = new MyStackSet(scope, 'integ-stack-set');
-    new cfn.StackSet(this, 'StackSet', {
+    const stackSet = new MyStackSet(this, 'StackSet', {
       stackSetName,
       target: cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
       }),
-      template: cfn.StackSetTemplate.fromStackSetStack(stackSetStack),
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
         adminRole,
       }),
     });
+
+    // A value of this stack, passed to the template as a StackSet parameter
+    new CfnOutput(stackSet, 'AdminRoleId', { value: adminRole.roleId });
+    // The template is environment agnostic, so the ARN is formatted from the physical name of the role
+    new CfnOutput(stackSet, 'AdminRoleArn', { value: adminRole.roleArn });
   }
 }
 
@@ -138,17 +142,14 @@ class AssetTestCase extends Stack {
   constructor(scope: Construct, id: string, props: TestCaseProps) {
     super(scope, id);
 
-    const stackSetStack = new LambdaStackSet(scope, 'asset-stack-set', {
+    new LambdaStackSet(this, 'StackSet', {
       assetBuckets: [s3.Bucket.fromBucketName(this, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
       assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
-    });
-    new cfn.StackSet(this, 'StackSet', {
       stackSetName: assetStackSetName,
       target: cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
       }),
-      template: cfn.StackSetTemplate.fromStackSetStack(stackSetStack),
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
       }),

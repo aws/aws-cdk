@@ -1,13 +1,21 @@
-import type { Construct, IDependable } from 'constructs';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import { join } from 'path';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
 import { CfnStackSet } from './cloudformation.generated';
-import type { StackSetStack } from './stackset-stack';
+import { StackSetSynthesizer } from './private/stackset-synthesizer';
 import * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import type { IResource } from '../../core';
+import type { IResource, ISynthesisSession, RemovalPolicy, ResourceEnvironment } from '../../core';
 import {
   Arn,
   ArnFormat,
+  Aws,
   CfnCapabilities,
+  CfnResource,
+  FileAssetPackaging,
   Lazy,
   Names,
   Resource,
@@ -16,26 +24,19 @@ import {
   UnscopedValidationError,
   ValidationError,
 } from '../../core';
+import type { IBox, IMapBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IStackSetRef, StackSetReference } from '../../interfaces/generated/aws-cloudformation-interfaces.generated';
 import { RegionInfo } from '../../region-info';
 
 /**
- * Represents a StackSet CloudFormation template
+ * A StackSet template that is not defined in the StackSet itself
  */
 export abstract class StackSetTemplate {
-  /**
-   * Creates a StackSetTemplate from a StackSetStack
-   *
-   * @param stack the stack to use as the base for the stackset template
-   * @returns StackSetTemplate
-   */
-  public static fromStackSetStack(stack: StackSetStack): StackSetTemplate {
-    return new StackSetStackTemplate(stack);
-  }
-
   /**
    * Uses a template that is already stored in Amazon S3
    *
@@ -60,10 +61,11 @@ export abstract class StackSetTemplate {
   /**
    * Binds the template to the StackSet that uses it
    *
-   * @param scope the StackSet that uses this template
+   * @param scope the scope of the StackSet, in the stack that contains the StackSet
+   * @param id the construct ID of the StackSet, prefixed to the IDs of constructs created in `scope`
    * @internal
    */
-  public abstract _bind(scope: Construct): StackSetTemplateConfig;
+  public abstract _bind(scope: Construct, id: string): StackSetTemplateConfig;
 }
 
 /**
@@ -74,23 +76,6 @@ interface StackSetTemplateConfig {
    * The S3 URL of the template
    */
   readonly templateUrl: string;
-
-  /**
-   * Resources that must be deployed before the StackSet
-   *
-   * @default - no dependencies
-   */
-  readonly dependencies?: IDependable[];
-}
-
-class StackSetStackTemplate extends StackSetTemplate {
-  constructor(private readonly stack: StackSetStack) {
-    super();
-  }
-
-  public _bind(scope: Construct): StackSetTemplateConfig {
-    return this.stack._bind(scope);
-  }
 }
 
 class StackSetUrlTemplate extends StackSetTemplate {
@@ -98,7 +83,7 @@ class StackSetUrlTemplate extends StackSetTemplate {
     super();
   }
 
-  public _bind(_scope: Construct): StackSetTemplateConfig {
+  public _bind(_scope: Construct, _id: string): StackSetTemplateConfig {
     return { templateUrl: this.url };
   }
 }
@@ -108,8 +93,8 @@ class StackSetAssetTemplate extends StackSetTemplate {
     super();
   }
 
-  public _bind(scope: Construct): StackSetTemplateConfig {
-    const asset = new s3_assets.Asset(scope, 'TemplateAsset', {
+  public _bind(scope: Construct, id: string): StackSetTemplateConfig {
+    const asset = new s3_assets.Asset(scope, `${id}.TemplateAsset`, {
       path: this.path,
       ...this.options,
     });
@@ -556,9 +541,13 @@ export interface StackSetProps {
   readonly target?: StackSetTarget;
 
   /**
-   * The Stack that will be deployed to the target
+   * A template that is not defined in this StackSet, e.g. a template file or a template in Amazon S3.
+   *
+   * A StackSet with a `template` must not contain any resources.
+   *
+   * @default - the template is defined by the resources of this StackSet
    */
-  readonly template: StackSetTemplate;
+  readonly template?: StackSetTemplate;
 
   /**
    * The name of the stack set
@@ -568,11 +557,33 @@ export interface StackSetProps {
   readonly stackSetName?: string;
 
   /**
-   * An optional description to add to the StackSet
+   * A description of the StackSet, also used as the description of its template
    *
    * @default - none
    */
   readonly description?: string;
+
+  /**
+   * An array of Buckets can be passed to store assets, enabling StackSet Asset support
+   *
+   * One Bucket is required per target region. The name must be `${assetBucketPrefix}-<region>`, where
+   * `<region>` is the region targeted by the StackSet.
+   *
+   * The full bucket interface is required because the assets are copied with a
+   * `BucketDeployment`, which needs it. [disable-awslint:prefer-ref-interface]
+   *
+   * @default - No Buckets provided and Assets will not be supported.
+   */
+  readonly assetBuckets?: s3.IBucket[];
+
+  /**
+   * The common prefix for the asset bucket names used by this StackSet.
+   *
+   * Required if `assetBuckets` is provided.
+   *
+   * @default - No Buckets provided and Assets will not be supported.
+   */
+  readonly assetBucketPrefix?: string;
 
   /**
    * The type of deployment for this StackSet. The deployment can either be managed by
@@ -765,15 +776,40 @@ class ImportedStackSet extends Resource implements IStackSet {
   }
 }
 
+const STACK_SET_SYMBOL = Symbol.for('aws-cdk-lib.aws-cloudformation.StackSet');
+
 /**
  * A CloudFormation StackSet, which deploys a template to multiple AWS accounts and regions
+ *
+ * A StackSet is a stack: the resources defined in it make up the template that is
+ * deployed to the target accounts and regions. Like a `NestedStack`, it is defined
+ * within another stack (the host stack), which deploys the `AWS::CloudFormation::StackSet`
+ * resource, its administration role, the template, and the file assets of the template.
+ *
+ * The template is always environment agnostic. `account` and `region` refer to the
+ * accounts and regions the template is deployed to, while `env` and `stack` refer to the
+ * StackSet resource in the host stack.
+ *
+ * Values from other stacks that the template references are passed to the template as
+ * StackSet parameters. Other stacks can't reference the resources of the template.
+ *
+ * Like `NestedStack`, it extends `Stack` rather than `Resource`, and implements the
+ * resource interface itself.
  *
  * @resource AWS::CloudFormation::StackSet
  */
 @propertyInjectable
-export class StackSet extends Resource implements IStackSet {
+@noBoxStackTraces
+export class StackSet extends Stack implements IStackSet {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudformation.StackSet';
+
+  /**
+   * Checks if `x` is an object of type `StackSet`.
+   */
+  public static isStackSet(x: any): x is StackSet {
+    return x !== null && typeof x === 'object' && STACK_SET_SYMBOL in x;
+  }
 
   /**
    * Import an existing StackSet from its ID.
@@ -804,7 +840,17 @@ export class StackSet extends Resource implements IStackSet {
 
   public readonly stackSetId: string;
 
+  /**
+   * The file name of the synthesized template within the cloud assembly
+   */
+  public readonly templateFile: string;
+
   private readonly stackInstances: CfnStackSet.StackInstancesProperty[] = [];
+  private readonly templateParameters: IMapBox<string, string> = Box.fromMap<string, string>();
+  private readonly _templateUrl: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
+  private readonly hostStack: Stack;
+  private readonly externalTemplate: boolean;
+  private readonly userParameters: { [key: string]: string };
 
   private readonly _role?: iam.IRole;
   private readonly permissionModel: PermissionModel;
@@ -813,20 +859,37 @@ export class StackSet extends Resource implements IStackSet {
   /**
    * Creates a new StackSet.
    *
-   * @param scope The scope in which to define this StackSet.
+   * @param scope The scope in which to define this StackSet. Must be within a Stack.
    * @param id The ID of the StackSet.
    * @param props The properties of the StackSet.
    */
-  constructor(scope: Construct, id: string, props: StackSetProps) {
+  constructor(scope: Construct, id: string, props: StackSetProps = {}) {
+    const hostStack = findHostStack(scope);
+    const synthesizer = new StackSetSynthesizer(props.assetBuckets, props.assetBucketPrefix);
+
     super(scope, id, {
-      physicalName: props.stackSetName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, {}) }),
+      // The template is deployed to the accounts and regions targeted by the StackSet
+      env: { account: Aws.ACCOUNT_ID, region: Aws.REGION },
+      synthesizer,
+      description: props.description,
     });
+    Object.defineProperty(this, STACK_SET_SYMBOL, { value: true });
 
     addConstructMetadata(this, props);
 
+    this.hostStack = hostStack;
+    this.externalTemplate = props.template !== undefined;
+    this.userParameters = props.parameters ?? {};
+
+    // this is the file name of the synthesized template file within the cloud assembly
+    this.templateFile = `${Names.uniqueId(this)}.stackset.template.json`;
+
+    // The host stack stages the file assets of the template, in the scope of this StackSet
+    synthesizer.bindHost({ stack: hostStack, scope, id });
+
     const deploymentTypeConfig = (props.deploymentType ?? DeploymentType.selfManaged())._bind(this);
     if (deploymentTypeConfig.permissionsModel === PermissionModel.SELF_MANAGED) {
-      this._role = deploymentTypeConfig.adminRole ?? new iam.Role(this, 'AdminRole', {
+      this._role = deploymentTypeConfig.adminRole ?? new iam.Role(scope, `${id}.AdminRole`, {
         assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com', {
           conditions: this.adminRoleTrustConditions(),
         }),
@@ -836,7 +899,7 @@ export class StackSet extends Resource implements IStackSet {
         effect: iam.Effect.ALLOW,
         actions: ['sts:AssumeRole'],
         resources: [
-          Stack.of(this).formatArn({
+          hostStack.formatArn({
             service: 'iam',
             region: '',
             account: '*',
@@ -856,8 +919,12 @@ export class StackSet extends Resource implements IStackSet {
     if (props.target) {
       this.addTarget(props.target);
     }
-    const template = props.template._bind(this);
-    const stackSet = new CfnStackSet(this, 'Resource', {
+
+    const templateUrl = props.template
+      ? props.template._bind(scope, id).templateUrl
+      : this.templateUrl;
+
+    const stackSet = new CfnStackSet(scope, `${id}.Resource`, {
       autoDeployment: undefinedIfNoKeys({
         enabled: deploymentTypeConfig.autoDeployEnabled,
         retainStacksOnAccountRemoval: deploymentTypeConfig.autoDeployRetainStacks,
@@ -876,34 +943,56 @@ export class StackSet extends Resource implements IStackSet {
         regionConcurrencyType: props.operationPreferences.regionConcurrencyType?.value,
         regionOrder: props.operationPreferences.regionOrder,
       }) : undefined,
-      stackSetName: this.physicalName,
+      stackSetName: props.stackSetName ?? Names.uniqueResourceName(this, { maxLength: 128 }),
       capabilities: props.capabilities,
       permissionModel: deploymentTypeConfig.permissionsModel,
       callAs: deploymentTypeConfig.callAs,
-      templateUrl: template.templateUrl,
+      templateUrl,
       stackInstancesGroup: Lazy.any({
         produce: () => {
           return this.stackInstances;
         },
       }),
-      ...(props.parameters ? {
-        parameters: Object.entries(props.parameters).map((entry) => {
-          return {
-            parameterKey: entry[0],
-            parameterValue: entry[1],
-          };
-        }),
-      } : {}),
+      parameters: Token.asAny(this.templateParameters.derive((templateParameters) => this.renderParameters(templateParameters))),
     });
     this.resource = stackSet;
     this.stackSetId = stackSet.attrStackSetId;
+    this.node.defaultChild = stackSet;
 
     if (this._role) {
       stackSet.node.addDependency(this._role);
     }
 
-    // e.g. the file asset bucket deployments need to complete before the stackset can deploy
-    stackSet.node.addDependency(...template.dependencies ?? []);
+    // the file asset bucket deployments need to complete before the stackset can deploy
+    stackSet.node.addDependency(synthesizer.assetDeploymentsDependable);
+
+    if (this.externalTemplate) {
+      this.node.addValidation({ validate: () => this.validateNoResources() });
+    }
+  }
+
+  /**
+   * The stack that contains this StackSet, which deploys the StackSet resource.
+   */
+  public get stack(): Stack {
+    return this.hostStack;
+  }
+
+  /**
+   * The URL of the template asset, set while the app is prepared
+   */
+  @memoizedGetter
+  private get templateUrl(): string {
+    return Token.asString(this._templateUrl);
+  }
+
+  /**
+   * The environment of the StackSet resource, i.e. of the stack that contains this StackSet.
+   *
+   * The template itself is environment agnostic, see `account` and `region`.
+   */
+  public get env(): ResourceEnvironment {
+    return this.hostStack.env;
   }
 
   public get stackSetRef(): StackSetReference {
@@ -912,6 +1001,15 @@ export class StackSet extends Resource implements IStackSet {
 
   public get role(): iam.IRole | undefined {
     return this._role;
+  }
+
+  /**
+   * Applies the given removal policy to the StackSet resource.
+   *
+   * @param policy The removal policy
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy): void {
+    this.resource.applyRemovalPolicy(policy);
   }
 
   /**
@@ -953,17 +1051,109 @@ export class StackSet extends Resource implements IStackSet {
   }
 
   /**
+   * The template is deployed to other accounts and regions, where the resources of other stacks
+   * can't use its resources.
+   *
+   * @internal
+   */
+  public _supportsCrossStackReferences(): boolean {
+    return false;
+  }
+
+  /**
+   * Values from other stacks are resolved in the host stack and passed as StackSet parameters.
+   *
+   * @internal
+   */
+  public get _parameterHost(): Stack | undefined {
+    return this.hostStack;
+  }
+
+  /**
+   * @internal
+   */
+  public _setParameterFromHost(name: string, value: string): void {
+    this.templateParameters.put(name, value);
+  }
+
+  /**
+   * Not a true top-level stack: its annotations are reported by the host stack.
+   *
+   * @internal
+   */
+  public get _isTopLevelStack(): boolean {
+    return false;
+  }
+
+  /**
+   * Defines an asset in the host stack which represents the template of this StackSet,
+   * and copies the tags of this StackSet to the StackSet resource.
+   *
+   * @internal
+   */
+  public _prepareTemplateAsset(): CfnResource | undefined {
+    // The tags of this StackSet are propagated by CloudFormation to the stack instances
+    for (const [key, value] of Object.entries(this.tags.tagValues())) {
+      this.resource.tags.setTag(key, value);
+    }
+
+    if (!this.externalTemplate && !this._templateUrl.get()) {
+      const cfn = JSON.stringify(this._toCloudFormation());
+      this._templateUrl.set(this.hostStack.synthesizer.addFileAsset({
+        packaging: FileAssetPackaging.FILE,
+        sourceHash: crypto.createHash('sha256').update(cfn).digest('hex'),
+        fileName: this.templateFile,
+        displayName: `${this.node.path} Template`,
+      }).httpUrl);
+    }
+
+    return this.resource;
+  }
+
+  /**
+   * Writes the template file, overrides the `super` class method.
+   *
+   * The template is uploaded as an asset of the host stack, see `_prepareTemplateAsset`.
+   *
+   * @internal
+   */
+  public _synthesizeTemplate(session: ISynthesisSession): void {
+    fs.writeFileSync(join(session.assembly.outdir, this.templateFile), JSON.stringify(this._toCloudFormation(), undefined, 2));
+  }
+
+  private renderParameters(templateParameters: ReadonlyMap<string, string>): CfnStackSet.ParameterProperty[] | undefined {
+    const parameters: { [key: string]: string } = { ...this.userParameters };
+    for (const [name, value] of templateParameters) {
+      // the names of the parameters passed for references are logical IDs, which are tokens until resolved
+      const parameterKey: string = this.resolve(name);
+      if (parameterKey in this.userParameters) {
+        throw new ValidationError(lit`StackSetParameterConflict`,
+          `the parameter ${JSON.stringify(parameterKey)} is also passed for a reference of the template to another stack, rename the parameter`, this);
+      }
+      parameters[parameterKey] = value;
+    }
+    const rendered = Object.entries(parameters).map(([parameterKey, parameterValue]) => ({ parameterKey, parameterValue }));
+    return rendered.length > 0 ? rendered : undefined;
+  }
+
+  private validateNoResources(): string[] {
+    const hasResources = this.node.findAll().some(c => c !== this && CfnResource.isCfnResource(c));
+    return hasResources
+      ? ['a StackSet with a \'template\' must not contain resources, define the resources in the StackSet or use the template, not both']
+      : [];
+  }
+
+  /**
    * Confused deputy protection: CloudFormation may only assume the admin role on behalf of
    * StackSets in this account.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html
    */
   private adminRoleTrustConditions(): iam.Conditions {
-    const stack = Stack.of(this);
     return {
-      StringEquals: { 'aws:SourceAccount': stack.account },
+      StringEquals: { 'aws:SourceAccount': this.hostStack.account },
       ArnLike: {
-        'aws:SourceArn': stack.formatArn({
+        'aws:SourceArn': this.hostStack.formatArn({
           service: 'cloudformation',
           region: '*',
           resource: 'stackset',
@@ -973,6 +1163,17 @@ export class StackSet extends Resource implements IStackSet {
       },
     };
   }
+}
+
+/**
+ * Finds the stack that contains a StackSet, which must be defined within the scope of a `Stack`.
+ */
+function findHostStack(scope: Construct): Stack {
+  const hostStack = Node.of(scope).scopes.reverse().find(s => Stack.isStack(s));
+  if (!hostStack) {
+    throw new ValidationError(lit`StackSetMustBeDefinedWithinStack`, 'a StackSet must be defined within the scope of a Stack', scope);
+  }
+  return hostStack as Stack;
 }
 
 function undefinedIfNoKeys<A extends Object>(obj: A): A | undefined {
