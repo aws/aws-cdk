@@ -46,16 +46,41 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       const credentials = await getCredentials(call, physicalResourceId);
 
       const flatData: { [key: string]: string } = {};
-      try {
-        const response = await apiCall.invoke({
-          sdkPackage: awsSdk,
-          apiVersion: call.apiVersion,
-          credentials,
-          region: call.region,
-          parameters: decodeSpecialValues(call.parameters, physicalResourceId),
-          flattenResponse: true,
-        });
+      const MAX_RETRIES = 5;
+      let response: any;
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          response = await apiCall.invoke({
+            sdkPackage: awsSdk,
+            apiVersion: call.apiVersion,
+            credentials,
+            region: call.region,
+            parameters: decodeSpecialValues(call.parameters, physicalResourceId),
+            flattenResponse: true,
+          });
+          break;
+        } catch (e: any) {
+          // empirecal evidence show e.name is not always set
+          const exceptionName = e.name ?? e.constructor.name;
+          if (call.ignoreErrorCodesMatching && new RegExp(call.ignoreErrorCodesMatching).test(exceptionName)) {
+            break;
+          }
+          // IAM policies can take seconds to propagate after creation. When a new AwsCustomResource
+          // is added to an existing stack, CloudFormation may invoke the Lambda before the attached
+          // IAM policy has propagated, causing a transient AccessDenied error. Retry with exponential
+          // backoff before surfacing the failure to CloudFormation.
+          const isAccessDenied = exceptionName === 'AccessDeniedException' || exceptionName === 'AccessDenied';
+          if (isAccessDenied && attempt < MAX_RETRIES) {
+            const delayMs = 1_000 * (2 ** attempt);
+            console.log(`${exceptionName} on attempt ${attempt + 1}/${MAX_RETRIES + 1}. Retrying in ${delayMs}ms.`);
+            await new Promise<void>(resolve => setTimeout(resolve, delayMs));
+          } else {
+            throw e;
+          }
+        }
+      }
 
+      if (response !== undefined) {
         if (logApiResponseData) {
           console.log('API response', response);
         }
@@ -65,12 +90,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         Object.assign(flatData, response);
 
         data = formatData(call, flatData);
-      } catch (e: any) {
-        // empirecal evidence show e.name is not always set
-        const exceptionName = e.name ?? e.constructor.name;
-        if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(exceptionName)) {
-          throw e;
-        }
       }
 
       if (call.physicalResourceId?.responsePath) {
