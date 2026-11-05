@@ -1,0 +1,58 @@
+{
+  "/integ-user-ses-email/myuserpool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "userPoolName": "*",
+        "email": "*"
+      }
+    }
+  ],
+  "/integ-user-ses-email/user-pool-id": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "userpoolid"
+    }
+  ],
+  "/integ-user-ses-email/idnuserpool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "userPoolName": "*",
+        "email": "*"
+      }
+    }
+  ],
+  "/integ-user-ses-email/idn-user-pool-id": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "idnuserpoolid"
+    }
+  ],
+  "/integ-user-ses-email/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-user-ses-email/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-user-ses-email/myuserpool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myuserpool01998219"
+    }
+  ],
+  "/integ-user-ses-email/idnuserpool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "idnuserpool307152F2"
+    }
+  ]
+}
