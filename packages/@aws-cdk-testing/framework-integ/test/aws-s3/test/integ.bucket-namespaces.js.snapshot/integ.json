@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "s3-namespaces-integ-test/DefaultTest": {
+      "stacks": [
+        "S3-Namespaces-TestStack"
+      ],
+      "assertionStack": "s3-namespaces-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "s3namespacesintegtestDefaultTestDeployAssertC9E1EF4F"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}
