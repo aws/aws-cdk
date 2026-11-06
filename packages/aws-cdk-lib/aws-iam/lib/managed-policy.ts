@@ -354,7 +354,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    */
   @MethodMetadata()
   public attachToRole(role: IRole) {
-    if (this.roles.find(r => r.roleRef.roleArn === role.roleArn)) { return; }
+    if (this.roles.find(r => r.roleRef.roleArn === role.roleArn) || !role.mutable) { return; }
     this.roles.push(role);
   }
 
