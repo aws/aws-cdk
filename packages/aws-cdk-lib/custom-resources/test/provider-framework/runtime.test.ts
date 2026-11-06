@@ -283,6 +283,26 @@ test('onTimeout with an unreadable Cause logs a sanitized summary and throws wit
   expect(logged).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
 });
 
+describe('redactDataFromPayload', () => {
+  test('masks every value of object Data', () => {
+    expect(cfnResponse.redactDataFromPayload({ NoEcho: true, Data: { A: 'secret-a', B: 'secret-b' } }).Data)
+      .toEqual({ A: '*****', B: '*****' });
+  });
+
+  test.each([
+    ['a string', 'SECRET-STRING'],
+    ['an array', ['SECRET-1', 'SECRET-2']],
+    ['a number', 1234567],
+  ])('replaces Data that is %s with a single placeholder', (_desc, data) => {
+    const payload = { NoEcho: true, Data: data as any };
+
+    const redacted = cfnResponse.redactDataFromPayload(payload);
+
+    expect(redacted.Data).toEqual('*****');
+    expect(payload.Data).toEqual(data); // the input is not modified
+  });
+});
+
 test('isComplete: "Data" is not allowed if InComplete is "False"', async () => {
   // GIVEN
   mocks.onEventImplMock = async () => ({ Data: { Foo: 123 }, PhysicalResourceId: MOCK_PHYSICAL_ID });

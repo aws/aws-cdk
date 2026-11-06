@@ -62,7 +62,7 @@ export function makeHandler(userHandler: Handler, options: MakeHandlerOptions = 
   return async (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => {
     const sanitizedEvent = { ...event, ResponseURL: '...' };
     // with an invalid option we cannot tell which properties are sensitive, so
-    // none of them are logged.
+    // every property value is redacted (the property names are still logged).
     const loggableEvent = redactEventForLog(event, optionsError ? allPropertyNames(event) : redactProperties);
     external.log(JSON.stringify(loggableEvent, undefined, 2));
 
@@ -249,6 +249,10 @@ function allPropertyNames(event: AWSLambda.CloudFormationCustomResourceEvent): s
   return [...new Set([...Object.keys(event.ResourceProperties ?? {}), ...Object.keys(oldProps ?? {})])];
 }
 
+/**
+ * Returns a copy of the response with every `Data` value replaced, for logging
+ * a response that has `NoEcho` set.
+ */
 function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {
   if (json.Data === undefined || json.Data === null) {
     return json;

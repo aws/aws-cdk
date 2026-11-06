@@ -104,18 +104,21 @@ export function safeHandler(block: (event: any) => Promise<void>) {
   };
 }
 
-export function redactDataFromPayload(payload: OnEventResponse) {
+export function redactDataFromPayload(payload: OnEventResponse): OnEventResponse {
   // Create a deep copy of the payload object
   const redactedPayload: OnEventResponse = JSON.parse(JSON.stringify(payload));
 
   // Redact the data in the copied payload object
-  if (redactedPayload.Data) {
-    const keys = Object.keys(redactedPayload.Data);
-    for (const key of keys) {
-      redactedPayload.Data[key] = '*****';
-    }
+  const data: unknown = redactedPayload.Data;
+  if (data === undefined || data === null) {
+    return redactedPayload;
   }
-  return redactedPayload;
+  if (typeof data !== 'object' || Array.isArray(data)) {
+    // masking per key only makes sense for an object; for anything else (for
+    // example a string, whose characters cannot be overwritten) hide the whole value.
+    return { ...redactedPayload, Data: '*****' as any };
+  }
+  return { ...redactedPayload, Data: Object.fromEntries(Object.keys(data).map(key => [key, '*****'])) };
 }
 
 export class Retry extends Error { }

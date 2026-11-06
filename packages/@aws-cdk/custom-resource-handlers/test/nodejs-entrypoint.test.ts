@@ -293,6 +293,29 @@ describe('nodejs entrypoint', () => {
       expect(JSON.parse(logs[0]).ResourceProperties).toEqual({ ServiceToken: '*****', Config: '*****' });
     });
 
+    test('invalid redactProperties on an Update redacts both ResourceProperties and OldResourceProperties', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Update',
+        PhysicalResourceId: 'phys',
+        ResourceProperties: { ServiceToken: '<ServiceToken>', Config: 'NEW-SECRET' },
+        OldResourceProperties: { Config: 'OLD-SECRET', OnlyOld: 'OLD-ONLY-SECRET' },
+      } as any);
+
+      // WHEN
+      const { logs, response } = await invokeHandler(event, async _ => undefined, { redactProperties: ['Config.Nested'] });
+
+      // THEN
+      expect(response.Status).toEqual('FAILED');
+      const logged = logs.join('\n');
+      expect(logged).not.toContain('NEW-SECRET');
+      expect(logged).not.toContain('OLD-SECRET');
+      expect(logged).not.toContain('OLD-ONLY-SECRET');
+      const loggedEvent = JSON.parse(logs[0]);
+      expect(loggedEvent.ResourceProperties).toEqual({ ServiceToken: '*****', Config: '*****' });
+      expect(loggedEvent.OldResourceProperties).toEqual({ Config: '*****', OnlyOld: '*****' });
+    });
+
     test('invalid redactProperties still lets the ignored DELETE after a failed CREATE succeed', async () => {
       // GIVEN
       const event = makeEvent({
