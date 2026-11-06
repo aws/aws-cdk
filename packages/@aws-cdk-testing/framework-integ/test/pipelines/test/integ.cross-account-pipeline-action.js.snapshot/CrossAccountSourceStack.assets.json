@@ -1,16 +1,16 @@
 {
   "version": "55.0.0",
   "files": {
-    "03dfd64403de71183a583df1edc239de980f35908958e89a4d07ec801d8c9373": {
+    "bd554ed1b25651e2670d05a49f1e3677acaaeb87fafde03e584a43e8f3bea368": {
       "displayName": "CrossAccountSourceStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
-        "path": "asset.03dfd64403de71183a583df1edc239de980f35908958e89a4d07ec801d8c9373",
+        "path": "asset.bd554ed1b25651e2670d05a49f1e3677acaaeb87fafde03e584a43e8f3bea368",
         "packaging": "zip"
       },
       "destinations": {
-        "234567890123-test-region-0514699f": {
+        "234567890123-test-region-8853de2d": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
-          "objectKey": "03dfd64403de71183a583df1edc239de980f35908958e89a4d07ec801d8c9373.zip",
+          "objectKey": "bd554ed1b25651e2670d05a49f1e3677acaaeb87fafde03e584a43e8f3bea368.zip",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
         }
@@ -61,16 +61,16 @@
         }
       }
     },
-    "fa088f77a90ed1516e487cee8bf609f2d19f5c8d4e79cafda903d203ad91202b": {
+    "8cfc733f4f8b567a4021adc92fd4710278e3eec317a0e084dc9a204755e85113": {
       "displayName": "CrossAccountSourceStack Template",
       "source": {
         "path": "CrossAccountSourceStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-test-region-b1f74a79": {
+        "234567890123-test-region-d503b6fd": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
-          "objectKey": "fa088f77a90ed1516e487cee8bf609f2d19f5c8d4e79cafda903d203ad91202b.json",
+          "objectKey": "8cfc733f4f8b567a4021adc92fd4710278e3eec317a0e084dc9a204755e85113.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
         }
