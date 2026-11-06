@@ -1,0 +1,306 @@
+{
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:27:24)",
+        "new IntegTest (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:100:33)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:47:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:189:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)"
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:197:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)"
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketCommand397000907103dafbc6e7e0a8fc5567b8/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketCommand397000907103dafbc6e7e0a8fc5567b8/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3vectorsGetVectorBucketCommand397000907103dafbc6e7e0a8fc5567b8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:72:25)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:38)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "invokeAspectsV2 (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:279:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)"
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:76:26)",
+        "SingletonFunction.ensureFunction (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:159:16)",
+        "new SingletonFunction (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:150:36)",
+        "new AssertionsProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:212:24)",
+        "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:35:25)",
+        "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:50:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:124:28)",
+        "SingletonFunction.ensureFunction (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:159:16)",
+        "new SingletonFunction (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:150:36)",
+        "new AssertionsProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:212:24)",
+        "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:35:25)",
+        "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:50:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketCommand3e5816eedc2a1cc2a1e429f4fda505b8/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketCommand3e5816eedc2a1cc2a1e429f4fda505b8/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3vectorsGetVectorBucketCommand3e5816eedc2a1cc2a1e429f4fda505b8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:72:25)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:38)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "invokeAspectsV2 (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:279:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)"
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketPolicyCommand397000907103dafbc6e7e0a8fc5567b8/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketPolicyCommand397000907103dafbc6e7e0a8fc5567b8/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3vectorsGetVectorBucketPolicyCommand397000907103dafbc6e7e0a8fc5567b8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:72:25)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:38)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "invokeAspectsV2 (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:279:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)"
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetIndexCommand710b8b6e9239c1fdd904995cc7db25ad/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetIndexCommand710b8b6e9239c1fdd904995cc7db25ad/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3vectorsGetIndexCommand710b8b6e9239c1fdd904995cc7db25ad"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:72:25)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:307:38)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "recurse (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:321:43)",
+        "invokeAspectsV2 (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:279:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:37:9)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)"
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketCommand397000907103dafbc6e7e0a8fc5567b8/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3vectorsGetVectorBucketCommand397000907103dafbc6e7e0a8fc5567b8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:45:32)",
+        "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:50:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketCommand3e5816eedc2a1cc2a1e429f4fda505b8/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3vectorsGetVectorBucketCommand3e5816eedc2a1cc2a1e429f4fda505b8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:45:32)",
+        "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:57:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetVectorBucketPolicyCommand397000907103dafbc6e7e0a8fc5567b8/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3vectorsGetVectorBucketPolicyCommand397000907103dafbc6e7e0a8fc5567b8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:45:32)",
+        "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:67:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VectorBucketIntegTestCase/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3vectorsGetIndexCommand710b8b6e9239c1fdd904995cc7db25ad/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3vectorsGetIndexCommand710b8b6e9239c1fdd904995cc7db25ad"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:45:32)",
+        "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:72:18)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

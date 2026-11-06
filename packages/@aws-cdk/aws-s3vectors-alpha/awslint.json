@@ -1,0 +1,15 @@
+{
+  "exclude": [
+    "props-physical-name:@aws-cdk/aws-s3vectors-alpha.VectorBucketPolicyProps",
+    "attribute-tag:@aws-cdk/aws-s3vectors-alpha.VectorBucket.vectorBucketPolicy",
+    "attribute-readonly:@aws-cdk/aws-s3vectors-alpha.VectorBucket.vectorBucketPolicy",
+    "prefer-ref-interface:@aws-cdk/aws-s3vectors-alpha.VectorBucketAttributes.encryptionKey",
+    "prefer-ref-interface:@aws-cdk/aws-s3vectors-alpha.VectorBucketProps.encryptionKey",
+    "prefer-ref-interface:@aws-cdk/aws-s3vectors-alpha.VectorBucketPolicyProps.vectorBucket",
+    "prefer-ref-interface:@aws-cdk/aws-s3vectors-alpha.VectorIndexProps.vectorBucket",
+    "prefer-ref-interface:@aws-cdk/aws-s3vectors-alpha.VectorIndexProps.encryptionKey",
+    "prefer-ref-interface:@aws-cdk/aws-s3vectors-alpha.VectorIndexAttributes.vectorBucket",
+    "interface-extends-ref:@aws-cdk/aws-s3vectors-alpha.IVectorBucket",
+    "interface-extends-ref:@aws-cdk/aws-s3vectors-alpha.IVectorIndex"
+  ]
+}

@@ -1,0 +1,337 @@
+{
+ "Resources": {
+  "PlainBucket9A5027E6": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PlainBucketDefaultPolicyCA0A27D3": {
+   "Type": "AWS::S3Vectors::VectorBucketPolicy",
+   "Properties": {
+    "Policy": {
+     "Statement": [
+      {
+       "Action": "s3vectors:GetVectorBucket",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "Consumer8D6BE417",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "PlainBucket9A5027E6",
+         "VectorBucketArn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "PlainBucket9A5027E6",
+      "VectorBucketArn"
+     ]
+    }
+   }
+  },
+  "Consumer8D6BE417": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ConsumerDefaultPolicyE9A971D5": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3vectors:CreateIndex",
+        "s3vectors:DeleteIndex",
+        "s3vectors:GetVectorBucket",
+        "s3vectors:GetVectorBucketPolicy",
+        "s3vectors:ListIndexes",
+        "s3vectors:ListTagsForResource"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EncryptedBucket6730B3DC",
+          "VectorBucketArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "EncryptedBucket6730B3DC",
+             "VectorBucketArn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Key961B73FD",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3vectors:DeleteVectors",
+        "s3vectors:GetIndex",
+        "s3vectors:GetVectors",
+        "s3vectors:ListTagsForResource",
+        "s3vectors:ListVectors",
+        "s3vectors:PutVectors",
+        "s3vectors:QueryVectors"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Index4A79713B",
+         "IndexArn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ConsumerDefaultPolicyE9A971D5",
+    "Roles": [
+     {
+      "Ref": "Consumer8D6BE417"
+     }
+    ]
+   }
+  },
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": "kms:Decrypt",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":s3vectors:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":bucket/*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ForAnyValue:StringEquals": {
+         "kms:EncryptionContextKeys": [
+          "aws:s3vectors:arn",
+          "aws:s3vectors:resource-id"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "indexing.s3vectors.amazonaws.com"
+       },
+       "Resource": "*",
+       "Sid": "AllowS3VectorsServicePrincipal"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptedBucket6730B3DC": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "EncryptionConfiguration": {
+     "KmsKeyArn": {
+      "Fn::GetAtt": [
+       "Key961B73FD",
+       "Arn"
+      ]
+     },
+     "SseType": "aws:kms"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Index4A79713B": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1024,
+    "DistanceMetric": "cosine",
+    "MetadataConfiguration": {
+     "NonFilterableMetadataKeys": [
+      "source",
+      "author"
+     ]
+    },
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "EncryptedBucket6730B3DC",
+      "VectorBucketArn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttPlainBucket9A5027E6VectorBucketArn41F43652": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PlainBucket9A5027E6",
+     "VectorBucketArn"
+    ]
+   },
+   "Export": {
+    "Name": "VectorBucketIntegTest:ExportsOutputFnGetAttPlainBucket9A5027E6VectorBucketArn41F43652"
+   }
+  },
+  "ExportsOutputFnGetAttKey961B73FDArn5A860C43": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Key961B73FD",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "VectorBucketIntegTest:ExportsOutputFnGetAttKey961B73FDArn5A860C43"
+   }
+  },
+  "ExportsOutputFnGetAttEncryptedBucket6730B3DCVectorBucketArnC84281AC": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EncryptedBucket6730B3DC",
+     "VectorBucketArn"
+    ]
+   },
+   "Export": {
+    "Name": "VectorBucketIntegTest:ExportsOutputFnGetAttEncryptedBucket6730B3DCVectorBucketArnC84281AC"
+   }
+  },
+  "ExportsOutputFnGetAttIndex4A79713BIndexArn5888FEA5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Index4A79713B",
+     "IndexArn"
+    ]
+   },
+   "Export": {
+    "Name": "VectorBucketIntegTest:ExportsOutputFnGetAttIndex4A79713BIndexArn5888FEA5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

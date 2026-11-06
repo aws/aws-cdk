@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "VectorBucketIntegTestCase/DefaultTest": {
+      "stacks": [
+        "VectorBucketIntegTest"
+      ],
+      "assertionStack": "VectorBucketIntegTestCase/DefaultTest/DeployAssert",
+      "assertionStackName": "VectorBucketIntegTestCaseDefaultTestDeployAssertD17D97BB"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}
