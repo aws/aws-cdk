@@ -71,7 +71,9 @@ export interface NetworkLoadBalancedServiceBaseProps {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
-   * The minimum value is 1
+   *
+   * Set this to 0 to create the service without any running tasks, for example to suspend the
+   * service or to deploy the surrounding infrastructure before the container image is ready.
    *
    * @default - The default is 1 for all new services and uses the existing service's desired count
    * when updating an existing service.
@@ -368,11 +370,11 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.desiredCount !== undefined && props.desiredCount < 1) {
-      throw new ValidationError(lit`SpecifyDesiredCountGreater`, 'You must specify a desiredCount greater than 0', this);
+    if (props.desiredCount !== undefined && !cdk.Token.isUnresolved(props.desiredCount) && props.desiredCount < 0) {
+      throw new ValidationError(lit`DesiredCountNegative`, `desiredCount must be greater than or equal to 0, got ${JSON.stringify(props.desiredCount)}`, this);
     }
 
-    this.desiredCount = props.desiredCount || 1;
+    this.desiredCount = props.desiredCount ?? 1;
     this.internalDesiredCount = props.desiredCount;
 
     const internetFacing = props.publicLoadBalancer ?? true;

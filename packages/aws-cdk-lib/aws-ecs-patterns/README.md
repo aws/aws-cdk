@@ -1293,3 +1293,23 @@ const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Serv
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 ```
+
+### Run a service without any task
+
+Set `desiredCount` to `0` to create a service that does not start any task. This can be used to
+suspend a service, or to deploy a service and its surrounding infrastructure before the container
+image is ready to run.
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  minHealthyPercent: 100,
+  desiredCount: 0,
+});
+```

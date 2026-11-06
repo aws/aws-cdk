@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "albFargateServiceDesiredCountZero/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-fg-desired-count-zero"
+      ],
+      "assertionStack": "albFargateServiceDesiredCountZero/DefaultTest/DeployAssert",
+      "assertionStackName": "albFargateServiceDesiredCountZeroDefaultTestDeployAssertE7D5157C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
