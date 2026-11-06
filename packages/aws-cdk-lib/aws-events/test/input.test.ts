@@ -310,6 +310,39 @@ describe('input', () => {
         ],
       });
     });
+
+    test('fromMultilineText with JSON content preserves structure', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const rule = new Rule(stack, 'Rule', {
+        schedule: Schedule.rate(cdk.Duration.minutes(1)),
+      });
+
+      // WHEN - JSON content with EventField placeholders
+      rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText(`{
+  "eventId": "${EventField.fromPath('$.id')}",
+  "message": "Event received with id: ${EventField.fromPath('$.id')}",
+  "metadata": {
+    "source": "${EventField.fromPath('$.source')}",
+    "description": "This is a \\"quoted\\" value"
+  }
+}`)));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        Targets: [
+          {
+            InputTransformer: {
+              InputPathsMap: {
+                id: '$.id',
+                source: '$.source',
+              },
+              InputTemplate: '"{"\n"  \\"eventId\\": \\"<id>\\","\n"  \\"message\\": \\"Event received with id: <id>\\","\n"  \\"metadata\\": {"\n"    \\"source\\": \\"<source>\\","\n"    \\"description\\": \\"This is a \\\\\\"quoted\\\\\\" value\\""\n"  }"\n"}"',
+            },
+          },
+        ],
+      });
+    });
   });
 });
 
