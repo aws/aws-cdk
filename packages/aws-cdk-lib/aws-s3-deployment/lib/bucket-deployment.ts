@@ -462,27 +462,16 @@ export class BucketDeployment extends Construct {
       properties: {
         SourceBucketNames: this.sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: this.sources.map(source => source.zipObjectKey),
-        SourceMarkers: sanitize(this.sources.map((source) => {
-          if (source.markers) {
-            return source.markers;
-            // if there are more than 1 source, then all sources
-            // require markers (custom resource will throw an error otherwise)
-          } else if (this.sources.length > 1) {
-            return {};
-          }
-          return undefined;
+        SourceMarkers: removeTrailingEmptyObjects(this.sources.map((source) => {
+          return source.markers ?? {};
         })),
-        SourceMarkersConfig: sanitize(this.sources.map((source): MarkersConfig | undefined => {
-          const minimalConfig = onlyDefined({
-            jsonEscape: source.markersConfig?.jsonEscape,
-            markerEncodings: onlyDefined(source.markersConfig?.markerEncodings),
-          } satisfies MarkersConfig);
-
-          // If there is something to put here, or if we need to fill the index in
-          // an array, return the current object.
-          return minimalConfig || this.sources.length > 1
-            ? { ...minimalConfig }
-            : undefined;
+        SourceMarkersConfig: removeTrailingEmptyObjects(this.sources.map((source): MarkersConfig => {
+          return {
+            ...dropEmpty({
+              jsonEscape: source.markersConfig?.jsonEscape,
+              markerEncodings: dropEmpty(source.markersConfig?.markerEncodings),
+            } satisfies MarkersConfig),
+          };
         })),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
@@ -1049,14 +1038,35 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
     && a.markers === undefined && b.markers === undefined);
 }
 
-function sanitize<A>(box: IReadableBox<Array<A>>) {
-  return box.derive(arr => arr.filter(Boolean))
-    .derive(arr => arr.length === 0 ? undefined : arr);
+/**
+ * Remove trailing empty objects from an array box, returning `undefined` if the array ends up empty
+ */
+function removeTrailingEmptyObjects<A extends object>(box: IReadableBox<Array<A>>) {
+  return box.derive(arr => {
+    const ret = [...arr];
+    while (ret.length > 0 && Object.keys(ret[ret.length - 1]).length === 0) {
+      ret.pop();
+    }
+    return ret.length > 0 ? ret : undefined;
+  });
 }
 
-function onlyDefined<A extends object>(obj: A | undefined): A | undefined {
-  if (obj === undefined || Object.keys(obj).length === 0) {
+/**
+ * Drop `undefined` values from the object, drop the object entirely if it is empty after that
+ */
+function dropEmpty<A extends object>(obj: A | undefined): A | undefined {
+  if (obj === undefined) {
     return undefined;
   }
-  return obj;
+
+  const ret: any = {};
+  for (const key of Object.keys(obj)) {
+    if (!obj.hasOwnProperty(key)) { continue; }
+
+    const value = (obj as any)[key];
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return Object.keys(ret).length === 0 ? undefined : ret;
 }

@@ -208,8 +208,8 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
         # download the archive from the source and extract to "contents"
         for i in range(len(s3_source_zips)):
             s3_source_zip = s3_source_zips[i]
-            markers       = source_markers[i]
-            markers_config = source_markers_config[i]
+            markers       = source_markers[i] if i < len(source_markers) else {}
+            markers_config = source_markers_config[i] if i < len(source_markers_config) else {}
 
             if extract:
                 archive=os.path.join(workdir, str(uuid4()))

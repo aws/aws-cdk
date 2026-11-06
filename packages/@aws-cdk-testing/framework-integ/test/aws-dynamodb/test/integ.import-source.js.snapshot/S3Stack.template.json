@@ -183,15 +183,10 @@
      "d19f123f7417660caba345fe33585440b4bdddf84c7d743fdcd62fa9711803b5.zip",
      "a0283ad80e0316927423bcf52e7df87f128ea4076ed6464f70287b9e41ad6d82.zip"
     ],
-    "SourceMarkers": [
-     {},
-     {},
-     {}
-    ],
     "SourceMarkersConfig": [
-     {},
-     {},
-     {}
+     {
+      "jsonEscape": true
+     }
     ],
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
@@ -338,7 +333,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
+     "S3Key": "9a429549ac40e3ec3e6335de0a56794665ab2c4602d6e60ec7b31ea303b149a4.zip"
     },
     "Environment": {
      "Variables": {
