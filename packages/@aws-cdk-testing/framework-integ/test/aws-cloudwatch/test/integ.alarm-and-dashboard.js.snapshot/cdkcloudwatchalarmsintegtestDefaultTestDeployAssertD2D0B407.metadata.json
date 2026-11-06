@@ -1,0 +1,20 @@
+{
+  "/cdk-cloudwatch-alarms-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkcloudwatchalarmsintegtestDefaultTestDeployAssertD2D0B407.template.json"
+    }
+  ],
+  "/cdk-cloudwatch-alarms-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-cloudwatch-alarms-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
