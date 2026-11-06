@@ -1114,6 +1114,63 @@ describe('volume', () => {
     }).toThrow('`volumeId` does not match expected pattern. Expected `vol-<hexadecmial value>` (ex: `vol-05abe246af`) or a Token');
   });
 
+  test('volume with availabilityZoneId', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZoneId: 'use1-az1',
+      size: cdk.Size.gibibytes(8),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
+      AvailabilityZoneId: 'use1-az1',
+    });
+  });
+
+  test('volume availabilityZoneId is accessible as attribute', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const volume = new Volume(stack, 'Volume', {
+      availabilityZoneId: 'use1-az1',
+      size: cdk.Size.gibibytes(8),
+    });
+
+    // THEN
+    expect(volume.availabilityZoneId).toEqual('use1-az1');
+    expect(() => volume.availabilityZone).toThrow('`availabilityZone` is not available when the volume was created with `availabilityZoneId`');
+  });
+
+  test('volume throws if both availabilityZone and availabilityZoneId are provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new Volume(stack, 'Volume', {
+        availabilityZone: 'us-east-1a',
+        availabilityZoneId: 'use1-az1',
+        size: cdk.Size.gibibytes(8),
+      });
+    }).toThrow("Cannot specify both 'availabilityZone' and 'availabilityZoneId'");
+  });
+
+  test('volume throws if neither availabilityZone nor availabilityZoneId is provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new Volume(stack, 'Volume', {
+        size: cdk.Size.gibibytes(8),
+      } as any);
+    }).toThrow("Must provide either 'availabilityZone' or 'availabilityZoneId'");
+  });
+
   test('validation required props', () => {
     // GIVEN
     const key = new kms.Key(stack, 'Key');
