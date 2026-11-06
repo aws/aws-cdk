@@ -53,6 +53,9 @@
      {
       "Ref": "cdk52888317"
      },
+     {
+      "Ref": "cdkSecretValue019DDAD3"
+     },
      "COGNITO"
     ],
     "UserPoolId": {
@@ -88,6 +91,46 @@
      "jwks_uri": "https://www.issuer-url.com/jwks"
     },
     "ProviderName": "cdk",
+    "ProviderType": "OIDC",
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    }
+   }
+  },
+  "ClientSecret6773D8CE": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "cdkSecretValue019DDAD3": {
+   "Type": "AWS::Cognito::UserPoolIdentityProvider",
+   "Properties": {
+    "ProviderDetails": {
+     "client_id": "client-id",
+     "client_secret": {
+      "Fn::Join": [
+       "",
+       [
+        "{{resolve:secretsmanager:",
+        {
+         "Ref": "ClientSecret6773D8CE"
+        },
+        ":SecretString:::}}"
+       ]
+      ]
+     },
+     "authorize_scopes": "openid",
+     "attributes_request_method": "GET",
+     "oidc_issuer": "https://www.issuer-url.com",
+     "authorize_url": "https://www.issuer-url.com/authorize",
+     "token_url": "https://www.issuer-url.com/token",
+     "attributes_url": "https://www.issuer-url.com/userinfo",
+     "jwks_uri": "https://www.issuer-url.com/jwks"
+    },
+    "ProviderName": "cdk-secret-value",
     "ProviderType": "OIDC",
     "UserPoolId": {
      "Ref": "pool056F3F7E"
