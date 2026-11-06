@@ -4,6 +4,7 @@ import uuid
 import os
 import sys
 from unittest.mock import MagicMock, patch
+from botocore.exceptions import ClientError
 
 # boto needs a region to initialize the client
 # even if no calls are executed.
@@ -502,6 +503,36 @@ class CfnResponsesTest(unittest.TestCase):
 
         submit.assert_called_once()
         self.assertEqual(submit.call_args_list[0][0][2], "FAILED")
+
+
+class MissingBucketTest(unittest.TestCase):
+    def run_with_error(self, request_type: str, managed: bool, failing_call: str, code: str):
+        error = ClientError({"Error": {"Code": code, "Message": "message"}}, failing_call)
+        with patch("index.s3") as mock_s3, patch("index.submit_response") as submit:
+            mock_s3.get_bucket_notification_configuration.return_value = {}
+            getattr(mock_s3, failing_call).side_effect = error
+            index.handler(make_event(request_type, managed), {})
+        return submit.call_args_list[0][0][2]
+
+    def test_delete_succeeds_when_bucket_is_gone(self):
+        for managed, failing_call in [
+            (True, "put_bucket_notification_configuration"),
+            (False, "get_bucket_notification_configuration"),
+            (False, "put_bucket_notification_configuration"),
+        ]:
+            with self.subTest(managed=managed, failing_call=failing_call):
+                self.assertEqual(self.run_with_error("Delete", managed, failing_call, "NoSuchBucket"), "SUCCESS")
+
+    def test_delete_fails_on_other_errors(self):
+        for managed in [True, False]:
+            with self.subTest(managed=managed):
+                self.assertEqual(self.run_with_error("Delete", managed, "put_bucket_notification_configuration", "AccessDenied"), "FAILED")
+
+    def test_create_and_update_fail_when_bucket_is_gone(self):
+        for request_type in ["Create", "Update"]:
+            for managed in [True, False]:
+                with self.subTest(request_type=request_type, managed=managed):
+                    self.assertEqual(self.run_with_error(request_type, managed, "put_bucket_notification_configuration", "NoSuchBucket"), "FAILED")
 
 
 if __name__ == "__main__":
