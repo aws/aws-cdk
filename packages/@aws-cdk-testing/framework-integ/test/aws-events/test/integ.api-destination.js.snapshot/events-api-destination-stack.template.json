@@ -48,6 +48,49 @@
     "InvocationRateLimitPerSecond": 1,
     "Name": "MyDestination"
    }
+  },
+  "InvokeRoleC9AEA952": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "InvokeRoleDefaultPolicyC476D83C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:InvokeApiDestination",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DestinationApiDestinationA879FAE5",
+         "ArnForPolicy"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "InvokeRoleDefaultPolicyC476D83C",
+    "Roles": [
+     {
+      "Ref": "InvokeRoleC9AEA952"
+     }
+    ]
+   }
   }
  },
  "Outputs": {
