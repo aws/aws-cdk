@@ -1396,6 +1396,17 @@ describe('replicas (multi-location)', () => {
     });
   });
 
+  test('an empty replica resourcesToReplicateTags is omitted', () => {
+    const stack = new Stack();
+    newCanary(stack, [{ location: 'us-west-2', resourcesToReplicateTags: [] }]);
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      Replicas: [{
+        Location: 'us-west-2',
+        ResourcesToReplicateTags: Match.absent(),
+      }],
+    });
+  });
+
   test('throws on more than 50 replicas', () => {
     const stack = new Stack();
     const replicas = Array.from({ length: 51 }, (_, i) => ({ location: `region-${i}` }));
