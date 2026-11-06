@@ -145,6 +145,45 @@ describe('cross-region-ssm-writer entrypoint', () => {
         Names: ['/cdk/exports/MyStack/RemovedExport'],
       });
     });
+    test('changed export values are written', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Update',
+        OldResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+              '/cdk/exports/MyStack/ChangedExport': 'OldValue',
+            },
+          },
+        },
+        ResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/ExistingExport': 'MyExistingValue',
+              '/cdk/exports/MyStack/ChangedExport': 'NewValue',
+            },
+          },
+        },
+      });
+
+      // WHEN
+      await handler(event);
+
+      // THEN
+      expect(mockPutParameter).toHaveBeenCalledWith({
+        Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/ChangedExport`,
+        Value: 'NewValue',
+        Type: 'String',
+        Overwrite: true,
+      });
+      expect(mockPutParameter).toHaveBeenCalledTimes(1);
+      expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
+    });
   });
 
   describe('delete events', () => {
