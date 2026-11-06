@@ -48,18 +48,15 @@ Work the changed docs in this order — a method, not a rigid script. Adapt to w
    `cdk-review-principles` "Verify before you cite").
 
 2. **Check the inventory against the rules.** Walk the changed docs family by family — **Example
-   compilation**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For EACH
-   rule check BOTH directions — what is present-and-wrong, and what is owed-but-missing. From the step-1
-   inventory, check each doc a surface of that kind OWES and flag the absent. One method the rows lack: for
+   compilation**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. One method
+   the rows lack: for
    a `@default`, **read the constructor / `?? ` handling in the same
    diff and compare** what the code applies when the prop is omitted against the tag — a contradiction is
    this dimension's highest-value defect.
 
 3. **Rate by harm and stop.** Rate every finding by the harm the defect does — broken build, misled
-   consumer, unspecified API — per `cdk-review-principles` (its BLOCKING/RECOMMENDED/OPTIONAL scale,
-   "Confidence is not severity"); never demote a real defect to OPTIONAL out of uncertainty a reader
-   reaches the line. When one location has
-   more than one doc defect, classify under the most severe type and describe them in one finding. Stop
+   consumer, unspecified API — per `cdk-review-principles` (its BLOCKING/RECOMMENDED/OPTIONAL scale).
+   When one location has more than one doc defect, describe them in one finding. Stop
    once you can name the defect and cite its rule and guideline section.
 
 ## What NOT to flag

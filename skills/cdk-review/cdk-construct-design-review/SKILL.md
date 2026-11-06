@@ -33,17 +33,12 @@ Work the changed surface in this order — a method, not a rigid script; adapt t
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **Feature placement**,
    **Abstraction / L1 leak**, **Conformance**, **Footgun / ages-well** — judging the SHAPE it produces, not
-   the intent. For each rule check BOTH directions: what is present and violating, AND what the KIND owes but
-   the diff omits. Before flagging an absence, confirm the service supports the affordance in the
-   authoritative AWS docs, and confirm the CDK framework doesn't already auto-wire it — flagging an
-   auto-wired affordance as missing is a false positive. Rate a missing affordance exactly as a declared
-   defect.
+   the intent. Before flagging a missing affordance, confirm the service supports it and the CDK framework
+   doesn't already provide it.
 
-3. **Rate by harm and stop.** Rate every finding by the cost of shipping the shape, per `cdk-review-principles`
-   ("Confidence is not severity"); never demote a wrong abstraction, an L1 leak, or a footgun to OPTIONAL
-   out of uncertainty. When several defects share one code cause,
-   classify under the most fitting family and give one finding. Stop once you can name the defect and cite
-   its rule — file + section — with the concrete fix.
+3. **Rate by harm and stop.** Rate every finding by the cost of shipping the shape, per
+   `cdk-review-principles` and the row's tier. When several defects share one code cause, give one finding. Stop once you can name the
+   defect and cite its rule — file + section — with the concrete fix.
 
 ## What NOT to flag
 
@@ -59,6 +54,13 @@ the changed surface. When a defect belongs to a different dimension, leave it �
   secret prop MUST be `SecretValue` stays yours; whether a policy is over-broad is outside your scope.
 - **Test/doc prose quality** — test design and README/JSDoc wording. Whether a new L2 has a README usage
   example *at all* is a design signal you keep; grading its prose is outside your scope.
+- **Future-proofing** — "when a second variant is added", "if AWS adds a field", "so the next capability
+  lands additively". Design for what the service offers today; the guidelines forbid speculative
+  abstraction, so do not ask for it.
+- **A shape the change cannot adopt without breaking users** — for example narrowing the type of an
+  existing public property. If the better shape is a breaking change, the current one is the right call.
+- **A design point the author has already answered** with a reason, precedent in the module, or a
+  maintainer's agreement.
 
 ## Output
 
