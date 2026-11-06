@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest": {
+      "stacks": [
+        "ApiCalleeStack",
+        "StateMachineStack"
+      ],
+      "assertionStack": "CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "CallAwsServiceCrossRegionCrossAccountIntegDefaultTestDeployAssertF31294DD"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

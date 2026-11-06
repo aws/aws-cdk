@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "8dac47066bb3b4421cfab3c8ab60e46de6c74437661bffcfd61c04c661f8454e": {
+      "source": {
+        "path": "asset.8dac47066bb3b4421cfab3c8ab60e46de6c74437661bffcfd61c04c661f8454e.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-a76b4237": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8dac47066bb3b4421cfab3c8ab60e46de6c74437661bffcfd61c04c661f8454e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "cc2bb6ec977644cf03be6191080ef8e1f89e17d334be177b083d98cf2f284220": {
+      "displayName": "CallAwsServiceCrossRegionCrossAccountIntegDefaultTestDeployAssertF31294DD Template",
+      "source": {
+        "path": "CallAwsServiceCrossRegionCrossAccountIntegDefaultTestDeployAssertF31294DD.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-997cae22": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cc2bb6ec977644cf03be6191080ef8e1f89e17d334be177b083d98cf2f284220.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

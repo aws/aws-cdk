@@ -43,7 +43,6 @@
     "@aws-sdk/client-dynamodb": "3.632.0",
     "@aws-sdk/client-eks": "3.632.0",
     "@aws-sdk/client-glue": "3.632.0",
-    "@aws-sdk/client-sts": "3.632.0",
     "@smithy/node-http-handler": "3.3.3",
     "@smithy/util-stream": "3.3.4",
     "@types/jest": "^29.5.14",
@@ -64,6 +63,7 @@
     "@aws-sdk/client-kms": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-cloudwatch": "3.632.0",
+    "@aws-sdk/client-sts": "3.632.0",
     "proxy-agent": "^6.5.0",
     "p-limit": "^3.1.0"
   },

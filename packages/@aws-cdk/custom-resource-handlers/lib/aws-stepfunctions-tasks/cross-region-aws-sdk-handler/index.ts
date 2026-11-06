@@ -25,6 +25,11 @@ type Event = {
    * request parameters to call the API (must be in AWS SDK for JS v3 style)
    */
   parameters?: any;
+
+  /**
+   * ARN of the IAM role to assume when making the AWS API call
+   */
+  assumeRoleArn?: string;
 };
 
 // reference: code from CDK AwsCustomResource
@@ -68,12 +73,37 @@ export const handler = async (event: Event) => {
   console.log('Event: ', event);
 
   try {
+    let credentials;
+    if (event.assumeRoleArn) {
+      const { STSClient, AssumeRoleCommand } = require('@aws-sdk/client-sts');
+      const stsClient = new STSClient({});
+      const assumeRoleCommand = new AssumeRoleCommand({
+        RoleArn: event.assumeRoleArn,
+        RoleSessionName: `cross-region-aws-sdk-${Date.now()}`,
+      });
+      const res = await stsClient.send(assumeRoleCommand);
+      if (!res.Credentials?.AccessKeyId || !res.Credentials?.SecretAccessKey || !res.Credentials?.SessionToken) {
+        throw new Error('Failed to assume role: STS returned incomplete credentials');
+      }
+      credentials = res.Credentials;
+    }
+
     // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
     const pkg = require(`@aws-sdk/client-${event.service}`);
     const Client = findV3ClientConstructor(pkg);
     const Command = findCommandClass(pkg, event.action);
 
-    const client = new Client({ region: event.region, endpoint: event.endpoint });
+    const client = new Client({
+      region: event.region,
+      endpoint: event.endpoint,
+      ...(credentials && {
+        credentials: {
+          accessKeyId: credentials.AccessKeyId,
+          secretAccessKey: credentials.SecretAccessKey,
+          sessionToken: credentials.SessionToken,
+        },
+      }),
+    });
     const command = new Command(event.parameters ?? {});
     const res = await client.send(command);
 
