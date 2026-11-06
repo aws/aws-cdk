@@ -1,5 +1,5 @@
-import { TlsCertificate } from './tls-certificate';
-import { MutualTlsValidation } from './tls-validation';
+import type { TlsCertificate } from './tls-certificate';
+import type { MutualTlsValidation } from './tls-validation';
 
 /**
  * Enum of supported TLS modes

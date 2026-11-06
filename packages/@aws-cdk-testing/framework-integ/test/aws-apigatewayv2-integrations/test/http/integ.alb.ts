@@ -1,5 +1,6 @@
-import { AssertionsProvider, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import * as assert from 'assert';
+import type { AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import assert from 'assert';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { HttpApi } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpAlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';

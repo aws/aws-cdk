@@ -1,12 +1,13 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { App, Fn, PhysicalName, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Fn, PhysicalName, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Key } from 'aws-cdk-lib/aws-kms';
 
 /**

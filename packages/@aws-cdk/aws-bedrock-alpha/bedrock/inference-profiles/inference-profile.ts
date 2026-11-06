@@ -1,5 +1,5 @@
 import { Resource } from 'aws-cdk-lib';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
 
 /**
  * These are the values used by the API when using aws bedrock get-inference-profile --inference-profile-identifier XXXXXXX

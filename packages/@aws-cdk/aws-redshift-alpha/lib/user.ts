@@ -1,15 +1,21 @@
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct, IConstruct } from 'constructs';
-import { ICluster } from './cluster';
-import { DatabaseOptions } from './database-options';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
+import type { ICluster } from './cluster';
+import type { DatabaseOptions } from './database-options';
 import { DatabaseSecret } from './database-secret';
 import { DatabaseQuery } from './private/database-query';
 import { HandlerName } from './private/database-query-provider/handler-name';
-import { UserHandlerProps } from './private/handler-props';
+import { isPublicGrantee } from './private/database-query-provider/validate';
+import type { UserHandlerProps } from './private/handler-props';
 import { UserTablePrivileges } from './private/privileges';
-import { ITable, TableAction } from './table';
+import type { ITable, TableAction } from './table';
+
+/** Characters the Redshift documentation excludes from clear-text passwords, except the backslash, which Redshift was observed to accept once `quoteLiteral` escapes it. */
+const DISALLOWED_PASSWORD_CHARACTERS = ["'", '"', '/', '@'];
 
 /**
  * Properties for configuring a Redshift user.
@@ -93,6 +99,16 @@ export interface UserAttributes extends DatabaseOptions {
   readonly password: cdk.SecretValue;
 }
 
+function validateUsername(username: string, scope: IConstruct): void {
+  if (isPublicGrantee(username)) {
+    throw new cdk.ValidationError(
+      lit`PublicUserNameNotAllowed`,
+      `user name cannot be PUBLIC: it names a pseudo-role rather than a user; found ${JSON.stringify(username)}`,
+      scope,
+    );
+  }
+}
+
 abstract class UserBase extends Construct implements IUser {
   abstract readonly username: string;
   abstract readonly password: cdk.SecretValue;
@@ -108,6 +124,7 @@ abstract class UserBase extends Construct implements IUser {
 
   addTablePrivileges(table: ITable, ...actions: TableAction[]): void {
     if (!this.privileges) {
+      validateUsername(this.username, this);
       this.privileges = new UserTablePrivileges(this, 'TablePrivileges', {
         ...this.databaseProps,
         user: this,
@@ -155,11 +172,23 @@ export class User extends UserBase {
   constructor(scope: Construct, id: string, props: UserProps) {
     super(scope, id);
 
+    if (props.excludeCharacters !== undefined && !cdk.Token.isUnresolved(props.excludeCharacters)) {
+      const missing = DISALLOWED_PASSWORD_CHARACTERS.filter(character => !props.excludeCharacters!.includes(character));
+      if (missing.length > 0) {
+        cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-redshift-alpha:excludeCharactersIncomplete',
+          `The Redshift documentation does not allow ${JSON.stringify(DISALLOWED_PASSWORD_CHARACTERS.join(''))} in a clear-text password, and excludeCharacters does not include ${JSON.stringify(missing.join(''))}. ` +
+          'For a new user, add the missing characters to excludeCharacters. On an existing user, changing excludeCharacters gives the secret a new password, ' +
+          'which must then also be set on the database user.');
+      }
+    }
+
     this.databaseProps = props;
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 
     const username = props.username ?? cdk.Names.uniqueId(this).toLowerCase();
+    validateUsername(username, this);
+
     const secret = new DatabaseSecret(this, 'Secret', {
       username,
       encryptionKey: props.encryptionKey,

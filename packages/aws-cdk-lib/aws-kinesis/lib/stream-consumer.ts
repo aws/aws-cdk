@@ -1,13 +1,15 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnStreamConsumer } from './kinesis.generated';
 import { ResourcePolicy } from './resource-policy';
-import { IStream, Stream } from './stream';
+import type { IStream } from './stream';
+import { Stream } from './stream';
 import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Resource, Stack } from '../../core';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IStreamConsumerRef, StreamConsumerReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
+import type { IStreamConsumerRef, StreamConsumerReference } from '../../interfaces/generated/aws-kinesis-interfaces.generated';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamConsumer',

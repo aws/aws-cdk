@@ -1,4 +1,4 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import * as cxapi from '../../../cx-api';
 import { AspectPriority } from '../aspect';
 import { FeatureFlags } from '../feature-flags';

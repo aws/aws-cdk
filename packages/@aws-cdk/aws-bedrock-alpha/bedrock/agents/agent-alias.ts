@@ -1,10 +1,11 @@
-import { ArnFormat, aws_bedrock as bedrock, IResource, Resource, Stack } from 'aws-cdk-lib';
+import type { IResource } from 'aws-cdk-lib';
+import { ArnFormat, aws_bedrock as bedrock, Resource, Stack } from 'aws-cdk-lib';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IAgent } from './agent';
+import type { Construct } from 'constructs';
+import type { IAgent } from './agent';
 
 /******************************************************************************
  *                              COMMON

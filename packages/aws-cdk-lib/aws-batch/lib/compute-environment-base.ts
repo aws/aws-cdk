@@ -1,7 +1,8 @@
-import { Construct } from 'constructs';
-import * as iam from '../../aws-iam';
-import { IResource, Resource } from '../../core';
-import { ComputeEnvironmentReference, IComputeEnvironmentRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
+import type { Construct } from 'constructs';
+import type * as iam from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Resource } from '../../core';
+import type { ComputeEnvironmentReference, IComputeEnvironmentRef } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
 /**
  * Represents a ComputeEnvironment

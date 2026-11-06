@@ -3,9 +3,11 @@ import * as cw from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { App, Duration, RemovalPolicy, Stack } from '../../core';
-import { IScheduleTarget, ScheduleExpression, ScheduleTargetConfig } from '../lib';
+import type { IScheduleTarget, ScheduleTargetConfig } from '../lib';
+import { ScheduleExpression } from '../lib';
 import { Schedule } from '../lib/schedule';
-import { ScheduleGroup, ScheduleGroupProps } from '../lib/schedule-group';
+import type { ScheduleGroupProps } from '../lib/schedule-group';
+import { ScheduleGroup } from '../lib/schedule-group';
 import { CfnScheduleGroup } from '../lib/scheduler.generated';
 
 class SomeLambdaTarget implements IScheduleTarget {

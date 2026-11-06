@@ -1,0 +1,70 @@
+{
+ "Resources": {
+  "TaggedBucket5A84A2D2": {
+   "Type": "AWS::S3Tables::TableBucket",
+   "Properties": {
+    "TableBucketName": "tagged-table-bucket",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "Test"
+     },
+     {
+      "Key": "Project",
+      "Value": "S3Tables"
+     }
+    ],
+    "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttTaggedBucket5A84A2D2TableBucketARN325752C1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TaggedBucket5A84A2D2",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "TaggedTableBucketStack:ExportsOutputFnGetAttTaggedBucket5A84A2D2TableBucketARN325752C1"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

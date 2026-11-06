@@ -3,8 +3,8 @@ import * as core from 'aws-cdk-lib/core';
 import { Lazy, Names } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IRecordingConfiguration } from './recording-configuration';
+import type { Construct } from 'constructs';
+import type { IRecordingConfiguration } from './recording-configuration';
 import { StreamKey } from './stream-key';
 
 /**

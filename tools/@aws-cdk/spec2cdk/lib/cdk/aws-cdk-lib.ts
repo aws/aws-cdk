@@ -1,11 +1,13 @@
-import { Resource, Service } from '@aws-cdk/service-spec-types';
+import type { Resource, Service } from '@aws-cdk/service-spec-types';
 import { Module, stmt } from '@cdklabs/typewriter';
 import { AugmentationsModule } from './augmentation-generator';
 import { CannedMetricsModule } from './canned-metrics';
 import { CDK_CORE, CDK_INTERFACES_ENVIRONMENT_AWARE, CONSTRUCTS } from './cdk';
-import { AddServiceProps, LibraryBuilder, LibraryBuilderProps } from './library-builder';
+import type { AddServiceProps, LibraryBuilderProps } from './library-builder';
+import { LibraryBuilder } from './library-builder';
 import { ResourceClass } from './resource-class';
-import { BaseServiceSubmodule, LocatedModule, relativeImportPath } from './service-submodule';
+import type { LocatedModule } from './service-submodule';
+import { BaseServiceSubmodule, relativeImportPath } from './service-submodule';
 import { submoduleSymbolFromName } from '../naming';
 import { GrantsModule } from './grants-module';
 
@@ -173,7 +175,7 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     const filePath = this.pathsFor(moduleName, service).grants;
     const imports = this.resolveImportPaths(filePath);
     return {
-      module: new GrantsModule(service, this.db, JSON.parse(grantsProps.config), imports.iam, grantsProps.isStable),
+      module: new GrantsModule(service, this.db, JSON.parse(grantsProps.config), imports.iam, grantsProps.isStable, imports.core),
       filePath,
     };
   }

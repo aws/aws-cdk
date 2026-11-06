@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { ArnFormat, CustomResource, Stack } from 'aws-cdk-lib';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
-import * as rds from 'aws-cdk-lib/aws-rds';
+import type * as rds from 'aws-cdk-lib/aws-rds';
 
 interface ClusterSnapshoterProps {
   readonly cluster: rds.IDatabaseCluster;

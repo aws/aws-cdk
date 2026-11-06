@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
-import { IBucketRef } from '../../../aws-s3';
+import type { Construct } from 'constructs';
+import type { IBucketRef } from '../../../aws-s3';
 import { Resource } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTrustStoreRevocation } from '../elasticloadbalancingv2.generated';
 
 /**

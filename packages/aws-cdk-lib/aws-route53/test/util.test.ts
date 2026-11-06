@@ -1,6 +1,7 @@
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { GrantDelegationOptions, HostedZone } from '../lib';
+import type { GrantDelegationOptions } from '../lib';
+import { HostedZone } from '../lib';
 import * as util from '../lib/util';
 
 describe('util', () => {

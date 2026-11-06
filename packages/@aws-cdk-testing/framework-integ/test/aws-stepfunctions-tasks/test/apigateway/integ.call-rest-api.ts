@@ -40,7 +40,7 @@ const callEndpointJob = new CallApiGatewayRestApiEndpoint(stack, 'Call APIGW', {
 const chain = sfn.Chain.start(callEndpointJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 

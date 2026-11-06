@@ -1,7 +1,7 @@
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 

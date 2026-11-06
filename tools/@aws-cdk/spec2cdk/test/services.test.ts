@@ -1,5 +1,5 @@
 import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
-import { SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { SpecDatabase } from '@aws-cdk/service-spec-types';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';
 

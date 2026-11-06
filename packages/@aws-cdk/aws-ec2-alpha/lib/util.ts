@@ -1,6 +1,7 @@
 /* eslint no-bitwise: ["error", { "allow": ["~", "|", "<<", "&"] }] */
 
-import { ISubnet, ISubnetRef, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import type { ISubnet, ISubnetRef } from 'aws-cdk-lib/aws-ec2';
+import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 /**
  * The default names for every subnet type
@@ -438,7 +439,6 @@ export class CidrBlockIpv6 {
     const blocks = this.parseBigIntParts(ipv6Address);
     let ipv6Number = BigInt(0);
     for (const block of blocks) {
-      /* tslint:disable:no-bitwise */
       ipv6Number = (ipv6Number << BigInt(16)) + block;
     }
     return ipv6Number;

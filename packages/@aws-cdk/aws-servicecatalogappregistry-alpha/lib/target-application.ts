@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
-import { IApplication, Application } from './application';
+import type { Construct } from 'constructs';
+import type { IApplication } from './application';
+import { Application } from './application';
 import { hashValues } from './common';
 
 /**

@@ -3,13 +3,13 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import type { IRecipeBase } from '../lib';
 import {
   AmazonManagedComponent,
   BaseImage,
   Component,
   ComponentParameterValue,
   ImageRecipe,
-  IRecipeBase,
   Platform,
 } from '../lib';
 

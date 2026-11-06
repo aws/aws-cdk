@@ -1,14 +1,13 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "testCases": {
-    "integ.user-pool-idp.google": {
+    "integ-user-pool-idp-google-test/DefaultTest": {
       "stacks": [
         "integ-user-pool-idp-google"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ-user-pool-idp-google-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolidpgoogletestDefaultTestDeployAssert3C7A9C9E"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1033.0"
 }

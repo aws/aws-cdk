@@ -1,11 +1,14 @@
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
-import { TargetBaseProps, bindBaseTargetConfig } from './util';
+import type { TargetBaseProps } from './util';
+import { bindBaseTargetConfig } from './util';
+import type { RuleTargetInputProperties, IRule } from '../../aws-events';
 import * as events from '../../aws-events';
-import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule, InputType } from '../../aws-events';
+import { RuleTargetInput, EventField, InputType } from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as logs from '../../aws-logs';
+import type * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import { ArnFormat, Stack, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options used when creating a target input template
@@ -35,7 +38,7 @@ export interface LogGroupTargetInputOptions {
 /**
  * The input to send to the CloudWatch LogGroup target
  */
-export abstract class LogGroupTargetInput {
+export abstract class LogGroupTargetInput extends RuleTargetInput {
   /**
    * Pass a JSON object to the log group event target
    *
@@ -44,7 +47,7 @@ export abstract class LogGroupTargetInput {
    *
    * @deprecated use fromObjectV2
    */
-  public static fromObject(options?: LogGroupTargetInputOptions): RuleTargetInput {
+  public static fromObject(options: any): RuleTargetInput {
     return RuleTargetInput.fromObject({
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
@@ -52,22 +55,35 @@ export abstract class LogGroupTargetInput {
   }
 
   /**
-   * Pass a JSON object to the the log group event target
+   * Pass a JSON object to the log group event target
    *
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
    */
   public static fromObjectV2(options?: LogGroupTargetInputOptions): LogGroupTargetInput {
-    return new events.FieldAwareEventInput({
+    return new LogGroupFieldAwareInput({
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
-    }, InputType.Object);
+    });
+  }
+}
+
+/**
+ * A LogGroupTargetInput that delegates to FieldAwareEventInput.
+ * This ensures the returned object is nominally a LogGroupTargetInput
+ * for JSII-generated languages (Python, Java).
+ */
+class LogGroupFieldAwareInput extends LogGroupTargetInput {
+  private readonly inner: events.FieldAwareEventInput;
+
+  constructor(obj: any) {
+    super();
+    this.inner = new events.FieldAwareEventInput(obj, InputType.Object);
   }
 
-  /**
-   * Return the input properties for this input object
-   */
-  public abstract bind(rule: IRule): RuleTargetInputProperties;
+  public bind(rule: IRule): RuleTargetInputProperties {
+    return this.inner.bind(rule);
+  }
 }
 
 /**
@@ -119,12 +135,12 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
     if (this.props.event && this.props.logEvent) {
-      throw new ValidationError('Only one of "event" or "logEvent" can be specified', rule);
+      throw new ValidationError(lit`OnlyOneOfEventOrLogEventCanBeSpecified`, 'Only one of "event" or "logEvent" can be specified', rule);
     }
 
     this.target = this.props.event?.bind(rule);
     if (this.target?.inputPath || this.target?.input) {
-      throw new ValidationError('CloudWatchLogGroup targets does not support input or inputPath', rule);
+      throw new ValidationError(lit`CloudWatchLogGroupTargetsDoNotSupportInputOrInputPath`, 'CloudWatchLogGroup targets does not support input or inputPath', rule);
     }
 
     rule.node.addValidation({ validate: () => this.validateInputTemplate() });

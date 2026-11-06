@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "GatewayIntegTest/DefaultTest": {
+      "stacks": [
+        "BedrockAgentCoreGatewayIntegTest"
+      ],
+      "assertionStack": "GatewayIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GatewayIntegTestDefaultTestDeployAssert9223BB27"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

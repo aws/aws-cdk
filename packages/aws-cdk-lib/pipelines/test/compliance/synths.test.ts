@@ -9,7 +9,8 @@ import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodeBuildStep } from '../../lib';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, ModernTestGitHubNpmPipelineProps, OneStackApp } from '../testhelpers';
+import type { ModernTestGitHubNpmPipelineProps } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, OneStackApp } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -579,7 +580,7 @@ test('CodeBuild: Can specify additional policy statements', () => {
       rolePolicyStatements: [
         new iam.PolicyStatement({
           actions: ['codeartifact:*', 'sts:GetServiceBearerToken'],
-          resources: ['arn:my:arn'],
+          resources: ['arn:aws:codeartifact:us-east-1:123456789012:repository/my-domain/my-repo'],
         }),
       ],
     }),
@@ -592,7 +593,7 @@ test('CodeBuild: Can specify additional policy statements', () => {
           'codeartifact:*',
           'sts:GetServiceBearerToken',
         ],
-        Resource: 'arn:my:arn',
+        Resource: 'arn:aws:codeartifact:us-east-1:123456789012:repository/my-domain/my-repo',
       })]),
     },
   });

@@ -1,14 +1,15 @@
-import { Construct } from 'constructs';
-import { IDatabaseCluster } from './cluster-ref';
+import type { Construct } from 'constructs';
+import type { IDatabaseCluster } from './cluster-ref';
 import { CfnDBInstance } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import * as ec2 from '../../aws-ec2';
-import { CaCertificate } from '../../aws-rds';
+import type { CaCertificate } from '../../aws-rds';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { IDBClusterRef, IDBInstanceRef, DBInstanceReference } from '../../interfaces/generated/aws-docdb-interfaces.generated';
+import type { IDBClusterRef, IDBInstanceRef, DBInstanceReference } from '../../interfaces/generated/aws-docdb-interfaces.generated';
 
 /**
  * A database instance
@@ -273,7 +274,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
 
 function toIDatabaseCluster(cluster: IDBClusterRef): IDatabaseCluster {
   if (!('clusterIdentifier' in cluster) || !('connections' in cluster)) {
-    throw new cdk.UnscopedValidationError(`'cluster' instance should implement IDatabaseCluster, but doesn't: ${cluster.constructor.name}`);
+    throw new cdk.UnscopedValidationError(lit`ClusterMustImplementIDatabaseCluster`, `'cluster' instance should implement IDatabaseCluster, but doesn't: ${cluster.constructor.name}`);
   }
   return cluster as IDatabaseCluster;
 }

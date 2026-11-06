@@ -1,5 +1,5 @@
-import { DockerImageAssetSource, FileAssetSource, Stack } from 'aws-cdk-lib/core';
-import { IConstruct } from 'constructs';
+import type { DockerImageAssetSource, FileAssetSource, Stack } from 'aws-cdk-lib/core';
+import type { IConstruct } from 'constructs';
 
 /**
  * Information returned by the Staging Stack for each file asset.
@@ -82,7 +82,7 @@ export interface IStagingResourcesFactory {
   /**
    * Return an object that will manage staging resources for the given stack
    *
-   * This is called whenever the the `AppStagingSynthesizer` binds to a specific
+   * This is called whenever the `AppStagingSynthesizer` binds to a specific
    * stack, and allows selecting where the staging resources go.
    *
    * This method can choose to either create a new construct (perhaps a stack)

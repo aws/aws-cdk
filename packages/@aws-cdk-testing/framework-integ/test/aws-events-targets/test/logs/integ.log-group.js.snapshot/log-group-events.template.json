@@ -170,7 +170,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "89f8c437feaf078124252df938abc83ca969185d1730374a4ab70530e6b34616.zip"
+     "S3Key": "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -179,7 +179,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 120
    },
    "DependsOn": [
@@ -309,6 +309,9 @@
   },
   "dlq09C78ACC": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },

@@ -1,9 +1,11 @@
-/* eslint-disable-next-line import/no-unresolved */
-import * as AWSLambda from 'aws-lambda';
-import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
+
+import type * as AWSLambda from 'aws-lambda';
+import type { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
+import { quoteIdentifier, quoteQualifiedIdentifier } from './escape';
 import { executeStatement } from './redshift-data';
-import { ClusterProps } from './types';
+import type { ClusterProps } from './types';
 import { makePhysicalId } from './util';
+import { validateUsername } from './validate';
 
 export async function handler(props: UserTablePrivilegesHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const username = props.username;
@@ -42,7 +44,7 @@ async function revokePrivileges(
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
     return executeStatement(
-      `REVOKE ${actions.join(', ')} ON ${normalizedTableName(tableName, stackId)} FROM ${username}`,
+      `REVOKE ${actions.join(', ')} ON ${quoteQualifiedIdentifier(normalizedTableName(tableName, stackId))} FROM ${quoteIdentifier(username)}`,
       clusterProps,
     );
   }));
@@ -54,11 +56,14 @@ async function grantPrivileges(
   clusterProps: ClusterProps,
   stackId: string,
 ) {
+  // Existing PUBLIC grants must remain revocable during teardown.
+  validateUsername(username);
+
   // Limited by human input
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
   await Promise.all(tablePrivileges.map(({ tableName, actions }) => {
     return executeStatement(
-      `GRANT ${actions.join(', ')} ON ${normalizedTableName(tableName, stackId)} TO ${username}`,
+      `GRANT ${actions.join(', ')} ON ${quoteQualifiedIdentifier(normalizedTableName(tableName, stackId))} TO ${quoteIdentifier(username)}`,
       clusterProps,
     );
   }));
@@ -89,10 +94,6 @@ async function updatePrivileges(
       tableId === otherTableId && actions.some(action => !otherActions.includes(action))
     ))
   ));
-  if (tablesToRevoke.length > 0) {
-    await revokePrivileges(username, tablesToRevoke, clusterProps, stackId);
-  }
-
   const tablesToGrant = tablePrivileges.filter(({ tableId, tableName, actions }) => {
     const tableAdded = !oldTablePrivileges.find(({ tableId: otherTableId, tableName: otherTableName }) => (
       tableId === otherTableId && tableName === otherTableName
@@ -102,6 +103,13 @@ async function updatePrivileges(
     ));
     return tableAdded || actionsAdded;
   });
+  // Validate before the revoke below so a rejected PUBLIC narrowing runs no statements.
+  if (tablesToGrant.length > 0) {
+    validateUsername(username);
+  }
+  if (tablesToRevoke.length > 0) {
+    await revokePrivileges(username, tablesToRevoke, clusterProps, stackId);
+  }
   if (tablesToGrant.length > 0) {
     await grantPrivileges(username, tablesToGrant, clusterProps, stackId);
   }

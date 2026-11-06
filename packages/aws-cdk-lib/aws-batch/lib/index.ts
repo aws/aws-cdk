@@ -1,3 +1,4 @@
+export * from './consumable-resource';
 export * from './ecs-job-definition';
 export * from './compute-environment-base';
 export * from './eks-job-definition';
@@ -13,3 +14,4 @@ export * from './unmanaged-compute-environment';
 
 // AWS::Batch CloudFormation Resources:
 export * from './batch.generated';
+export * from './batch-grants.generated';

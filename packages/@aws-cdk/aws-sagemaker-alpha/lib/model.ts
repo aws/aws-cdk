@@ -5,9 +5,9 @@ import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { ContainerImage } from './container-image';
-import { ModelData } from './model-data';
+import type { Construct } from 'constructs';
+import type { ContainerImage } from './container-image';
+import type { ModelData } from './model-data';
 
 /**
  * Interface that defines a Model resource.

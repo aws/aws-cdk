@@ -1,0 +1,222 @@
+{
+ "Resources": {
+  "AwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180": {
+   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBInstances",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "RDS",
+    "api": "describeDBInstances",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"DBInstances\":[{\"AvailabilityZone\":\"",
+       {
+        "Fn::Select": [
+         0,
+         {
+          "Fn::GetAZs": ""
+         }
+        ]
+       },
+       "\"}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "DBInstanceIdentifier": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-rds-cluster-availability-zone:ExportsOutputRefClusterwriter2D9E9F4C1B772014"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1771942162789"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "rds:DescribeDBInstances"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "rds:DescribeDBInstances"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallRDSdescribeDBInstancesd3ec9b10e1d9188ee52cbcb9e52d03b2": {
+   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBInstances",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "RDS",
+    "api": "describeDBInstances",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"DBInstances\":[{\"AvailabilityZone\":\"",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::GetAZs": ""
+         }
+        ]
+       },
+       "\"}]}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "DBInstanceIdentifier": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-rds-cluster-availability-zone:ExportsOutputRefClusterreader2204550CF3846A09"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1771942162790"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRDSdescribeDBInstancesd3ec9b10e1d9188ee52cbcb9e52d03b2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRDSdescribeDBInstancesd3ec9b10e1d9188ee52cbcb9e52d03b2",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

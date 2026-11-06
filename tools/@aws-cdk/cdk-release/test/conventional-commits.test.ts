@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
 import * as stream from 'stream';
-import { ConventionalCommit, filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
-import { ReleaseOptions } from '../lib/types';
+import type { ConventionalCommit } from '../lib/conventional-commits';
+import { filterCommits, getConventionalCommitsFromGitHistory } from '../lib/conventional-commits';
+import type { ReleaseOptions } from '../lib/types';
 
 // mock out Git interactions
 jest.mock('git-raw-commits', () => { return jest.fn(); });

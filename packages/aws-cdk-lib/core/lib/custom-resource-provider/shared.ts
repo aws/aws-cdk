@@ -1,5 +1,5 @@
-import { Duration } from '../duration';
-import { Size } from '../size';
+import type { Duration } from '../duration';
+import type { Size } from '../size';
 
 export const INLINE_CUSTOM_RESOURCE_CONTEXT = '@aws-cdk/core:inlineCustomResourceIfPossible';
 

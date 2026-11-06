@@ -1,4 +1,5 @@
-import { FileAssetPackaging, Stack, FileAssetSource, LegacyStackSynthesizer } from '../../lib';
+import type { FileAssetSource } from '../../lib';
+import { FileAssetPackaging, Stack, LegacyStackSynthesizer } from '../../lib';
 
 // Remove this file in v2
 test('overridden method on stack gets called', () => {

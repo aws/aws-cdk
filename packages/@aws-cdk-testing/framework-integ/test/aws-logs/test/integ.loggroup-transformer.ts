@@ -1,5 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { JsonMutatorType, LogGroup, ParserProcessorType, ParserProcessor, JsonMutatorProcessor } from 'aws-cdk-lib/aws-logs';
 
 class TransformerIntegStack extends Stack {

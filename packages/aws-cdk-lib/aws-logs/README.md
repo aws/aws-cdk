@@ -42,11 +42,19 @@ By default, the log group created by LogRetention will be retained after the sta
 
 ## Log Group Class
 
-CloudWatch Logs offers two classes of log groups:
+CloudWatch Logs offers three classes of log groups:
 
 1. The CloudWatch Logs Standard log class is a full-featured option for logs that require real-time monitoring or logs that you access frequently.
 
 2. The CloudWatch Logs Infrequent Access log class is a new log class that you can use to cost-effectively consolidate your logs. This log class offers a subset of CloudWatch Logs capabilities including managed ingestion, storage, cross-account log analytics, and encryption with a lower ingestion price per GB. The Infrequent Access log class is ideal for ad-hoc querying and after-the-fact forensic analysis on infrequently accessed logs.
+
+3. The CloudWatch Logs Delivery log class is used to deliver logs to a destination such as Amazon S3 or Amazon Data Firehose (for example, Lambda vended logs). A Delivery log group does not store log events itself; it forwards them to a destination configured through a subscription filter. Because of this, the Delivery log class does not support `retention`, `dataProtectionPolicy`, or `fieldIndexPolicies`; setting any of them together with `LogGroupClass.DELIVERY` results in a synthesis-time error.
+
+```ts
+new logs.LogGroup(this, 'DeliveryLogGroup', {
+  logGroupClass: logs.LogGroupClass.DELIVERY,
+});
+```
 
 For more details please check: [log group class documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html)
 
@@ -68,14 +76,14 @@ Or more conveniently, write permissions to the log group can be granted as follo
 
 ```ts
 const logGroup = new logs.LogGroup(this, 'LogGroup');
-logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
+logGroup.grants.write(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
 Similarly, read permissions can be granted to the log group as follows.
 
 ```ts
 const logGroup = new logs.LogGroup(this, 'LogGroup');
-logGroup.grantRead(new iam.ServicePrincipal('es.amazonaws.com'));
+logGroup.grants.read(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
 Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.

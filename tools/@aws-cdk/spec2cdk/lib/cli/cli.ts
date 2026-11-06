@@ -6,9 +6,11 @@
  */
 import * as path from 'node:path';
 import { parseArgs } from 'node:util';
-import { PositionalArg, showHelp } from './help';
-import { AwsCdkLibBuilder } from '../cdk/aws-cdk-lib';
-import { GenerateModuleMap, GenerateOptions, generate, generateAll } from '../generate';
+import type { PositionalArg } from './help';
+import { showHelp } from './help';
+import type { AwsCdkLibBuilder } from '../cdk/aws-cdk-lib';
+import type { GenerateModuleMap, GenerateOptions } from '../generate';
+import { generate, generateAll } from '../generate';
 import { log } from '../util';
 
 const command = 'spec2cdk';
@@ -99,6 +101,7 @@ export async function main(argv: string[]) {
     outputPath,
     clearOutput: options['clear-output'],
     debug: options.debug as boolean,
+    orgs: ['AWS', 'Alexa'],
     builderProps: {
       filePatterns: {
         resources: options.pattern,

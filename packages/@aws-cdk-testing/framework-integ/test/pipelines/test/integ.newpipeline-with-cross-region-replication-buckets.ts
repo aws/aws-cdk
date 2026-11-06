@@ -1,15 +1,17 @@
 
 /// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import type {
+  StackProps,
+  StageProps,
+} from 'aws-cdk-lib';
 import {
   App,
   Stack,
-  StackProps,
   Stage,
-  StageProps,
   RemovalPolicy,
 } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as s3 from 'aws-cdk-lib/aws-s3';

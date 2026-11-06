@@ -1,5 +1,6 @@
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { Attribute, AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
+import type { Attribute } from 'aws-cdk-lib/aws-dynamodb';
+import { AttributeType, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 // CDK parameters

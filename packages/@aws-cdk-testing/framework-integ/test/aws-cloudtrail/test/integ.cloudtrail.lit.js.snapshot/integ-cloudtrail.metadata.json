@@ -1,0 +1,428 @@
+{
+  "/integ-cloudtrail": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudtrail/test/integ.cloudtrail.lit.js:14:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/integ-cloudtrail/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-cloudtrail/Topic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-cloudtrail/LambdaFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/integ-cloudtrail/Trail": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "snsTopic": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLambdaEventSelector": [
+          [
+            "*"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventSelector": [
+          "AWS::Lambda::Function",
+          [
+            "*"
+          ],
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addS3EventSelector": [
+          [
+            {
+              "bucket": "*"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventSelector": [
+          "AWS::S3::Object",
+          [
+            "*"
+          ],
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-cloudtrail/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/integ-cloudtrail/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudtrail/test/integ.cloudtrail.lit.js:15:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/integ-cloudtrail/Bucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/integ-cloudtrail/Bucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-cloudtrail/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Topic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicBFC7AF6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudtrail/test/integ.cloudtrail.lit.js:19:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Topic/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topics": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-cloudtrail/LambdaFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-cloudtrail/LambdaFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaFunctionBF21E41F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudtrail/test/integ.cloudtrail.lit.js:20:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Trail/S3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "enforceSSL": true
+      }
+    }
+  ],
+  "/integ-cloudtrail/Trail/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Trail022F0CF2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:307:27)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudtrail/test/integ.cloudtrail.lit.js:25:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketPolicyE9A3008A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2162:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudtrail/test/integ.cloudtrail.lit.js:15:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/integ-cloudtrail/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Topic/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicPolicyA1747468"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TopicPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/policy.js:118:13)",
+        "new TopicPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createTopicPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:121:27)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:100:14)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:68:49)",
+        "TopicGrants.actions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/sns-grants.generated.js:54:59)",
+        "TopicGrants.publish (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/sns-grants.generated.js:82:21)",
+        "WrappedClass.grantPublish (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:173:28)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:272:28)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/integ-cloudtrail/LambdaFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaFunctionServiceRoleC555A460"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudtrail/test/integ.cloudtrail.lit.js:20:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Trail/S3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrailS30071F172"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:234:45)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudtrail/test/integ.cloudtrail.lit.js:25:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudtrail/Trail/S3/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/integ-cloudtrail/Trail/S3/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrailS3PolicyE42170FE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:276:18)",
+        "WrappedClass.enforceSSLStatement (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1570:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1439:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:234:45)",
+        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "/cdk-integ-lambda-nodejs-latest": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]",
+      "trace": [
+        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new Bundling (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:289:45)",
+        "Bundling.bundle (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:213:27)",
+        "new NodejsFunction (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:100:45)",
+        "new TestStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.latest.js:46:31)",
+        "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.latest.js:61:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-integ-lambda-nodejs-latest.template.json"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "minify": true,
+          "nodeModules": "*",
+          "forceDockerBundling": true
+        },
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "minify": true,
+          "nodeModules": "*",
+          "forceDockerBundling": true
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "latestFE0D80B6"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/Exports/Output{\"Ref\":\"latestFE0D80B6\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflatestFE0D80B6C9B17E6B"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "latestServiceRole8A40241A"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codebuild from '../../../aws-codebuild';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';

@@ -1,8 +1,10 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IRole } from '../../aws-iam';
-import * as kinesis from '../../aws-kinesis';
-import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IRole } from '../../aws-iam';
+import type * as kinesis from '../../aws-kinesis';
+import type { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '../../aws-scheduler';
 import { Token, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for a Kinesis Data Streams Target
@@ -29,7 +31,7 @@ export class KinesisStreamPutRecord extends ScheduleTargetBase implements ISched
     super(props, stream.streamArn);
 
     if (!Token.isUnresolved(props.partitionKey) && (props.partitionKey.length < 1 || props.partitionKey.length > 256)) {
-      throw new ValidationError(`partitionKey length must be between 1 and 256, got ${props.partitionKey.length}`, stream);
+      throw new ValidationError(lit`PartitionKeyLength`, `partitionKey length must be between 1 and 256, got ${props.partitionKey.length}`, stream);
     }
   }
 

@@ -3,7 +3,7 @@ import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { IAgent } from '../../../bedrock/agents/agent';
+import type { IAgent } from '../../../bedrock/agents/agent';
 import { AgentAlias } from '../../../bedrock/agents/agent-alias';
 
 describe('AgentAlias', () => {
@@ -30,6 +30,7 @@ describe('AgentAlias', () => {
       stack: stack,
       env: { account: stack.account, region: stack.region },
       applyRemovalPolicy: jest.fn(),
+      with: jest.fn(),
     };
   });
 

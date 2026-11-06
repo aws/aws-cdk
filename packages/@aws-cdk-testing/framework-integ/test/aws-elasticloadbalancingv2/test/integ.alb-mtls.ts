@@ -1,6 +1,13 @@
+/**
+ * This test requires manual setup and will fail without it:
+ * - A Route53 public hosted zone you own (env vars: HOSTED_ZONE_ID, HOSTED_ZONE_NAME, DOMAIN_NAME)
+ * - Pre-generated mTLS certificates (rootCA_cert.pem, crl.pem) in the mtls/ directory
+ * - See the detailed OpenSSL instructions in the MutualTls class comments below
+ */
 import * as path from 'path';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as route53 from 'aws-cdk-lib/aws-route53';
@@ -8,7 +15,7 @@ import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * In order to test this you must create certificates, keys and Certificate Revocation List (CRL).

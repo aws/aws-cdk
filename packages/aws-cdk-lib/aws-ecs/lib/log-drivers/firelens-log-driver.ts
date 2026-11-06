@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import { BaseLogDriverProps } from './base-log-driver';
-import { LogDriver, LogDriverConfig } from './log-driver';
+import type { Construct } from 'constructs';
+import type { BaseLogDriverProps } from './base-log-driver';
+import type { LogDriverConfig } from './log-driver';
+import { LogDriver } from './log-driver';
 import { removeEmpty, renderLogDriverSecretOptions } from './utils';
-import { ContainerDefinition, Secret } from '../container-definition';
+import type { ContainerDefinition, Secret } from '../container-definition';
 
 /**
  * Specifies the firelens log driver configuration options.

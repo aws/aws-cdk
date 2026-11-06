@@ -4,8 +4,8 @@ import * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { RuleSetContent } from './matchmaking-ruleset-body';
+import type { Construct } from 'constructs';
+import type { RuleSetContent } from './matchmaking-ruleset-body';
 
 /**
  * Represents a Gamelift matchmaking ruleset

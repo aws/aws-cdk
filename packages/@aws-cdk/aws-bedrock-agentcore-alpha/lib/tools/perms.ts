@@ -10,6 +10,7 @@
    *****************************************************************************/
 /**
  * Permissions to manage a specific browser session
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const BROWSER_SESSION_PERMS = [
   'bedrock-agentcore:GetBrowserSession',
@@ -20,6 +21,7 @@ export const BROWSER_SESSION_PERMS = [
 
 /**
  * Permissions to connect to a browser live view or automation stream
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const BROWSER_STREAM_PERMS = [
   'bedrock-agentcore:UpdateBrowserStream',
@@ -32,6 +34,7 @@ export const BROWSER_STREAM_PERMS = [
    *****************************************************************************/
 /**
  * Grants control plane operations to manage the browser (CRUD)
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const BROWSER_ADMIN_PERMS = [
   'bedrock-agentcore:CreateBrowser',
@@ -42,6 +45,7 @@ export const BROWSER_ADMIN_PERMS = [
 
 /**
  * Permissions for reading browser information
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const BROWSER_READ_PERMS = [
   'bedrock-agentcore:GetBrowser',
@@ -50,6 +54,7 @@ export const BROWSER_READ_PERMS = [
 
 /**
  * Permissions for listing browser resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const BROWSER_LIST_PERMS = [
   'bedrock-agentcore:ListBrowsers',
@@ -58,6 +63,7 @@ export const BROWSER_LIST_PERMS = [
 
 /**
  * Permissions for using browser functionality
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const BROWSER_USE_PERMS = [
   'bedrock-agentcore:StartBrowserSession',
@@ -77,6 +83,7 @@ export const BROWSER_USE_PERMS = [
    *****************************************************************************/
 /**
  * Permissions to manage a specific code interpreter session
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const CODE_INTERPRETER_SESSION_PERMS = [
   'bedrock-agentcore:GetCodeInterpreterSession',
@@ -87,6 +94,7 @@ export const CODE_INTERPRETER_SESSION_PERMS = [
 
 /**
  * Permissions to invoke a code interpreter
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const CODE_INTERPRETER_INVOKE_PERMS = ['bedrock-agentcore:InvokeCodeInterpreter'];
 
@@ -95,6 +103,7 @@ export const CODE_INTERPRETER_INVOKE_PERMS = ['bedrock-agentcore:InvokeCodeInter
    *****************************************************************************/
 /**
  * Grants control plane operations to manage the code interpreter (CRUD)
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const CODE_INTERPRETER_ADMIN_PERMS = [
   'bedrock-agentcore:CreateCodeInterpreter',
@@ -105,6 +114,7 @@ export const CODE_INTERPRETER_ADMIN_PERMS = [
 
 /**
  * Permissions for reading code interpreter information
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const CODE_INTERPRETER_READ_PERMS = [
   'bedrock-agentcore:GetCodeInterpreter',
@@ -113,6 +123,7 @@ export const CODE_INTERPRETER_READ_PERMS = [
 
 /**
  * Permissions for listing code interpreter resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const CODE_INTERPRETER_LIST_PERMS = [
   'bedrock-agentcore:ListCodeInterpreters',
@@ -121,6 +132,7 @@ export const CODE_INTERPRETER_LIST_PERMS = [
 
 /**
  * Permissions for using code interpreter functionality
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const CODE_INTERPRETER_USE_PERMS = [
   'bedrock-agentcore:StartCodeInterpreterSession',

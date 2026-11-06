@@ -1,15 +1,16 @@
 {
-  "version": "34.0.0",
+  "version": "54.0.0",
   "files": {
-    "7dd59f6a9837c37010b565ae387d2d8d96bf372c1183c98bdbda4aba976858ba": {
+    "d3c869b49fcc2a914013d9f074e7ba77df7865a1f0fa81a47a2d7421109847f3": {
+      "displayName": "aws-stepfunctions-tasks-lambda-invoke-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-lambda-invoke-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-43d41b13": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7dd59f6a9837c37010b565ae387d2d8d96bf372c1183c98bdbda4aba976858ba.json",
+          "objectKey": "d3c869b49fcc2a914013d9f074e7ba77df7865a1f0fa81a47a2d7421109847f3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

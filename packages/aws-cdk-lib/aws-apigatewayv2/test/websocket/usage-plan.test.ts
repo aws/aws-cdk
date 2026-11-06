@@ -1,7 +1,8 @@
 import { Template } from '../../../assertions';
 import * as cdk from '../../../core';
+import type { IUsagePlan } from '../../lib';
 import {
-  ApiKey, IUsagePlan,
+  ApiKey,
   Period,
   UsagePlan,
   WebSocketApi,

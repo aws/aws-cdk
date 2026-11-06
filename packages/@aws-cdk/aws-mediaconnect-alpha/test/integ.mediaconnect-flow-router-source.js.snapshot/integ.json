@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-mediaconnect-router-source/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-router-source"
+      ],
+      "assertionStack": "cdk-integ-mediaconnect-router-source/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediaconnectroutersourceDefaultTestDeployAssert2F5EE8FE"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

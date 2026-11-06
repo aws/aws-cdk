@@ -1,13 +1,15 @@
-import { Construct, IConstruct } from 'constructs';
-import { Alarm, ComparisonOperator } from './alarm';
-import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Statistic, Unit } from './metric-types';
-import { CreateAlarmOptionsBase } from './private/alarm-options';
+import type { Construct, IConstruct } from 'constructs';
+import type { ComparisonOperator } from './alarm';
+import { Alarm } from './alarm';
+import type { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig, Unit } from './metric-types';
+import type { CreateAlarmOptionsBase } from './private/alarm-options';
 import { dispatchMetric, metricKey } from './private/metric-util';
-import { normalizeStatistic, pairStatisticToString, parseStatistic, singleStatisticToString } from './private/statistic';
+import { normalizeStatistic, parseStatistic, parseStatisticToFields } from './private/statistic';
 import { Stats } from './stats';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { makeEnumerable } from './private/make-enumerable';
+import { lit } from '../../core/lib/private/literal-string';
 
 export type DimensionHash = { [dim: string]: any };
 
@@ -215,6 +217,16 @@ export interface MathExpressionOptions {
   readonly color?: string;
 
   /**
+   * Whether this metric should be visible in dashboard graphs.
+   *
+   * Setting this to false is useful when you want to hide raw metrics
+   * that are used in math expressions, and show only the expression results.
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
+
+  /**
    * The period over which the math expression's statistics are applied.
    *
    * This period overrides all periods in the metrics used in this
@@ -339,6 +351,16 @@ export interface SearchExpressionOptions {
   readonly color?: string;
 
   /**
+   * Whether the time series produced by this search expression should be visible in dashboard graphs.
+   *
+   * Setting this to false keeps the time series on the widget without rendering
+   * them, so they can still be toggled on in the CloudWatch console.
+   *
+   * @default true
+   */
+  readonly visible?: boolean;
+
+  /**
    * The period over which the search expression's statistics are applied.
    *
    * This period overrides the period defined within the search expression.
@@ -409,7 +431,7 @@ export class Metric implements IMetric {
   public static anomalyDetectionFor(props: AnomalyDetectionMetricOptions): MathExpression {
     // Validate stdDevs
     if (props.stdDevs !== undefined && props.stdDevs <= 0) {
-      throw new cdk.UnscopedValidationError('stdDevs must be greater than 0');
+      throw new cdk.UnscopedValidationError(lit`StdDevsMustBeGreaterThanZero`, 'stdDevs must be greater than 0');
     }
 
     // Create the anomaly detection band expression
@@ -482,7 +504,7 @@ export class Metric implements IMetric {
     this.period = props.period || cdk.Duration.minutes(5);
     const periodSec = this.period.toSeconds();
     if (periodSec !== 1 && periodSec !== 5 && periodSec !== 10 && periodSec !== 30 && periodSec % 60 !== 0) {
-      throw new cdk.UnscopedValidationError(`'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
+      throw new cdk.UnscopedValidationError(lit`PeriodMustBeValidInterval`, `'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received ${periodSec}`);
     }
 
     this.warnings = undefined;
@@ -491,12 +513,12 @@ export class Metric implements IMetric {
     this.metricName = props.metricName;
 
     const parsedStat = parseStatistic(props.statistic || Stats.AVERAGE);
-    if (parsedStat.type === 'generic') {
+    if (parsedStat.type === 'unparseable') {
       // Unrecognized statistic, do not throw, just warn
       // There may be a new statistic that this lib does not support yet
       const label = props.label ? `, label "${props.label}"` : '';
 
-      const warning = `Unrecognized statistic "${props.statistic}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
+      const warning = `Unrecognized statistic "${parsedStat.originalInput}" for metric with namespace "${props.namespace}"${label} and metric name "${props.metricName}".` +
         ' Preferably use the `aws_cloudwatch.Stats` helper class to specify a statistic.' +
         ' You can ignore this warning if your statistic is valid but not yet supported by the `aws_cloudwatch.Stats` helper class.';
       this.warningsV2 = {
@@ -629,25 +651,17 @@ export class Metric implements IMetric {
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+      throw new cdk.UnscopedValidationError(lit`MathExpressionNotSupportedInAlarm`, 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
-    const parsed = parseStatistic(metricConfig.metricStat.statistic);
-
-    let extendedStatistic: string | undefined = undefined;
-    if (parsed.type === 'single') {
-      extendedStatistic = singleStatisticToString(parsed);
-    } else if (parsed.type === 'pair') {
-      extendedStatistic = pairStatisticToString(parsed);
-    }
+    const fields = parseStatisticToFields(metricConfig.metricStat.statistic);
 
     return {
       dimensions: metricConfig.metricStat.dimensions,
       namespace: metricConfig.metricStat.namespace,
       metricName: metricConfig.metricStat.metricName,
       period: metricConfig.metricStat.period.toSeconds(),
-      statistic: parsed.type === 'simple' ? parsed.statistic as Statistic : undefined,
-      extendedStatistic,
+      ...fields,
       unit: this.unit,
     };
   }
@@ -658,7 +672,7 @@ export class Metric implements IMetric {
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
-      throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+      throw new cdk.UnscopedValidationError(lit`MathExpressionNotSupportedInGraph`, 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
     }
 
     return {
@@ -730,19 +744,19 @@ export class Metric implements IMetric {
 
     var dimsArray = Object.keys(dims);
     if (dimsArray?.length > 30) {
-      throw new cdk.UnscopedValidationError(`The maximum number of dimensions is 30, received ${dimsArray.length}`);
+      throw new cdk.UnscopedValidationError(lit`MaximumDimensionsExceeded`, `The maximum number of dimensions is 30, received ${dimsArray.length}`);
     }
 
     dimsArray.map(key => {
       if (dims[key] === undefined || dims[key] === null) {
-        throw new cdk.UnscopedValidationError(`Dimension value of '${dims[key]}' is invalid for key: ${key}`);
+        throw new cdk.UnscopedValidationError(lit`InvalidDimensionValue`, `Dimension value of '${dims[key]}' is invalid for key: ${key}`);
       }
       if (key.length < 1 || key.length > 255) {
-        throw new cdk.UnscopedValidationError(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
+        throw new cdk.UnscopedValidationError(lit`DimensionNameLengthInvalid`, `Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
       }
 
       if (dims[key].length < 1 || dims[key].length > 255) {
-        throw new cdk.UnscopedValidationError(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
+        throw new cdk.UnscopedValidationError(lit`DimensionValueLengthInvalid`, `Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
       }
     });
 
@@ -753,7 +767,7 @@ export class Metric implements IMetric {
 function asString(x?: unknown): string | undefined {
   if (x === undefined) { return undefined; }
   if (typeof x !== 'string') {
-    throw new cdk.UnscopedValidationError(`Expected string, got ${x}`);
+    throw new cdk.UnscopedValidationError(lit`ExpectedStringType`, `Expected string, got ${x}`);
   }
   return x;
 }
@@ -797,6 +811,11 @@ export class MathExpression implements IMetric {
   public readonly color?: string;
 
   /**
+   * Whether this metric should be visible in dashboard graphs.
+   */
+  public readonly visible?: boolean;
+
+  /**
    * Aggregation period of this metric
    */
   public readonly period: cdk.Duration;
@@ -827,6 +846,7 @@ export class MathExpression implements IMetric {
     this.expression = props.expression;
     this.label = props.label;
     this.color = props.color;
+    this.visible = props.visible;
     this.searchAccount = props.searchAccount;
     this.searchRegion = props.searchRegion;
 
@@ -840,7 +860,7 @@ export class MathExpression implements IMetric {
 
     const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !cdk.Token.isUnresolved(x) && !validVariableName(x));
     if (invalidVariableNames.length > 0) {
-      throw new cdk.UnscopedValidationError(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
+      throw new cdk.UnscopedValidationError(lit`InvalidVariableNames`, `Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
 
     this.validateNoIdConflicts();
@@ -879,6 +899,7 @@ export class MathExpression implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
+      && (props.visible === undefined || props.visible === this.visible)
       && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
       && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
       && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
@@ -890,6 +911,7 @@ export class MathExpression implements IMetric {
       usingMetrics: this.usingMetrics,
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
+      visible: ifUndefined(props.visible, this.visible),
       period: ifUndefined(props.period, this.period),
       searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
       searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
@@ -900,14 +922,14 @@ export class MathExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+    throw new cdk.UnscopedValidationError(lit`MathExpressionNotSupportedInAlarmConfig`, 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   /**
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new cdk.UnscopedValidationError('Using a math expression is not supported here. Pass a \'Metric\' object instead');
+    throw new cdk.UnscopedValidationError(lit`MathExpressionNotSupportedInGraphConfig`, 'Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
   public toMetricConfig(): MetricConfig {
@@ -922,6 +944,7 @@ export class MathExpression implements IMetric {
       renderingProperties: {
         label: this.label,
         color: this.color,
+        visible: this.visible,
       },
     };
   }
@@ -966,7 +989,7 @@ export class MathExpression implements IMetric {
           for (const [id, subMetric] of Object.entries(mathExpr.usingMetrics)) {
             const existing = seen.get(id);
             if (existing && metricKey(existing) !== metricKey(subMetric)) {
-              throw new cdk.UnscopedValidationError(`The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
+              throw new cdk.UnscopedValidationError(lit`DuplicateMetricId`, `The ID '${id}' used for two metrics in the expression: '${subMetric}' and '${existing}'. Rename one.`);
             }
             seen.set(id, subMetric);
             visit(subMetric);
@@ -975,7 +998,7 @@ export class MathExpression implements IMetric {
         withSearchExpression(searchExpr) {
           // search expression should not contain anything inside  `usingMetric
           if (Object.entries(searchExpr.usingMetrics).length > 0) {
-            throw new cdk.UnscopedValidationError(`Search expression '${searchExpr.expression}' should not contain any 'usingMetrics'.`);
+            throw new cdk.UnscopedValidationError(lit`SearchExpressionCannotHaveUsingMetrics`, `Search expression '${searchExpr.expression}' should not contain any 'usingMetrics'.`);
           }
         },
       });
@@ -1020,6 +1043,11 @@ export class SearchExpression implements IMetric {
   public readonly color?: string;
 
   /**
+   * Whether the time series produced by this search expression should be visible in dashboard graphs.
+   */
+  public readonly visible?: boolean;
+
+  /**
    * The aggregation period for the metrics produced by the Search Expression.
    */
   public readonly period: cdk.Duration;
@@ -1049,6 +1077,7 @@ export class SearchExpression implements IMetric {
     this.expression = props.expression;
     this.label = props.label;
     this.color = props.color;
+    this.visible = props.visible;
     this.period = props.period || cdk.Duration.minutes(5);
     this.searchAccount = props.searchAccount;
     this.searchRegion = props.searchRegion;
@@ -1071,6 +1100,7 @@ export class SearchExpression implements IMetric {
   public with(props: SearchExpressionOptions): SearchExpression {
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
+      && (props.visible === undefined || props.visible === this.visible)
       && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
       && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
       && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
@@ -1081,6 +1111,7 @@ export class SearchExpression implements IMetric {
       expression: this.expression,
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
+      visible: ifUndefined(props.visible, this.visible),
       period: ifUndefined(props.period, this.period),
       searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
       searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
@@ -1091,14 +1122,14 @@ export class SearchExpression implements IMetric {
    * @deprecated use toMetricConfig()
    */
   public toAlarmConfig(): MetricAlarmConfig {
-    throw new cdk.UnscopedValidationError('Using a search expression is not supported in CloudWatch Alarms.');
+    throw new cdk.UnscopedValidationError(lit`SearchExpressionNotSupportedInAlarms`, 'Using a search expression is not supported in CloudWatch Alarms.');
   }
 
   /**
    * @deprecated use toMetricConfig()
    */
   public toGraphConfig(): MetricGraphConfig {
-    throw new cdk.UnscopedValidationError('`toGraphConfig()` is deprecated, use `toMetricConfig()`');
+    throw new cdk.UnscopedValidationError(lit`ToGraphConfigDeprecated`, '`toGraphConfig()` is deprecated, use `toMetricConfig()`');
   }
 
   public toMetricConfig(): MetricConfig {
@@ -1113,6 +1144,7 @@ export class SearchExpression implements IMetric {
       renderingProperties: {
         label: this.label,
         color: this.color,
+        visible: this.visible,
       },
     };
   }
@@ -1138,7 +1170,13 @@ function validVariableName(x: string) {
  * Return all variable names used in an expression
  */
 function allIdentifiersInExpression(x: string) {
-  return Array.from(matchAll(x, FIND_VARIABLE)).map(m => m[0]);
+  // Remove CDK token patterns before extracting identifiers
+  // Token format: ${Token[TOKEN.123]} or ${Token[TOKEN.456]}
+  const withoutTokens = x.replace(/\$\{Token\[[^\]]+\]\}/g, '');
+  // Remove quoted strings (single and double) so we don't extract identifiers from string arguments
+  // CloudWatch math expressions use both quote styles: METRICS("errors"), DB_PERF_INSIGHTS('RDS', ...)
+  const withoutStrings = withoutTokens.replace(/"[^"]*"|'[^']*'/g, '');
+  return Array.from(matchAll(withoutStrings, FIND_VARIABLE)).map(m => m[0]);
 }
 
 /**
@@ -1221,7 +1259,7 @@ function changePeriod(metric: IMetric, period: cdk.Duration): { metric: IMetric;
     return { metric: metric.with({ period }), overridden };
   }
 
-  throw new cdk.UnscopedValidationError(`Metric object should also implement 'with': ${metric}`);
+  throw new cdk.UnscopedValidationError(lit`MetricMustImplementWith`, `Metric object should also implement 'with': ${metric}`);
 }
 
 /**

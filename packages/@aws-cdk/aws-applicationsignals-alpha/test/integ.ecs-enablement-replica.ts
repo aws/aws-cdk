@@ -5,7 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { Role, ManagedPolicy, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { PrivateDnsNamespace } from 'aws-cdk-lib/aws-servicediscovery';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as appsignals from '../lib';
 
 const app = new cdk.App();
@@ -178,7 +178,7 @@ const pythonStack = new PythonStack(app, 'ApplicationSignalsPythonApp-Replica', 
   dnsNamespace: infraStack.dnsNamespace,
   securityGroup: infraStack.securityGroup,
 });
-pythonStack.addDependency(cwaStack);
+pythonStack.addStackDependency(cwaStack);
 
 new integ.IntegTest(app, 'ApplicationSignalsIntegrationECSReplicaTest', {
   testCases: [infraStack, cwaStack, pythonStack],

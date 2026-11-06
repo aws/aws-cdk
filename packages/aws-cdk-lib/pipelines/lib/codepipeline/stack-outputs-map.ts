@@ -1,6 +1,6 @@
-import { StackOutputReference } from '../blueprint';
+import type { StackOutputReference } from '../blueprint';
 import { PipelineQueries } from '../helpers-internal/pipeline-queries';
-import { PipelineBase } from '../main';
+import type { PipelineBase } from '../main';
 import { stackVariableNamespace } from '../private/identifiers';
 
 /**

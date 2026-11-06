@@ -1,0 +1,24 @@
+*.js
+*.d.ts
+*.generated.ts
+*.js.map
+dist
+coverage
+.nyc_output
+.jsii
+
+.LAST_BUILD
+nyc.config.js
+.LAST_PACKAGE
+*.snk
+!eslint.config.mjs
+
+junit.xml
+!jest.config.js
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
+!**/*.snapshot/**/asset.*/**
+
+# we ignore generated files that cannot contain hand-written info
+lib/services/**/*.jsiirc.json

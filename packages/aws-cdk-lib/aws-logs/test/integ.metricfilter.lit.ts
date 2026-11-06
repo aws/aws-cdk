@@ -1,4 +1,5 @@
-import { App, RemovalPolicy, Stack, StackProps } from '../../core';
+import type { StackProps } from '../../core';
+import { App, RemovalPolicy, Stack } from '../../core';
 import { FilterPattern, LogGroup, MetricFilter } from '../lib';
 
 class MetricFilterIntegStack extends Stack {

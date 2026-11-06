@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { IKey } from '../../aws-kms';
-import { ISecret, Secret } from '../../aws-secretsmanager';
+import type { Construct } from 'constructs';
+import type { IKey } from '../../aws-kms';
+import type { ISecret } from '../../aws-secretsmanager';
+import { Secret } from '../../aws-secretsmanager';
 import { Aws } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

@@ -1,8 +1,12 @@
-import { Construct, IConstruct } from 'constructs';
+import type { MetadataEntry, PropertyMutationMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
+import type { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
-import { constructInfoFromConstruct } from '../../helpers-internal';
-import { Stack } from '../../stack';
+import { iterateDfsPreorder } from '../../private/construct-iteration';
+import { stackOf } from '../../private/core-construct-finders';
+import { constructInfoFromConstruct } from '../../private/runtime-info';
+import type { Stack } from '../../stack';
 
 /**
  * A construct centric view of a stack trace
@@ -77,24 +81,24 @@ export class ConstructTree {
     this._constructByPath.set(this.root.node.path, root);
     // do this once at the start so we don't have to traverse
     // the entire tree everytime we want to find a nested node
-    this.root.node.findAll().forEach(child => {
+    for (const child of iterateDfsPreorder(this.root)) {
       this._constructByPath.set(child.node.path, child);
       const defaultChild = child.node.defaultChild;
       if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
-        const stack = Stack.of(defaultChild);
+        const stack = stackOf(defaultChild);
         const logicalId = stack.resolve(defaultChild.logicalId);
         this.setLogicalId(stack, logicalId, child);
       }
-    });
+    }
 
     // Another pass to include all the L1s that haven't been added yet
-    this.root.node.findAll().forEach(child => {
+    for (const child of iterateDfsPreorder(this.root)) {
       if (CfnResource.isCfnResource(child)) {
-        const stack = Stack.of(child);
-        const logicalId = Stack.of(child).resolve(child.logicalId);
+        const stack = stackOf(child);
+        const logicalId = stackOf(child).resolve(child.logicalId);
         this.setLogicalId(stack, logicalId, child);
       }
-    });
+    }
   }
 
   private setLogicalId(stack: Stack, logicalId: string, child: Construct) {
@@ -120,7 +124,7 @@ export class ConstructTree {
     let node: IConstruct | undefined = this.root;
     while (node) {
       rootPath.push(this.constructTraceLevelFromTreeNode(node));
-      stackTraces.push(this.stackTrace(node));
+      stackTraces.push(this.creationTrace(node)?.split('\n'));
 
       const component = components.shift()!;
       node = component !== undefined ? node.node.tryFindChild(component) : undefined;
@@ -168,6 +172,14 @@ export class ConstructTree {
     }
   }
 
+  public constructTraceLevelFromConstructPath(constructPath: string): ReturnType<ConstructTree['constructTraceLevelFromTreeNode']> | undefined {
+    const construct = this.getConstructByPath(constructPath);
+    if (!construct) {
+      return undefined;
+    }
+    return this.constructTraceLevelFromTreeNode(construct);
+  }
+
   /**
    * Convert a Tree Metadata Node into a ConstructTrace object, except its child and stack trace info
    *
@@ -184,13 +196,42 @@ export class ConstructTree {
     };
   }
 
+  public creationTraceByPath(path: string) {
+    const construct = this.getConstructByPath(path);
+    if (!construct) {
+      return undefined;
+    }
+    return this.creationTrace(construct);
+  }
+
   /**
    * Return the stack trace for a given construct path
    *
    * Returns a stack trace if stack trace information is found, or `undefined` if not.
    */
-  private stackTrace(construct: IConstruct): string[] | undefined {
-    return construct?.node.metadata.find(meta => !!meta.trace)?.trace;
+  private creationTrace(construct: IConstruct): string | undefined {
+    return construct?.node.metadata.find(meta => meta.type === ArtifactMetadataEntryType.CREATION_STACK)?.data?.join('\n');
+  }
+
+  public mutationTracesByPath(constructPath: string, propertyPath: string) {
+    const construct = this.getConstructByPath(constructPath);
+    if (!construct) {
+      return [];
+    }
+    return this.mutationTraces(construct, propertyPath);
+  }
+
+  /**
+   * Return mutation traces for the given construct and property path
+   *
+   * The `propertyPath` must start with `Properties.`, and can contain nested properties, e.g. `Properties.MyProperty.NestedProperty`.
+   * We will report the best information that we have.
+   */
+  private mutationTraces(construct: IConstruct, propertyPath: string): string[] {
+    return construct?.node.metadata
+      .filter(isPropertyMutationMetadataEntry)
+      .filter(meta => propertyAssignmentMatchesPropertyPath(meta, propertyPath))
+      .map(meta => meta.data.stackTrace.join('\n'));
   }
 
   /**
@@ -199,7 +240,7 @@ export class ConstructTree {
    * @param path the node.addr of the construct
    * @returns the Construct
    */
-  public getConstructByPath(path: string): Construct | undefined {
+  private getConstructByPath(path: string): Construct | undefined {
     return this._constructByPath.get(path);
   }
 
@@ -215,4 +256,17 @@ export class ConstructTree {
   }
 }
 
+function propertyAssignmentMatchesPropertyPath(meta: PropertyMetadataEntry, propertyPath: string): boolean {
+  return propertyPath === `Properties.${meta.data.propertyName}` || propertyPath.startsWith(`Properties.${meta.data.propertyName}.`);
+}
+
 const STACK_TRACE_HINT = 'Run with \'--debug\' to include location info';
+
+interface PropertyMetadataEntry {
+  type: 'aws:cdk:propertyAssignment';
+  data: PropertyMutationMetadataEntry;
+}
+
+function isPropertyMutationMetadataEntry(entry: MetadataEntry): entry is PropertyMetadataEntry {
+  return entry.type === ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT;
+}

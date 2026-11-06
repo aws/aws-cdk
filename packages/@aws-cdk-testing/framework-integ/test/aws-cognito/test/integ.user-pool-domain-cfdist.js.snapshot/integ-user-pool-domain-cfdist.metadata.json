@@ -1,0 +1,57 @@
+{
+  "/integ-user-pool-domain-cfdist/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/integ-user-pool-domain-cfdist/Domain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Domain"
+    }
+  ],
+  "/integ-user-pool-domain-cfdist/CloudFrontEndpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CloudFrontEndpoint"
+    }
+  ],
+  "/integ-user-pool-domain-cfdist/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-user-pool-domain-cfdist/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-user-pool-domain-cfdist/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPool6BA7E5F2"
+    }
+  ],
+  "/integ-user-pool-domain-cfdist/UserPool/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "cognitoDomain": {
+          "domainPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/integ-user-pool-domain-cfdist/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolDomainD0EA232A"
+    }
+  ]
+}

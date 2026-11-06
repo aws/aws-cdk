@@ -1,5 +1,5 @@
 import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * The properties of a scalable attribute representing task count.

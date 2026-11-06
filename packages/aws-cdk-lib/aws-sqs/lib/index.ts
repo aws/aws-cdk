@@ -1,3 +1,6 @@
+// Side-effect import to make sure that the default traits are registered before any of the constructs are used.
+import './private/grants';
+
 export * from './policy';
 export * from './queue';
 export * from './queue-base';

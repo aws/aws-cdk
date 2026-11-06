@@ -2,7 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**

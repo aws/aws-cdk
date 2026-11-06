@@ -1,4 +1,4 @@
-import { Resource, TagInformation, TagVariant } from '@aws-cdk/service-spec-types';
+import type { Resource, TagInformation, TagVariant } from '@aws-cdk/service-spec-types';
 
 /**
  * Property names that were not extended with the IResolvable type because they were considered to be tags
@@ -26,7 +26,15 @@ export function resourceTaggabilityStyle(resource: Resource): TaggabilityStyle |
   }
 
   if (resource.tagInformation) {
-    return { style: 'modern', ...resource.tagInformation };
+    // Only treat the resource as modern-taggable if the tag property actually exists as a
+    // writable property. Some resources (e.g. AWS::RDS::ReservedDBInstance) carry
+    // `tagInformation` but expose `Tags` only as a read-only attribute, with no corresponding
+    // property. In that case the property loop never emits a `cdkTagManager`, so implementing
+    // `ITaggableV2` would produce a class that does not satisfy the interface.
+    if (resource.properties[resource.tagInformation.tagPropertyName]) {
+      return { style: 'modern', ...resource.tagInformation };
+    }
+    return undefined;
   }
 
   return undefined;

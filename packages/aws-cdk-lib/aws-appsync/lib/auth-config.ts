@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnApiKey } from './appsync.generated';
-import { IUserPool } from '../../aws-cognito';
-import { IFunction } from '../../aws-lambda';
-import { Duration, Expiration } from '../../core';
+import type { IUserPool } from '../../aws-cognito';
+import type { IFunction } from '../../aws-lambda';
+import type { Expiration } from '../../core';
+import { Duration } from '../../core';
 
 /**
  * Auth provider settings for AppSync Event APIs

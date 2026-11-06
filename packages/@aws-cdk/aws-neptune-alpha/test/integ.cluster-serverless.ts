@@ -20,7 +20,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup:
 
 const clusterParameterGroup = new ClusterParameterGroup(stack, 'Params', {
   description: 'A nice parameter group',
-  family: ParameterGroupFamily.NEPTUNE_1_2,
+  family: ParameterGroupFamily.NEPTUNE_1_4,
   parameters: {
     neptune_enable_audit_log: '1',
     neptune_query_timeout: '100000',

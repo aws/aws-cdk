@@ -1,7 +1,10 @@
-import { IStageRef } from './apigateway.generated';
-import * as firehose from '../../aws-kinesisfirehose';
+import type { IStageRef } from './apigateway.generated';
+import type * as firehose from '../../aws-kinesisfirehose';
+import { ArnFormat, FeatureFlags, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
+import { lit } from '../../core/lib/private/literal-string';
+import { APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD } from '../../cx-api';
+import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
  * Access log destination for a RestApi Stage.
@@ -33,7 +36,20 @@ export class LogGroupLogDestination implements IAccessLogDestination {
   /**
    * Binds this destination to the CloudWatch Logs.
    */
-  public bind(_stage: IStageRef): AccessLogDestinationConfig {
+  public bind(stage: IStageRef): AccessLogDestinationConfig {
+    const isArnWithoutWildcard = FeatureFlags.of(stage).isEnabled(APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD);
+    if (isArnWithoutWildcard) {
+      return {
+        destinationArn: Stack.of(this.logGroup).formatArn({
+          service: 'logs',
+          account: this.logGroup.env.account,
+          region: this.logGroup.env.region,
+          resource: 'log-group',
+          resourceName: this.logGroup.logGroupRef.logGroupName,
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        }),
+      };
+    }
     return {
       destinationArn: this.logGroup.logGroupRef.logGroupArn,
     };
@@ -52,7 +68,7 @@ export class FirehoseLogDestination implements IAccessLogDestination {
    */
   public bind(stage: IStageRef): AccessLogDestinationConfig {
     if (!this.stream.deliveryStreamName?.startsWith('amazon-apigateway-')) {
-      throw new ValidationError(`Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
+      throw new ValidationError(lit`MustBeFirehoseDeliveryStream`, `Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
     }
     return {
       destinationArn: this.stream.attrArn,

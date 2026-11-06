@@ -1,47 +1,39 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as cdk from 'aws-cdk-lib';
-import { AuroraMysqlEngineVersion, ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
+import { IntegTestBaseStack } from './integ-test-base-stack';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ClusterInstance, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-cluster-volume-iops-metric');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-cluster-volume-iops-metric');
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
-const cluster = new DatabaseCluster(stack, 'Database', {
+const cluster = new DatabaseCluster(stack, 'Cluster', {
   engine: DatabaseClusterEngine.auroraMysql({
-    version: AuroraMysqlEngineVersion.VER_3_10_0,
+    version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
-  credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
   vpc,
-  writer: ClusterInstance.provisioned('Instance1', {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
-  }),
-  readers: [
-    ClusterInstance.provisioned('Instance2', {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
-    }),
-  ],
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  writer: ClusterInstance.serverlessV2('writer'),
+  serverlessV2MinCapacity: 0.5,
+  serverlessV2MaxCapacity: 1,
 });
 
-// Test that metricVolumeReadIOPs can be used to create an alarm
-cluster.metricVolumeReadIOPs({
-  period: cdk.Duration.minutes(10),
-}).createAlarm(stack, 'VolumeReadIOPsAlarm', {
+new cloudwatch.Alarm(stack, 'ReadIOPSAlarm', {
+  metric: cluster.metricVolumeReadIOPs(),
   threshold: 1000,
-  evaluationPeriods: 3,
+  evaluationPeriods: 1,
 });
 
-// Test that metricVolumeWriteIOPs can be used to create an alarm
-cluster.metricVolumeWriteIOPs({
-  period: cdk.Duration.minutes(10),
-}).createAlarm(stack, 'VolumeWriteIOPsAlarm', {
+new cloudwatch.Alarm(stack, 'WriteIOPSAlarm', {
+  metric: cluster.metricVolumeWriteIOPs(),
   threshold: 1000,
-  evaluationPeriods: 3,
+  evaluationPeriods: 1,
 });
 
-new IntegTest(app, 'rds-cluster-volume-iops-metric-integ-test', {
+new IntegTest(app, 'cluster-volume-iops-metric-integ-test', {
   testCases: [stack],
 });
+

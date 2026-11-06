@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "311c7f5f7b4db1d5c6c1090019b6a5a71f092034924d987ffe13641a93df572b": {
+      "displayName": "grant-service-principal-test-stack Template",
+      "source": {
+        "path": "grant-service-principal-test-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-63818e53": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "311c7f5f7b4db1d5c6c1090019b6a5a71f092034924d987ffe13641a93df572b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

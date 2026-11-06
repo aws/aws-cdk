@@ -1,0 +1,20 @@
+{
+  "/MultipleSchemasIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MultipleSchemasIntegTestDefaultTestDeployAssert101F6CFD.template.json"
+    }
+  ],
+  "/MultipleSchemasIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MultipleSchemasIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

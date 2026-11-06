@@ -1,6 +1,6 @@
-import { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
-import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { EnrichmentParametersConfig, IEnrichment, IPipe, InputTransformation } from '@aws-cdk/aws-pipes-alpha';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 
 /**
  * Properties for a LambdaEnrichment

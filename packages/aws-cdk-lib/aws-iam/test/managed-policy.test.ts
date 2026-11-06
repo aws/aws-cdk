@@ -2,7 +2,8 @@ import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { AddToPrincipalPolicyResult, Grant, Group, IResourceWithPolicy, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
+import type { AddToPrincipalPolicyResult, IResourceWithPolicy } from '../lib';
+import { Grant, Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;
@@ -46,7 +47,7 @@ describe('managed policy', () => {
   test('managed policy with statements', () => {
     const policy = new ManagedPolicy(stack, 'MyManagedPolicy', { managedPolicyName: 'MyManagedPolicyName' });
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
-    policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
+    policy.addStatements(new PolicyStatement({ resources: ['arn:aws:sns:us-east-1:123456789012:my-topic'], actions: ['sns:Subscribe'] }));
 
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
@@ -60,7 +61,7 @@ describe('managed policy', () => {
             PolicyDocument: {
               Statement:
                 [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn:aws:sns:us-east-1:123456789012:my-topic' }],
               Version: '2012-10-17',
             },
             Path: '/',
@@ -119,7 +120,7 @@ describe('managed policy', () => {
           Resource: '*',
         }],
       }),
-      statements: [new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] })],
+      statements: [new PolicyStatement({ resources: ['arn:aws:sns:us-east-1:123456789012:my-topic'], actions: ['sns:Subscribe'] })],
     });
 
     Template.fromStack(stack).templateMatches({
@@ -131,7 +132,7 @@ describe('managed policy', () => {
             PolicyDocument: {
               Statement:
                 [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn:aws:sns:us-east-1:123456789012:my-topic' }],
               Version: '2012-10-17',
             },
             Path: '/',
@@ -145,7 +146,7 @@ describe('managed policy', () => {
   test('policy name can be omitted, in which case the logical id will be used', () => {
     const policy = new ManagedPolicy(stack, 'MyManagedPolicy');
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));
-    policy.addStatements(new PolicyStatement({ resources: ['arn'], actions: ['sns:Subscribe'] }));
+    policy.addStatements(new PolicyStatement({ resources: ['arn:aws:sns:us-east-1:123456789012:my-topic'], actions: ['sns:Subscribe'] }));
 
     const group = new Group(stack, 'MyGroup');
     group.addManagedPolicy(policy);
@@ -158,7 +159,7 @@ describe('managed policy', () => {
             PolicyDocument: {
               Statement:
                 [{ Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
-                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn' }],
+                  { Action: 'sns:Subscribe', Effect: 'Allow', Resource: 'arn:aws:sns:us-east-1:123456789012:my-topic' }],
               Version: '2012-10-17',
             },
             Path: '/',

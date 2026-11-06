@@ -2,7 +2,7 @@
 import * as url from 'url';
 import { httpRequest } from './outbound';
 import { log, withRetries } from './util';
-import { OnEventResponse } from '../types';
+import type { OnEventResponse } from '../types';
 
 export const CREATE_FAILED_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED';
 export const MISSING_PHYSICAL_ID_MARKER = 'AWSCDK::CustomResourceProviderFramework::MISSING_PHYSICAL_ID';

@@ -1,10 +1,11 @@
-import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import type { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { CfnFirewallRuleGroupAssociation } from 'aws-cdk-lib/aws-route53resolver';
 import { Resource, Token, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IFirewallRuleGroup } from './firewall-rule-group';
+import type { Construct } from 'constructs';
+import type { IFirewallRuleGroup } from './firewall-rule-group';
 
 /**
  * Options for a Firewall Rule Group Association
@@ -15,7 +16,11 @@ export interface FirewallRuleGroupAssociationOptions {
    * association, to help prevent against accidentally altering DNS firewall
    * protections.
    *
-   * @default true
+   * Note that mutation protection also blocks CloudFormation from updating or
+   * deleting the association, so leave it disabled for associations whose
+   * lifecycle is managed by this stack.
+   *
+   * @default - mutation protection is disabled; the association can be modified or removed
    */
   readonly mutationProtection?: boolean;
 
@@ -115,13 +120,17 @@ export class FirewallRuleGroupAssociation extends Resource {
     addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.priority) && (props.priority <= 100 || props.priority >= 9000)) {
-      throw new ValidationError(`Priority must be greater than 100 and less than 9000, got ${props.priority}`, this);
+      throw new ValidationError(lit`InvalidPriority`, `Priority must be greater than 100 and less than 9000, got ${props.priority}`, this);
     }
 
     const association = new CfnFirewallRuleGroupAssociation(this, 'Resource', {
+      name: props.name,
       firewallRuleGroupId: props.firewallRuleGroup.firewallRuleGroupId,
       priority: props.priority,
       vpcId: props.vpc.vpcId,
+      mutationProtection: props.mutationProtection === undefined
+        ? undefined
+        : (props.mutationProtection ? 'ENABLED' : 'DISABLED'),
     });
 
     this.firewallRuleGroupAssociationArn = association.attrArn;

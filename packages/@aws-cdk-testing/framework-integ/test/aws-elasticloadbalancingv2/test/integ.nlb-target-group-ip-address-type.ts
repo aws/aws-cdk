@@ -2,7 +2,7 @@ import { Stack, App } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {

@@ -1,10 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as codepipeline from '../../../aws-codepipeline';
 import { Rule } from '../../../aws-events';
 import * as targets from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
 import { Names } from '../../../core';
-import { IRepositoryRef } from '../../../interfaces/generated/aws-ecr-interfaces.generated';
+import type { IRepositoryRef } from '../../../interfaces/generated/aws-ecr-interfaces.generated';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -102,7 +102,7 @@ export class EcrSourceAction extends Action {
         detail: {
           'result': ['SUCCESS'],
           'repository-name': [this.props.repository.repositoryRef.repositoryName],
-          'image-tag': [this.props.imageTag === '' ? undefined : (this.props.imageTag ?? 'latest')],
+          'image-tag': this.props.imageTag === '' ? undefined : [this.props.imageTag ?? 'latest'],
           'action-type': ['PUSH'],
         },
       },

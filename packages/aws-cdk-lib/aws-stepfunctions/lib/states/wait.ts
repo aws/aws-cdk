@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, State, StateBaseProps } from './state';
-import * as cdk from '../../../core';
+import type { AssignableStateOptions, JsonataCommonOptions, JsonPathCommonOptions, StateBaseProps } from './state';
+import { State } from './state';
+import type * as cdk from '../../../core';
 import { Chain } from '../chain';
-import { IChainable, INextable, QueryLanguage } from '../types';
+import type { IChainable, INextable } from '../types';
+import { QueryLanguage } from '../types';
 
 /**
  * Represents the Wait state which delays a state machine from continuing for a specified time

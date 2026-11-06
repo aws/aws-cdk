@@ -1,9 +1,11 @@
 import { Capture, Template } from '../../assertions';
-import { App, Aws, CfnElement, CfnResource, Lazy, Stack } from '../../core';
+import type { CfnElement } from '../../core';
+import { App, Aws, CfnResource, Lazy, Stack } from '../../core';
 import {
   IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME,
 } from '../../cx-api';
-import { AnyPrincipal, ArnPrincipal, Grant, IRole, Policy, PolicyStatement, Role } from '../lib';
+import type { IRole } from '../lib';
+import { AnyPrincipal, ArnPrincipal, Grant, Policy, PolicyStatement, Role } from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
 
@@ -690,7 +692,7 @@ test('Role.fromRoleName with no options ', () => {
 function somePolicyStatement() {
   return new PolicyStatement({
     actions: ['s3:*'],
-    resources: ['xyz'],
+    resources: ['arn:aws:s3:::my-bucket'],
   });
 }
 
@@ -728,7 +730,7 @@ function _assertStackContainsPolicyResource(stack: Stack, roleNames: any[], name
         {
           Action: 's3:*',
           Effect: 'Allow',
-          Resource: 'xyz',
+          Resource: 'arn:aws:s3:::my-bucket',
         },
       ],
     },

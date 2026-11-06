@@ -1,22 +1,28 @@
-import { Construct } from 'constructs';
-import { CfnFlowLog, FlowLogReference, IFlowLogRef, ISubnetRef } from './ec2.generated';
-import { IVpc } from './vpc';
+import type { Construct } from 'constructs';
+import type { FlowLogReference, IFlowLogRef, ISubnetRef } from './ec2.generated';
+import { CfnFlowLog } from './ec2.generated';
+import type { IVpc } from './vpc';
 import * as iam from '../../aws-iam';
+import type * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
+import type { IResource } from '../../core';
 import {
+  Validations,
   CfnResource,
   FeatureFlags,
-  IResource,
   PhysicalName,
   RemovalPolicy,
   Resource,
   Stack,
   Tags,
+  Token,
+  TokenComparison,
   ValidationError,
 } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
@@ -230,11 +236,29 @@ export abstract class FlowLogDestination {
    * Use Amazon Data Firehose as the destination
    *
    * @param deliveryStreamArn the ARN of Amazon Data Firehose delivery stream to publish logs to
+   * @deprecated use `toFirehose`
    */
   public static toKinesisDataFirehoseDestination(deliveryStreamArn: string): FlowLogDestination {
-    return new KinesisDataFirehoseDestination({
+    return new FirehoseDestination({
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
       deliveryStreamArn,
+    });
+  }
+
+  /**
+   * Use Amazon Data Firehose as the destination
+   *
+   * If the delivery stream and the VPC are in different account, you must specify `iamRole`.
+   *
+   * @param deliveryStream the Amazon Data Firehose delivery stream to publish logs to
+   * @param iamRole the IAM Role for cross account log delivery
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-firehose.html
+   */
+  public static toFirehose(deliveryStream: firehose.IDeliveryStreamRef, iamRole?: iam.IRole): FlowLogDestination {
+    return new FirehoseDestination({
+      logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
+      deliveryStream,
+      iamRole,
     });
   }
 
@@ -256,9 +280,11 @@ export interface FlowLogDestinationConfig {
   readonly logDestinationType: FlowLogDestinationType;
 
   /**
-   * The IAM Role that has access to publish to CloudWatch logs
+   * The IAM role that allows Amazon EC2 to publish flow logs to the log destination.
    *
-   * @default - default IAM role is created for you
+   * Required if the destination type is CloudWatch logs, or if the destination type is Amazon Data Firehose delivery stream and the delivery stream and the VPC are in different accounts.
+   *
+   * @default - default IAM role is created for you if the destination type is CloudWatch logs
    */
   readonly iamRole?: iam.IRole;
 
@@ -286,9 +312,17 @@ export interface FlowLogDestinationConfig {
   /**
    * The ARN of Amazon Data Firehose delivery stream to publish the flow logs to
    *
+   * @deprecated use deliveryStream
    * @default - undefined
    */
   readonly deliveryStreamArn?: string;
+
+  /**
+   * The Amazon Data Firehose delivery stream to publish the flow logs to
+   *
+   * @default - undefined
+   */
+  readonly deliveryStream?: firehose.IDeliveryStreamRef;
 
   /**
    * Options for writing flow logs to a supported destination
@@ -435,22 +469,29 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 }
 
 /**
- *
+ * The Amazon Data Firehose flow log destination
  */
-class KinesisDataFirehoseDestination extends FlowLogDestination {
+class FirehoseDestination extends FlowLogDestination {
   constructor(private readonly props: FlowLogDestinationConfig) {
     super();
   }
 
-  public bind(scope: Construct, _flowLog: FlowLog): FlowLogDestinationConfig {
-    if (this.props.deliveryStreamArn === undefined) {
-      throw new ValidationError('deliveryStreamArn is required', scope);
+  public bind(scope: Construct, flowLog: FlowLog): FlowLogDestinationConfig {
+    if (!!this.props.deliveryStreamArn === !!this.props.deliveryStream) {
+      throw new ValidationError(lit`SpecifyExactlyOneDeliveryStream`, 'Specify exactly one of either deliveryStream or deliveryStreamArn.', scope);
     }
-    const deliveryStreamArn = this.props.deliveryStreamArn;
+    if (this.props.deliveryStream) {
+      const compareAccount = Token.compareStrings(this.props.deliveryStream.env.account, flowLog.env.account);
+      if (compareAccount === TokenComparison.DIFFERENT && !this.props.iamRole) {
+        throw new ValidationError(lit`IamRoleRequiredCrossAccount`, 'The iamRole is required for cross-account log delivery.', scope);
+      }
+    }
 
     return {
       logDestinationType: FlowLogDestinationType.KINESIS_DATA_FIREHOSE,
-      deliveryStreamArn,
+      deliveryStreamArn: this.props.deliveryStreamArn,
+      deliveryStream: this.props.deliveryStream,
+      iamRole: this.props.iamRole,
     };
   }
 }
@@ -871,8 +912,14 @@ export class FlowLog extends FlowLogBase {
 
   /**
    * The ARN of the Amazon Data Firehose delivery stream to publish flow logs to
+   * @deprecated Use deliveryStream
    */
   public readonly deliveryStreamArn?: string;
+
+  /**
+   * The Amazon Data Firehose delivery stream to publish flow logs to
+   */
+  public readonly deliveryStream?: firehose.IDeliveryStreamRef;
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);
@@ -886,7 +933,9 @@ export class FlowLog extends FlowLogBase {
     this.bucket = destinationConfig.s3Bucket;
     this.iamRole = destinationConfig.iamRole;
     this.keyPrefix = destinationConfig.keyPrefix;
-    this.deliveryStreamArn = destinationConfig.deliveryStreamArn;
+    this.deliveryStreamArn = destinationConfig.deliveryStream?.deliveryStreamRef?.deliveryStreamArn
+      ?? destinationConfig.deliveryStreamArn;
+    this.deliveryStream = destinationConfig.deliveryStream;
 
     Tags.of(this).add(NAME_TAG, props.flowLogName || this.node.path);
 
@@ -907,10 +956,10 @@ export class FlowLog extends FlowLogBase {
     let trafficType: FlowLogTrafficType | undefined = props.trafficType ?? FlowLogTrafficType.ALL;
     if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
       if (props.trafficType) {
-        throw new ValidationError('trafficType is not supported for Transit Gateway and Transit Gateway Attachment', this);
+        throw new ValidationError(lit`TrafficTypeSupportedTransitGateway`, 'trafficType is not supported for Transit Gateway and Transit Gateway Attachment', this);
       }
       if (props.maxAggregationInterval && props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE) {
-        throw new ValidationError('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment', this);
+        throw new ValidationError(lit`MaxAggregationIntervalSetTransit`, 'maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment', this);
       }
       trafficType = undefined;
     }
@@ -931,16 +980,25 @@ export class FlowLog extends FlowLogBase {
     // VPC service implicitly tries to create a bucket policy when adding a vpc flow log.
     // To avoid the race condition, we add an explicit dependency here.
     if (this.bucket?.policy?.node.defaultChild instanceof CfnResource) {
-      flowLog.addDependency(this.bucket?.policy.node.defaultChild);
+      flowLog.addResourceDependency(this.bucket?.policy.node.defaultChild);
     }
 
     // we must remove a flow log configuration first before deleting objects.
     const deleteObjects = this.bucket?.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
     if (deleteObjects instanceof CfnResource) {
-      flowLog.addDependency(deleteObjects);
+      flowLog.addResourceDependency(deleteObjects);
     }
 
     this.flowLogId = flowLog.ref;
     this.node.defaultChild = flowLog;
+
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::F3002',
+      reason: 'AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec',
+    });
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::F3003',
+      reason: 'AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec',
+    });
   }
 }

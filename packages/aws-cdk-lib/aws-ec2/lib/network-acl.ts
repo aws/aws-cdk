@@ -1,15 +1,18 @@
-import { Construct } from 'constructs';
-import {
-  CfnNetworkAcl,
-  CfnNetworkAclEntry,
-  CfnSubnetNetworkAclAssociation,
+import type { Construct } from 'constructs';
+import type {
   INetworkAclEntryRef,
   INetworkAclRef,
   ISubnetNetworkAclAssociationRef, NetworkAclEntryReference, NetworkAclReference, SubnetNetworkAclAssociationReference,
 } from './ec2.generated';
-import { AclCidr, AclTraffic } from './network-acl-types';
-import { ISubnet, IVpc, SubnetSelection } from './vpc';
-import { IResource, Resource, Tags } from '../../core';
+import {
+  CfnNetworkAcl,
+  CfnNetworkAclEntry,
+  CfnSubnetNetworkAclAssociation,
+} from './ec2.generated';
+import type { AclCidr, AclTraffic } from './network-acl-types';
+import type { ISubnet, IVpc, SubnetSelection } from './vpc';
+import type { IResource } from '../../core';
+import { Resource, Tags } from '../../core';
 import { asNetworkAcl, asSubnet } from './private/conversions';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

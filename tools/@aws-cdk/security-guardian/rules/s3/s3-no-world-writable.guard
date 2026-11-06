@@ -25,9 +25,11 @@ rule S3_NO_WORLD_WRITABLE when %s3_bucket_policies !empty {
                                     when Principal.AWS exists {
                                         when Principal.AWS is_string {
                                             Principal.AWS != "*"
+                                                <<##ERROR:S3 bucket policy must not grant world-writable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
                                         }
                                         when Principal.AWS is_list {
                                             Principal.AWS[*] != "*"
+                                                <<##ERROR:S3 bucket policy must not grant world-writable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
                                         }
                                     }
                                 }
@@ -41,9 +43,11 @@ rule S3_NO_WORLD_WRITABLE when %s3_bucket_policies !empty {
                                     when Principal.AWS exists {
                                         when Principal.AWS is_string {
                                             Principal.AWS != "*"
+                                                <<##ERROR:S3 bucket policy must not grant world-writable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
                                         }
                                         when Principal.AWS is_list {
                                             Principal.AWS[*] != "*"
+                                                <<##ERROR:S3 bucket policy must not grant world-writable access. Remove '*' from Principal and scope to specific accounts or roles.##>>
                                         }
                                     }
                                 }

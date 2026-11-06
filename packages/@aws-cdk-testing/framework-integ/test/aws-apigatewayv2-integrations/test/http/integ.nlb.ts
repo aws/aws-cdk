@@ -3,7 +3,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { HttpNlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
-import { IntegTest, ExpectedResult, AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
+import type { AssertionsProvider } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 

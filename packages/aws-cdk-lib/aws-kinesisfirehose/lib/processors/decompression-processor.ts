@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
+import type { Construct } from 'constructs';
+import type { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
 /**
  * Compression format for DecompressionProcessor.

@@ -1,6 +1,7 @@
-import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as ses from 'aws-cdk-lib/aws-ses';
 import * as sns from 'aws-cdk-lib/aws-sns';

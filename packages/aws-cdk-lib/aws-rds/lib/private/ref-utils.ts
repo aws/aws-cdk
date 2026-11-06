@@ -1,6 +1,7 @@
 import { UnscopedValidationError } from '../../../core';
-import { IDBSubnetGroupRef } from '../rds.generated';
-import { ISubnetGroup } from '../subnet-group';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { IDBSubnetGroupRef } from '../rds.generated';
+import type { ISubnetGroup } from '../subnet-group';
 
 /**
  * Convert an IBackupVaultRef to IBackupVault, throwing an error if the instance
@@ -8,7 +9,7 @@ import { ISubnetGroup } from '../subnet-group';
  */
 export function toISubnetGroup(group: IDBSubnetGroupRef): ISubnetGroup {
   if (!('subnetGroupName' in group)) {
-    throw new UnscopedValidationError(`'group' instance should implement ISubnetGroup, but doesn't: ${group.constructor.name}`);
+    throw new UnscopedValidationError(lit`GroupInstanceShouldImplement`, `'group' instance should implement ISubnetGroup, but doesn't: ${group.constructor.name}`);
   }
   return group as ISubnetGroup;
 }

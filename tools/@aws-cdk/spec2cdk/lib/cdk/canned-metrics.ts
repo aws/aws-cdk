@@ -1,5 +1,6 @@
-import { DimensionSet, Metric, Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { ClassType, expr, InterfaceType, IScope, Method, Module, stmt, Type } from '@cdklabs/typewriter';
+import type { DimensionSet, Metric, Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import type { IScope, Method } from '@cdklabs/typewriter';
+import { ClassType, expr, InterfaceType, Module, stmt, Type } from '@cdklabs/typewriter';
 import {
   metricFunctionName,
   metricsClassNameFromService as metricsClassNameFromNamespace,

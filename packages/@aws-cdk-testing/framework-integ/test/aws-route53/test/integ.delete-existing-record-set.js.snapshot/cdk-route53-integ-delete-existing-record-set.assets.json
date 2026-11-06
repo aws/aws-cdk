@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "d31ae6d66f2c01cc155b32bebe939459536ed5a9454d1d680af65fd95e46e5ae": {
       "displayName": "cdk-route53-integ-delete-existing-record-set Template",

@@ -8,7 +8,8 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as servicecatalog from 'aws-cdk-lib/aws-servicecatalog';
-import { ProductStackHistory, ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
+import type { ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
+import { ProductStackHistory } from 'aws-cdk-lib/aws-servicecatalog';
 import { ServerSideEncryption } from 'aws-cdk-lib/aws-s3-deployment';
 
 const app = new cdk.App({

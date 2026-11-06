@@ -15,7 +15,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 const backend = new elbv2.ApplicationLoadBalancer(stack, 'Backend', {
   vpc,
 });
-backend.addListener('Listener', {
+const backendListener = backend.addListener('Listener', {
   protocol: elbv2.ApplicationProtocol.HTTP,
   defaultAction: elbv2.ListenerAction.fixedResponse(200, {
     contentType: 'application/json',
@@ -40,7 +40,7 @@ const listener = nlb.addListener('Listener', {
 
 const group = listener.addTargets('Target', {
   port: 80,
-  targets: [new targets.AlbTarget(backend, 80)],
+  targets: [new targets.AlbListenerTarget(backendListener)],
 });
 backend.connections.allowFrom(nlb, ec2.Port.tcp(80));
 

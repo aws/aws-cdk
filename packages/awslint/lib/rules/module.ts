@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { CfnResourceReflection } from './cfn-resource';
 import { Linter } from '../linter';
 

@@ -1,7 +1,7 @@
-import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import type * as iot from '@aws-cdk/aws-iot-alpha';
+import type * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { CommonActionProps } from './common-action-props';
+import type { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**

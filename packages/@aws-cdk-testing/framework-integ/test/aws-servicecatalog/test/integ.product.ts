@@ -5,7 +5,8 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as servicecatalog from 'aws-cdk-lib/aws-servicecatalog';
-import { ProductStackHistory, ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
+import type { ProductStackProps } from 'aws-cdk-lib/aws-servicecatalog';
+import { ProductStackHistory } from 'aws-cdk-lib/aws-servicecatalog';
 
 /**
  * Follow these instructions to manually test provisioning a Product with an Asset with the resources provisioned in this stack:

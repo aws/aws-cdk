@@ -123,7 +123,7 @@ export class CfnReference extends Reference {
     super(value, target, displayName, typeHint);
 
     this.replacementTokens = new Map<Stack, IResolvable>();
-    this.targetStack = Stack.of(target);
+    this.targetStack = stackOf(target);
 
     Object.defineProperty(this, CFN_REFERENCE_SYMBOL, { value: true });
   }
@@ -131,7 +131,7 @@ export class CfnReference extends Reference {
   public resolve(context: IResolveContext): any {
     // If we have a special token for this consuming stack, resolve that. Otherwise resolve as if
     // we are in the same stack.
-    const consumingStack = Stack.of(context.scope);
+    const consumingStack = stackOf(context.scope);
     const token = this.replacementTokens.get(consumingStack);
 
     // if (!token && this.isCrossStackReference(consumingStack) && !context.preparing) {
@@ -156,11 +156,11 @@ export class CfnReference extends Reference {
 
   public assignValueForStack(stack: Stack, value: IResolvable) {
     if (stack === this.targetStack) {
-      throw new UnscopedValidationError('cannot assign a value for the same stack');
+      throw new UnscopedValidationError(lit`CannotAssignValueStack`, 'cannot assign a value for the same stack');
     }
 
     if (this.hasValueForStack(stack)) {
-      throw new UnscopedValidationError('Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
+      throw new UnscopedValidationError(lit`CannotAssignReferenceValueTwice`, 'Cannot assign a reference value twice to the same stack. Use hasValueForStack to check first');
     }
 
     this.replacementTokens.set(stack, value);
@@ -175,10 +175,12 @@ export class CfnReference extends Reference {
   }
 }
 
-import { Construct, IConstruct } from 'constructs';
-import { CfnElement } from '../cfn-element';
-import { IResolvable, IResolveContext } from '../resolvable';
-import { Stack } from '../stack';
+import type { Construct, IConstruct } from 'constructs';
+import type { CfnElement } from '../cfn-element';
+import type { IResolvable, IResolveContext } from '../resolvable';
+import type { Stack } from '../stack';
 import { Token } from '../token';
-import { ResolutionTypeHint } from '../type-hints';import { UnscopedValidationError } from '../errors';
+import type { ResolutionTypeHint } from '../type-hints';import { UnscopedValidationError } from '../errors';
+import { lit } from './literal-string';
+import { stackOf } from './core-construct-finders';
 

@@ -1,20 +1,11 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
-const app = new cdk.App({
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
-});
-const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  },
-});
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
 
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {
@@ -46,5 +37,3 @@ new redshift.Cluster(stack, 'Cluster', {
 new integ.IntegTest(app, 'aws-cdk-redshift-elastic-ip-test', {
   testCases: [stack],
 });
-
-app.synth();

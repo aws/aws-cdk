@@ -1,6 +1,8 @@
-import { Queue, IQueue } from 'aws-cdk-lib/aws-sqs';
+import type { IQueue } from 'aws-cdk-lib/aws-sqs';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
-import { App, Stack, StackProps, NestedStack } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, NestedStack } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 

@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import { Runtime } from '../../../lib/runtime/runtime';
-import { AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
+import { AgentRuntimeArtifact, AgentCoreRuntime } from '../../../lib/runtime/runtime-artifact';
 
 describe('AgentRuntimeArtifact tests', () => {
   let app: cdk.App;
@@ -226,5 +226,96 @@ describe('AgentRuntimeArtifact tests', () => {
     expect(() => {
       artifact2.bind(runtime, runtime);
     }).toThrow(/There is already a Construct with name 'AgentRuntimeArtifact'/);
+  });
+
+  describe('fromCodeAsset', () => {
+    test('Should create artifact from code asset', () => {
+      const artifact = AgentRuntimeArtifact.fromCodeAsset({
+        path: path.join(__dirname, 'testArtifact'),
+        runtime: AgentCoreRuntime.PYTHON_3_12,
+        entrypoint: ['main.py'],
+      });
+
+      const runtime = new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: artifact,
+      });
+
+      artifact.bind(stack, runtime);
+      const rendered: any = artifact._render();
+
+      expect(rendered.code).toBeDefined();
+      expect(rendered.code.s3).toBeDefined();
+      expect(rendered.code.s3.bucket).toBeDefined();
+      expect(rendered.code.s3.prefix).toBeDefined();
+      expect(rendered.runtime).toBe('PYTHON_3_12');
+      expect(rendered.entryPoint).toEqual(['main.py']);
+    });
+
+    test('Should throw error if _render is called before bind for CodeAsset', () => {
+      const artifact = AgentRuntimeArtifact.fromCodeAsset({
+        path: path.join(__dirname, 'testArtifact'),
+        runtime: AgentCoreRuntime.PYTHON_3_12,
+        entrypoint: ['main.py'],
+      });
+
+      expect(() => {
+        artifact._render();
+      }).toThrow('Asset not initialized. Call bind() before _render()');
+    });
+
+    test('Should only bind once for code asset', () => {
+      const artifact = AgentRuntimeArtifact.fromCodeAsset({
+        path: path.join(__dirname, 'testArtifact'),
+        runtime: AgentCoreRuntime.PYTHON_3_12,
+        entrypoint: ['main.py'],
+      });
+
+      const runtime = new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: artifact,
+      });
+
+      // Bind multiple times
+      artifact.bind(stack, runtime);
+      artifact.bind(stack, runtime);
+
+      // Check that asset is created only once
+      const rendered1: any = artifact._render();
+      const rendered2: any = artifact._render();
+
+      // Should return the same bucket and key
+      expect(rendered1.code.s3.bucket).toBe(rendered2.code.s3.bucket);
+      expect(rendered1.code.s3.prefix).toBe(rendered2.code.s3.prefix);
+    });
+
+    test('Should grant read permissions to runtime role for code asset', () => {
+      const artifact = AgentRuntimeArtifact.fromCodeAsset({
+        path: path.join(__dirname, 'testArtifact'),
+        runtime: AgentCoreRuntime.PYTHON_3_12,
+        entrypoint: ['main.py'],
+      });
+
+      const runtime = new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: artifact,
+      });
+
+      artifact.bind(stack, runtime);
+
+      const template = Template.fromStack(stack);
+
+      // Verify that IAM permissions are granted
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: Match.arrayWith(['s3:GetObject*', 's3:GetBucket*', 's3:List*']),
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+    });
   });
 });

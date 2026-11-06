@@ -138,6 +138,39 @@
     }
    }
   },
+  "AliasDistributionOrigin1InvokeFunctionFromCloudFrontForintegcloudfrontfunctionurloriginoacAliasDistributionOrigin11CF22ED50D032DE9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyFunctionAliasLiveFunctionUrl4C98949A",
+      "FunctionArn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "AliasDistribution1027E46E"
+       }
+      ]
+     ]
+    }
+   }
+  },
   "AliasDistribution1027E46E": {
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {

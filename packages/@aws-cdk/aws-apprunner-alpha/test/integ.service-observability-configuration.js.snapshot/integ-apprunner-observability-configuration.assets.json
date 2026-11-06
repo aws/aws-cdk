@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "50.0.0",
   "files": {
     "839ca74bb662f9fc4cef96d00bbc37a8739def22f31ef235eb3dc66132b90e9c": {
+      "displayName": "integ-apprunner-observability-configuration Template",
       "source": {
         "path": "integ-apprunner-observability-configuration.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-d0d25088": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "839ca74bb662f9fc4cef96d00bbc37a8739def22f31ef235eb3dc66132b90e9c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

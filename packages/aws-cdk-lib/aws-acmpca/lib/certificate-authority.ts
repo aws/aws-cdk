@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import { ICertificateAuthorityRef } from './acmpca.generated';
+import type { Construct } from 'constructs';
+import type { ICertificateAuthorityRef } from './acmpca.generated';
 import * as cdk from '../../core';
 
 /**

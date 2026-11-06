@@ -4,7 +4,7 @@
 
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { App, NestedStack, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class ConsumerNestedStack extends NestedStack {
   constructor(scope: Construct, id: string, topic: sns.Topic) {

@@ -2,8 +2,9 @@ import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Annotations, Lazy, Names, Token } from '../../../core';
-import { IntegrationConfig, IntegrationOptions, ResponseTransferMode } from '../integration';
-import { Method } from '../method';
+import type { IntegrationConfig, IntegrationOptions } from '../integration';
+import { ResponseTransferMode } from '../integration';
+import type { Method } from '../method';
 
 export interface LambdaIntegrationOptions extends IntegrationOptions {
   /**

@@ -21,7 +21,7 @@ httpApi.addRoutes({
   methods: [apigwv2.HttpMethod.GET],
   integration: new integrations.HttpLambdaIntegration('GetIntegration',
     new lambda.Function(stack, 'GetHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: new lambda.InlineCode(`
         exports.handler = async () => ({
@@ -36,7 +36,7 @@ httpApi.addRoutes({
   methods: [apigwv2.HttpMethod.POST],
   integration: new integrations.HttpLambdaIntegration('PostIntegration',
     new lambda.Function(stack, 'PostHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: new lambda.InlineCode(`
         exports.handler = async ({ body }) => ({
@@ -51,7 +51,7 @@ httpApi.addRoutes({
   methods: [apigwv2.HttpMethod.GET],
   integration: new integrations.HttpLambdaIntegration('ForbiddenIntegration',
     new lambda.Function(stack, 'ForbiddenHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: new lambda.InlineCode(`
         exports.handler = async ({ body }) => ({
@@ -65,7 +65,7 @@ httpApi.addRoutes({
   methods: [apigwv2.HttpMethod.GET],
   integration: new integrations.HttpLambdaIntegration('EchoIntegration',
     new lambda.Function(stack, 'EchoHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: new lambda.InlineCode(`
         exports.handler = async ({ pathParameters: { echo } }) => ({

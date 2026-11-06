@@ -1,7 +1,7 @@
 import { Template } from '../../../assertions';
 import * as apigateway from '../../../aws-apigateway';
 import { Certificate } from '../../../aws-certificatemanager';
-import { Metric } from '../../../aws-cloudwatch';
+import type { Metric } from '../../../aws-cloudwatch';
 import * as logs from '../../../aws-logs';
 import { Lazy, Stack } from '../../../core';
 import { DomainName, HttpApi, HttpStage, LogGroupLogDestination } from '../../lib';

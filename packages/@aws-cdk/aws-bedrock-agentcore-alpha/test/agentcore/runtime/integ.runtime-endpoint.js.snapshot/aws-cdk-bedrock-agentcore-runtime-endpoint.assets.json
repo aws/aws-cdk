@@ -1,31 +1,32 @@
 {
   "version": "48.0.0",
   "files": {
-    "e40203bf9ee3fa2e6b7a8abb7f383864647cce9eca80e76ab4e732fcada3513a": {
+    "19d9b06dcbb5c28236a6fbe00a61cf413690873208a99f86808623d58383c1fa": {
       "displayName": "aws-cdk-bedrock-agentcore-runtime-endpoint Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-runtime-endpoint.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-03e404e5": {
+        "current_account-current_region-52abdd15": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e40203bf9ee3fa2e6b7a8abb7f383864647cce9eca80e76ab4e732fcada3513a.json",
+          "objectKey": "19d9b06dcbb5c28236a6fbe00a61cf413690873208a99f86808623d58383c1fa.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }
   },
   "dockerImages": {
-    "f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240": {
+    "b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925": {
       "displayName": "ExistingRuntime/AgentRuntimeArtifact",
       "source": {
-        "directory": "asset.f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
+        "directory": "asset.b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925",
+        "platform": "linux/arm64"
       },
       "destinations": {
-        "current_account-current_region-1d39c940": {
+        "current_account-current_region-922b1212": {
           "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
-          "imageTag": "f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240",
+          "imageTag": "b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

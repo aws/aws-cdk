@@ -8,7 +8,9 @@ const stack = new cdk.Stack(app, 'aws-cdk-appsync-graphql-field-level-log');
 
 new appsync.GraphqlApi(stack, 'LambdaAPI', {
   name: 'LambdaAPI',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.lambda.graphql')),
+  },
   logConfig: {
     fieldLogLevel: appsync.FieldLogLevel.INFO,
   },

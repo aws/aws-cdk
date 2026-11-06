@@ -1,6 +1,9 @@
 import * as validation from './private/validation';
-import * as s3 from '../../aws-s3';
-import { Lazy, Token, UnscopedValidationError } from '../../core';
+import type * as s3 from '../../aws-s3';
+import { Token, UnscopedValidationError } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * An output artifact of an action. Artifacts can be used as input by some actions.
@@ -14,13 +17,15 @@ export class Artifact {
    * @param files file paths that you want to export as the output artifact for the action.
    * This property can only be used in the artifact for `CommandsAction`.
    * The length of the files array must be between 1 and 10.
+   *
+   * @jsii suppress JSII5019 For historic reasons
    */
   public static artifact(name: string, files?: string[]): Artifact {
     return new Artifact(name, files);
   }
 
-  private _artifactName?: string;
-  private _artifactFiles?: string[];
+  private readonly _artifactName: IBox<string | undefined>;
+  private readonly _artifactFiles?: string[];
   private readonly metadata: { [key: string]: any } = {};
 
   /**
@@ -35,14 +40,23 @@ export class Artifact {
     validation.validateArtifactName(artifactName);
 
     if (artifactFiles !== undefined && (artifactFiles.length < 1 || artifactFiles.length > 10)) {
-      throw new UnscopedValidationError(`The length of the artifactFiles array must be between 1 and 10, got: ${artifactFiles.length}`);
+      throw new UnscopedValidationError(lit`MustBeLengthArtifactfilesArray`, `The length of the artifactFiles array must be between 1 and 10, got: ${artifactFiles.length}`);
     }
 
-    this._artifactName = artifactName;
+    this._artifactName = Box.fromValue<string | undefined>(artifactName);
     this._artifactFiles = artifactFiles;
   }
 
   public get artifactName(): string | undefined {
+    return this._artifactName.get();
+  }
+
+  /**
+   * @internal
+   *
+   * Internal because we need to expose the box for use as IResolvable in ArtifactPath
+   */
+  public get _artifactNameBox(): IBox<string | undefined> {
     return this._artifactName;
   }
 
@@ -132,10 +146,10 @@ export class Artifact {
 
   /** @internal */
   protected _setName(name: string) {
-    if (this._artifactName) {
-      throw new UnscopedValidationError(`Artifact already has name '${this._artifactName}', cannot override it`);
+    if (this._artifactName.get()) {
+      throw new UnscopedValidationError(lit`ArtifactAlreadyName`, `Artifact already has name '${this._artifactName.get()}', cannot override it`);
     } else {
-      this._artifactName = name;
+      this._artifactName.set(name);
     }
   }
 }
@@ -147,6 +161,7 @@ export class Artifact {
  * for a CloudFormation action.
  */
 export class ArtifactPath {
+  /** @jsii suppress JSII5019 For historic reasons */
   public static artifactPath(artifactName: string, fileName: string): ArtifactPath {
     return new ArtifactPath(Artifact.artifact(artifactName), fileName);
   }
@@ -158,17 +173,15 @@ export class ArtifactPath {
   public get location() {
     const artifactName = this.artifact.artifactName
       ? this.artifact.artifactName
-      : Lazy.string({ produce: () => this.artifact.artifactName });
+      : Token.asString(this.artifact._artifactNameBox);
     return `${artifactName}::${this.fileName}`;
   }
 }
 
 function artifactAttribute(artifact: Artifact, attributeName: string) {
-  const lazyArtifactName = Lazy.string({ produce: () => artifact.artifactName });
-  return Token.asString({ 'Fn::GetArtifactAtt': [lazyArtifactName, attributeName] });
+  return Token.asString({ 'Fn::GetArtifactAtt': [Token.asString(artifact._artifactNameBox), attributeName] });
 }
 
 function artifactGetParam(artifact: Artifact, jsonFile: string, keyName: string) {
-  const lazyArtifactName = Lazy.string({ produce: () => artifact.artifactName });
-  return Token.asString({ 'Fn::GetParam': [lazyArtifactName, jsonFile, keyName] });
+  return Token.asString({ 'Fn::GetParam': [Token.asString(artifact._artifactNameBox), jsonFile, keyName] });
 }

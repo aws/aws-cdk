@@ -1,5 +1,5 @@
 /* eslint-disable eol-last */
-import * as scheduler from './scheduler.generated';
+import type * as scheduler from './scheduler.generated';
 import * as iam from '../../aws-iam';
 import { Arn, Aws } from '../../core';
 

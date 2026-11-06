@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { notify } from '../private/print';
 import { runExecFile } from '../private/run-exec-file';
-import { ReleaseOptions } from '../types';
+import type { ReleaseOptions } from '../types';
 
 export async function commit(args: ReleaseOptions, newVersion: string, modifiedFiles: string[]): Promise<void> {
   if (args.skip?.commit) {

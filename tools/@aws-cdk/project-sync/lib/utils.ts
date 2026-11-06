@@ -1,5 +1,5 @@
 import { PROJECT_NUMBER } from './config';
-import { Github } from './github';
+import type { Github } from './github';
 
 export const PRIORITIES = {
   p0: 'P0',
@@ -107,7 +107,7 @@ export const getPriorityFromLabels = (labels: any[], priorityField: { options: R
 
 const botLogins = new Set([
   'github-actions',
-  'related-issues-bot-for-aws',
+  'maintainer-for-aws',
 ]);
 
 export const isBotLogin = (login: string) => botLogins.has(login);

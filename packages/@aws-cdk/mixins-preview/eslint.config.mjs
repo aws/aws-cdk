@@ -6,7 +6,7 @@ for (const c of config) {
     // this library too much right now, avoiding merge conflicts
     if (c.rules) {
         c.rules['import/order'] = ['off'];
-        c.rules['no-duplicate-imports'] = ['off'];
+        c.rules['import/no-duplicates'] = ['off'];
     }
 }
 

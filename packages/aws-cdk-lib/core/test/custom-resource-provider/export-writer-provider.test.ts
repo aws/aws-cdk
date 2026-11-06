@@ -1,4 +1,5 @@
-import { App, Stack, AssetStaging, CfnResource, NestedStack } from '../../lib';
+import type { AssetStaging } from '../../lib';
+import { App, Stack, CfnResource, NestedStack } from '../../lib';
 import { ExportWriter } from '../../lib/custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { toCloudFormation } from '../util';
 
@@ -134,7 +135,7 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs22.x',
+            Runtime: 'nodejs24.x',
           },
           DependsOn: [
             'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -163,7 +164,7 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs22.x',
+            Runtime: 'nodejs24.x',
             Timeout: 900,
           },
           Type: 'AWS::Lambda::Function',
@@ -495,7 +496,7 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs22.x',
+            Runtime: 'nodejs24.x',
           },
           DependsOn: [
             'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -524,7 +525,7 @@ describe('export writer provider', () => {
                 'Arn',
               ],
             },
-            Runtime: 'nodejs22.x',
+            Runtime: 'nodejs24.x',
             Timeout: 900,
           },
           Type: 'AWS::Lambda::Function',

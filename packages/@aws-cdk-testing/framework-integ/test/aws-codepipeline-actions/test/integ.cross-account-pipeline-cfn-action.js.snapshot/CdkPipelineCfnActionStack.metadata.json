@@ -1,0 +1,1002 @@
+{
+  "/CdkPipelineCfnActionStack/SourceBucketKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/SourceBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true,
+        "versioned": true,
+        "encryptionKey": "*"
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    }
+  ],
+  "/CdkPipelineCfnActionStack/ArtifactBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS",
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true,
+        "bucketName": "*"
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "pipelineName": "*",
+        "crossAccountKeys": true,
+        "artifactBucket": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BuildProject": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/SourceBucketKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceBucketKey79929454"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/SourceBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceBucketDDD2130A"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/SourceBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/SourceBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BucketDeployment/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BucketDeployment/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BucketDeployment/CustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/ArtifactBucket/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "enableKeyRotation": true
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/ArtifactBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ArtifactBucket7410C9EF"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/ArtifactBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/ArtifactBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountCloudformationPipeline18407FD7"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BuildProject/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BuildProject/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuildProject097C5DB7"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/SourceBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceBucketPolicy703DFBF9"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/SourceBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceBucketAutoDeleteObjectsCustomResourceC68FC040"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BucketDeployment/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketDeploymentAwsCliLayerB018DCE1"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BucketDeployment/Asset1/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BucketDeployment/CustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketDeploymentCustomResourceCB7E2133"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/ArtifactBucket/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ArtifactBucketKey55061679"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/ArtifactBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ArtifactBucketPolicy4B4B7752"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/ArtifactBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ArtifactBucketAutoDeleteObjectsCustomResource0BB47FD6"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountCloudformationPipelineRole3E76389A"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BuildProject/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuildProjectRoleAA92C755"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BuildProject/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BucketDeployment/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountCloudformationPipelineRoleDefaultPolicyEE65AA6B"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Source/Source/CodePipelineActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantAssumeRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Build/BuildAction/CodePipelineActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantAssumeRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/BuildProject/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuildProjectRoleDefaultPolicy3E9F248C"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Source/Source/CodePipelineActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountCloudformationPipelineSourceCodePipelineActionRole9DC3F7EF"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Source/Source/CodePipelineActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Build/BuildAction/CodePipelineActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountCloudformationPipelineBuildBuildActionCodePipelineActionRole0101BBE7"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Build/BuildAction/CodePipelineActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountCloudformationPipelineSourceCodePipelineActionRoleDefaultPolicyD03C8DC4"
+    }
+  ],
+  "/CdkPipelineCfnActionStack/CrossAccountCloudformationPipeline/Build/BuildAction/CodePipelineActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountCloudformationPipelineBuildBuildActionCodePipelineActionRoleDefaultPolicy63188467"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-import { Column, IWidget, Row, Spacer, TextWidget } from '../lib';
+import type { IWidget } from '../lib';
+import { Column, Row, Spacer, TextWidget } from '../lib';
 
 describe('Layout', () => {
   test('row has the height of the tallest element', () => {

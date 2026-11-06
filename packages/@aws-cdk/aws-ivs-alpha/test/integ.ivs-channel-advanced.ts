@@ -22,6 +22,7 @@ const standardChannelWithPresetSetting = new ivs.Channel(stack, 'StandardChannel
 
 const test = new integ.IntegTest(app, 'ivs-test', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1', 'eu-central-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1'], // IVS is only available in these regions
 });
 
 test.assertions.awsApiCall('IVS', 'GetChannel', {

@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type { Construct } from 'constructs';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 import { Annotations, FeatureFlags, Names, Stack } from '../../core';
 import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from '../../cx-api';
 

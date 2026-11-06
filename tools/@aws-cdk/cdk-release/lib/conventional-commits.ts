@@ -1,4 +1,4 @@
-import { ReleaseOptions } from './types';
+import type { ReleaseOptions } from './types';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const conventionalCommitsParser = require('conventional-commits-parser');
 // eslint-disable-next-line @typescript-eslint/no-require-imports

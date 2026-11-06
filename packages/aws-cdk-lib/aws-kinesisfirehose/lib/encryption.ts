@@ -1,5 +1,5 @@
 import { StreamEncryptionType } from './delivery-stream';
-import { IKey } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
 
 /**
  * Represents server-side encryption for an Amazon Firehose Delivery Stream.

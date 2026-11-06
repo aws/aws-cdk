@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Template } from '../../assertions';
-import * as acm from '../../aws-certificatemanager';
+import type * as acm from '../../aws-certificatemanager';
 import { Certificate } from '../../aws-certificatemanager';
 import * as cdk from '../../core';
 import * as appsync from '../lib';

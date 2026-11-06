@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "54.0.0",
   "testCases": {
     "integtest-pipe-enrichments-stepfunctions/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert",
       "assertionStackName": "integtestpipeenrichmentsstepfunctionsDefaultTestDeployAssert49B5A72D"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

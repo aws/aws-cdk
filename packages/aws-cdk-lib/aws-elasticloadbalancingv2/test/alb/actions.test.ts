@@ -353,4 +353,109 @@ describe('tests', () => {
       });
     }).toThrow('Redirect path must start with a \'/\', got: example');
   });
+
+  test('Chaining JWT authentication action', () => {
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      protocol: elbv2.ApplicationProtocol.HTTPS,
+      port: 443,
+      certificates: [elbv2.ListenerCertificate.fromArn('arn:aws:acm:us-east-1:123456789012:certificate/test-cert')],
+      defaultAction: elbv2.ListenerAction.authenticateJwt({
+        issuer: 'https://issuer.example.com',
+        jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+    listener.addAction('AdditionalJwtAuthenticationAction', {
+      priority: 1,
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/api/*'])],
+      action: elbv2.ListenerAction.authenticateJwt({
+        issuer: 'https://issuer.example.com',
+        jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      DefaultActions: [
+        {
+          JwtValidationConfig: {
+            Issuer: 'https://issuer.example.com',
+            JwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+          },
+          Order: 1,
+          Type: 'jwt-validation',
+        },
+        {
+          Order: 2,
+          TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
+          Type: 'forward',
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::ListenerRule', {
+      Actions: [
+        {
+          JwtValidationConfig: {
+            Issuer: 'https://issuer.example.com',
+            JwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+          },
+          Order: 1,
+          Type: 'jwt-validation',
+        },
+        {
+          Order: 2,
+          TargetGroupArn: { Ref: 'TargetGroup1E5480F51' },
+          Type: 'forward',
+        },
+      ],
+    });
+  });
+
+  test('JWT authentication requires HTTPS listener', () => {
+    // WHEN/THEN
+    expect(() => {
+      lb.addListener('Listener', {
+        port: 80,
+        defaultAction: elbv2.ListenerAction.authenticateJwt({
+          issuer: 'https://issuer.example.com',
+          jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+          next: elbv2.ListenerAction.forward([group1]),
+        }),
+      });
+    }).toThrow('JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
+  });
+
+  test('throws error when jwksEndpoint does not use HTTPS', () => {
+    expect(() => {
+      elbv2.ListenerAction.authenticateJwt({
+        issuer: 'https://issuer.example.com',
+        jwksEndpoint: 'http://issuer.example.com/.well-known/jwks.json',
+        next: elbv2.ListenerAction.forward([group1]),
+      });
+    }).toThrow('JWKS endpoint must use HTTPS protocol, got: http://issuer.example.com/.well-known/jwks.json');
+  });
+
+  test('throws error when jwksEndpoint exceeds 256 characters', () => {
+    const longEndpoint = 'https://issuer.example.com/' + 'a'.repeat(256);
+    expect(() => {
+      elbv2.ListenerAction.authenticateJwt({
+        issuer: 'https://issuer.example.com',
+        jwksEndpoint: longEndpoint,
+        next: elbv2.ListenerAction.forward([group1]),
+      });
+    }).toThrow(`JWKS endpoint must be 256 characters or fewer, got ${longEndpoint.length} characters`);
+  });
+
+  test('throws error when issuer exceeds 256 characters', () => {
+    const longIssuer = 'https://issuer.example.com/' + 'a'.repeat(256);
+    expect(() => {
+      elbv2.ListenerAction.authenticateJwt({
+        issuer: longIssuer,
+        jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+        next: elbv2.ListenerAction.forward([group1]),
+      });
+    }).toThrow(`Issuer must be 256 characters or fewer, got ${longIssuer.length} characters`);
+  });
 });

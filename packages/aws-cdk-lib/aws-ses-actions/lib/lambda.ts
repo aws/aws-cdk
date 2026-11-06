@@ -1,7 +1,7 @@
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as ses from '../../aws-ses';
-import * as sns from '../../aws-sns';
+import type * as lambda from '../../aws-lambda';
+import type * as ses from '../../aws-ses';
+import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 
 /**

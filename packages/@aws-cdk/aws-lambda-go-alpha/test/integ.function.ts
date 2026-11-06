@@ -1,8 +1,9 @@
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import type { Construct } from 'constructs';
 import * as lambda from '../lib';
 
 /*

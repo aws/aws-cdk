@@ -1,8 +1,10 @@
-import { Construct } from 'constructs';
-import { CfnGatewayRoute, CfnVirtualGateway, GatewayRouteReference, IGatewayRouteRef } from './appmesh.generated';
-import { GatewayRouteSpec } from './gateway-route-spec';
+import type { Construct } from 'constructs';
+import type { CfnVirtualGateway, GatewayRouteReference, IGatewayRouteRef } from './appmesh.generated';
+import { CfnGatewayRoute } from './appmesh.generated';
+import type { GatewayRouteSpec } from './gateway-route-spec';
 import { renderMeshOwner } from './private/utils';
-import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
+import type { IVirtualGateway } from './virtual-gateway';
+import { VirtualGateway } from './virtual-gateway';
 import * as cdk from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';

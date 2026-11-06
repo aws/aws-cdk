@@ -7,7 +7,7 @@
  *   - GetAtt.Attribute2: 1234
  */
 import { App, CfnOutput, CustomResource, CustomResourceProvider, Stack, Token } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME } from '../../config';
 
 class TestStack extends Stack {

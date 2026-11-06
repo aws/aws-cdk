@@ -1,7 +1,7 @@
 
 import * as path from 'node:path';
 import * as fs from 'fs-extra';
-import { ModuleMap } from '../module-topology';
+import type { ModuleMap } from '../module-topology';
 
 export default async function writeCloudFormationIncludeMapping(moduleMap: ModuleMap, outPath: string) {
   const classMap: { [cfnType: string]: string } = {};

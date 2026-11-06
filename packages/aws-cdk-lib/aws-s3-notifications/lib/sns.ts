@@ -1,7 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import * as sns from '../../aws-sns';
+import type * as sns from '../../aws-sns';
 import { Annotations, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 

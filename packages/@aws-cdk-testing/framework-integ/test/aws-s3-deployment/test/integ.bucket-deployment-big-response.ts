@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import { CfnOutput, Fn } from 'aws-cdk-lib';
 import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
