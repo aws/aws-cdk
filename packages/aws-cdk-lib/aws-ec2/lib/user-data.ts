@@ -1,8 +1,71 @@
 import { OperatingSystemType } from './machine-image';
 import type { IBucketRef } from '../../aws-s3';
-import type { Resource, CfnResource } from '../../core';
-import { Fn, Stack, UnscopedValidationError } from '../../core';
+import type { IResolveContext, Resource, CfnResource } from '../../core';
+import { FeatureFlags, Fn, Stack, Token, UnscopedValidationError } from '../../core';
+import {
+  posixShellDecodeDeployTimeArgument,
+  posixShellEscapeDeployTimeValuesInCommandLine,
+  powershellDecodeDeployTimeArgument,
+  powershellEscapeDeployTimeValuesInCommandLine,
+} from '../../core/lib/private/deploy-time-shell-escape';
 import { lit } from '../../core/lib/private/literal-string';
+import { EC2_ENCODE_USER_DATA_COMMAND_VALUES } from '../../cx-api';
+
+// Deploy-time values in download and execute commands
+//
+// A deploy-time value, such as a `CfnParameter`, is a token: CloudFormation
+// pastes the real value into the script at deploy time, exactly as typed. A
+// value like `x'; touch /tmp/pwned; '` would then end the quotes around it
+// and run `touch` on the instance as root.
+//
+// With the feature flag on, each token is wrapped in `Fn::Base64` instead, and
+// the script decodes it when the command runs. Base64 text has no characters
+// that mean anything to the shell or PowerShell, and both read a line for
+// quotes and commands only once, before the decode runs. So the decoded value
+// is passed as plain text and nothing in it runs. Each deploy-time value is
+// passed as exactly one argument.
+//
+// Literal values are written by the app author, so they are inserted as-is.
+
+/**
+ * Return `encoded` if the `@aws-cdk/aws-ec2:encodeUserDataCommandValues`
+ * feature flag is enabled, and `legacy` otherwise. The flag exists because
+ * changing UserData restarts or replaces existing instances.
+ *
+ * `UserData` is not a Construct, so the flag is read when the returned token
+ * is resolved, from the scope resolving it. `Lazy.string()` can't do this: it
+ * caches its first result and gets no scope. `Lazy.uncachedString()` could,
+ * but this repository's lint rules don't allow it.
+ */
+function encodedIfFlagEnabled(legacy: string, encoded: string): string {
+  if (legacy === encoded) {
+    return legacy;
+  }
+  return Token.asString({
+    creationStack: [],
+    resolve: (context: IResolveContext) =>
+      FeatureFlags.of(context.scope).isEnabled(EC2_ENCODE_USER_DATA_COMMAND_VALUES) ? encoded : legacy,
+  });
+}
+
+/**
+ * Render a single-value field (such as a bucket key, file path or region) as
+ * exactly one Linux shell argument. A deploy-time value is decoded with
+ * `posixShellDecodeDeployTimeArgument`. A literal is single-quoted as
+ * written.
+ */
+function encodeSingleValueForShell(value: string): string {
+  return Token.isUnresolved(value) ? posixShellDecodeDeployTimeArgument(value) : `'${value}'`;
+}
+
+/**
+ * Render a single-value field as exactly one PowerShell argument. A
+ * deploy-time value is decoded with `powershellDecodeDeployTimeArgument`. A
+ * literal is single-quoted as written.
+ */
+function encodeSingleValueForPowershell(value: string): string {
+  return Token.isUnresolved(value) ? powershellDecodeDeployTimeArgument(value) : `'${value}'`;
+}
 
 /**
  * Options when constructing UserData for Linux
@@ -77,6 +140,12 @@ export interface ExecuteFileOptions {
 
   /**
    * The arguments to be passed to the file.
+   *
+   * When the `@aws-cdk/aws-ec2:encodeUserDataCommandValues` feature flag is
+   * enabled, each value that is only known at deploy time, such as a
+   * `CfnParameter`, reaches the file as one argument with its exact text.
+   * Quotes, `;` or `$(...)` in the value are passed along as text instead of
+   * being run by the shell or PowerShell.
    *
    * @default No arguments are passed to the file.
    */
@@ -179,19 +248,54 @@ class LinuxUserData extends UserData {
   public addS3DownloadCommand(params: S3DownloadOptions): string {
     const s3Path = `s3://${params.bucket.bucketRef.bucketName}/${params.bucketKey}`;
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
+    const region = params.region;
+
+    const legacyMkdir = `mkdir -p $(dirname '${localPath}')`;
+    // For a deploy-time path, quote the whole `$(dirname ...)` so its output
+    // isn't split on spaces into several directories, and pass `--` to both
+    // commands so a value starting with `-` isn't read as an option. A literal
+    // path is written as `legacyMkdir`.
+    const encodedMkdir = Token.isUnresolved(localPath)
+      ? `mkdir -p -- "$(dirname -- ${encodeSingleValueForShell(localPath)})"`
+      : legacyMkdir;
+
+    // `--region` is only added when a region is given.
+    let legacyRegionFlag = '';
+    let encodedRegionFlag = '';
+    if (region !== undefined) {
+      // A literal region stays unquoted, so literal output is the same with the flag on or off.
+      const encodedRegion = Token.isUnresolved(region) ? encodeSingleValueForShell(region) : region;
+      legacyRegionFlag = ` --region ${region}`;
+      encodedRegionFlag = ` --region ${encodedRegion}`;
+    }
+
+    const encodedSource = encodeSingleValueForShell(s3Path);
+    const encodedTarget = encodeSingleValueForShell(localPath);
+    const legacyCopy = `aws s3 cp '${s3Path}' '${localPath}'${legacyRegionFlag}`;
+    const encodedCopy = `aws s3 cp ${encodedSource} ${encodedTarget}${encodedRegionFlag}`;
+
     this.addCommands(
-      `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'` + (params.region !== undefined ? ` --region ${params.region}` : ''),
+      encodedIfFlagEnabled(legacyMkdir, encodedMkdir),
+      encodedIfFlagEnabled(legacyCopy, encodedCopy),
     );
 
     return localPath;
   }
 
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
+    const encodedFile = encodeSingleValueForShell(params.filePath);
+    const args = params.arguments ?? '';
+
+    const legacyChmod = `chmod +x '${params.filePath}'`;
+    const encodedChmod = `chmod +x ${encodedFile}`;
+
+    const legacyRun = `'${params.filePath}' ${args}`.trim();
+    const encodedRun = `${encodedFile} ${posixShellEscapeDeployTimeValuesInCommandLine(args)}`.trim();
+
     this.addCommands(
       'set -e',
-      `chmod +x '${params.filePath}'`,
-      `'${params.filePath}' ${params.arguments ?? ''}`.trim(),
+      encodedIfFlagEnabled(legacyChmod, encodedChmod),
+      encodedIfFlagEnabled(legacyRun, encodedRun),
     );
   }
 
@@ -238,17 +342,48 @@ class WindowsUserData extends UserData {
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
+    const region = params.region;
+
+    const legacyMkdir = `mkdir (Split-Path -Path '${localPath}' ) -ea 0`;
+    const encodedMkdir = `mkdir (Split-Path -Path ${encodeSingleValueForPowershell(localPath)} ) -ea 0`;
+
+    // `-Region` is only added when a region is given.
+    let legacyRegionFlag = '';
+    let encodedRegionFlag = '';
+    if (region !== undefined) {
+      // A literal region stays unquoted, so literal output is the same with the flag on or off.
+      const encodedRegion = Token.isUnresolved(region) ? encodeSingleValueForPowershell(region) : region;
+      legacyRegionFlag = ` -Region ${region}`;
+      encodedRegionFlag = ` -Region ${encodedRegion}`;
+    }
+
+    const bucketName = params.bucket.bucketRef.bucketName;
+    const encodedBucket = encodeSingleValueForPowershell(bucketName);
+    const encodedKey = encodeSingleValueForPowershell(params.bucketKey);
+    const encodedFile = encodeSingleValueForPowershell(localPath);
+    const legacyRead = `Read-S3Object -BucketName '${bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop${legacyRegionFlag}`;
+    const encodedRead = `Read-S3Object -BucketName ${encodedBucket} -key ${encodedKey} -file ${encodedFile} -ErrorAction Stop${encodedRegionFlag}`;
+
     this.addCommands(
-      `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketRef.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
+      encodedIfFlagEnabled(legacyMkdir, encodedMkdir),
+      encodedIfFlagEnabled(legacyRead, encodedRead),
     );
     return localPath;
   }
 
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
+    const args = params.arguments ?? '';
+
+    const legacyRun = `&'${params.filePath}' ${args}`.trim();
+    const encodedRun = `&${encodeSingleValueForPowershell(params.filePath)} ${powershellEscapeDeployTimeValuesInCommandLine(args)}`.trim();
+
+    const failureMessage = `Failed to execute the file "${params.filePath}"`;
+    const legacyCheck = `if (!$?) { Write-Error '${failureMessage}' -ErrorAction Stop }`;
+    const encodedCheck = `if (!$?) { Write-Error ${encodeSingleValueForPowershell(failureMessage)} -ErrorAction Stop }`;
+
     this.addCommands(
-      `&'${params.filePath}' ${params.arguments ?? ''}`.trim(),
-      `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`,
+      encodedIfFlagEnabled(legacyRun, encodedRun),
+      encodedIfFlagEnabled(legacyCheck, encodedCheck),
     );
   }
 

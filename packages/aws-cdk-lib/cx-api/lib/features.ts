@@ -162,6 +162,7 @@ export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefa
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
+export const EC2_ENCODE_USER_DATA_COMMAND_VALUES = '@aws-cdk/aws-ec2:encodeUserDataCommandValues';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2018,6 +2019,32 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_ENCODE_USER_DATA_COMMAND_VALUES]: {
+    type: FlagType.BugFix,
+    summary: 'Encode tokenized values in UserData download and execute commands so a deploy-time value cannot inject OS commands',
+    detailsMd: `
+      \`UserData.addS3DownloadCommand()\` and \`addExecuteFileCommand()\` build the EC2 boot
+      script by interpolating their values into shell (Linux) or PowerShell (Windows) command
+      text. When a value is a deploy-time token (for example a \`CfnParameter\`), CloudFormation
+      substitutes the resolved value with no shell-safe escaping, so a value containing shell
+      metacharacters can run as commands on the instance as root (CWE-78).
+
+      When this flag is enabled, each tokenized value is encoded with the \`Fn::Base64\` intrinsic
+      and decoded on the instance when the command runs, so its text is never parsed as code.
+      Literal values render the same with the flag enabled or disabled.
+
+      When disabled, values are rendered unencoded, so already-deployed UserData is
+      byte-identical and no instance is restarted or replaced on upgrade. Enabling the flag
+      changes the synthesized UserData of any stack that passes a token to these helpers,
+      including asset downloads, which updates (and, with \`userDataCausesReplacement\`, replaces)
+      those instances on the next deploy.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Leave the flag unset (or set it to `false`) to keep rendering these values unencoded. Where a value may be supplied at deploy time, constrain it with a strict `allowedPattern` as defense-in-depth.',
   },
 };
 

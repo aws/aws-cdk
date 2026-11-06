@@ -6,16 +6,73 @@ import { AmazonLinuxCpuType, AmazonLinuxGeneration, AmazonLinuxImage, InstanceTy
 import type { ApplicationListener } from '../../aws-elasticloadbalancingv2';
 import { ApplicationLoadBalancer, ApplicationTargetGroup } from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
+import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
-import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
+import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, EC2_ENCODE_USER_DATA_COMMAND_VALUES } from '../../cx-api';
 import * as autoscaling from '../lib';
 import { OnDemandAllocationStrategy, SpotAllocationStrategy } from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
 
 describe('auto scaling group', () => {
+  test('a launch configuration inserts a deploy-time value without encoding when the UserData encoding flag is off', () => {
+    const app = new cdk.App({ context: { [EC2_ENCODE_USER_DATA_COMMAND_VALUES]: false } });
+    const stack = new cdk.Stack(app, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
+    const key = new cdk.CfnParameter(stack, 'Key').valueAsString;
+    const userData = ec2.UserData.forLinux();
+    userData.addS3DownloadCommand({ bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'test'), bucketKey: key });
+
+    new autoscaling.AutoScalingGroup(stack, 'Asg', {
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+      instanceType: new InstanceType('t3.micro'),
+      machineImage: new AmazonLinuxImage(),
+      userData,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+      UserData: Match.exact({
+        'Fn::Base64': {
+          'Fn::Join': ['', [
+            "#!/bin/bash\nmkdir -p $(dirname '/tmp/", { Ref: 'Key' },
+            "')\naws s3 cp 's3://test/", { Ref: 'Key' }, "' '/tmp/", { Ref: 'Key' }, "'",
+          ]],
+        },
+      }),
+    });
+  });
+
+  test('a launch configuration passes a deploy-time value as Base64 when the UserData encoding flag is on', () => {
+    const app = new cdk.App({ context: { [EC2_ENCODE_USER_DATA_COMMAND_VALUES]: true } });
+    const stack = new cdk.Stack(app, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
+    const key = new cdk.CfnParameter(stack, 'Key').valueAsString;
+    const userData = ec2.UserData.forLinux();
+    userData.addS3DownloadCommand({ bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'test'), bucketKey: key });
+
+    new autoscaling.AutoScalingGroup(stack, 'Asg', {
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+      instanceType: new InstanceType('t3.micro'),
+      machineImage: new AmazonLinuxImage(),
+      userData,
+    });
+
+    const localFile = { 'Fn::Base64': { 'Fn::Join': ['', ['/tmp/', { Ref: 'Key' }]] } };
+    const source = { 'Fn::Base64': { 'Fn::Join': ['', ['s3://test/', { Ref: 'Key' }]] } };
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+      UserData: Match.exact({
+        'Fn::Base64': {
+          'Fn::Join': ['', [
+            "#!/bin/bash\nmkdir -p -- \"$(dirname -- \"$(printf %s '", localFile,
+            "' | base64 -d)\")\"\naws s3 cp \"$(printf %s '", source,
+            "' | base64 -d)\" \"$(printf %s '", localFile,
+            "' | base64 -d)\"",
+          ]],
+        },
+      }),
+    });
+  });
+
   test('default fleet', () => {
     const stack = getTestStack();
     const vpc = mockVpc(stack);
