@@ -7,18 +7,14 @@ import * as path from 'path';
 
 // Every rule file needs a fixture it fires on and a fixture it evaluates and passes,
 // at test/rule-fixtures/<rule path without .guard>/{non-compliant,compliant}.json.
-// A rule can have more fixtures in the same directory, named non-compliant-<name>.json
-// or compliant-<name>.json with <name> in lowercase kebab-case, and each is checked
-// the same way as the fixture its name starts with.
+// Extra fixtures, compliant-<name>.json or non-compliant-<name>.json, are checked like the base pair.
 // The fixtures are .json rather than .template.json so that the Security Guardian
 // action never scans them as changed templates.
 const rulesDir = path.join(__dirname, '..', 'rules');
 const fixturesDir = path.join(__dirname, 'rule-fixtures');
 const requiredFixtures = ['non-compliant.json', 'compliant.json'];
 const fixtureName = /^(non-)?compliant(-[a-z0-9]+)*\.json$/;
-// The action fails a pull request when either scan fails, so a compliant fixture must
-// pass both; a non-compliant fixture must fail both, so that neither scan stops
-// evaluating a rule unnoticed
+// The action fails a PR when either scan fails, so every fixture is checked in both.
 const scans = ['static', 'resolved'];
 
 // These rules wrap their checks in `when Principal != "*"`. cfn-guard cannot compare a
@@ -34,10 +30,7 @@ const rulesThatSkipEveryPolicy = [
   'sqs/sqs-no-world-accessible-inline',
 ];
 
-// In these fixtures the PassRole Resource list holds only Fn::GetAtt objects, and the
-// rule checks only the string elements of a list, so the static scan evaluates nothing
-// and skips them; the resolved scan resolves the ARNs to strings and evaluates them.
-// Remove a fixture from this list once the static scan evaluates it.
+// The static scan skips these: their Resource lists hold only Fn::GetAtt objects. Remove an entry once it evaluates them.
 const fixturesTheStaticScanSkips = [
   'iam/iam-no-overly-permissive-passrole/compliant-inline-policy-intrinsic-arn-list.json',
   'iam/iam-no-overly-permissive-passrole/compliant-intrinsic-arn-list.json',
@@ -66,8 +59,7 @@ describe('Guard Rule Fixtures', () => {
   });
 
   test('every fixture belongs to a rule file', () => {
-    // Every file, not only .json, because the rule tests run only the fixture names above.
-    // Hidden files, such as .DS_Store or editor swap files, are never fixtures.
+    // Check every file, since a misnamed one never runs; hidden files such as .DS_Store are never fixtures.
     const misplaced = findFiles(fixturesDir)
       .filter(file => !path.basename(file).startsWith('.'))
       .map(file => path.relative(fixturesDir, file))
