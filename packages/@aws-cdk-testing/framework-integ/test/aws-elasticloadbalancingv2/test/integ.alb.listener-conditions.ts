@@ -19,7 +19,9 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
  *    9. source-ip
  */
 class TestStack extends cdk.Stack {
-  public readonly listenerArn: string;
+  public readonly hostHeaderRegexRule: elbv2.ApplicationListenerRule;
+  public readonly httpHeaderRegexRule: elbv2.ApplicationListenerRule;
+  public readonly pathPatternRegexRule: elbv2.ApplicationListenerRule;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -57,7 +59,10 @@ class TestStack extends cdk.Stack {
       }),
     });
 
-    listener.addAction('HostHeaderRegexCondition', {
+    // The regex rules are created directly, with the same IDs `addAction` would use,
+    // so that the assertions below can look each of them up by ARN.
+    this.hostHeaderRegexRule = new elbv2.ApplicationListenerRule(listener, 'HostHeaderRegexConditionRule', {
+      listener,
       priority: 15,
       conditions: [
         elbv2.ListenerCondition.hostHeadersRegex(['.*\\.example\\.com']),
@@ -82,7 +87,8 @@ class TestStack extends cdk.Stack {
       }),
     });
 
-    listener.addAction('HttpHeaderRegexCondition', {
+    this.httpHeaderRegexRule = new elbv2.ApplicationListenerRule(listener, 'HttpHeaderRegexConditionRule', {
+      listener,
       priority: 25,
       conditions: [
         elbv2.ListenerCondition.httpHeaderRegex('User-Agent', [
@@ -113,7 +119,8 @@ class TestStack extends cdk.Stack {
       }),
     });
 
-    listener.addAction('PathPatternRegexCondition', {
+    this.pathPatternRegexRule = new elbv2.ApplicationListenerRule(listener, 'PathPatternRegexConditionRule', {
+      listener,
       priority: 50,
       conditions: [
         elbv2.ListenerCondition.pathPatternsRegex([
@@ -152,8 +159,6 @@ class TestStack extends cdk.Stack {
         messageBody: 'Source IP matched',
       }),
     });
-
-    this.listenerArn = listener.listenerArn;
   }
 }
 
@@ -165,36 +170,35 @@ const test = new integ.IntegTest(app, 'ListenerConditionsTest', {
 });
 
 // Verify the regex conditions round-trip through the service, i.e. that they are
-// stored as `RegexValues` rather than as plain `Values`.
-test.assertions.awsApiCall('elastic-load-balancing-v2', 'describeRules', {
-  ListenerArn: stack.listenerArn,
-}).expect(integ.ExpectedResult.objectLike({
-  Rules: integ.Match.arrayWith([
-    integ.Match.objectLike({
-      Priority: '15',
-      Conditions: [integ.Match.objectLike({
-        Field: 'host-header',
-        HostHeaderConfig: { RegexValues: ['.*\\.example\\.com'] },
-      })],
-    }),
-    integ.Match.objectLike({
-      Priority: '25',
-      Conditions: [integ.Match.objectLike({
-        Field: 'http-header',
-        HttpHeaderConfig: {
-          HttpHeaderName: 'User-Agent',
-          RegexValues: ['^Mozilla/.*Chrome.*$'],
-        },
-      })],
-    }),
-    integ.Match.objectLike({
-      Priority: '50',
-      Conditions: [integ.Match.objectLike({
-        Field: 'path-pattern',
-        PathPatternConfig: {
-          RegexValues: ['/images/.*\\.(jpg|png|gif)', '/docs/.*\\.pdf'],
-        },
-      })],
-    }),
-  ]),
-}));
+// stored as `RegexValues` rather than as plain `Values`. Each rule is described on
+// its own, because describing the whole listener returns more than the 4 KB a
+// custom resource response may hold.
+function expectRuleCondition(rule: elbv2.ApplicationListenerRule, condition: Record<string, unknown>) {
+  test.assertions.awsApiCall('elastic-load-balancing-v2', 'describeRules', {
+    RuleArns: [rule.listenerRuleArn],
+  }).expect(integ.ExpectedResult.objectLike({
+    Rules: [integ.Match.objectLike({
+      Conditions: [integ.Match.objectLike(condition)],
+    })],
+  }));
+}
+
+expectRuleCondition(stack.hostHeaderRegexRule, {
+  Field: 'host-header',
+  HostHeaderConfig: { RegexValues: ['.*\\.example\\.com'] },
+});
+
+expectRuleCondition(stack.httpHeaderRegexRule, {
+  Field: 'http-header',
+  HttpHeaderConfig: {
+    HttpHeaderName: 'User-Agent',
+    RegexValues: ['^Mozilla/.*Chrome.*$'],
+  },
+});
+
+expectRuleCondition(stack.pathPatternRegexRule, {
+  Field: 'path-pattern',
+  PathPatternConfig: {
+    RegexValues: ['/images/.*\\.(jpg|png|gif)', '/docs/.*\\.pdf'],
+  },
+});

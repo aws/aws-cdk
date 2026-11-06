@@ -6,14 +6,18 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:125:18)",
-        "    at TestStack._silenceLiteralAzWarning (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at Validations.acknowledge (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at TestStack._silenceLiteralAzWarning (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
         "    at get availabilityZones (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new TestStack (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:59:21)",
-        "    at <anonymous> (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:179:15)",
+        "    at new TestStack (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:61:21)",
+        "    at <anonymous> (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:185:15)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-elbv2-alb-listener-conditions-integ.template.json"
     }
   ],
   "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC": [
@@ -91,7 +95,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -127,7 +134,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -277,24 +287,24 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
     }
   ],
-  "/aws-cdk-elbv2-alb-listener-conditions-integ/Exports/Output{\"Ref\":\"LBListener49E825B4\"}": [
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/Exports/Output{\"Ref\":\"LBListenerHostHeaderRegexConditionRule691C331D\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefLBListener49E825B45EB41560"
+      "data": "ExportsOutputRefLBListenerHostHeaderRegexConditionRule691C331DD74033F8"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/Exports/Output{\"Ref\":\"LBListenerHttpHeaderRegexConditionRule8B015117\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefLBListenerHttpHeaderRegexConditionRule8B01511726AA5749"
+    }
+  ],
+  "/aws-cdk-elbv2-alb-listener-conditions-integ/Exports/Output{\"Ref\":\"LBListenerPathPatternRegexConditionRule779C78E9\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefLBListenerPathPatternRegexConditionRule779C78E99BB7D469"
     }
   ],
   "/aws-cdk-elbv2-alb-listener-conditions-integ/VPC/PublicSubnet1/Subnet": [

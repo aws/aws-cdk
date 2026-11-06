@@ -864,12 +864,28 @@
   }
  },
  "Outputs": {
-  "ExportsOutputRefLBListener49E825B45EB41560": {
+  "ExportsOutputRefLBListenerHostHeaderRegexConditionRule691C331DD74033F8": {
    "Value": {
-    "Ref": "LBListener49E825B4"
+    "Ref": "LBListenerHostHeaderRegexConditionRule691C331D"
    },
    "Export": {
-    "Name": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListener49E825B45EB41560"
+    "Name": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListenerHostHeaderRegexConditionRule691C331DD74033F8"
+   }
+  },
+  "ExportsOutputRefLBListenerHttpHeaderRegexConditionRule8B01511726AA5749": {
+   "Value": {
+    "Ref": "LBListenerHttpHeaderRegexConditionRule8B015117"
+   },
+   "Export": {
+    "Name": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListenerHttpHeaderRegexConditionRule8B01511726AA5749"
+   }
+  },
+  "ExportsOutputRefLBListenerPathPatternRegexConditionRule779C78E99BB7D469": {
+   "Value": {
+    "Ref": "LBListenerPathPatternRegexConditionRule779C78E9"
+   },
+   "Export": {
+    "Name": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListenerPathPatternRegexConditionRule779C78E99BB7D469"
    }
   }
  },

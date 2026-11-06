@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallelasticloadbalancingv2describeRulesaaabc500b5c8c95f2ce3a0c0293b4284": {
+  "AwsApiCallelasticloadbalancingv2describeRules3a7a15be3f37eeb154f14e98c948a259": {
    "Type": "Custom::DeployAssert@SdkCallelastic-load-balancing-v2describ",
    "Properties": {
     "ServiceToken": {
@@ -11,23 +11,23 @@
     },
     "service": "elastic-load-balancing-v2",
     "api": "describeRules",
-    "expected": "{\"$ObjectLike\":{\"Rules\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Priority\":\"15\",\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"host-header\",\"HostHeaderConfig\":{\"RegexValues\":[\".*\\\\.example\\\\.com\"]}}}]}},{\"$ObjectLike\":{\"Priority\":\"25\",\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"http-header\",\"HttpHeaderConfig\":{\"HttpHeaderName\":\"User-Agent\",\"RegexValues\":[\"^Mozilla/.*Chrome.*$\"]}}}]}},{\"$ObjectLike\":{\"Priority\":\"50\",\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"path-pattern\",\"PathPatternConfig\":{\"RegexValues\":[\"/images/.*\\\\.(jpg|png|gif)\",\"/docs/.*\\\\.pdf\"]}}}]}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"Rules\":[{\"$ObjectLike\":{\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"host-header\",\"HostHeaderConfig\":{\"RegexValues\":[\".*\\\\.example\\\\.com\"]}}}]}}]}}",
     "parameters": {
-     "ListenerArn": {
+     "RuleArns": {
       "Fn::Join": [
        "",
        [
-        "\"",
+        "[\"",
         {
-         "Fn::ImportValue": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListener49E825B45EB41560"
+         "Fn::ImportValue": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListenerHostHeaderRegexConditionRule691C331DD74033F8"
         },
-        "\""
+        "\"]"
        ]
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1788909475740"
+    "salt": "1793980740177"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -66,6 +66,24 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "elasticloadbalancing:DescribeRules"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "elasticloadbalancing:DescribeRules"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -81,7 +99,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e0bc3fbc08cc3480f4c3881324c1cbbd3d52a00bb8547363b104906683a9e268.zip"
+     "S3Key": "d7f9338b4576900400045da036ccb545a4259eaa0624a3fff37d4427c8762626.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -96,13 +114,93 @@
      "ApplicationLogLevel": "FATAL"
     }
    }
+  },
+  "AwsApiCallelasticloadbalancingv2describeRulesb42766845fa4fa07b779551f67185976": {
+   "Type": "Custom::DeployAssert@SdkCallelastic-load-balancing-v2describ",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "elastic-load-balancing-v2",
+    "api": "describeRules",
+    "expected": "{\"$ObjectLike\":{\"Rules\":[{\"$ObjectLike\":{\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"http-header\",\"HttpHeaderConfig\":{\"HttpHeaderName\":\"User-Agent\",\"RegexValues\":[\"^Mozilla/.*Chrome.*$\"]}}}]}}]}}",
+    "parameters": {
+     "RuleArns": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListenerHttpHeaderRegexConditionRule8B01511726AA5749"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1793980740178"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallelasticloadbalancingv2describeRulesdb6d3f7c76934a5dda27194023afcb7c": {
+   "Type": "Custom::DeployAssert@SdkCallelastic-load-balancing-v2describ",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "elastic-load-balancing-v2",
+    "api": "describeRules",
+    "expected": "{\"$ObjectLike\":{\"Rules\":[{\"$ObjectLike\":{\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"path-pattern\",\"PathPatternConfig\":{\"RegexValues\":[\"/images/.*\\\\.(jpg|png|gif)\",\"/docs/.*\\\\.pdf\"]}}}]}}]}}",
+    "parameters": {
+     "RuleArns": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-elbv2-alb-listener-conditions-integ:ExportsOutputRefLBListenerPathPatternRegexConditionRule779C78E99BB7D469"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1793980740179"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallelasticloadbalancingv2describeRulesaaabc500b5c8c95f2ce3a0c0293b4284": {
+  "AssertionResultsAwsApiCallelasticloadbalancingv2describeRules3a7a15be3f37eeb154f14e98c948a259": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallelasticloadbalancingv2describeRulesaaabc500b5c8c95f2ce3a0c0293b4284",
+     "AwsApiCallelasticloadbalancingv2describeRules3a7a15be3f37eeb154f14e98c948a259",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallelasticloadbalancingv2describeRulesb42766845fa4fa07b779551f67185976": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallelasticloadbalancingv2describeRulesb42766845fa4fa07b779551f67185976",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallelasticloadbalancingv2describeRulesdb6d3f7c76934a5dda27194023afcb7c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallelasticloadbalancingv2describeRulesdb6d3f7c76934a5dda27194023afcb7c",
      "assertion"
     ]
    }
