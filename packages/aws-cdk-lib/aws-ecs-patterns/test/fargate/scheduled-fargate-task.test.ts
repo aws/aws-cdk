@@ -587,6 +587,7 @@ test('Scheduled Fargate Task - with unused properties', () => {
     runtimePlatform: {
       cpuArchitecture: ecs.CpuArchitecture.X86_64,
     },
+    availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
   });
 
   // THEN
@@ -597,6 +598,7 @@ test('Scheduled Fargate Task - with unused properties', () => {
   Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'cpu\' is ignored, use \'scheduledFargateTaskImageOptions.cpu\' instead.'));
   Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'memoryLimitMiB\' is ignored, use \'scheduledFargateTaskImageOptions.memoryLimitMiB\' instead.'));
   Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'runtimePlatform\' is ignored.'));
+  Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'availabilityZoneRebalancing\' is ignored; ScheduledFargateTask does not create a FargateService.'));
 });
 
 test('Can create a scheduled Fargate Task - with customized container name', () => {
