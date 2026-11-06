@@ -9,6 +9,7 @@ export * from './instance-engine';
 export * from './props';
 export * from './parameter-group';
 export * from './database-secret';
+export * from './connection-string-templates';
 export * from './endpoint';
 export * from './option-group';
 export * from './instance';
