@@ -53,7 +53,7 @@ interface StackSetHost {
  */
 export class StackSetSynthesizer extends StackSynthesizer {
   private readonly bucketDeployments = new Map<IBucket, BucketDeployment>();
-  private readonly assetDeployments = new DependencyGroup();
+  private readonly assetDeploymentGroup = new DependencyGroup();
   private host?: StackSetHost;
   private hostAssetBucket?: IBucket;
 
@@ -71,8 +71,8 @@ export class StackSetSynthesizer extends StackSynthesizer {
    * Resolved when dependencies are rendered, so it includes assets added after a
    * StackSet takes a dependency on it.
    */
-  public get assetDeploymentsDependable(): IDependable {
-    return this.assetDeployments;
+  public get assetDeployments(): IDependable {
+    return this.assetDeploymentGroup;
   }
 
   /**
@@ -160,7 +160,7 @@ export class StackSetSynthesizer extends StackSynthesizer {
         prune: false,
       });
       this.bucketDeployments.set(assetBucket, newBucketDeployment);
-      this.assetDeployments.add(newBucketDeployment);
+      this.assetDeploymentGroup.add(newBucketDeployment);
     });
 
     return hostLocation.objectKey;

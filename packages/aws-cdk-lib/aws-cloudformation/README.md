@@ -11,7 +11,7 @@ to the target accounts and regions. Like a `NestedStack`, it is defined within a
 deploys the StackSet.
 
 ```ts
-class Baseline extends StackSet {
+class MyStackSet extends StackSet {
   constructor(scope: Construct, id: string, props: StackSetProps) {
     super(scope, id, props);
 
@@ -24,7 +24,7 @@ class Baseline extends StackSet {
 const app = new App();
 const stack = new Stack(app, 'Admin');
 
-new Baseline(stack, 'Baseline', {
+new MyStackSet(stack, 'MyStackSet', {
   target: StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
     accounts: ['11111111111'],
@@ -43,17 +43,37 @@ synthesize separate Stack templates for each environment (account/region combina
 way that StackSets work, a single template is defined and synthesized for a StackSet. Any environmental
 differences must be encoded using Parameters.
 
-You define the resources of a `StackSet` the same way you define the resources of a `Stack`, either
-by subclassing `StackSet` as above, or by adding resources to an instance:
+There are three ways to provide the template of a `StackSet`:
 
-```ts
-declare const stack: Stack;
-const stackSet = new StackSet(stack, 'StackSet');
+1. Subclass `StackSet` and define its resources in the constructor, as in the example above.
+2. Add resources to a `StackSet` instance, the same way you add resources to a `Stack`:
 
-new iam.Role(stackSet, 'MyRole', {
-  assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
-});
-```
+   ```ts
+   declare const stack: Stack;
+   const stackSet = new StackSet(stack, 'StackSet');
+
+   new iam.Role(stackSet, 'MyRole', {
+     assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
+   });
+   ```
+
+3. Pass a template that is not defined with CDK as `template`. A StackSet with a `template` must not
+   contain resources.
+   - `StackSetTemplate.fromUrl(url)` uses a template that is already stored in Amazon S3.
+   - `StackSetTemplate.fromAsset(path)` uses a local template file, which is uploaded as an asset of the
+     stack that contains the StackSet.
+
+   ```ts
+   declare const stack: Stack;
+
+   new StackSet(stack, 'FromUrl', {
+     template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
+   });
+
+   new StackSet(stack, 'FromAsset', {
+     template: StackSetTemplate.fromAsset(path.join(__dirname, 'template.json')),
+   });
+   ```
 
 A `StackSet` has a couple of special requirements and behaviors compared to a `Stack`:
 
@@ -61,7 +81,7 @@ A `StackSet` has a couple of special requirements and behaviors compared to a `S
 - Must be defined within the scope of a `Stack` (directly, through other constructs, or in a `NestedStack`).
   That stack contains the `AWS::CloudFormation::StackSet` resource, its administration role, and
   uploads the template and its file assets. They are created next to the StackSet, with its ID as a
-  prefix (for example `Baseline.Resource`, which is also `stackSet.node.defaultChild`)
+  prefix (for example `MyStackSet.Resource`, which is also `stackSet.node.defaultChild`)
 
 *Behavior*
 - The template is always environment agnostic: it uses `AWS::AccountId` and `AWS::Region`, even if
@@ -104,7 +124,7 @@ To deploy the same template twice, for example to organizational units with a se
 StackSet and to the management account with a self managed StackSet:
 
 ```ts
-class Baseline extends StackSet {
+class MyStackSet extends StackSet {
   constructor(scope: Construct, id: string, props: StackSetProps) {
     super(scope, id, props);
     new iam.Role(this, 'MyRole', { assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com') });
@@ -112,11 +132,11 @@ class Baseline extends StackSet {
 }
 
 declare const stack: Stack;
-new Baseline(stack, 'OrgBaseline', {
+new MyStackSet(stack, 'OrgStackSet', {
   deploymentType: DeploymentType.serviceManaged(),
   target: StackSetTarget.fromOrganizationalUnits({ regions: ['us-east-1'], organizationalUnits: ['ou-1'] }),
 });
-new Baseline(stack, 'ManagementBaseline', {
+new MyStackSet(stack, 'ManagementStackSet', {
   target: StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['11111111111'] }),
 });
 ```
@@ -334,27 +354,6 @@ The StackSet waits for the asset copies to the buckets of its template to comple
 If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning
 on the stack that contains the StackSet. Once you have granted access yourself, acknowledge it with
 `Annotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions')`.
-
-### Templates not defined in the StackSet
-
-To deploy a template that is not defined with CDK, pass a `StackSetTemplate` as `template`.
-A StackSet with a `template` must not contain resources.
-
-- `StackSetTemplate.fromUrl(url)` uses a template that is already stored in Amazon S3.
-- `StackSetTemplate.fromAsset(path)` uses a local template file, which is uploaded as an asset of the
-  stack that contains the StackSet.
-
-```ts
-declare const stack: Stack;
-
-new StackSet(stack, 'FromUrl', {
-  template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
-});
-
-new StackSet(stack, 'FromAsset', {
-  template: StackSetTemplate.fromAsset(path.join(__dirname, 'template.json')),
-});
-```
 
 ### Importing an existing StackSet
 

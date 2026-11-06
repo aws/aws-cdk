@@ -34,7 +34,7 @@ import type { IStackSetRef, StackSetReference } from '../../interfaces/generated
 import { RegionInfo } from '../../region-info';
 
 /**
- * A StackSet template that is not defined in the StackSet itself
+ * A StackSet template stored in S3 or local file
  */
 export abstract class StackSetTemplate {
   /**
@@ -541,7 +541,7 @@ export interface StackSetProps {
   readonly target?: StackSetTarget;
 
   /**
-   * A template that is not defined in this StackSet, e.g. a template file or a template in Amazon S3.
+   * A template defined in S3 or a local file
    *
    * A StackSet with a `template` must not contain any resources.
    *
@@ -782,7 +782,7 @@ const STACK_SET_SYMBOL = Symbol.for('aws-cdk-lib.aws-cloudformation.StackSet');
  * A CloudFormation StackSet, which deploys a template to multiple AWS accounts and regions
  *
  * A StackSet is a stack: the resources defined in it make up the template that is
- * deployed to the target accounts and regions. Like a `NestedStack`, it is defined
+ * deployed to the target accounts and regions. It is defined
  * within another stack (the host stack), which deploys the `AWS::CloudFormation::StackSet`
  * resource, its administration role, the template, and the file assets of the template.
  *
@@ -793,9 +793,6 @@ const STACK_SET_SYMBOL = Symbol.for('aws-cdk-lib.aws-cloudformation.StackSet');
  * Values from other stacks that the template references are passed to the template as
  * StackSet parameters. Other stacks can't reference the resources of the template.
  *
- * Like `NestedStack`, it extends `Stack` rather than `Resource`, and implements the
- * resource interface itself.
- *
  * @resource AWS::CloudFormation::StackSet
  */
 @propertyInjectable
@@ -805,7 +802,7 @@ export class StackSet extends Stack implements IStackSet {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudformation.StackSet';
 
   /**
-   * Checks if `x` is an object of type `StackSet`.
+   * Checks if the provided object is of type `StackSet`.
    */
   public static isStackSet(x: any): x is StackSet {
     return x !== null && typeof x === 'object' && STACK_SET_SYMBOL in x;
@@ -920,6 +917,7 @@ export class StackSet extends Stack implements IStackSet {
       this.addTarget(props.target);
     }
 
+    const stackSetName = props.stackSetName ?? Names.uniqueResourceName(this, { maxLength: 128 });
     const templateUrl = props.template
       ? props.template._bind(scope, id).templateUrl
       : this.templateUrl;
@@ -943,7 +941,7 @@ export class StackSet extends Stack implements IStackSet {
         regionConcurrencyType: props.operationPreferences.regionConcurrencyType?.value,
         regionOrder: props.operationPreferences.regionOrder,
       }) : undefined,
-      stackSetName: props.stackSetName ?? Names.uniqueResourceName(this, { maxLength: 128 }),
+      stackSetName,
       capabilities: props.capabilities,
       permissionModel: deploymentTypeConfig.permissionsModel,
       callAs: deploymentTypeConfig.callAs,
@@ -964,7 +962,7 @@ export class StackSet extends Stack implements IStackSet {
     }
 
     // the file asset bucket deployments need to complete before the stackset can deploy
-    stackSet.node.addDependency(synthesizer.assetDeploymentsDependable);
+    stackSet.node.addDependency(synthesizer.assetDeployments);
 
     if (this.externalTemplate) {
       this.node.addValidation({ validate: () => this.validateNoResources() });
@@ -972,14 +970,14 @@ export class StackSet extends Stack implements IStackSet {
   }
 
   /**
-   * The stack that contains this StackSet, which deploys the StackSet resource.
+   * The stack that contains this StackSet.
    */
   public get stack(): Stack {
     return this.hostStack;
   }
 
   /**
-   * The URL of the template asset, set while the app is prepared
+   * The URL of the template asset
    */
   @memoizedGetter
   private get templateUrl(): string {
@@ -1051,8 +1049,8 @@ export class StackSet extends Stack implements IStackSet {
   }
 
   /**
-   * The template is deployed to other accounts and regions, where the resources of other stacks
-   * can't use its resources.
+   * Other stacks can't reference the resources of a StackSet, because its template is
+   * deployed to many accounts and regions.
    *
    * @internal
    */
@@ -1086,8 +1084,7 @@ export class StackSet extends Stack implements IStackSet {
   }
 
   /**
-   * Defines an asset in the host stack which represents the template of this StackSet,
-   * and copies the tags of this StackSet to the StackSet resource.
+   * Adds the template of this StackSet as an asset in the host stack and copies the tags of this StackSet
    *
    * @internal
    */
@@ -1111,9 +1108,7 @@ export class StackSet extends Stack implements IStackSet {
   }
 
   /**
-   * Writes the template file, overrides the `super` class method.
-   *
-   * The template is uploaded as an asset of the host stack, see `_prepareTemplateAsset`.
+   * Writes the template file
    *
    * @internal
    */
@@ -1166,7 +1161,7 @@ export class StackSet extends Stack implements IStackSet {
 }
 
 /**
- * Finds the stack that contains a StackSet, which must be defined within the scope of a `Stack`.
+ * Finds the stack that contains a StackSet
  */
 function findHostStack(scope: Construct): Stack {
   const hostStack = Node.of(scope).scopes.reverse().find(s => Stack.isStack(s));
