@@ -64,9 +64,9 @@ export abstract class FirewallDomains {
   /**
    * Firewall domains created from the URL of a file stored in Amazon S3.
    * The file must be a text file and must contain a single domain per line.
-   * The content type of the S3 object must be `plain/text`.
+   * The content type of the S3 object must be `text/plain`.
    *
-   * @param url S3 bucket url (s3://bucket/prefix/objet).
+   * @param url S3 bucket url (s3://bucket/prefix/object).
    */
   public static fromS3Url(url: string): FirewallDomains {
     if (!Token.isUnresolved(url) && !url.startsWith('s3://')) {
@@ -83,7 +83,7 @@ export abstract class FirewallDomains {
   /**
    * Firewall domains created from a file stored in Amazon S3.
    * The file must be a text file and must contain a single domain per line.
-   * The content type of the S3 object must be `plain/text`.
+   * The content type of the S3 object must be `text/plain`.
    *
    * @param bucket S3 bucket
    * @param key S3 key
@@ -130,7 +130,7 @@ export interface DomainsConfig {
   /**
    * The fully qualified URL or URI of the file stored in Amazon S3 that contains
    * the list of domains to import. The file must be a text file and must contain
-   * a single domain per line. The content type of the S3 object must be `plain/text`.
+   * a single domain per line. The content type of the S3 object must be `text/plain`.
    *
    * @default - use `domains`
    */
@@ -153,7 +153,7 @@ export class FirewallDomainList extends Resource implements IFirewallDomainList 
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-route53resolver-alpha.FirewallDomainList';
 
   /**
-   * Import an existing Firewall Rule Group
+   * Import an existing Firewall Domain List
    */
   public static fromFirewallDomainListId(scope: Construct, id: string, firewallDomainListId: string): IFirewallDomainList {
     class Import extends Resource implements IFirewallDomainList {

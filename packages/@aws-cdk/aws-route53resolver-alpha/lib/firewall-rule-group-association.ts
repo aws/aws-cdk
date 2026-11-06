@@ -41,7 +41,7 @@ export interface FirewallRuleGroupAssociationOptions {
   readonly priority: number;
 
   /**
-   * The VPC that to associate with the rule group.
+   * The VPC to associate with the rule group.
    */
   readonly vpc: IVpc;
 }
