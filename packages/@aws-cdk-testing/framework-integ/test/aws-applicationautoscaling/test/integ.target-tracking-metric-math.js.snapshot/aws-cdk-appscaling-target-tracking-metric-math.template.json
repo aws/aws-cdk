@@ -1,0 +1,233 @@
+{
+ "Resources": {
+  "FunctionServiceRole675BB04A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "Function76856677": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async () => {};"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "FunctionServiceRole675BB04A",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "FunctionServiceRole675BB04A"
+   ]
+  },
+  "FunctionCurrentVersion4E2B2261786c1d6233d2499d36d6dfb7ad94bfe7": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "Function76856677"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "Alias325C5727": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "Function76856677"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "FunctionCurrentVersion4E2B2261786c1d6233d2499d36d6dfb7ad94bfe7",
+      "Version"
+     ]
+    },
+    "Name": "live"
+   }
+  },
+  "ScalableTargetRole53C0666F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "application-autoscaling.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "DependsOn": [
+    "Alias325C5727"
+   ]
+  },
+  "ScalableTarget07F0A026": {
+   "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+   "Properties": {
+    "MaxCapacity": 2,
+    "MinCapacity": 1,
+    "ResourceId": {
+     "Fn::Join": [
+      "",
+      [
+       "function:",
+       {
+        "Ref": "Function76856677"
+       },
+       ":live"
+      ]
+     ]
+    },
+    "RoleARN": {
+     "Fn::GetAtt": [
+      "ScalableTargetRole53C0666F",
+      "Arn"
+     ]
+    },
+    "ScalableDimension": "lambda:function:ProvisionedConcurrency",
+    "ServiceNamespace": "lambda"
+   },
+   "DependsOn": [
+    "Alias325C5727"
+   ]
+  },
+  "ScalableTargetUtilizationTrackingF8205D59": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "utilization-or-zero",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "ScalableTarget07F0A026"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "CustomizedMetricSpecification": {
+      "Metrics": [
+       {
+        "Expression": "FILL(utilization, 0)",
+        "Id": "expr_1",
+        "Label": "Utilization, idle as 0",
+        "ReturnData": true
+       },
+       {
+        "Id": "utilization",
+        "MetricStat": {
+         "Metric": {
+          "Dimensions": [
+           {
+            "Name": "FunctionName",
+            "Value": {
+             "Ref": "Function76856677"
+            }
+           },
+           {
+            "Name": "Resource",
+            "Value": {
+             "Fn::Join": [
+              "",
+              [
+               {
+                "Ref": "Function76856677"
+               },
+               ":live"
+              ]
+             ]
+            }
+           }
+          ],
+          "MetricName": "ProvisionedConcurrencyUtilization",
+          "Namespace": "AWS/Lambda"
+         },
+         "Stat": "Maximum"
+        },
+        "ReturnData": false
+       }
+      ]
+     },
+     "TargetValue": 0.7
+    }
+   },
+   "DependsOn": [
+    "Alias325C5727"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefFunction76856677C48862D5": {
+   "Value": {
+    "Ref": "Function76856677"
+   },
+   "Export": {
+    "Name": "aws-cdk-appscaling-target-tracking-metric-math:ExportsOutputRefFunction76856677C48862D5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

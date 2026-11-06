@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "TargetTrackingMetricMath/DefaultTest": {
+      "stacks": [
+        "aws-cdk-appscaling-target-tracking-metric-math"
+      ],
+      "assertionStack": "TargetTrackingMetricMath/DefaultTest/DeployAssert",
+      "assertionStackName": "TargetTrackingMetricMathDefaultTestDeployAssert5D052FD7"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
