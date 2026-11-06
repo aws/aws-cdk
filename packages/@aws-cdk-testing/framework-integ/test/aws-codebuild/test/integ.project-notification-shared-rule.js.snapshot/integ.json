@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "ProjectNotificationSharedRule/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codebuild-project-notification-shared-rule"
+      ],
+      "assertionStack": "ProjectNotificationSharedRule/DefaultTest/DeployAssert",
+      "assertionStackName": "ProjectNotificationSharedRuleDefaultTestDeployAssert6AF280C9"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

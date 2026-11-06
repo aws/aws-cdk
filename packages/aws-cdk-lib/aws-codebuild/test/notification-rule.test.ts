@@ -68,3 +68,33 @@ test('notifications rule', () => {
     ],
   });
 });
+
+test('notifyOn calls with the same id share one notification rule', () => {
+  const stack = new cdk.Stack();
+  const project = new codebuild.Project(stack, 'MyCodebuildProject', {
+    buildSpec: codebuild.BuildSpec.fromObject({
+      version: '0.2',
+    }),
+  });
+  const topic = new sns.Topic(stack, 'MyTopic');
+
+  project.notifyOnBuildSucceeded('BuildNotifications', topic);
+  project.notifyOnBuildFailed('BuildNotifications', topic);
+
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::CodeStarNotifications::NotificationRule', 1);
+  template.hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
+    EventTypeIds: [
+      'codebuild-project-build-state-succeeded',
+      'codebuild-project-build-state-failed',
+    ],
+    Targets: [
+      {
+        TargetAddress: {
+          Ref: 'MyTopic86869434',
+        },
+        TargetType: 'SNS',
+      },
+    ],
+  });
+});

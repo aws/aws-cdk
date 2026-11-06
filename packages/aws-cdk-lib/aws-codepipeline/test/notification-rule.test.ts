@@ -1,6 +1,7 @@
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 import { Template } from '../../assertions';
+import * as notifications from '../../aws-codestarnotifications';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
 
@@ -186,4 +187,109 @@ describe('pipeline with codestar notification integration', () => {
       ],
     });
   });
+
+  describe('notifyOn with an existing id', () => {
+    const slack = {
+      bindAsNotificationRuleTarget: () => ({
+        targetType: 'AWSChatbotSlack',
+        targetAddress: 'SlackID',
+      }),
+    };
+    const sns = {
+      bindAsNotificationRuleTarget: () => ({
+        targetType: 'SNS',
+        targetAddress: 'TopicArn',
+      }),
+    };
+
+    test('adds events and targets to the existing notification rule', () => {
+      const first = pipeline.notifyOnExecutionStateChange('Notifications', slack);
+      const second = pipeline.notifyOnAnyManualApprovalStateChange('Notifications', slack);
+      pipeline.notifyOn('Notifications', sns, {
+        events: [codepipeline.PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED],
+      });
+
+      expect(second).toBe(first);
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::CodeStarNotifications::NotificationRule', 1);
+      template.hasResourceProperties('AWS::CodeStarNotifications::NotificationRule', {
+        Name: 'PipelineNotifications15BAB178',
+        EventTypeIds: [
+          'codepipeline-pipeline-pipeline-execution-failed',
+          'codepipeline-pipeline-pipeline-execution-canceled',
+          'codepipeline-pipeline-pipeline-execution-started',
+          'codepipeline-pipeline-pipeline-execution-resumed',
+          'codepipeline-pipeline-pipeline-execution-succeeded',
+          'codepipeline-pipeline-pipeline-execution-superseded',
+          'codepipeline-pipeline-manual-approval-failed',
+          'codepipeline-pipeline-manual-approval-needed',
+          'codepipeline-pipeline-manual-approval-succeeded',
+        ],
+        Targets: [
+          { TargetAddress: 'SlackID', TargetType: 'AWSChatbotSlack' },
+          { TargetAddress: 'TopicArn', TargetType: 'SNS' },
+        ],
+      });
+    });
+
+    test('different ids still create separate notification rules', () => {
+      pipeline.notifyOnExecutionStateChange('ExecutionNotifications', slack);
+      pipeline.notifyOnAnyManualApprovalStateChange('ApprovalNotifications', slack);
+
+      Template.fromStack(stack).resourceCountIs('AWS::CodeStarNotifications::NotificationRule', 2);
+    });
+
+    test('accepts options that match the defaults', () => {
+      pipeline.notifyOnExecutionStateChange('Notifications', slack);
+      pipeline.notifyOnAnyStageStateChange('Notifications', slack, {
+        enabled: true,
+        detailType: notifications.DetailType.FULL,
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::CodeStarNotifications::NotificationRule', 1);
+    });
+
+    test('fails when options differ from the existing notification rule', () => {
+      pipeline.notifyOnExecutionStateChange('Notifications', slack);
+
+      expect(() => {
+        pipeline.notifyOnAnyStageStateChange('Notifications', slack, {
+          detailType: notifications.DetailType.BASIC,
+        });
+      }).toThrow(/already exists with detailType "FULL", got "BASIC"/);
+    });
+
+    test('fails when the id is used by a notification rule for another source', () => {
+      const other = new codepipeline.Pipeline(stack, 'OtherPipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new FakeSourceAction({ actionName: 'Fetch', output: new codepipeline.Artifact() })],
+          },
+          {
+            stageName: 'Build',
+            actions: [new FakeBuildAction({ actionName: 'Gcc', input: sourceArtifact })],
+          },
+        ],
+      });
+      const rule = new notifications.NotificationRule(pipeline, 'Notifications', {
+        source: other,
+        events: [codepipeline.PipelineNotificationEvents.PIPELINE_EXECUTION_FAILED],
+      });
+
+      expect(rule.notificationRuleArn).toBeDefined();
+      expect(() => {
+        pipeline.notifyOnExecutionStateChange('Notifications', slack);
+      }).toThrow(/already exists for a different source/);
+    });
+
+    test('fails when the id is used by a construct that is not a notification rule', () => {
+      new cdk.CfnResource(pipeline, 'Notifications', { type: 'Test::Resource' });
+
+      expect(() => {
+        pipeline.notifyOnExecutionStateChange('Notifications', slack);
+      }).toThrow(/There is already a Construct with name 'Notifications'/);
+    });
+  });
 });
+
