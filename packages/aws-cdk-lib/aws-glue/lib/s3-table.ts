@@ -340,7 +340,7 @@ export class S3Table extends TableBase {
     // over-grant is a deliberate choice rather than a silent surprise.
     if (this.userProvidedBucket && this.s3Prefix === '') {
       Annotations.of(this).addWarningV2(
-        '@aws-cdk/aws-glue-alpha:grantScopedToWholeBucket',
+        '@aws-cdk/aws-glue:grantScopedToWholeBucket',
         'granting access to the entire data bucket because `s3Prefix` is empty and a shared bucket was provided; ' +
           'set `s3Prefix` to scope grants to this table\'s data and avoid granting access to other tables sharing the bucket.',
       );
