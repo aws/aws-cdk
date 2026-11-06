@@ -165,7 +165,7 @@ export class CodeBuildAction extends Action {
     }
 
     // grant the Pipeline role the required permissions to this Project
-    options.role.addToPolicy(new iam.PolicyStatement({
+    const actionRolePolicy = options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.props.project.projectArn],
       actions: [
         `codebuild:${this.props.executeBatchBuild ? 'BatchGetBuildBatches' : 'BatchGetBuilds'}`,
@@ -234,6 +234,7 @@ export class CodeBuildAction extends Action {
     }
     return {
       configuration,
+      dependencies: actionRolePolicy.policyDependable ? [actionRolePolicy.policyDependable] : undefined,
     };
   }
 }
