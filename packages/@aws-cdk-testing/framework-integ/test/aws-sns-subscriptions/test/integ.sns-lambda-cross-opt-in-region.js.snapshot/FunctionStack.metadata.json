@@ -1,0 +1,92 @@
+{
+  "/FunctionStack/Echo": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "handler": "*",
+        "runtime": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/FunctionStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FunctionStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/FunctionStack/Echo/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/FunctionStack/Echo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Echo11F3FB29"
+    }
+  ],
+  "/FunctionStack/Echo/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/FunctionStack/Echo/AllowInvoke:TopicStackMyTopicC43E67AF": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoAllowInvokeTopicStackMyTopicC43E67AF32CF6EFA"
+    }
+  ],
+  "/FunctionStack/Echo/MyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topic": "*",
+        "endpoint": "*",
+        "protocol": "lambda",
+        "filterPolicy": "*",
+        "filterPolicyWithMessageBody": "*",
+        "region": "*",
+        "deadLetterQueue": "*"
+      }
+    }
+  ],
+  "/FunctionStack/Echo/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoServiceRoleBE28060B"
+    }
+  ],
+  "/FunctionStack/Echo/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoLogGroup4CFE6FF3"
+    }
+  ],
+  "/FunctionStack/Echo/MyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoMyTopic4CB8819E"
+    }
+  ]
+}
