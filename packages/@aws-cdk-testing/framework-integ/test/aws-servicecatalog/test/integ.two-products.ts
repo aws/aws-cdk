@@ -88,6 +88,10 @@ const app = new cdk.App({
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
 });
+console.error({
+  account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,
+  region: process.env.CDK_INTEG_REGION ?? process.env.CDK_DEFAULT_REGION,
+});
 const stack = new PortfolioStack(app, 'integ-servicecatalog-two-products', {
   env: {
     account: process.env.CDK_INTEG_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT,

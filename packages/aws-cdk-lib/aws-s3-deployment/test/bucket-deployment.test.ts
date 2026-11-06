@@ -1620,17 +1620,16 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 
   const result = app.synth();
-  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","baz":null,"sub":{"hello":<<marker:0xbaba:0>>},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
+  // A string token is quoted in the file like any other string, and its marker receives the
+  // bare value. Supplying the quotes from the deploy-time value instead would make
+  // `jsonEscape` escape them along with the contents.
+  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","baz":null,"sub":{"hello":"<<marker:0xbaba:0>>"},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
       {
-        '<<marker:0xbaba:0>>': {
-          'Fn::Join': ['', ['"',
-            { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
-            '"']],
-        },
+        '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
         '<<marker:0xbaba:1>>': {
           Ref: 'Bucket83908E77',
         },
@@ -1662,17 +1661,129 @@ test('Source.jsonData() can be used with list tokens', () => {
   });
 
   const result = app.synth();
+  // A list token sits unquoted in the file; its marker receives the list itself and renders
+  // it as a complete JSON value.
   expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","sub":{"hello":<<marker:0xbaba:0>>}}');
 
-  // verify marker is mapped to the bucket ARN in the resource props
-  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+  const template = Template.fromJSON(result.stacks[0].template);
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
       {
-        '<<marker:0xbaba:0>>': {
-          'Fn::GetAtt': ['CdkJsonStringifyFnSplitresolvessmreprosubnets67ED8B00', 'Value'],
-        },
+        '<<marker:0xbaba:0>>': { 'Fn::Split': [',', '{{resolve:ssm:/repro/subnets}}'] },
       },
     ],
+    SourceMarkersConfig: [
+      { jsonEscape: true, markerEncodings: { '<<marker:0xbaba:0>>': 'JSON_VALUE' } },
+    ],
+  });
+  // The list is delivered to the provider as a list, so it no longer needs a custom resource
+  // to turn it into JSON text first.
+  template.resourceCountIs('Custom::AWSCDKCfnJsonStringify', 0);
+});
+
+test('Source.jsonData() with escape gives a string token a bare value inside the quotes', () => {
+  // `jsonEscape` escapes everything in a marker's value. That only yields valid JSON when the
+  // value is the bare string and the quotes come from the file, as they do for any literal.
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const param = new ssm.StringParameter(stack, 'Param', { stringValue: 'value' });
+
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.jsonData('secret.json', { secret_value: param.stringValue }, { escape: true })],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  expect(readDataFile(result, 'secret.json')).toBe('{"secret_value":"<<marker:0xbaba:0>>"}');
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [{ '<<marker:0xbaba:0>>': { 'Fn::GetAtt': [Match.stringLikeRegexp('^Param'), 'Value'] } }],
+    SourceMarkersConfig: [{ jsonEscape: true }],
+  });
+});
+
+describe('marker encodings', () => {
+  // Each deploy-time value is encoded according to where the serializer put its marker: inside
+  // quotes it is escaped by the source's default encoding, unquoted it is rendered as a complete
+  // JSON value. Only markers that differ from the default get an entry in `markerEncodings`.
+  function synth(source: (stack: cdk.Stack) => s3deploy.ISource, fileName: string) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Test');
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [source(stack)],
+      destinationBucket: new s3.Bucket(stack, 'Bucket'),
+    });
+    const result = app.synth();
+    return { text: readDataFile(result, fileName), template: Template.fromJSON(result.stacks[0].template) };
+  }
+
+  const stringToken = (stack: cdk.Stack, id: string) => new ssm.StringParameter(stack, id, { stringValue: 'x' }).stringValue;
+  const listToken = (stack: cdk.Stack, id: string) => ssm.StringListParameter.fromStringListParameterName(stack, id, `/${id}`).stringListValue;
+
+  test('Source.jsonData() encodes each kind of token by its position', () => {
+    const { text, template } = synth((stack) => s3deploy.Source.jsonData('f.json', {
+      s: stringToken(stack, 'S'),
+      l: listToken(stack, 'L'),
+      n: cdk.Token.asNumber(stringToken(stack, 'N')),
+      o: cdk.Fn.getAtt('SomeResource', 'Arn'),
+    }), 'f.json');
+
+    expect(text).toBe('{"s":"<<marker:0xbaba:0>>","l":<<marker:0xbaba:1>>,"n":<<marker:0xbaba:2>>,"o":<<marker:0xbaba:3>>}');
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{
+        jsonEscape: true,
+        markerEncodings: Match.objectEquals({
+          '<<marker:0xbaba:1>>': 'JSON_VALUE',
+          '<<marker:0xbaba:3>>': 'JSON_VALUE',
+        }),
+      }],
+    });
+  });
+
+  test('a value used both unquoted and inside a string gets an encoding for each use', () => {
+    const { text, template } = synth(() => {
+      const arn = cdk.Fn.getAtt('SomeResource', 'Arn');
+      return s3deploy.Source.jsonData('f.json', { bare: arn, label: `id=${arn}` });
+    }, 'f.json');
+
+    expect(text).toBe('{"bare":<<marker:0xbaba:0>>,"label":"id=<<marker:0xbaba:1>>"}');
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{ markerEncodings: Match.objectEquals({ '<<marker:0xbaba:0>>': 'JSON_VALUE' }) }],
+    });
+  });
+
+  test('Source.jsonData() with escaping turned off still renders lists as JSON values', () => {
+    const { template } = synth((stack) => s3deploy.Source.jsonData('f.json', {
+      s: stringToken(stack, 'S'),
+      l: listToken(stack, 'L'),
+    }, { escape: false }), 'f.json');
+
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{
+        jsonEscape: false,
+        markerEncodings: Match.objectEquals({ '<<marker:0xbaba:1>>': 'JSON_VALUE' }),
+      }],
+    });
+  });
+
+  test('Source.yamlData() leaves literal strings to the serializer and encodes deploy-time strings', () => {
+    const { text, template } = synth((stack) => s3deploy.Source.yamlData('f.yaml', {
+      literal: 'plain words',
+      token: stringToken(stack, 'S'),
+    }), 'f.yaml');
+
+    expect(text.trim()).toBe('literal: plain words\ntoken: <<marker:0xbaba:0>>');
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{ markerEncodings: Match.objectEquals({ '<<marker:0xbaba:0>>': 'YAML_STRING' }) }],
+    });
+  });
+
+  test('Source.data() sends no marker encodings', () => {
+    const { template } = synth((stack) => s3deploy.Source.data('f.txt', `value=${stringToken(stack, 'S')}`), 'f.txt');
+
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{ markerEncodings: Match.absent() }],
+    });
   });
 });
 
@@ -1700,6 +1811,9 @@ test('Source.yamlData() can be used to create a file with YAML content', () => {
     'sub:',
     '  hello: <<marker:0xbaba:0>>',
   ].join('\n'));
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [{ '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } }],
+  });
 });
 
 test('can add sources with addSource', () => {
