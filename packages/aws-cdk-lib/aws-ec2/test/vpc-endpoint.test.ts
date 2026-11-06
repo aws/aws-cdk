@@ -757,6 +757,22 @@ describe('vpc endpoint', () => {
         ServiceName: 'com.amazonaws.cn-northwest-1.glue',
       });
     });
+    test.each([
+      ['scheduler', InterfaceVpcEndpointAwsService.SCHEDULER],
+      ['scheduler-fips', InterfaceVpcEndpointAwsService.SCHEDULER_FIPS],
+    ])('test vpc interface endpoint for %s can be created correctly', (name: string, given: InterfaceVpcEndpointAwsService) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('Endpoint', { service: given });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `com.amazonaws.us-east-1.${name}`,
+      });
+    });
     test('test vpc interface endpoint for transcribe can be created correctly in non-china regions', () => {
       // GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
