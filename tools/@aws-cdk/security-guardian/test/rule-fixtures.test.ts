@@ -12,6 +12,15 @@ import * as path from 'path';
 const rulesDir = path.join(__dirname, '..', 'rules');
 const fixturesDir = path.join(__dirname, 'rule-fixtures');
 const fixtures = ['non-compliant.json', 'compliant.json'];
+// These supplemental PassRole fixtures are exercised directly by guard-rules.test.ts.
+const supplementalFixtures = new Set([
+  'compliant-inline-policy-intrinsic-arn-list.json',
+  'compliant-intrinsic-arn-list.json',
+  'compliant-single-arn.json',
+  'non-compliant-inline-policy-wildcard-in-list.json',
+  'non-compliant-wildcard-in-list.json',
+  'non-compliant-wildcard.json',
+].map(file => path.join('iam', 'iam-no-overly-permissive-passrole', file)));
 // The action fails a pull request when either scan fails, so compliant.json must pass
 // both; non-compliant.json must fail both, so that neither scan stops evaluating a
 // rule unnoticed
@@ -55,7 +64,8 @@ describe('Guard Rule Fixtures', () => {
   test('every fixture belongs to a rule file', () => {
     const misplaced = findFiles(fixturesDir, '.json')
       .map(file => path.relative(fixturesDir, file))
-      .filter(file => !ruleIds.includes(path.dirname(file)));
+      .filter(file => !ruleIds.includes(path.dirname(file))
+        || (!fixtures.includes(path.basename(file)) && !supplementalFixtures.has(file)));
     expect(misplaced).toEqual([]);
   });
 
