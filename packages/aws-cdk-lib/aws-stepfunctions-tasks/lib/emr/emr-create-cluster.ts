@@ -550,13 +550,13 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     }
 
     // EMR EBS limitations https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html#emr-root-volume-overview
-    if (this.props.ebsRootVolumeSize !== undefined &&
+    if (this.props.ebsRootVolumeSize !== undefined && !this.props.ebsRootVolumeSize.isUnresolved() &&
       (this.props.ebsRootVolumeSize.toGibibytes() < 15 || this.props.ebsRootVolumeSize.toGibibytes() > 100)) {
       throw new ValidationError(lit`EbsRootVolumeSizeOutOfRange`,
         `ebsRootVolumeSize must be between 15 and 100 GiB, but got ${this.props.ebsRootVolumeSize.toGibibytes()} GiB.`, this);
     }
 
-    if (this.props.releaseLabel &&
+    if (this.props.releaseLabel && !cdk.Token.isUnresolved(this.props.releaseLabel) &&
       (this.props.ebsRootVolumeThroughput !== undefined || this.props.ebsRootVolumeIops !== undefined)) {
       const minVersion = '6.15.0';
       if (semver.lt(this.props.releaseLabel.slice(4), minVersion)) {
@@ -564,12 +564,14 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
       }
     }
 
-    if (this.props.ebsRootVolumeThroughput !== undefined && (this.props.ebsRootVolumeThroughput < 125 || this.props.ebsRootVolumeThroughput > 1000)) {
+    if (this.props.ebsRootVolumeThroughput !== undefined && !cdk.Token.isUnresolved(this.props.ebsRootVolumeThroughput) &&
+      (this.props.ebsRootVolumeThroughput < 125 || this.props.ebsRootVolumeThroughput > 1000)) {
       throw new ValidationError(lit`EbsRootVolumeThroughputOutOfRange`,
         `ebsRootVolumeThroughput must be between 125 and 1000 MiB/s, but got ${this.props.ebsRootVolumeThroughput} MiB/s.`, this);
     }
 
-    if (this.props.ebsRootVolumeIops !== undefined && (this.props.ebsRootVolumeIops < 3000 || this.props.ebsRootVolumeIops > 16000)) {
+    if (this.props.ebsRootVolumeIops !== undefined && !cdk.Token.isUnresolved(this.props.ebsRootVolumeIops) &&
+      (this.props.ebsRootVolumeIops < 3000 || this.props.ebsRootVolumeIops > 16000)) {
       throw new ValidationError(lit`EbsRootVolumeIopsOutOfRange`,
         `ebsRootVolumeIops must be between 3000 and 16000, but got ${this.props.ebsRootVolumeIops}.`, this);
     }
