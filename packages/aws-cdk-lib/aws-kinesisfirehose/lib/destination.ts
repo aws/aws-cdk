@@ -19,6 +19,13 @@ export interface DestinationConfig {
   readonly httpEndpointDestinationConfiguration?: CfnDeliveryStream.HttpEndpointDestinationConfigurationProperty;
 
   /**
+   * Amazon Redshift destination configuration properties.
+   *
+   * @default - Redshift destination is not used.
+   */
+  readonly redshiftDestinationConfiguration?: CfnDeliveryStream.RedshiftDestinationConfigurationProperty;
+
+  /**
    * Any resources that were created by the destination when binding it to the stack that must be deployed before the delivery stream is deployed.
    *
    * @default []
