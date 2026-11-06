@@ -351,9 +351,18 @@ export class EcsTask implements events.IRuleTarget {
   }
 
   private createEventRolePolicyStatements(): iam.PolicyStatement[] {
-    // check if there is a taskdefinition revision (arn will end with : followed by digits) included in the arn already
+    // Decide whether the `ecs:RunTask` resource ARN must be scoped with a `:*` revision wildcard.
+    // An ARN that already pins a revision (e.g. `family:1`) is granted as-is, while an ARN that
+    // only refers to the family (e.g. `family`) needs the `:*` wildcard.
     let needsRevisionWildcard = false;
-    if (!cdk.Token.isUnresolved(this.taskDefinition.taskDefinitionArn)) {
+    if (this.taskDefinition.taskDefinitionArnIncludesRevision !== undefined) {
+      // The caller told us explicitly whether the imported ARN includes a revision. This is the
+      // only reliable signal when the ARN is a token (e.g. a CloudFormation parameter or an
+      // `Fn.importValue` result) whose revision cannot be inferred from the string.
+      needsRevisionWildcard = !this.taskDefinition.taskDefinitionArnIncludesRevision;
+    } else if (!cdk.Token.isUnresolved(this.taskDefinition.taskDefinitionArn)) {
+      // Fall back to inspecting the concrete ARN: it ends with `:` followed by digits when a
+      // revision is included.
       const revisionAtEndPattern = /:[0-9]+$/;
       const hasRevision = revisionAtEndPattern.test(this.taskDefinition.taskDefinitionArn);
       needsRevisionWildcard = !hasRevision;

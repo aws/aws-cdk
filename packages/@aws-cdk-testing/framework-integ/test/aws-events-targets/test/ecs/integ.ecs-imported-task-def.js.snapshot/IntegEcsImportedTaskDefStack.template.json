@@ -606,7 +606,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":task-definition/TaskDefinitionA"
+          ":task-definition/TaskDefinitionA:*"
          ]
         ]
        }
