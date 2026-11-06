@@ -7,11 +7,14 @@ import * as path from 'path';
 
 // Every rule file needs a fixture it fires on and a fixture it evaluates and passes,
 // at test/rule-fixtures/<rule path without .guard>/{non-compliant,compliant}.json.
+// A rule directory may also hold extra cases named compliant-<case>.json or
+// non-compliant-<case>.json; guard-rules.test.ts runs those with case-specific checks.
 // The fixtures are .json rather than .template.json so that the Security Guardian
 // action never scans them as changed templates.
 const rulesDir = path.join(__dirname, '..', 'rules');
 const fixturesDir = path.join(__dirname, 'rule-fixtures');
 const fixtures = ['non-compliant.json', 'compliant.json'];
+const fixtureName = /^(non-)?compliant(-[a-z0-9]+)*\.json$/;
 // The action fails a pull request when either scan fails, so compliant.json must pass
 // both; non-compliant.json must fail both, so that neither scan stops evaluating a
 // rule unnoticed
@@ -55,7 +58,7 @@ describe('Guard Rule Fixtures', () => {
   test('every fixture belongs to a rule file', () => {
     const misplaced = findFiles(fixturesDir, '.json')
       .map(file => path.relative(fixturesDir, file))
-      .filter(file => !fixtures.includes(path.basename(file)) || !ruleIds.includes(path.dirname(file)));
+      .filter(file => !fixtureName.test(path.basename(file)) || !ruleIds.includes(path.dirname(file)));
     expect(misplaced).toEqual([]);
   });
 
