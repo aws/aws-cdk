@@ -9,7 +9,7 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "env JSII_DEPRECATED=fail integ-runner --unstable=toolkit-lib-engine --language javascript",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
     "package": "cdk-package",
     "build+test": "yarn build && yarn test",
     "build+extract": "yarn build",
@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.205.8",
+    "@aws-cdk/integ-runner": "^2.206.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-sdk/client-acm": "3.632.0",
     "@aws-sdk/client-bedrock-agentcore-control": "3.1143.0",
@@ -55,7 +55,7 @@
     "@aws-cdk/lambda-layer-kubectl-v37": "^2.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "aws-cdk-lib": "0.0.0",
-    "cdk8s": "2.70.116",
+    "cdk8s": "2.70.119",
     "cdk8s-plus-27": "2.9.5",
     "constructs": "^10.5.0"
   },
