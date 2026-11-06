@@ -547,6 +547,42 @@ describe('grants.vectorSearch', () => {
     expect(actions).not.toContain('dynamodb:SearchVectors');
   });
 
+  test('grants SearchVectors to a principal in another account through the table resource policy', () => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+
+    table.grants.vectorSearch(new iam.AccountPrincipal('222222222222'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        Match.objectLike({
+          Region: 'us-east-1',
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:SearchVectors',
+                  Effect: 'Allow',
+                  Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']] } },
+                  Resource: '*',
+                },
+              ],
+            },
+          },
+        }),
+      ],
+    });
+    template.resourceCountIs('AWS::IAM::Policy', 0);
+  });
+
   test('also grants read access to a customer-managed KMS key', () => {
     const key = new kms.Key(stack, 'Key');
     const table = new TableV2(stack, 'Table', {
