@@ -3,8 +3,9 @@ import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import type { Size } from '../../../core';
-import { Stack, ValidationError, withResolved } from '../../../core';
+import { Stack, FeatureFlags, Token, ValidationError, withResolved, ArnFormat } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
+import { STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY } from '../../../cx-api';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -309,18 +310,13 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
     return [
-      // Resource level access control for job-definition requires revision which batch does not support yet
-      // Using the alternative permissions as mentioned here:
-      // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
+      // Batch supports resource-level access control for job definitions by scoping to revisions or wildcards:
+      // https://docs.aws.amazon.com/batch/latest/userguide/iam-example-restrict-job-submission.html
       new iam.PolicyStatement({
-        resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn) ? ['*'] : [
-          Stack.of(this).formatArn({
-            service: 'batch',
-            resource: 'job-definition',
-            resourceName: '*',
-          }),
-          this.props.jobQueueArn,
-        ],
+        // Only a dynamic queue needs `*`
+        resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn)
+          ? ['*']
+          : [...this.jobDefinitionResources(), this.props.jobQueueArn],
         actions: ['batch:SubmitJob'],
       }),
       new iam.PolicyStatement({
@@ -333,6 +329,40 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
         actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
       }),
     ];
+  }
+
+  /**
+   * The job definition resources the `batch:SubmitJob` permission is scoped to.
+   */
+  private jobDefinitionResources(): string[] {
+    const jobDefinition = (resourceName: string) => Stack.of(this).formatArn({
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+    const scoped = FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_TASKS_FIX_BATCH_SUBMIT_JOB_POLICY);
+    const name = scoped ? this.jobDefinitionName() : undefined;
+    return name === undefined
+      ? [jobDefinition('*')]
+      : [jobDefinition(name), jobDefinition(`${name}:*`)];
+  }
+
+  /**
+   * The name of the job definition, or `undefined` when it cannot be determined at
+   * synthesis time (JsonPath/JSONata expression, or an ARN whose resource name cannot be parsed).
+   * An unresolved token is resolved via CloudFormation intrinsics rather than returning `undefined`.
+   */
+  private jobDefinitionName(): string | undefined {
+    const jobDefinitionArn = this.props.jobDefinitionArn;
+    if (isJsonPathOrJsonataExpression(jobDefinitionArn)) {
+      return undefined;
+    }
+    if (!Token.isUnresolved(jobDefinitionArn) && !jobDefinitionArn.startsWith('arn:')) {
+      return jobDefinitionArn.split(':')[0] || undefined;
+    }
+    const resourceName = Stack.of(this).splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    return resourceName?.split(':')[0] || undefined;
   }
 
   private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {
