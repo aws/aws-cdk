@@ -24,7 +24,16 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   }
 
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-    stringifiedConfig = stringifiedConfig + calculateLayersHash([...fn._layers].sort());
+    // Filter to only the layers actually referenced in this function's CloudFormation
+    // Layers property. This guards against layers that exist in the construct tree
+    // (e.g. defined in the same stack) but are not attached to this function — their
+    // presence would otherwise pollute the hash via fn._layers.
+    const cfnLayerArns: any[] = properties.Layers ?? [];
+    const attachedLayers = [...fn._layers].filter(layer => {
+      const resolvedArn = stack.resolve(layer.layerVersionArn);
+      return cfnLayerArns.some((cfnArn: any) => JSON.stringify(cfnArn) === JSON.stringify(resolvedArn));
+    });
+    stringifiedConfig = stringifiedConfig + calculateLayersHash(attachedLayers);
   }
 
   return md5hash(stringifiedConfig + additional);
