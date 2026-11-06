@@ -533,7 +533,7 @@ export class Alarm extends AlarmBase {
                   expression: mathExpr.expression,
                   id,
                   label: conf.renderingProperties?.label as string,
-                  period: hasSubmetrics ? undefined : mathExpr.period,
+                  period: hasSubmetrics && !mathExprUsesInsightRule(mathExpr) ? undefined : mathExpr.period,
                   returnData,
                 };
               },
@@ -678,6 +678,11 @@ function describePeriod(seconds: number) {
 
 function mathExprHasSubmetrics(expr: MetricExpressionConfig) {
   return Object.keys(expr.usingMetrics).length > 0;
+}
+
+// INSIGHT_RULE_METRIC requires the period on the expression itself, even when it also references submetrics
+function mathExprUsesInsightRule(expr: MetricExpressionConfig) {
+  return /\bINSIGHT_RULE_METRIC\b/i.test(expr.expression);
 }
 
 function assertSubmetricsCount(scope: Construct, expr: MetricExpressionConfig) {

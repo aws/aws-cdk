@@ -1,0 +1,45 @@
+{
+  "/MathAlarmInsightRuleIntegStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MathAlarmInsightRuleIntegStack.template.json"
+    }
+  ],
+  "/MathAlarmInsightRuleIntegStack/InsightRule": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InsightRule"
+    }
+  ],
+  "/MathAlarmInsightRuleIntegStack/Alarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        }
+      }
+    }
+  ],
+  "/MathAlarmInsightRuleIntegStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MathAlarmInsightRuleIntegStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MathAlarmInsightRuleIntegStack/Alarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm7103F465"
+    }
+  ]
+}
