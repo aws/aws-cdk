@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.polly"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Polly"
+    },
+    "python": {
+      "module": "aws_cdk.aws_polly"
+    }
+  }
+}

@@ -1,10 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
+import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
+import { AssemblyValidationReport } from '../../../assertions/lib/helpers-internal/assembly-validation-report';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
 import type { App } from '../../lib';
+import { namespaceFromPluginName, normalizeValidationId } from '../../lib/validation/private/validation-id';
 
 const ANNOTATION_CAPTION = 'Annotation';
 
@@ -15,12 +18,11 @@ beforeEach(() => {
   process.env.NO_COLOR = '1';
   OUTPUT_REDACTIONS.clear();
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
 afterEach(() => {
-  jest.clearAllMocks();
+  jest.restoreAllMocks();
 });
 
 describe('validations', () => {
@@ -477,21 +479,51 @@ describe('validations', () => {
     expect(report).toContain('ERROR Validation plugin \'broken-plugin\' failed: Something went wrong');
   });
 
-  test('plugin tries to modify a template', () => {
+  test('plugin on a Stage nested under a regular construct is invoked', () => {
+    // A Stage does not have to be a direct child of the App; finding assemblies
+    // must recurse through the regular constructs in between.
+    const mockValidate = jest.fn().mockImplementation(() => ({ success: true, violations: [] }));
+    const app = new NonStrictApp();
+    const wrapper = new Construct(app, 'Wrapper');
+    const stage = new core.Stage(wrapper, 'Stage', {
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stack = new core.Stack(stage, 'stack1');
+    new FailResource(stack, 'DefaultResource');
+    app.synth();
+
+    expect(mockValidate).toHaveBeenCalledWith(expect.objectContaining({
+      templatePaths: [
+        expect.stringMatching(/assembly-Wrapper-Stage\/WrapperStagestack1.*\.template\.json/),
+      ],
+    }));
+  });
+
+  test.each([false, true])('plugin tries to modify a template with confirmValidationPluginsDoNotMutate: %s', (confirmValidationPluginsDoNotMutate) => {
     const app = new NonStrictApp({
       policyValidationBeta1: [
         new RoguePlugin(),
       ],
+      confirmValidationPluginsDoNotMutate,
     });
     const stack = new core.Stack(app);
     new FailResource(stack, 'DefaultResource');
-    expect(() => {
-      app.synth();
-    }).toThrow(/rogue-plugin.*modified the cloud assembly/);
+
+    if (confirmValidationPluginsDoNotMutate) {
+      expect(() => { app.synth(); }).toThrow(/rogue-plugin.*modified the cloud assembly/);
+    } else {
+      expect(() => { app.synth(); }).not.toThrow();
+    }
   });
 
   test('plugin that writes new files to assembly is allowed', () => {
     const app = new NonStrictApp({
+      confirmValidationPluginsDoNotMutate: true,
       policyValidationBeta1: [
         {
           name: 'file-writer-plugin',
@@ -514,8 +546,9 @@ describe('validations', () => {
     expect(JSON.parse(fs.readFileSync(outputFile, 'utf-8'))).toEqual({ result: 'ok' });
   });
 
-  test('plugin that deletes pre-existing file is caught', () => {
+  test.each([false, true])('plugin that deletes pre-existing file is caught if confirmValidationPluginsDoNotMutate: %s', (confirmValidationPluginsDoNotMutate) => {
     const app = new NonStrictApp({
+      confirmValidationPluginsDoNotMutate,
       policyValidationBeta1: [
         {
           name: 'deleter-plugin',
@@ -531,7 +564,11 @@ describe('validations', () => {
       type: 'Test::Resource::Fake',
       properties: { result: 'success' },
     });
-    expect(() => app.synth()).toThrow(/deleter-plugin.*modified the cloud assembly/);
+    if (confirmValidationPluginsDoNotMutate) {
+      expect(() => app.synth()).toThrow(/deleter-plugin.*modified the cloud assembly/);
+    } else {
+      expect(() => app.synth()).not.toThrow();
+    }
   });
 
   test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
@@ -1642,7 +1679,113 @@ describe('validations', () => {
       expect(output).toContain('Fake');
     });
   });
+
+  test.each([
+    ['StackA/ScopeA', 3],
+    ['StackA', 2],
+    ['', 0],
+  ])('suppressions respect scope: suppression at %p leaves %p violations', (suppressScope, warningCount) => {
+    const app = new core.App({
+      postCliContext: AssemblyValidationReport.APP_CONTEXT,
+    });
+
+    // A plugin that complains about every resource it finds
+    core.Validations.of(app).addPlugins(pluginThatReportsForEveryResource());
+
+    // Make a construct tree with 4 resources across 2 stacks
+    const stackA = new core.Stack(app, 'StackA');
+    new Construct(stackA, 'ScopeA');
+    const stackB = new core.Stack(app, 'StackB');
+    new Construct(stackB, 'ScopeB');
+
+    for (const scopePath of ['StackA', 'StackA/ScopeA', 'StackB', 'StackB/ScopeB']) {
+      const scope = constructAt(app, scopePath);
+      new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
+    }
+
+    core.Validations.of(constructAt(app, suppressScope)).acknowledge({
+      id: 'ValidationPlugin::MyRule-001',
+      reason: 'Silence in scope',
+    });
+
+    const report = AssemblyValidationReport.fromApp(app);
+    expect(report.allViolations()).toHaveLength(warningCount);
+  });
+
+  test('properly splits the same violation from multiple resources', () => {
+    // Test that the internal data structure in the report splits appropriately.
+    const app = new core.App({
+      postCliContext: AssemblyValidationReport.APP_CONTEXT,
+    });
+
+    // A plugin that complains about every resource it finds
+    core.Validations.of(app).addPlugins(pluginThatReportsForEveryResource());
+
+    // Make a construct tree with 4 resources across 2 stacks
+    const stackA = new core.Stack(app, 'StackA');
+    new Construct(stackA, 'ScopeA');
+
+    for (const scopePath of ['StackA', 'StackA/ScopeA']) {
+      const scope = constructAt(app, scopePath);
+      new core.CfnResource(scope, 'Bucket', { type: 'AWS::S3::Bucket' });
+    }
+
+    // Only acknowledge the rule on StackA/ScopeA resource.
+    core.Validations.of(constructAt(app, 'StackA/ScopeA')).acknowledge({
+      id: 'ValidationPlugin::MyRule-001',
+      reason: 'Silence in scope',
+    });
+
+    const report = AssemblyValidationReport.fromApp(app).pluginReport('ValidationPlugin');
+    expect(report).toMatchObject({
+      suppressedViolations: [
+        expect.objectContaining({
+          ruleName: 'MyRule-001',
+          violatingConstructs: [
+            expect.objectContaining({
+              constructPath: 'StackA/ScopeA/Bucket',
+            }),
+          ],
+        }),
+      ],
+      violations: [
+        expect.objectContaining({
+          ruleName: 'MyRule-001',
+          violatingConstructs: [
+            expect.objectContaining({
+              constructPath: 'StackA/Bucket',
+            }),
+          ],
+        }),
+      ],
+    });
+  });
 });
+
+function pluginThatReportsForEveryResource(ruleName: string = 'MyRule-001'): core.IPolicyValidationPlugin {
+  return {
+    name: 'ValidationPlugin',
+    validate(context) {
+      const violations = context.stackTemplates.flatMap((s) => {
+        const template = JSON.parse(fs.readFileSync(s.templatePath, 'utf-8'));
+        return Object.entries(template.Resources || {}).map(([logicalId, _]) => ({
+          description: 'dummy violation for demonstration',
+          ruleName,
+          violatingResources: [{
+            resourceLogicalId: logicalId,
+            templatePath: s.templatePath,
+            locations: [],
+          }],
+        } satisfies core.PolicyViolation));
+      });
+
+      return {
+        success: violations.length === 0,
+        violations,
+      };
+    },
+  };
+}
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   constructor(
@@ -1787,3 +1930,30 @@ class NonStrictApp extends core.App {
 function loadJson(filePath: string): any {
   return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 }
+
+function constructAt(root: IConstruct, constructPath: string) {
+  const parts = constructPath ? constructPath.split('/') : [];
+
+  let current: IConstruct = root;
+  while (parts.length > 0) {
+    const part = parts.shift()!;
+    let next = current.node.tryFindChild(part);
+    if (!next) {
+      throw new Error(`At path ${current.node.path}: no child named ${part}`);
+    }
+    current = next;
+  }
+  return current;
+}
+
+describe('normalizeValidationId', () => {
+  test('normalize without prefix', () => {
+    const normalized = normalizeValidationId('my rule', namespaceFromPluginName('my plugin'));
+    expect(normalized).toEqual('my-plugin::my-rule');
+  });
+
+  test('normalize with prefix', () => {
+    const normalized = normalizeValidationId('my custom plugin::my rule', namespaceFromPluginName('my plugin'));
+    expect(normalized).toEqual('my-custom-plugin::my-rule');
+  });
+});

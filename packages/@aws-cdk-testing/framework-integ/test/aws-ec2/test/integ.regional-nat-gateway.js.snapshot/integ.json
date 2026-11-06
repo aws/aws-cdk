@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "regional-nat-gateway-integ/DefaultTest": {
+      "stacks": [
+        "RegionalNatGatewayStack"
+      ],
+      "assertionStack": "regional-nat-gateway-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "regionalnatgatewayintegDefaultTestDeployAssert62EFF3BC"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

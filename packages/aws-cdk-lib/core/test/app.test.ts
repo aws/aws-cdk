@@ -422,6 +422,36 @@ describe('app', () => {
       delete process.env[cxapi.PERF_COUNTERS_FILE_ENV];
     }
   });
+
+  test('App performance counters include stack and construct counts', () => {
+    // GIVEN
+    const countersDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-counters'));
+    const countersFile = path.join(countersDir, 'counters.json');
+    process.env[cxapi.PERF_COUNTERS_FILE_ENV] = countersFile;
+    try {
+      // WHEN
+      const app = new App({
+        outdir: countersDir,
+        context: {
+          '@aws-cdk/core.slowSynthThreshold': 0,
+        },
+      });
+      const stack1 = new Stack(app, 'Stack1');
+      new CfnResource(stack1, 'Resource1', { type: 'AWS::Test::Resource' });
+      const stack2 = new Stack(app, 'Stack2');
+      new CfnResource(stack2, 'Resource2', { type: 'AWS::Test::Resource' });
+      new Construct(stack2, 'PlainConstruct');
+      app.synth();
+
+      // THEN
+      const counters = JSON.parse(fs.readFileSync(countersFile, 'utf-8')).counters;
+      // App + Tree + Stack1 + Resource1 + Stack2 + Resource2 + PlainConstruct = at least 7
+      expect(counters['count:Constructs(cnt)']).toBeGreaterThanOrEqual(7);
+    } finally {
+      fs.rmSync(countersDir, { force: true, recursive: true });
+      delete process.env[cxapi.PERF_COUNTERS_FILE_ENV];
+    }
+  });
 });
 
 class MyConstruct extends Construct {
