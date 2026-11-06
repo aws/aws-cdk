@@ -406,6 +406,30 @@ describe('organizational unit account filters', () => {
     });
   });
 
+  test('fromOrganizationalUnits accepts a tokenized organizational unit list', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const organizationalUnits = new CfnParameter(stack, 'OrganizationalUnits', { type: 'CommaDelimitedList' }).valueAsList;
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromOrganizationalUnits({
+        regions: ['us-east-1'],
+        organizationalUnits,
+      }),
+      deploymentType: DeploymentType.serviceManaged(),
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
+    });
+
+    expect(Token.isUnresolved(organizationalUnits)).toBe(true);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      StackInstancesGroup: [{
+        DeploymentTargets: {
+          OrganizationalUnitIds: { Ref: 'OrganizationalUnits' },
+          AccountFilterType: 'NONE',
+        },
+      }],
+    });
+  });
+
   test('a service managed StackSet renders an organizational unit target added with addTarget', () => {
     const app = new App();
     const stack = new Stack(app);
@@ -1497,6 +1521,16 @@ describe('StackSet validation errors', () => {
   });
 
   test.each([
+    ['no', []],
+    ['a missing list of', undefined as unknown as string[]],
+  ])('fails with an error code when fromOrganizationalUnits has %s organizational units', (_name, organizationalUnits) => {
+    expect(() => StackSetTarget.fromOrganizationalUnits({ regions: ['us-east-1'], organizationalUnits })).toThrow(expect.objectContaining({
+      name: 'StackSetOrganizationalUnitsRequired',
+      message: 'fromOrganizationalUnits requires at least one organizational unit',
+    }));
+  });
+
+  test.each([
     ['intersection', StackSetAccountFilter.intersection],
     ['difference', StackSetAccountFilter.difference],
   ])('fails with an error code when the %s account filter has no accounts', (name, factory) => {
@@ -1521,7 +1555,7 @@ describe('StackSet validation errors', () => {
   });
   const serviceManagedRequiresOrganizationalUnits = expect.objectContaining({
     name: 'StackSetServiceManagedRequiresOrganizationalUnits',
-    message: 'a service managed StackSet cannot deploy to accounts ["111111111111"] without organizational units, use StackSetTarget.fromOrganizationalUnits() with \'accountFilter: StackSetAccountFilter.intersection()\' to deploy to specific accounts',
+    message: 'a service managed StackSet cannot deploy to accounts ["111111111111"] without organizational units, use StackSetTarget.fromOrganizationalUnits() with \'accountFilter: StackSetAccountFilter.intersection()\' and set \'autoDeployEnabled: false\' in DeploymentType.serviceManaged() to deploy only to specific accounts, because automatic deployments ignore account filters',
     constructPath: 'Default/StackSet',
   });
 

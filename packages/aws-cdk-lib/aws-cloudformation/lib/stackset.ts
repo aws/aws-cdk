@@ -91,19 +91,17 @@ interface AccountFilterConfig {
 }
 
 /**
- * Refines which accounts to deploy stacks to by specifying how to use the accounts and organizationalUnits together.
+ * Narrows a target's `organizationalUnits` to the listed accounts, or excludes the listed accounts from them
  *
- * @example
- * // deploy only to account 11111111111 of the OU
- * StackSetTarget.fromOrganizationalUnits({
- *   regions: ['us-east-1'],
- *   organizationalUnits: ['ou-1111111'],
- *   accountFilter: StackSetAccountFilter.intersection(['11111111111']),
- * });
+ * `intersection()` deploys only to the listed accounts that are in the organizational units.
+ * `difference()` deploys to every account in the organizational units except the listed ones.
  */
 export abstract class StackSetAccountFilter {
   /**
    * Deploy only to the listed accounts that are in the organizational units
+   *
+   * With automatic deployments on, accounts that join the organizational units later also get
+   * the stack, see `accountFilter`.
    *
    * @param accounts the AWS account IDs to deploy to
    */
@@ -172,15 +170,19 @@ export interface OrganizationsTargetOptions extends StackSetTargetOptions {
    * deploy the provided Stack template to all accounts in the OU.
    * This can be further filtered by specifying `accountFilter`.
    *
-   * If the `deploymentType` is specified with `autoDeployEnabled` then
-   * the StackSet will automatically deploy the Stack to new accounts as they
-   * are added to the specified `organizationalUnits`
+   * Automatic deployments, which `DeploymentType.serviceManaged()` enables by default
+   * (`autoDeployEnabled`), deploy the Stack to accounts added to these organizational units later.
    */
   readonly organizationalUnits: string[];
 
   /**
    * Which accounts to deploy to, in combination with the organizational units
    *
+   * Automatic deployments, on by default with `DeploymentType.serviceManaged()`, don't apply the
+   * filter, so accounts that join the organizational units later get the stack even if the filter
+   * leaves them out. Set `autoDeployEnabled: false` to deploy only to the accounts the filter selects.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html#stacksets-orgs-auto-deployment-considerations
    * @default - deploys to every account in the organizational units
    */
   readonly accountFilter?: StackSetAccountFilter;
@@ -229,7 +231,7 @@ export abstract class StackSetTarget {
    *
    * @example
    * StackSetTarget.fromAccounts({
-   *   accounts: ['11111111111', '22222222222'],
+   *   accounts: ['111111111111', '222222222222'],
    *   regions: ['us-east-1', 'us-east-2'],
    * });
    */
@@ -298,6 +300,11 @@ class AccountsTarget extends StackSetTarget {
 class OrganizationsTarget extends StackSetTarget {
   constructor(private readonly options: OrganizationsTargetOptions) {
     super();
+
+    const organizationalUnits = this.options.organizationalUnits;
+    if (organizationalUnits === undefined || (!Token.isUnresolved(organizationalUnits) && organizationalUnits.length === 0)) {
+      throw new UnscopedValidationError(lit`StackSetOrganizationalUnitsRequired`, 'fromOrganizationalUnits requires at least one organizational unit');
+    }
   }
 
   public _bind(_scope: Construct, _options: TargetBindOptions = {}): StackSetTargetConfig {
@@ -855,7 +862,7 @@ export class StackSet extends Resource implements IStackSet {
       throw new ValidationError(lit`StackSetOrganizationalUnitsRequireServiceManaged`, `a self managed StackSet cannot deploy to organizational units ${JSON.stringify(targetConfig.organizationalUnits)}, set 'deploymentType: DeploymentType.serviceManaged()' or use StackSetTarget.fromAccounts()`, this);
     }
     if (this.permissionModel === PermissionModel.SERVICE_MANAGED && targetConfig.organizationalUnits === undefined) {
-      throw new ValidationError(lit`StackSetServiceManagedRequiresOrganizationalUnits`, `a service managed StackSet cannot deploy to accounts ${JSON.stringify(targetConfig.accounts)} without organizational units, use StackSetTarget.fromOrganizationalUnits() with 'accountFilter: StackSetAccountFilter.intersection()' to deploy to specific accounts`, this);
+      throw new ValidationError(lit`StackSetServiceManagedRequiresOrganizationalUnits`, `a service managed StackSet cannot deploy to accounts ${JSON.stringify(targetConfig.accounts)} without organizational units, use StackSetTarget.fromOrganizationalUnits() with 'accountFilter: StackSetAccountFilter.intersection()' and set 'autoDeployEnabled: false' in DeploymentType.serviceManaged() to deploy only to specific accounts, because automatic deployments ignore account filters`, this);
     }
 
     if (this.adminRole && iam.Role.isRole(this.adminRole)) {

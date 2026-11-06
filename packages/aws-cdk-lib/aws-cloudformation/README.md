@@ -14,7 +14,7 @@ const stackSetStack = new StackSetStack(stack, 'MyStackSet');
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
-    accounts: ['11111111111'],
+    accounts: ['111111111111'],
     parameterOverrides: {
       SomeParam: 'overrideValue',
     },
@@ -94,7 +94,7 @@ const stackSetStack = new StackSetStack(stack, 'MyStackSet');
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
-    accounts: ['11111111111'],
+    accounts: ['111111111111'],
   }),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
@@ -168,6 +168,12 @@ This would deploy only to `account-1` & `account-4`, and would exclude `account-
 To deploy only to some of the accounts in the OU hierarchy, use `StackSetAccountFilter.intersection()`
 with the accounts to deploy to.
 
+Automatic deployments, which `DeploymentType.serviceManaged()` enables by default, don't apply
+account filters: an account that joins the OU later gets the stack even if the filter leaves it out.
+To deploy only to the accounts the filter selects, set `autoDeployEnabled: false` in
+`DeploymentType.serviceManaged()`. See
+[automatic deployment considerations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html#stacksets-orgs-auto-deployment-considerations).
+
 To also deploy the StackSet to accounts in another OU, add another target with `addTarget()`. For
 example, to deploy to `account-5` of `ou-2` as well:
 
@@ -236,7 +242,7 @@ const stackSetStack = new StackSetStack(stack, 'MyStackSet');
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
-    accounts: ['11111111111'],
+    accounts: ['111111111111'],
   }),
   deploymentType: DeploymentType.selfManaged({
     executionRoleName: 'MyStackSetExecutionRole',
