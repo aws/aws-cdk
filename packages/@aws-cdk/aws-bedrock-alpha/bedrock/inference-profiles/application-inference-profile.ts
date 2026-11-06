@@ -1,4 +1,4 @@
-import { Arn, ArnFormat, ValidationError } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Token, ValidationError } from 'aws-cdk-lib';
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import type { IGrantable } from 'aws-cdk-lib/aws-iam';
 import { Grant } from 'aws-cdk-lib/aws-iam';
@@ -294,14 +294,16 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
       throw new ValidationError(lit`ProfileNameRequired`, 'applicationInferenceProfileName is required and cannot be empty', this);
     }
 
+    const isNameUnresolved = Token.isUnresolved(props.applicationInferenceProfileName);
+
     // Validate applicationInferenceProfileName length
-    if (props.applicationInferenceProfileName.length > 64) {
+    if (!isNameUnresolved && props.applicationInferenceProfileName.length > 64) {
       throw new ValidationError(lit`ProfileNameTooLong`, 'applicationInferenceProfileName cannot exceed 64 characters', this);
     }
 
     // Validate applicationInferenceProfileName pattern
     const namePattern = /^([0-9a-zA-Z:.][ _-]?)+$/;
-    if (!namePattern.test(props.applicationInferenceProfileName)) {
+    if (!isNameUnresolved && !namePattern.test(props.applicationInferenceProfileName)) {
       throw new ValidationError(
         lit`ProfileNameInvalidPattern`,
         'applicationInferenceProfileName must match pattern ^([0-9a-zA-Z:.][ _-]?)+$',
@@ -315,12 +317,12 @@ export class ApplicationInferenceProfile extends InferenceProfileBase implements
     }
 
     // Validate description length if provided
-    if (props.description !== undefined && props.description.length > 200) {
+    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 200) {
       throw new ValidationError(lit`DescriptionTooLong`, 'description cannot exceed 200 characters', this);
     }
 
     // Validate description pattern if provided
-    if (props.description !== undefined && props.description !== '') {
+    if (props.description !== undefined && props.description !== '' && !Token.isUnresolved(props.description)) {
       const descriptionPattern = /^([0-9a-zA-Z:.][ _-]?)+$/;
       if (!descriptionPattern.test(props.description)) {
         throw new ValidationError(
