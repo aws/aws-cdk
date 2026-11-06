@@ -197,7 +197,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f7cb5878efef668855c2e9c3805636c098514bcc33d2d7851258aaf869636514.zip"
+     "S3Key": "fa70d8bd2ae91f9b4f63e5a9f03f62b419115d5b980ab17e79a0a09d6ac8e9e4.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -303,7 +303,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9ad763f1ebfb1702b1706ea080767ec6a80344ea377b58e7638c43ff5950ee31.zip"
+     "S3Key": "e47f9aad8d8043fd12007bf9c6c095d6f90f74c1d6e09fdb963b8ff7d09bf661.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -942,6 +942,112 @@
    },
    "DependsOn": [
     "tshandlercustomhandlerdotsServiceRole0575D3CB"
+   ]
+  },
+  "entryrelativetocwdServiceRoleE669860D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "entryrelativetocwd7855B24F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5fd5332ac0f100f1845842d79d110a7cf0957bd31419a7aabaedf8d3043ddf09.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "entryrelativetocwdServiceRoleE669860D",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "entryrelativetocwdServiceRoleE669860D"
+   ]
+  },
+  "entryrelativetoprojectRootServiceRole0191C6F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "entryrelativetoprojectRootB768148B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "32370a8294374ea4b0e044b4935c833a4ad57ee848169f98e7efdd8043e77e29.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "entryrelativetoprojectRootServiceRole0191C6F0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "entryrelativetoprojectRootServiceRole0191C6F0"
    ]
   }
  },
