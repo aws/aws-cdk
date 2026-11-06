@@ -94,7 +94,7 @@ enum AccountFilterType {
 /**
  * Common options for deploying a StackSet to a target
  */
-export interface TargetOptions {
+export interface StackSetTargetOptions {
   /**
    * A list of regions the Stack should be deployed to.
    *
@@ -115,7 +115,7 @@ export interface TargetOptions {
 /**
  * Options for deploying a StackSet to a set of Organizational Units (OUs)
  */
-export interface OrganizationsTargetOptions extends TargetOptions {
+export interface OrganizationsTargetOptions extends StackSetTargetOptions {
   /**
    * A list of organizational unit ids to deploy to. The StackSet will
    * deploy the provided Stack template to all accounts in the OU.
@@ -161,7 +161,7 @@ export interface OrganizationsTargetOptions extends TargetOptions {
 /**
  * Options for deploying a StackSet to a list of AWS accounts
  */
-export interface AccountsTargetOptions extends TargetOptions {
+export interface AccountsTargetOptions extends StackSetTargetOptions {
   /**
    * A list of AWS accounts to deploy the StackSet to
    */
@@ -434,7 +434,7 @@ export abstract class DeploymentType {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stacksets-concepts-stackset-permission-models
    */
   public static serviceManaged(options: ServiceManagedOptions = {}): DeploymentType {
-    return new ManagedDeploymentType(options);
+    return new ServiceManagedDeploymentType(options);
   }
 
   /**
@@ -456,7 +456,7 @@ export abstract class DeploymentType {
   public abstract _bind(scope: Construct, options?: DeploymentTypeOptions): DeploymentTypeConfig;
 }
 
-class ManagedDeploymentType extends DeploymentType {
+class ServiceManagedDeploymentType extends DeploymentType {
   constructor(private readonly options?: ServiceManagedOptions) {
     super();
   }
@@ -682,26 +682,9 @@ export interface IStackSet extends IResource, IStackSetRef {
    * @attribute
    */
   readonly stackSetId: string;
-
-  /**
-   * Only available on self managed stacksets. `undefined` for service managed and imported StackSets.
-   *
-   * The admin role that CloudFormation will use to perform stackset operations.
-   * This role should only have permissions to be assumed by the CloudFormation service
-   * and to assume the execution role in each individual account.
-   *
-   * When you create the execution role it must have an assume role policy statement which
-   * allows `sts:AssumeRole` from this admin role.
-   *
-   * To grant specific users/groups access to use this role to deploy stacksets they must have
-   * a policy that allows `iam:GetRole` & `iam:PassRole` on this role resource.
-   */
-  readonly role?: iam.IRole;
 }
 
 class ImportedStackSet extends Resource implements IStackSet {
-  public readonly role?: iam.IRole = undefined;
-
   constructor(scope: Construct, id: string, public readonly stackSetId: string, stackSetArn?: string) {
     super(scope, id, { environmentFromArn: stackSetArn });
   }
@@ -724,7 +707,7 @@ export class StackSet extends Resource implements IStackSet {
   /**
    * Import an existing StackSet from its ID.
    *
-   * The imported StackSet has no `role`.
+   * The imported StackSet has no `adminRole`.
    *
    * @param scope The parent creating construct
    * @param id The construct's name.
@@ -737,7 +720,7 @@ export class StackSet extends Resource implements IStackSet {
   /**
    * Import an existing StackSet from its ARN.
    *
-   * The account and region of the imported StackSet are taken from the ARN. The imported StackSet has no `role`.
+   * The account and region of the imported StackSet are taken from the ARN. The imported StackSet has no `adminRole`.
    *
    * @param scope The parent creating construct.
    * @param id The construct's name.
@@ -750,9 +733,25 @@ export class StackSet extends Resource implements IStackSet {
 
   public readonly stackSetId: string;
 
+  /**
+   * The admin role that CloudFormation uses to perform StackSet operations.
+   *
+   * This is the `adminRole` passed to `DeploymentType.selfManaged()`, or the role the StackSet
+   * creates when none is passed. It is `undefined` for a service managed StackSet.
+   *
+   * This role should only have permissions to be assumed by the CloudFormation service
+   * and to assume the execution role in each individual account.
+   *
+   * When you create the execution role it must have an assume role policy statement which
+   * allows `sts:AssumeRole` from this admin role.
+   *
+   * To grant specific users/groups access to use this role to deploy stacksets they must have
+   * a policy that allows `iam:GetRole` & `iam:PassRole` on this role resource.
+   */
+  public readonly adminRole?: iam.IRole;
+
   private readonly stackInstances: CfnStackSet.StackInstancesProperty[] = [];
 
-  private readonly _role?: iam.IRole;
   private readonly permissionModel: PermissionModel;
   private readonly resource: CfnStackSet;
 
@@ -772,13 +771,13 @@ export class StackSet extends Resource implements IStackSet {
 
     const deploymentTypeConfig = (props.deploymentType ?? DeploymentType.selfManaged())._bind(this);
     if (deploymentTypeConfig.permissionsModel === PermissionModel.SELF_MANAGED) {
-      this._role = deploymentTypeConfig.adminRole ?? new iam.Role(this, 'AdminRole', {
+      this.adminRole = deploymentTypeConfig.adminRole ?? new iam.Role(this, 'AdminRole', {
         assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com', {
           conditions: this.adminRoleTrustConditions(),
         }),
       });
 
-      this._role.addToPrincipalPolicy(new iam.PolicyStatement({
+      this.adminRole.addToPrincipalPolicy(new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['sts:AssumeRole'],
         resources: [
@@ -808,7 +807,7 @@ export class StackSet extends Resource implements IStackSet {
         retainStacksOnAccountRemoval: deploymentTypeConfig.autoDeployRetainStacks,
       }),
       executionRoleName: deploymentTypeConfig.executionRoleName,
-      administrationRoleArn: this._role?.roleArn,
+      administrationRoleArn: this.adminRole?.roleArn,
       description: props.description,
       managedExecution: {
         Active: props.managedExecution ?? true,
@@ -843,8 +842,8 @@ export class StackSet extends Resource implements IStackSet {
     this.resource = stackSet;
     this.stackSetId = stackSet.attrStackSetId;
 
-    if (this._role) {
-      stackSet.node.addDependency(this._role);
+    if (this.adminRole) {
+      stackSet.node.addDependency(this.adminRole);
     }
 
     // the file asset bucket deployment needs to complete before the stackset can deploy
@@ -853,10 +852,6 @@ export class StackSet extends Resource implements IStackSet {
 
   public get stackSetRef(): StackSetReference {
     return this.resource.stackSetRef;
-  }
-
-  public get role(): iam.IRole | undefined {
-    return this._role;
   }
 
   /**
@@ -868,7 +863,7 @@ export class StackSet extends Resource implements IStackSet {
   public addTarget(target: StackSetTarget) {
     const targetConfig = target._bind(this);
 
-    if (this._role && iam.Role.isRole(this._role)) {
+    if (this.adminRole && iam.Role.isRole(this.adminRole)) {
       const disabledPrincipals: iam.IPrincipal[] = [];
       targetConfig.regions.forEach(region => {
         if (!Token.isUnresolved(region) && RegionInfo.get(region).isOptInRegion) {
@@ -876,7 +871,7 @@ export class StackSet extends Resource implements IStackSet {
         }
       });
       if (disabledPrincipals.length > 0) {
-        this._role.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+        this.adminRole.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: ['sts:AssumeRole'],
           principals: disabledPrincipals,

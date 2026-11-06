@@ -294,7 +294,7 @@ Once you have granted access yourself, acknowledge it with
 ### Importing an existing StackSet
 
 You can reference a StackSet that was created outside of your app by its ID or by its ARN.
-An imported StackSet has no `role`, and neither does a service managed StackSet.
+Only a self managed `StackSet` has an `adminRole`; an imported StackSet and a service managed StackSet have none.
 
 ```ts
 const stack = new Stack();

@@ -1289,8 +1289,23 @@ describe('StackSet self managed admin role', () => {
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     });
 
-    expect(stackSet.node.tryFindChild('AdminRole')).toBe(stackSet.role);
+    expect(stackSet.adminRole).toBeDefined();
+    expect(stackSet.node.tryFindChild('AdminRole')).toBe(stackSet.adminRole);
     expect(stack.node.tryFindChild('AdminRole')).toBeUndefined();
+  });
+
+  test('adminRole is the supplied admin role', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const adminRole = iam.Role.fromRoleArn(stack, 'AdminRole', 'arn:aws:iam::123456789012:role/StackSetAdmin');
+
+    const stackSet = new StackSet(stack, 'StackSet', {
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
+      deploymentType: DeploymentType.selfManaged({ adminRole }),
+    });
+
+    expect(stackSet.adminRole).toBe(adminRole);
+    expect(stackSet.node.tryFindChild('AdminRole')).toBeUndefined();
   });
 
   test('two self managed StackSets in one scope each get their own admin role', () => {
@@ -1514,7 +1529,7 @@ test('stackSetId is the StackSetId attribute of the StackSet resource', () => {
   expect(stack.resolve(stackSet.stackSetId)).toEqual({ 'Fn::GetAtt': ['StackSet6E6355CF', 'StackSetId'] });
 });
 
-test('a service managed StackSet has no role', () => {
+test('a service managed StackSet has no admin role', () => {
   const app = new App();
   const stack = new Stack(app);
 
@@ -1523,7 +1538,7 @@ test('a service managed StackSet has no role', () => {
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
   });
 
-  expect(stackSet.role).toBeUndefined();
+  expect(stackSet.adminRole).toBeUndefined();
 });
 
 test('a tokenized target region gets no opt-in region trust statement', () => {
@@ -1549,14 +1564,14 @@ test('a tokenized target region gets no opt-in region trust statement', () => {
 describe('importing a StackSet', () => {
   const stackSetId = 'my-stackset:2f0a8b4c-1234-5678-9abc-def012345678';
 
-  test('fromStackSetId returns a StackSet with the given id and no role', () => {
+  test('fromStackSetId returns a StackSet with the given id and no admin role', () => {
     const stack = new Stack();
 
     const imported = StackSet.fromStackSetId(stack, 'Imported', stackSetId);
 
     expect(imported.stackSetId).toEqual(stackSetId);
     expect(imported.stackSetRef.stackSetId).toEqual(stackSetId);
-    expect(imported.role).toBeUndefined();
+    expect(imported).not.toHaveProperty('adminRole');
   });
 
   test('fromStackSetArn takes the id, account and region from the ARN', () => {
@@ -1568,7 +1583,7 @@ describe('importing a StackSet', () => {
     expect(imported.stackSetId).toEqual(stackSetId);
     expect(imported.stackSetRef.stackSetId).toEqual(stackSetId);
     expect(imported.env).toEqual({ account: '123456789012', region: 'us-west-2' });
-    expect(imported.role).toBeUndefined();
+    expect(imported).not.toHaveProperty('adminRole');
   });
 
   test('fromStackSetArn resolves the id of a tokenized ARN at deploy time', () => {
