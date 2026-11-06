@@ -1,0 +1,154 @@
+{
+ "Resources": {
+  "TargetRole12E3474B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "application-autoscaling.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Target3191CF44": {
+   "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+   "Properties": {
+    "MaxCapacity": 10,
+    "MinCapacity": 1,
+    "ResourceId": "https://custom-resource",
+    "RoleARN": {
+     "Fn::GetAtt": [
+      "TargetRole12E3474B",
+      "Arn"
+     ]
+    },
+    "ScalableDimension": "custom-resource:ResourceType:Property",
+    "ServiceNamespace": "custom-resource"
+   }
+  },
+  "TargetStepScalingLowerPolicy0E8A27EC": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "awsapplicationautoscalingstepscalingTargetStepScalingLowerPolicy5C847361",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "Target3191CF44"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "MetricAggregationType": "Average",
+     "StepAdjustments": [
+      {
+       "MetricIntervalUpperBound": 0,
+       "ScalingAdjustment": -1
+      }
+     ]
+    }
+   }
+  },
+  "TargetStepScalingLowerAlarmF471F721": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "TargetStepScalingLowerPolicy0E8A27EC"
+     }
+    ],
+    "AlarmDescription": "Lower threshold scaling alarm",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "MetricName": "Metric",
+    "Namespace": "Test",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 0,
+    "TreatMissingData": "notBreaching"
+   }
+  },
+  "TargetStepScalingUpperPolicy2F3A21B2": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "awsapplicationautoscalingstepscalingTargetStepScalingUpperPolicy2F9C4F83",
+    "PolicyType": "StepScaling",
+    "ScalingTargetId": {
+     "Ref": "Target3191CF44"
+    },
+    "StepScalingPolicyConfiguration": {
+     "AdjustmentType": "ChangeInCapacity",
+     "MetricAggregationType": "Average",
+     "StepAdjustments": [
+      {
+       "MetricIntervalLowerBound": 0,
+       "MetricIntervalUpperBound": 400,
+       "ScalingAdjustment": 1
+      },
+      {
+       "MetricIntervalLowerBound": 400,
+       "ScalingAdjustment": 5
+      }
+     ]
+    }
+   }
+  },
+  "TargetStepScalingUpperAlarm47A043E2": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "TargetStepScalingUpperPolicy2F3A21B2"
+     }
+    ],
+    "AlarmDescription": "Upper threshold scaling alarm",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "MetricName": "Metric",
+    "Namespace": "Test",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 100,
+    "TreatMissingData": "notBreaching"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

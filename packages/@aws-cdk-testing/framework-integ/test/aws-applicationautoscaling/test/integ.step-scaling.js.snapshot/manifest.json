@@ -1,0 +1,94 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-applicationautoscaling-step-scaling.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-applicationautoscaling-step-scaling.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-applicationautoscaling-step-scaling": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-applicationautoscaling-step-scaling.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66bccd68747fe7bfeec43086a5586a9d66de1dec727f813cc83f038af1cf4de8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-applicationautoscaling-step-scaling.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-applicationautoscaling-step-scaling.assets"
+      ],
+      "metadata": {
+        "/aws-applicationautoscaling-step-scaling/Target/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetRole12E3474B"
+          }
+        ],
+        "/aws-applicationautoscaling-step-scaling/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Target3191CF44"
+          }
+        ],
+        "/aws-applicationautoscaling-step-scaling/Target/StepScaling/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetStepScalingLowerPolicy0E8A27EC"
+          }
+        ],
+        "/aws-applicationautoscaling-step-scaling/Target/StepScaling/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetStepScalingLowerAlarmF471F721"
+          }
+        ],
+        "/aws-applicationautoscaling-step-scaling/Target/StepScaling/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetStepScalingUpperPolicy2F3A21B2"
+          }
+        ],
+        "/aws-applicationautoscaling-step-scaling/Target/StepScaling/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetStepScalingUpperAlarm47A043E2"
+          }
+        ],
+        "/aws-applicationautoscaling-step-scaling/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-applicationautoscaling-step-scaling/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-applicationautoscaling-step-scaling"
+    }
+  }
+}
