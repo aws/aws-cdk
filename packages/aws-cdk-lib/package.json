@@ -129,7 +129,7 @@
     "ignore": "^5.3.2",
     "jsonschema": "^1.5.0",
     "mime-types": "^2.1.35",
-    "minimatch": "^10.2.6",
+    "minimatch": "^11.0.1",
     "punycode": "^2.3.1",
     "semver": "^7.8.6",
     "yaml": "1.10.3"
