@@ -3,7 +3,7 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
-import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
+import { App, CfnParameter, Fn, PhysicalName, RemovalPolicy, Stack } from '../../core';
 import type { ILogGroup, ILogSubscriptionDestination } from '../lib';
 import { LogGroupGrants, LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FilterPattern, FieldIndexPolicy, ParserProcessor, ParserProcessorType, JsonMutatorType, JsonMutatorProcessor, CfnLogGroup } from '../lib';
 
@@ -531,6 +531,68 @@ describe('log group', () => {
         ],
         Version: '2012-10-17',
       },
+    });
+  });
+
+  describe('grants from a stack in a different environment include the log stream wildcard', () => {
+    test.each([
+      ['different account', { account: '222222222222', region: 'us-east-1' }],
+      ['different region', { account: '111111111111', region: 'eu-west-1' }],
+    ])('%s', (_name, consumerEnv) => {
+      // GIVEN
+      const app = new App();
+      const logStack = new Stack(app, 'LogStack', { env: { account: '111111111111', region: 'us-east-1' } });
+      const lg = new LogGroup(logStack, 'LogGroup', { logGroupName: 'my-log-group' });
+      const roleStack = new Stack(app, 'RoleStack', { env: consumerEnv });
+      const role = new iam.Role(roleStack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+      // WHEN
+      lg.grantWrite(role);
+      lg.grantRead(role);
+
+      // THEN
+      Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+              Effect: 'Allow',
+              Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:111111111111:log-group:my-log-group:*']] },
+            },
+            {
+              Action: ['logs:FilterLogEvents', 'logs:GetLogEvents', 'logs:GetLogGroupFields', 'logs:DescribeLogGroups', 'logs:DescribeLogStreams'],
+              Effect: 'Allow',
+              Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:111111111111:log-group:my-log-group:*']] },
+            },
+          ],
+        },
+      });
+    });
+
+    test('with a generated physical name', () => {
+      // GIVEN
+      const app = new App();
+      const logStack = new Stack(app, 'LogStack', { env: { account: '111111111111', region: 'us-east-1' } });
+      const lg = new LogGroup(logStack, 'LogGroup', { logGroupName: PhysicalName.GENERATE_IF_NEEDED });
+      const roleStack = new Stack(app, 'RoleStack', { env: { account: '222222222222', region: 'us-east-1' } });
+      const role = new iam.Role(roleStack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+      // WHEN
+      lg.grantWrite(role);
+
+      // THEN
+      const physicalName = Template.fromStack(logStack).findResources('AWS::Logs::LogGroup').LogGroupF5B46931.Properties.LogGroupName;
+      Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+              Effect: 'Allow',
+              Resource: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, `:logs:us-east-1:111111111111:log-group:${physicalName}:*`]] },
+            },
+          ],
+        },
+      });
     });
   });
 
