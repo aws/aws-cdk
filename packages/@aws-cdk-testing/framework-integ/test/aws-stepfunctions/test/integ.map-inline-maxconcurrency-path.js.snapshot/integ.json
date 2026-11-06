@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest": {
+      "stacks": [
+        "cdk-stepfunctions-map-inline-maxconcurrency-path-stack"
+      ],
+      "assertionStack": "cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkstepfunctionsmapinlinemaxconcurrencypathintegDefaultTestDeployAssertFFB370FA"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
