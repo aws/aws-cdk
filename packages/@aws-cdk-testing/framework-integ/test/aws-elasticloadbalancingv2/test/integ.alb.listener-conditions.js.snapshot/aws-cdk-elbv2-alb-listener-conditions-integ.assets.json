@@ -1,0 +1,34 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92": {
+      "displayName": "aws-cdk-elbv2-alb-listener-conditions-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-fea3f0e7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6adc0b69e7e7cce8dcc72e82682d665258fcb06502457bab4242ac37f3f04952": {
+      "displayName": "aws-cdk-elbv2-alb-listener-conditions-integ Template",
+      "source": {
+        "path": "aws-cdk-elbv2-alb-listener-conditions-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-bd709b4c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6adc0b69e7e7cce8dcc72e82682d665258fcb06502457bab4242ac37f3f04952.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
