@@ -505,6 +505,9 @@
    "me-south-1": {
     "endpoint": "s3-website.me-south-1.amazonaws.com"
    },
+   "me-west-1": {
+    "endpoint": "s3-website.me-west-1.amazonaws.com"
+   },
    "mx-central-1": {
     "endpoint": "s3-website.mx-central-1.amazonaws.com"
    },
