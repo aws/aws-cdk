@@ -3,7 +3,7 @@ import { LambdaAction } from '../../aws-cloudwatch-actions/lib';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { LogGroup } from '../../aws-logs';
-import { Duration, Fn, Stack, Token } from '../../core';
+import { Duration, Fn, Stack, Token, Validations } from '../../core';
 import type { IAlarmAction } from '../lib';
 import { ComparisonOperator, LogAlarm, TreatMissingData } from '../lib';
 
@@ -217,6 +217,40 @@ describe('LogAlarm', () => {
     new LogAlarm(stack, 'Alarm', baseProps());
 
     Annotations.fromStack(stack).hasNoWarning('/Default/Alarm', Match.stringLikeRegexp('logGroups is not set'));
+  });
+
+  test('warns that the log line role is unscoped when logGroups is not set', () => {
+    const props = baseProps();
+    const { logGroups, ...sqcWithout } = props.scheduledQueryConfiguration;
+    void logGroups;
+    new LogAlarm(stack, 'Alarm', { ...props, scheduledQueryConfiguration: sqcWithout, actionLogLines: { count: 5 } });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Alarm',
+      Match.stringLikeRegexp('logGroups is not set, so the log line role is granted logs:GetQueryResults on all resources'));
+  });
+
+  test('does not warn about the log line role when logGroups is set', () => {
+    new LogAlarm(stack, 'Alarm', { ...baseProps(), actionLogLines: { count: 5 } });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Alarm', Match.stringLikeRegexp('log line role is granted'));
+  });
+
+  test('attaches the action service and resource as warning context, so an acknowledgement suppresses only matching actions', () => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+    alarm.addAlarmAction(
+      { bind: () => ({ alarmActionArn: 'arn:aws:lambda:us-east-1:123456789012:layer:my-layer:1' }) },
+      { bind: () => ({ alarmActionArn: 'arn:aws:ssm:us-east-1:123456789012:automation-definition/my-runbook' }) },
+    );
+
+    Validations.of(alarm).acknowledge({
+      id: 'aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
+      reason: 'lambda layer actions are attached intentionally',
+      where: { service: 'lambda', resource: 'layer' },
+    });
+
+    const annotations = Annotations.fromStack(stack);
+    annotations.hasNoWarning('/Default/Alarm', Match.stringLikeRegexp('layer:my-layer'));
+    annotations.hasWarning('/Default/Alarm', Match.stringLikeRegexp('automation-definition/my-runbook'));
   });
 
   test('fails for an empty aggregationExpression', () => {

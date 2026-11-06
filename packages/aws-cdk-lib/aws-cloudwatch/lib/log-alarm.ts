@@ -7,7 +7,7 @@ import { CfnLogAlarm } from './cloudwatch.generated';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
 import type { IRole } from '../../aws-iam';
 import { Grant, Role, ServicePrincipal } from '../../aws-iam';
-import { Annotations, ArnFormat, CfnCondition, Fn, Stack, Token, Tokenization, ValidationError } from '../../core';
+import { Annotations, ArnFormat, CfnCondition, Fn, Stack, Token, Tokenization, ValidationError, Validations } from '../../core';
 import type { ArnComponents, Duration } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -491,6 +491,10 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
         props.alarmName !== undefined && !Token.isUnresolved(props.alarmName) ? props.alarmName : undefined);
     if (this.actionLogLineRole !== undefined) {
       this.grantReadLogLines(this.actionLogLineRole, sqc.logGroups);
+      if (sqc.logGroups === undefined) {
+        Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedLogLinePermissions',
+          'logGroups is not set, so the log line role is granted logs:GetQueryResults on all resources; set logGroups to scope it');
+      }
     }
 
     this.alarm = new CfnLogAlarm(this, 'Resource', {
@@ -587,8 +591,9 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     const components = this.actionArnComponents(arn);
     const dispatches = components && DISPATCHABLE_ACTIONS[components.service];
     if (components !== undefined && (dispatches === undefined || !dispatches(components))) {
-      Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
-        `log alarms do not dispatch this action type, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`);
+      Validations.of(this).addWarning('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
+        `log alarms do not dispatch this action type, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`,
+        { context: { service: components.service, resource: components.resource } });
     }
     return arn;
   }
