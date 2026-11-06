@@ -1,11 +1,34 @@
 import type { IAlarmAction } from './alarm-action';
 import type { AlarmMuteRuleOptions } from './alarm-mute-rule';
 import { AlarmMuteRule } from './alarm-mute-rule';
-import type { IResource } from '../../core';
+import type { Duration, IResource } from '../../core';
 import { Resource } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import type { IAlarmRef, AlarmReference } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+
+/**
+ * The warm-up configuration for an alarm.
+ *
+ * This can be used with alarms that evaluate a single time series, including metric math and anomaly detection.
+ */
+export interface AlarmWarmupConfiguration {
+  /**
+   * The amount of time that the alarm remains in `INSUFFICIENT_DATA` after it is created or updated.
+   *
+   * This must be between 1 minute and 2 days.
+   */
+  readonly warmupPeriod: Duration;
+
+  /**
+   * Whether the alarm must wait for the full warm-up period before it starts evaluating.
+   *
+   * When false, the alarm starts evaluating as soon as it has enough metric data to fill its evaluation window.
+   *
+   * @default false
+   */
+  readonly onlyStartEvaluatingAfterWarmupPeriodEnds?: boolean;
+}
 
 /**
  * Interface for Alarm Rule.
