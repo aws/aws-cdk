@@ -38,6 +38,7 @@ running on AWS Lambda, or any web application.
     - [Controlled triggering of deployments](#controlled-triggering-of-deployments)
     - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
   - [Custom Domains](#custom-domains)
+    - [Custom domain routing rules](#custom-domain-routing-rules)
     - [Custom Domains with multi-level api mapping](#custom-domains-with-multi-level-api-mapping)
   - [Access Logging](#access-logging)
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
@@ -1303,6 +1304,81 @@ import * as targets from 'aws-cdk-lib/aws-route53-targets';
 new route53.ARecord(this, 'CustomDomainAliasRecord', {
   zone: hostedZoneForExampleCom,
   target: route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName))
+});
+```
+
+### Custom domain routing rules
+
+Routing rules put multiple REST APIs behind a single custom domain name and split
+traffic by request path or headers. Set the domain's `routingMode` to
+`RoutingMode.ROUTING_RULE_ONLY` (rules only) or `RoutingMode.ROUTING_RULE_THEN_BASE_PATH_MAPPING`
+(rules first, then base path / API mappings), then add rules with `addRoutingRule()`. Routing
+rules are only supported for `EndpointType.REGIONAL` endpoints.
+
+```ts
+declare const acmCertificateForExampleCom: any;
+declare const usersApi: apigateway.RestApi;
+declare const ordersApi: apigateway.RestApi;
+declare const defaultApi: apigateway.RestApi;
+
+const domain = new apigateway.DomainName(this, 'Domain', {
+  domainName: 'api.example.com',
+  certificate: acmCertificateForExampleCom,
+  endpointType: apigateway.EndpointType.REGIONAL,
+  routingMode: apigateway.RoutingMode.ROUTING_RULE_ONLY,
+});
+
+// Path-based: /users -> Users API (strip the base path before forwarding)
+domain.addRoutingRule('UsersRule', {
+  priority: 100,
+  conditions: { basePath: 'users' },
+  action: { restApi: usersApi, stripBasePath: true },
+});
+
+// Header-based: x-api-version: v2 -> Orders API
+domain.addRoutingRule('HeaderV2Rule', {
+  priority: 50,
+  conditions: { headers: [{ header: 'x-api-version', valueGlob: 'v2' }] },
+  action: { restApi: ordersApi },
+});
+
+// Combined conditions (base path AND header)
+domain.addRoutingRule('V2OrdersRule', {
+  priority: 75,
+  conditions: {
+    basePath: 'orders',
+    headers: [{ header: 'x-api-version', valueGlob: 'v2' }],
+  },
+  action: { restApi: ordersApi, stripBasePath: true },
+});
+
+// Catch-all rule with no conditions, using the highest priority
+domain.addRoutingRule('CatchAllRule', {
+  priority: 1000000,
+  action: { restApi: defaultApi },
+});
+```
+
+Priorities range from 1 to 1,000,000 and are evaluated from lowest to highest. Each
+rule must have a unique priority. A rule can match at most one base path and up to two
+headers; base path and header conditions are combined with AND.
+
+For cross-stack scenarios, `RoutingRule` can also be created standalone against an
+imported domain:
+
+```ts
+declare const importedDomain: apigateway.IDomainName;
+declare const usersApi: apigateway.RestApi;
+
+new apigateway.RoutingRule(this, 'UsersRule', {
+  domainName: importedDomain,
+  priority: 100,
+  conditions: { basePath: 'users' },
+  action: {
+    restApi: usersApi,
+    stage: usersApi.deploymentStage,
+    stripBasePath: true,
+  },
 });
 ```
 
