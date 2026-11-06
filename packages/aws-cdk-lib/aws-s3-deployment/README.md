@@ -443,16 +443,32 @@ const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
 
 ## EFS Support
 
-If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
-lambda function. To Enable EFS support set `efs` and `vpc` props for BucketDeployment.
+If your workflow needs more disk space than the default ephemeral storage (512 MiB),
+you can attach EFS storage to the deployment Lambda function. Set `useEfs: true` and
+provide a `vpc`.
 
-Check sample usage below.
-Please note that creating VPC inline may cause stack deletion failures. It is shown as below for simplicity.
-To avoid such condition, keep your network infra (VPC) in a separate stack and pass as props.
+The deployment function must reach both the source and destination S3 buckets over
+HTTPS. `BucketDeployment` does not create an S3 VPC endpoint. Use either private
+subnets with a route through a NAT gateway or an S3 gateway endpoint associated with
+the selected subnet route tables. An S3 gateway endpoint allows access to buckets in
+the same AWS Region without a NAT gateway. Its endpoint policy must permit access
+to the source asset bucket, the destination bucket, and CloudFormation's regional
+custom-resource response bucket. The deployment function sends its result to the
+presigned S3 `ResponseURL` supplied by CloudFormation; blocking that response causes
+the stack operation to time out. See the
+[CloudFormation VPC endpoint considerations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/vpc-interface-endpoints.html#vpc-interface-endpoints-considerations)
+for the required response bucket access.
+
+For a VPC without NAT gateways, add an endpoint and select isolated subnets:
 
 ```ts
 declare const destinationBucket: s3.Bucket;
 declare const vpc: ec2.Vpc;
+
+vpc.addGatewayEndpoint('DeploymentS3Endpoint', {
+  service: ec2.GatewayVpcEndpointAwsService.S3,
+  subnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+});
 
 new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
@@ -460,9 +476,20 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
   destinationKeyPrefix: 'efs/',
   useEfs: true,
   vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+  memoryLimit: 1024,
   retainOnDelete: false,
 });
 ```
+
+Choose `memoryLimit` for your deployment workload; attaching EFS does not increase
+the Lambda function's memory allocation. Ensure custom security groups and network
+ACLs allow HTTPS access to S3 and NFS access to EFS. Placing a Lambda function in a
+public subnet does not give it internet access.
+
+Keep the VPC in a separate stack and pass it to `BucketDeployment` to avoid network
+resource deletion ordering problems. Configure an endpoint in the stack that owns
+the VPC.
 
 ## Data with deploy-time values
 
