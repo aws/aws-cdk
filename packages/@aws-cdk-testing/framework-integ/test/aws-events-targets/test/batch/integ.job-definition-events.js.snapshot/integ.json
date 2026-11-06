@@ -1,5 +1,5 @@
 {
-  "version": "55.0.0",
+  "version": "32.0.0",
   "testCases": {
     "integ.job-definition-events": {
       "stacks": [
@@ -10,6 +10,5 @@
     }
   },
   "synthContext": {},
-  "enableLookups": true,
-  "minimumCliVersion": "2.1146.1"
+  "enableLookups": false
 }

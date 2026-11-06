@@ -1,10 +1,4 @@
 {
-  "/DeliveryTest/DefaultTest/DeployAssert": [
-    {
-      "type": "aws:cdk:templateFile",
-      "data": "DeliveryTestDefaultTestDeployAssert48416031.template.json"
-    }
-  ],
   "/DeliveryTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

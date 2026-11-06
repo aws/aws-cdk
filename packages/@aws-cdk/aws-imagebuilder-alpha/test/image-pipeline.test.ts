@@ -501,18 +501,7 @@ describe('ImagePipeline', () => {
           {
             Action: Match.arrayWith(['logs:CreateLogStream', 'logs:PutLogEvents']),
             Effect: 'Allow',
-            Resource: [{
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':logs:us-east-1:123456789012:log-group:image-log-group',
-                ],
-              ],
-            }, {
+            Resource: {
               'Fn::Join': [
                 '',
                 [
@@ -523,7 +512,7 @@ describe('ImagePipeline', () => {
                   ':logs:us-east-1:123456789012:log-group:image-log-group:*',
                 ],
               ],
-            }],
+            },
           },
         ]),
       },
@@ -568,18 +557,7 @@ describe('ImagePipeline', () => {
           {
             Action: Match.arrayWith(['logs:CreateLogStream', 'logs:PutLogEvents']),
             Effect: 'Allow',
-            Resource: [{
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':logs:us-east-1:123456789012:log-group:image-pipeline-log-group',
-                ],
-              ],
-            }, {
+            Resource: {
               'Fn::Join': [
                 '',
                 [
@@ -590,7 +568,7 @@ describe('ImagePipeline', () => {
                   ':logs:us-east-1:123456789012:log-group:image-pipeline-log-group:*',
                 ],
               ],
-            }],
+            },
           },
         ]),
       },
@@ -628,31 +606,17 @@ describe('ImagePipeline', () => {
           {
             Action: Match.arrayWith(['logs:CreateLogStream', 'logs:PutLogEvents']),
             Effect: 'Allow',
-            Resource: [{
-              'Fn::Join': [
-                '',
-                ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:123456789012:log-group:image-log-group'],
-              ],
-            }, {
+            Resource: {
               'Fn::Join': [
                 '',
                 ['arn:', { Ref: 'AWS::Partition' }, ':logs:us-east-1:123456789012:log-group:image-log-group:*'],
               ],
-            }],
+            },
           },
           {
             Action: Match.arrayWith(['logs:CreateLogStream', 'logs:PutLogEvents']),
             Effect: 'Allow',
-            Resource: [{
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':logs:us-east-1:123456789012:log-group:image-pipeline-log-group',
-                ],
-              ],
-            }, {
+            Resource: {
               'Fn::Join': [
                 '',
                 [
@@ -661,7 +625,7 @@ describe('ImagePipeline', () => {
                   ':logs:us-east-1:123456789012:log-group:image-pipeline-log-group:*',
                 ],
               ],
-            }],
+            },
           },
         ]),
       },

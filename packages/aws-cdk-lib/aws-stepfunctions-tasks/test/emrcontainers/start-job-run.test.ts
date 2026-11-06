@@ -319,37 +319,12 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
                 'logs:PutLogEvents',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':log-group:',
-                      {
-                        Ref: 'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-                      },
-                    ],
-                  ],
-                },
-                {
-                  'Fn::GetAtt': [
-                    'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-                    'Arn',
-                  ],
-                },
-              ],
+              Resource: {
+                'Fn::GetAtt': [
+                  'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+                  'Arn',
+                ],
+              },
             },
             {
               Action: 'logs:DescribeLogStreams',
@@ -518,48 +493,26 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
                 'logs:PutLogEvents',
               ],
               Effect: 'Allow',
-              Resource: [
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':log-group:providedloggroup',
-                    ],
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:providedloggroup:*',
                   ],
-                },
-                {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':logs:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':log-group:providedloggroup:*',
-                    ],
-                  ],
-                },
-              ],
+                ],
+              },
             },
             {
               Action: 'logs:DescribeLogStreams',
