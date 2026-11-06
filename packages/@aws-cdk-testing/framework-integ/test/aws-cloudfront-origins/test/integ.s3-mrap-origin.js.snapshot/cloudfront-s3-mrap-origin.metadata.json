@@ -1,0 +1,108 @@
+{
+  "/cloudfront-s3-mrap-origin": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cloudfront-s3-mrap-origin.template.json"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Mrap": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Mrap"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/OAC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "signing": "*"
+      }
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Distribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/MrapPolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MrapPolicy"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Bucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/OAC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OAC5B452445"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Distribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Distribution830FAC52"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Exports/Output{\"Fn::GetAtt\":[\"Mrap\",\"Alias\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMrapAliasD7D8ED40"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Exports/Output{\"Fn::GetAtt\":[\"OAC5B452445\",\"Id\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttOAC5B452445IdC0768632"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Exports/Output{\"Ref\":\"Distribution830FAC52\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDistribution830FAC524DF81588"
+    }
+  ],
+  "/cloudfront-s3-mrap-origin/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketPolicyE9A3008A"
+    }
+  ]
+}

@@ -115,7 +115,7 @@ bucket origins, the bucket's object ownership must be either set to Bucket owner
 
 #### Setting up OAC for an S3 Multi-Region Access Point origin
 
-An [S3 Multi-Region Access Point](https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiRegionAccessPoints.html) origin requires an origin access control that signs with SigV4A, and is configured as a custom origin using the Multi-Region Access Point hostname:
+Use `S3MrapOrigin` with an [S3 Multi-Region Access Point](https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiRegionAccessPoints.html) alias, including its `.mrap` suffix. The origin derives the global hostname and uses HTTPS by default. To restrict access, supply an origin access control that signs with SigV4A:
 
 ```ts
 const oac = new cloudfront.S3OriginAccessControl(this, 'MyMrapOAC', {
@@ -124,14 +124,14 @@ const oac = new cloudfront.S3OriginAccessControl(this, 'MyMrapOAC', {
 
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
-    origin: new origins.HttpOrigin('mfzwi23gnjvgw.mrap.accesspoint.s3-global.amazonaws.com', {
+    origin: new origins.S3MrapOrigin('mfzwi23gnjvgw.mrap', {
       originAccessControlId: oac.originAccessControlId,
     }),
   },
 });
 ```
 
-You must also grant CloudFront access in the Multi-Region Access Point policy and in the bucket policy of every underlying bucket. See [Restrict access to an Amazon S3 Multi-Region Access Point origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3-mrap.html).
+`S3MrapOrigin` supports the same options as `HttpOrigin`. It does not modify resource policies. You must also grant CloudFront access in the Multi-Region Access Point policy and in the bucket policy of every underlying bucket. See [Restrict access to an Amazon S3 Multi-Region Access Point origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3-mrap.html).
 
 #### Setting up OAC with a SSE-KMS encrypted S3 origin
 
