@@ -278,11 +278,32 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-opus-4-8". */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_8 = new FoundationModelIdentifier('anthropic.claude-opus-4-8');
 
+  /** Base model "anthropic.claude-opus-5-5". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5_5 = new FoundationModelIdentifier('anthropic.claude-opus-5-5');
+
   /** Base model "anthropic.claude-sonnet-4-6". */
   public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-6');
 
   /** Base model "anthropic.claude-sonnet-5". */
   public static readonly ANTHROPIC_CLAUDE_SONNET_5 = new FoundationModelIdentifier('anthropic.claude-sonnet-5');
+
+  /** Base model "anthropic.claude-opus-5". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5 = new FoundationModelIdentifier('anthropic.claude-opus-5');
+
+  /** Base model "anthropic.claude-mythos-5". */
+  public static readonly ANTHROPIC_CLAUDE_MYTHOS_5 = new FoundationModelIdentifier('anthropic.claude-mythos-5');
+
+  /** Base model "anthropic.claude-fable-5". */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5 = new FoundationModelIdentifier('anthropic.claude-fable-5');
+
+  /** Base model "anthropic.claude-sonnet-5-5". */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5_5 = new FoundationModelIdentifier('anthropic.claude-sonnet-5-5');
+
+  /** Base model "anthropic.claude-haiku-5-5". */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_5_5 = new FoundationModelIdentifier('anthropic.claude-haiku-5-5');
+
+  /** Base model "anthropic.claude-fable-5-1". */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5_1 = new FoundationModelIdentifier('anthropic.claude-fable-5-1');
 
   /**
    * Base model "anthropic.claude-instant-v1".
@@ -370,6 +391,18 @@ export class FoundationModelIdentifier {
 
   /** Base model "openai.gpt-daybreak-blue-5.6-sol". */
   public static readonly OPENAI_GPT_DAYBREAK_BLUE_5_6_SOL = new FoundationModelIdentifier('openai.gpt-daybreak-blue-5.6-sol');
+
+  /** Base model "openai.gpt-6-astra". */
+  public static readonly OPENAI_GPT_6_ASTRA = new FoundationModelIdentifier('openai.gpt-6-astra');
+
+  /** Base model "openai.gpt-6-sol". */
+  public static readonly OPENAI_GPT_6_SOL = new FoundationModelIdentifier('openai.gpt-6-sol');
+
+  /** Base model "openai.gpt-6-luna". */
+  public static readonly OPENAI_GPT_6_LUNA = new FoundationModelIdentifier('openai.gpt-6-luna');
+
+  /** Base model "openai.gpt-6.1-sol". */
+  public static readonly OPENAI_GPT_6_1_SOL = new FoundationModelIdentifier('openai.gpt-6.1-sol');
 
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');

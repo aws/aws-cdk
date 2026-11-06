@@ -503,6 +503,81 @@ function givenResource(res: Plain<Resource>) {
   db.link('hasResource', service, db.allocate('resource', res));
 }
 
+test('resource reference keeps Arn when Ref and primary identifiers differ', () => {
+  // GIVEN
+  givenResource({
+    ...BASE_RESOURCE,
+    name: 'ApiKey',
+    primaryIdentifier: ['ApiId', 'ApiKeyId'],
+    cfnRefIdentifier: ['Arn'],
+    properties: {
+      ApiId: {
+        type: { type: 'string' },
+        required: true,
+      },
+    },
+    attributes: {
+      Arn: {
+        type: { type: 'string' },
+      },
+      ApiKeyId: {
+        type: { type: 'string' },
+      },
+    },
+  });
+
+  // THEN
+  const rendered = renderResource();
+  expect(rendered.interfaces).toContainCode(
+    `export interface ApiKeyReference {
+      /**
+       * The ApiId of the ApiKey resource.
+       */
+      readonly apiId: string;
+
+      /**
+       * The ApiKeyId of the ApiKey resource.
+       */
+      readonly apiKeyId: string;
+
+      /**
+       * The ARN of the ApiKey resource.
+       */
+      readonly apiKeyArn: string;
+    }`);
+  expect(rendered.resources).toContainCode(
+    `public static arnForApiKey(resource: IApiKeyRef): string {
+      return resource.apiKeyRef.apiKeyArn;
+    }`);
+});
+
+test('nested properties use safe names for reserved fields', () => {
+  // GIVEN
+  const imageConfiguration = db.allocate('typeDefinition', {
+    name: 'ImageConfiguration',
+    properties: {
+      Build: {
+        type: { type: 'string' },
+      },
+    },
+  });
+  const resource = db.allocate('resource', {
+    ...BASE_RESOURCE,
+    properties: {
+      ImageConfiguration: {
+        type: { type: 'ref', reference: { $ref: imageConfiguration.$id } },
+      },
+    },
+  });
+  db.link('hasResource', service, resource);
+  db.link('usesType', resource, imageConfiguration);
+
+  // THEN
+  const rendered = renderResource();
+  expect(rendered.resources).toContain('readonly buildProperty?: string;');
+  expect(rendered.resources).toContainCode('Build: cdk.stringToCloudFormation(properties.buildProperty)');
+});
+
 function renderResource(resourceType = 'AWS::Some::Resource') {
   const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', resourceType).only();
 
