@@ -465,6 +465,119 @@ describe('log retention', () => {
     });
   });
 
+  test('with LogGroupRegion and removalPolicy DESTROY, DeleteLogGroup is granted on the log group region', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      logGroupRegion: 'us-east-1',
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': Match.arrayWith([
+          {
+            'Action': 'logs:DeleteLogGroup',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':logs:us-east-1:',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':log-group:group:*',
+                ],
+              ],
+            },
+          },
+        ]),
+      },
+    });
+  });
+
+  test('multiple LogRetentions in different regions sharing the singleton provider each get DeleteLogGroup on their own region', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda1', {
+      logGroupName: 'group1',
+      logGroupRegion: 'us-east-1',
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    new LogRetention(stack, 'MyLambda2', {
+      logGroupName: 'group2',
+      logGroupRegion: 'eu-west-1',
+      retention: RetentionDays.ONE_DAY,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    // Both LogRetentions share one provider function (and one role/policy)
+    template.resourceCountIs('AWS::Lambda::Function', 1);
+    template.resourceCountIs('AWS::IAM::Policy', 1);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': Match.arrayWith([
+          {
+            'Action': 'logs:DeleteLogGroup',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':logs:us-east-1:',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':log-group:group1:*',
+                ],
+              ],
+            },
+          },
+          {
+            'Action': 'logs:DeleteLogGroup',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':logs:eu-west-1:',
+                  {
+                    'Ref': 'AWS::AccountId',
+                  },
+                  ':log-group:group2:*',
+                ],
+              ],
+            },
+          },
+        ]),
+      },
+    });
+  });
+
   test('log group ARN is well formed and conforms', () => {
     const stack = new cdk.Stack();
     const group = new LogRetention(stack, 'MyLambda', {
