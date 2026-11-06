@@ -668,7 +668,7 @@
      "Ref": "dbInstanceSubnetGroupD062EC9E"
     },
     "Engine": "postgres",
-    "EngineVersion": "18.3",
+    "EngineVersion": "18.6",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
