@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-codepipeline-elastic-beanstalk-deploy": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-codepipeline-elastic-beanstalk-deploy.template.json"
+    }
+  ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -19,6 +25,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -130,16 +137,16 @@
       "type": "aws:cdk:warning",
       "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]",
       "trace": [
-        "Annotations.addMessage (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new Pipeline (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:483:47)",
-        "new Pipeline (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Pipeline (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "Object.<anonymous> (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-elastic-beanstalk-deploy.js:122:18)",
-        "Module._compile (node:internal/modules/cjs/loader:1829:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1969:10)",
-        "Module.load (node:internal/modules/cjs/loader:1552:32)",
-        "Module._load (node:internal/modules/cjs/loader:1354:12)",
+        "Annotations.addMessage (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new Pipeline (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:483:47)",
+        "new Pipeline (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "Object.<anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-elastic-beanstalk-deploy.js:122:18)",
+        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
+        "Object..js (node:internal/modules/cjs/loader:1943:10)",
+        "Module.load (node:internal/modules/cjs/loader:1533:32)",
+        "Module._load (node:internal/modules/cjs/loader:1335:12)",
         "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
         "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
         "node:internal/main/run_main_module:33:47"
@@ -227,6 +234,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],

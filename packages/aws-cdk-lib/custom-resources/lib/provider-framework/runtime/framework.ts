@@ -108,9 +108,27 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
 
 // invoked when completion retries are exhaused.
 async function onTimeout(timeoutEvent: any) {
-  log('timeoutHandler', timeoutEvent);
-
-  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
+  // the timeout event carries the full isComplete request (including the presigned
+  // ResponseURL) in `Cause`, so log the parsed request in sanitized form instead.
+  let isCompleteRequest: AWSCDKAsyncCustomResource.IsCompleteRequest;
+  try {
+    isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage);
+  } catch (e: any) {
+    // never log `Cause` or the parse error message: both can contain the
+    // presigned ResponseURL (JSON.parse quotes part of its input in its message).
+    // `Error` is the Step Functions error name (for example `States.Timeout`).
+    const isObject = timeoutEvent && typeof timeoutEvent === 'object';
+    const stepFunctionsError = isObject && typeof timeoutEvent.Error === 'string' ? timeoutEvent.Error : 'unknown';
+    const summary = `timeoutHandler: cannot read the isComplete request from the timeout event (${e?.name ?? 'Error'}); Step Functions error: ${stepFunctionsError}; event keys: ${isObject ? Object.keys(timeoutEvent).join(', ') : typeof timeoutEvent}`;
+    log(summary);
+    throw new Error(summary);
+  }
+  const sanitizedRequest = { ...isCompleteRequest, ResponseURL: '...' };
+  if (isCompleteRequest.NoEcho) {
+    log('redacted timeoutHandler request', cfnResponse.redactDataFromPayload(sanitizedRequest));
+  } else {
+    log('timeoutHandler request', sanitizedRequest);
+  }
   await cfnResponse.submitResponse('FAILED', isCompleteRequest, {
     reason: 'Operation timed out',
   });

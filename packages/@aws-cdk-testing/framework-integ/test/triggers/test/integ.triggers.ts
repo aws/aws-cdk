@@ -26,6 +26,7 @@ const triggerFunction = new triggers.TriggerFunction(stack, 'MyTriggerFunction',
 
 const assertionQueue = new sqs.Queue(stack, 'TestQueue', {
   queueName: 'trigger-assertion-queue',
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 
 const func = new lambda.Function(stack, 'MyLambdaFunction', {

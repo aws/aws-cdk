@@ -1,30 +1,30 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+    "bd554ed1b25651e2670d05a49f1e3677acaaeb87fafde03e584a43e8f3bea368": {
       "displayName": "PipelinesFileSystemLocations/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
       "source": {
-        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "path": "asset.bd554ed1b25651e2670d05a49f1e3677acaaeb87fafde03e584a43e8f3bea368",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-094cbf39": {
+        "current_account-current_region-e72c1c25": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "objectKey": "bd554ed1b25651e2670d05a49f1e3677acaaeb87fafde03e584a43e8f3bea368.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "8b7d29e9b4003250dc293acc4e2270aef40e7420a50286a912da99b86bec42a7": {
+    "e081b9679adc785879728e16a8a6c352ee0cef3081ece3334f8bbf3b77a3a8ca": {
       "displayName": "PipelinesFileSystemLocations Template",
       "source": {
         "path": "PipelinesFileSystemLocations.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-df9d1b49": {
+        "current_account-current_region-43b9cc92": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8b7d29e9b4003250dc293acc4e2270aef40e7420a50286a912da99b86bec42a7.json",
+          "objectKey": "e081b9679adc785879728e16a8a6c352ee0cef3081ece3334f8bbf3b77a3a8ca.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

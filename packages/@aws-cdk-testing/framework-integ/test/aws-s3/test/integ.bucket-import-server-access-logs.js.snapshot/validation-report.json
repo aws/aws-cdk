@@ -1,0 +1,84 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "ServerAccessLogsImportTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ],
+      "suppressedViolations": [
+        {
+          "ruleName": "W3045",
+          "description": "AccessControl: AccessControl property is deprecated. Use bucket policies instead",
+          "suggestedFix": "Remove AccessControl and use an AWS::S3::BucketPolicy resource",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-s3-access-logs-target/TargetBucket/Resource",
+              "constructFqn": "aws-cdk-lib.aws_s3.CfnBucket",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-s3-access-logs-target.template.json",
+                "logicalId": "TargetBucket6BBF3429",
+                "propertyPaths": [
+                  "Properties.AccessControl"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W3045",
+          "reason": "accessControl is deprecated, but we are still using it for historical reasons.",
+          "acknowledgedAt": "aws-cdk-s3-access-logs-target/TargetBucket",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at PropertyInjectable.acknowledgeAccessControl (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1541:47)\n    at new Bucket (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1455:18)\n    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-import-server-access-logs.js:46:22)\n    ...node internals..."
+        },
+        {
+          "ruleName": "W3045",
+          "description": "AccessControl: AccessControl property is deprecated. Use bucket policies instead",
+          "suggestedFix": "Remove AccessControl and use an AWS::S3::BucketPolicy resource",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-s3-access-logs-delivery/SourceBucket/Resource",
+              "constructFqn": "aws-cdk-lib.aws_s3.CfnBucket",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-s3-access-logs-delivery.template.json",
+                "logicalId": "SourceBucketDDD2130A",
+                "propertyPaths": [
+                  "Properties.AccessControl"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W3045",
+          "reason": "accessControl is deprecated, but we are still using it for historical reasons.",
+          "acknowledgedAt": "aws-cdk-s3-access-logs-delivery/SourceBucket",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at PropertyInjectable.acknowledgeAccessControl (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1541:47)\n    at new Bucket (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1455:18)\n    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-import-server-access-logs.js:55:1)\n    ...node internals..."
+        }
+      ]
+    }
+  ]
+}
