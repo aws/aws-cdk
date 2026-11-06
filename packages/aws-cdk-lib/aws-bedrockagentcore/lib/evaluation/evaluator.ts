@@ -12,18 +12,22 @@
  */
 
 import type { IEvaluator } from './evaluator-base';
-import type { BuiltinEvaluator, EvaluatorSelectorBindResult } from './types';
+import type { BuiltinEvaluator, EvaluatorSelectorBindResult, ThirdPartyEvaluator } from './types';
 
 /**
  * Represents a reference to an evaluator for online evaluation.
  *
  * Use the static factory methods to create evaluator references:
  * - `EvaluatorSelector.builtin()` for built-in evaluators
+ * - `EvaluatorSelector.thirdParty()` for managed third-party evaluators
  * - `EvaluatorSelector.custom()` for custom evaluators
  *
  * @example
  * // Using built-in evaluators
  * const helpfulness = agentcore.EvaluatorSelector.builtin(agentcore.BuiltinEvaluator.HELPFULNESS);
+ *
+ * // Using managed third-party evaluators
+ * const bias = agentcore.EvaluatorSelector.thirdParty(agentcore.ThirdPartyEvaluator.DEEP_EVAL_BIAS);
  *
  * // Using custom evaluators
  * declare const myCustomEvaluator: agentcore.IEvaluator;
@@ -44,6 +48,24 @@ export class EvaluatorSelector {
    * const goalSuccess = agentcore.EvaluatorSelector.builtin(agentcore.BuiltinEvaluator.GOAL_SUCCESS_RATE);
    */
   public static builtin(evaluator: BuiltinEvaluator): EvaluatorSelector {
+    return new EvaluatorSelector(evaluator.value);
+  }
+
+  /**
+   * Creates a reference to a managed third-party evaluator.
+   *
+   * Managed third-party evaluators run metrics from open source evaluation libraries
+   * (DeepEval, AutoEval). The service hosts them and selects the model, the same way
+   * it does for built-in evaluators.
+   *
+   * @param evaluator - The managed third-party evaluator to reference
+   * @returns An EvaluatorSelector instance
+   *
+   * @example
+   * const bias = agentcore.EvaluatorSelector.thirdParty(agentcore.ThirdPartyEvaluator.DEEP_EVAL_BIAS);
+   * const security = agentcore.EvaluatorSelector.thirdParty(agentcore.ThirdPartyEvaluator.AUTO_EVAL_SECURITY);
+   */
+  public static thirdParty(evaluator: ThirdPartyEvaluator): EvaluatorSelector {
     return new EvaluatorSelector(evaluator.value);
   }
 

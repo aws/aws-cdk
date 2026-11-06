@@ -11,6 +11,7 @@
  *  and limitations under the License.
  */
 
+import { throwIfInvalid, validateThirdPartyEvaluatorId } from './validation-helpers';
 import type * as iam from '../../../aws-iam';
 import type { Duration } from '../../../core';
 
@@ -77,6 +78,20 @@ export class BuiltinEvaluator {
   public static readonly TOOL_PARAMETER_ACCURACY = new BuiltinEvaluator('Builtin.ToolParameterAccuracy');
 
   /**
+   * Evaluates whether the agent selected an appropriate skill for the task.
+   *
+   * Runs once per skill invocation, at the tool call that loaded the skill.
+   */
+  public static readonly SKILL_SELECTION_ACCURACY = new BuiltinEvaluator('Builtin.SkillSelectionAccuracy');
+
+  /**
+   * Evaluates how fully the agent followed a loaded skill's prescribed instructions.
+   *
+   * Runs once per skill invocation, at the tool call that loaded the skill.
+   */
+  public static readonly SKILL_INSTRUCTION_FOLLOWING = new BuiltinEvaluator('Builtin.SkillInstructionFollowing');
+
+  /**
    * Evaluates whether the response contains harmful content.
    */
   public static readonly HARMFULNESS = new BuiltinEvaluator('Builtin.Harmfulness');
@@ -96,6 +111,99 @@ export class BuiltinEvaluator {
    */
   public constructor(value: string) {
     this.value = value;
+  }
+}
+
+/**
+ * Managed third-party evaluators provided by Amazon Bedrock AgentCore.
+ *
+ * These evaluators run metrics from the open source DeepEval and AutoEval
+ * libraries. The service hosts them and selects the model, the same way it does
+ * for built-in evaluators, so no model or configuration is required.
+ *
+ * Their identifiers follow the `ThirdParty.<Provider>.<Metric>` format.
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/third-party-evaluators.html
+ */
+export class ThirdPartyEvaluator {
+  /**
+   * DeepEval: evaluates whether the response shows gender, political, racial, or geographical bias.
+   */
+  public static readonly DEEP_EVAL_BIAS = new ThirdPartyEvaluator('ThirdParty.DeepEval.Bias');
+
+  /**
+   * DeepEval: evaluates whether the response contains attacks, mockery, hate, or threats.
+   */
+  public static readonly DEEP_EVAL_TOXICITY = new ThirdPartyEvaluator('ThirdParty.DeepEval.Toxicity');
+
+  /**
+   * DeepEval: evaluates whether the response exposes personal information.
+   */
+  public static readonly DEEP_EVAL_PII_LEAKAGE = new ThirdPartyEvaluator('ThirdParty.DeepEval.PIILeakage');
+
+  /**
+   * DeepEval: evaluates whether the agent's summary is faithful and comprehensive.
+   */
+  public static readonly DEEP_EVAL_SUMMARIZATION = new ThirdPartyEvaluator('ThirdParty.DeepEval.Summarization');
+
+  /**
+   * DeepEval: evaluates whether the agent accomplished the user's goal.
+   */
+  public static readonly DEEP_EVAL_TASK_COMPLETION = new ThirdPartyEvaluator('ThirdParty.DeepEval.TaskCompletion');
+
+  /**
+   * DeepEval: evaluates whether all user requests across the conversation were addressed.
+   */
+  public static readonly DEEP_EVAL_CONVERSATION_COMPLETENESS = new ThirdPartyEvaluator('ThirdParty.DeepEval.ConversationCompleteness');
+
+  /**
+   * DeepEval: evaluates whether the agent remembered information shared earlier in the conversation.
+   */
+  public static readonly DEEP_EVAL_KNOWLEDGE_RETENTION = new ThirdPartyEvaluator('ThirdParty.DeepEval.KnowledgeRetention');
+
+  /**
+   * DeepEval: evaluates whether each reply stays relevant to the prior turns.
+   */
+  public static readonly DEEP_EVAL_TURN_RELEVANCY = new ThirdPartyEvaluator('ThirdParty.DeepEval.TurnRelevancy');
+
+  /**
+   * DeepEval: evaluates whether the agent achieved its goals across a multi-turn conversation.
+   */
+  public static readonly DEEP_EVAL_GOAL_ACCURACY = new ThirdPartyEvaluator('ThirdParty.DeepEval.GoalAccuracy');
+
+  /**
+   * DeepEval: evaluates whether the agent picked the right tool and passed correct arguments.
+   */
+  public static readonly DEEP_EVAL_TOOL_USE = new ThirdPartyEvaluator('ThirdParty.DeepEval.ToolUse');
+
+  /**
+   * AutoEval: evaluates whether the response is malicious.
+   */
+  public static readonly AUTO_EVAL_SECURITY = new ThirdPartyEvaluator('ThirdParty.AutoEval.Security');
+
+  /**
+   * AutoEval: evaluates whether the response is funny.
+   */
+  public static readonly AUTO_EVAL_HUMOR = new ThirdPartyEvaluator('ThirdParty.AutoEval.Humor');
+
+  /**
+   * AutoEval: evaluates whether the agent attempted a solution or declared the task impossible.
+   */
+  public static readonly AUTO_EVAL_POSSIBLE = new ThirdPartyEvaluator('ThirdParty.AutoEval.Possible');
+
+  /**
+   * The string value of the third-party evaluator.
+   */
+  public readonly value: string;
+
+  /**
+   * Use this constructor to reference a managed third-party evaluator that does not
+   * yet have a static member on this class.
+   *
+   * @param value - The evaluator identifier string, in the format `ThirdParty.<Provider>.<Metric>`
+   */
+  public constructor(value: string) {
+    this.value = throwIfInvalid(validateThirdPartyEvaluatorId, value);
   }
 }
 
@@ -270,7 +378,7 @@ export interface CloudWatchLogsDataSourceConfig {
    * The list of CloudWatch log group names to monitor for agent traces.
    *
    * @minimum 1
-   * @maximum 5
+   * @maximum 10
    */
   readonly logGroupNames: string[];
 
