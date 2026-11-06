@@ -29,6 +29,13 @@ function newTable(): Table {
   });
 }
 
+// Index ARN of the table 'my-table' imported by name into the test stack, which sets no account or region.
+const importedByNameIndexArn = {
+  'Fn::Join': ['', [
+    'arn:', { Ref: 'AWS::Partition' }, ':dynamodb:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':table/my-table/index/*',
+  ]],
+};
+
 test('addVectorIndex renders VectorIndexes into the table', () => {
   const table = newTable();
 
@@ -421,18 +428,33 @@ describe('grants.vectorSearch', () => {
           {
             Action: 'dynamodb:SearchVectors',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': ['', [
-                'arn:', { Ref: 'AWS::Partition' }, ':dynamodb:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':table/my-table/index/*',
-              ]],
-            },
+            Resource: importedByNameIndexArn,
           },
         ],
       },
     });
   });
 
-  test('grants SearchVectors on the index resources in each region passed to TableGrants.fromTable', () => {
+  test('grants SearchVectors on the index resources of a table imported by ARN in another region', () => {
+    const importedTable = Table.fromTableArn(stack, 'ImportedTable', 'arn:aws:dynamodb:eu-west-1:111111111111:table/my-table');
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
+
+    TableGrants.fromTable(importedTable).vectorSearch(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:SearchVectors',
+            Effect: 'Allow',
+            Resource: 'arn:aws:dynamodb:eu-west-1:111111111111:table/my-table/index/*',
+          },
+        ],
+      },
+    });
+  });
+
+  test('grants SearchVectors on the index resources of a table imported by name in each region passed to TableGrants.fromTable', () => {
     const importedTable = Table.fromTableName(stack, 'ImportedTable', 'my-table');
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
 
@@ -445,11 +467,7 @@ describe('grants.vectorSearch', () => {
             Action: 'dynamodb:SearchVectors',
             Effect: 'Allow',
             Resource: [
-              {
-                'Fn::Join': ['', [
-                  'arn:', { Ref: 'AWS::Partition' }, ':dynamodb:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':table/my-table/index/*',
-                ]],
-              },
+              importedByNameIndexArn,
               {
                 'Fn::Join': ['', [
                   'arn:', { Ref: 'AWS::Partition' }, ':dynamodb:us-west-2:', { Ref: 'AWS::AccountId' }, ':table/my-table/index/*',

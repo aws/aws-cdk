@@ -456,6 +456,46 @@ describe('grants.vectorSearch', () => {
     });
   });
 
+  test('grants SearchVectors on the index resources and key of one replica through replica(region)', () => {
+    const key = new kms.Key(stack, 'Key');
+    const replicaKeyArn = 'arn:aws:kms:us-west-2:123456789012:key/11111111-2222-3333-4444-555555555555';
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      encryption: TableEncryptionV2.customerManagedKey(key, { 'us-west-2': replicaKeyArn }),
+      replicas: [{ region: 'us-west-2' }],
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
+
+    table.replica('us-west-2').grants.vectorSearch(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['kms:Decrypt', 'kms:DescribeKey'],
+            Effect: 'Allow',
+            Resource: replicaKeyArn,
+          },
+          {
+            Action: 'dynamodb:SearchVectors',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, ':dynamodb:us-west-2:123456789012:table/', { Ref: 'TableCD117FA1' }, '/index/*',
+              ]],
+            },
+          },
+        ],
+      },
+    });
+  });
+
   test('grantFullAccess covers the index resources of a table whose only index is a vector index', () => {
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
