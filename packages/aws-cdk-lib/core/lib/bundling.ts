@@ -313,7 +313,7 @@ export class BundlingDockerImage {
    */
   @profileFn('BundlingDockerImage.cp', { telemetry: true })
   public cp(imagePath: string, outputPath?: string): string {
-    const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
+    const { stdout } = dockerExec(['create', this.image], {}); // Empty options: return stdout without replaying it
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
       throw new ExecutionError(lit`FailedToFailedExtractContainer`, 'Failed to extract container ID from Docker create output');

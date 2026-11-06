@@ -207,14 +207,24 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
 
 export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
+  // Pipe stdout and stderr so a non-zero exit can include them in the error.
+  // Redirecting those streams ('inherit' / a parent stream) prints them, but
+  // spawnSync then leaves proc.stdout and proc.stderr null. The failure
+  // surfaced as "docker exited with status 1" and dropped the real output.
+  // Replay the captured text afterwards so builds still show Docker logs.
+  // maxBuffer is unlimited, matching the previous inherit behavior, which did
+  // not kill Docker when the log grew past Node's 1MiB default.
+  const captureOutput = options === undefined;
   const proc = spawnSync(prog, args, options ?? {
     encoding: 'utf-8',
-    stdio: [ // show Docker output
-      'ignore', // ignore stdio
-      process.stderr, // redirect stdout to stderr
-      'inherit', // inherit stderr
-    ],
+    maxBuffer: Infinity,
+    stdio: ['ignore', 'pipe', 'pipe'],
   });
+
+  if (captureOutput) {
+    replayToStderr(proc.stdout);
+    replayToStderr(proc.stderr);
+  }
 
   if (proc.error) {
     throw proc.error;
@@ -243,4 +253,15 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+/**
+ * Echo captured Docker output. Callers that pass their own spawn options
+ * (for example `docker create`, which parses stdout) opt out of this.
+ */
+function replayToStderr(text: Buffer | string | null | undefined) {
+  if (text == null || text.length === 0) {
+    return;
+  }
+  process.stderr.write(text);
 }

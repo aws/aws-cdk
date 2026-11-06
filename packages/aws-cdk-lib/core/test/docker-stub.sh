@@ -26,6 +26,7 @@ fi
 
 if echo "$@" | grep "DOCKER_STUB_FAIL"; then
   echo "A HUGE FAILING DOCKER STUFF"
+  echo "Got permission denied while trying to connect to the Docker daemon socket" >&2
   exit 1
 fi
 
