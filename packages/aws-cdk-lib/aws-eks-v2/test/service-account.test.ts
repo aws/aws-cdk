@@ -1,3 +1,4 @@
+import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture, testFixtureCluster } from './util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
@@ -379,6 +380,83 @@ describe('service account', () => {
       });
       // should not create OpenIdConnectProvider
       t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
+    });
+    test('reuses an eks-pod-identity-agent Addon already declared for the cluster', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const addon = new eks.Addon(stack, 'PodIdentityAgent', {
+        cluster,
+        addonName: 'eks-pod-identity-agent',
+        addonVersion: 'v1.3.4-eksbuild.1',
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      expect(cluster.eksPodIdentityAgent).toBe(addon);
+      t.resourcePropertiesCountIs('AWS::EKS::Addon', { AddonName: 'eks-pod-identity-agent' }, 1);
+      t.hasResourceProperties('AWS::EKS::Addon', {
+        AddonName: 'eks-pod-identity-agent',
+        AddonVersion: 'v1.3.4-eksbuild.1',
+        ClusterName: { Ref: 'ClusterEB0386A7' },
+      });
+      t.resourceCountIs('AWS::EKS::PodIdentityAssociation', 1);
+    });
+    test('reuses an eks-pod-identity-agent CfnAddon already declared for the cluster', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      new eks.CfnAddon(stack, 'PodIdentityAgent', {
+        clusterName: cluster.clusterName,
+        addonName: 'eks-pod-identity-agent',
+        addonVersion: 'v1.3.4-eksbuild.1',
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      expect(cluster.eksPodIdentityAgent?.addonName).toBe('eks-pod-identity-agent');
+      t.resourcePropertiesCountIs('AWS::EKS::Addon', { AddonName: 'eks-pod-identity-agent' }, 1);
+      t.hasResourceProperties('AWS::EKS::Addon', {
+        AddonName: 'eks-pod-identity-agent',
+        AddonVersion: 'v1.3.4-eksbuild.1',
+        ClusterName: { Ref: 'ClusterEB0386A7' },
+      });
+    });
+    test('does not reuse an eks-pod-identity-agent Addon that belongs to another cluster', () => {
+      // GIVEN
+      const { stack, app, cluster } = testFixtureCluster();
+      const otherStack = new cdk.Stack(app, 'OtherStack');
+      const otherCluster = new eks.Cluster(otherStack, 'OtherCluster', {
+        version: eks.KubernetesVersion.V1_25,
+        kubectlProviderOptions: { kubectlLayer: new KubectlV31Layer(otherStack, 'kubectlLayer') },
+      });
+      new eks.Addon(otherStack, 'PodIdentityAgent', {
+        cluster: otherCluster,
+        addonName: 'eks-pod-identity-agent',
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Addon', {
+        AddonName: 'eks-pod-identity-agent',
+        ClusterName: { Ref: 'ClusterEB0386A7' },
+      });
+      Template.fromStack(otherStack).resourcePropertiesCountIs('AWS::EKS::Addon', { AddonName: 'eks-pod-identity-agent' }, 1);
     });
   });
   describe('Service Account with eks.IdentityType.IRSA', () => {
