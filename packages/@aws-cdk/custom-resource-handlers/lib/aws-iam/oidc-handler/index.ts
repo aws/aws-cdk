@@ -12,7 +12,7 @@ async function onCreate(event: AWSLambda.CloudFormationCustomResourceCreateEvent
   const issuerUrl = event.ResourceProperties.Url;
   const thumbprints: string[] = (event.ResourceProperties.ThumbprintList ?? []).sort(); // keep sorted for UPDATE
   const clients: string[] = (event.ResourceProperties.ClientIDList ?? []).sort();
-  const rejectUnauthorized: boolean = event.ResourceProperties.RejectUnauthorized ?? false;
+  const rejectUnauthorized = isTrue(event.ResourceProperties.RejectUnauthorized);
 
   if (thumbprints.length === 0) {
     thumbprints.push(await external.downloadThumbprint(issuerUrl, rejectUnauthorized));
@@ -36,7 +36,7 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceUpdateEvent
   const issuerUrl = event.ResourceProperties.Url;
   const thumbprints: string[] = (event.ResourceProperties.ThumbprintList ?? []).sort(); // keep sorted for UPDATE
   const clients: string[] = (event.ResourceProperties.ClientIDList ?? []).sort();
-  const rejectUnauthorized: boolean = event.ResourceProperties.RejectUnauthorized ?? false;
+  const rejectUnauthorized = isTrue(event.ResourceProperties.RejectUnauthorized);
 
   // determine which update we are talking about.
   const oldIssuerUrl = event.OldResourceProperties.Url;
@@ -91,4 +91,11 @@ async function onDelete(deleteEvent: AWSLambda.CloudFormationCustomResourceDelet
   await external.deleteOpenIDConnectProvider({
     OpenIDConnectProviderArn: deleteEvent.PhysicalResourceId,
   });
+}
+
+/**
+ * CloudFormation passes boolean custom resource properties as the strings 'true' and 'false'
+ */
+function isTrue(value: unknown): boolean {
+  return value === true || value === 'true';
 }
