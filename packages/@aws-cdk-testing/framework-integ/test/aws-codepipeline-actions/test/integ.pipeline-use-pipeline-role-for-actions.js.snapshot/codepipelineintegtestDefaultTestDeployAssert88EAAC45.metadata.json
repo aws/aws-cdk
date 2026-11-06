@@ -1,0 +1,52 @@
+{
+  "/codepipeline-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/codepipeline-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/codepipeline-integ-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/codepipeline-integ-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310"
+    }
+  ],
+  "/codepipeline-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/codepipeline-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/codepipeline-integ-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodePipelinegetPipeline31c434352ef5472b791f93bb260a9310"
+    }
+  ]
+}

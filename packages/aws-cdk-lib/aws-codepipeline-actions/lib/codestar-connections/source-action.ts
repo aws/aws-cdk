@@ -33,8 +33,11 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
   readonly output: codepipeline.Artifact;
 
   /**
-   * The ARN of the CodeStar Connection created in the AWS console
-   * that has permissions to access this GitHub or BitBucket repository.
+   * The ARN of the AWS CodeConnections connection (formerly AWS CodeStar Connections)
+   * that has permissions to access this GitHub, GitLab or BitBucket repository.
+   *
+   * Depending on when and how the connection was created, its ARN uses either the
+   * `codestar-connections` or the `codeconnections` service prefix. Both are supported.
    *
    * @example 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh'
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/connections-create.html
@@ -88,12 +91,12 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
 }
 
 /**
- * A CodePipeline source action for the CodeStar Connections source,
- * which allows connecting to GitHub and BitBucket.
+ * A CodePipeline source action for AWS CodeConnections (formerly AWS CodeStar Connections),
+ * which allows connecting to GitHub, GitLab and BitBucket.
  */
 export class CodeStarConnectionsSourceAction extends Action {
   /**
-   * The name of the property that holds the ARN of the CodeStar Connection
+   * The name of the property that holds the ARN of the CodeConnections connection
    * inside of the CodePipeline Artifact's metadata.
    *
    * @internal
@@ -128,10 +131,13 @@ export class CodeStarConnectionsSourceAction extends Action {
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
-    // https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-update-role-new-services
+    // https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html#edit-role-connections
+    // CodeStar Connections was renamed to CodeConnections, and both actions are required,
+    // regardless of whether the connection ARN uses the 'codestar-connections' or 'codeconnections' service prefix.
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: [
         'codestar-connections:UseConnection',
+        'codeconnections:UseConnection',
       ],
       resources: [
         this.props.connectionArn,

@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1779973588798"
+    "salt": "1791969110775"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -98,7 +98,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "975c50294bf440555942c5e3ececdce7edd8e8235cab26948825f80f95c833c5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -107,6 +107,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -140,7 +144,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1779973588799"
+    "salt": "1791969110775"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinestartPipelineExecution57ac6eaf015feec14cf48d22e7e8225e"
@@ -324,7 +328,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "975c50294bf440555942c5e3ececdce7edd8e8235cab26948825f80f95c833c5.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -333,6 +337,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -366,7 +374,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "975c50294bf440555942c5e3ececdce7edd8e8235cab26948825f80f95c833c5.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -375,6 +383,10 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   }

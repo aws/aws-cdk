@@ -1,0 +1,525 @@
+{
+  "/codepipeline-ecr-build-and-publish-public": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "You must specify your connection ARN in the CONNECTION_ARN environment variable [ack: integ:connection-arn]",
+      "trace": [
+        "Annotations.addMessage (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "Object.<anonymous> (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-ecr-build-and-publish-public.js:58:31)",
+        "Module._compile (node:internal/modules/cjs/loader:1929:14)",
+        "Object..js (node:internal/modules/cjs/loader:2060:10)",
+        "Module.load (node:internal/modules/cjs/loader:1651:32)",
+        "Module._load (node:internal/modules/cjs/loader:1443:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "You must specify your repository owner in the REPO_OWNER environment variable [ack: integ:repo-owner]",
+      "trace": [
+        "Annotations.addMessage (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "Object.<anonymous> (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-ecr-build-and-publish-public.js:61:31)",
+        "Module._compile (node:internal/modules/cjs/loader:1929:14)",
+        "Object..js (node:internal/modules/cjs/loader:2060:10)",
+        "Module.load (node:internal/modules/cjs/loader:1651:32)",
+        "Module._load (node:internal/modules/cjs/loader:1443:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "You must specify your repository name in the REPO_NAME environment variable [ack: integ:repo-name]",
+      "trace": [
+        "Annotations.addMessage (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "Object.<anonymous> (/Users/andrii.panasiuk/Projects/aws/codeconnections/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-ecr-build-and-publish-public.js:64:31)",
+        "Module._compile (node:internal/modules/cjs/loader:1929:14)",
+        "Object..js (node:internal/modules/cjs/loader:2060:10)",
+        "Module.load (node:internal/modules/cjs/loader:1651:32)",
+        "Module._load (node:internal/modules/cjs/loader:1443:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Repository": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Repository"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "pipelineType": "V2",
+        "stages": [
+          {
+            "stageName": "*",
+            "actions": [
+              {}
+            ]
+          },
+          {
+            "stageName": "*",
+            "actions": [
+              {}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/ArtifactsBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucketName": "*",
+        "encryptionKey": "*",
+        "encryption": "KMS_MANAGED",
+        "enforceSSL": true,
+        "blockPublicAccess": "*",
+        "removalPolicy": "retain"
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineC660917D"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Exports/Output{\"Ref\":\"PipelineC660917D\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPipelineC660917DEB540586"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/ArtifactsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineArtifactsBucket22248F97"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/ArtifactsBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineRoleD68726F7"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/ArtifactsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineArtifactsBucketPolicyD4F9712A"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineRoleDefaultPolicyC7A05455"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantAssumeRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantAssumeRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineSourceCodeStarConnectionsSourceActionCodePipelineActionRole37D44485"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineBuildEcrBuildAndPublishActionCodePipelineActionRole3A9C3603"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineSourceCodeStarConnectionsSourceActionCodePipelineActionRoleDefaultPolicyF5116984"
+    }
+  ],
+  "/codepipeline-ecr-build-and-publish-public/Pipeline/Build/EcrBuildAndPublishAction/CodePipelineActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineBuildEcrBuildAndPublishActionCodePipelineActionRoleDefaultPolicy477758DA"
+    }
+  ]
+}

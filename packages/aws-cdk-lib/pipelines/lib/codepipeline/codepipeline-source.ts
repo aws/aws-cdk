@@ -81,14 +81,16 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
   }
 
   /**
-   * Returns a CodeStar connection source. A CodeStar connection allows AWS CodePipeline to
-   * access external resources, such as repositories in GitHub, GitHub Enterprise or
+   * Returns an AWS CodeConnections source (formerly AWS CodeStar Connections). A connection allows AWS CodePipeline to
+   * access external resources, such as repositories in GitHub, GitHub Enterprise, GitLab or
    * BitBucket.
    *
-   * To use this method, you first need to create a CodeStar connection
-   * using the AWS console. In the process, you may have to sign in to the external provider
+   * To use this method, you first need to create a connection with AWS CodeConnections,
+   * for example using the AWS console. In the process, you may have to sign in to the external provider
    * -- GitHub, for example -- to authorize AWS to read and modify your repository.
    * Once you have done this, copy the connection ARN and use it to create the source.
+   * Depending on when and how the connection was created, its ARN uses either the
+   * `codestar-connections` or the `codeconnections` service prefix. Both are supported.
    *
    * Example:
    *
@@ -373,12 +375,12 @@ class ECRSource extends CodePipelineSource {
 }
 
 /**
- * Configuration options for CodeStar source
+ * Configuration options for an AWS CodeConnections source (formerly AWS CodeStar Connections)
  */
 export interface ConnectionSourceOptions {
   /**
-   * The ARN of the CodeStar Connection created in the AWS console
-   * that has permissions to access this GitHub or BitBucket repository.
+   * The ARN of the AWS CodeConnections connection (formerly AWS CodeStar Connections)
+   * that has permissions to access this GitHub, GitLab or BitBucket repository.
    *
    * @example 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh'
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/connections-create.html

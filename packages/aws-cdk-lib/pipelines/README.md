@@ -346,11 +346,9 @@ In CodePipeline, _Sources_ define where the source of your application lives.
 When a change to the source is detected, the pipeline will start executing.
 Source objects can be created by factory methods on the `CodePipelineSource` class:
 
-##### GitHub, GitHub Enterprise, BitBucket using a connection
+##### GitHub, GitHub Enterprise, GitLab, BitBucket using a connection
 
-The recommended way of connecting to GitHub or BitBucket is by using a _connection_.
-You will first use the AWS Console to authenticate to the source control
-provider, and then use the connection ARN in your pipeline definition:
+The recommended way of connecting to GitHub, GitLab or BitBucket is by using a _connection_ from [AWS CodeConnections](https://docs.aws.amazon.com/dtconsole/latest/userguide/welcome-connections.html) (formerly AWS CodeStar Connections). You will first use the AWS Console to authenticate to the source control provider, and then use the connection ARN in your pipeline definition. Depending on when and how the connection was created, its ARN uses either the `codestar-connections` or the `codeconnections` service prefix; both are supported:
 
 ```ts
 pipelines.CodePipelineSource.connection('org/repo', 'branch', {

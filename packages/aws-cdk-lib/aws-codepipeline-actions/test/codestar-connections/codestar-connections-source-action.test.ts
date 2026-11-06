@@ -47,6 +47,33 @@ describe('CodeStar Connections source Action', () => {
     });
   });
 
+  test.each([
+    'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+    'arn:aws:codeconnections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+  ])('grants both codestar-connections:UseConnection and codeconnections:UseConnection to the source action role for %s', (connectionArn) => {
+    const stack = new Stack();
+
+    createBitBucketAndCodeBuildPipeline(stack, {
+      connectionArn,
+      codeBuildCloneOutput: false,
+    });
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': Match.arrayWith([
+          {
+            'Action': [
+              'codestar-connections:UseConnection',
+              'codeconnections:UseConnection',
+            ],
+            'Effect': 'Allow',
+            'Resource': connectionArn,
+          },
+        ]),
+      },
+    }, 1);
+  });
+
   test('setting codeBuildCloneOutput=true adds permission to use the connection to the following CodeBuild Project', () => {
     const stack = new Stack();
 
@@ -69,7 +96,10 @@ describe('CodeStar Connections source Action', () => {
           {},
           {},
           {
-            'Action': 'codestar-connections:UseConnection',
+            'Action': [
+              'codestar-connections:UseConnection',
+              'codeconnections:UseConnection',
+            ],
             'Effect': 'Allow',
             'Resource': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
           },
