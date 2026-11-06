@@ -151,6 +151,8 @@ yarn test
 
 Every rule in `rules/` needs two fixtures in `test/rule-fixtures/<rule path without .guard>/`: `non-compliant.json`, which the rule must fail, and `compliant.json`, which the rule must evaluate and pass. The tests fail for a rule that has no fixtures.
 
+To cover more cases, add fixtures to the same directory named `non-compliant-<name>.json` or `compliant-<name>.json`, where `<name>` is lowercase kebab-case such as `wildcard-in-list`. Each one is checked like the fixture its name starts with. The tests fail for any other file under `test/rule-fixtures/`, whatever its extension, except hidden files, whose names start with a dot. They also fail for a fixture in a directory that does not match a rule.
+
 ---
 
 ## Output

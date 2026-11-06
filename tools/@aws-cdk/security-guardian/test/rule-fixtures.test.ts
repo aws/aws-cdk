@@ -7,14 +7,18 @@ import * as path from 'path';
 
 // Every rule file needs a fixture it fires on and a fixture it evaluates and passes,
 // at test/rule-fixtures/<rule path without .guard>/{non-compliant,compliant}.json.
+// A rule can have more fixtures in the same directory, named non-compliant-<name>.json
+// or compliant-<name>.json with <name> in lowercase kebab-case, and each is checked
+// the same way as the fixture its name starts with.
 // The fixtures are .json rather than .template.json so that the Security Guardian
 // action never scans them as changed templates.
 const rulesDir = path.join(__dirname, '..', 'rules');
 const fixturesDir = path.join(__dirname, 'rule-fixtures');
-const fixtures = ['non-compliant.json', 'compliant.json'];
-// The action fails a pull request when either scan fails, so compliant.json must pass
-// both; non-compliant.json must fail both, so that neither scan stops evaluating a
-// rule unnoticed
+const requiredFixtures = ['non-compliant.json', 'compliant.json'];
+const fixtureName = /^(non-)?compliant(-[a-z0-9]+)*\.json$/;
+// The action fails a pull request when either scan fails, so a compliant fixture must
+// pass both; a non-compliant fixture must fail both, so that neither scan stops
+// evaluating a rule unnoticed
 const scans = ['static', 'resolved'];
 
 // These rules wrap their checks in `when Principal != "*"`. cfn-guard cannot compare a
@@ -30,7 +34,16 @@ const rulesThatSkipEveryPolicy = [
   'sqs/sqs-no-world-accessible-inline',
 ];
 
-function findFiles(dir: string, extension: string): string[] {
+// In these fixtures the PassRole Resource list holds only Fn::GetAtt objects, and the
+// rule checks only the string elements of a list, so the static scan evaluates nothing
+// and skips them; the resolved scan resolves the ARNs to strings and evaluates them.
+// Remove a fixture from this list once the static scan evaluates it.
+const fixturesTheStaticScanSkips = [
+  'iam/iam-no-overly-permissive-passrole/compliant-inline-policy-intrinsic-arn-list.json',
+  'iam/iam-no-overly-permissive-passrole/compliant-intrinsic-arn-list.json',
+];
+
+function findFiles(dir: string, extension = ''): string[] {
   const files: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
@@ -53,9 +66,12 @@ describe('Guard Rule Fixtures', () => {
   });
 
   test('every fixture belongs to a rule file', () => {
-    const misplaced = findFiles(fixturesDir, '.json')
+    // Every file, not only .json, because the rule tests run only the fixture names above.
+    // Hidden files, such as .DS_Store or editor swap files, are never fixtures.
+    const misplaced = findFiles(fixturesDir)
+      .filter(file => !path.basename(file).startsWith('.'))
       .map(file => path.relative(fixturesDir, file))
-      .filter(file => !fixtures.includes(path.basename(file)) || !ruleIds.includes(path.dirname(file)));
+      .filter(file => !fixtureName.test(path.basename(file)) || !ruleIds.includes(path.dirname(file)));
     expect(misplaced).toEqual([]);
   });
 
@@ -64,6 +80,16 @@ describe('Guard Rule Fixtures', () => {
     const fixtureDir = path.join(fixturesDir, ruleId);
     const reportDir = path.join(outputDir, ruleId);
     const resolvedDir = path.join(reportDir, 'resolved');
+    const extraFixtures = fs.existsSync(fixtureDir)
+      ? fs.readdirSync(fixtureDir).filter(file => fixtureName.test(file) && !requiredFixtures.includes(file)).sort()
+      : [];
+    const skips = (scan: string, fixture: string) => rulesThatSkipEveryPolicy.includes(ruleId)
+      || (scan === 'static' && fixturesTheStaticScanSkips.includes(`${ruleId}/${fixture}`));
+    const fixtures = [...requiredFixtures, ...extraFixtures];
+    const cases = scans.flatMap(scan => fixtures.map(fixture => [scan, fixture]));
+    const skipCases = cases.filter(([scan, fixture]) => skips(scan, fixture));
+    const fireCases = cases.filter(([scan, fixture]) => !skips(scan, fixture) && fixture.startsWith('non-'));
+    const passCases = cases.filter(([scan, fixture]) => !skips(scan, fixture) && !fixture.startsWith('non-'));
     let ruleName: string;
 
     beforeAll(() => {
@@ -73,7 +99,7 @@ describe('Guard Rule Fixtures', () => {
       }
       ruleName = ruleNames[0];
 
-      const missing = fixtures.filter(fixture => !fs.existsSync(path.join(fixtureDir, fixture)));
+      const missing = requiredFixtures.filter(fixture => !fs.existsSync(path.join(fixtureDir, fixture)));
       if (missing.length > 0) {
         throw new Error(`missing fixtures for rules/${ruleId}.guard: add ${missing.map(fixture => `test/rule-fixtures/${ruleId}/${fixture}`).join(' and ')}`);
       }
@@ -89,28 +115,32 @@ describe('Guard Rule Fixtures', () => {
       return { success, report };
     }
 
-    if (rulesThatSkipEveryPolicy.includes(ruleId)) {
-      test.each(scans.flatMap(scan => fixtures.map(fixture => [scan, fixture])))('%s: skips %s', async (scan, fixture) => {
+    // test.each rejects an empty table
+    if (skipCases.length > 0) {
+      test.each(skipCases)('%s: skips %s', async (scan, fixture) => {
         const { report } = await validate(scan, fixture);
 
         expect(testCases(report)).toEqual([{ ruleFile: path.basename(ruleFile), status: 'skip' }]);
       });
-      return;
     }
 
-    test.each(scans)('%s: fires on non-compliant.json', async (scan) => {
-      const { success, report } = await validate(scan, 'non-compliant.json');
+    if (fireCases.length > 0) {
+      test.each(fireCases)('%s: fires on %s', async (scan, fixture) => {
+        const { success, report } = await validate(scan, fixture);
 
-      expect(testCases(report)).toEqual([{ ruleFile: path.basename(ruleFile), status: 'fail' }]);
-      expect(failedRules(report)).toEqual([ruleName]);
-      expect(success).toBe(false);
-    });
+        expect(testCases(report)).toEqual([{ ruleFile: path.basename(ruleFile), status: 'fail' }]);
+        expect(failedRules(report)).toEqual([ruleName]);
+        expect(success).toBe(false);
+      });
+    }
 
-    test.each(scans)('%s: evaluates and passes on compliant.json', async (scan) => {
-      const { success, report } = await validate(scan, 'compliant.json');
+    if (passCases.length > 0) {
+      test.each(passCases)('%s: evaluates and passes on %s', async (scan, fixture) => {
+        const { success, report } = await validate(scan, fixture);
 
-      expect(testCases(report)).toEqual([{ ruleFile: path.basename(ruleFile), status: 'pass' }]);
-      expect(success).toBe(true);
-    });
+        expect(testCases(report)).toEqual([{ ruleFile: path.basename(ruleFile), status: 'pass' }]);
+        expect(success).toBe(true);
+      });
+    }
   });
 });
