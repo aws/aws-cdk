@@ -1,0 +1,100 @@
+{
+  "/integ-assets-dockerfile-specific-dockerignore/MyUser": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-assets-dockerfile-specific-dockerignore/ImageUri": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImageUri"
+    }
+  ],
+  "/integ-assets-dockerfile-specific-dockerignore/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-assets-dockerfile-specific-dockerignore/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-assets-dockerfile-specific-dockerignore/MyUser/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyUserDC45028B"
+    }
+  ],
+  "/integ-assets-dockerfile-specific-dockerignore/MyUser/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-assets-dockerfile-specific-dockerignore/MyUser/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyUserDefaultPolicy7B897426"
+    }
+  ]
+}
