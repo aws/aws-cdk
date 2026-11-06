@@ -5,13 +5,26 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## StackSets
 
-The `StackSetStack` and `StackSet` constructs allow you to define [AWS CloudFormation StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html).
+The `StackSet` construct allows you to define [AWS CloudFormation StackSets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/what-is-cfnstacksets.html).
+A `StackSet` is a stack: the resources you define in it make up the template that the StackSet deploys
+to the target accounts and regions. Like a `NestedStack`, it is defined within another stack, which
+deploys the StackSet.
 
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+class MyStackSet extends StackSet {
+  constructor(scope: Construct, id: string, props: StackSetProps) {
+    super(scope, id, props);
 
-new StackSet(stack, 'StackSet', {
+    new iam.Role(this, 'MyRole', {
+      assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
+    });
+  }
+}
+
+const app = new App();
+const stack = new Stack(app, 'Admin');
+
+new MyStackSet(stack, 'MyStackSet', {
   target: StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
     accounts: ['11111111111'],
@@ -19,54 +32,116 @@ new StackSet(stack, 'StackSet', {
       SomeParam: 'overrideValue',
     },
   }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
-### Creating a StackSet Stack
+### Defining the template of a StackSet
 
 StackSets allow you to deploy a single CloudFormation template across multiple AWS accounts and regions.
 Typically when creating a CDK Stack that will be deployed across multiple environments, the CDK will
 synthesize separate Stack templates for each environment (account/region combination). Because of the
-way that StackSets work, StackSet Stacks behave differently. For Stacks that will be deployed via StackSets,
-a single Stack is defined and synthesized. Any environmental differences must be encoded using Parameters.
+way that StackSets work, a single template is defined and synthesized for a StackSet. Any environmental
+differences must be encoded using Parameters.
 
-A special class was created to handle the uniqueness of the StackSet Stack.
-You declare a `StackSetStack` the same way that you declare a normal `Stack`, but there
-are a couple of differences. `StackSetStack`s have a couple of special requirements/limitations when
-compared to Stacks.
+There are three ways to provide the template of a `StackSet`:
+
+1. Subclass `StackSet` and define its resources in the constructor, as in the example above.
+2. Add resources to a `StackSet` instance, the same way you add resources to a `Stack`:
+
+   ```ts
+   declare const stack: Stack;
+   const stackSet = new StackSet(stack, 'StackSet');
+
+   new iam.Role(stackSet, 'MyRole', {
+     assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
+   });
+   ```
+
+3. Pass a template that is not defined with CDK as `template`. A StackSet with a `template` must not
+   contain resources.
+   - `StackSetTemplate.fromUrl(url)` uses a template that is already stored in Amazon S3.
+   - `StackSetTemplate.fromAsset(path)` uses a local template file, which is uploaded as an asset of the
+     stack that contains the StackSet.
+
+   ```ts
+   declare const stack: Stack;
+
+   new StackSet(stack, 'FromUrl', {
+     template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
+   });
+
+   new StackSet(stack, 'FromAsset', {
+     template: StackSetTemplate.fromAsset(path.join(__dirname, 'template.json')),
+   });
+   ```
+
+A `StackSet` has a couple of special requirements and behaviors compared to a `Stack`:
 
 *Requirements*
-- Must be created in the scope of a `Stack`
-- Must be environment agnostic
+- Must be defined within the scope of a `Stack` (directly, through other constructs, or in a `NestedStack`).
+  That stack contains the `AWS::CloudFormation::StackSet` resource, its administration role, and
+  uploads the template and its file assets. They are created next to the StackSet, with its ID as a
+  prefix (for example `MyStackSet.Resource`, which is also `stackSet.node.defaultChild`)
+
+*Behavior*
+- The template is always environment agnostic: it uses `AWS::AccountId` and `AWS::Region`, even if
+  its `Stage` has an environment, because it is deployed to the accounts and regions the StackSet targets.
+  `stackSet.account` and `stackSet.region` refer to the template, while `stackSet.env` and
+  `stackSet.stack` refer to the StackSet resource in the stack that contains it
+- The template is not deployed by itself, so a `StackSet` is not listed by `cdk list`
+- Values from other stacks that the template references are passed to it as StackSet parameters, the
+  same way a `NestedStack` gets values from its parent. Because the template is environment agnostic,
+  references to resources of a stack with an explicit environment are cross-environment references: for
+  resources that support physical names (for example the ARN of a role), CDK uses the physical name of the
+  resource, and generates one if needed
+- The `description` is used for the StackSet and its template, and tags of the StackSet
+  (`Tags.of(stackSet).add(...)`) are tags of the StackSet resource, which CloudFormation propagates to
+  every stack instance
+- Each `StackSet` has its own template. To deploy the same template with different StackSet settings,
+  create the `StackSet` class twice
 
 *Limitations*
 - Does not support Docker container assets
+- Other stacks can't reference the resources of a `StackSet`, because its template is deployed to many
+  accounts and regions
 
-Once you create a `StackSetStack` you can create resources within the stack.
+For example, the template of a StackSet can trust a role of the stack that contains it:
+
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'StackSet');
+declare const stack: Stack;
+const auditRole = new iam.Role(stack, 'AuditRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
 
-new iam.Role(stackSetStack, 'MyRole', {
-  assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
+const stackSet = new StackSet(stack, 'StackSet');
+new iam.Role(stackSet, 'AuditAccess', {
+  // passed to the template as a StackSet parameter
+  assumedBy: new iam.ArnPrincipal(auditRole.roleArn),
 });
 ```
 
-Or
-```ts
-class MyStackSet extends StackSetStack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+To deploy the same template twice, for example to organizational units with a service managed
+StackSet and to the management account with a self managed StackSet:
 
-    new iam.Role(this, 'MyRole', {
-      assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
-    });
+```ts
+class MyStackSet extends StackSet {
+  constructor(scope: Construct, id: string, props: StackSetProps) {
+    super(scope, id, props);
+    new iam.Role(this, 'MyRole', { assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com') });
   }
 }
+
+declare const stack: Stack;
+new MyStackSet(stack, 'OrgStackSet', {
+  deploymentType: DeploymentType.serviceManaged(),
+  target: StackSetTarget.fromOrganizationalUnits({ regions: ['us-east-1'], organizationalUnits: ['ou-1'] }),
+});
+new MyStackSet(stack, 'ManagementStackSet', {
+  target: StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['11111111111'] }),
+});
 ```
 
-### Creating a StackSet
+### Deploying a StackSet
 
 AWS CloudFormation StackSets enable you to create, update, or delete stacks across multiple accounts and AWS Regions
 with a single operation. Using an administrator account, you define and manage an AWS CloudFormation template, and use
@@ -81,15 +156,13 @@ Deploying to individual accounts requires you to specify the account IDs. If you
 or remove the StackSet from accounts, add or remove the account ID in the list.
 
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
     accounts: ['11111111111'],
   }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
@@ -122,15 +195,13 @@ graph TD
 You could deploy to all AWS accounts under OUs `ou-1`, `ou-3`, `ou-4` by specifying the following:
 
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
   }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
@@ -140,16 +211,14 @@ If there are specific AWS accounts that are part of the specified OU hierarchy t
 to exclude, this can be done by specifying `excludeAccounts`.
 
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
-	excludeAccounts: ['account-2'],
+    excludeAccounts: ['account-2'],
   }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
@@ -159,16 +228,14 @@ Sometimes you might have individual accounts that you would like to deploy the S
 you do not want to include the entire OU. To do that you can specify `additionalAccounts`.
 
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
-	additionalAccounts: ['account-5'],
+    additionalAccounts: ['account-5'],
   }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
@@ -187,8 +254,7 @@ When a StackSet is service managed, the permissions are managed by AWS Organizat
 account within the organization. In addition, the StackSet will be able to create _any_ type of resource.
 
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromOrganizationalUnits({
@@ -196,7 +262,6 @@ new StackSet(stack, 'StackSet', {
     organizationalUnits: ['ou-1'],
   }),
   deploymentType: DeploymentType.serviceManaged(),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
@@ -210,7 +275,7 @@ When a StackSet is self managed (the default), you create the IAM roles StackSet
 administration role is assumed by CloudFormation in the account the StackSet is deployed from,
 and it assumes an execution role that must already exist in each target account.
 
-If you don't pass an `adminRole`, the StackSet creates one. Its trust policy only allows
+If you don't pass an `adminRole`, the StackSet creates one in the stack that contains it. Its trust policy only allows
 CloudFormation to assume it on behalf of StackSets in the same account, using the
 `aws:SourceAccount` and `aws:SourceArn` condition keys to protect against the
 [confused deputy problem](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-prereqs-self-managed.html).
@@ -221,8 +286,7 @@ adds a statement to its trust policy that allows the CloudFormation service prin
 region to assume it, with the same conditions.
 
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromAccounts({
@@ -232,23 +296,23 @@ new StackSet(stack, 'StackSet', {
   deploymentType: DeploymentType.selfManaged({
     executionRoleName: 'MyStackSetExecutionRole',
   }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
 #### Using File Assets
 
-You can use the StackSet's parent stack to facilitate file assets. Behind the scenes,
-this is accomplished using the `BucketDeployment` construct from the
-`aws_s3_deployment` module. You need to provide a list of buckets outside the scope of the CDK
-managed asset buckets and ensure you have permissions for the target accounts to pull
-the artifacts from the supplied bucket(s).
+The stack that contains the StackSet facilitates the file assets of its template, for example the
+code of a Lambda function or the template of a `NestedStack` defined in the StackSet. It stages them
+like its own assets and copies them to the asset buckets using the `BucketDeployment` construct from
+the `aws_s3_deployment` module. You need to provide a list of buckets outside the scope of the CDK
+managed asset buckets and ensure you have permissions for the target accounts to pull the artifacts
+from the supplied bucket(s).
 
 As a basic example, if using a `serviceManaged` deployment, you just need to give read
-access to the Organization. You can create the asset bucket in the parent stack, or another
-stack in the same app and pass the object as a prop. Or, import an existing bucket as needed.
+access to the Organization. You can create the asset bucket in the stack that contains the StackSet,
+or another stack in the same app and pass the object as a prop. Or, import an existing bucket as needed.
 
-If you create the bucket in the parent or a sibling stack, you could define it similar to this:
+If you create the bucket in the stack that contains the StackSet or another stack, you could define it similar to this:
 
 ```ts
 const bucket = new s3.Bucket(this, "Assets", {
@@ -264,12 +328,12 @@ bucket.addToResourcePolicy(
 );
 ```
 
-Then pass as a prop to the StackSet stack:
+Then pass as a prop to the StackSet:
 
 ```ts
+declare const stack: Stack;
 declare const bucket: s3.Bucket;
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet', {
+const stackSet = new StackSet(stack, 'MyStackSet', {
   assetBuckets: [bucket],
   assetBucketPrefix: "prefix",
 });
@@ -287,8 +351,8 @@ need to ensure the roles in all target accounts have access to the central asset
 bucket you pass as the property.
 
 The StackSet waits for the asset copies to the buckets of its template to complete before it deploys.
-If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning.
-Once you have granted access yourself, acknowledge it with
+If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning
+on the stack that contains the StackSet. Once you have granted access yourself, acknowledge it with
 `Annotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions')`.
 
 ### Importing an existing StackSet
@@ -331,10 +395,7 @@ class BootstrapStage extends Stage {
 
     const stack = new Stack(this, 'BootstrapStackSet');
 
-    const bootstrap = new Bootstrap(stack, 'CDKToolkit');
-
-    const stackSet = new StackSet(stack, 'StackSet', {
-      template: StackSetTemplate.fromStackSetStack(bootstrap),
+    new Bootstrap(stack, 'CDKToolkit', {
       target: props.initialBootstrapTarget,
       capabilities: [CfnCapabilities.NAMED_IAM],
       managedExecution: true,

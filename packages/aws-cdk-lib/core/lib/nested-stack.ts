@@ -215,15 +215,14 @@ export class NestedStack extends Stack {
    * references every time an asset is added. This is because (at the moment)
    * assets are addressed using CloudFormation parameters.
    *
-   * @returns `true` if a new asset was added or `false` if an asset was
-   * previously added. When this returns `true`, App will do another reference
-   * rectification cycle.
+   * @returns the `AWS::CloudFormation::Stack` resource, whose references App
+   * resolves again after the template assets of all nested stacks are defined.
    *
    * @internal
    */
-  public _prepareTemplateAsset() {
+  public _prepareTemplateAsset(): CfnResource | undefined {
     if (this._templateUrl.get()) {
-      return false;
+      return this.resource;
     }
 
     // When adding tags to nested stack, the tags need to be added to all the resources in
@@ -252,7 +251,7 @@ export class NestedStack extends Stack {
     // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
     // be resolved as cross-stack references like any other (see "multi" tests).
     this._templateUrl.set(`https://s3.${this._parentStack.region}.${this._parentStack.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`);
-    return true;
+    return this.resource;
   }
 
   private contextualAttribute(innerValue: string, outerValue: string) {

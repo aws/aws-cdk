@@ -65,7 +65,7 @@
     ]
    }
   },
-  "StackSet6E6355CF": {
+  "StackSetResource": {
    "Type": "AWS::CloudFormation::StackSet",
    "Properties": {
     "AdministrationRoleARN": {
@@ -78,6 +78,17 @@
     "ManagedExecution": {
      "Active": true
     },
+    "Parameters": [
+     {
+      "ParameterKey": "referencetointegstacksettestAdminRoleD699F605RoleId",
+      "ParameterValue": {
+       "Fn::GetAtt": [
+        "AdminRole38563C57",
+        "RoleId"
+       ]
+      }
+     }
+    ],
     "PermissionModel": "SELF_MANAGED",
     "StackInstancesGroup": [
      {
@@ -93,7 +104,7 @@
     ],
     "StackSetName": "integ-stackset-test",
     "TemplateURL": {
-     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/fc39dcfb61ca7db050a8c6cf440dde97c2c051f0965e9094eaad4bf1157e63cf.json"
+     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/eafdf37263c96be63d90688bdd6a533a50491a77b6bbc6dfa704daabff37c6bd.json"
     }
    },
    "DependsOn": [

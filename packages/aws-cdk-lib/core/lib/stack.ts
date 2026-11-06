@@ -1377,6 +1377,51 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Whether this stack's template can produce or consume cross-stack references.
+   *
+   * @internal
+   */
+  public _supportsCrossStackReferences(): boolean {
+    return true;
+  }
+
+  /**
+   * Registers this stack's template as an asset of the stack that deploys it.
+   *
+   * Called while the app is prepared, children first, so a template is registered
+   * before the templates of the stacks that contain it are hashed.
+   *
+   * @returns the resource that consumes the template asset, if any
+   * @internal
+   */
+  public _prepareTemplateAsset(): CfnResource | undefined {
+    return undefined;
+  }
+
+  /**
+   * The stack that passes values into this stack's template as parameters, if any.
+   *
+   * Values that this stack references from other stacks are resolved in the
+   * parameter host, and passed to this stack's template as parameters.
+   *
+   * @internal
+   */
+  public get _parameterHost(): Stack | undefined {
+    return undefined;
+  }
+
+  /**
+   * Sets a template parameter of this stack from its parameter host.
+   *
+   * @param name the logical ID of the parameter
+   * @param value the value, resolved in the parameter host
+   * @internal
+   */
+  public _setParameterFromHost(_name: string, _value: string): void {
+    throw new AssumptionError(lit`StackHasNoParameterHost`, `stack "${this.node.path}" has no parameter host`);
+  }
+
+  /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize
    * this behavior.

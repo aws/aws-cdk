@@ -1,0 +1,33 @@
+{
+  "Resources": {
+    "IntegStackSetSNSTopic360B333E": {
+      "Type": "AWS::SNS::Topic"
+    }
+  },
+  "Outputs": {
+    "AdminRoleId": {
+      "Value": {
+        "Ref": "referencetointegstacksettestAdminRoleD699F605RoleId"
+      }
+    },
+    "AdminRoleArn": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "arn:",
+            {
+              "Ref": "AWS::Partition"
+            },
+            ":iam::12345678:role/AWSCloudFormationStackSetAdministrationRole-integ-test"
+          ]
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "referencetointegstacksettestAdminRoleD699F605RoleId": {
+      "Type": "String"
+    }
+  }
+}
