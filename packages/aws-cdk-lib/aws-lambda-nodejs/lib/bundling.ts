@@ -86,6 +86,7 @@ export class Bundling implements cdk.BundlingOptions {
    */
   public static bundle(scope: IConstruct, options: BundlingProps): AssetCode {
     return Code.fromAsset(options.projectRoot, {
+      ...(options.followSymlinks !== undefined ? { followSymlinks: options.followSymlinks } : {}),
       assetHash: options.assetHash,
       assetHashType: options.assetHash ? cdk.AssetHashType.CUSTOM : cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(scope, options),
