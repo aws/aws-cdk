@@ -2175,7 +2175,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     this.domainId = this.domain.getAtt('Id').toString();
 
-    this.domainEndpoint = this.domain.getAtt('DomainEndpoint').toString();
+    this.domainEndpoint = props.ipAddressType === IpAddressType.DUAL_STACK
+      ? this.domain.getAtt('DomainEndpointV2').toString()
+      : this.domain.getAtt('DomainEndpoint').toString();
 
     if (props.customEndpoint?.hostedZone) {
       new route53.CnameRecord(this, 'CnameRecord', {
