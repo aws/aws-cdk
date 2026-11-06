@@ -29,6 +29,7 @@ import type { IGateway } from '../gateway/gateway-base';
 
 /**
  * Contains all properties and methods for both created and imported policy engines.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantable {
   /**
@@ -142,6 +143,7 @@ export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantab
 
 /**
  * Attributes for importing an existing PolicyEngine
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface PolicyEngineAttributes {
   /**
@@ -164,6 +166,7 @@ export interface PolicyEngineAttributes {
 /**
  * Abstract base class for a PolicyEngine.
  * Contains methods and attributes valid for PolicyEngines either created with CDK or imported.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class PolicyEngineBase extends Resource implements IPolicyEngine {
   public abstract readonly policyEngineArn: string;

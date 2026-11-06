@@ -3,6 +3,7 @@ import type { PolicyStatement } from './policy-statement';
 /**
  * Validation mode for Cedar policy definitions.
  *
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class PolicyValidationMode {
   /**
@@ -29,6 +30,7 @@ export class PolicyValidationMode {
 
 /**
  * Options for adding a policy via PolicyEngine.addPolicy()
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddPolicyOptions {
   /**
