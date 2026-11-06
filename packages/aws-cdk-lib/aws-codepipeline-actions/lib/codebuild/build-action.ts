@@ -110,6 +110,23 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default false
    */
   readonly combineBatchBuildArtifacts?: boolean;
+
+  /**
+   * A service role to use for this CodeBuild action, overriding the CodeBuild
+   * project's default service role for builds triggered by this pipeline action.
+   *
+   * Maps to the CodePipeline `ServiceRoleArnOverride` action configuration property.
+   * When supplied, the pipeline role is granted `iam:PassRole` on this role.
+   *
+   * CDK does not add any other permissions to this role. It must grant everything
+   * the build needs, such as access to the pipeline artifact bucket, build logs and
+   * source connections. The role must be in the same account as the CodeBuild project.
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeBuild.html
+   *
+   * @default - no override; the CodeBuild project's default service role is used
+   */
+  readonly serviceRoleOverride?: iam.IRoleRef;
 }
 
 /**
@@ -231,6 +248,14 @@ export class CodeBuildAction extends Action {
       if (this.props.combineBatchBuildArtifacts) {
         configuration.CombineArtifacts = 'true';
       }
+    }
+    if (this.props.serviceRoleOverride) {
+      configuration.ServiceRoleArnOverride = this.props.serviceRoleOverride.roleRef.roleArn;
+      options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['iam:PassRole'],
+        resources: [this.props.serviceRoleOverride.roleRef.roleArn],
+        conditions: { StringEquals: { 'iam:PassedToService': 'codebuild.amazonaws.com' } },
+      }));
     }
     return {
       configuration,
