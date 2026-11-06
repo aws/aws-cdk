@@ -3107,21 +3107,8 @@ describe('Runtime observability tests', () => {
       DeliveryDestinationType: 'XRAY',
     });
 
-    // Verify X-Ray resource policy allows logs delivery service
-    template.hasResourceProperties('AWS::XRay::ResourcePolicy', {
-      PolicyDocument: {
-        'Fn::Join': [
-          '',
-          [
-            '{"Statement":[{"Action":"xray:PutTraceSegments","Condition":{"ForAllValues:ArnLike":{"logs:LogGeneratingResourceArns":["',
-            { 'Fn::GetAtt': ['TracingRuntime80A99119', 'AgentRuntimeArn'] },
-            '"]},"StringEquals":{"aws:SourceAccount":"123456789012"},"ArnLike":{"aws:SourceArn":"arn:',
-            { Ref: 'AWS::Partition' },
-            ':logs:us-east-1:123456789012:delivery-source:*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"*"}],"Version":"2012-10-17"}',
-          ],
-        ],
-      },
-    });
+    // AWS auto-manages the X-Ray resource policy; the L2 must not create one
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
   });
 
   test('Should not create observability resources when not configured', () => {
