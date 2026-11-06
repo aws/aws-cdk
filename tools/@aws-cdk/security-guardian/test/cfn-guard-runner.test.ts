@@ -256,7 +256,7 @@ describe('cfn-guard report post-processing', () => {
 
     test.each<[number, string[]]>([
       [0, []],
-      [19, ['::warning::⚠️ CFN-Guard (Static) validation found issues']],
+      [19, ['::warning::⚠️ CFN-Guard (Static) validation found issues', "::debug::The process '/usr/bin/sh' failed with exit code 19"]],
     ])('fails the scan once when cfn-guard exits %i with such a report, without reporting it as a finding', async (exitCode, expectedCommands) => {
       const report = path.join(workDir, 'report.xml');
       // Stands in for the cfn-guard run: writes a truncated report and exits with the given code

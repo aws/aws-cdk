@@ -101,9 +101,10 @@ export async function runCfnGuardValidation(
       '-c',
       `cfn-guard validate --data "${dataDir}" --rules "${ruleSetPath}" --output-format junit --structured --show-summary none > "${outputFile}"`
     ]);
-  } catch {
+  } catch (err) {
     passed = false;
     core.warning(`⚠️ CFN-Guard (${type}) validation found issues`);
+    core.debug((err as Error).message);
   }
 
   if (enhanceXml) {
