@@ -10,6 +10,7 @@ import {
   SearchSchemaElementType,
   Table,
   TableEncryption,
+  TableGrants,
   VectorDistanceFunction,
 } from '../lib';
 
@@ -401,6 +402,59 @@ describe('grants.vectorSearch', () => {
               { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['TableCD117FA1', 'Arn'] }, '/index/*']] },
               regionalIndexArn('eu-west-2'),
               regionalIndexArn('eu-central-1'),
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('grants SearchVectors on the index resources of a table imported by name', () => {
+    const importedTable = Table.fromTableName(stack, 'ImportedTable', 'my-table');
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
+
+    TableGrants.fromTable(importedTable).vectorSearch(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:SearchVectors',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:', { Ref: 'AWS::Partition' }, ':dynamodb:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':table/my-table/index/*',
+              ]],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('grants SearchVectors on the index resources in each region passed to TableGrants.fromTable', () => {
+    const importedTable = Table.fromTableName(stack, 'ImportedTable', 'my-table');
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
+
+    TableGrants.fromTable(importedTable, ['us-west-2']).vectorSearch(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:SearchVectors',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:', { Ref: 'AWS::Partition' }, ':dynamodb:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':table/my-table/index/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  'arn:', { Ref: 'AWS::Partition' }, ':dynamodb:us-west-2:', { Ref: 'AWS::AccountId' }, ':table/my-table/index/*',
+                ]],
+              },
             ],
           },
         ],
