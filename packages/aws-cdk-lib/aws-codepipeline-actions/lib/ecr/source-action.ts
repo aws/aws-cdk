@@ -33,6 +33,16 @@ export interface EcrSourceVariables {
  */
 export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
+   * The AWS account ID of the registry whose image push events trigger the pipeline.
+   *
+   * Filters the account field of native ECR Image Action events. This does not
+   * configure cross-account event forwarding or change the source repository.
+   *
+   * @default - events are not filtered by registry account ID
+   */
+  readonly registryId?: string;
+
+  /**
    * The image tag that will be checked for changes.
    *
    * It is not possible to trigger on changes to more than one tag.
@@ -56,8 +66,7 @@ export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps 
  * The ECR Repository source CodePipeline Action.
  *
  * Will trigger the pipeline as soon as the target tag in the repository
- * changes, but only if there is a CloudTrail Trail in the account that
- * captures the ECR event.
+ * changes, using native ECR Image Action events from Amazon EventBridge.
  */
 export class EcrSourceAction extends Action {
   private readonly props: EcrSourceActionProps;
@@ -97,6 +106,7 @@ export class EcrSourceAction extends Action {
         new targets.CodePipeline(stage.pipeline),
       ],
       eventPattern: {
+        account: this.props.registryId !== undefined ? [this.props.registryId] : undefined,
         detailType: ['ECR Image Action'],
         source: ['aws.ecr'],
         detail: {
