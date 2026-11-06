@@ -206,6 +206,18 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly esbuildVersion?: string;
 
   /**
+   * The path to an esbuild executable.
+   *
+   * By default, CDK will either run the local esbuild installed in your project
+   * or fall back to your package manager (`npx`, `yarn run`, `pnpm exec`, etc.).
+   *
+   * If you have a custom or pre-installed esbuild binary, you can specify the path here.
+   *
+   * @default - automatically discovered from local node_modules or package manager
+   */
+  readonly esbuildBinaryPath?: string;
+
+  /**
    * Build arguments to pass into esbuild.
    *
    * Use an array of strings for options that esbuild supports repeating, for example

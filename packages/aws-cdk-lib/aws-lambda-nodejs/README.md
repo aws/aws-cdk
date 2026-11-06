@@ -247,6 +247,18 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 });
 ```
 
+### Custom esbuild binary path
+
+If you have `esbuild` installed in a custom location or want to use a standalone esbuild binary, specify `esbuildBinaryPath`:
+
+```ts
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    esbuildBinaryPath: '/custom/bin/esbuild',
+  },
+});
+```
+
 ## Command hooks
 
 It is possible to run additional commands by specifying the `commandHooks` prop:
