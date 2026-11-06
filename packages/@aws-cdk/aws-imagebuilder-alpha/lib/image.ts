@@ -433,6 +433,11 @@ export class Image extends ImageBase {
       {
         ...props,
         imageLogGroup: props.logGroup,
+        parentInstanceAutoScalingGroup: InfrastructureConfiguration.isInfrastructureConfiguration(
+          this.infrastructureConfiguration,
+        )
+          ? this.infrastructureConfiguration._parentInstanceAutoScalingGroup
+          : undefined,
       },
     );
 

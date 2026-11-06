@@ -1,0 +1,20 @@
+{
+  "/InfrastructureConfigurationParentInstanceTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "InfrastructureConfigurationParentInstanceTestDefaultTestDeployAssert3A7766B5.template.json"
+    }
+  ],
+  "/InfrastructureConfigurationParentInstanceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/InfrastructureConfigurationParentInstanceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
