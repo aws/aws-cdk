@@ -246,7 +246,11 @@ export interface CommonAutoScalingGroupProps {
   readonly resourceSignalTimeout?: Duration;
 
   /**
-   * Default scaling cooldown for this AutoScalingGroup
+   * Default scaling cooldown for simple scaling policies on this AutoScalingGroup.
+   *
+   * Target tracking and step scaling policies use instance warmup instead of cooldown.
+   * If neither policy-specific nor default instance warmup is set, they fall back
+   * to this value for warmup.
    *
    * @default Duration.minutes(5)
    */
