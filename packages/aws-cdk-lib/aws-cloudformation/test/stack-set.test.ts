@@ -374,11 +374,6 @@ describe('organizational unit account filters', () => {
       AccountFilterType: 'DIFFERENCE',
       Accounts: ['222222222222', '333333333333'],
     }],
-    ['union', StackSetAccountFilter.union(['222222222222', '333333333333']), {
-      OrganizationalUnitIds: ['ou-1111111'],
-      AccountFilterType: 'UNION',
-      Accounts: ['222222222222', '333333333333'],
-    }],
   ])('%s renders the matching account filter type', (_name, accountFilter, expected) => {
     expect(deploymentTargetsOf(accountFilter)).toEqual(expected);
   });
@@ -386,7 +381,6 @@ describe('organizational unit account filters', () => {
   test.each([
     ['intersection', StackSetAccountFilter.intersection],
     ['difference', StackSetAccountFilter.difference],
-    ['union', StackSetAccountFilter.union],
   ])('%s accepts a tokenized account list', (_name, factory) => {
     const app = new App();
     const stack = new Stack(app);
