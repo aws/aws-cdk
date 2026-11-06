@@ -1,0 +1,17 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "PolicyEnforcementModeIntegTest/DefaultTest": {
+      "stacks": [
+        "PolicyEnforcementModeIntegTestStack"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "PolicyEnforcementModeIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PolicyEnforcementModeIntegTestDefaultTestDeployAssert1A947A1A"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

@@ -781,9 +781,42 @@ export class PolicyStatement {
     return statement;
   }
 
+  /**
+   * Create a statement for the `policy` member of the policy definition.
+   *
+   * Use this for statements that the `cedar` member does not accept, such as
+   * statements with a `when guardrails { ... }` block or the `suppressOutput` effect.
+   * The Policy construct writes the statement to `Definition.Policy.Statement`
+   * instead of `Definition.Cedar.Statement`.
+   *
+   * As with `fromCedar()`, the source is used exactly as given. This method does not
+   * escape, quote, or validate it, so it is treated as trusted input and you own its
+   * correctness and its safety. Do not build the string by joining values that come
+   * from outside your application.
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_PolicyDefinition.html
+   * @param statement - Complete policy statement
+   */
+  public static fromPolicy(statement: string): PolicyStatement {
+    const policyStatement = PolicyStatement.fromCedar(statement);
+    policyStatement.definitionMember = 'policy';
+    return policyStatement;
+  }
+
   private rawCedar?: string;
 
+  private definitionMember: 'cedar' | 'policy' = 'cedar';
+
   public constructor(private readonly props: PolicyStatementProps) {}
+
+  /**
+   * The member of the policy definition that this statement is written to.
+   *
+   * @internal
+   */
+  public get _definitionMember(): 'cedar' | 'policy' {
+    return this.definitionMember;
+  }
 
   /**
    * Generate the Cedar policy statement string.
