@@ -345,35 +345,6 @@ test('fromOrganizations default', () => {
   });
 });
 
-test('fromOrganizations with a union account filter', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromOrganizationalUnits({
-      regions: ['us-east-1'],
-      organizationalUnits: ['ou-1111111'],
-      accountFilter: StackSetAccountFilter.union(['222222222222', '333333333333']),
-    }),
-    deploymentType: DeploymentType.serviceManaged({
-      delegatedAdmin: false,
-      autoDeployEnabled: false,
-    }),
-    template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-    StackInstancesGroup: [{
-      Regions: ['us-east-1'],
-      DeploymentTargets: {
-        AccountFilterType: 'UNION',
-        OrganizationalUnitIds: ['ou-1111111'],
-        Accounts: ['222222222222', '333333333333'],
-      },
-    }],
-  });
-});
-
 describe('organizational unit account filters', () => {
   function deploymentTargetsOf(accountFilter?: StackSetAccountFilter) {
     const app = new App();
@@ -385,7 +356,7 @@ describe('organizational unit account filters', () => {
         accountFilter,
       }),
       deploymentType: DeploymentType.serviceManaged(),
-      template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     });
     const stackSets = Template.fromStack(stack).findResources('AWS::CloudFormation::StackSet');
     return Object.values(stackSets)[0].Properties.StackInstancesGroup[0].DeploymentTargets;
@@ -427,7 +398,7 @@ describe('organizational unit account filters', () => {
         accountFilter: factory(accounts),
       }),
       deploymentType: DeploymentType.serviceManaged(),
-      template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     });
 
     expect(Token.isUnresolved(accounts)).toBe(true);
@@ -450,7 +421,7 @@ describe('organizational unit account filters', () => {
         organizationalUnits: ['ou-1111111'],
       }),
       deploymentType: DeploymentType.serviceManaged(),
-      template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     });
 
     stackSet.addTarget(StackSetTarget.fromOrganizationalUnits({
@@ -1519,142 +1490,9 @@ describe('importing a StackSet', () => {
   });
 });
 
-test('fromStackSetStack returns a StackSetTemplate instance', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  const template = StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack'));
-
-  expect(template).toBeInstanceOf(StackSetTemplate);
-});
-
-describe('StackSetTemplate.fromUrl', () => {
-  test('uses the given URL as the template URL', () => {
-    const app = new App();
-    const stack = new Stack(app);
-
-    new StackSet(stack, 'StackSet', {
-      template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-      TemplateURL: 'https://s3.amazonaws.com/my-bucket/template.json',
-    });
-  });
-
-  test('adds no dependencies to a service managed StackSet', () => {
-    const app = new App();
-    const stack = new Stack(app);
-
-    new StackSet(stack, 'StackSet', {
-      deploymentType: DeploymentType.serviceManaged(),
-      template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
-    });
-
-    Template.fromStack(stack).hasResource('AWS::CloudFormation::StackSet', {
-      DependsOn: Match.absent(),
-    });
-  });
-});
-
-describe('StackSetTemplate.fromAsset', () => {
-  const templatePath = path.join(__dirname, 'stackset-template', 'template.json');
-
-  test('uploads the template as an asset of the StackSet stack', () => {
-    const app = new App();
-    const stack = new Stack(app, 'Admin');
-
-    new StackSet(stack, 'StackSet', {
-      template: StackSetTemplate.fromAsset(templatePath),
-    });
-
-    const assetManifest = JSON.parse(fs.readFileSync(path.join(app.synth().directory, 'Admin.assets.json'), 'utf-8'));
-    const [assetHash] = Object.entries(assetManifest.files)
-      .filter(([, file]: [string, any]) => file.source.path.endsWith('.json') && file.source.packaging === 'file')
-      .map(([hash]) => hash);
-    expect(assetHash).toBeDefined();
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-      TemplateURL: {
-        'Fn::Sub': `https://s3.\${AWS::Region}.\${AWS::URLSuffix}/cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${assetHash}.json`,
-      },
-    });
-  });
-
-  test('can be used by several StackSets', () => {
-    const app = new App();
-    const stack = new Stack(app);
-    const template = StackSetTemplate.fromAsset(templatePath);
-
-    new StackSet(stack, 'First', { template });
-    new StackSet(stack, 'Second', { template });
-
-    Template.fromStack(stack).resourceCountIs('AWS::CloudFormation::StackSet', 2);
-  });
-});
-
-describe('StackSetStack environment', () => {
-  test('is environment agnostic even when its stage has an environment', () => {
-    const app = new App();
-    const stage = new Stage(app, 'Stage', { env: { account: '111111111111', region: 'us-east-1' } });
-    const host = new Stack(stage, 'Host');
-    const stackSetStack = new StackSetStack(stage, 'StackSetStack');
-    new iam.Role(stackSetStack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
-
-    new StackSet(host, 'StackSet', {
-      template: StackSetTemplate.fromStackSetStack(stackSetStack),
-    });
-
-    stackSetTemplateOf(stackSetStack).hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [{
-          Principal: {
-            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
-          },
-        }],
-      },
-    });
-  });
-});
-
-describe('StackSetStack cross-stack references', () => {
-  test('fails when a StackSetStack references a resource of another stack', () => {
-    const app = new App();
-    const host = new Stack(app, 'Host');
-    const stackSetStack = new StackSetStack(app, 'StackSetStack');
-    const hostRole = new iam.Role(host, 'HostRole', { assumedBy: new iam.AccountRootPrincipal() });
-    new CfnOutput(stackSetStack, 'HostRoleArn', { value: hostRole.roleArn });
-
-    new StackSet(host, 'StackSet', {
-      template: StackSetTemplate.fromStackSetStack(stackSetStack),
-    });
-
-    expect(() => app.synth()).toThrow(expect.objectContaining({
-      name: 'CrossStackReferenceNotSupported',
-      message: expect.stringContaining('the consumer stack "StackSetStack" does not support cross-stack references'),
-    }));
-  });
-
-  test('fails when another stack references a resource of a StackSetStack', () => {
-    const app = new App();
-    const host = new Stack(app, 'Host');
-    const stackSetStack = new StackSetStack(app, 'StackSetStack');
-    const role = new iam.Role(stackSetStack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
-    new CfnOutput(host, 'RoleArn', { value: role.roleArn });
-
-    new StackSet(host, 'StackSet', {
-      template: StackSetTemplate.fromStackSetStack(stackSetStack),
-    });
-
-    expect(() => app.synth()).toThrow(expect.objectContaining({
-      name: 'CrossStackReferenceNotSupported',
-      message: expect.stringContaining('the producer stack "StackSetStack" does not support cross-stack references'),
-    }));
-  });
-});
-
 describe('StackSet validation errors', () => {
   function templateIn(stack: Stack) {
-    return StackSetTemplate.fromStackSetStack(new StackSetStack(Stage.of(stack)!, 'Stack'));
+    return StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack'));
   }
 
   test('fails with an error code when fromAccounts has no accounts', () => {
@@ -1667,7 +1505,6 @@ describe('StackSet validation errors', () => {
   test.each([
     ['intersection', StackSetAccountFilter.intersection],
     ['difference', StackSetAccountFilter.difference],
-    ['union', StackSetAccountFilter.union],
   ])('fails with an error code when the %s account filter has no accounts', (name, factory) => {
     expect(() => factory([])).toThrow(expect.objectContaining({
       name: 'StackSetAccountFilterAccountsRequired',

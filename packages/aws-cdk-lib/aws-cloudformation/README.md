@@ -168,25 +168,17 @@ This would deploy only to `account-1` & `account-4`, and would exclude `account-
 To deploy only to some of the accounts in the OU hierarchy, use `StackSetAccountFilter.intersection()`
 with the accounts to deploy to.
 
-Sometimes you might have individual accounts that you would like to deploy the StackSet to, but
-you do not want to include their entire OU. `StackSetAccountFilter.union()` adds accounts from outside
-the OU hierarchy. CloudFormation does not support it for create operations when using a StackSet as a
-resource; see the `StackSetAccountFilter.union()` documentation.
+To also deploy the StackSet to accounts in another OU, add another target with `addTarget()`. For
+example, to deploy to `account-5` of `ou-2` as well:
 
 ```ts
-const app = new App();
-const stack = new Stack(app, 'Admin');
-const stackSetStack = new StackSetStack(app, 'MyStackSet');
+declare const stackSet: StackSet;
 
-new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromOrganizationalUnits({
-    regions: ['us-east-1'],
-    organizationalUnits: ['ou-1'],
-    accountFilter: StackSetAccountFilter.union(['account-5']),
-  }),
-  deploymentType: DeploymentType.serviceManaged(),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
-});
+stackSet.addTarget(StackSetTarget.fromOrganizationalUnits({
+  regions: ['us-east-1'],
+  organizationalUnits: ['ou-2'],
+  accountFilter: StackSetAccountFilter.intersection(['account-5']),
+}));
 ```
 
 This would deploy the StackSet to `account-1`, `account-2`, `account-4` & `account-5`.
