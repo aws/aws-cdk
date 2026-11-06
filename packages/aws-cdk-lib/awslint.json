@@ -1,5 +1,6 @@
 {
   "exclude": [
+    "props-physical-name:aws-cdk-lib.aws_securityhub.HubProps",
     "construct-ctor-props-optional:aws-cdk-lib.aws_dynamodb.Table",
     "props-physical-name:aws-cdk-lib.aws_dynamodb.TableV2MultiAccountReplicaProps",
     "prefer-ref-interface:aws-cdk-lib.aws_dynamodb.TableV2MultiAccountReplicaProps.kinesisStream",
