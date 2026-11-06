@@ -8,6 +8,7 @@ intake and aggregation.
 ## Table Of Contents
 
 - [Streams](#streams)
+  - [Record Distribution](#record-distribution)
   - [Encryption](#encryption)
   - [Import](#import)
   - [Permission Grants](#permission-grants)
@@ -43,6 +44,20 @@ new kinesis.Stream(this, 'MyFirstStream', {
   streamName: 'my-awesome-stream',
   shardCount: 3,
   retentionPeriod: Duration.hours(48),
+});
+```
+
+### Record Distribution
+
+On-demand streams can let Kinesis Data Streams distribute records evenly across shards instead of using the
+partition key that producers supply, which suits stateless workloads that do not need partition-key ordering.
+Set `recordDistributionStrategy` to `RecordDistributionStrategy.AUTO`; it can only be set on on-demand streams.
+Read more at [Service-managed record distribution](https://docs.aws.amazon.com/streams/latest/dev/service-managed-record-distribution.html).
+
+```ts
+new kinesis.Stream(this, 'MyEvenlyDistributedStream', {
+  streamMode: kinesis.StreamMode.ON_DEMAND,
+  recordDistributionStrategy: kinesis.RecordDistributionStrategy.AUTO,
 });
 ```
 
