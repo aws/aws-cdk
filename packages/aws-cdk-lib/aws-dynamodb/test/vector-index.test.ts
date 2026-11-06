@@ -1,6 +1,8 @@
 import { Match, Template } from '../../assertions';
+import { AssemblyValidationReport } from '../../assertions/lib/helpers-internal';
 import * as iam from '../../aws-iam';
 import { App, Lazy, Stack } from '../../core';
+import type { CfnTable } from '../lib';
 import {
   AttributeType,
   BillingMode,
@@ -255,6 +257,25 @@ test('throws when a vector index name collides with an LSI name', () => {
   })).toThrow(/duplicate index name, shared/);
 });
 
+test('throws when an LSI name collides with a vector index name', () => {
+  const table = new Table(stack, 'SortKeyTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    sortKey: { name: 'sk', type: AttributeType.STRING },
+    billingMode: BillingMode.PAY_PER_REQUEST,
+  });
+  table.addVectorIndex({
+    indexName: 'shared',
+    vectorAttribute: 'embedding',
+    dimensions: 128,
+    distanceFunction: VectorDistanceFunction.COSINE,
+  });
+
+  expect(() => table.addLocalSecondaryIndex({
+    indexName: 'shared',
+    sortKey: { name: 'lsiSk', type: AttributeType.NUMBER },
+  })).toThrow(/duplicate index name, shared/);
+});
+
 test('search schema with only INLINE_FILTER elements renders', () => {
   const table = newTable();
   table.addVectorIndex({
@@ -321,7 +342,7 @@ test('throws when search schema contains more than one HASH element', () => {
   })).toThrow(/At most one HASH search schema element is allowed/);
 });
 
-describe('grantVectorSearch', () => {
+describe('grants.vectorSearch', () => {
   test('grants SearchVectors on the index resources only', () => {
     const table = newTable();
     table.addVectorIndex({
@@ -332,7 +353,7 @@ describe('grantVectorSearch', () => {
     });
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
 
-    table.grantVectorSearch(role);
+    table.grants.vectorSearch(role);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -343,6 +364,72 @@ describe('grantVectorSearch', () => {
             Resource: {
               'Fn::Join': ['', [{ 'Fn::GetAtt': ['TableCD117FA1', 'Arn'] }, '/index/*']],
             },
+          },
+        ],
+      },
+    });
+  });
+
+  test('grants SearchVectors on the index resources in each replication region', () => {
+    const replicatedStack = new Stack(app, 'ReplicatedStack', { env: { region: 'us-east-1' } });
+    const table = new Table(replicatedStack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicationRegions: ['eu-west-2', 'eu-central-1'],
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(replicatedStack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
+
+    table.grants.vectorSearch(role);
+
+    const regionalIndexArn = (region: string) => ({
+      'Fn::Join': ['', [
+        'arn:', { Ref: 'AWS::Partition' }, `:dynamodb:${region}:`, { Ref: 'AWS::AccountId' }, ':table/', { Ref: 'TableCD117FA1' }, '/index/*',
+      ]],
+    });
+    Template.fromStack(replicatedStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:SearchVectors',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['TableCD117FA1', 'Arn'] }, '/index/*']] },
+              regionalIndexArn('eu-west-2'),
+              regionalIndexArn('eu-central-1'),
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('grantFullAccess covers the index resources of a table whose only index is a vector index', () => {
+    const table = newTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
+
+    table.grantFullAccess(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'dynamodb:*',
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::GetAtt': ['TableCD117FA1', 'Arn'] },
+              { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['TableCD117FA1', 'Arn'] }, '/index/*']] },
+            ],
           },
         ],
       },
@@ -382,7 +469,7 @@ describe('grantVectorSearch', () => {
     });
     const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com') });
 
-    table.grantVectorSearch(role);
+    table.grants.vectorSearch(role);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -390,6 +477,7 @@ describe('grantVectorSearch', () => {
           Match.objectLike({
             Action: Match.arrayWith(['kms:Decrypt']),
             Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['EncryptedTableKey9BE7B4E0', 'Arn'] },
           }),
         ]),
       },
@@ -405,7 +493,7 @@ describe('grantVectorSearch', () => {
       distanceFunction: VectorDistanceFunction.COSINE,
     });
 
-    expect(() => table.grantVectorSearch(new iam.ServicePrincipal('bedrock.amazonaws.com')))
+    expect(() => table.grants.vectorSearch(new iam.ServicePrincipal('bedrock.amazonaws.com')))
       .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
   });
 
@@ -421,7 +509,7 @@ describe('grantVectorSearch', () => {
       StringEquals: { 'aws:SourceAccount': '123456789012' },
     });
 
-    expect(() => table.grantVectorSearch(principal))
+    expect(() => table.grants.vectorSearch(principal))
       .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
   });
 });
@@ -435,4 +523,66 @@ test('throws when search schema is an empty array', () => {
     distanceFunction: VectorDistanceFunction.COSINE,
     searchSchema: [],
   })).toThrow(/must contain at least one element when provided/);
+});
+
+// E3039 reports attribute definitions that no key schema references. DynamoDB
+// requires the attributes of a vector index search schema in AttributeDefinitions,
+// so Table acknowledges the rule when a vector index declares a search schema.
+describe('CloudFormation-Validate E3039', () => {
+  let reportApp: App;
+  let reportStack: Stack;
+
+  beforeEach(() => {
+    reportApp = new App({ postCliContext: AssemblyValidationReport.APP_CONTEXT });
+    reportStack = new Stack(reportApp, 'Stack');
+  });
+
+  function newReportTable(): Table {
+    return new Table(reportStack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billingMode: BillingMode.PAY_PER_REQUEST,
+    });
+  }
+
+  test('reports an attribute definition that no key schema references', () => {
+    const table = newReportTable();
+    (table.node.defaultChild as CfnTable).addPropertyOverride('AttributeDefinitions', [
+      { AttributeName: 'pk', AttributeType: 'S' },
+      { AttributeName: 'unused', AttributeType: 'S' },
+    ]);
+
+    AssemblyValidationReport.fromApp(reportApp).hasViolation({ ruleName: 'E3039' });
+  });
+
+  test('reports an unused attribute definition when the vector index has no search schema', () => {
+    const table = newReportTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    (table.node.defaultChild as CfnTable).addPropertyOverride('AttributeDefinitions', [
+      { AttributeName: 'pk', AttributeType: 'S' },
+      { AttributeName: 'unused', AttributeType: 'S' },
+    ]);
+
+    AssemblyValidationReport.fromApp(reportApp).hasViolation({ ruleName: 'E3039' });
+  });
+
+  test('does not report the attributes of a vector index search schema', () => {
+    const table = newReportTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+      searchSchema: [
+        { attribute: { name: 'category', type: AttributeType.STRING }, type: SearchSchemaElementType.HASH },
+        { attribute: { name: 'year', type: AttributeType.NUMBER }, type: SearchSchemaElementType.INLINE_FILTER },
+      ],
+    });
+
+    AssemblyValidationReport.fromApp(reportApp).hasNoViolation({ ruleName: 'E3039' });
+  });
 });

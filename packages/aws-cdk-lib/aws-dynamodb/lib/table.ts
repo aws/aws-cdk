@@ -819,25 +819,6 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
   }
 
   /**
-   * Permits an IAM principal to search this table's vector indexes:
-   * SearchVectors on the index resources.
-   *
-   * SearchVectors is deliberately not included in `grantReadData`: fine-grained
-   * access control condition keys (such as `dynamodb:LeadingKeys`) have no
-   * effect on SearchVectors, so it must be granted explicitly.
-   *
-   * Appropriate grants will also be added to the customer-managed KMS key
-   * if one was configured.
-   *
-   * [disable-awslint:no-grants]
-   *
-   * @param grantee The principal to grant access to
-   */
-  public grantVectorSearch(grantee: iam.IGrantable): iam.Grant {
-    return this.grants.vectorSearch(grantee);
-  }
-
-  /**
    * Permits an IAM Principal to list streams attached to current dynamodb table.
    *
    *
@@ -1337,8 +1318,8 @@ export class Table extends TableBase {
     this._localSecondaryIndexes = Box.fromArray();
     this._vectorIndexes = Box.fromArray();
     this._hasIndexBox = Box.combine(
-      { gsi: this._globalSecondaryIndexes, lsi: this._localSecondaryIndexes },
-      ({ gsi, lsi }) => gsi.length + lsi.length > 0,
+      { gsi: this._globalSecondaryIndexes, lsi: this._localSecondaryIndexes, vector: this._vectorIndexes },
+      ({ gsi, lsi, vector }) => gsi.length + lsi.length + vector.length > 0,
     );
 
     if (!props?.partitionKey) {
@@ -1785,7 +1766,9 @@ export class Table extends TableBase {
    * DynamoDB requires every vector index search schema attribute to be declared
    * in AttributeDefinitions, but the CloudFormation-Validate rule E3039 only
    * counts key schema attributes and reports search schema attributes as unused
-   * definitions. Acknowledge the rule once for this table.
+   * definitions. Acknowledge the rule once for this table. The acknowledgement
+   * covers every E3039 finding on the table. TableV2 needs none, because the
+   * rule reports no finding for AWS::DynamoDB::GlobalTable.
    */
   private acknowledgeSearchSchemaAttributeDefinitions() {
     if (this._searchSchemaAttributeDefinitionsAcknowledged) {

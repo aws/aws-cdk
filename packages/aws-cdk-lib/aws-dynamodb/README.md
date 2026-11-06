@@ -738,14 +738,20 @@ expression targeting it.
 Searching a vector index requires the `dynamodb:SearchVectors` permission on
 the index resource. It is not included in `grantReadData` because fine-grained
 access control condition keys (such as `dynamodb:LeadingKeys`) have no effect
-on `SearchVectors`. Grant it explicitly with `grantVectorSearch`:
+on `SearchVectors`. Grant it explicitly with `grants.vectorSearch()`:
 
 ```ts
 declare const table: dynamodb.TableV2;
 declare const grantee: iam.IGrantable;
 
-table.grantVectorSearch(grantee);
+table.grants.vectorSearch(grantee);
 ```
+
+On a `TableV2`, `grants.vectorSearch()` grants `SearchVectors` on the indexes of
+the primary table and of each replica in the `replicas` property. It does not
+cover replicas added later with `addReplica()`, and it grants on the primary
+table's `encryptionKey` only. To grant on one replica and its replica key, use
+`table.replica(region).grants.vectorSearch(grantee)`.
 
 ## Streams
 

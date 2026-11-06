@@ -167,7 +167,8 @@ export class TableGrants {
 
   /**
    * Permits an IAM principal to search the table's vector indexes:
-   * SearchVectors on the index resources.
+   * SearchVectors on the index resources in the table's region and in each
+   * region of `regions`.
    *
    * SearchVectors is deliberately not part of `readData`: fine-grained access
    * control condition keys (such as `dynamodb:LeadingKeys`) have no effect on

@@ -305,13 +305,35 @@ expression targeting it.
 Searching a vector index requires the `dynamodb:SearchVectors` permission on
 the index resource. It is not included in `grantReadData` because fine-grained
 access control condition keys (such as `dynamodb:LeadingKeys`) have no effect
-on `SearchVectors`. Grant it explicitly with `grantVectorSearch`:
+on `SearchVectors`. Grant it explicitly with `grants.vectorSearch()`:
 
 ```ts
 declare const table: dynamodb.Table;
 declare const grantee: iam.IGrantable;
 
-table.grantVectorSearch(grantee);
+table.grants.vectorSearch(grantee);
+```
+
+A table imported with `Table.fromTableName()` or another `from*` method has the
+type `ITable`, which has no `grants` property. Use `TableGrants.fromTable()` for
+such a table:
+
+```ts
+declare const grantee: iam.IGrantable;
+
+const importedTable = dynamodb.Table.fromTableName(this, 'ImportedTable', 'my-table');
+dynamodb.TableGrants.fromTable(importedTable).vectorSearch(grantee);
+```
+
+Without a `regions` argument, `TableGrants.fromTable()` grants in the table's
+own region only. For a replicated table that you hold as `ITable`, pass the
+replication regions:
+
+```ts
+declare const table: dynamodb.ITable;
+declare const grantee: iam.IGrantable;
+
+dynamodb.TableGrants.fromTable(table, ['us-west-2']).vectorSearch(grantee);
 ```
 
 ## Kinesis Stream

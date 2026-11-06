@@ -34,7 +34,6 @@ class TestStack extends Stack {
   }
 }
 
-// Vector indexes are a preview feature currently available only in eu-north-1.
 const stack = new TestStack(app, 'aws-cdk-dynamodb-vector-index-v2', {
   env: { region: 'eu-north-1' },
 });

@@ -45,7 +45,6 @@ import {
   TagManager,
   TagType,
   Token,
-  Validations,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IBox, IMapBox } from '../../core/lib/helpers-internal';
@@ -785,7 +784,6 @@ export class TableV2 extends TableBaseV2 {
   private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap();
   private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap();
   private readonly vectorIndexes: IMapBox<string, CfnGlobalTable.VectorIndexProperty> = Box.fromMap();
-  private searchSchemaAttributeDefinitionsAcknowledged = false;
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
@@ -1178,6 +1176,8 @@ export class TableV2 extends TableBaseV2 {
 
     // Search schema attributes require attribute definitions on the table. The
     // vector attribute has an implicit type of List and is therefore not registered.
+    // Table acknowledges CloudFormation-Validate rule E3039 for these definitions.
+    // TableV2 does not, because the rule reports no finding for AWS::DynamoDB::GlobalTable.
     const searchSchema = props.searchSchema?.map((element: SearchSchemaElement) => {
       this.addAttributeDefinition(element.attribute);
       return {
@@ -1185,10 +1185,6 @@ export class TableV2 extends TableBaseV2 {
         searchSchemaElementType: element.type,
       };
     });
-
-    if (searchSchema) {
-      this.acknowledgeSearchSchemaAttributeDefinitions();
-    }
 
     return {
       indexName: props.indexName,
@@ -1198,23 +1194,6 @@ export class TableV2 extends TableBaseV2 {
       projection,
       searchSchema,
     };
-  }
-
-  /**
-   * DynamoDB requires every vector index search schema attribute to be declared
-   * in AttributeDefinitions, but the CloudFormation-Validate rule E3039 only
-   * counts key schema attributes and reports search schema attributes as unused
-   * definitions. Acknowledge the rule once for this table.
-   */
-  private acknowledgeSearchSchemaAttributeDefinitions() {
-    if (this.searchSchemaAttributeDefinitionsAcknowledged) {
-      return;
-    }
-    Validations.of(this).acknowledge({
-      id: 'CloudFormation-Validate::E3039',
-      reason: 'Vector index search schema attributes must be declared in AttributeDefinitions even though no key schema references them',
-    });
-    this.searchSchemaAttributeDefinitionsAcknowledged = true;
   }
 
   private configureReplicaGlobalSecondaryIndexes(options: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions } = {}) {
@@ -1326,7 +1305,7 @@ export class TableV2 extends TableBaseV2 {
   }
 
   protected get hasIndex() {
-    return this.globalSecondaryIndexes.size + this.localSecondaryIndexes.size > 0;
+    return this.globalSecondaryIndexes.size + this.localSecondaryIndexes.size + this.vectorIndexes.size > 0;
   }
 
   private validateIndexName(indexName: string) {
