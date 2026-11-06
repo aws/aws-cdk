@@ -1,14 +1,15 @@
 {
-  "version": "30.0.0",
+  "version": "54.0.0",
   "testCases": {
-    "integ.start-job-run": {
+    "AwsSfnIntegTest/DefaultTest": {
       "stacks": [
         "aws-stepfunctions-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "AwsSfnIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsSfnIntegTestDefaultTestDeployAssert8F32A58A"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }
