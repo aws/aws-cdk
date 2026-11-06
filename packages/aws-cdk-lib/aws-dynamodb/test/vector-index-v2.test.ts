@@ -547,7 +547,7 @@ describe('grants.vectorSearch', () => {
     expect(actions).not.toContain('dynamodb:SearchVectors');
   });
 
-  test('grants SearchVectors to a principal in another account through the table resource policy', () => {
+  test('grants SearchVectors to a principal with no identity policy through the table resource policy', () => {
     const table = new TableV2(stack, 'Table', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
@@ -572,6 +572,42 @@ describe('grants.vectorSearch', () => {
                   Action: 'dynamodb:SearchVectors',
                   Effect: 'Allow',
                   Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']] } },
+                  Resource: '*',
+                },
+              ],
+            },
+          },
+        }),
+      ],
+    });
+    template.resourceCountIs('AWS::IAM::Policy', 0);
+  });
+
+  test('grants SearchVectors to a role imported from another account through the table resource policy', () => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+
+    table.grants.vectorSearch(iam.Role.fromRoleArn(stack, 'RemoteRole', 'arn:aws:iam::222222222222:role/Remote'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        Match.objectLike({
+          Region: 'us-east-1',
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:SearchVectors',
+                  Effect: 'Allow',
+                  Principal: { AWS: 'arn:aws:iam::222222222222:role/Remote' },
                   Resource: '*',
                 },
               ],

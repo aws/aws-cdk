@@ -527,7 +527,7 @@ describe('grants.vectorSearch', () => {
     expect(actions).not.toContain('dynamodb:SearchVectors');
   });
 
-  test('grants SearchVectors to a principal in another account through the table resource policy', () => {
+  test('grants SearchVectors to a principal with no identity policy through the table resource policy', () => {
     const table = newTable();
     table.addVectorIndex({
       indexName: 'vectorIndex',
@@ -547,6 +547,39 @@ describe('grants.vectorSearch', () => {
               Action: 'dynamodb:SearchVectors',
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']] } },
+              Resource: '*',
+            },
+          ],
+        },
+      },
+    });
+    template.resourceCountIs('AWS::IAM::Policy', 0);
+  });
+
+  test('grants SearchVectors to a role imported from another account through the table resource policy', () => {
+    const accountStack = new Stack(app, 'AccountStack', { env: { account: '123456789012', region: 'us-east-1' } });
+    const table = new Table(accountStack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      billingMode: BillingMode.PAY_PER_REQUEST,
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+
+    table.grants.vectorSearch(iam.Role.fromRoleArn(accountStack, 'RemoteRole', 'arn:aws:iam::222222222222:role/Remote'));
+
+    const template = Template.fromStack(accountStack);
+    template.hasResourceProperties('AWS::DynamoDB::Table', {
+      ResourcePolicy: {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 'dynamodb:SearchVectors',
+              Effect: 'Allow',
+              Principal: { AWS: 'arn:aws:iam::222222222222:role/Remote' },
               Resource: '*',
             },
           ],
