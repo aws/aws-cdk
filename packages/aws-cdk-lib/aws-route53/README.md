@@ -24,6 +24,22 @@ const zone = new route53.PrivateHostedZone(this, 'HostedZone', {
 
 Additional VPCs can be added with `zone.addVpc()`.
 
+### Removal policy
+
+By default a hosted zone is deleted when it is removed from the stack or the
+stack is deleted. Because the name servers Route 53 assigns to a public hosted
+zone are chosen at creation time and cannot be recovered, a recreated zone gets
+different name servers that must be re-registered with the parent domain and
+propagated through DNS. To protect against accidental loss, set the
+`removalPolicy` to `RETAIN`:
+
+```ts
+new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'fully.qualified.domain.com',
+  removalPolicy: RemovalPolicy.RETAIN,
+});
+```
+
 ## Adding Records
 
 To add a TXT record to your zone:
