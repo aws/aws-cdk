@@ -162,6 +162,7 @@ export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefa
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
+export const EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED = '@aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2018,6 +2019,23 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED]: {
+    type: FlagType.BugFix,
+    summary: 'Scope VPC Flow Logs CloudWatch Logs permissions to the required resource types',
+    detailsMd: `
+      When this feature flag is enabled, the \`DescribeLogStreams\` permission is granted on the log group ARN,
+      while \`CreateLogStream\` and \`PutLogEvents\` remain granted on the log stream ARN pattern.
+
+      When disabled, all three permissions are granted together on the log stream ARN pattern, preserving the
+      previous behavior.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this feature flag to keep the previous combined permission statement.',
   },
 };
 
