@@ -204,6 +204,8 @@ export class QueryString {
 export interface QueryDefinitionProps {
   /**
    * Name of the query definition.
+   *
+   * To organize saved queries in folders, use a name such as `folder-name/query-name`.
    */
   readonly queryDefinitionName: string;
 
