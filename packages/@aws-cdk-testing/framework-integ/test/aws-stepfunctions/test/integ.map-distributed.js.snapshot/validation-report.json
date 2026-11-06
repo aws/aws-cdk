@@ -1,10 +1,10 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "title": "Validation Report",
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.12.1",
+      "pluginVersion": "1.14.0",
       "conclusion": "success",
       "violations": [
         {
@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "cdk-stepfunctions-map-distributed-integ/DefaultTest/DeployAssert",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.6.0"
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
             }
           ]
         }

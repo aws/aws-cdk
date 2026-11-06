@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "testCases": {
     "SfnSMTrainingJobImage/DefaultTest": {
       "stacks": [
@@ -13,5 +13,5 @@
     }
   },
   "enableLookups": true,
-  "minimumCliVersion": "2.1131.0"
+  "minimumCliVersion": "2.1146.1"
 }

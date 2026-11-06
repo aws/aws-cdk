@@ -1,4 +1,10 @@
 {
+  "/StringSetAfterParallel/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "StringSetAfterParallelDefaultTestDeployAssert649ABBB9.template.json"
+    }
+  ],
   "/StringSetAfterParallel/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

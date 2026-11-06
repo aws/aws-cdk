@@ -1,4 +1,10 @@
 {
+  "/sfn-sm-training-job-image": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "sfn-sm-training-job-image.template.json"
+    }
+  ],
   "/sfn-sm-training-job-image/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",

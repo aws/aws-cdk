@@ -487,9 +487,6 @@ export class StateMachine extends StateMachineBase {
                 arnFormat: ArnFormat.COLON_RESOURCE_NAME,
               }),
             },
-            StringEquals: {
-              'aws:SourceAccount': stack.account,
-            },
           },
         },
       ),

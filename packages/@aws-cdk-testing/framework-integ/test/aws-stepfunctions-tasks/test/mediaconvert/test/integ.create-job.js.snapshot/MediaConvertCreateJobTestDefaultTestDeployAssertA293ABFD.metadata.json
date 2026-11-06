@@ -1,4 +1,10 @@
 {
+  "/MediaConvertCreateJobTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MediaConvertCreateJobTestDefaultTestDeployAssertA293ABFD.template.json"
+    }
+  ],
   "/MediaConvertCreateJobTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

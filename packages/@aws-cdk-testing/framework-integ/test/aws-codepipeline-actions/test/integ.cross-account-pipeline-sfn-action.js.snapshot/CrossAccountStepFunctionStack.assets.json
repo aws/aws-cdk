@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "c68afa855d64c483e26025a8243a5dca85b2fc7e1b039749a7ea5d0508462d4d": {
+    "7bf1148bf6cc10ef4e7acb8669345b51423827b1b35e72d6c9ea3795a6645bf8": {
       "displayName": "CrossAccountStepFunctionStack Template",
       "source": {
         "path": "CrossAccountStepFunctionStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-test-region-21826445": {
+        "234567890123-test-region-be0faf4a": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
-          "objectKey": "c68afa855d64c483e26025a8243a5dca85b2fc7e1b039749a7ea5d0508462d4d.json",
+          "objectKey": "7bf1148bf6cc10ef4e7acb8669345b51423827b1b35e72d6c9ea3795a6645bf8.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
         }

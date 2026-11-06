@@ -1,14 +1,26 @@
 {
+  "/CallRestApiInteg-ApiStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CallRestApiInteg-ApiStack.template.json"
+    }
+  ],
   "/CallRestApiInteg-ApiStack/MyRestApi": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "cloudWatchRole": true
+      }
     }
   ],
   "/CallRestApiInteg-ApiStack/Hello": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
     }
   ],
   "/CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider": [
@@ -38,11 +50,25 @@
   "/CallRestApiInteg-ApiStack/MyRestApi/CloudWatchRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "applyRemovalPolicy": [
+          "retain"
+        ]
+      }
     }
   ],
   "/CallRestApiInteg-ApiStack/MyRestApi/Account": [
@@ -54,17 +80,27 @@
   "/CallRestApiInteg-ApiStack/MyRestApi/Deployment": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
     }
   ],
   "/CallRestApiInteg-ApiStack/MyRestApi/DeploymentStage.prod": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "deployment": "*"
+      }
     }
   ],
   "/CallRestApiInteg-ApiStack/MyRestApi/Endpoint": [
@@ -82,7 +118,17 @@
   "/CallRestApiInteg-ApiStack/Hello/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     }
   ],
   "/CallRestApiInteg-ApiStack/Hello/Resource": [
@@ -130,7 +176,12 @@
   "/CallRestApiInteg-ApiStack/MyRestApi/Default/ANY": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
     }
   ],
   "/CallRestApiInteg-ApiStack/Hello/ServiceRole/Resource": [

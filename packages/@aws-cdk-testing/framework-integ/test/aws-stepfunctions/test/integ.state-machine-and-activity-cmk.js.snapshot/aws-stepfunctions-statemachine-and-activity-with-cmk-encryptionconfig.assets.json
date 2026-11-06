@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "4eccf4b739661aa42b80f6794a738f6d76ebc7ee2ad4ea5be7b447265b738e9a": {
+    "1374f21005ad45e4d124f313a6b7a1fe2ee6a01fa3bf21a06cac735cadc66928": {
       "displayName": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig Template",
       "source": {
         "path": "aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-b9a45b27": {
+        "current_account-current_region-7a3abc93": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4eccf4b739661aa42b80f6794a738f6d76ebc7ee2ad4ea5be7b447265b738e9a.json",
+          "objectKey": "1374f21005ad45e4d124f313a6b7a1fe2ee6a01fa3bf21a06cac735cadc66928.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

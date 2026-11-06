@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-pipes-sfn-target": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-pipes-sfn-target.template.json"
+    }
+  ],
   "/aws-cdk-pipes-sfn-target/SourceQueue": [
     {
       "type": "aws:cdk:analytics:construct",

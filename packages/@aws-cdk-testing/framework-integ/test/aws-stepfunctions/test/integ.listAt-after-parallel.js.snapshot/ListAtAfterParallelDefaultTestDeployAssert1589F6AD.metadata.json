@@ -1,4 +1,10 @@
 {
+  "/ListAtAfterParallel/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ListAtAfterParallelDefaultTestDeployAssert1589F6AD.template.json"
+    }
+  ],
   "/ListAtAfterParallel/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

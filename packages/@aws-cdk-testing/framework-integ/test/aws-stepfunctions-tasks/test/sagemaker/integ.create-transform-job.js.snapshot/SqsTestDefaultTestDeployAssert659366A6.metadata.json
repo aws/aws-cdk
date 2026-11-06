@@ -1,4 +1,10 @@
 {
+  "/SqsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "SqsTestDefaultTestDeployAssert659366A6.template.json"
+    }
+  ],
   "/SqsTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

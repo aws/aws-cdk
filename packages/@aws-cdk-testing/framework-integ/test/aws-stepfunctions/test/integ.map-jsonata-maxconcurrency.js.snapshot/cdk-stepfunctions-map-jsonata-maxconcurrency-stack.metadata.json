@@ -1,8 +1,17 @@
 {
+  "/cdk-stepfunctions-map-jsonata-maxconcurrency-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-stepfunctions-map-jsonata-maxconcurrency-stack.template.json"
+    }
+  ],
   "/cdk-stepfunctions-map-jsonata-maxconcurrency-stack/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/cdk-stepfunctions-map-jsonata-maxconcurrency-stack/BootstrapVersion": [
@@ -20,7 +29,12 @@
   "/cdk-stepfunctions-map-jsonata-maxconcurrency-stack/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/cdk-stepfunctions-map-jsonata-maxconcurrency-stack/StateMachine/Resource": [

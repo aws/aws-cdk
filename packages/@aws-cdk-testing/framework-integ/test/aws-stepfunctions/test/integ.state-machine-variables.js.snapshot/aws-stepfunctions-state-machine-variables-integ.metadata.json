@@ -1,8 +1,16 @@
 {
+  "/aws-stepfunctions-state-machine-variables-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-state-machine-variables-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-state-machine-variables-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
     }
   ],
   "/aws-stepfunctions-state-machine-variables-integ/BootstrapVersion": [
@@ -20,7 +28,12 @@
   "/aws-stepfunctions-state-machine-variables-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/aws-stepfunctions-state-machine-variables-integ/StateMachine/Resource": [

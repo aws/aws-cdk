@@ -1,4 +1,10 @@
 {
+  "/StateMachineDefaultRoleTrust/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "StateMachineDefaultRoleTrustDefaultTestDeployAssertB3EBC6CB.template.json"
+    }
+  ],
   "/StateMachineDefaultRoleTrust/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
