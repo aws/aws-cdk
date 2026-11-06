@@ -23,13 +23,17 @@
   "/integ-sqs-bucket-notifications/IntegQueue1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
     }
   ],
   "/integ-sqs-bucket-notifications/IntegQueue2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
     }
   ],
   "/integ-sqs-bucket-notifications/BootstrapVersion": [

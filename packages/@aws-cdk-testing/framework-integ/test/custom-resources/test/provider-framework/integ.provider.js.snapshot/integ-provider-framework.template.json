@@ -185,7 +185,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b531a33a72645c6c295e83cc71be98697c407495bf4c8769e14ee33ed20f40d.zip"
+     "S3Key": "be2864cd460a2cf1f62b72b76e55bd32d9f70ccddfd74ca468cbaff26cb77704.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider)",
     "Environment": {
@@ -543,7 +543,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b531a33a72645c6c295e83cc71be98697c407495bf4c8769e14ee33ed20f40d.zip"
+     "S3Key": "be2864cd460a2cf1f62b72b76e55bd32d9f70ccddfd74ca468cbaff26cb77704.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
     "Environment": {
@@ -736,7 +736,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b531a33a72645c6c295e83cc71be98697c407495bf4c8769e14ee33ed20f40d.zip"
+     "S3Key": "be2864cd460a2cf1f62b72b76e55bd32d9f70ccddfd74ca468cbaff26cb77704.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
     "Environment": {
@@ -926,7 +926,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b531a33a72645c6c295e83cc71be98697c407495bf4c8769e14ee33ed20f40d.zip"
+     "S3Key": "be2864cd460a2cf1f62b72b76e55bd32d9f70ccddfd74ca468cbaff26cb77704.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
     "Environment": {

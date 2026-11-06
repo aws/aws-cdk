@@ -59,7 +59,8 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "queueName": "*"
+        "queueName": "*",
+        "encryption": "SQS_MANAGED"
       }
     }
   ],

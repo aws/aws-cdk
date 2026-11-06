@@ -261,7 +261,8 @@
   "TestQueue6F0069AA": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "QueueName": "trigger-assertion-queue"
+    "QueueName": "trigger-assertion-queue",
+    "SqsManagedSseEnabled": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
