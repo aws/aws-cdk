@@ -5,7 +5,7 @@ import { GatewayVpcEndpoint } from '../../aws-ec2';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type { CfnElement } from '../../core';
-import { App, CfnResource, Lazy, RemovalPolicy, Size, Stack, Validations } from '../../core';
+import { App, CfnParameter, CfnResource, Lazy, RemovalPolicy, Size, Stack, Token, Validations } from '../../core';
 import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import * as cx_api from '../../cx-api';
 import * as apigw from '../lib';
@@ -162,6 +162,118 @@ describe('restapi', () => {
 
     // THEN
     expect(() => app.synth()).toThrow(/The REST API doesn't contain any methods/);
+  });
+
+  test('fails if enhanced SecurityPolicy is used without endpointAccessMode', () => {
+    const app = new App();
+    stack = new Stack(app, 'my-stack');
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointTypes: [apigw.EndpointType.EDGE],
+      securityPolicy: apigw.SecurityPolicy.TLS12_PFS_2025_EDGE,
+    })).toThrow(/Enhanced security policies require endpointAccessMode to be specified/);
+  });
+
+  test('fails if EDGE endpoint is used with a non-edge security policy', () => {
+    const app = new App();
+    stack = new Stack(app, 'my-stack');
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      endpointTypes: [apigw.EndpointType.EDGE],
+      securityPolicy: apigw.SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+    })).toThrow(/is not supported for edge-optimized endpoints/);
+  });
+
+  test('accepts an EDGE endpoint with an edge-only security policy', () => {
+    const app = new App();
+    stack = new Stack(app, 'my-stack');
+    expect(() => new apigw.RestApi(stack, 'api', {
+      endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+      endpointTypes: [apigw.EndpointType.EDGE],
+      securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE,
+    })).not.toThrow();
+  });
+
+  describe('security policy validation', () => {
+    test.each([
+      apigw.SecurityPolicy.TLS13_1_3_2025_09,
+      apigw.SecurityPolicy.TLS13_1_3_FIPS_2025_09,
+      apigw.SecurityPolicy.TLS13_1_2_PQ_2025_09,
+      apigw.SecurityPolicy.TLS13_1_2_PFS_PQ_2025_09,
+    ])('fails for non-edge policy %s with explicit or default EDGE endpoints', securityPolicy => {
+      for (const props of [{}, { endpointTypes: [apigw.EndpointType.EDGE] }, { endpointConfiguration: { types: [apigw.EndpointType.EDGE] } }]) {
+        expect(() => new apigw.RestApi(new Stack(), 'api', {
+          ...props,
+          securityPolicy,
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        })).toThrow(`Security policy ${securityPolicy} is not supported for edge-optimized endpoints`);
+      }
+    });
+
+    test.each([
+      apigw.SecurityPolicy.TLS13_2025_EDGE,
+      apigw.SecurityPolicy.TLS12_PFS_2025_EDGE,
+      apigw.SecurityPolicy.TLS12_2018_EDGE,
+    ])('fails for edge-only policy %s with REGIONAL or PRIVATE endpoints', securityPolicy => {
+      for (const endpointType of [apigw.EndpointType.REGIONAL, apigw.EndpointType.PRIVATE]) {
+        for (const props of [{ endpointTypes: [endpointType] }, { endpointConfiguration: { types: [endpointType] } }]) {
+          expect(() => new apigw.RestApi(new Stack(), 'api', {
+            ...props,
+            securityPolicy,
+            endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+          })).toThrow(`Security policy ${securityPolicy} is only supported for edge-optimized endpoints`);
+        }
+      }
+    });
+
+    test.each([apigw.SecurityPolicy.TLS_1_0, apigw.SecurityPolicy.TLS_1_2, undefined])('preserves legacy or omitted security policy %s', securityPolicy => {
+      for (const endpointType of [apigw.EndpointType.EDGE, apigw.EndpointType.REGIONAL, apigw.EndpointType.PRIVATE]) {
+        expect(() => new apigw.RestApi(new Stack(), 'api', {
+          endpointTypes: [endpointType],
+          securityPolicy,
+        })).not.toThrow();
+      }
+    });
+
+    test.each([apigw.SecurityPolicy.TLS_1_0, apigw.SecurityPolicy.TLS_1_2, undefined])('fails for legacy or omitted security policy %s with endpointAccessMode', securityPolicy => {
+      for (const endpointAccessMode of [apigw.EndpointAccessMode.BASIC, apigw.EndpointAccessMode.STRICT]) {
+        expect(() => new apigw.RestApi(new Stack(), 'api', {
+          securityPolicy,
+          endpointAccessMode,
+        })).toThrow(/endpointAccessMode is not supported for legacy security policies/);
+      }
+    });
+
+    test('accepts enhanced security policies with compatible endpoint types', () => {
+      for (const endpointType of [apigw.EndpointType.EDGE, apigw.EndpointType.REGIONAL, apigw.EndpointType.PRIVATE]) {
+        const api = new apigw.RestApi(new Stack(), 'api', {
+          endpointConfiguration: { types: [endpointType] },
+          securityPolicy: endpointType === apigw.EndpointType.EDGE ? apigw.SecurityPolicy.TLS13_2025_EDGE : apigw.SecurityPolicy.TLS13_1_3_2025_09,
+          endpointAccessMode: apigw.EndpointAccessMode.STRICT,
+        });
+        expect((api.node.defaultChild as apigw.CfnRestApi).endpointAccessMode).toBe('STRICT');
+        expect((api.node.defaultChild as apigw.CfnRestApi).securityPolicy).toBe(
+          endpointType === apigw.EndpointType.EDGE ? apigw.SecurityPolicy.TLS13_2025_EDGE : apigw.SecurityPolicy.TLS13_1_3_2025_09,
+        );
+      }
+    });
+
+    test('defers validation for tokenized security policy fields', () => {
+      const value = new CfnParameter(stack, 'Value').valueAsString;
+      const policies: apigw.RestApiProps[] = [
+        { securityPolicy: value as apigw.SecurityPolicy },
+        { securityPolicy: value as apigw.SecurityPolicy, endpointAccessMode: apigw.EndpointAccessMode.STRICT },
+        { securityPolicy: apigw.SecurityPolicy.TLS_1_2, endpointAccessMode: value as apigw.EndpointAccessMode },
+        { endpointAccessMode: value as apigw.EndpointAccessMode },
+        { securityPolicy: value as apigw.SecurityPolicy, endpointTypes: [apigw.EndpointType.EDGE] },
+        { securityPolicy: apigw.SecurityPolicy.TLS13_1_3_2025_09, endpointAccessMode: value as apigw.EndpointAccessMode },
+        { securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE, endpointTypes: [value as apigw.EndpointType] },
+        { securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE, endpointTypes: Token.asList({ Ref: 'EndpointTypes' }) as apigw.EndpointType[] },
+        { securityPolicy: apigw.SecurityPolicy.TLS13_2025_EDGE, endpointConfiguration: { types: [value as apigw.EndpointType] } },
+      ];
+      policies.forEach((props, index) => {
+        expect(() => new apigw.RestApi(stack, `api${index}`, props)).not.toThrow();
+      });
+    });
   });
 
   test('"addResource" can be used on "IRestApiResource" to form a tree', () => {
