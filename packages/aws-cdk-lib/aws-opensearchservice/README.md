@@ -575,6 +575,7 @@ The domain can be configured to use service software updates.
 const domain = new Domain(this, 'Domain', {
   version: EngineVersion.OPENSEARCH_1_3,
   enableAutoSoftwareUpdate: true,
+  useLatestServiceSoftwareForBlueGreen: true,
 });
 ```
 

@@ -809,6 +809,62 @@ test('lambda execution role gets putObjectAcl permission when deploying with acc
   });
 });
 
+test('default memory limit is 1024MB', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    // memoryLimit not specified - should default to 1024MB
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 1024 });
+});
+
+test('deployment handler runs on ARM_64', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['arm64'],
+  });
+});
+
+test('the ARM_64 handler is still a singleton shared across deployments', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+  new s3deploy.BucketDeployment(stack, 'Deploy2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN - a single handler, on arm64
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::Lambda::Function', 1);
+  template.hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['arm64'],
+  });
+});
+
 test('memoryLimit can be used to specify the memory limit for the deployment resource handler', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -1035,6 +1091,113 @@ test('deploy without extracting files in destination and get the object key', ()
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     Extract: false,
   });
+});
+
+test('OutputObjectVersionIds is absent from the custom resource when objectVersionIds is never read', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  // THEN - no snapshot churn for existing users: the property must not appear
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectVersionIds: Match.absent(),
+  });
+});
+
+test('reading objectVersionIds opts in via OutputObjectVersionIds and renders a Fn::GetAtt list', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  // WHEN
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  const versionId = cdk.Fn.select(0, deployment.objectVersionIds);
+  new cdk.CfnOutput(stack, 'VersionId', { value: versionId });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectVersionIds: true,
+  });
+  // the accessor resolves to a GetAtt on SourceObjectVersionIds
+  template.hasOutput('VersionId', {
+    Value: {
+      'Fn::Select': [0, { 'Fn::GetAtt': [Match.stringLikeRegexp('CustomResource'), 'SourceObjectVersionIds'] }],
+    },
+  });
+});
+
+test('objectVersionIds throws when extract is true (the default)', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    // extract defaults to true
+  });
+
+  // THEN
+  expect(() => deployment.objectVersionIds).toThrow("'objectVersionIds' is only supported when 'extract' is set to false");
+});
+
+test('objectVersionIds throws when extract is explicitly true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: true,
+  });
+
+  // THEN
+  expect(() => deployment.objectVersionIds).toThrow("'objectVersionIds' is only supported when 'extract' is set to false");
+});
+
+test('objectVersionIds throws when outputObjectKeys is disabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+    outputObjectKeys: false,
+  });
+
+  // THEN - the documented positional alignment with objectKeys cannot hold when keys aren't output
+  expect(() => deployment.objectVersionIds).toThrow("'objectVersionIds' requires 'outputObjectKeys' to be enabled");
+});
+
+test('DeployTimeSubstitutedFile.objectVersionIds throws a subclass-specific error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const file = new s3deploy.DeployTimeSubstitutedFile(stack, 'File', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: {},
+  });
+
+  // THEN - files are always extracted, so the base "extract must be false" message would be misleading
+  expect(() => file.objectVersionIds).toThrow("'objectVersionIds' is not supported for 'DeployTimeSubstitutedFile' since its file is always extracted");
 });
 
 test('given a source with markers and extract is false, BucketDeployment throws an error', () => {
@@ -1652,14 +1815,14 @@ test('DeployTimeSubstitutedFile throws error when source file path is invalid', 
 
   expect(() => {
     new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
-      source: path.join(__dirname, 'non-existant-file.yaml'),
+      source: path.join(__dirname, 'non-existent-file.yaml'),
       destinationBucket: bucket,
       substitutions: {
         testMethod: 'changedTestMethodSuccess',
         mock: 'changedMockTypeSuccess',
       },
     });
-  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existant-file.yaml')}`);
+  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existent-file.yaml')}`);
 });
 
 test('DeployTimeSubstitutedFile does not make substitutions when no substitutions are passed in', () => {

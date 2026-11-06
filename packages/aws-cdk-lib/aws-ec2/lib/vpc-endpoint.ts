@@ -252,6 +252,20 @@ export interface GatewayVpcEndpointOptions {
    *
    */
   readonly subnets?: SubnetSelection[];
+
+  /**
+   * The IP address type for the endpoint.
+   *
+   * @default not specified
+   */
+  readonly ipAddressType?: VpcEndpointIpAddressType;
+
+  /**
+   * Type of DNS records created for the VPC endpoint.
+   *
+   * @default not specified
+   */
+  readonly dnsRecordIpType?: VpcEndpointDnsRecordIpType;
 }
 
 /**
@@ -317,12 +331,18 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
       throw new ValidationError(lit`CanTGatewayEndpointVpc`, 'Can\'t add a gateway endpoint to VPC; route table IDs are not available', this);
     }
 
+    const dnsOptions = props.dnsRecordIpType !== undefined
+      ? { dnsRecordIpType: props.dnsRecordIpType }
+      : undefined;
+
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       policyDocument: this._policyDocumentToken(),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
       vpcId: props.vpc.vpcId,
+      ipAddressType: props.ipAddressType,
+      dnsOptions,
     });
 
     this.vpcEndpointId = endpoint.ref;
@@ -537,6 +557,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
   public static readonly EKS = new InterfaceVpcEndpointAwsService('eks');
   public static readonly EKS_AUTH = new InterfaceVpcEndpointAwsService('eks-auth');
+  public static readonly EKS_PROXY = new InterfaceVpcEndpointAwsService('eks-proxy');
   public static readonly ELASTIC_BEANSTALK = new InterfaceVpcEndpointAwsService('elasticbeanstalk');
   public static readonly ELASTIC_BEANSTALK_HEALTH = new InterfaceVpcEndpointAwsService('elasticbeanstalk-health');
   public static readonly ELASTIC_DISASTER_RECOVERY = new InterfaceVpcEndpointAwsService('drs');

@@ -55,6 +55,45 @@ export class ProtocolType {
 }
 
 /**
+ * The platform version of the Agent Runtime.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtime.html#cfn-bedrockagentcore-runtime-platformversion
+ */
+export class PlatformVersion {
+  /**
+   * Platform version V1 (the create-time default).
+   */
+  public static readonly V1 = new PlatformVersion('V1');
+
+  /**
+   * Platform version V2 (the new AgentCore Runtime — elastic, optimized, consistently fast starts).
+   */
+  public static readonly V2 = new PlatformVersion('V2');
+
+  /**
+   * Use a custom platform version not yet defined in this class.
+   * @param value The platform version string value
+   */
+  public static of(value: string): PlatformVersion {
+    return new PlatformVersion(value);
+  }
+
+  /**
+   * The platform version string value.
+   */
+  public readonly value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  /** Returns the string value. */
+  public toString(): string {
+    return this.value;
+  }
+}
+
+/**
  * Configuration for HTTP request headers that will be passed through to the runtime.
  */
 export interface RequestHeaderConfiguration {

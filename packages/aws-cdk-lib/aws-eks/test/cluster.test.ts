@@ -2887,7 +2887,7 @@ describe('cluster', () => {
       });
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
         clusterName,
-        kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        kubectlRoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
         kubectlLambdaRole: kubectlLambdaRole,
       });
 
@@ -2904,7 +2904,7 @@ describe('cluster', () => {
       });
       Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
         ClusterName: clusterName,
-        RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        RoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
         Release: 'importedcharttestchartf3acd6e5',
         Chart: chart,
         Namespace: 'default',
@@ -3962,6 +3962,12 @@ describe('cluster', () => {
     test('user provided removal policy applies to kubectl lambda', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
+
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3004',
+        reason: 'Something with circular deps',
+      });
+
       const userVpc = new ec2.Vpc(stack, 'UserVpc');
       const userRole = new iam.Role(stack, 'UserRole', {
         assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),

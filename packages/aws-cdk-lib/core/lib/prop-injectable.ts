@@ -26,7 +26,7 @@ export function propertyInjectable<T extends PropertyInjectableConstructConstruc
   //
   // I couldn't find a clear reference on what that error is trying to say, but it's possible
   // to cast it away, and the signature of the containing function seems to hold water.
-  const WrappedClass = class extends (constructor as ArbitraryConstructor) {
+  const PropertyInjectable = class extends (constructor as ArbitraryConstructor) {
     constructor(scope: Construct, id: string, props: object, ...args: any[]) {
       const uniqueId = constructor.PROPERTY_INJECTION_ID;
       if (uniqueId === undefined) {
@@ -41,10 +41,9 @@ export function propertyInjectable<T extends PropertyInjectableConstructConstruc
       super(scope, id, props, ...args);
     }
   };
-  // Preserve the static `name` property
-  Object.defineProperty(WrappedClass, 'name', {
+  Object.defineProperty(PropertyInjectable, 'name', {
     value: constructor.name,
     writable: false,
   });
-  return WrappedClass as any;
+  return PropertyInjectable as any;
 }
