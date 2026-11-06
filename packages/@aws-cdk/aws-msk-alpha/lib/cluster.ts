@@ -674,7 +674,9 @@ export class Cluster extends ClusterBase {
       },
     };
 
-    if (props.clientAuthentication?.saslProps?.scram && props.clientAuthentication?.saslProps?.key === undefined) {
+    const scramEnabled = props.clientAuthentication?.saslProps?.scram ?? false;
+    const providedScramKey = props.clientAuthentication?.saslProps?.key;
+    if (scramEnabled && providedScramKey === undefined) {
       this.saslScramAuthenticationKey = new kms.Key(this, 'SASLKey', {
         description: 'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
         alias: `msk/${props.clusterName}/sasl/scram`,
@@ -703,6 +705,12 @@ export class Cluster extends ClusterBase {
           },
         }),
       );
+    } else if (scramEnabled && providedScramKey !== undefined) {
+      // The user supplied their own KMS key for SASL/SCRAM authentication.
+      // Use it instead of silently ignoring it and creating a new one, so that
+      // `addUser()` can encrypt the generated secrets with the provided key.
+      // See https://github.com/aws/aws-cdk/issues/22617.
+      this.saslScramAuthenticationKey = kms.Key.fromKeyArn(this, 'SASLKey', providedScramKey.keyRef.keyArn);
     }
 
     let clientAuthentication: CfnCluster.ClientAuthenticationProperty | undefined;
