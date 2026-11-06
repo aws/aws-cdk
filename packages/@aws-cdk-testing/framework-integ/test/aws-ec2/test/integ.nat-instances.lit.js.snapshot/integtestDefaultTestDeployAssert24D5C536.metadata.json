@@ -1,4 +1,10 @@
 {
+  "/integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestDefaultTestDeployAssert24D5C536.template.json"
+    }
+  ],
   "/integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

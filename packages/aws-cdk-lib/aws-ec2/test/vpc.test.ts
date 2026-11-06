@@ -2,7 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { acknowledgeTestValidationRules } from './util';
 import { Annotations, Match, Template } from '../../assertions';
 import { App, CfnOutput, CfnResource, Duration, Fn, Lazy, Stack, Tags, Token } from '../../core';
-import { EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
+import { EC2_NAT_INSTANCE_V2_RETRY_IPTABLES_INSTALL, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 import type { NatInstanceProps } from '../lib';
 import {
   AclCidr,
@@ -20,6 +20,7 @@ import {
   NatProvider,
   NatGatewayProvider,
   NatInstanceProvider,
+  NatInstanceProviderV2,
   NatTrafficDirection,
   NetworkAcl,
   NetworkAclEntry,
@@ -2266,6 +2267,93 @@ describe('vpc', () => {
             IpProtocol: '-1',
           },
         ],
+      });
+    });
+
+    describe('NAT instances V2 default user data', () => {
+      const iptablesSetupCommands = [
+        'systemctl enable iptables',
+        'systemctl start iptables',
+        'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf',
+        'sudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf',
+        "sudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE",
+        'sudo /sbin/iptables -F FORWARD',
+        'sudo service iptables save',
+      ];
+
+      function getNatInstanceStack(retryIptablesInstall: boolean | undefined, userData?: UserData): Stack {
+        const stack = getTestStack();
+        if (retryIptablesInstall !== undefined) {
+          stack.node.setContext(EC2_NAT_INSTANCE_V2_RETRY_IPTABLES_INSTALL, retryIptablesInstall);
+        }
+        new Vpc(stack, 'TheVPC', {
+          natGatewayProvider: NatProvider.instanceV2({
+            instanceType: new InstanceType('q86.mega'),
+            machineImage: new GenericLinuxImage({
+              'us-east-1': 'ami-1',
+            }),
+            userData,
+          }),
+        });
+        return stack;
+      }
+
+      test('retries the iptables-services install when natInstanceV2RetryIptablesInstall is enabled', () => {
+        // WHEN
+        const stack = getNatInstanceStack(true);
+
+        // THEN
+        Template.fromStack(stack).allResourcesProperties('AWS::EC2::Instance', {
+          UserData: {
+            'Fn::Base64': [
+              '#!/bin/bash',
+              'n=0; until yum install iptables-services -y; do n=$((n+1)); [ $n -ge 30 ] && exit 1; echo "yum install failed, retrying in 10 seconds..."; sleep 10; done',
+              ...iptablesSetupCommands.map(command => `${command} || exit 1`),
+            ].join('\n'),
+          },
+        });
+      });
+
+      test.each([false, undefined])('installs iptables-services without retrying when natInstanceV2RetryIptablesInstall is %s', (retryIptablesInstall) => {
+        // WHEN
+        const stack = getNatInstanceStack(retryIptablesInstall);
+
+        // THEN
+        Template.fromStack(stack).allResourcesProperties('AWS::EC2::Instance', {
+          UserData: {
+            'Fn::Base64': [
+              '#!/bin/bash',
+              'yum install iptables-services -y',
+              ...iptablesSetupCommands,
+            ].join('\n'),
+          },
+        });
+      });
+
+      test('DEFAULT_USER_DATA_COMMANDS is the user data used when natInstanceV2RetryIptablesInstall is enabled', () => {
+        // WHEN
+        const stack = getNatInstanceStack(true);
+
+        // THEN
+        Template.fromStack(stack).allResourcesProperties('AWS::EC2::Instance', {
+          UserData: {
+            'Fn::Base64': ['#!/bin/bash', ...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS].join('\n'),
+          },
+        });
+      });
+
+      test('custom user data is used as is when natInstanceV2RetryIptablesInstall is enabled', () => {
+        // GIVEN
+        const userData = UserData.forLinux();
+        userData.addCommands('echo "hello world!"');
+
+        // WHEN
+        const stack = getNatInstanceStack(true, userData);
+
+        // THEN
+        Template.fromStack(stack).allResourcesProperties('AWS::EC2::Instance', {
+          UserData: { 'Fn::Base64': '#!/bin/bash\necho "hello world!"' },
+        });
       });
     });
 

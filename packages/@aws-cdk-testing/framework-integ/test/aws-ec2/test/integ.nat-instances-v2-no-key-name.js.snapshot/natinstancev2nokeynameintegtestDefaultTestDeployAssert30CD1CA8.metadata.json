@@ -1,4 +1,10 @@
 {
+  "/nat-instance-v2-no-key-name-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "natinstancev2nokeynameintegtestDefaultTestDeployAssert30CD1CA8.template.json"
+    }
+  ],
   "/nat-instance-v2-no-key-name-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

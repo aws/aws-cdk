@@ -16,8 +16,9 @@ import type { PrivateSubnet, PublicSubnet, Vpc } from './vpc';
 import { RouterType } from './vpc';
 import * as iam from '../../aws-iam';
 import type { Duration } from '../../core';
-import { Annotations, Fn, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { Annotations, FeatureFlags, Fn, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
+import * as cxapi from '../../cx-api';
 import type { IEIPRef } from '../../interfaces/generated/aws-ec2-interfaces.generated';
 
 /**
@@ -392,7 +393,9 @@ export interface NatInstanceProps {
   /**
    * Custom user data to run on the NAT instances
    *
-   * @default UserData.forLinux().addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);  - Appropriate user data commands to initialize and configure the NAT instances
+   * @default - Appropriate user data commands to initialize and configure the NAT instances:
+   * `NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS` if the `@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall`
+   * feature flag is enabled. Otherwise, the same commands without the install retry and the failure checks.
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
    */
   readonly userData?: UserData;
@@ -739,9 +742,39 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
   /**
    * Amazon Linux 2023 NAT instance user data commands
    * Enable iptables on the instance, enable persistent IP forwarding, configure NAT on instance
+   *
+   * The `iptables-services` install is retried up to 30 times, 10 seconds apart, and the
+   * script exits with an error if every attempt fails, or if any of the setup commands
+   * after the install fails.
+   *
+   * The provider only uses these commands for its default user data when the
+   * `@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall` feature flag is enabled. If you
+   * build your own `userData` from these commands, you get this behavior whatever the flag says.
+   *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
    */
   public static readonly DEFAULT_USER_DATA_COMMANDS = [
+    // Retried: other boot-time processes can run `dnf clean all` during the install
+    // and delete the downloaded packages.
+    'n=0; until yum install iptables-services -y; do n=$((n+1)); [ $n -ge 30 ] && exit 1; echo "yum install failed, retrying in 10 seconds..."; sleep 10; done',
+    // Each command exits on failure so a half-configured instance fails the script. Not
+    // `set -e`, which would carry over to commands users append after these.
+    'systemctl enable iptables || exit 1',
+    'systemctl start iptables || exit 1',
+    'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf || exit 1',
+    'sudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf || exit 1',
+    "sudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE || exit 1",
+    'sudo /sbin/iptables -F FORWARD || exit 1',
+    'sudo service iptables save || exit 1',
+  ];
+
+  /**
+   * The default user data commands from before the iptables-services install was retried.
+   *
+   * Used when the `@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall` feature flag is disabled.
+   * Changing these commands changes the user data of existing NAT instances, which restarts them.
+   */
+  private static readonly LEGACY_USER_DATA_COMMANDS = [
     'yum install iptables-services -y',
     'systemctl enable iptables',
     'systemctl start iptables',
@@ -799,8 +832,11 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
 
     let userData = this.props.userData;
     if (!userData) {
+      const isIptablesInstallRetried = FeatureFlags.of(options.vpc).isEnabled(cxapi.EC2_NAT_INSTANCE_V2_RETRY_IPTABLES_INSTALL);
       userData = UserData.forLinux();
-      userData.addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);
+      userData.addCommands(...(isIptablesInstallRetried
+        ? NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS
+        : NatInstanceProviderV2.LEGACY_USER_DATA_COMMANDS));
     }
 
     for (const sub of options.natSubnets) {
