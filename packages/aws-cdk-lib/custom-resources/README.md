@@ -523,7 +523,8 @@ The custom resource also implements `iam.IGrantable`, making it possible to use 
 
 As this custom resource uses a singleton Lambda function, it's important to note
 that the function's role will eventually accumulate the permissions/grants from all
-resources.
+resources. The function uses the role of the first `AwsCustomResource` in the stack,
+so a different `role` passed to a later one is ignored and a warning is emitted.
 
 Chained API calls can be achieved by creating dependencies:
 
