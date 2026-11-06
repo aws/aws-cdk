@@ -6,6 +6,7 @@ import { MachineImage } from '../../../aws-ec2';
 import * as ec2 from '../../../aws-ec2';
 import { AsgCapacityProvider } from '../../../aws-ecs';
 import * as ecs from '../../../aws-ecs';
+import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import * as cdk from '../../../core';
@@ -592,4 +593,36 @@ test('throws if image is undefined', () => {
       memoryLimitMiB: 512,
     });
   }).toThrow(new Error('image must be specified for EC2 queue processing service'));
+});
+
+test('uses the supplied task role and grants queue access', () => {
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+  const cluster = new ecs.Cluster(stack, 'Cluster', {
+    vpc: new ec2.Vpc(stack, 'Vpc'),
+    capacity: { instanceType: new ec2.InstanceType('t3.micro'), minCapacity: 0, maxCapacity: 1 },
+  });
+  const service = new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+    cluster,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    memoryLimitMiB: 512,
+    taskRole,
+  });
+  expect(service.taskDefinition.taskRole).toBe(taskRole);
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    TaskRoleArn: stack.resolve(taskRole.roleArn),
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Roles: [stack.resolve(taskRole.roleName)],
+    PolicyDocument: {
+      Statement: Match.arrayWith([Match.objectLike({
+        Effect: 'Allow',
+        Action: ['sqs:ReceiveMessage', 'sqs:ChangeMessageVisibility', 'sqs:GetQueueUrl', 'sqs:DeleteMessage', 'sqs:GetQueueAttributes'],
+        Resource: stack.resolve(service.sqsQueue.queueArn),
+      })]),
+    },
+  });
 });
