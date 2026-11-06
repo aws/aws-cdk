@@ -1,0 +1,7 @@
+{
+  // The child overrides the target but inherits the base lib option.
+  "extends": "./testtsconfig-comments.json",
+  "compilerOptions": {
+    "target": "ES2020",
+  },
+}

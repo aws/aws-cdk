@@ -201,6 +201,31 @@ describe('extractDependencies', () => {
   });
 });
 
+describe.each([
+  { name: 'string', render: getTsconfigCompilerOptions },
+  { name: 'array', render: getTsconfigCompilerOptionsArray },
+])('JSONC compiler options ($name)', ({ render }) => {
+  test('reads a UTF-8 BOM, comments and trailing commas without modifying strings', () => {
+    const result = render(path.join(__dirname, 'testtsconfig-comments.json'));
+    const options = Array.isArray(result) ? result.join(' ') : result;
+    expect(options).toContain('--target ES2022');
+    expect(options).toContain('--baseUrl https://example.com/compiler');
+    expect(options).toContain('--lib es2022,dom');
+  });
+
+  test('reads comments in inherited configs and preserves child overrides', () => {
+    const result = render(path.join(__dirname, 'testtsconfig-comments-extended.json'));
+    const options = Array.isArray(result) ? result.join(' ') : result;
+    expect(options).toContain('--target ES2020');
+    expect(options).toContain('--lib es2022,dom');
+  });
+
+  test('fails with the path and parse error for malformed JSONC', () => {
+    const tsconfig = path.join(__dirname, 'testtsconfig-invalid.json');
+    expect(() => render(tsconfig)).toThrow(`Cannot parse tsconfig '${tsconfig}'`);
+  });
+});
+
 describe('getTsconfigCompilerOptions', () => {
   test('should extract compiler options and returns as string', () => {
     const tsconfig = path.join(__dirname, 'testtsconfig.json');
