@@ -57,37 +57,12 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "DeliveryStreamLogGroupA92E8EA0",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":logs:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":log-group:",
-           {
-            "Ref": "DeliveryStreamLogGroupA92E8EA0"
-           }
-          ]
-         ]
-        }
-       ]
+       "Resource": {
+        "Fn::GetAtt": [
+         "DeliveryStreamLogGroupA92E8EA0",
+         "Arn"
+        ]
+       }
       },
       {
        "Action": [

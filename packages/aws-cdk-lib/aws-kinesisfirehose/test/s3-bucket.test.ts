@@ -143,10 +143,7 @@ describe('S3 destination', () => {
               'logs:PutLogEvents',
             ],
             Effect: 'Allow',
-            Resource: [
-              { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':logs:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':log-group:evergreen']] },
-              stack.resolve(logGroup.logGroupArn),
-            ],
+            Resource: stack.resolve(logGroup.logGroupArn),
           },
         ],
       },
@@ -223,10 +220,7 @@ describe('S3 destination', () => {
                 'logs:PutLogEvents',
               ],
               Effect: 'Allow',
-              Resource: [
-                { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':logs:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':log-group:', stack.resolve(logGroup.logGroupName)]] },
-                stack.resolve(logGroup.logGroupArn),
-              ],
+              Resource: stack.resolve(logGroup.logGroupArn),
             },
           ]),
         },

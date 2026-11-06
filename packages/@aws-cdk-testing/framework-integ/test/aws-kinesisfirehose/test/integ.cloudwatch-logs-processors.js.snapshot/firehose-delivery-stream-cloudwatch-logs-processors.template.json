@@ -280,37 +280,12 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "DecompressCloudWatchLogsEntryLogGroup9D3B0DB2",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":logs:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":log-group:",
-           {
-            "Ref": "DecompressCloudWatchLogsEntryLogGroup9D3B0DB2"
-           }
-          ]
-         ]
-        }
-       ]
+       "Resource": {
+        "Fn::GetAtt": [
+         "DecompressCloudWatchLogsEntryLogGroup9D3B0DB2",
+         "Arn"
+        ]
+       }
       },
       {
        "Action": "lambda:InvokeFunction",
@@ -505,37 +480,12 @@
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ExtractCloudWatchLogsEntryLogGroupE6853E20",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":logs:",
-           {
-            "Ref": "AWS::Region"
-           },
-           ":",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":log-group:",
-           {
-            "Ref": "ExtractCloudWatchLogsEntryLogGroupE6853E20"
-           }
-          ]
-         ]
-        }
-       ]
+       "Resource": {
+        "Fn::GetAtt": [
+         "ExtractCloudWatchLogsEntryLogGroupE6853E20",
+         "Arn"
+        ]
+       }
       },
       {
        "Action": "lambda:InvokeFunction",

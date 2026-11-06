@@ -27,7 +27,7 @@
      "Record": "{\"Data\":\"testData123\"}"
     },
     "flattenResponse": "false",
-    "salt": "1793579793620"
+    "salt": "1779973494797"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -99,7 +99,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -108,10 +108,6 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
-    },
-    "LoggingConfig": {
-     "LogFormat": "JSON",
-     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -146,7 +142,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1793579793621"
+    "salt": "1779973494798"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -327,7 +323,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -336,10 +332,6 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
-    },
-    "LoggingConfig": {
-     "LogFormat": "JSON",
-     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -373,7 +365,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "986738e11850145ca8fc63552388cd9d7447e5d3daae23e11ad3f75a1bf5a6e3.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -382,10 +374,6 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
-    },
-    "LoggingConfig": {
-     "LogFormat": "JSON",
-     "ApplicationLogLevel": "FATAL"
     }
    }
   }

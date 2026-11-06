@@ -1138,9 +1138,18 @@
       {
        "Action": [
         "logs:CreateLogStream",
-        "logs:DescribeLogStreams",
         "logs:PutLogEvents"
        ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "StartaJobRunMonitoringLogGroupD033B7AF",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
        "Effect": "Allow",
        "Resource": [
         {

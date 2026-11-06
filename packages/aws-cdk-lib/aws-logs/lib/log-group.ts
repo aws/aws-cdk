@@ -9,7 +9,6 @@ import { MetricFilter } from './metric-filter';
 import type { IFilterPattern } from './pattern';
 import { FilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
-import { logGroupArnWithoutStreamSuffix } from './private/log-group-arn';
 import type { ILogSubscriptionDestination } from './subscription-filter';
 import { SubscriptionFilter } from './subscription-filter';
 import type { IProcessor } from './transformer';
@@ -269,13 +268,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions,
-      // Include both the log group ARN and the log stream ARN (':*').
-      resourceArns: [logGroupArnWithoutStreamSuffix(this), this.logGroupArn],
-      resource: this,
-    });
+    return this.grants.actions(grantee, actions);
   }
 
   /**

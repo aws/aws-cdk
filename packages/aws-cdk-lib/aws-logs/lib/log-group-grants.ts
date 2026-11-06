@@ -71,7 +71,8 @@ export class LogGroupGrants {
    */
   public write(grantee: iam.IGrantable): iam.Grant {
     const actions = ['logs:CreateLogStream', 'logs:PutLogEvents'];
-    return this.actions(grantee, actions, {});
+    // Both actions apply to log streams, which only the log stream ARN (':*') matches.
+    return this.actions(grantee, actions, { resourceArns: [logs.CfnLogGroup.arnForLogGroup(this.resource)] });
   }
 
   /**

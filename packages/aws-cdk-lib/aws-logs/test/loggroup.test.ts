@@ -389,30 +389,17 @@ describe('log group', () => {
           {
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':logs:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':log-group:my-log-group',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':logs:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':log-group:my-log-group:*',
-                ]],
-              },
-            ],
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':logs:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':log-group:my-log-group:*',
+              ]],
+            },
           },
         ],
       },
@@ -443,10 +430,7 @@ describe('log group', () => {
           {
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: [
-              'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group',
-              'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group:*',
-            ],
+            Resource: 'arn:aws:logs:us-west-1:123456789012:log-group:my-log-group:*',
           },
         ],
       },
@@ -520,21 +504,7 @@ describe('log group', () => {
           {
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
-            Resource: [
-              {
-                'Fn::Join': ['', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':logs:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':log-group:',
-                  { Ref: 'LogGroupF5B46931' },
-                ]],
-              },
-              { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
-            ],
+            Resource: { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
           },
         ],
         Version: '2012-10-17',
@@ -686,6 +656,67 @@ describe('log group', () => {
             Action: 'logs:PutRetentionPolicy',
             Effect: 'Allow',
             Resource: 'arn:aws:logs:*:*:log-group:custom',
+          },
+        ],
+      },
+    });
+  });
+
+  test('grantRead on log group imported from a token ARN rebuilds the log group ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const user = new iam.User(stack, 'User');
+    const imported = LogGroup.fromLogGroupArn(stack, 'lg', Fn.importValue('LogGroupArn'));
+
+    // WHEN
+    imported.grantRead(user);
+
+    // THEN
+    const arnPart = (index: number) => ({ 'Fn::Select': [index, { 'Fn::Split': [':', { 'Fn::ImportValue': 'LogGroupArn' }] }] });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: READ_ACTIONS,
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:',
+                  arnPart(3),
+                  ':',
+                  arnPart(4),
+                  ':log-group:',
+                  arnPart(6),
+                ]],
+              },
+              { 'Fn::Join': ['', [{ 'Fn::ImportValue': 'LogGroupArn' }, ':*']] },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
+  test('grants.write only uses the log stream ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const cfnLogGroup = new CfnLogGroup(stack, 'CfnLogGroup');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    LogGroupGrants.fromLogGroup(cfnLogGroup).write(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['CfnLogGroup', 'Arn'] },
           },
         ],
       },
@@ -887,17 +918,14 @@ describe('log group', () => {
         'Fn::Join': [
           '',
           [
-            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":["arn:',
-            { Ref: 'AWS::Partition' },
-            ':logs:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':log-group:',
-            { Ref: 'LogGroupF5B46931' },
-            '","',
-            { 'Fn::GetAtt': ['LogGroupF5B46931', 'Arn'] },
-            '"]}],"Version":"2012-10-17"}',
+            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"es.amazonaws.com"},"Resource":"',
+            {
+              'Fn::GetAtt': [
+                'LogGroupF5B46931',
+                'Arn',
+              ],
+            },
+            '"}],"Version":"2012-10-17"}',
           ],
         ],
       },
@@ -921,17 +949,14 @@ describe('log group', () => {
         'Fn::Join': [
           '',
           [
-            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Resource":["arn:',
-            { Ref: 'AWS::Partition' },
-            ':logs:',
-            { Ref: 'AWS::Region' },
-            ':',
-            { Ref: 'AWS::AccountId' },
-            ':log-group:',
-            { Ref: 'CfnLogGroup' },
-            '","',
-            { 'Fn::GetAtt': ['CfnLogGroup', 'Arn'] },
-            '"]}],"Version":"2012-10-17"}',
+            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Resource":"',
+            {
+              'Fn::GetAtt': [
+                'CfnLogGroup',
+                'Arn',
+              ],
+            },
+            '"}],"Version":"2012-10-17"}',
           ],
         ],
       },
