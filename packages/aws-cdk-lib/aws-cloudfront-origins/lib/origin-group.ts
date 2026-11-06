@@ -6,6 +6,13 @@ import { lit } from '../../core/lib/private/literal-string';
 /** Construction properties for `OriginGroup`. */
 export interface OriginGroupProps {
   /**
+   * A unique identifier for this origin group within the distribution.
+   *
+   * @default - an origin group ID is generated
+   */
+  readonly originId?: string;
+
+  /**
    * The primary origin that should serve requests for this group.
    */
   readonly primaryOrigin: cloudfront.IOrigin;
@@ -51,6 +58,7 @@ export class OriginGroup implements cloudfront.IOrigin {
 
     return {
       originProperty: primaryOriginConfig.originProperty,
+      originGroupId: this.props.originId,
       failoverConfig: {
         failoverOrigin: this.props.fallbackOrigin,
         statusCodes: this.props.fallbackStatusCodes,

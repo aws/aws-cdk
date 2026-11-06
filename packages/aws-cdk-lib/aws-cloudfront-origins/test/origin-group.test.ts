@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as mediapackage from '../../aws-mediapackagev2';
 import * as s3 from '../../aws-s3';
@@ -15,6 +15,104 @@ beforeEach(() => {
 });
 
 describe('Origin Groups', () => {
+  test('fails when a custom group ID collides with an existing ordinary origin ID', () => {
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('ordinary.example.com', { originId: 'shared-id' }) },
+    });
+
+    expect(() => distribution.addBehavior('/group/*', new origins.OriginGroup({
+      primaryOrigin: new origins.HttpOrigin('primary.example.com'),
+      fallbackOrigin: new origins.HttpOrigin('fallback.example.com'),
+      originId: 'shared-id',
+    }))).toThrow('Origin with id shared-id already exists');
+  });
+
+  test('ignores a group ID on an ordinary origin and reuses its actual origin ID', () => {
+    const httpOrigin = new origins.HttpOrigin('ordinary.example.com', { originId: 'ordinary-origin' });
+    const ordinaryOrigin: cloudfront.IOrigin = {
+      bind: (scope, options) => ({ ...httpOrigin.bind(scope, options), originGroupId: 'ignored-group' }),
+    };
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', { defaultBehavior: { origin: ordinaryOrigin } });
+    distribution.addBehavior('/ordinary/*', ordinaryOrigin);
+    distribution.addBehavior('/group/*', new origins.OriginGroup({
+      primaryOrigin: new origins.HttpOrigin('primary.example.com'),
+      fallbackOrigin: new origins.HttpOrigin('fallback.example.com'),
+      originId: 'ignored-group',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: { TargetOriginId: 'ordinary-origin' },
+        CacheBehaviors: Match.arrayWith([
+          Match.objectLike({ PathPattern: '/ordinary/*', TargetOriginId: 'ordinary-origin' }),
+          Match.objectLike({ PathPattern: '/group/*', TargetOriginId: 'ignored-group' }),
+        ]),
+      },
+    });
+  });
+
+  test.each(['primary', 'fallback', 'ordinary'])('fails when a group ID collides with a %s origin ID', collision => {
+    const group = new origins.OriginGroup({
+      primaryOrigin: new origins.HttpOrigin('primary.example.com', { originId: collision === 'primary' ? 'shared-id' : 'primary' }),
+      fallbackOrigin: new origins.HttpOrigin('fallback.example.com', { originId: collision === 'fallback' ? 'shared-id' : 'fallback' }),
+      originId: 'shared-id',
+    });
+    expect(() => {
+      const distribution = new cloudfront.Distribution(stack, 'Distribution', { defaultBehavior: { origin: group } });
+      if (collision === 'ordinary') {
+        distribution.addBehavior('/ordinary/*', new origins.HttpOrigin('ordinary.example.com', { originId: 'shared-id' }));
+      }
+    }).toThrow('Origin with id shared-id already exists');
+  });
+
+  test('reuses the generated group ID in additional cache behaviors', () => {
+    const group = new origins.OriginGroup({
+      primaryOrigin,
+      fallbackOrigin: new origins.HttpOrigin('fallback.example.com'),
+    });
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', { defaultBehavior: { origin: group } });
+    distribution.addBehavior('/assets/*', group);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: { TargetOriginId: 'DistributionOriginGroup1A1A31B49' },
+        CacheBehaviors: Match.arrayWith([Match.objectLike({ TargetOriginId: 'DistributionOriginGroup1A1A31B49' })]),
+        OriginGroups: { Quantity: 1, Items: [Match.objectLike({ Id: 'DistributionOriginGroup1A1A31B49' })] },
+      },
+    });
+  });
+
+  test('uses the custom group ID in default and additional behavior references', () => {
+    const group = new origins.OriginGroup({
+      primaryOrigin: new origins.HttpOrigin('primary.example.com', { originId: 'primary' }),
+      fallbackOrigin: new origins.HttpOrigin('fallback.example.com', { originId: 'fallback' }),
+      originId: 'readable-failover',
+    });
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', { defaultBehavior: { origin: group } });
+    distribution.addBehavior('/assets/*', group);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: { TargetOriginId: 'readable-failover' },
+        CacheBehaviors: Match.arrayWith([Match.objectLike({ TargetOriginId: 'readable-failover' })]),
+        OriginGroups: {
+          Quantity: 1,
+          Items: [Match.objectLike({
+            Id: 'readable-failover',
+            Members: { Quantity: 2, Items: [{ OriginId: 'primary' }, { OriginId: 'fallback' }] },
+          })],
+        },
+      },
+    });
+  });
+
+  test('fails for duplicate custom origin group IDs', () => {
+    const group = () => new origins.OriginGroup({
+      primaryOrigin: new origins.HttpOrigin('primary.example.com'),
+      fallbackOrigin: new origins.HttpOrigin('fallback.example.com'),
+      originId: 'same-group',
+    });
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', { defaultBehavior: { origin: group() } });
+    expect(() => distribution.addBehavior('/other/*', group())).toThrow('Origin with id same-group already exists');
+  });
+
   test('correctly render the OriginGroups property of DistributionConfig', () => {
     const failoverOrigin = new origins.S3Origin(s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket'));
     const originGroup = new origins.OriginGroup({

@@ -61,6 +61,15 @@ export interface OriginFailoverConfig {
 /** The struct returned from `IOrigin.bind`. */
 export interface OriginBindConfig {
   /**
+   * A unique identifier for an origin group within the distribution.
+   *
+   * Only used when failoverConfig is provided.
+   *
+   * @default - an origin group ID is generated
+   */
+  readonly originGroupId?: string;
+
+  /**
    * The CloudFormation OriginProperty configuration for this Origin.
    *
    * @default - nothing is returned
