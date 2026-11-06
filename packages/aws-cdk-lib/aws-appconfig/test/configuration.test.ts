@@ -1466,7 +1466,7 @@ describe('configuration', () => {
       ApplicationId: {
         Ref: 'MyAppConfigB4B63E75',
       },
-      KmsKeyIdentifier: stack.resolve(kmsKey.keyArn),
+      KmsKeyIdentifier: { Ref: 'MyKey6AB29FA6' },
     });
   });
 });

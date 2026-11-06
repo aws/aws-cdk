@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "testCases": {
     "appconfig-configuration-kms/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "appconfig-configuration-kms/DefaultTest/DeployAssert",
       "assertionStackName": "appconfigconfigurationkmsDefaultTestDeployAssert53559CF7"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1144.0"
 }

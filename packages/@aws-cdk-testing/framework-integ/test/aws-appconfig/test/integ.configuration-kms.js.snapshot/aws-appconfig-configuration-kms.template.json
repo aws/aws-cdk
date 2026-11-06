@@ -59,10 +59,7 @@
      "Ref": "MyAppConfigB4B63E75"
     },
     "KmsKeyIdentifier": {
-     "Fn::GetAtt": [
-      "MyKey6AB29FA6",
-      "Arn"
-     ]
+     "Ref": "MyKey6AB29FA6"
     },
     "LocationUri": "hosted",
     "Name": "awsappconfigconfigurationkms-MyHostedConfigFromFile-EF9016BD"
@@ -82,6 +79,26 @@
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "PublishOutputFnGetAttMyKey6AB29FA6Arn833E1873": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MyKey6AB29FA6",
+     "Arn"
+    ]
+   }
+  },
+  "PublishOutputRefMyAppConfigB4B63E75461D0B64": {
+   "Value": {
+    "Ref": "MyAppConfigB4B63E75"
+   }
+  },
+  "PublishOutputRefMyHostedConfigFromFileConfigurationProfile32B2D26F6CF116AF": {
+   "Value": {
+    "Ref": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+   }
   }
  },
  "Parameters": {
