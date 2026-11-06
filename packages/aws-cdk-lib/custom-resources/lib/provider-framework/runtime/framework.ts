@@ -116,7 +116,10 @@ async function onTimeout(timeoutEvent: any) {
   } catch (e: any) {
     // never log `Cause` or the parse error message: both can contain the
     // presigned ResponseURL (JSON.parse quotes part of its input in its message).
-    const summary = `timeoutHandler: cannot read the isComplete request from the timeout event (${e?.name ?? 'Error'}); event keys: ${timeoutEvent && typeof timeoutEvent === 'object' ? Object.keys(timeoutEvent).join(', ') : typeof timeoutEvent}`;
+    // `Error` is the Step Functions error name (for example `States.Timeout`).
+    const isObject = timeoutEvent && typeof timeoutEvent === 'object';
+    const stepFunctionsError = isObject && typeof timeoutEvent.Error === 'string' ? timeoutEvent.Error : 'unknown';
+    const summary = `timeoutHandler: cannot read the isComplete request from the timeout event (${e?.name ?? 'Error'}); Step Functions error: ${stepFunctionsError}; event keys: ${isObject ? Object.keys(timeoutEvent).join(', ') : typeof timeoutEvent}`;
     log(summary);
     throw new Error(summary);
   }

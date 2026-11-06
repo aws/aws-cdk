@@ -51,18 +51,19 @@ export function makeHandler(userHandler: Handler, options: MakeHandlerOptions = 
   // validate once, but report an invalid option per request (below) rather than
   // throwing here: a throw at module load would leave CloudFormation without a
   // response until the custom resource times out.
-  let redactProperties: readonly string[] | typeof REDACT_ALL;
+  let redactProperties: readonly string[] = [];
   let optionsError: unknown;
   try {
     redactProperties = validateRedactProperties(options.redactProperties, 'makeHandler option "redactProperties"');
   } catch (e) {
     optionsError = e;
-    redactProperties = REDACT_ALL;
   }
 
   return async (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => {
     const sanitizedEvent = { ...event, ResponseURL: '...' };
-    const loggableEvent = redactEventForLog(event, redactProperties);
+    // with an invalid option we cannot tell which properties are sensitive, so
+    // none of them are logged.
+    const loggableEvent = redactEventForLog(event, optionsError ? allPropertyNames(event) : redactProperties);
     external.log(JSON.stringify(loggableEvent, undefined, 2));
 
     // ignore DELETE event when the physical resource ID is the marker that
@@ -191,7 +192,6 @@ async function defaultSendHttpRequest(options: https.RequestOptions, requestBody
 }
 
 const REDACTED = '*****';
-const REDACT_ALL = Symbol('redact-all');
 
 /**
  * Validates a list of property names to redact from logs. Only top-level names are
@@ -217,10 +217,10 @@ function validateRedactProperties(names: unknown, source: string): readonly stri
 
 /**
  * Returns a copy of the event that is safe to log: the presigned `ResponseURL`
- * is hidden and the listed top-level properties (or all of them) are replaced
- * with a placeholder in both `ResourceProperties` and `OldResourceProperties`.
+ * is hidden and the listed top-level properties are replaced with a placeholder
+ * in both `ResourceProperties` and `OldResourceProperties`.
  */
-function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, redactProperties: readonly string[] | typeof REDACT_ALL) {
+function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, redactProperties: readonly string[]) {
   const loggable: any = { ...event, ResponseURL: '...' };
   for (const key of ['ResourceProperties', 'OldResourceProperties']) {
     if (key in loggable) {
@@ -230,21 +230,23 @@ function redactEventForLog(event: AWSLambda.CloudFormationCustomResourceEvent, r
   return loggable;
 }
 
-function redactPropertyValues(props: unknown, redactProperties: readonly string[] | typeof REDACT_ALL) {
-  if (!props || typeof props !== 'object') {
-    return props;
-  }
-  const names = redactProperties === REDACT_ALL ? Object.keys(props) : redactProperties;
-  if (names.length === 0) {
+function redactPropertyValues(props: unknown, redactProperties: readonly string[]) {
+  if (redactProperties.length === 0 || !props || typeof props !== 'object') {
     return props;
   }
   const ret: Record<string, unknown> = { ...props };
-  for (const name of names) {
+  for (const name of redactProperties) {
     if (Object.prototype.hasOwnProperty.call(ret, name)) {
       ret[name] = REDACTED;
     }
   }
   return ret;
+}
+
+/** Every top-level name in `ResourceProperties` and `OldResourceProperties`. */
+function allPropertyNames(event: AWSLambda.CloudFormationCustomResourceEvent): string[] {
+  const oldProps = (event as { OldResourceProperties?: Record<string, unknown> }).OldResourceProperties;
+  return [...new Set([...Object.keys(event.ResourceProperties ?? {}), ...Object.keys(oldProps ?? {})])];
 }
 
 function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {

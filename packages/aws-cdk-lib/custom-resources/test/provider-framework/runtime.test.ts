@@ -276,7 +276,7 @@ test('onTimeout with an unreadable Cause logs a sanitized summary and throws wit
   // THEN
   expect(error).toBeInstanceOf(Error);
   expect(error).not.toBeInstanceOf(SyntaxError);
-  expect(error.message).toContain('cannot read the isComplete request from the timeout event (SyntaxError); event keys: Error, Cause');
+  expect(error.message).toContain('cannot read the isComplete request from the timeout event (SyntaxError); Step Functions error: States.Timeout; event keys: Error, Cause');
   expect(error.message).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
   const logged = logMock.mock.calls.map(args => args.join(' ')).join('\n');
   expect(logged).toContain('cannot read the isComplete request from the timeout event');

@@ -148,6 +148,8 @@ async function defaultSendHttpRequest(options: https.RequestOptions, requestBody
   });
 }
 
+const REDACTED = '*****';
+
 /**
  * Returns a copy of the response with every `Data` value replaced, for logging
  * a response that has `NoEcho` set.
@@ -159,9 +161,9 @@ function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse
   if (typeof json.Data !== 'object' || Array.isArray(json.Data)) {
     // masking per key only makes sense for an object; for anything else (for
     // example a string, whose keys are character indices) hide the whole value.
-    return { ...json, Data: '*****' };
+    return { ...json, Data: REDACTED };
   }
-  return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, '*****'])) };
+  return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, REDACTED])) };
 }
 
 function defaultLog(fmt: string, ...params: any[]) {
