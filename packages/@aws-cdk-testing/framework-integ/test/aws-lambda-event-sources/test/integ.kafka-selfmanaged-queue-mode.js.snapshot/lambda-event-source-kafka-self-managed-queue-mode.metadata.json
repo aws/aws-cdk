@@ -1,0 +1,176 @@
+{
+  "/lambda-event-source-kafka-self-managed-queue-mode": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "lambda-event-source-kafka-self-managed-queue-mode.template.json"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/KafkaSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/QueueModeFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/StreamModeFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/KafkaSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KafkaSecret78EF3770"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/QueueModeFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/QueueModeFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueueModeFunction077AB717"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/QueueModeFunction/KafkaEventSource:7d34701f646e2bdd4e96f7fda0d3b758:queue-mode-topic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/StreamModeFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/StreamModeFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StreamModeFunctionE4601A8C"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/StreamModeFunction/StreamModeMapping": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/QueueModeFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueueModeFunctionServiceRole7047A507"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/QueueModeFunction/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/QueueModeFunction/KafkaEventSource:7d34701f646e2bdd4e96f7fda0d3b758:queue-mode-topic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueueModeFunctionKafkaEventSource7d34701f646e2bdd4e96f7fda0d3b758queuemodetopic9BB55DDF"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/StreamModeFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StreamModeFunctionServiceRole72E2A072"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/StreamModeFunction/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/StreamModeFunction/StreamModeMapping/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StreamModeFunctionStreamModeMapping5E2EB75E"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/QueueModeFunction/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueueModeFunctionServiceRoleDefaultPolicy1060629D"
+    }
+  ],
+  "/lambda-event-source-kafka-self-managed-queue-mode/StreamModeFunction/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StreamModeFunctionServiceRoleDefaultPolicyC1D37F8B"
+    }
+  ]
+}

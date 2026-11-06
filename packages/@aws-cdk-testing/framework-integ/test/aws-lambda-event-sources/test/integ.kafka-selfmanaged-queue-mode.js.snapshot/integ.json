@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "LambdaEventSourceKafkaSelfManagedQueueModeTest/DefaultTest": {
+      "stacks": [
+        "lambda-event-source-kafka-self-managed-queue-mode"
+      ],
+      "assertionStack": "LambdaEventSourceKafkaSelfManagedQueueModeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaEventSourceKafkaSelfManagedQueueModeTestDefaultTestDeployAssertFB1F4E41"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

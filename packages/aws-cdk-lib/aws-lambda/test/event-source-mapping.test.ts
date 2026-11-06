@@ -617,4 +617,102 @@ describe('event source mapping', () => {
       },
     })).not.toThrow();
   });
+
+  describe('kafkaConsumptionMode', () => {
+    const kafkaBootstrapServers = ['kafka-broker:9092'];
+
+    test('QUEUE mode sets ConsumptionMode and omits StartingPosition and MaximumBatchingWindowInSeconds', () => {
+      new EventSourceMapping(stack, 'test', {
+        target: fn,
+        kafkaBootstrapServers,
+        kafkaTopic: 'jobs',
+        kafkaConsumerGroupId: 'jobs-workers',
+        kafkaConsumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SelfManagedEventSource: { Endpoints: { KafkaBootstrapServers: kafkaBootstrapServers } },
+        Topics: ['jobs'],
+        SelfManagedKafkaEventSourceConfig: {
+          ConsumerGroupId: 'jobs-workers',
+          ConsumptionMode: 'Queue',
+        },
+        StartingPosition: Match.absent(),
+        StartingPositionTimestamp: Match.absent(),
+        MaximumBatchingWindowInSeconds: Match.absent(),
+      });
+    });
+
+    test('QUEUE mode without a consumer group id still renders SelfManagedKafkaEventSourceConfig', () => {
+      new EventSourceMapping(stack, 'test', {
+        target: fn,
+        kafkaBootstrapServers,
+        kafkaTopic: 'jobs',
+        kafkaConsumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SelfManagedKafkaEventSourceConfig: {
+          ConsumerGroupId: Match.absent(),
+          ConsumptionMode: 'Queue',
+        },
+      });
+    });
+
+    test('STREAM mode is passed through with a starting position', () => {
+      new EventSourceMapping(stack, 'test', {
+        target: fn,
+        kafkaBootstrapServers,
+        kafkaTopic: 'jobs',
+        startingPosition: StartingPosition.LATEST,
+        kafkaConsumptionMode: lambda.KafkaConsumptionMode.STREAM,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        StartingPosition: 'LATEST',
+        SelfManagedKafkaEventSourceConfig: {
+          ConsumptionMode: 'Stream',
+        },
+      });
+    });
+
+    test('ConsumptionMode is not rendered when kafkaConsumptionMode is not set', () => {
+      new EventSourceMapping(stack, 'test', {
+        target: fn,
+        kafkaBootstrapServers,
+        kafkaTopic: 'jobs',
+        startingPosition: StartingPosition.LATEST,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SelfManagedKafkaEventSourceConfig: Match.absent(),
+      });
+    });
+
+    test('throws when used with eventSourceArn', () => {
+      expect(() => new EventSourceMapping(stack, 'test', {
+        target: fn,
+        eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/my-cluster/abcd1234-abcd-cafe-abab-9876543210ab-4',
+        kafkaTopic: 'jobs',
+        startingPosition: StartingPosition.LATEST,
+        kafkaConsumptionMode: lambda.KafkaConsumptionMode.STREAM,
+      })).toThrow(/kafkaConsumptionMode can only be used with a self-managed Kafka event source/);
+    });
+
+    test.each([
+      ['startingPosition', { startingPosition: StartingPosition.TRIM_HORIZON }],
+      ['startingPosition', { startingPosition: StartingPosition.AT_TIMESTAMP, startingPositionTimestamp: 1640995200 }],
+      ['startingPositionTimestamp', { startingPositionTimestamp: 1640995200 }],
+      ['maxBatchingWindow', { maxBatchingWindow: cdk.Duration.seconds(1) }],
+      ['maxBatchingWindow', { maxBatchingWindow: cdk.Duration.seconds(0) }],
+    ])('QUEUE mode throws when %s is set', (name, extra) => {
+      expect(() => new EventSourceMapping(stack, 'test', {
+        target: fn,
+        kafkaBootstrapServers,
+        kafkaTopic: 'jobs',
+        kafkaConsumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+        ...extra,
+      })).toThrow(new RegExp(`${name}.* cannot be used when kafkaConsumptionMode is KafkaConsumptionMode.QUEUE`));
+    });
+  });
 });

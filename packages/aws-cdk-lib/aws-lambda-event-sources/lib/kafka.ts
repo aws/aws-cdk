@@ -206,6 +206,22 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    * @default - none
    */
   readonly rootCACertificate?: secretsmanager.ISecret;
+
+  /**
+   * How Lambda consumes records from the Kafka topic.
+   *
+   * `KafkaConsumptionMode.QUEUE` uses a Kafka share group, so several pollers can read from the same
+   * partition and records are not processed in order. It requires Apache Kafka 4.2 or later with
+   * share groups enabled. In queue mode, `startingPosition`, `startingPositionTimestamp` and
+   * `maxBatchingWindow` must not be set.
+   *
+   * This value cannot be changed after the event source mapping is created.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/polling-kafka-queue.html
+   *
+   * @default - not set, Lambda uses KafkaConsumptionMode.STREAM
+   */
+  readonly consumptionMode?: lambda.KafkaConsumptionMode;
 }
 
 /**
@@ -237,6 +253,10 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
     this.innerProps = props;
+
+    if (props.startingPosition === undefined) {
+      throw new UnscopedValidationError(lit`StartingPositionRequired`, 'startingPosition must be set for ManagedKafkaEventSource');
+    }
 
     if (props.metricsConfig) {
       if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
@@ -372,6 +392,19 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new UnscopedValidationError(lit`MustBeSecretKafkaBrokers`, 'secret must be set if Kafka brokers accessed over Internet');
     }
 
+    if (props.consumptionMode === lambda.KafkaConsumptionMode.QUEUE) {
+      const unsupported = [
+        props.startingPosition !== undefined ? 'startingPosition' : undefined,
+        props.startingPositionTimestamp !== undefined ? 'startingPositionTimestamp' : undefined,
+        props.maxBatchingWindow !== undefined ? 'maxBatchingWindow' : undefined,
+      ].filter((name) => name !== undefined);
+      if (unsupported.length > 0) {
+        throw new UnscopedValidationError(lit`KafkaQueueModeUnsupportedProps`, `${unsupported.join(', ')} cannot be used when consumptionMode is KafkaConsumptionMode.QUEUE, remove them or use KafkaConsumptionMode.STREAM`);
+      }
+    } else if (props.startingPosition === undefined) {
+      throw new UnscopedValidationError(lit`StartingPositionRequired`, 'startingPosition must be set for SelfManagedKafkaEventSource unless consumptionMode is KafkaConsumptionMode.QUEUE');
+    }
+
     if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
       throw new UnscopedValidationError(lit`StartingPositionTimestampProvidedStarting`, 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
     }
@@ -412,6 +445,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         retryAttempts: this.innerProps.retryAttempts,
         reportBatchItemFailures: this.innerProps.reportBatchItemFailures,
         maxRecordAge: this.innerProps.maxRecordAge,
+        kafkaConsumptionMode: this.innerProps.consumptionMode,
       }),
     );
 

@@ -346,6 +346,42 @@ export interface EventSourceMappingOptions {
    * @default - none
    */
   readonly schemaRegistryConfig?: ISchemaRegistry;
+
+  /**
+   * (Self-managed Apache Kafka only) How Lambda consumes records from the Kafka topic.
+   *
+   * `QUEUE` mode uses a Kafka share group, so several pollers can read from the same partition
+   * and per-partition ordering is not preserved. It requires Apache Kafka 4.2 or later with share
+   * groups enabled. In `QUEUE` mode, `startingPosition`, `startingPositionTimestamp` and
+   * `maxBatchingWindow` are not supported.
+   *
+   * This value cannot be changed after the event source mapping is created.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/polling-kafka-queue.html
+   *
+   * @default - not set, Lambda uses KafkaConsumptionMode.STREAM
+   */
+  readonly kafkaConsumptionMode?: KafkaConsumptionMode;
+}
+
+/**
+ * How Lambda consumes records from a self-managed Apache Kafka topic.
+ *
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/polling-kafka-queue.html
+ */
+export enum KafkaConsumptionMode {
+  /**
+   * Lambda reads records with a Kafka consumer group and keeps the order of records within each partition.
+   */
+  STREAM = 'Stream',
+
+  /**
+   * Lambda reads records with a Kafka share group. Several pollers can process records
+   * from the same partition at the same time, so records are not processed in order.
+   *
+   * Requires Apache Kafka 4.2 or later with share groups enabled.
+   */
+  QUEUE = 'Queue',
 }
 
 /**
@@ -575,6 +611,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new ValidationError(lit`TumblingWindowCannotSeconds`, `tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`, this);
     }
 
+    if (props.kafkaConsumptionMode !== undefined) {
+      this.validateKafkaConsumptionModeOrThrow(props);
+    }
+
     if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
       throw new ValidationError(lit`StartingPositionTimestampProvidedStarting`, 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP', this);
     }
@@ -617,10 +657,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     let kafkaConfig: any;
-    if (props.kafkaConsumerGroupId || props.schemaRegistryConfig) {
+    if (props.kafkaConsumerGroupId || props.schemaRegistryConfig || props.kafkaConsumptionMode) {
       kafkaConfig = {};
       if (props.kafkaConsumerGroupId) {
         kafkaConfig.consumerGroupId = props.kafkaConsumerGroupId;
+      }
+      if (props.kafkaConsumptionMode) {
+        kafkaConfig.consumptionMode = props.kafkaConsumptionMode;
       }
       if (props.schemaRegistryConfig) {
         const schemaRegistry = props.schemaRegistryConfig.bind(this, props.target);
@@ -669,6 +712,25 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       eventSourceMappingId: this.eventSourceMappingId,
       eventSourceMappingArn: this.eventSourceMappingArn,
     };
+  }
+
+  private validateKafkaConsumptionModeOrThrow(props: EventSourceMappingProps) {
+    if (props.kafkaBootstrapServers === undefined) {
+      throw new ValidationError(lit`KafkaConsumptionModeSelfManagedOnly`, 'kafkaConsumptionMode can only be used with a self-managed Kafka event source (kafkaBootstrapServers)', this);
+    }
+
+    if (props.kafkaConsumptionMode !== KafkaConsumptionMode.QUEUE) {
+      return;
+    }
+
+    const unsupported = [
+      props.startingPosition !== undefined ? 'startingPosition' : undefined,
+      props.startingPositionTimestamp !== undefined ? 'startingPositionTimestamp' : undefined,
+      props.maxBatchingWindow !== undefined ? 'maxBatchingWindow' : undefined,
+    ].filter((name) => name !== undefined);
+    if (unsupported.length > 0) {
+      throw new ValidationError(lit`KafkaQueueModeUnsupportedProps`, `${unsupported.join(', ')} cannot be used when kafkaConsumptionMode is KafkaConsumptionMode.QUEUE, remove them or use KafkaConsumptionMode.STREAM`, this);
+    }
   }
 
   private validateKafkaConsumerGroupIdOrThrow(kafkaConsumerGroupId: string) {

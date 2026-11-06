@@ -27,8 +27,14 @@ export interface BaseStreamEventSourceProps {
 
   /**
    * Where to begin consuming the stream.
+   *
+   * Required for `DynamoEventSource`, `KinesisEventSource`, `KinesisConsumerEventSource`,
+   * `ManagedKafkaEventSource`, and `SelfManagedKafkaEventSource` in stream consumption mode.
+   * Must not be set for `SelfManagedKafkaEventSource` in queue consumption mode.
+   *
+   * @default - none, required unless `SelfManagedKafkaEventSource` uses `KafkaConsumptionMode.QUEUE`
    */
-  readonly startingPosition: lambda.StartingPosition;
+  readonly startingPosition?: lambda.StartingPosition;
 
   /**
    * The maximum amount of time to gather records before invoking the function.

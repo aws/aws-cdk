@@ -4189,3 +4189,7 @@ removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2.obtainResourceDependen
 removed:aws-cdk-lib.aws_dms.CfnMigrationProject.migrationProjectCreationTime
 removed:aws-cdk-lib.aws_dms.CfnMigrationProjectProps.migrationProjectCreationTime
 removed:@aws-cdk/cfn-property-mixins.aws_dms.CfnMigrationProjectMixinProps.migrationProjectCreationTime
+# startingPosition is now optional because SelfManagedKafkaEventSource in queue consumption mode
+# does not accept it. Every stream event source that needs it still throws at synth time when it
+# is missing, so existing code keeps the same behavior.
+weakened:aws-cdk-lib.aws_lambda_event_sources.StreamEventSourceProps

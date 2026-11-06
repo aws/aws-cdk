@@ -1,0 +1,20 @@
+{
+  "/LambdaEventSourceKafkaSelfManagedQueueModeTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "LambdaEventSourceKafkaSelfManagedQueueModeTestDefaultTestDeployAssertFB1F4E41.template.json"
+    }
+  ],
+  "/LambdaEventSourceKafkaSelfManagedQueueModeTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/LambdaEventSourceKafkaSelfManagedQueueModeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

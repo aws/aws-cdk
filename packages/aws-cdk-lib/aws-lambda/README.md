@@ -1265,6 +1265,26 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 }));
 ```
 
+### Kafka consumption mode
+
+For a self-managed Apache Kafka event source, `kafkaConsumptionMode` chooses how Lambda reads the topic.
+`KafkaConsumptionMode.STREAM` (the Lambda default) uses a consumer group and keeps the order of records in each partition.
+`KafkaConsumptionMode.QUEUE` uses a Kafka share group, so several pollers can read the same partition and records
+are not processed in order. Queue mode needs Apache Kafka 4.2 or later with share groups enabled, and it does not
+accept `startingPosition`, `startingPositionTimestamp` or `maxBatchingWindow`. The mode cannot be changed after the
+event source mapping is created. See [Polling Kafka topics in Queue mode](https://docs.aws.amazon.com/lambda/latest/dg/polling-kafka-queue.html).
+
+```ts
+declare const fn: lambda.Function;
+
+fn.addEventSourceMapping('KafkaQueue', {
+  kafkaBootstrapServers: ['kafka-broker-1.example.com:9092'],
+  kafkaTopic: 'jobs',
+  kafkaConsumerGroupId: 'jobs-workers',
+  kafkaConsumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+});
+```
+
 See the documentation for the __@aws-cdk/aws-lambda-event-sources__ module for more details.
 
 ## Imported Lambdas
