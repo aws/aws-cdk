@@ -1,0 +1,20 @@
+{
+  "/integ-stack-set-service-managed-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integstacksetservicemanagedtestDefaultTestDeployAssert6C08A8B5.template.json"
+    }
+  ],
+  "/integ-stack-set-service-managed-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-stack-set-service-managed-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

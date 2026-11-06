@@ -1,0 +1,36 @@
+{
+  "/integ-stack-set-service-managed": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-stack-set-service-managed.template.json"
+    }
+  ],
+  "/integ-stack-set-service-managed/StackSet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stack-set-service-managed/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-stack-set-service-managed/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-stack-set-service-managed/StackSet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSet6E6355CF"
+    }
+  ]
+}

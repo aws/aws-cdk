@@ -1,0 +1,22 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-stack-set-service-managed-test/DefaultTest": {
+      "stacks": [
+        "integ-stack-set-service-managed"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "enabled": false
+        },
+        "destroy": {
+          "enabled": false
+        }
+      },
+      "assertionStack": "integ-stack-set-service-managed-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integstacksetservicemanagedtestDefaultTestDeployAssert6C08A8B5"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

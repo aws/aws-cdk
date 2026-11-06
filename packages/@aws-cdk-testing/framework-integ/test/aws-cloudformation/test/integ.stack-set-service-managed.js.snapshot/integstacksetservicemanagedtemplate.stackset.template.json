@@ -1,0 +1,7 @@
+{
+  "Resources": {
+    "TopicBFC7AF6E": {
+      "Type": "AWS::SNS::Topic"
+    }
+  }
+}

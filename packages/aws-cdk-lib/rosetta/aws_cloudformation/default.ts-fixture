@@ -5,6 +5,7 @@ import {
   DeploymentType,
   RegionConcurrencyType,
   StackSet,
+  StackSetAccountFilter,
   StackSetStack,
   StackSetTarget,
   StackSetTemplate,

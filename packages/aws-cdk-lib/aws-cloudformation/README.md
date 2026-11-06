@@ -73,7 +73,14 @@ with a single operation. Using an administrator account, you define and manage a
 the template as the basis for provisioning stacks into selected target accounts across specific AWS Regions.
 
 There are two methods for defining _where_ the StackSet should be deployed. You can either define individual accounts, or
-you can define AWS Organizations organizational units.
+you can define AWS Organizations organizational units. The target must match the StackSet's
+[permission model](#stackset-permissions):
+
+- A self managed StackSet (the default) deploys to individual accounts with `StackSetTarget.fromAccounts()`.
+- A service managed StackSet (`DeploymentType.serviceManaged()`) deploys to organizational units with
+  `StackSetTarget.fromOrganizationalUnits()`.
+
+The StackSet throws an error when it gets a target that doesn't match its permission model.
 
 #### Deploying to individual accounts
 
@@ -100,6 +107,7 @@ AWS Organizations allows you to define organizational units (OUs) which are logi
 OUs enable you to organize your accounts into a hierarchy and make it easier for you to apply management controls.
 For a deep dive on OU best practices you can read the [Best Practices for Organizational Units with AWS Organizations](https://aws.amazon.com/blogs/mt/best-practices-for-organizational-units-with-aws-organizations/) blog post.
 
+Deploying to organizational units requires a service managed StackSet.
 You can either specify the organization itself, or individual OUs. By default the StackSet will be deployed
 to all AWS accounts that are part of the OU. If the OU is nested it will also deploy to all accounts
 that are part of any nested OUs.
@@ -130,6 +138,7 @@ new StackSet(stack, 'StackSet', {
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
   }),
+  deploymentType: DeploymentType.serviceManaged(),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
@@ -137,7 +146,7 @@ new StackSet(stack, 'StackSet', {
 This would deploy the StackSet to `account-1`, `account-2`, `account-4`.
 
 If there are specific AWS accounts that are part of the specified OU hierarchy that you would like
-to exclude, this can be done by specifying `excludeAccounts`.
+to exclude, this can be done by specifying an `accountFilter` with `StackSetAccountFilter.difference()`.
 
 ```ts
 const stack = new Stack();
@@ -147,29 +156,29 @@ new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
-	excludeAccounts: ['account-2'],
+    accountFilter: StackSetAccountFilter.difference(['account-2']),
   }),
+  deploymentType: DeploymentType.serviceManaged(),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
 This would deploy only to `account-1` & `account-4`, and would exclude `account-2`.
 
-Sometimes you might have individual accounts that you would like to deploy the StackSet to, but
-you do not want to include the entire OU. To do that you can specify `additionalAccounts`.
+To deploy only to some of the accounts in the OU hierarchy, use `StackSetAccountFilter.intersection()`
+with the accounts to deploy to.
+
+To also deploy the StackSet to accounts in another OU, add another target with `addTarget()`. For
+example, to deploy to `account-5` of `ou-2` as well:
 
 ```ts
-const stack = new Stack();
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stackSet: StackSet;
 
-new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromOrganizationalUnits({
-    regions: ['us-east-1'],
-    organizationalUnits: ['ou-1'],
-	additionalAccounts: ['account-5'],
-  }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
-});
+stackSet.addTarget(StackSetTarget.fromOrganizationalUnits({
+  regions: ['us-east-1'],
+  organizationalUnits: ['ou-2'],
+  accountFilter: StackSetAccountFilter.intersection(['account-5']),
+}));
 ```
 
 This would deploy the StackSet to `account-1`, `account-2`, `account-4` & `account-5`.
