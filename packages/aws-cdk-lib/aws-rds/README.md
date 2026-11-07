@@ -1198,6 +1198,36 @@ const cpuUtilization = cluster.metricCPUUtilization();
 const readLatency = instance.metric('ReadLatency', { statistic: 'Average', period: Duration.seconds(60) });
 ```
 
+Use `DatabaseInstanceMetrics` to access the instance-level metrics published in the `AWS/RDS`
+namespace. It accepts a `DatabaseInstance`, an imported instance or a `CfnDBInstance`, so the
+same helpers are available for all of them:
+
+```ts
+declare const instance: rds.IDatabaseInstance;
+
+const metrics = rds.DatabaseInstanceMetrics.fromDatabaseInstance(instance);
+
+// How far a read replica lags behind its source (average over 5 minutes)
+const replicaLag = metrics.replicaLag();
+
+// The average amount of time taken per disk I/O read operation (average over 1 minute)
+const readLatency = metrics.readLatency({ period: Duration.seconds(60) });
+
+// Any other metric, such as an engine-specific one
+const binLogDiskUsage = metrics.metric('BinLogDiskUsage', { statistic: 'Maximum' });
+```
+
+The following helpers are available. See
+[Amazon CloudWatch metrics for Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-metrics.html)
+for the full list of metrics.
+
+- CPU & memory: `cpuUtilization`, `freeableMemory`, `swapUsage`
+- Connections & latency: `databaseConnections`, `readLatency`, `writeLatency`
+- Storage: `freeStorageSpace`, `burstBalance`
+- I/O: `readIOPS`, `writeIOPS`, `readThroughput`, `writeThroughput`, `diskQueueDepth`
+- Network: `networkReceiveThroughput`, `networkTransmitThroughput`
+- Replication: `replicaLag`
+
 ## Enabling S3 integration
 
 Data in S3 buckets can be imported to and exported from certain database engines using SQL queries. To enable this
