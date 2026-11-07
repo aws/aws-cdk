@@ -1,0 +1,78 @@
+{
+  "/ImportedPrincipalTestAssertions/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/AwsApiCallIAMlistUserPoliciesc5578f1d93789a524eabf3dfabf8d228/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/AwsApiCallIAMlistUserPoliciesc5578f1d93789a524eabf3dfabf8d228/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallIAMlistUserPoliciesc5578f1d93789a524eabf3dfabf8d228"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/AwsApiCallIAMlistGroupPolicies236d69fdd92f11bada734a9f8cb20f89/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/AwsApiCallIAMlistGroupPolicies236d69fdd92f11bada734a9f8cb20f89/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallIAMlistGroupPolicies236d69fdd92f11bada734a9f8cb20f89"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/AwsApiCallIAMlistUserPoliciesc5578f1d93789a524eabf3dfabf8d228/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallIAMlistUserPoliciesc5578f1d93789a524eabf3dfabf8d228"
+    }
+  ],
+  "/ImportedPrincipalTestAssertions/AwsApiCallIAMlistGroupPolicies236d69fdd92f11bada734a9f8cb20f89/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallIAMlistGroupPolicies236d69fdd92f11bada734a9f8cb20f89"
+    }
+  ]
+}

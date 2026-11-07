@@ -1,0 +1,194 @@
+{
+ "Resources": {
+  "AwsApiCallIAMlistUserPoliciesc5578f1d93789a524eabf3dfabf8d228": {
+   "Type": "Custom::DeployAssert@SdkCallIAMlistUserPolicies",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "listUserPolicies",
+    "expected": "{\"$ObjectLike\":{\"PolicyNames\":{\"$ArrayWith\":[{\"$StringLike\":\"^Policyintegiamimportedprincipal1User.{8}$\"},{\"$StringLike\":\"^Policyintegiamimportedprincipal2User.{8}$\"},{\"$StringLike\":\"^Policyintegiamimportedprincipal2Userx+.{8}$\"}]}}}",
+    "parameters": {
+     "UserName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-iam-imported-principal-stack:ExportsOutputRefTestUser6A619381D76C3DED"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1790337636353"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "iam:ListUserPolicies"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "iam:ListGroupPolicies"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallIAMlistGroupPolicies236d69fdd92f11bada734a9f8cb20f89": {
+   "Type": "Custom::DeployAssert@SdkCallIAMlistGroupPolicies",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IAM",
+    "api": "listGroupPolicies",
+    "expected": "{\"$ObjectLike\":{\"PolicyNames\":{\"$ArrayWith\":[{\"$StringLike\":\"^DefaultPolicyintegiamimportedprincipal1Group.{8}$\"},{\"$StringLike\":\"^DefaultPolicyintegiamimportedprincipal2Group.{8}$\"}]}}}",
+    "parameters": {
+     "GroupName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-iam-imported-principal-stack:ExportsOutputRefTestGroupAF88660E90A943DC"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1790337636355"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallIAMlistUserPoliciesc5578f1d93789a524eabf3dfabf8d228": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMlistUserPoliciesc5578f1d93789a524eabf3dfabf8d228",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIAMlistGroupPolicies236d69fdd92f11bada734a9f8cb20f89": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIAMlistGroupPolicies236d69fdd92f11bada734a9f8cb20f89",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

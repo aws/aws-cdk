@@ -1,6 +1,6 @@
 import type { Construct } from 'constructs';
-import { MAX_POLICY_NAME_LEN } from './util';
-import { Annotations, FeatureFlags, Names, Resource, Token, TokenComparison } from '../../../core';
+import { defaultPolicyNameFor } from './util';
+import { Annotations, Resource, Token, TokenComparison } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
@@ -70,17 +70,8 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   @MethodMetadata()
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
-      const useUniqueName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME);
-      // To preserve existing policy names, use Names.uniqueResourceName() only when exceeding the limit of policy names
-      // See https://github.com/aws/aws-cdk/pull/27548 for more
-      const prefix = 'Policy';
-      let defaultDefaultPolicyName = useUniqueName
-        ? `${prefix}${Names.uniqueId(this)}`
-        : prefix;
-      if (defaultDefaultPolicyName.length > MAX_POLICY_NAME_LEN) {
-        defaultDefaultPolicyName = `${prefix}${Names.uniqueResourceName(this, { maxLength: MAX_POLICY_NAME_LEN - prefix.length })}`;
-      }
-      const policyName = this.defaultPolicyName ?? defaultDefaultPolicyName;
+      const { useUniqueName, name } = defaultPolicyNameFor(this, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, 'Policy');
+      const policyName = this.defaultPolicyName ?? name;
       this.defaultPolicy = new Policy(this, policyName, useUniqueName ? { policyName } : undefined);
       this.attachInlinePolicy(this.defaultPolicy);
     }

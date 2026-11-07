@@ -1,0 +1,128 @@
+{
+  "/integ-iam-imported-principal-2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-iam-imported-principal-2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-iam-imported-principal-2/User/Policyintegiamimportedprincipal2User4C90841A": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "policyName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-iam-imported-principal-2/Group/DefaultPolicyintegiamimportedprincipal2Group4A5C2A88": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "policyName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToGroup": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToGroup": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-iam-imported-principal-2/Userxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/Policyintegiamimportedprincipal2Userxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx84AD2E7D": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "policyName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-iam-imported-principal-2/User/Policyintegiamimportedprincipal2User4C90841A/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPolicyintegiamimportedprincipal2User4C90841A34396931"
+    }
+  ],
+  "/integ-iam-imported-principal-2/Group/DefaultPolicyintegiamimportedprincipal2Group4A5C2A88/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupDefaultPolicyintegiamimportedprincipal2Group4A5C2A884385A57E"
+    }
+  ],
+  "/integ-iam-imported-principal-2/Userxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/Policyintegiamimportedprincipal2Userxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx84AD2E7D/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPolicyintegiamimportedprincipal2Userxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx35FA719C"
+    }
+  ]
+}
