@@ -280,6 +280,19 @@ new cognito.UserPool(this, 'myuserpool', {
 });
 ```
 
+By default a passkey sign-in counts as a single authentication factor. To have passkey authentication with user verification satisfy MFA requirements, set `passkeyFactorMode` to `PasskeyFactorMode.MULTI_FACTOR_WITH_USER_VERIFICATION`. This mode requires the passkey to perform user verification, so combine it with `passkeyUserVerification: PasskeyUserVerification.REQUIRED`. To activate this setting, your user pool must be in the Essentials tier or higher.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  signInPolicy: {
+    allowedFirstAuthFactors: { password: true, passkey: true },
+  },
+  passkeyRelyingPartyId: 'auth.example.com',
+  passkeyUserVerification: cognito.PasskeyUserVerification.REQUIRED,
+  passkeyFactorMode: cognito.PasskeyFactorMode.MULTI_FACTOR_WITH_USER_VERIFICATION,
+});
+```
+
 To disable choice-based authentication explicitly, specify `password` only.
 
 ```ts
