@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
-    "f6c2e8f4ae6e014d243c2796a686814ee8cdc94ae0c82a7c3e20360010a536ba": {
+    "b9fa9fddb6679df53646bd5397ef0c2ff1bc9f1f96e99b661700d327f701e42e": {
       "displayName": "cdk-stepfunctions-map-jsonata-maxconcurrency-stack Template",
       "source": {
         "path": "cdk-stepfunctions-map-jsonata-maxconcurrency-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a9117334": {
+        "current_account-current_region-56a79497": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f6c2e8f4ae6e014d243c2796a686814ee8cdc94ae0c82a7c3e20360010a536ba.json",
+          "objectKey": "b9fa9fddb6679df53646bd5397ef0c2ff1bc9f1f96e99b661700d327f701e42e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

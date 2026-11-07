@@ -25,6 +25,7 @@ import type { Runtime } from './runtime';
 /**
  * Bedrock AgentCore runtime environment for code execution
  * Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13 | PYTHON_3_14 | NODE_22
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum AgentCoreRuntime {
   /**
@@ -55,6 +56,7 @@ export enum AgentCoreRuntime {
 
 /**
  * Options for configuring an S3 code asset from local files for agent runtime artifact
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface CodeAssetOptions extends s3_assets.AssetOptions {
   /**
@@ -76,6 +78,7 @@ export interface CodeAssetOptions extends s3_assets.AssetOptions {
 /**
  * Abstract base class for agent runtime artifacts.
  * Provides methods to reference container images from ECR repositories or local assets.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class AgentRuntimeArtifact {
   /**

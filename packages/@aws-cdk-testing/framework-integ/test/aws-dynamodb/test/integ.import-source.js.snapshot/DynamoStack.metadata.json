@@ -1,4 +1,23 @@
 {
+  "/DynamoStack": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:236:29)",
+        "Annotations.addWarningV2 (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:105:18)",
+        "resolveValue (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:196:52)",
+        "resolveReferences (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:45:34)",
+        "synthesize (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "process.<anonymous> (/Users/kumsmrit/workplace/cdkPRs/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:155:51)",
+        "Object.onceWrapper (node:events:631:12)",
+        "process.emit (node:events:509:20)"
+      ]
+    }
+  ],
   "/DynamoStack/DynamoDBJsonTable": [
     {
       "type": "aws:cdk:analytics:construct",

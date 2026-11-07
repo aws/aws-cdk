@@ -1,0 +1,310 @@
+{
+  "/EventBusGrantsTestStackWithFlag/TestEventBus": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestParameterWithFlag": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/PublisherWithFlag": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "functionName": "*",
+        "code": "*",
+        "environment": "*",
+        "timeout": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "stateMachineName": "*",
+        "definitionBody": "*",
+        "timeout": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/PublisherFunctionName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublisherFunctionName"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/StateMachineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineArn"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/ParameterName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParameterName"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestEventBus/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestEventBus12626D66"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestParameterWithFlag/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestParameterWithFlag030979F6"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/PublisherWithFlag/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublisherWithFlagD8B4AB49"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestStateMachineWithFlag61D312F9"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublisherWithFlagServiceRole5A520D99"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestStateMachineWithFlagRole78ED4BBC"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/PublisherWithFlag/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublisherWithFlagServiceRoleDefaultPolicy1FEBC9A2"
+    }
+  ],
+  "/EventBusGrantsTestStackWithFlag/TestStateMachineWithFlag/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestStateMachineWithFlagRoleDefaultPolicy17C6B7FC"
+    }
+  ]
+}

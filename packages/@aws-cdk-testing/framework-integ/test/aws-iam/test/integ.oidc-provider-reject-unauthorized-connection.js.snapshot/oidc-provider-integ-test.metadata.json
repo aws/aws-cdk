@@ -1,0 +1,246 @@
+{
+  "/oidc-provider-integ-test": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:45:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/NoClientsNoThumbprint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*"
+      }
+    }
+  ],
+  "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/oidc-provider-integ-test/Clients": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*",
+        "clientIds": "*"
+      }
+    }
+  ],
+  "/oidc-provider-integ-test/Thumbprints": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*",
+        "thumbprints": "*"
+      }
+    }
+  ],
+  "/oidc-provider-integ-test/NoClientsThumbprints": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoClientsThumbprints"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:60:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/ClientsThumbprints": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClientsThumbprints"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:63:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/ThumbprintsThumbprints": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ThumbprintsThumbprints"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:66:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/NoClientsNoThumbprint/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new OidcProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-iam/oidc-provider.generated.js:57:9)",
+        "OidcProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-iam/oidc-provider.generated.js:54:28)",
+        "WrappedClass.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:185:61)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:147:35)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:46:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new OidcProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-iam/oidc-provider.generated.js:57:9)",
+        "OidcProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-iam/oidc-provider.generated.js:54:28)",
+        "WrappedClass.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:185:61)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:147:35)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:46:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/Clients/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-integ-test/Thumbprints/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-integ-test/NoClientsNoThumbprint/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoClientsNoThumbprint8BF1533F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:148:29)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:46:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/Clients/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Clients67031123"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:148:29)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:49:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-integ-test/Thumbprints/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Thumbprints9CD6AB02"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:148:29)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-reject-unauthorized-connection.js:53:21)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

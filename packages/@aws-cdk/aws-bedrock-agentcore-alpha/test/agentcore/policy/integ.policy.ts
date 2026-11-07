@@ -11,279 +11,142 @@
  *  and limitations under the License.
  */
 
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import { Gateway, PolicyEngineMode } from '../../../lib/gateway/gateway';
+import { Gateway } from '../../../lib/gateway/gateway';
+import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
 import { Policy } from '../../../lib/policy/policy';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
 import { PolicyStatement } from '../../../lib/policy/policy-statement';
 import { PolicyValidationMode } from '../../../lib/policy/policy-types';
 
 /**
- * Integration test for Policy and PolicyEngine constructs.
+ * Comprehensive integration test for the AgentCore Policy and PolicyEngine constructs.
  *
- * This test validates:
- * 1. Basic PolicyEngine and Policy creation
- * 2. PolicyEngine with custom KMS encryption
- * 3. Multiple policies added to a single engine
- * 4. Policy with raw Cedar definition
- * 5. Policy with PolicyStatement builder
- * 6. Policy with when/unless conditions
- * 7. Different validation modes
- * 8. PolicyEngine.addPolicy() convenience method
- * 9. Accessing policies list from PolicyEngine
- *
- * Manual verification steps after deployment:
- * 1. Verify PolicyEngine resources are created in AWS Console
- * 2. Verify Policy resources are associated with correct PolicyEngine
- * 3. Verify KMS encryption is applied where specified
- * 4. Verify Cedar policy definitions are correctly stored
- * 5. Check CloudWatch Logs for any policy evaluation errors
+ * Validates:
+ *   - PolicyEngine variants: explicit name, KMS encryption + tags, auto-generated name
+ *   - PolicyEngine convenience: `addPolicy()` and the `policies` accessor
+ *   - Policy authoring: raw Cedar `definition` and the `PolicyStatement` builder
+ *   - Builder methods: forPrincipal (OAuthUser and IamEntity), forAllPrincipals,
+ *     onAllActions, onResource (specific), onResourceType
+ *   - Permit and forbid policies
+ *   - Validation modes (default and IGNORE_ALL_FINDINGS)
+ *   - Real Gateway as the referenced resource for specific-ARN policies
  */
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'PolicyIntegTestStack');
 
-// Test 1: Basic PolicyEngine with simple Policy
+const sharedGateway = new Gateway(stack, 'SharedGateway', {
+  gatewayName: 'policy-integ-gateway',
+  description: 'Shared gateway referenced by policies in this stack',
+  authorizerConfiguration: GatewayAuthorizer.withNoAuth(),
+});
+
 const basicEngine = new PolicyEngine(stack, 'BasicPolicyEngine', {
-  policyEngineName: 'basic_engine_integ_test',
+  policyEngineName: 'basic_engine',
   description: 'Basic policy engine for integration testing',
 });
 
-new Policy(stack, 'BasicPolicy', {
+new Policy(stack, 'RawCedarPolicy', {
   policyEngine: basicEngine,
-  policyName: 'basic_policy',
-  definition: 'permit(principal, action, resource);',
-  description: 'Basic permit-all policy for testing',
+  policyName: 'raw_cedar_policy',
+  description: 'Raw Cedar definition with constrained principal',
+  definition: [
+    'permit(',
+    `  principal == AgentCore::IamEntity::"arn:${cdk.Aws.PARTITION}:iam::${cdk.Aws.ACCOUNT_ID}:role/TestAgentRole",`,
+    '  action,',
+    '  resource is AgentCore::Gateway',
+    ');',
+  ].join('\n'),
 });
 
-// Test 2: PolicyEngine with KMS encryption
 const kmsKey = new kms.Key(stack, 'PolicyEngineKey', {
-  description: 'KMS key for PolicyEngine encryption',
+  description: 'Encryption key for PolicyEngine',
   enableKeyRotation: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const encryptedEngine = new PolicyEngine(stack, 'EncryptedPolicyEngine', {
-  policyEngineName: 'encrypted_engine_integ',
+  policyEngineName: 'encrypted_engine',
   description: 'PolicyEngine with custom KMS encryption',
-  kmsKey: kmsKey,
+  kmsKey,
   tags: {
     Environment: 'Test',
     Purpose: 'Integration',
   },
 });
 
-// Test 3: Policy with raw Cedar definition (multiple actions)
-new Policy(stack, 'RawCedarPolicy', {
-  policyEngine: encryptedEngine,
-  policyName: 'raw_cedar_policy',
-  definition: 'permit(principal, action in [AgentCore::Action::"GetData", AgentCore::Action::"PutData"], resource);',
-  description: 'Policy with raw Cedar definition',
-  validationMode: PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
-});
-
-// Test 4: Policy with PolicyStatement builder - simple permit
-new Policy(stack, 'BuilderSimplePolicy', {
-  policyEngine: encryptedEngine,
-  policyName: 'builder_simple_policy',
-  statement: PolicyStatement.permit()
-    .forAllPrincipals()
-    .onAllActions()
-    .onAllResources(),
-  description: 'Simple policy using builder pattern',
-});
-
-// Test 5: Policy with specific principals and actions
 new Policy(stack, 'BuilderSpecificPolicy', {
   policyEngine: encryptedEngine,
-  policyName: 'builder_specific_policy',
+  policyName: 'builder_specific',
+  description: 'Permit a specific OAuth user to use the shared gateway',
   statement: PolicyStatement.permit()
     .forPrincipal('AgentCore::OAuthUser', 'user123')
-    .onActions(['AgentCore::Action::GetData', 'AgentCore::Action::PutData'])
-    .onResource('AgentCore::Gateway', 'arn:aws:bedrock:us-east-1:123456789012:gateway/gw-abc'),
-  description: 'Policy with specific principal, actions, and resource',
-});
-
-// Test 6: Policy with when conditions
-new Policy(stack, 'BuilderConditionsPolicy', {
-  policyEngine: encryptedEngine,
-  policyName: 'builder_conditions_policy',
-  statement: PolicyStatement.permit()
-    .forAllPrincipals()
     .onAllActions()
-    .onAllResources()
-    .when()
-    .principalAttribute('department').equalTo('Engineering')
-    .and()
-    .principalAttribute('role').equalTo('Developer')
-    .done(),
-  description: 'Policy with when conditions',
+    .onResource('AgentCore::Gateway', sharedGateway.gatewayArn),
 });
 
-// Test 7: Policy with when and unless conditions
-new Policy(stack, 'BuilderComplexPolicy', {
+new Policy(stack, 'BuilderIamPrincipalPolicy', {
   policyEngine: encryptedEngine,
-  policyName: 'builder_complex_policy',
+  policyName: 'builder_iam_principal',
+  description: 'Permit a specific IAM role to use any gateway',
   statement: PolicyStatement.permit()
-    .forAllPrincipals()
+    .forPrincipal(
+      'AgentCore::IamEntity',
+      `arn:${cdk.Aws.PARTITION}:iam::${cdk.Aws.ACCOUNT_ID}:role/AnotherTestAgentRole`,
+    )
     .onAllActions()
-    .onResource('AgentCore::Gateway', 'arn:aws:bedrock:us-east-1:123:gateway/gw-123')
-    .when()
-    .principalAttribute('department').equalTo('Engineering')
-    .and()
-    .contextAttribute('sourceIp').isInRange('192.168.1.0/24')
-    .done()
-    .unless()
-    .principalAttribute('suspended').equalTo(true)
-    .or()
-    .principalAttribute('accessLevel').lessThan(3)
-    .done(),
-  description: 'Complex policy with when and unless conditions',
+    .onResourceType('AgentCore::Gateway'),
 });
 
-// Test 8: Forbid policy
-new Policy(stack, 'BuilderForbidPolicy', {
+new Policy(stack, 'ForbidPolicy', {
   policyEngine: encryptedEngine,
-  policyName: 'builder_forbid_policy',
+  policyName: 'forbid_on_gateway',
+  description: 'Forbid a specific OAuth user from using the shared gateway',
   statement: PolicyStatement.forbid()
-    .forAllPrincipals()
-    .onAction('AgentCore::Action::DeleteData')
-    .onAllResources()
-    .when()
-    .principalAttribute('role').equalTo('ReadOnly')
-    .done(),
-  description: 'Forbid policy to deny delete action',
-});
-
-// Test 9: PolicyEngine with addPolicy() convenience method
-const engineWithAddedPolicies = new PolicyEngine(stack, 'EngineWithAddedPolicies', {
-  policyEngineName: 'engine_with_added_policies',
-  description: 'PolicyEngine using addPolicy() method',
-});
-
-engineWithAddedPolicies.addPolicy('AddedPolicy1', {
-  policyName: 'added_policy_1',
-  definition: 'permit(principal, action, resource);',
-  description: 'First policy added via addPolicy()',
-});
-
-engineWithAddedPolicies.addPolicy('AddedPolicy2', {
-  policyName: 'added_policy_2',
-  statement: PolicyStatement.permit()
-    .forPrincipal('AgentCore::OAuthUser')
+    .forPrincipal('AgentCore::OAuthUser', 'banned-user')
     .onAllActions()
-    .onAllResources(),
-  description: 'Second policy added via addPolicy()',
+    .onResource('AgentCore::Gateway', sharedGateway.gatewayArn),
 });
 
-engineWithAddedPolicies.addPolicy('AddedPolicy3', {
-  policyName: 'added_policy_3',
-  statement: PolicyStatement.forbid()
-    .forAllPrincipals()
-    .onActions(['AgentCore::Action::DeleteData', 'AgentCore::Action::ModifyData'])
-    .onAllResources(),
-  description: 'Third policy added via addPolicy()',
+new Policy(stack, 'IgnoreFindingsPolicy', {
+  policyEngine: encryptedEngine,
+  policyName: 'ignore_findings',
+  description: 'Policy that opts out of validation findings',
+  statement: PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser', 'admin')
+    .onAllActions()
+    .onResourceType('AgentCore::Gateway'),
   validationMode: PolicyValidationMode.IGNORE_ALL_FINDINGS,
 });
 
-// Test 10: Verify policies list can be accessed
-const policiesCount = engineWithAddedPolicies.policies.length;
-if (policiesCount !== 3) {
-  throw new Error(`Expected 3 policies but got ${policiesCount}`);
-}
-
-// Test 11: Auto-generated names
 const autoNamedEngine = new PolicyEngine(stack, 'AutoNamedEngine', {
   description: 'PolicyEngine with auto-generated name',
 });
 
-new Policy(stack, 'AutoNamedPolicy', {
-  policyEngine: autoNamedEngine,
+autoNamedEngine.addPolicy('AutoPolicy1', {
+  description: 'First policy added via addPolicy()',
   statement: PolicyStatement.permit()
-    .forAllPrincipals()
+    .forPrincipal('AgentCore::OAuthUser', 'reader')
     .onAllActions()
-    .onAllResources(),
-  description: 'Policy with auto-generated name',
+    .onResourceType('AgentCore::Gateway'),
 });
 
-// A gateway with attached policy engine and policies — the core authorization scenario
-const gatewayEngine = new PolicyEngine(stack, 'GatewayPolicyEngine', {
-  policyEngineName: 'gateway_policy_engine',
-  description: 'PolicyEngine governing tool access for an agent gateway',
-});
-
-gatewayEngine.addPolicy('AllowToolAccess', {
-  policyName: 'allow_tool_access',
-  statement: PolicyStatement.permit()
-    .forAllPrincipals()
-    .onAllActions()
-    .onAllResources(),
-  description: 'Permit all principals to invoke tools via the gateway',
-});
-
-gatewayEngine.addPolicy('DenyDeleteActions', {
-  policyName: 'deny_delete_actions',
+autoNamedEngine.addPolicy('AutoPolicy2', {
+  description: 'Second policy added via addPolicy() (forbid)',
   statement: PolicyStatement.forbid()
-    .forAllPrincipals()
-    .onAction('AgentCore::Action::DeleteData')
-    .onAllResources(),
-  description: 'Forbid delete actions for all principals',
+    .forPrincipal('AgentCore::OAuthUser', 'auto-banned-user')
+    .onAllActions()
+    .onResource('AgentCore::Gateway', sharedGateway.gatewayArn),
 });
 
-new Gateway(stack, 'PolicyGateway', {
-  gatewayName: 'policy-integ-gateway',
-  policyEngineConfiguration: {
-    policyEngine: gatewayEngine,
-    mode: PolicyEngineMode.LOG_ONLY,
-  },
-});
+if (autoNamedEngine.policies.length !== 2) {
+  throw new Error(`Expected 2 policies on autoNamedEngine, got ${autoNamedEngine.policies.length}`);
+}
 
-// Add outputs for verification
-new cdk.CfnOutput(stack, 'BasicEngineArn', {
-  value: basicEngine.policyEngineArn,
-  description: 'ARN of the basic policy engine',
-});
-
-new cdk.CfnOutput(stack, 'EncryptedEngineArn', {
-  value: encryptedEngine.policyEngineArn,
-  description: 'ARN of the encrypted policy engine',
-});
-
-new cdk.CfnOutput(stack, 'EngineWithAddedPoliciesArn', {
-  value: engineWithAddedPolicies.policyEngineArn,
-  description: 'ARN of the engine with added policies',
-});
-
-new cdk.CfnOutput(stack, 'KmsKeyArn', {
-  value: kmsKey.keyArn,
-  description: 'ARN of the KMS key used for encryption',
-});
-
-new cdk.CfnOutput(stack, 'AutoNamedEngineArn', {
-  value: autoNamedEngine.policyEngineArn,
-  description: 'ARN of the auto-named policy engine',
-});
-
-// Create integration test
-new IntegTest(app, 'PolicyIntegTest', {
+new integ.IntegTest(app, 'PolicyIntegTest', {
   testCases: [stack],
-  regions: ['us-east-1'], // Bedrock AgentCore is available in limited regions
-  diffAssets: true,
-  stackUpdateWorkflow: true,
-  cdkCommandOptions: {
-    deploy: {
-      args: {
-        rollback: true,
-      },
-    },
-    destroy: {
-      args: {
-        force: true,
-      },
-    },
-  },
+  regions: ['us-east-1'],
 });
-
-app.synth();

@@ -88,6 +88,7 @@ const DEFAULT_TOKEN_BASED_TRIGGER = 100;
 /**
  * Trigger conditions for self managed memory strategy
  * When first condition is met, batched payloads are sent to specified S3 bucket.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface TriggerConditions {
   /**
@@ -110,6 +111,7 @@ export interface TriggerConditions {
 
 /**
  * Invocation configuration for self managed memory strategy
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface InvocationConfiguration {
   /**
@@ -125,6 +127,7 @@ export interface InvocationConfiguration {
 /**
  * Configuration parameters for a self managed memory strategy
  * existing built-in default prompts/models
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface SelfManagedStrategyProps extends MemoryStrategyCommonProps {
   /**
@@ -145,6 +148,7 @@ export interface SelfManagedStrategyProps extends MemoryStrategyCommonProps {
 
 /**
  * Use AgentCore memory for event storage with custom triggers. Define memory processing logic in your own environment.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class SelfManagedMemoryStrategy implements IMemoryStrategy {
   public readonly name: string;

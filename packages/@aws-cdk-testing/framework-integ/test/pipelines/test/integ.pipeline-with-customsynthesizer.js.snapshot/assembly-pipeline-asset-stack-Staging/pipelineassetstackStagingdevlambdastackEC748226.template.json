@@ -52,6 +52,25 @@
    "DependsOn": [
     "LambdaFNServiceRole1CCEDDD9"
    ]
+  },
+  "LambdaFNLogGroup6B0836D2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "LambdaFNC3761C8C"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {

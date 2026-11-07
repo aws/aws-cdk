@@ -12,6 +12,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as eks from '../lib';
 import { HelmChart, KubectlProvider } from '../lib';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
@@ -1198,6 +1199,45 @@ describe('cluster', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
         AmiType: 'AL2_ARM_64',
+      });
+    });
+
+    test('default cluster capacity with EKS_DEFAULT_AL2023 flag uses AL2023_x86_64_STANDARD', () => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.EKS_DEFAULT_AL2023]: true } });
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        prune: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_x86_64_STANDARD',
+      });
+    });
+
+    test('default cluster capacity with EKS_DEFAULT_AL2023 flag and ARM64 instance uses AL2023_ARM_64_STANDARD', () => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.EKS_DEFAULT_AL2023]: true } });
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        prune: false,
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_ARM_64_STANDARD',
       });
     });
 
@@ -2553,6 +2593,10 @@ describe('cluster', () => {
   test('create a cluster using custom resource with secrets encryption using KMS CMK', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'EncryptionConfig.Resources is intentionally retained for backwards compatibility',
+    });
 
     // WHEN
     new eks.Cluster(stack, 'Cluster', {
@@ -3031,6 +3075,10 @@ describe('cluster', () => {
     test('skips cross-network validation when all CIDRs are tokens', () => {
       // GIVEN
       const { stack } = testFixture();
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'Two remote node network entries are intentional to test token-aware cross-network validation',
+      });
       const unresolvedNodeCidr1 = cdk.Fn.importValue('NodeCidr1');
       const unresolvedNodeCidr2 = cdk.Fn.importValue('NodeCidr2');
 

@@ -6,8 +6,8 @@ import { CustomResource } from '../../custom-resource';
 import { CrossRegionSsmReaderProvider } from '../../dist/core/cross-region-ssm-reader-provider.generated';
 import type { IMapBox } from '../../helpers-internal';
 import { Box } from '../../helpers-internal';
+import { stackOf } from '../../private/core-construct-finders';
 import type { Intrinsic } from '../../private/intrinsic';
-import { Stack } from '../../stack';
 
 /**
  * Properties for an ExportReader
@@ -22,7 +22,7 @@ export interface ExportReaderProps {}
  */
 export class ExportReader extends Construct {
   public static getOrCreate(scope: Construct, uniqueId: string, _props: ExportReaderProps = {}): ExportReader {
-    const stack = Stack.of(scope);
+    const stack = stackOf(scope);
     const existing = stack.node.tryFindChild(uniqueId);
     return existing
       ? existing as ExportReader
@@ -33,7 +33,7 @@ export class ExportReader extends Construct {
   private readonly customResource: CustomResource;
   constructor(scope: Construct, id: string, _props: ExportReaderProps = {}) {
     super(scope, id);
-    const stack = Stack.of(this);
+    const stack = stackOf(this);
 
     const resourceType = 'Custom::CrossRegionExportReader';
     const serviceToken = CrossRegionSsmReaderProvider.getOrCreate(this, resourceType, {

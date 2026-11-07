@@ -12,6 +12,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as eks from '../lib';
 import { HelmChart } from '../lib';
 import { KubectlProvider } from '../lib/kubectl-provider';
@@ -1823,6 +1824,45 @@ describe('cluster', () => {
       });
     });
 
+    test('default cluster capacity with EKS_DEFAULT_AL2023 flag uses AL2023_x86_64_STANDARD', () => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.EKS_DEFAULT_AL2023]: true } });
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        prune: false,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_x86_64_STANDARD',
+      });
+    });
+
+    test('default cluster capacity with EKS_DEFAULT_AL2023 flag and ARM64 instance uses AL2023_ARM_64_STANDARD', () => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.EKS_DEFAULT_AL2023]: true } });
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        prune: false,
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_ARM_64_STANDARD',
+      });
+    });
+
     test('addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -2847,7 +2887,7 @@ describe('cluster', () => {
       });
       const cluster = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
         clusterName,
-        kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        kubectlRoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
         kubectlLambdaRole: kubectlLambdaRole,
       });
 
@@ -2864,7 +2904,7 @@ describe('cluster', () => {
       });
       Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
         ClusterName: clusterName,
-        RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+        RoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
         Release: 'importedcharttestchartf3acd6e5',
         Chart: chart,
         Namespace: 'default',
@@ -3922,6 +3962,12 @@ describe('cluster', () => {
     test('user provided removal policy applies to kubectl lambda', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
+
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3004',
+        reason: 'Something with circular deps',
+      });
+
       const userVpc = new ec2.Vpc(stack, 'UserVpc');
       const userRole = new iam.Role(stack, 'UserRole', {
         assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
@@ -4271,6 +4317,95 @@ describe('cluster', () => {
           },
         },
       });
+    });
+  });
+});
+
+describe('deletionProtection', () => {
+  test.each([
+    true, false,
+  ])('deletionProtection(%s) should work', (deletionProtection) => {
+    // GIVEN
+    const { stack } = testFixture();
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      deletionProtection,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        deletionProtection,
+      },
+    });
+  });
+
+  test('deletionProtection defaults to undefined when not specified', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        deletionProtection: Match.absent(),
+      },
+    });
+  });
+});
+
+describe('controlPlaneScalingTier', () => {
+  test.each([
+    [eks.ControlPlaneScalingTier.STANDARD, 'standard'],
+    [eks.ControlPlaneScalingTier.TIER_XL, 'tier-xl'],
+    [eks.ControlPlaneScalingTier.TIER_2XL, 'tier-2xl'],
+    [eks.ControlPlaneScalingTier.TIER_4XL, 'tier-4xl'],
+    [eks.ControlPlaneScalingTier.TIER_8XL, 'tier-8xl'],
+  ])(
+    'controlPlaneScalingTier(%s) should configure controlPlaneScalingConfig',
+    (tier, expected) => {
+      // GIVEN
+      const { stack } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        controlPlaneScalingTier: tier,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+        Config: {
+          controlPlaneScalingConfig: {
+            tier: expected,
+          },
+        },
+      });
+    },
+  );
+
+  test('controlPlaneScalingConfig is not set when controlPlaneScalingTier is not provided', () => {
+    // GIVEN
+    const { stack } = testFixture();
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        controlPlaneScalingConfig: Match.absent(),
+      },
     });
   });
 });

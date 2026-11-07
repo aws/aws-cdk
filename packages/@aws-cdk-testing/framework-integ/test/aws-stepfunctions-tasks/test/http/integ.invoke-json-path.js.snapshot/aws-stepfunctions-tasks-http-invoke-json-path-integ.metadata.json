@@ -1,0 +1,272 @@
+{
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Authorizer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Connection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerHandler0112B303"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/awsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200:Permissions": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerHandlerawsstepfunctionstaskshttpinvokejsonpathintegAuthorizer0A0EA200PermissionsAC1581B9"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Authorizer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerBD825682"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApiF8B59B0D"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApiEndpoint7BEB0C53"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Connection/Connection": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Connection07624BCD"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerHandlerServiceRole5F40A014"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/AuthorizerHandler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerHandlerLogGroup19D4FC4C"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApiDeploymentD67E59ECc0bae562047b64e07eb861eb93111562"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApiDeploymentStageprod29E2686A"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApitestjsonpath7AE2D560"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    }
+  ],
+  "/aws-stepfunctions-tasks-http-invoke-json-path-integ/IntegRestApi/Default/test-json-path/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegRestApitestjsonpathGETEA421C58"
+    }
+  ]
+}

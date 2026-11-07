@@ -30,6 +30,7 @@ interface StringLengthValidation extends IntervalValidation {
  * @param params - Validation parameters including value, fieldName, minLength, and maxLength
  * @param scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateStringFieldLength(params: StringLengthValidation, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -67,6 +68,7 @@ export function validateStringFieldLength(params: StringLengthValidation, _scope
  * @param customMessage - Optional custom error message
  * @param scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateFieldPattern(
   value: string,
@@ -105,6 +107,10 @@ export function validateFieldPattern(
 
 export type ValidationFn<T> = (param: T, scope?: IConstruct) => string[];
 
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T, scope?: IConstruct): T {
   const errors = validationFn(param, scope);
   if (errors.length > 0) {

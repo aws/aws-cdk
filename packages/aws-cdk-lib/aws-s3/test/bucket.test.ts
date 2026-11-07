@@ -208,6 +208,7 @@ describe('bucket', () => {
 
   test('bucket with custom blockedEncryptionTypes', () => {
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3030', reason: 'Bogus encryption types are only for tests' });
 
     new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.S3_MANAGED,
@@ -1845,6 +1846,23 @@ describe('bucket', () => {
       });
     });
 
+    test('allows overriding cross-stack reference strength', () => {
+      const app = new cdk.App();
+      const producerStack = new cdk.Stack(app, 'Producer', { env: { region: 'us-east-1', account: '111111111111' } });
+      const consumerStack = new cdk.Stack(app, 'Consumer', { env: { region: 'us-east-1', account: '111111111111' } });
+
+      const b = new s3.Bucket(producerStack, 'MyBucket');
+      cdk.CrossStackReferences.of(b).produce(cdk.ReferenceStrength.WEAK);
+
+      new cdk.CfnOutput(consumerStack, 'BucketName', { value: b.bucketName });
+
+      const assembly = app.synth();
+      const consumerTemplate = assembly.getStackByName(consumerStack.stackName).template;
+
+      const output = consumerTemplate.Outputs.BucketName;
+      expect(output.Value).toHaveProperty('Fn::GetStackOutput');
+    });
+
     test('correctly sets the default child of the returned L2', () => {
       expect(bucket.node.defaultChild).toBe(cfnBucket);
     });
@@ -1956,6 +1974,11 @@ describe('bucket', () => {
     });
 
     test('allows importing a BucketPolicy that references a Bucket', () => {
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::E3019',
+        reason: 'This test is asserting something pointless',
+      });
+
       new s3.CfnBucketPolicy(stack, 'CfnBucketPolicy', {
         policyDocument: {
           'Statement': [
@@ -5364,6 +5387,78 @@ describe('bucket', () => {
             'Ref': 'SrcBucketReplicationRole5B31865A',
           },
         ],
+      });
+    });
+
+    describe('replication metrics behavior', () => {
+      test('replication metrics can be enabled without replication time control', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ReplicationMetricsStackNoRTC');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES, // metrics only
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          ReplicationConfiguration: {
+            Rules: [
+              {
+                Destination: {
+                  Metrics: {
+                    Status: 'Enabled',
+                    EventThreshold: Match.absent(), // Explicitly ensure no EventThreshold field
+                  },
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('replication metrics includes eventThreshold when replication time control is defined', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ReplicationMetricsStackWithRTC');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+              metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Rules: [
+              {
+                Destination: {
+                  ReplicationTime: {
+                    Status: 'Enabled',
+                    Time: { Minutes: 15 },
+                  },
+                  Metrics: {
+                    Status: 'Enabled',
+                    EventThreshold: {
+                      Minutes: 15,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        });
       });
     });
 

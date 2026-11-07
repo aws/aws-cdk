@@ -54,6 +54,7 @@ describeDeprecated('staging', () => {
       'stack.metadata.json',
       'stack.template.json',
       'tree.json',
+      'validation-report.json',
     ]);
   });
 

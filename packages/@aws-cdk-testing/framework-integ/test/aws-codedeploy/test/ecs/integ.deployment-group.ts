@@ -170,7 +170,7 @@ const blueUnhealthyHosts = new cloudwatch.Alarm(stack, 'BlueUnhealthyHosts', {
 
 const blueApiFailure = new cloudwatch.Alarm(stack, 'Blue5xx', {
   alarmName: stack.stackName + '-Http-500-Blue',
-  metric: blueTG.metricHttpCodeTarget(
+  metric: blueTG.metrics.httpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
     { period: cdk.Duration.minutes(1) },
   ),
@@ -187,7 +187,7 @@ const greenUnhealthyHosts = new cloudwatch.Alarm(stack, 'GreenUnhealthyHosts', {
 
 const greenApiFailure = new cloudwatch.Alarm(stack, 'Green5xx', {
   alarmName: stack.stackName + '-Http-500-Green',
-  metric: greenTG.metricHttpCodeTarget(
+  metric: greenTG.metrics.httpCodeTarget(
     elbv2.HttpCodeTarget.TARGET_5XX_COUNT,
     { period: cdk.Duration.minutes(1) },
   ),

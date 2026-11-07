@@ -1,0 +1,363 @@
+{
+  "/cdk-integ-location-tracker": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/GeofenceCollection1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-location-tracker/GeofenceCollection2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-location-tracker/GeofenceCollectionForAdd1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-location-tracker/GeofenceCollectionForAdd2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-location-tracker/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/cdk-integ-location-tracker/Tracker": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-location-tracker/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/GeofenceCollection1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GeofenceCollection1D36FEE6D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new GeofenceCollection (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/geofence-collection.js:144:40)",
+        "new GeofenceCollection (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:17:37)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/GeofenceCollection2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GeofenceCollection2348D6DB5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new GeofenceCollection (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/geofence-collection.js:144:40)",
+        "new GeofenceCollection (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:18:37)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/GeofenceCollectionForAdd1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GeofenceCollectionForAdd131D6B4EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new GeofenceCollection (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/geofence-collection.js:144:40)",
+        "new GeofenceCollection (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:19:43)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/GeofenceCollectionForAdd2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GeofenceCollectionForAdd21A9CA549"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new GeofenceCollection (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/geofence-collection.js:144:40)",
+        "new GeofenceCollection (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:20:43)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:21:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Tracker/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrackerAF5FC55F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Tracker (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:182:29)",
+        "new Tracker (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:22:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrackerTrackerConsumerGeofenceCollection106C790AE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:191: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:191:1)",
+        "Array.forEach (:)",
+        "new Tracker (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:190:40)",
+        "new Tracker (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:22:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollection2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrackerTrackerConsumerGeofenceCollection2BA7E93DE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:191: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:191:1)",
+        "Array.forEach (:)",
+        "new Tracker (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:190:40)",
+        "new Tracker (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:22:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrackerTrackerConsumerGeofenceCollectionForAdd1BAA19E05"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:215: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:215:1)",
+        "Array.forEach (:)",
+        "WrappedClass.addGeofenceCollections (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:214:33)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:31:17)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Tracker/TrackerConsumerGeofenceCollectionForAdd2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrackerTrackerConsumerGeofenceCollectionForAdd268D815CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:215: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:215:1)",
+        "Array.forEach (:)",
+        "WrappedClass.addGeofenceCollections (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/lib/tracker.js:214:33)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:31:17)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-location-alpha/test/integ.tracker.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollection1D36FEE6D\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGeofenceCollection1D36FEE6DArn9B50BDFC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollection2348D6DB5\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGeofenceCollection2348D6DB5Arn8B13E123"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollectionForAdd131D6B4EA\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGeofenceCollectionForAdd131D6B4EAArnBFDA7317"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Exports/Output{\"Fn::GetAtt\":[\"GeofenceCollectionForAdd21A9CA549\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGeofenceCollectionForAdd21A9CA549Arn540CF730"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-location-tracker/Exports/Output{\"Ref\":\"TrackerAF5FC55F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTrackerAF5FC55FD7F6E1CB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
