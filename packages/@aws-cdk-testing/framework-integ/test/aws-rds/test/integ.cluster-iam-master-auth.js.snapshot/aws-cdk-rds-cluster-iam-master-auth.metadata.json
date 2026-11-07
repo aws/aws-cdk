@@ -1,0 +1,613 @@
+{
+  "/aws-cdk-rds-cluster-iam-master-auth": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:73:15)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:339:17)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:569: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:569:2)",
+        "visit (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:634:5)",
+        "visit (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:630:5)",
+        "synthesizeTree (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:561:3)",
+        "synthesize (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:75:3)",
+        "App.synth (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:89:22)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:349:3)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:569: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:569:2)",
+        "visit (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:634:5)",
+        "visit (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:630:5)",
+        "synthesizeTree (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:561:3)",
+        "synthesize (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:75:3)",
+        "App.synth (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:89:22)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1627:21)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1694:19)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1700:19)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/Cluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterEB0386A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseCluster (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts:1584:21)",
+        "new DatabaseCluster (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:77:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2233:19)",
+        "WrappedClass.<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708:2)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1705:46)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2506:40)",
+        "WrappedClass.<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureNat (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:316:27)",
+        "WrappedClass.createNatGateways (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2504:17)",
+        "WrappedClass.<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureNat (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:316:27)",
+        "WrappedClass.createNatGateways (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2233:19)",
+        "WrappedClass.<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708:2)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1705:46)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2506:40)",
+        "WrappedClass.<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureNat (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:316:27)",
+        "WrappedClass.createNatGateways (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2504:17)",
+        "WrappedClass.<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureNat (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:316:27)",
+        "WrappedClass.createNatGateways (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2326:19)",
+        "WrappedClass.<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:330:12)",
+        "NatGatewayProvider.configureNat (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:323:12)",
+        "WrappedClass.createNatGateways (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2326:19)",
+        "WrappedClass.<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureSubnet (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:330:12)",
+        "NatGatewayProvider.configureNat (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:323:12)",
+        "WrappedClass.createNatGateways (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:75:13)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/Cluster/Subnets/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterSubnetsDCFA5CB7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetGroup (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.ts:101:25)",
+        "new SubnetGroup (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new DatabaseClusterNew (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts:888:48)",
+        "new DatabaseCluster (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts:1543:5)",
+        "new DatabaseCluster (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:77:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/Cluster/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterSecurityGroup0921994B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.ts:552:26)",
+        "new SecurityGroup (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new SecurityGroup (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new DatabaseClusterNew (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts:896:7)",
+        "new DatabaseCluster (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts:1543:5)",
+        "new DatabaseCluster (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:77:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-iam-master-auth/Cluster/writer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Clusterwriter2D9E9F4C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new AuroraClusterInstance (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts:568:22)",
+        "new AuroraClusterInstance (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "ClusterInstance.bind (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.ts:419:12)",
+        "WrappedClass._createInstances (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts:1083:34)",
+        "new DatabaseCluster (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.ts:1634:52)",
+        "new DatabaseCluster (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/abhishektanguturi/aws-cdk/packages/aws-cdk-lib/synth-integ-iam-master-auth.ts:77:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ]
+}
