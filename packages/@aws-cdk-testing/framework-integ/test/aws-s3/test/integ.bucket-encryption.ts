@@ -43,16 +43,25 @@ const sseAlgorithmByEncryption: Partial<Record<s3.BucketEncryption, string>> = {
 };
 
 // MySSECBlockedBucket is intentionally synth-only: blockedEncryptionTypes doesn't affect the reflected encryption mode.
-for (const bucket of [dsseBucket, sseS3Bucket, kmsBucket]) {
+const getBucketEncryptionCalls = [dsseBucket, sseS3Bucket, kmsBucket].map((bucket) => {
   const sseAlgorithm = bucket.encryption && sseAlgorithmByEncryption[bucket.encryption];
   if (!sseAlgorithm) {
     throw new Error(`unexpected encryption mode ${JSON.stringify(bucket.encryption)} for ${bucket.node.path}`);
   }
 
-  test.assertions.awsApiCall('S3', 'getBucketEncryption', { Bucket: bucket.bucketName })
-    .expect(integ.ExpectedResult.objectLike({
-      ServerSideEncryptionConfiguration: {
-        Rules: [{ ApplyServerSideEncryptionByDefault: { SSEAlgorithm: sseAlgorithm } }],
-      },
-    }));
-}
+  const getBucketEncryption = test.assertions.awsApiCall('S3', 'getBucketEncryption', { Bucket: bucket.bucketName });
+  getBucketEncryption.expect(integ.ExpectedResult.objectLike({
+    ServerSideEncryptionConfiguration: {
+      Rules: [{ ApplyServerSideEncryptionByDefault: { SSEAlgorithm: sseAlgorithm } }],
+    },
+  }));
+  return getBucketEncryption;
+});
+
+// The GetBucketEncryption API is authorized by the s3:GetEncryptionConfiguration action, not the s3:GetBucketEncryption
+// action the provider derives from the API name. All calls share one provider, so grant it once.
+getBucketEncryptionCalls[0].provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetEncryptionConfiguration'],
+  Resource: ['*'],
+});

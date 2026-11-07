@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1793754621221"
+    "salt": "1794016224456"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -81,6 +81,15 @@
           "s3:GetBucketEncryption"
          ],
          "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetEncryptionConfiguration"
+         ],
          "Resource": [
           "*"
          ]
@@ -142,7 +151,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1793754621222"
+    "salt": "1794016224457"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -174,7 +183,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1793754621222"
+    "salt": "1794016224457"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
