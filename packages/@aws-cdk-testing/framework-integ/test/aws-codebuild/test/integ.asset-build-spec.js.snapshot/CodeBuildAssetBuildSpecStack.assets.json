@@ -1,28 +1,30 @@
 {
-  "version": "30.1.0",
+  "version": "55.0.0",
   "files": {
     "0ddfdbafee06424f04319f1476a7a991c4d29cdfc917e4c4c5fac49ade421ad4": {
+      "displayName": "MyProject/Code",
       "source": {
         "path": "asset.0ddfdbafee06424f04319f1476a7a991c4d29cdfc917e4c4c5fac49ade421ad4.yml",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-d65e9729": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "0ddfdbafee06424f04319f1476a7a991c4d29cdfc917e4c4c5fac49ade421ad4.yml",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "3843454984973fab240386685a4ee6813ab6e383ffb32068183fda7b8badb46e": {
+    "62f372df0caf53bde8ff5ee5ca0d1296202d5f75b6466866b958b8bd61d6853a": {
+      "displayName": "CodeBuildAssetBuildSpecStack Template",
       "source": {
         "path": "CodeBuildAssetBuildSpecStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-dd6e12e8": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3843454984973fab240386685a4ee6813ab6e383ffb32068183fda7b8badb46e.json",
+          "objectKey": "62f372df0caf53bde8ff5ee5ca0d1296202d5f75b6466866b958b8bd61d6853a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

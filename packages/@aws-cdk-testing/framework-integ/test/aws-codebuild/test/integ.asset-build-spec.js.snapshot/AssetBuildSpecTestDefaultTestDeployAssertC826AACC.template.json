@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallCodeBuildbatchGetProjects": {
+  "AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e5": {
    "Type": "Custom::DeployAssert@SdkCallCodeBuildbatchGetProjects",
    "Properties": {
     "ServiceToken": {
@@ -11,20 +11,38 @@
     },
     "service": "CodeBuild",
     "api": "batchGetProjects",
-    "expected": "{\"$StringLike\":\".+\"}",
-    "actualPath": "projects.0.source.buildspec",
-    "parameters": {
-     "names": [
-      {
-       "Fn::ImportValue": "CodeBuildAssetBuildSpecStack:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
-      }
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$Exact\":\"",
+       {
+        "Fn::ImportValue": "CodeBuildAssetBuildSpecStack:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+       },
+       "\"}"
+      ]
      ]
+    },
+    "actualPath": "projects.0.name",
+    "parameters": {
+     "names": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "CodeBuildAssetBuildSpecStack:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+        },
+        "\"]"
+       ]
+      ]
+     }
     },
     "flattenResponse": "true",
     "outputPaths": [
-     "projects.0.source.buildspec"
+     "projects.0.name"
     ],
-    "salt": "1677121630131"
+    "salt": "1794142009638"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -55,6 +73,15 @@
       "PolicyDocument": {
        "Version": "2012-10-17",
        "Statement": [
+        {
+         "Action": [
+          "codebuild:BatchGetProjects"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
         {
          "Action": [
           "codebuild:BatchGetProjects"
@@ -109,12 +136,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "87aade8cd73d75d1ea17e34314d337288ae3e665ffb1fa92ab0fb993a1317fd9.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -123,10 +150,51 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
-  "AwsApiCallS3getObject": {
+  "AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51": {
+   "Type": "Custom::DeployAssert@SdkCallCodeBuildbatchGetProjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CodeBuild",
+    "api": "batchGetProjects",
+    "expected": "{\"$StringLike\":\".+\"}",
+    "actualPath": "projects.0.source.buildspec",
+    "parameters": {
+     "names": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "CodeBuildAssetBuildSpecStack:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "projects.0.source.buildspec",
+     "projects.0.source.buildspec"
+    ],
+    "salt": "1794142009639"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3getObject5fadd9d30511df40ccf893791785d7a1": {
    "Type": "Custom::DeployAssert@SdkCallS3getObject",
    "Properties": {
     "ServiceToken": {
@@ -139,65 +207,83 @@
     "api": "getObject",
     "parameters": {
      "Bucket": {
-      "Fn::Select": [
-       0,
-       {
-        "Fn::Split": [
-         "/",
-         {
-          "Fn::Select": [
-           5,
-           {
-            "Fn::Split": [
-             ":",
-             {
-              "Fn::GetAtt": [
-               "AwsApiCallCodeBuildbatchGetProjects",
-               "apiCallResponse.projects.0.source.buildspec"
-              ]
-             }
-            ]
-           }
-          ]
-         }
-        ]
-       }
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::Split": [
+            "/",
+            {
+             "Fn::Select": [
+              5,
+              {
+               "Fn::Split": [
+                ":",
+                {
+                 "Fn::GetAtt": [
+                  "AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51",
+                  "apiCallResponse.projects.0.source.buildspec"
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        "\""
+       ]
       ]
      },
      "Key": {
-      "Fn::Select": [
-       1,
-       {
-        "Fn::Split": [
-         "/",
-         {
-          "Fn::Select": [
-           5,
-           {
-            "Fn::Split": [
-             ":",
-             {
-              "Fn::GetAtt": [
-               "AwsApiCallCodeBuildbatchGetProjects",
-               "apiCallResponse.projects.0.source.buildspec"
-              ]
-             }
-            ]
-           }
-          ]
-         }
-        ]
-       }
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::Select": [
+          1,
+          {
+           "Fn::Split": [
+            "/",
+            {
+             "Fn::Select": [
+              5,
+              {
+               "Fn::Split": [
+                ":",
+                {
+                 "Fn::GetAtt": [
+                  "AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51",
+                  "apiCallResponse.projects.0.source.buildspec"
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        "\""
+       ]
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1677121630135"
+    "salt": "1794142009639"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallCodeBuildstartBuild": {
+  "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62": {
    "Type": "Custom::DeployAssert@SdkCallCodeBuildstartBuild",
    "Properties": {
     "ServiceToken": {
@@ -210,16 +296,28 @@
     "api": "startBuild",
     "parameters": {
      "projectName": {
-      "Fn::ImportValue": "CodeBuildAssetBuildSpecStack:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "CodeBuildAssetBuildSpecStack:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
-    "salt": "1677121630135"
+    "outputPaths": [
+     "build.id"
+    ],
+    "salt": "1794142009639"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallCodeBuildbatchGetBuilds": {
+  "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c": {
    "Type": "Custom::DeployAssert@SdkCallCodeBuildbatchGetBuilds",
    "Properties": {
     "ServiceToken": {
@@ -233,28 +331,35 @@
     "expected": "{\"$StringLike\":\"SUCCEEDED\"}",
     "actualPath": "builds.0.buildStatus",
     "stateMachineArn": {
-     "Ref": "AwsApiCallCodeBuildbatchGetBuildsWaitFor678D530F"
+     "Ref": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForEABFE599"
     },
     "parameters": {
-     "ids": [
-      {
-       "Fn::GetAtt": [
-        "AwsApiCallCodeBuildstartBuild",
-        "apiCallResponse.build.id"
+     "ids": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62",
+          "apiCallResponse.build.id"
+         ]
+        },
+        "\"]"
        ]
-      }
-     ]
+      ]
+     }
     },
     "flattenResponse": "true",
     "outputPaths": [
      "builds.0.buildStatus"
     ],
-    "salt": "1677121630135"
+    "salt": "1794142009640"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallCodeBuildbatchGetBuildsWaitForIsCompleteProviderInvokeB7D5E279": {
+  "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForIsCompleteProviderInvokeA895084C": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -266,13 +371,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallCodeBuildbatchGetBuildsWaitForRole390D0005",
+      "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForRole755D6EC3",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallCodeBuildbatchGetBuildsWaitForTimeoutProviderInvokeFAAC8293": {
+  "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForTimeoutProviderInvokeC4B68BD5": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -284,13 +389,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallCodeBuildbatchGetBuildsWaitForRole390D0005",
+      "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForRole755D6EC3",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallCodeBuildbatchGetBuildsWaitForRole390D0005": {
+  "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForRole755D6EC3": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -335,7 +440,7 @@
     ]
    }
   },
-  "AwsApiCallCodeBuildbatchGetBuildsWaitFor678D530F": {
+  "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForEABFE599": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -362,13 +467,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallCodeBuildbatchGetBuildsWaitForRole390D0005",
+      "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForRole755D6EC3",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallCodeBuildbatchGetBuildsWaitForRole390D0005"
+    "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForRole755D6EC3"
    ]
   },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
@@ -415,12 +520,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "87aade8cd73d75d1ea17e34314d337288ae3e665ffb1fa92ab0fb993a1317fd9.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -429,6 +534,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -457,12 +566,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "87aade8cd73d75d1ea17e34314d337288ae3e665ffb1fa92ab0fb993a1317fd9.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -471,23 +580,35 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCodeBuildbatchGetProjects": {
+  "AssertionResultsAwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e5": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCodeBuildbatchGetProjects",
+     "AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e5",
      "assertion"
     ]
    }
   },
-  "AssertionResultsAwsApiCallCodeBuildbatchGetBuilds": {
+  "AssertionResultsAwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCodeBuildbatchGetBuilds",
+     "AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c",
      "assertion"
     ]
    }
