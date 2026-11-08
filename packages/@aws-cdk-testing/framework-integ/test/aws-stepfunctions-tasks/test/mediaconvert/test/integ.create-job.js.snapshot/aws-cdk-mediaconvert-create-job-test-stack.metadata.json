@@ -1,0 +1,96 @@
+{
+  "/aws-cdk-mediaconvert-create-job-test-stack/MediaConvertRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconvert-create-job-test-stack/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconvert-create-job-test-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconvert-create-job-test-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconvert-create-job-test-stack/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconvert-create-job-test-stack/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-cdk-mediaconvert-create-job-test-stack/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-cdk-mediaconvert-create-job-test-stack/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconvert-create-job-test-stack/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    }
+  ]
+}

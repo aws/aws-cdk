@@ -154,6 +154,7 @@ to production by simply updating the endpoint to point to the newer version.
 | `networkConfiguration` | `NetworkConfiguration` | No | Network configuration for the agent runtime. Defaults to `RuntimeNetworkConfiguration.usingPublicNetwork()` |
 | `description` | `string` | No | Optional description for the agent runtime |
 | `protocolConfiguration` | `ProtocolType` | No | Protocol configuration for the agent runtime. Defaults to `ProtocolType.HTTP` |
+| `platformVersion` | `PlatformVersion` | No | The platform version of the runtime (for example `PlatformVersion.V1` or `PlatformVersion.V2`). Defaults to the service default platform version |
 | `authorizerConfiguration` | `RuntimeAuthorizerConfiguration` | No | Authorizer configuration for the agent runtime. Use `RuntimeAuthorizerConfiguration` static methods to create configurations for IAM, Cognito, JWT, or OAuth authentication |
 | `environmentVariables` | `{ [key: string]: string }` | No | Environment variables for the agent runtime. Maximum 50 environment variables |
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
@@ -707,6 +708,22 @@ runtime.connections.allowTo(databaseSecurityGroup, ec2.Port.tcp(5432), 'Allow Po
 runtime.connections.allowToAnyIpv4(ec2.Port.tcp(443), 'Allow HTTPS outbound');
 ```
 
+#### Removing a VPC Runtime
+
+When a VPC-mode runtime is removed, the AgentCore service releases the network interfaces it created in your VPC asynchronously, and they can stay attached to the runtime's security groups for an extended period after the runtime is deleted. If CloudFormation tries to delete such a security group in that time, the deletion fails with `DependencyViolation`. CloudFormation retries for a while and then skips it, so the stack update can take a long time and the security group remains in your account outside of the stack.
+
+To avoid this, keep the runtime's security groups out of CloudFormation's delete path, and delete them yourself once the network interfaces are gone:
+
+```typescript fixture=default
+declare const runtime: agentcore.Runtime;
+
+for (const sg of runtime.connections.securityGroups) {
+  sg.applyRemovalPolicy(RemovalPolicy.RETAIN);
+}
+```
+
+Alternatively, pass a long-lived security group managed in a separate stack through the `securityGroups` property of `RuntimeNetworkConfiguration.usingVpc()`.
+
 ### Runtime IAM Permissions
 
 The Runtime construct provides convenient methods for granting IAM permissions to principals that need to invoke the runtime or manage its execution role.
@@ -910,6 +927,26 @@ new logs.MetricFilter(this, 'ToolErrors', {
 ```
 
 The log group itself is created by the AgentCore service on the runtime's first invocation, not by CDK. Constructs that require the log group to exist at deploy time may race the first invocation; if that is a concern, pre-create the log group with a `LogRetention` resource using the same name.
+
+#### Platform version
+
+Set `platformVersion` to choose the runtime platform (`V1` or `V2`). If omitted when creating a runtime, the service applies its default platform version; if omitted when updating an existing runtime, the runtime keeps its current platform version.
+
+Switching an existing runtime between platform versions updates it in place rather than replacing it. AgentCore creates a new runtime version, points the `DEFAULT` endpoint at it, leaves pinned endpoints on their versions, and drains in-flight sessions on the old one. Because `V2` snapshots your agent, a `V2` create or update takes a few minutes to reach `READY` (versus seconds on `V1`). See [Platform versions](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-how-it-works.html#platform-versions) for `V2` specifics.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  platformVersion: agentcore.PlatformVersion.V2,
+});
+```
 
 ## Browser
 
@@ -1117,7 +1154,7 @@ const userRole = new iam.Role(this, "UserRole", {
 // Grant read permissions (Get and List actions)
 browser.grantRead(userRole);
 
-// Grant use permissions (Start, Update, Stop actions)
+// Grant use permissions (Start, Update, Connect to the automation stream, and Stop actions)
 browser.grantUse(userRole);
 
 // Grant specific custom permissions
@@ -1324,6 +1361,33 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   }),
 });
 ```
+
+`MCPProtocolVersion` provides the following versions:
+
+- `MCP_2026_07_28`: MCP version 2026-07-28
+- `MCP_2025_11_25`: MCP version 2025-11-25
+- `MCP_2025_06_18`: MCP version 2025-06-18
+- `MCP_2025_03_26`: MCP version 2025-03-26 (used by the default protocol configuration)
+
+Use `MCPProtocolVersion.of()` for a version that is not yet defined in the class.
+
+`supportedVersions` replaces the default list instead of adding to it. A request without the `MCP-Protocol-Version` header gets version 2025-03-26, and the gateway rejects it if that version is not in `supportedVersions`. Keep `MCP_2025_03_26` in the list to accept those clients:
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  protocolConfiguration: new agentcore.McpProtocolConfiguration({
+    supportedVersions: [
+      agentcore.MCPProtocolVersion.MCP_2025_03_26,
+      agentcore.MCPProtocolVersion.MCP_2025_11_25,
+      agentcore.MCPProtocolVersion.MCP_2026_07_28,
+    ],
+  }),
+});
+```
+
+You can change `supportedVersions` on an existing gateway. The gateway is updated in place and keeps its identifier and URL.
+For more information, see [How AgentCore Gateway supports the MCP 2026-07-28 spec](https://aws.amazon.com/blogs/machine-learning/how-agentcore-gateway-supports-the-mcp-2026-07-28-spec/).
 
 ### Inbound authorization
 
@@ -1618,7 +1682,7 @@ discovers and indexes available tools from MCP servers through synchronization.
 - Requires explicit authentication configuration (OAuth2 recommended, empty array for NoAuth)
 - Ideal for connecting to external MCP-compliant servers
 - The endpoint must use HTTPS protocol
-- Supported MCP protocol versions: 2025-06-18, 2025-03-26
+- Supported MCP protocol versions: 2026-07-28, 2025-11-25, 2025-06-18, 2025-03-26
 - Automatic tool discovery through synchronization
 
 **Synchronization Behavior:**

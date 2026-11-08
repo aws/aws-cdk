@@ -212,18 +212,21 @@ export abstract class Output {
 /**
  * Output definition for a MediaPackage V2 output group.
  *
- * MediaPackage V2 uses CMAF ingest which requires one media track (video or audio) per output.
- * In-band captions (burn-in, embedded) can ride alongside the primary encode because they do not
- * produce a separate track.
+ * MediaPackage V2 uses CMAF ingest which requires one track per output. The track is a video
+ * encode, an audio encode, or a caption encode. In-band captions (burn-in,
+ * embedded) ride alongside the primary encode because they do not produce a separate track.
  */
 export interface MediaPackageV2OutputDefinition {
   /**
-   * The primary encode for this output — one video or one audio track.
+   * The encode that produces this output's track — one video encode, one audio encode, or one caption encode.
+   * Those caption types are packaged as their own track, so they
+   * are set here rather than in `captions`.
    */
   readonly encode: EncodeConfiguration;
   /**
    * Caption encodes that ride alongside the primary encode. Only in-band caption types are
-   * allowed (burn-in, embedded) — out-of-band captions must go in their own output.
+   * allowed (burn-in, embedded) — out-of-band captions go in their own output, as that output's
+   * `encode`. Must be empty when `encode` is itself a caption.
    *
    * @default - no captions on this output
    */
@@ -466,17 +469,21 @@ export interface SrtOutputDefinition extends OutputDefinition {
 /**
  * Output definition for a CMAF Ingest output group.
  *
- * CMAF Ingest requires one media track (video or audio) per output. In-band captions (burn-in,
- * embedded) can ride alongside the primary encode.
+ * CMAF Ingest requires one track per output. The track is a video encode, an audio encode, or a
+ * caption encode. In-band captions (burn-in, embedded) ride alongside the primary
+ * encode because they do not produce a separate track.
  */
 export interface CmafIngestOutputDefinition {
   /**
-   * The primary encode for this output — one video or one audio track.
+   * The encode that produces this output's track — one video encode, one audio encode, or one
+   * caption encode. Those caption types are packaged as their own track, so they
+   * are set here rather than in `captions`.
    */
   readonly encode: EncodeConfiguration;
   /**
    * Caption encodes that ride alongside the primary encode. Only in-band caption types are
-   * allowed (burn-in, embedded) — out-of-band captions must go in their own output.
+   * allowed (burn-in, embedded) — out-of-band captions go in their own output, as that output's
+   * `encode`. Must be empty when `encode` is itself a caption.
    *
    * @default - no captions on this output
    */
@@ -543,15 +550,22 @@ export class MediaPackageV2Output extends Output {
         `MediaPackage V2 output group '${this.groupName}' requires explicit framerate on video encode '${encode.name}'.`,
       );
     }
-    // Validate the primary encode is not a caption
-    if (encode._bindCaption()) {
+    // A sidecar caption is a track of its own, so it can be the primary encode. In-band captions
+    // produce no track and must ride alongside a video encode.
+    if (encode._bindCaption() && encode._isInBandCaption()) {
       throw new UnscopedValidationError(
-        lit`MediaPackagePrimaryEncodeNotCaption`,
-        `MediaPackage V2 output '${this.def.outputName}': 'encode' must be a video or audio encode. Captions must go in the 'captions' prop alongside a video encode.`,
+        lit`MediaPackagePrimaryEncodeNotInBandCaption`,
+        `MediaPackage V2 output '${this.def.outputName}': caption '${encode.name}' uses an in-band destination (burn-in, embedded), which produces no track of its own. Set 'encode' to a video encode and pass this caption in the 'captions' prop.`,
+      );
+    }
+    if (encode._bindCaption() && (this.def.captions ?? []).length > 0) {
+      throw new UnscopedValidationError(
+        lit`MediaPackageCaptionOnlyOutputHasCaptions`,
+        `MediaPackage V2 output '${this.def.outputName}': 'captions' must be empty when 'encode' is a caption. Put each out-of-band caption in its own output.`,
       );
     }
     // Validate captions are actually caption encodes and are in-band only
-    for (const caption of this.def.captions ?? []) {
+    for (const caption of (this.def.captions ?? [])) {
       if (!caption._bindCaption()) {
         throw new UnscopedValidationError(
           lit`MediaPackageCaptionsMustBeCaptions`,
@@ -561,14 +575,13 @@ export class MediaPackageV2Output extends Output {
       if (!caption._isInBandCaption()) {
         throw new UnscopedValidationError(
           lit`MediaPackageCaptionsMustBeInBand`,
-          `MediaPackage V2 output '${this.def.outputName}': caption '${caption.name}' uses an out-of-band destination (e.g. WebVTT, TTML). Only in-band types (burn-in, embedded) can ride alongside the primary encode. Put out-of-band captions in their own output.`,
+          `MediaPackage V2 output '${this.def.outputName}': caption '${caption.name}' uses an out-of-band destination (e.g. WebVTT, TTML). Only in-band types (burn-in, embedded) can ride alongside the primary encode. Put out-of-band captions in their own output, as the 'encode' of that output.`,
         );
       }
     }
-    // Only one embedded caption per output
-    const embeddedCount = (this.def.captions ?? []).filter(c => c._isEmbeddedCaption()).length
-      + (encode._bindCaption() && encode._isEmbeddedCaption() ? 1 : 0);
-    if (embeddedCount > 1) {
+    // Only one embedded caption per output. The primary encode is never embedded here: embedded
+    // destinations are in-band, so they are rejected above.
+    if ((this.def.captions ?? []).filter(c => c._isEmbeddedCaption()).length > 1) {
       throw new UnscopedValidationError(
         lit`MediaPackageOneEmbeddedCaption`,
         `MediaPackage V2 output '${this.def.outputName}': only one embedded caption is allowed per output.`,
@@ -806,8 +819,22 @@ export class CmafIngestOutput extends Output {
   }
 
   protected _validate(): void {
+    // A sidecar caption is a track of its own, so it can be the primary encode. In-band captions
+    // produce no track and must ride alongside a video encode.
+    if (this.def.encode._bindCaption() && this.def.encode._isInBandCaption()) {
+      throw new UnscopedValidationError(
+        lit`CmafIngestPrimaryEncodeNotInBandCaption`,
+        `CMAF Ingest output '${this.def.outputName}': caption '${this.def.encode.name}' uses an in-band destination (burn-in, embedded), which produces no track of its own. Set 'encode' to a video encode and pass this caption in the 'captions' prop.`,
+      );
+    }
+    if (this.def.encode._bindCaption() && (this.def.captions ?? []).length > 0) {
+      throw new UnscopedValidationError(
+        lit`CmafIngestCaptionOnlyOutputHasCaptions`,
+        `CMAF Ingest output '${this.def.outputName}': 'captions' must be empty when 'encode' is a caption. Put each out-of-band caption in its own output.`,
+      );
+    }
     // Validate captions are actually caption encodes and are in-band only
-    for (const caption of this.def.captions ?? []) {
+    for (const caption of (this.def.captions ?? [])) {
       if (!caption._bindCaption()) {
         throw new UnscopedValidationError(
           lit`CmafIngestCaptionsMustBeCaptions`,
@@ -817,14 +844,13 @@ export class CmafIngestOutput extends Output {
       if (!caption._isInBandCaption()) {
         throw new UnscopedValidationError(
           lit`CmafIngestCaptionsMustBeInBand`,
-          `CMAF Ingest output '${this.def.outputName}': caption '${caption.name}' uses an out-of-band destination. Only in-band types (burn-in, embedded) can ride alongside the primary encode. Put out-of-band captions in their own output.`,
+          `CMAF Ingest output '${this.def.outputName}': caption '${caption.name}' uses an out-of-band destination (e.g. WebVTT, TTML). Only in-band types (burn-in, embedded) can ride alongside the primary encode. Put out-of-band captions in their own output, as the 'encode' of that output.`,
         );
       }
     }
-    // Only one embedded caption per output
-    const embeddedCount = (this.def.captions ?? []).filter(c => c._isEmbeddedCaption()).length
-      + (this.def.encode._bindCaption() && this.def.encode._isEmbeddedCaption() ? 1 : 0);
-    if (embeddedCount > 1) {
+    // Only one embedded caption per output. The primary encode is never embedded here: embedded
+    // destinations are in-band, so they are rejected above.
+    if ((this.def.captions ?? []).filter(c => c._isEmbeddedCaption()).length > 1) {
       throw new UnscopedValidationError(
         lit`CmafIngestOneEmbeddedCaption`,
         `CMAF Ingest output '${this.def.outputName}': only one embedded caption is allowed per output.`,

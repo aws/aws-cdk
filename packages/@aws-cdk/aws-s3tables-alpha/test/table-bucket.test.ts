@@ -52,6 +52,25 @@ describe('TableBucket', () => {
     });
   });
 
+  describe('created without tableBucketName', () => {
+    test(`creates a ${TABLE_BUCKET_CFN_RESOURCE} resource with a CDK-generated name`, () => {
+      new s3tables.TableBucket(stack, 'AutoNamedBucket');
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'TableBucketName': 'autonamedbucket',
+      });
+    });
+
+    test('two auto-named buckets get distinct names', () => {
+      new s3tables.TableBucket(stack, 'AutoNamedBucketA');
+      new s3tables.TableBucket(stack, 'AutoNamedBucketB');
+
+      const template = Template.fromStack(stack);
+      const tableBuckets = template.findResources(TABLE_BUCKET_CFN_RESOURCE);
+      const names = Object.values(tableBuckets).map((r: any) => r.Properties.TableBucketName);
+      expect(new Set(names).size).toBe(names.length);
+    });
+  });
+
   describe('created with unreferenced file removal properties', () => {
     const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
       account: '0123456789012',

@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "DistributionDefaultViewerProtocolPolicy/DefaultTest": {
+      "stacks": [
+        "integ-distribution-default-viewer-protocol-policy"
+      ],
+      "assertionStack": "DistributionDefaultViewerProtocolPolicy/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributionDefaultViewerProtocolPolicyDefaultTestDeployAssert03BF6A22"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
