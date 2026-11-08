@@ -1,0 +1,265 @@
+{
+  "/FunctionUrlOriginIpAddressTypeStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FunctionUrlOriginIpAddressTypeStack.template.json"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/TestFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithoutIpAddressTypeProp(IPv4)": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv4": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv6": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithDualstack": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/TestFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/TestFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunction22AD90FC"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/TestFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/TestFunction/FunctionUrl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "function": "*",
+        "authType": "AWS_IAM"
+      }
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithoutIpAddressTypeProp(IPv4)/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithoutIpAddressTypePropIPv457500ACB"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv4/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithIPv467452C1E"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv6/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithIPv69F24DA5D"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithDualstack/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithDualstackCB183339"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/Exports/Output{\"Ref\":\"DistributionWithIPv467452C1E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDistributionWithIPv467452C1EFE039C9B"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/Exports/Output{\"Ref\":\"DistributionWithIPv69F24DA5D\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDistributionWithIPv69F24DA5D6A4AB011"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/Exports/Output{\"Ref\":\"DistributionWithDualstackCB183339\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDistributionWithDualstackCB18333921C95B2A"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/TestFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionServiceRole6ABD93C7"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/TestFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionLogGroupE7744A08"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/TestFunction/FunctionUrl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionFunctionUrlF8C7B1A2"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithoutIpAddressTypeProp(IPv4)/Origin1/FunctionUrlOriginAccessControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithoutIpAddressTypeProp(IPv4)/Origin1/InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithoutIpAddressTypePropIPv4Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D68C10388"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithoutIpAddressTypeProp(IPv4)/Origin1/InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithoutIpAddressTypePropIPv4Origin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropIPv4Origin19CE58A8D11AC39DD"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv4/Origin1/FunctionUrlOriginAccessControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv4/Origin1/InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D097901": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithIPv4Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D09790128D49D13"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv4/Origin1/InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D097901": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithIPv4Origin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv4Origin16D09790183D60B9B"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv6/Origin1/FunctionUrlOriginAccessControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv6/Origin1/InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithIPv6Origin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92367EAB99"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv6/Origin1/InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithIPv6Origin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithIPv6Origin13DB75E92C9E5ABDB"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithDualstack/Origin1/FunctionUrlOriginAccessControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithDualstack/Origin1/InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E08": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithDualstackOrigin1InvokeFromApiForFunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E08C93B3E02"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithDualstack/Origin1/InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E08": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithDualstackOrigin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithDualstackOrigin1C9A16E087EF55EB6"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithoutIpAddressTypeProp(IPv4)/Origin1/FunctionUrlOriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithoutIpAddressTypePropIPv4Origin1FunctionUrlOriginAccessControl24C1DA23"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv4/Origin1/FunctionUrlOriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithIPv4Origin1FunctionUrlOriginAccessControl26099520"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithIPv6/Origin1/FunctionUrlOriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithIPv6Origin1FunctionUrlOriginAccessControl37121DA6"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeStack/DistributionWithDualstack/Origin1/FunctionUrlOriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionWithDualstackOrigin1FunctionUrlOriginAccessControl41F65825"
+    }
+  ]
+}
