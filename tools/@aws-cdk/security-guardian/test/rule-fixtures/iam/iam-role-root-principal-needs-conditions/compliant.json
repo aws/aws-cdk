@@ -1,0 +1,23 @@
+{
+  "Description": "IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS passes: an ArnEquals condition limits the trusted account to one role",
+  "Resources": {
+    "ConditionedRootTrustRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::123456789012:root" },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "ArnEquals": { "aws:PrincipalArn": "arn:aws:iam::123456789012:role/Deployer" }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}
