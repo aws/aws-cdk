@@ -1,0 +1,32 @@
+{
+  "/ExactAssertion": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ExactAssertion.template.json"
+    }
+  ],
+  "/ExactAssertion/Parameter": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Parameter"
+    }
+  ],
+  "/ExactAssertion/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ExactAssertion/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ExactAssertion/Exports/Output{\"Ref\":\"Parameter\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefParameter4BE52EB5"
+    }
+  ]
+}

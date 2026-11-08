@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "ExactAssertionTest/DefaultTest": {
+      "stacks": [
+        "ExactAssertion"
+      ],
+      "assertionStack": "ExactAssertionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ExactAssertionTestDefaultTestDeployAssert1C8BCAE3"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
+}

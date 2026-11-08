@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "87aade8cd73d75d1ea17e34314d337288ae3e665ffb1fa92ab0fb993a1317fd9": {
+      "source": {
+        "path": "asset.87aade8cd73d75d1ea17e34314d337288ae3e665ffb1fa92ab0fb993a1317fd9.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-c4bc741a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "87aade8cd73d75d1ea17e34314d337288ae3e665ffb1fa92ab0fb993a1317fd9.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f503d252f20d07ea1adc8d3dd8e9b82f0175a574b1c838b45166e09daa150939": {
+      "displayName": "ExactAssertionTestDefaultTestDeployAssert1C8BCAE3 Template",
+      "source": {
+        "path": "ExactAssertionTestDefaultTestDeployAssert1C8BCAE3.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-3e6cb8e5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f503d252f20d07ea1adc8d3dd8e9b82f0175a574b1c838b45166e09daa150939.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
