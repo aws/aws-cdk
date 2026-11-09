@@ -147,9 +147,9 @@ export interface StackSetTargetOptions {
   /**
    * A list of regions the Stack should be deployed to.
    *
-   * If {@link StackSetProps.operationPreferences.regionOrder} is specified
-   * then the StackSet will be deployed sequentially otherwise it will be
-   * deployed to all regions in parallel.
+   * By default the StackSet is deployed to the regions sequentially. Set
+   * `regionConcurrencyType` to `RegionConcurrencyType.PARALLEL` in
+   * {@link StackSetProps.operationPreferences} to deploy to them in parallel.
    */
   readonly regions: string[];
 
