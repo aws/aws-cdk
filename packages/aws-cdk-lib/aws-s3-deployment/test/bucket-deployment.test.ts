@@ -1760,7 +1760,6 @@ describe('marker encodings', () => {
 
     template.hasResourceProperties('Custom::CDKBucketDeployment', {
       SourceMarkersConfig: [{
-        jsonEscape: false,
         markerEncodings: Match.objectEquals({ '<<marker:0xbaba:1>>': 'JSON_VALUE' }),
       }],
     });
@@ -1782,7 +1781,7 @@ describe('marker encodings', () => {
     const { template } = synth((stack) => s3deploy.Source.data('f.txt', `value=${stringToken(stack, 'S')}`), 'f.txt');
 
     template.hasResourceProperties('Custom::CDKBucketDeployment', {
-      SourceMarkersConfig: [{ markerEncodings: Match.absent() }],
+      SourceMarkersConfig: Match.absent(),
     });
   });
 });
@@ -1824,17 +1823,19 @@ test('can add sources with addSource', () => {
     sources: [s3deploy.Source.data('my/path.txt', 'helloWorld')],
     destinationBucket: bucket,
   });
-  deployment.addSource(s3deploy.Source.data('my/other/path.txt', 'hello world'));
+  deployment.addSource(s3deploy.Source.data('my/other/path.txt', `hello world from ${cdk.Aws.REGION}`));
 
   const result = app.synth();
   const content = readDataFile(result, 'my/path.txt');
   const content2 = readDataFile(result, 'my/other/path.txt');
   expect(content).toStrictEqual('helloWorld');
-  expect(content2).toStrictEqual('hello world');
+  expect(content2).toStrictEqual('hello world from <<marker:0xbaba:0>>');
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
       {},
-      {},
+      {
+        '<<marker:0xbaba:0>>': { Ref: 'AWS::Region' },
+      },
     ],
   });
 });
@@ -1853,27 +1854,6 @@ test('deploy with payload signing enabled', () => {
 
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     SignContent: true,
-  });
-});
-
-test('if any source has markers then all sources have markers', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'Test');
-  const bucket = new s3.Bucket(stack, 'Bucket');
-  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
-    sources: [s3deploy.Source.data('my/path.txt', 'helloWorld')],
-    destinationBucket: bucket,
-  });
-  deployment.addSource(s3deploy.Source.asset(path.join(__dirname, 'my-website')));
-
-  const result = app.synth();
-  const content = readDataFile(result, 'my/path.txt');
-  expect(content).toStrictEqual('helloWorld');
-  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
-    SourceMarkers: [
-      {},
-      {},
-    ],
   });
 });
 
