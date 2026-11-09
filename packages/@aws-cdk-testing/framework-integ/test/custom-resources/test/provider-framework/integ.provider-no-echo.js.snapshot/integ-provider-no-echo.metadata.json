@@ -21,6 +21,36 @@
       "data": "*"
     }
   ],
+  "/integ-provider-no-echo/LogChecker": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "environment": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
   "/integ-provider-no-echo/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -65,7 +95,7 @@
         "handler": "*",
         "timeout": "*",
         "loggingFormat": "JSON",
-        "applicationLogLevelV2": "FATAL",
+        "applicationLogLevelV2": "INFO",
         "logGroup": "*",
         "vpc": "*",
         "vpcSubnets": "*",
@@ -137,10 +167,80 @@
       "data": "mycr"
     }
   ],
-  "/integ-provider-no-echo/Exports/Output{\"Fn::GetAtt\":[\"myproviderframeworkonEventLogRetentionA3431778\",\"LogGroupName\"]}": [
+  "/integ-provider-no-echo/LogChecker/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-provider-no-echo/LogChecker/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputFnGetAttmyproviderframeworkonEventLogRetentionA3431778LogGroupNameE0A0B461"
+      "data": "LogChecker145EDFD3"
+    }
+  ],
+  "/integ-provider-no-echo/LogChecker/inlinePolicyAddedToExecutionRole-0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-provider-no-echo/Exports/Output{\"Ref\":\"LogChecker145EDFD3\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefLogChecker145EDFD307A6FA6F"
     }
   ],
   "/integ-provider-no-echo/my-handler/ServiceRole/Resource": [
@@ -283,6 +383,18 @@
           {}
         ]
       }
+    }
+  ],
+  "/integ-provider-no-echo/LogChecker/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogCheckerServiceRoleEF36F89D"
+    }
+  ],
+  "/integ-provider-no-echo/LogChecker/inlinePolicyAddedToExecutionRole-0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogCheckerinlinePolicyAddedToExecutionRole05FA4E000"
     }
   ],
   "/integ-provider-no-echo/my-provider/framework-onEvent/ServiceRole/Resource": [

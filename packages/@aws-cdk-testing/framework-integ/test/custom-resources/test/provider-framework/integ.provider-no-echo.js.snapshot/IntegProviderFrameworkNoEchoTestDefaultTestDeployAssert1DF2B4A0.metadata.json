@@ -35,7 +35,7 @@
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5/Default": [
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LambdaInvoke80918088e76da94a63385a201595d7a4/Default": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -49,10 +49,16 @@
       "data": "*"
     }
   ],
-  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5/AssertionResults": [
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LambdaInvoke80918088e76da94a63385a201595d7a4/Invoke": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5"
+      "data": "LambdaInvoke80918088e76da94a63385a201595d7a4Invoke7C295CF1"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LambdaInvoke80918088e76da94a63385a201595d7a4/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke80918088e76da94a63385a201595d7a4"
     }
   ],
   "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
@@ -67,10 +73,58 @@
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
     }
   ],
-  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5/Default/Default": [
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AwsApiCallCloudWatchLogsfilterLogEventsdbdc36d436682909b09e2058599e58d5"
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LambdaInvoke80918088e76da94a63385a201595d7a4/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke80918088e76da94a63385a201595d7a4"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LambdaInvoke80918088e76da94a63385a201595d7a4/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke80918088e76da94a63385a201595d7a4WaitForRoleA9AD7C45"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LambdaInvoke80918088e76da94a63385a201595d7a4/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke80918088e76da94a63385a201595d7a4WaitFor30A17673"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LambdaInvoke80918088e76da94a63385a201595d7a4/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke80918088e76da94a63385a201595d7a4WaitForIsCompleteProviderInvoke390AD337"
+    }
+  ],
+  "/IntegProviderFrameworkNoEchoTest/DefaultTest/DeployAssert/LambdaInvoke80918088e76da94a63385a201595d7a4/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke80918088e76da94a63385a201595d7a4WaitForTimeoutProviderInvoke7B99ECA6"
     }
   ]
 }

@@ -10,5 +10,6 @@
       "assertionStackName": "integtestbucketdeploymentdeployedbucketDefaultTestDeployAssert294FD933"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }
