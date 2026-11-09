@@ -15,16 +15,16 @@
         }
       }
     },
-    "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8": {
+    "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f": {
       "displayName": "com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider/framework-onEvent/Code",
       "source": {
-        "path": "asset.41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8",
+        "path": "asset.476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-02a6c185": {
+        "current_account-current_region-e804c7d2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip",
+          "objectKey": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -43,16 +43,16 @@
         }
       }
     },
-    "53cd2255f91aa60caad853b3e86cf775fc26c252d66481d2f3dd11dd749d6e57": {
+    "9c27ada5574b28751c9d7027d357019de14ad2ac9cfa20588100b0206bbf6656": {
       "displayName": "integ-provider-framework Template",
       "source": {
         "path": "integ-provider-framework.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-17820152": {
+        "current_account-current_region-dddfdeef": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "53cd2255f91aa60caad853b3e86cf775fc26c252d66481d2f3dd11dd749d6e57.json",
+          "objectKey": "9c27ada5574b28751c9d7027d357019de14ad2ac9cfa20588100b0206bbf6656.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

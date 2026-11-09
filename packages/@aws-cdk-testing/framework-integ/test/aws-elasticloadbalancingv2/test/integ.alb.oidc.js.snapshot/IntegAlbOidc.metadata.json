@@ -6,7 +6,7 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
         "    at AlbOidcStack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
         "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",

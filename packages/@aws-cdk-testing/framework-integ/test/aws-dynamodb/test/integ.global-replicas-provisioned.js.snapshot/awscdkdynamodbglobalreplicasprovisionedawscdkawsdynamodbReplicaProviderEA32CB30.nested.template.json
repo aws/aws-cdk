@@ -322,7 +322,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
@@ -481,7 +481,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
@@ -637,7 +637,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {

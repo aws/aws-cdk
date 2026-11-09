@@ -489,7 +489,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "82e6a7b1ce9221c4b5bbd7607b662f2965ceaaadff0b45ec336397c6d67a8393.zip"
+     "S3Key": "720ab51569e4a55c658e6dba29e0ffa959863f122902df42c2e848b88ee9a6aa.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -762,7 +762,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-with-waiter-state-machine/MyProvider)",
     "Environment": {
@@ -1013,7 +1013,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (integ-provider-with-waiter-state-machine/MyProvider)",
     "Environment": {
@@ -1261,7 +1261,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-with-waiter-state-machine/MyProvider)",
     "Environment": {
@@ -1632,7 +1632,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
     "Environment": {
@@ -1883,7 +1883,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
     "Environment": {
@@ -2131,7 +2131,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "41ada5e9386c196b3e3c6c60b921366c3326dafdb43e4619ddc5a7d41bf460e8.zip"
+     "S3Key": "476b6f6dbe4d376cf4295054bc38b2a87d8a66566bbea2f3157d41a50948218f.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
     "Environment": {
