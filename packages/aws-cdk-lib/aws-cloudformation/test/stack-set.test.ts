@@ -1550,12 +1550,12 @@ describe('StackSet validation errors', () => {
   });
   const organizationalUnitsRequireServiceManaged = expect.objectContaining({
     name: 'StackSetOrganizationalUnitsRequireServiceManaged',
-    message: 'a self managed StackSet cannot deploy to organizational units ["ou-1111111"], set \'deploymentType: DeploymentType.serviceManaged()\' or use StackSetTarget.fromAccounts()',
+    message: 'a self managed StackSet cannot deploy to organizational units ["ou-1111111"]',
     constructPath: 'Default/StackSet',
   });
   const serviceManagedRequiresOrganizationalUnits = expect.objectContaining({
     name: 'StackSetServiceManagedRequiresOrganizationalUnits',
-    message: 'a service managed StackSet cannot deploy to accounts ["111111111111"] without organizational units, use StackSetTarget.fromOrganizationalUnits() with \'accountFilter: StackSetAccountFilter.intersection()\' and set \'autoDeployEnabled: false\' in DeploymentType.serviceManaged() to deploy only to specific accounts, because automatic deployments ignore account filters',
+    message: 'a service managed StackSet cannot deploy without organizational units',
     constructPath: 'Default/StackSet',
   });
 
