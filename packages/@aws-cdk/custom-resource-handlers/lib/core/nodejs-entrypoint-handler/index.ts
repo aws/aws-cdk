@@ -153,6 +153,9 @@ const REDACTED = '*****';
 /**
  * Returns a copy of the response with every `Data` value replaced, for logging
  * a response that has `NoEcho` set.
+ *
+ * The same rule is implemented in `nodejs-entrypoint.ts` and by `redactDataFromPayload` in the
+ * aws-cdk-lib provider framework; they cannot share code, so keep them in step.
  */
 function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {
   if (json.Data === undefined || json.Data === null) {

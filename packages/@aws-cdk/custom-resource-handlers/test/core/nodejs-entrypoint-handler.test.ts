@@ -189,18 +189,25 @@ describe('nodejs entrypoint', () => {
       expect(logs.join('\n')).toContain('"Attr":"*****"');
     });
 
-    test('NoEcho response Data that is not an object is logged as a single placeholder', async () => {
+    // the user handler is written to a file with `toString()`, so each case is a
+    // separate function with its Data inline rather than a closure over `data`.
+    test.each([
+      ['a string', 'SECRET-STRING', async () => ({ NoEcho: true, Data: 'SECRET-STRING' as any })],
+      ['an array', ['SECRET-1', 'SECRET-2'], async () => ({ NoEcho: true, Data: ['SECRET-1', 'SECRET-2'] as any })],
+      ['a number', 1234567, async () => ({ NoEcho: true, Data: 1234567 as any })],
+    ])('NoEcho response Data that is %s is logged as a single placeholder, but sent to cloudformation', async (_desc, data, userHandler) => {
       // GIVEN
       const event = makeEvent({ RequestType: 'Create' });
 
       // WHEN
-      const { logs, response } = await invokeHandler(event, async _ => ({ NoEcho: true, Data: 'SECRET-STRING' }));
+      const { logs, response } = await invokeHandler(event, userHandler);
 
       // THEN
-      expect(response.Data).toEqual('SECRET-STRING');
+      expect(response.Data).toEqual(data);
       const responseLog = logs.find(l => l.startsWith('submit response to cloudformation'));
       expect(responseLog).toContain('"Data":"*****"');
       expect(responseLog).not.toContain('SECRET');
+      expect(responseLog).not.toContain('1234567');
     });
 
     test('response Data is logged when NoEcho is not set', async () => {

@@ -43,7 +43,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
   const sanitizedEvent = { ...resourceEvent, ResponseURL: '...' };
   if (onEventResult?.NoEcho) {
-    log('readacted event:', cfnResponse.redactDataFromPayload(sanitizedEvent));
+    log('redacted event:', cfnResponse.redactDataFromPayload(sanitizedEvent));
   } else {
     log('event:', sanitizedEvent);
   }

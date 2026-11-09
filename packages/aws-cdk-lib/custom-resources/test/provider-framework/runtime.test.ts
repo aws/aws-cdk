@@ -242,6 +242,9 @@ test('onTimeout does not log the presigned ResponseURL, nor Data when NoEcho is 
   const responseLogs = logMock.mock.calls.filter(args => /submit (redacted )?response/.test(String(args[1])));
   expect(responseLogs).toHaveLength(1);
   expect(responseLogs[0].join(' ')).not.toContain('SECRET-ATTR');
+  // the response sent to cloudformation carries the real Data, with NoEcho set
+  expect(mocks.cfnResponse.NoEcho).toBe(true);
+  expect(mocks.cfnResponse.Data).toEqual({ Foo: 'SECRET-ATTR' });
 });
 
 test('a failing isComplete does not log NoEcho Data in the FAILED response', async () => {
@@ -266,6 +269,8 @@ test('a failing isComplete does not log NoEcho Data in the FAILED response', asy
   expect(responseLogs).toHaveLength(1);
   expect(String(responseLogs[0][1])).toEqual('submit redacted response to cloudformation');
   expect(logMock.mock.calls.map(args => args.join(' ')).join('\n')).not.toContain('SECRET-ATTR');
+  // the response sent to cloudformation has NoEcho set, decided the same way as the log line
+  expect(mocks.cfnResponse.NoEcho).toBe(true);
 });
 
 test('NoEcho Data returned by onEvent is not logged by any line of the async flow', async () => {
