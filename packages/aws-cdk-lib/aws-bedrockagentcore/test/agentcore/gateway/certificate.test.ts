@@ -108,7 +108,16 @@ describe('Gateway target certificate configurations', () => {
 
     test('throws on an empty object key', () => {
       const bucket = new s3.Bucket(stack, 'CaBucket');
-      expect(() => CertificateConfiguration.fromBucket(bucket, '')).toThrow(/must not be empty/);
+      expect(() => CertificateConfiguration.fromBucket(bucket, '')).toThrow(/the object key of the certificate must not be empty/);
+    });
+
+    test('skips validation of unresolved tokens', () => {
+      const bucket = new s3.Bucket(stack, 'CaBucket');
+      expect(() => CertificateConfiguration.fromBucket(
+        bucket,
+        cdk.Lazy.string({ produce: () => '' }),
+        { bucketOwnerAccountId: cdk.Lazy.string({ produce: () => '1234' }) },
+      )).not.toThrow();
     });
 
     test('throws on an invalid bucket owner account ID', () => {
@@ -170,7 +179,7 @@ describe('Gateway target certificate configurations', () => {
     expect(() => addMcpServerTarget([
       CertificateConfiguration.fromSecret(secret),
       CertificateConfiguration.fromBucket(bucket, 'root.pem'),
-    ])).toThrow(/At most 1 certificate configuration/);
+    ])).toThrow(/at most 1 certificate configuration can be specified for a gateway target, got 2/);
   });
 
   test('throws when certificates are given without a private endpoint', () => {

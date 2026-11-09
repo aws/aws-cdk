@@ -790,7 +790,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     if (count > 1) {
       throw new ValidationError(
         lit`GatewayTargetTooManyCertificates`,
-        `At most 1 certificate configuration can be specified for a gateway target, got ${count}`,
+        `at most 1 certificate configuration can be specified for a gateway target, got ${count}`,
         this,
       );
     }

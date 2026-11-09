@@ -85,7 +85,7 @@ class S3CertificateConfiguration extends CertificateConfiguration {
   ) {
     super();
     if (!Token.isUnresolved(objectKey) && objectKey.length === 0) {
-      throw new UnscopedValidationError(lit`CertificateObjectKeyEmpty`, 'The object key of the certificate must not be empty');
+      throw new UnscopedValidationError(lit`CertificateObjectKeyEmpty`, 'the object key of the certificate must not be empty');
     }
     const ownerId = options.bucketOwnerAccountId;
     if (ownerId !== undefined && !Token.isUnresolved(ownerId) && !/^[0-9]{12}$/.test(ownerId)) {
