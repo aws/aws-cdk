@@ -1,0 +1,549 @@
+{
+  "/WebFunctionCopyLogRedactionStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionCopyLogRedactionStack.template.json"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Secret": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Secret"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/CopyLogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logGroup",
+      "data": true
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/AWSCDKWebFunctionAssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "versioned": true,
+        "encryption": "S3_MANAGED",
+        "blockPublicAccess": "*",
+        "enforceSSL": true,
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "role": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/LogChecker": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "environment": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/CopyLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CopyLogGroup921A8ED8"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/Function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function042596DC"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/Revision": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionRevision22F51A9C"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/AWSCDKWebFunctionAssetBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKWebFunctionAssetBucket5B596593"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/AWSCDKWebFunctionAssetBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/AWSCDKWebFunctionAssetBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe91EC1CC6F"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/LogChecker/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/LogChecker/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogChecker145EDFD3"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/LogChecker/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Exports/Output{\"Ref\":\"LogChecker145EDFD3\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefLogChecker145EDFD307A6FA6F"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/CodeCopy90e4c376/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/CodeCopy90e4c376/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionLogGroup55B80E27"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/Endpoint/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionEndpoint85BE574A"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/AWSCDKWebFunctionAssetBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/AWSCDKWebFunctionAssetBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKWebFunctionAssetBucketAutoDeleteObjectsCustomResource7C95046A"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9ServiceRole2BDE33CF"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/LogChecker/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogCheckerServiceRoleEF36F89D"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/LogChecker/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/LogChecker/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogCheckerLogGroupCD8C95C0"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Function/CodeCopy90e4c376/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionCodeCopy90e4c37634A71E75"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312lgc8e26685712627e51a2cbabb5d8795dbe540cc3fe9ServiceRoleDefaultPolicyD9AFEBF8"
+    }
+  ],
+  "/WebFunctionCopyLogRedactionStack/LogChecker/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogCheckerServiceRoleDefaultPolicy1FFE7E8E"
+    }
+  ]
+}
