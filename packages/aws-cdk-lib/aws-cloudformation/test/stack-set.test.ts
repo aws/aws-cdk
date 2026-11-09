@@ -1548,14 +1548,14 @@ describe('StackSet validation errors', () => {
     regions: ['us-east-1'],
     accounts: ['111111111111'],
   });
-  const organizationalUnitsRequireServiceManaged = expect.objectContaining({
-    name: 'StackSetOrganizationalUnitsRequireServiceManaged',
-    message: 'a self managed StackSet cannot deploy to organizational units ["ou-1111111"]',
+  const selfManagedCannotHaveOrganizationalUnits = expect.objectContaining({
+    name: 'StackSetSelfManagedCannotHaveOrganizationalUnits',
+    message: 'a self managed StackSet cannot deploy to organizational units ["ou-1111111"], set \'deploymentType: DeploymentType.serviceManaged\' or use StackSetTarget.fromAccounts',
     constructPath: 'Default/StackSet',
   });
   const serviceManagedRequiresOrganizationalUnits = expect.objectContaining({
     name: 'StackSetServiceManagedRequiresOrganizationalUnits',
-    message: 'a service managed StackSet cannot deploy without organizational units',
+    message: 'a service managed StackSet cannot deploy without organizational units, use StackSetTarget.fromOrganizationalUnits or set \'deploymentType: DeploymentType.selfManaged\'',
     constructPath: 'Default/StackSet',
   });
 
@@ -1570,7 +1570,7 @@ describe('StackSet validation errors', () => {
       deploymentType,
       target: organizationalUnitsTarget(),
       template: templateIn(stack),
-    })).toThrow(organizationalUnitsRequireServiceManaged);
+    })).toThrow(selfManagedCannotHaveOrganizationalUnits);
   });
 
   test.each([
@@ -1584,7 +1584,7 @@ describe('StackSet validation errors', () => {
       template: templateIn(stack),
     });
 
-    expect(() => stackSet.addTarget(organizationalUnitsTarget())).toThrow(organizationalUnitsRequireServiceManaged);
+    expect(() => stackSet.addTarget(organizationalUnitsTarget())).toThrow(selfManagedCannotHaveOrganizationalUnits);
   });
 
   test('fails with an error code when a service managed StackSet gets an accounts target prop', () => {
