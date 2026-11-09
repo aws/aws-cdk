@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "testCases": {
     "BedrockApiSchema/DefaultTest": {
       "stacks": [
@@ -20,5 +20,5 @@
       "assertionStackName": "BedrockApiSchemaDefaultTestDeployAssert1DDDDC57"
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1123.0"
 }

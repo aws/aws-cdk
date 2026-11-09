@@ -1,0 +1,21 @@
+{
+  "Description": "IAM_POLICY_NO_BROAD_PRINCIPALS fires: the policy statement names every AWS principal",
+  "Resources": {
+    "BroadPrincipalPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "*" },
+              "Action": "s3:GetObject",
+              "Resource": "arn:aws:s3:::example-bucket/*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

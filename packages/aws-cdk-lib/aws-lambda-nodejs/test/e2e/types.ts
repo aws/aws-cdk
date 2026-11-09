@@ -8,6 +8,7 @@ export type SerializableNodejsFunctionProps = Omit<NodejsFunctionProps, 'runtime
     forceDockerBundling: boolean;
     commandHooks?: {[K in keyof ICommandHooks]: ReturnType<ICommandHooks[K]> };
   };
+  context?: Record<string, string>;
 };
 
 export type RuntimeKey = 'NODEJS_LATEST' | 'NODEJS_20_X' | 'NODEJS_22_X' | 'NODEJS_24_X';

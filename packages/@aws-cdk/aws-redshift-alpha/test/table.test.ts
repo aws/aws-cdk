@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 
 import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
 import * as redshift from '../lib';
@@ -355,6 +356,123 @@ describe('cluster table', () => {
         tableColumns,
         timeout: cdk.Duration.minutes(16),
       })).toThrow('The timeout for the handler must be between 1 second and 15 minutes, got 960 seconds.');
+    });
+  });
+
+  describe('case-sensitive identifiers', () => {
+    const clusterWith = (parameterGroup?: redshift.IClusterParameterGroup): redshift.Cluster => new redshift.Cluster(stack, 'CaseCluster', {
+      vpc,
+      masterUser: { masterUsername: 'admin' },
+      parameterGroup,
+    });
+    const parametersOf = (parameters: { [name: string]: string }) => new redshift.ClusterParameterGroup(stack, 'CaseParameters', { parameters });
+
+    test('marks the table case-sensitive when its cluster parameter group enables them', () => {
+      new redshift.Table(stack, 'Table', {
+        cluster: clusterWith(parametersOf({ enable_case_sensitive_identifier: 'true' })),
+        databaseName: 'databaseName',
+        tableColumns,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        handler: 'table',
+        caseSensitiveIdentifier: 'true',
+      });
+    });
+
+    test('marks the table case-sensitive when its cluster enables them after the table is created', () => {
+      const caseCluster = clusterWith();
+      new redshift.Table(stack, 'Table', { cluster: caseCluster, databaseName: 'databaseName', tableColumns });
+
+      caseCluster.addToParameterGroup('enable_case_sensitive_identifier', 'true');
+
+      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        handler: 'table',
+        caseSensitiveIdentifier: 'true',
+      });
+    });
+
+    test.each<[string, () => redshift.DatabaseOptions]>([
+      ['without a parameter group', () => databaseOptions],
+      ['when its parameter group leaves the setting out', () => ({
+        cluster: clusterWith(parametersOf({ enable_user_activity_logging: 'true' })),
+        databaseName: 'databaseName',
+      })],
+      ['when its parameter group disables them', () => ({
+        cluster: clusterWith(parametersOf({ enable_case_sensitive_identifier: 'false' })),
+        databaseName: 'databaseName',
+      })],
+      ['when the setting is unresolved', () => ({
+        cluster: clusterWith(parametersOf({
+          enable_case_sensitive_identifier: new cdk.CfnParameter(stack, 'CaseSensitive', { type: 'String' }).valueAsString,
+        })),
+        databaseName: 'databaseName',
+      })],
+      ['when its parameter group is imported', () => ({
+        cluster: clusterWith(redshift.ClusterParameterGroup.fromClusterParameterGroupName(stack, 'ImportedParameters', 'case-sensitive')),
+        databaseName: 'databaseName',
+      })],
+      ['when the cluster is imported', () => ({
+        cluster: redshift.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
+          clusterName: 'imported-cluster',
+          clusterEndpointAddress: 'imported-cluster.abcdefghijk.xx-west-1.redshift.amazonaws.com',
+          clusterEndpointPort: 5439,
+        }),
+        adminUser: secretsmanager.Secret.fromSecretNameV2(stack, 'ImportedAdmin', 'imported-admin'),
+        databaseName: 'databaseName',
+      })],
+    ])('leaves the table case-insensitive %s', (_label, options) => {
+      new redshift.Table(stack, 'Table', { ...options(), tableColumns });
+
+      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        handler: 'table',
+        caseSensitiveIdentifier: Match.absent(),
+      });
+    });
+  });
+
+  test.each(['', '.orders', 'dev..orders', 'analytics.'])('fails empty table name components in %j', (name) => {
+    expect(() => new redshift.Table(stack, 'Table', {
+      ...databaseOptions,
+      tableColumns,
+      tableName: name,
+    })).toThrow(`table name ${JSON.stringify(name)} must not contain empty components`);
+  });
+
+  describe.each(['created', 'imported'])('%s table names', (kind) => {
+    test.each([
+      ['unqualified', (): string => 'orders', 'orders'],
+      ['qualified', (): string => 'analytics.orders', 'analytics.orders'],
+      ['public schema', (): string => 'public.orders', 'public.orders'],
+      ['quoted components', (): string => 'sales team.order log', 'sales team.order log'],
+      ['lazy', (): string => cdk.Lazy.string({ produce: (): string => 'analytics.orders' }), 'analytics.orders'],
+      ['export', (): string => cdk.Fn.importValue('ExportedTableName'), { 'Fn::ImportValue': 'ExportedTableName' }],
+      ['parameter', (): string => new cdk.CfnParameter(stack, 'TableNameParam', { type: 'String' }).valueAsString, { Ref: 'TableNameParam' }],
+    ] as const)('preserves a %s name through table grants', (_label, name, expectedName) => {
+      const props = { ...databaseOptions, tableColumns, tableName: name() };
+      const table = kind === 'created'
+        ? new redshift.Table(stack, 'Table', props)
+        : redshift.Table.fromTableAttributes(stack, 'Table', props);
+      const user = redshift.User.fromUserAttributes(stack, 'User', {
+        ...databaseOptions,
+        username: 'alice',
+        password: cdk.SecretValue.unsafePlainText('INSECURE_NOT_FOR_PRODUCTION'),
+      });
+
+      table.grant(user, redshift.TableAction.SELECT);
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('Custom::RedshiftDatabaseQuery', kind === 'created' ? 2 : 1);
+      if (kind === 'created') {
+        template.hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+          handler: 'table',
+          tableName: { prefix: expectedName, generateSuffix: 'false' },
+        });
+      }
+      template.hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        handler: 'user-table-privileges',
+        tablePrivileges: [{ tableId: 'Table', tableName: expectedName, actions: ['SELECT'] }],
+      });
     });
   });
 });

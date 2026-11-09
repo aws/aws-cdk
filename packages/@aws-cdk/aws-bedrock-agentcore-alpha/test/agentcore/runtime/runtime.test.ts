@@ -753,7 +753,7 @@ describe('Runtime with local asset tests', () => {
 
     // If the runtime handler exists, test its properties
     if (runtimeHandler) {
-      expect(runtimeHandler.Properties.Runtime).toBe('nodejs22.x');
+      expect(runtimeHandler.Properties.Runtime).toBe('nodejs24.x');
       expect(runtimeHandler.Properties.Timeout).toBe(300);
     } else {
       // If it doesn't exist, that's also valid - just skip the test

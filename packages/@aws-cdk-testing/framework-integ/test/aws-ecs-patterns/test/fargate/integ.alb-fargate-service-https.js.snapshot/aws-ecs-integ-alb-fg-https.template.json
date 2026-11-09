@@ -497,7 +497,8 @@
      "Ref": "myServiceLB168895E1"
     },
     "Port": 443,
-    "Protocol": "HTTPS"
+    "Protocol": "HTTPS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
    }
   },
   "myServiceLBPublicListenerECSGroup17E9BBC1": {
@@ -536,7 +537,10 @@
     "Port": 80,
     "Protocol": "HTTP"
    },
-   "DependsOn": ["myServiceLBPublicListenerC78AE8A0","myServiceLBPublicListenerECSGroup17E9BBC1"]
+   "DependsOn": [
+    "myServiceLBPublicListenerECSGroup17E9BBC1",
+    "myServiceLBPublicListenerC78AE8A0"
+   ]
   },
   "myServiceCertificate152F9DDA": {
    "Type": "AWS::CertificateManager::Certificate",

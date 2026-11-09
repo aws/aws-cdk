@@ -1,0 +1,82 @@
+{
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new PlainStackApp (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:25:9)",
+        "new MyStage (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:36:9)",
+        "new PipelineStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:57:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:67:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "PlainStackApp.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "synthNestedAssemblies (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:226:19)"
+      ]
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "PlainStackApp.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "synthNestedAssemblies (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:226:19)"
+      ]
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:18:23)",
+        "new PlainStackApp (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:25:9)",
+        "new MyStage (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:36:9)",
+        "new PipelineStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:57:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-without-prepare.js:67:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

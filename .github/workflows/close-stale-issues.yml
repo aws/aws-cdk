@@ -17,13 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Stale issue job
     steps:
-    - uses: aws-actions/stale-issue-cleanup@v6
+    - uses: aws-actions/stale-issue-cleanup@v7
       with:
         # Setting messages to an empty string will cause the automation to skip
         # that category
         ancient-issue-message: This issue has not received any attention in 1 year. If you want to keep this issue open, please leave a comment below and auto-close will be canceled.
         stale-issue-message: This issue has not received a response in a while. If you want to keep this issue open, please leave a comment below and auto-close will be canceled.
-        stale-pr-message: This PR has not received a response in a while. If you want to keep this issue open, please leave a comment below and auto-close will be canceled.
+        stale-pr-message: This PR has not received a response in a while. If you want to keep this PR open, please leave a comment below and auto-close will be canceled.
         
         # These labels are required
         stale-issue-label: closing-soon

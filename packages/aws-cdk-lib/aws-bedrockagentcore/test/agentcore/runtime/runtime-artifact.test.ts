@@ -162,6 +162,28 @@ describe('AgentRuntimeArtifact tests', () => {
     expect(rendered.containerUri).toBe('123456789012.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest');
   });
 
+  test('Should accept aws-cn partition ECR container URIs', () => {
+    const cnUris = [
+      '123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn/my-repo:latest',
+      '123456789012.dkr.ecr.cn-northwest-1.amazonaws.com.cn/team/my-repo@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+    ];
+
+    cnUris.forEach((containerUri, i) => {
+      const artifact = AgentRuntimeArtifact.fromImageUri(containerUri);
+
+      // Also exercises Runtime.validateContainerUri, which carries the same ECR pattern
+      const runtime = new Runtime(stack, `test-runtime-cn-${i}`, {
+        runtimeName: `test_runtime_cn_${i}`,
+        agentRuntimeArtifact: artifact,
+      });
+
+      artifact.bind(stack, runtime);
+      const rendered: any = artifact._render();
+
+      expect(rendered.containerUri).toBe(containerUri);
+    });
+  });
+
   test('Should reject non-ECR container URIs', () => {
     expect(() => {
       AgentRuntimeArtifact.fromImageUri('docker.io/myimage:latest');
@@ -169,6 +191,15 @@ describe('AgentRuntimeArtifact tests', () => {
 
     expect(() => {
       AgentRuntimeArtifact.fromImageUri('ghcr.io/owner/repo:tag');
+    }).toThrow(/Invalid ECR container URI format/);
+
+    // Wrong aws-cn suffix (missing ".com") and a look-alike domain must still be rejected
+    expect(() => {
+      AgentRuntimeArtifact.fromImageUri('123456789012.dkr.ecr.cn-north-1.amazonaws.cn/my-repo:latest');
+    }).toThrow(/Invalid ECR container URI format/);
+
+    expect(() => {
+      AgentRuntimeArtifact.fromImageUri('123456789012.dkr.ecr.cn-north-1.amazonaws.com.cn.evil.example/my-repo:latest');
     }).toThrow(/Invalid ECR container URI format/);
   });
 
@@ -315,30 +346,6 @@ describe('AgentRuntimeArtifact tests', () => {
             }),
           ]),
         },
-      });
-    });
-  });
-
-  describe('AgentCoreRuntime.of() escape hatch', () => {
-    test('Should allow custom runtime value via .of() and render it in the template', () => {
-      const artifact = AgentRuntimeArtifact.fromCodeAsset({
-        path: path.join(__dirname, 'testArtifact'),
-        runtime: AgentCoreRuntime.of('PYTHON_3_99'),
-        entrypoint: ['main.py'],
-      });
-
-      new Runtime(stack, 'custom-runtime-test', {
-        runtimeName: 'custom_runtime_test',
-        agentRuntimeArtifact: artifact,
-      });
-
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
-        AgentRuntimeArtifact: Match.objectLike({
-          CodeConfiguration: Match.objectLike({
-            Runtime: 'PYTHON_3_99',
-          }),
-        }),
       });
     });
   });

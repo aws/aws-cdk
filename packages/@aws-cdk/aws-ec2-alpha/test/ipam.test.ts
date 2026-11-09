@@ -1,10 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as vpc from '../lib';
 import { AddressFamily, Ipam, IpamPoolPublicIpSource } from '../lib';
+import { testStack } from './test-stack';
+
+let stack: Stack;
 
 describe('IPAM Test', () => {
-  let stack: cdk.Stack;
   let ipam: Ipam;
 
   beforeEach(() => {
@@ -14,7 +17,7 @@ describe('IPAM Test', () => {
         '@aws-cdk/core:newStyleStackSynthesis': false,
       },
     });
-    stack = new cdk.Stack(app, 'IPAMTestStack', {
+    stack = testStack(app, 'IPAMTestStack', {
       env: envUSA,
     });
     ipam = new Ipam(stack, 'Ipam', {
@@ -246,13 +249,13 @@ describe('IPAM Test', () => {
 
   test('IPAM handles operating regions correctly', () => {
     const new_app = new cdk.App();
-    const testStack = new cdk.Stack(new_app, 'TestStack', {
+    const regionStack = new cdk.Stack(new_app, 'TestStack', {
       env: {
         region: 'us-west-1',
       },
     });
-    new Ipam(testStack, 'TestIpamNew', {});
-    Template.fromStack(testStack).hasResourceProperties(
+    new Ipam(regionStack, 'TestIpamNew', {});
+    Template.fromStack(regionStack).hasResourceProperties(
       'AWS::EC2::IPAM', {
         OperatingRegions: [
           {

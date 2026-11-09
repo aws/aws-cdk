@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "53.0.0",
   "testCases": {
     "function-sub/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "function-sub/DefaultTest/DeployAssert",
       "assertionStackName": "functionsubDefaultTestDeployAssert6BC1DDE4"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

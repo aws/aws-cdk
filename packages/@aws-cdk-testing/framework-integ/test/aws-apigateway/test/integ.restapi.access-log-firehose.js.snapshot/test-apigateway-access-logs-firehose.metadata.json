@@ -1,0 +1,448 @@
+{
+  "/test-apigateway-access-logs-firehose": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyStream": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyStream"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:36:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "cloudWatchRole": true,
+        "deployOptions": {
+          "accessLogDestination": "*",
+          "accessLogFormat": "*"
+        }
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:29:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Bucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Bucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Role1ABCC5F0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:33:36)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyApi49610EDF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:806:30)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:43:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/CloudWatchRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "applyRemovalPolicy": [
+          "retain"
+        ]
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/Account": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyApiAccount13882D84"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass._configureCloudWatchRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:491:34)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:821:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:43:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*",
+        "accessLogDestination": "*",
+        "accessLogFormat": "*"
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyApiEndpoint869ABE96"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:527:13)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:43:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketPolicyE9A3008A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2162:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:29:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/CloudWatchRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyApiCloudWatchRole2BEC1A9C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureCloudWatchRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:486:22)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:821:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:43:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyApiDeploymentECB0D05E81594d6748b4b291f993111a5070d710"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/deployment.js:136:29)",
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:515:38)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:43:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyApiDeploymentStageprodE1054AF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.js:370:30)",
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:523:36)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:43:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
+    }
+  ],
+  "/test-apigateway-access-logs-firehose/MyApi/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyApiGETD0C7AA0C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "new RestApiAccessLogFirehoseTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:50:18)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.restapi.access-log-firehose.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

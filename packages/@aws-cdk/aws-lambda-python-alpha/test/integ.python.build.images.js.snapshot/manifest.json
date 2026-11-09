@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4339929e1b1c36cea312cb344480fd243570986a9145a2ab25c29ecac191c43a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0369e0288b10b13d2d9c684cac5c163c3814c9e21c28b761d9004f02a4862ceb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -53,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2f7bb72f93b8abfd13a20b6f765c381e461ac9d2bf9fdecb27a4d382f697b83b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1459a6a031434b316db374e7dd36e0aa02e5b6913eda5b957747c1a2ea4fdf22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -590,6 +590,17 @@
           "@aws-cdk/aws-batch:defaultToAL2023": {
             "recommendedValue": true,
             "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }

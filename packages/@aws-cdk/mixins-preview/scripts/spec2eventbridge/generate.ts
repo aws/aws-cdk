@@ -4,12 +4,13 @@ import { EventBridgeBuilder } from './builder';
 import { MIXINS_PREVIEW_BASE_NAMES } from '../config';
 import type { GeneratorResult } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { loadModuleMap, type ModuleMap } from '@aws-cdk/spec2cdk/lib/module-topology';
+import { getAllServices } from '@aws-cdk/spec2cdk/lib/util/db';
 
-type GenerateOptions = Pick<Spec2CdkOptions<typeof EventBridgeBuilder>, 'outputPath' | 'clearOutput' | 'debug'>;
+type GenerateOptions = Pick<Spec2CdkOptions<typeof EventBridgeBuilder>, 'outputPath' | 'clearOutput' | 'debug' | 'orgs'>;
 
 export async function generateAll(options: GenerateOptions): Promise<GeneratorResult> {
   const db = await loadPatchedSpec();
-  const services = await db.all('service');
+  const services = getAllServices(db, options.orgs);
   const moduleMap: ModuleMap = loadModuleMap({
     packageBases: MIXINS_PREVIEW_BASE_NAMES,
     respectOverrides: false,

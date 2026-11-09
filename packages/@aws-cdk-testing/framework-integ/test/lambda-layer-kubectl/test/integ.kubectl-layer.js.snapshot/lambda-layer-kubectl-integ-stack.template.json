@@ -153,7 +153,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-kubectl-integ-stack/Providerpython3.9)",
     "Environment": {
@@ -177,7 +177,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -364,7 +364,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-kubectl-integ-stack/Providerpython3.10)",
     "Environment": {
@@ -388,7 +388,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [

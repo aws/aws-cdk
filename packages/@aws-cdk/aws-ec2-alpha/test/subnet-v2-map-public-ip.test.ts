@@ -1,12 +1,18 @@
-import { Stack } from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { IpCidr, SubnetV2, VpcV2, IpAddresses } from '../lib';
+import { testStack } from './test-stack';
+
+let stack: Stack;
+
+beforeEach(() => {
+  stack = testStack();
+});
 
 describe('SubnetV2 mapPublicIpOnLaunch', () => {
   test('mapPublicIpOnLaunch can be explicitly set to true for public subnets', () => {
     // GIVEN
-    const stack = new Stack();
     const vpc = new VpcV2(stack, 'VPC', {
       primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
     });
@@ -28,7 +34,6 @@ describe('SubnetV2 mapPublicIpOnLaunch', () => {
 
   test('throws error when mapPublicIpOnLaunch is set to true for non-public subnets', () => {
     // GIVEN
-    const stack = new Stack();
     const vpc = new VpcV2(stack, 'VPC', {
       primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
     });

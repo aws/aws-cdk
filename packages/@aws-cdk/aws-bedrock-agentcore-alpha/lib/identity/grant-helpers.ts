@@ -26,6 +26,7 @@ import type { IConstruct } from 'constructs';
  *   - token-vault/default/apikeycredentialprovider/*  (instance)
  *
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const TOKEN_VAULT_API_KEY_PARENT_RESOURCES = [
   'token-vault/default',
@@ -34,6 +35,7 @@ export const TOKEN_VAULT_API_KEY_PARENT_RESOURCES = [
 
 /**
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const TOKEN_VAULT_OAUTH2_PARENT_RESOURCES = [
   'token-vault/default',
@@ -42,6 +44,7 @@ export const TOKEN_VAULT_OAUTH2_PARENT_RESOURCES = [
 
 /**
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const WORKLOAD_IDENTITY_PARENT_RESOURCES = [
   'workload-identity-directory/default',
@@ -57,6 +60,7 @@ export const WORKLOAD_IDENTITY_PARENT_RESOURCES = [
  * by the gateway/service at runtime.
  *
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const WORKLOAD_IDENTITY_USE_RESOURCES = [
   'workload-identity-directory/default',
@@ -68,6 +72,7 @@ export const WORKLOAD_IDENTITY_USE_RESOURCES = [
  * plus all parent/collection ARNs that the service's authorization model requires.
  *
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function buildIdentityResourceArns(
   scope: IConstruct,
@@ -90,6 +95,7 @@ export function buildIdentityResourceArns(
  * parent/collection ARNs required by the Bedrock AgentCore authorization model.
  *
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function grantReadWithList(
   scope: IConstruct,
@@ -119,6 +125,7 @@ export function grantReadWithList(
  * supplied (e.g. via `fromApiKeyCredentialProviderAttributes`), we scope tightly.
  *
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function grantCredentialSecret(
   scope: IConstruct,
