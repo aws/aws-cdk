@@ -1006,7 +1006,7 @@ export class StackSet extends Resource implements IStackSet {
         produce: () => {
           return this.stackInstances;
         },
-      }),
+      }, { omitEmptyArray: true }),
       ...(props.parameters ? {
         parameters: Object.entries(props.parameters).map((entry) => {
           return {
