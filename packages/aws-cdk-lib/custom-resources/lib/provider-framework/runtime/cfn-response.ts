@@ -23,11 +23,14 @@ export interface CloudFormationEventContext {
 }
 
 export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudFormationEventContext, options: CloudFormationResponseOptions = { }) {
-  // NoEcho is set if either the caller or the event says so (fail closed). A
-  // FAILED response for an isComplete request (submitted by safeHandler) does not
-  // pass the option, but the request still carries the Data returned by onEvent.
-  // The same value decides both the response body and the log line.
-  const noEcho = options.noEcho === true || event.NoEcho === true;
+  // NoEcho is set if either the caller or the event says so. A FAILED response for
+  // an isComplete request (submitted by safeHandler) does not pass the option, but
+  // the request still carries the Data returned by onEvent. The check is for
+  // truthiness, not `=== true`: a handler written in another language, or one that
+  // builds its JSON by hand, can return `"true"` or `1`, which CloudFormation and
+  // the framework have always honored. The same value decides both the response
+  // body and the log line.
+  const noEcho = Boolean(options.noEcho) || Boolean(event.NoEcho);
   const json: AWSLambda.CloudFormationCustomResourceResponse = {
     Status: status,
     Reason: options.reason || status,
@@ -99,7 +102,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
           // otherwise, if PhysicalResourceId is not specified, something is
           // terribly wrong because all other events should have an ID.
           const sanitizedEvent = { ...event, ResponseURL: '...' };
-          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event.NoEcho === true ? redactDataFromPayload(sanitizedEvent) : sanitizedEvent)}`);
+          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event.NoEcho ? redactDataFromPayload(sanitizedEvent) : sanitizedEvent)}`);
         }
       }
 
