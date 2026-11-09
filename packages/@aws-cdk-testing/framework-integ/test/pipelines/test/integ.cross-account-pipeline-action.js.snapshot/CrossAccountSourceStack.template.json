@@ -173,9 +173,6 @@
     "SourceObjectKeys": [
      "fbee18a86723a24ee3c75971c14b5bbff255873d741f6bbdde2218433a37a74d.zip"
     ],
-    "SourceMarkers": [
-     {}
-    ],
     "DestinationBucketName": {
      "Ref": "SourceBucketDDD2130A"
     },
@@ -312,7 +309,7 @@
     ],
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-234567890123-test-region",
-     "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
+     "S3Key": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip"
     },
     "Environment": {
      "Variables": {

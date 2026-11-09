@@ -11,6 +11,5 @@
       "assertionStackName": "integproductDefaultTestDeployAssertEB23E2A9"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }

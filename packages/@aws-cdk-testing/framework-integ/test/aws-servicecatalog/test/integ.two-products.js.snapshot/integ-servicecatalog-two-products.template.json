@@ -147,14 +147,6 @@
      "d3833f63e813b3a96ea04c8c50ca98209330867f5f6ac358efca11f85a3476c2.zip",
      "e2204c9fddfc339ea362dec9143b4c22f883d4c18dd38c456f8f6a7161c1073d.zip"
     ],
-    "SourceMarkers": [
-     {},
-     {}
-    ],
-    "SourceMarkersConfig": [
-     {},
-     {}
-    ],
     "DestinationBucketName": {
      "Ref": "TestAssetBucket9434EFAE"
     },
@@ -349,7 +341,7 @@
     ],
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
+     "S3Key": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip"
     },
     "Environment": {
      "Variables": {
