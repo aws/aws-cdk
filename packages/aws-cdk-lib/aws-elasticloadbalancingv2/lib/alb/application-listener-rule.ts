@@ -4,7 +4,6 @@ import { ListenerAction } from './application-listener-action';
 import type { IApplicationTargetGroup } from './application-target-group';
 import type { ListenerCondition } from './conditions';
 import type { ListenerTransform } from './transforms';
-import { TransformType } from './transforms';
 import * as cdk from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
@@ -315,10 +314,10 @@ export class ApplicationListenerRule extends Construct {
   }
 
   /**
-   * Add a transform to this rule
+   * Add transforms to this rule
    */
-  public addTransforms(transform: ListenerTransform[]) {
-    this.transforms.push(...transform);
+  public addTransforms(transforms: ListenerTransform[]) {
+    this.transforms.push(...transforms);
   }
 
   /**
@@ -423,8 +422,10 @@ export class ApplicationListenerRule extends Construct {
       return undefined;
     }
 
-    const hostHeaderRewriteCount = transforms.filter(t => t.type === TransformType.HOST_HEADER_REWRITE).length;
-    const urlRewriteCount = transforms.filter(t => t.type === TransformType.URL_REWRITE).length;
+    const rendered = transforms.map(transform => transform.renderRawTransform());
+
+    const hostHeaderRewriteCount = rendered.filter(t => t.type === 'host-header-rewrite').length;
+    const urlRewriteCount = rendered.filter(t => t.type === 'url-rewrite').length;
 
     if (hostHeaderRewriteCount > 1) {
       throw new ValidationError(lit`HostHeaderRewriteLimit`, 'Only one host-header-rewrite transform is allowed per rule', this);
@@ -433,7 +434,7 @@ export class ApplicationListenerRule extends Construct {
       throw new ValidationError(lit`UrlRewriteLimit`, 'Only one url-rewrite transform is allowed per rule', this);
     }
 
-    return transforms.map(transform => transform.renderRawTransform());
+    return rendered;
   }
 }
 
