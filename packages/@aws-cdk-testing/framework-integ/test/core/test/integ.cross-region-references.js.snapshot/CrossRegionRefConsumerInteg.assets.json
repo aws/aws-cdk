@@ -1,31 +1,31 @@
 {
   "version": "55.0.0",
   "files": {
-    "ea8ec7294c8228c99fa98c5439f134f23cce0eb1787a35f6fa372489a1d6e500": {
+    "e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4": {
       "displayName": "CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider Code",
       "source": {
-        "path": "asset.ea8ec7294c8228c99fa98c5439f134f23cce0eb1787a35f6fa372489a1d6e500",
+        "path": "asset.e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-east-2-740b15be": {
+        "current_account-us-east-2-0c0e07e2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
-          "objectKey": "ea8ec7294c8228c99fa98c5439f134f23cce0eb1787a35f6fa372489a1d6e500.zip",
+          "objectKey": "e2ebd891609bed1d117520f05a64abd9f890f7413822fafc3bb4a469494e79c4.zip",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
         }
       }
     },
-    "0c58c060c8238cf2a362eeed8d7935b955c2d02bf659f071099ef69abf33e7e6": {
+    "336603b19fdedf019713d7be3886897d50918c3afa6b8e1ebe466b7b0a5fab33": {
       "displayName": "CrossRegionRefConsumerInteg Template",
       "source": {
         "path": "CrossRegionRefConsumerInteg.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-2-9ff29576": {
+        "current_account-us-east-2-b4bfcd89": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
-          "objectKey": "0c58c060c8238cf2a362eeed8d7935b955c2d02bf659f071099ef69abf33e7e6.json",
+          "objectKey": "336603b19fdedf019713d7be3886897d50918c3afa6b8e1ebe466b7b0a5fab33.json",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
         }

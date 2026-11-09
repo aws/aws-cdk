@@ -15,16 +15,16 @@
         }
       }
     },
-    "b41d078cae4de86d444fafba85080f8c63fd67a4d6f657183c843c8ea26b951d": {
+    "7247da7f607951228e4ab35cece7695df186aa09479812d97e125ded9fff4545": {
       "displayName": "cdk-s3-bucket-auto-delete-objects-mixin/Custom::S3PutObjectsCustomResourceProvider Code",
       "source": {
-        "path": "asset.b41d078cae4de86d444fafba85080f8c63fd67a4d6f657183c843c8ea26b951d",
+        "path": "asset.7247da7f607951228e4ab35cece7695df186aa09479812d97e125ded9fff4545",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-b939d986": {
+        "current_account-current_region-be4afd60": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b41d078cae4de86d444fafba85080f8c63fd67a4d6f657183c843c8ea26b951d.zip",
+          "objectKey": "7247da7f607951228e4ab35cece7695df186aa09479812d97e125ded9fff4545.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -43,16 +43,16 @@
         }
       }
     },
-    "00c6d938b90873cfc377b30e02a9048ec04100f8638fef009dae153be3509739": {
+    "a301b55535797644ecc510a4fed4ecb138e9980d4f93156c442105639d94905e": {
       "displayName": "cdk-s3-bucket-auto-delete-objects-mixin Template",
       "source": {
         "path": "cdk-s3-bucket-auto-delete-objects-mixin.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-cff491c5": {
+        "current_account-current_region-28bca2b7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "00c6d938b90873cfc377b30e02a9048ec04100f8638fef009dae153be3509739.json",
+          "objectKey": "a301b55535797644ecc510a4fed4ecb138e9980d4f93156c442105639d94905e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
