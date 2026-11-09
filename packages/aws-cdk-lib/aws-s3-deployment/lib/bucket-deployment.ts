@@ -466,9 +466,12 @@ export class BucketDeployment extends Construct {
           return source.markers ?? {};
         })),
         SourceMarkersConfig: removeTrailingEmptyObjects(this.sources.map((source): MarkersConfig => {
+          // Normalize to an object with only defined properties
           return {
             ...dropEmpty({
-              jsonEscape: source.markersConfig?.jsonEscape,
+              // Only render a 'true', omit if falsy
+              ...source.markersConfig?.jsonEscape ? { jsonEscape: true } : {},
+              // Make the list of encodings undefined if it ends up empty
               markerEncodings: dropEmpty(source.markersConfig?.markerEncodings),
             } satisfies MarkersConfig),
           };

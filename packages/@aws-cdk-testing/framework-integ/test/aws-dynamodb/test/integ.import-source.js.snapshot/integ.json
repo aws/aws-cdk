@@ -11,6 +11,5 @@
       "assertionStackName": "DynamoImportSourceIntegTestDefaultTestDeployAssert540810E4"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1145.0"
+  "enableLookups": true
 }

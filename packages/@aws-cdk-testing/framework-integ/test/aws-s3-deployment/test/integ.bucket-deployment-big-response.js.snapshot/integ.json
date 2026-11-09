@@ -10,6 +10,5 @@
       "assertionStackName": "integtestbucketdeploymentbigresponseDefaultTestDeployAssert8AFCF5AC"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1145.0"
+  "enableLookups": true
 }

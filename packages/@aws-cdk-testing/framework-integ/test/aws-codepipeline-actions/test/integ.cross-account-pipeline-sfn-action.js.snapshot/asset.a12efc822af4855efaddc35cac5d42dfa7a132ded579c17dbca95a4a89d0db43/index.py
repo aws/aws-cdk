@@ -187,9 +187,8 @@ def sanitize_message(message):
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
 def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, exclude, include, source_markers, extract, source_markers_config):
-    # list lengths are equal
-    if len(s3_source_zips) != len(source_markers):
-        raise Exception("'source_markers' and 's3_source_zips' must be the same length")
+    if len(s3_source_zips) < len(source_markers):
+        raise Exception(f"Can never have more SourceMarkers ({len(source_markers)}) than SourceObjectKeys ({len(s3_source_zips)})")
 
     # create a temporary working directory in /tmp or if enabled an attached efs volume
     if ENV_KEY_MOUNT_PATH in os.environ:
@@ -435,7 +434,7 @@ def encode_marker_value(marker_name, value, markers_config):
     elif encoding == 'YAML_STRING':
         if not isinstance(value, str):
             raise ValueError(f"Expected a string for YAML_STRING encoding for marker {marker_name}, got {type(value).__name__}")
-        if SAFE_PLAIN_YAML.match(value) and value.lower() not in YAML_RESERVED:
+        if SAFE_PLAIN_YAML.fullmatch(value) and value.lower() not in YAML_RESERVED:
             return value
         return json.dumps(value)
     else:
