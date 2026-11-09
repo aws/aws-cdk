@@ -33,9 +33,9 @@ export interface MakeHandlerOptions {
    *
    * Only top-level property names are supported: a value nested under a property
    * that is not listed is still logged. A name containing `.` is rejected, which
-   * reserves dotted names for nested paths later. An invalid value fails every
-   * request with an explicit reason (and redacts all properties from that log
-   * line); it does not prevent a response from reaching CloudFormation.
+   * reserves dotted names for nested paths later. An invalid value throws when
+   * `makeHandler` is called, that is when the handler module is loaded, so the
+   * handler's unit tests fail on import and the value cannot be released.
    *
    * Scope: only the log lines this wrapper writes are redacted. Logging done by
    * the user handler itself, and the `Reason` of a failed request (for example an
@@ -48,22 +48,14 @@ export interface MakeHandlerOptions {
 }
 
 export function makeHandler(userHandler: Handler, options: MakeHandlerOptions = {}) {
-  // validate once, but report an invalid option per request (below) rather than
-  // throwing here: a throw at module load would leave CloudFormation without a
-  // response until the custom resource times out.
-  let redactProperties: readonly string[] = [];
-  let optionsError: unknown;
-  try {
-    redactProperties = validateRedactProperties(options.redactProperties, 'makeHandler option "redactProperties"');
-  } catch (e) {
-    optionsError = e;
-  }
+  // the option is a constant in CDK's own handler code, so validate it when the
+  // handler module loads: an invalid value then fails the handler's unit tests
+  // instead of failing every request (Delete included) once it is released.
+  const redactProperties = validateRedactProperties(options.redactProperties, 'makeHandler option "redactProperties"');
 
   return async (event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) => {
     const sanitizedEvent = { ...event, ResponseURL: '...' };
-    // with an invalid option we cannot tell which properties are sensitive, so
-    // every property value is redacted (the property names are still logged).
-    const loggableEvent = redactEventForLog(event, optionsError ? allPropertyNames(event) : redactProperties);
+    const loggableEvent = redactEventForLog(event, redactProperties);
     external.log(JSON.stringify(loggableEvent, undefined, 2));
 
     // ignore DELETE event when the physical resource ID is the marker that
@@ -79,9 +71,6 @@ export function makeHandler(userHandler: Handler, options: MakeHandlerOptions = 
       // invoke the user handler. this is intentionally inside the try-catch to
       // ensure that if there is an error it's reported as a failure to
       // cloudformation (otherwise cfn waits).
-      if (optionsError) {
-        throw optionsError;
-      }
       const result = await userHandler(sanitizedEvent, context);
 
       // validate user response and create the combined event
@@ -241,12 +230,6 @@ function redactPropertyValues(props: unknown, redactProperties: readonly string[
     }
   }
   return ret;
-}
-
-/** Every top-level name in `ResourceProperties` and `OldResourceProperties`. */
-function allPropertyNames(event: AWSLambda.CloudFormationCustomResourceEvent): string[] {
-  const oldProps = (event as { OldResourceProperties?: Record<string, unknown> }).OldResourceProperties;
-  return [...new Set([...Object.keys(event.ResourceProperties ?? {}), ...Object.keys(oldProps ?? {})])];
 }
 
 /**

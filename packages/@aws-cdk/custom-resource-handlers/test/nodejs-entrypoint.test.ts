@@ -275,59 +275,8 @@ describe('nodejs entrypoint', () => {
       [[''], 'Invalid makeHandler option "redactProperties": entries must be non-empty strings, got ""'],
       [[42], 'Invalid makeHandler option "redactProperties": entries must be non-empty strings, got 42'],
       ['Config', 'Invalid makeHandler option "redactProperties": expected an array of top-level property names, got string'],
-    ])('invalid redactProperties %j fails the request with an explicit reason and redacts all properties', async (redactProperties, reason) => {
-      // GIVEN
-      const event = makeEvent({ RequestType: 'Create', ResourceProperties: { ServiceToken: '<ServiceToken>', Config: 'SECRET-CONFIG' } });
-      let called = false;
-
-      // WHEN - creating the handler does not throw
-      const { logs, response } = await invokeHandler(event, async _ => {
-        called = true;
-      }, { redactProperties: redactProperties as any });
-
-      // THEN
-      expect(called).toBe(false);
-      expect(response.Status).toEqual('FAILED');
-      expect(response.Reason).toEqual(reason);
-      expect(logs.join('\n')).not.toContain('SECRET-CONFIG');
-      expect(JSON.parse(logs[0]).ResourceProperties).toEqual({ ServiceToken: '*****', Config: '*****' });
-    });
-
-    test('invalid redactProperties on an Update redacts both ResourceProperties and OldResourceProperties', async () => {
-      // GIVEN
-      const event = makeEvent({
-        RequestType: 'Update',
-        PhysicalResourceId: 'phys',
-        ResourceProperties: { ServiceToken: '<ServiceToken>', Config: 'NEW-SECRET' },
-        OldResourceProperties: { Config: 'OLD-SECRET', OnlyOld: 'OLD-ONLY-SECRET' },
-      } as any);
-
-      // WHEN
-      const { logs, response } = await invokeHandler(event, async _ => undefined, { redactProperties: ['Config.Nested'] });
-
-      // THEN
-      expect(response.Status).toEqual('FAILED');
-      const logged = logs.join('\n');
-      expect(logged).not.toContain('NEW-SECRET');
-      expect(logged).not.toContain('OLD-SECRET');
-      expect(logged).not.toContain('OLD-ONLY-SECRET');
-      const loggedEvent = JSON.parse(logs[0]);
-      expect(loggedEvent.ResourceProperties).toEqual({ ServiceToken: '*****', Config: '*****' });
-      expect(loggedEvent.OldResourceProperties).toEqual({ Config: '*****', OnlyOld: '*****' });
-    });
-
-    test('invalid redactProperties still lets the ignored DELETE after a failed CREATE succeed', async () => {
-      // GIVEN
-      const event = makeEvent({
-        RequestType: 'Delete',
-        PhysicalResourceId: 'AWSCDK::CustomResourceProviderFramework::CREATE_FAILED',
-      });
-
-      // WHEN
-      const { response } = await invokeHandler(event, async _ => undefined, { redactProperties: ['Config.Nested'] });
-
-      // THEN
-      expect(response.Status).toEqual('SUCCESS');
+    ])('invalid redactProperties %j throws when the handler is created', (redactProperties, message) => {
+      expect(() => entrypoint.makeHandler(async _ => undefined, { redactProperties: redactProperties as any })).toThrow(message);
     });
 
     test('the validated list is not affected by later changes to the array passed in', async () => {
