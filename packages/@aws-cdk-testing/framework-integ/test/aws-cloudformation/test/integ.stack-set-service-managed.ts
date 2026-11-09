@@ -43,7 +43,7 @@ class TestCase extends Stack {
         accountFilter: cfn.StackSetAccountFilter.intersection([targetAccount]),
       }),
       deploymentType: cfn.DeploymentType.serviceManaged(),
-      template: cfn.StackSetTemplate.fromStackSetStack(new TopicStackSet(scope, 'integ-stack-set-service-managed-template')),
+      template: cfn.StackSetTemplate.fromStackSetStack(new TopicStackSet(this, 'integ-stack-set-service-managed-template')),
     });
   }
 }

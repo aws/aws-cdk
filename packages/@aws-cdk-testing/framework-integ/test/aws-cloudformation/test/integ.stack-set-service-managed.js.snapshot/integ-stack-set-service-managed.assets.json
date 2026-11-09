@@ -2,9 +2,8 @@
   "version": "55.0.0",
   "files": {
     "03018d41d7b55bfa16b4ee40ee7568f6a8641222586c56a4b4c35154594f8fe0": {
-      "displayName": "integ-stack-set-service-managed-template Template",
       "source": {
-        "path": "integstacksetservicemanagedtemplate.stackset.template.json",
+        "path": "integstacksetservicemanagedintegstacksetservicemanagedtemplateCE1F203C.stackset.template.json",
         "packaging": "file"
       },
       "destinations": {
