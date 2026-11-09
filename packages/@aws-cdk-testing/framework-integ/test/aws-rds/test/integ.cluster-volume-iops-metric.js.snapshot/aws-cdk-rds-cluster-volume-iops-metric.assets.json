@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "3dc15d4e2056ede6f15a04e36086e303fdb95729e2328c9e5a7b932e5a71601a": {
       "displayName": "aws-cdk-rds-cluster-volume-iops-metric Template",

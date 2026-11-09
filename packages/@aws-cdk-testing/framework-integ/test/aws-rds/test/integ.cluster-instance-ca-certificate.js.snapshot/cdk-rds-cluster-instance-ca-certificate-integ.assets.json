@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "f4bf680bd0474bf7c56d30c8a198e82684969428330040e001783811869dd98c": {
       "displayName": "cdk-rds-cluster-instance-ca-certificate-integ Template",

@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "test-rds-cluster-with-feature-flag/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStackName": "testrdsclusterwithfeatureflagDefaultTestDeployAssert8E2E540B"
     }
   },
-  "minimumCliVersion": "2.1123.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }

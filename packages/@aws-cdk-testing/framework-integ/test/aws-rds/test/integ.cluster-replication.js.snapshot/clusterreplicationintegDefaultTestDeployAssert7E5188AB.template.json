@@ -54,11 +54,7 @@
     "outputPaths": [
      "DBClusters.0.ReplicationSourceIdentifier"
     ],
-<<<<<<< HEAD
-    "salt": "1779973477103"
-=======
-    "salt": "1779692603570"
->>>>>>> de67c1cd1b (update integ tests)
+    "salt": "1794238296825"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -112,11 +108,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-<<<<<<< HEAD
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
-=======
-     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
->>>>>>> de67c1cd1b (update integ tests)
+     "S3Key": "d7f9338b4576900400045da036ccb545a4259eaa0624a3fff37d4427c8762626.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -125,6 +117,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   }

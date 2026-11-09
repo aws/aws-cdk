@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "db351fb6b827a717bbefb4bfb7ad23664332e4e1b1d5917fceaaeac1b78c86c4": {
       "displayName": "aws-cdk-rds-cluster-database-insights Template",
