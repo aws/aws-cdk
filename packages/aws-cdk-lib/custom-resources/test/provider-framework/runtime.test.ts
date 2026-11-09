@@ -239,6 +239,55 @@ test('onTimeout does not log the presigned ResponseURL, nor Data when NoEcho is 
   expect(logged).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
   expect(logged).not.toContain('SECRET-ATTR');
   expect(logged).toContain(MOCK_PHYSICAL_ID);
+  const responseLogs = logMock.mock.calls.filter(args => /submit (redacted )?response/.test(String(args[1])));
+  expect(responseLogs).toHaveLength(1);
+  expect(responseLogs[0].join(' ')).not.toContain('SECRET-ATTR');
+});
+
+test('a failing isComplete does not log NoEcho Data in the FAILED response', async () => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({ Data: { Foo: 'SECRET-ATTR' }, NoEcho: true, PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => {
+    throw new Error('isComplete failed');
+  };
+  const logMock = console.log as jest.Mock;
+  logMock.mockClear();
+
+  // WHEN
+  await simulateEvent({
+    RequestType: 'Update',
+    PhysicalResourceId: MOCK_PHYSICAL_ID,
+  });
+
+  // THEN
+  expect(mocks.cfnResponse.Status).toEqual('FAILED');
+  expect(mocks.cfnResponse.Reason).toContain('isComplete failed');
+  const responseLogs = logMock.mock.calls.filter(args => /submit (redacted )?response/.test(String(args[1])));
+  expect(responseLogs).toHaveLength(1);
+  expect(String(responseLogs[0][1])).toEqual('submit redacted response to cloudformation');
+  expect(logMock.mock.calls.map(args => args.join(' ')).join('\n')).not.toContain('SECRET-ATTR');
+});
+
+test('NoEcho Data returned by onEvent is not logged by any line of the async flow', async () => {
+  // GIVEN
+  let isCompleteCalls = 0;
+  mocks.onEventImplMock = async () => ({ Data: { Foo: 'SECRET-ATTR' }, NoEcho: true, PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => ({ IsComplete: ++isCompleteCalls > 1 });
+  const logMock = console.log as jest.Mock;
+  logMock.mockClear();
+
+  // WHEN
+  await simulateEvent({
+    RequestType: 'Update',
+    PhysicalResourceId: MOCK_PHYSICAL_ID,
+  });
+
+  // THEN
+  expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID, Data: { Foo: 'SECRET-ATTR' } });
+  const logged = logMock.mock.calls.map(args => args.join(' ')).join('\n');
+  expect(logged).toContain('executing user function arn:lambda:user:is:complete');
+  expect(logged).toContain('user function response:');
+  expect(logged).not.toContain('SECRET-ATTR');
 });
 
 test('onTimeout does not log the presigned ResponseURL when NoEcho is not set, and logs Data', async () => {

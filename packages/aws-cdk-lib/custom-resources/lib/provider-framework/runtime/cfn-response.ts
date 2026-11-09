@@ -19,6 +19,7 @@ export interface CloudFormationEventContext {
   LogicalResourceId: string;
   ResponseURL: string;
   Data?: any;
+  NoEcho?: boolean;
 }
 
 export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudFormationEventContext, options: CloudFormationResponseOptions = { }) {
@@ -37,7 +38,10 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
 
   const parsedUrl = url.parse(event.ResponseURL);
   const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
-  if (options?.noEcho) {
+  // redact the logged Data when either the caller or the event says NoEcho: a
+  // FAILED response for an isComplete request (submitted by safeHandler) does not
+  // pass the option, but the request still carries the Data returned by onEvent.
+  if (options.noEcho ?? event.NoEcho) {
     log('submit redacted response to cloudformation', loggingSafeUrl, redactDataFromPayload(json));
   } else {
     log('submit response to cloudformation', loggingSafeUrl, json);
