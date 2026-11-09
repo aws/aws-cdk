@@ -156,7 +156,7 @@ export interface StackSetTargetOptions {
   /**
    * Parameter overrides that should be applied to only this target
    *
-   * @default - use parameter overrides specified in {@link StackSetProps.parameterOverrides}
+   * @default - use the parameters specified in {@link StackSetProps.parameters}
    */
   readonly parameterOverrides?: { [key: string]: string };
 }
