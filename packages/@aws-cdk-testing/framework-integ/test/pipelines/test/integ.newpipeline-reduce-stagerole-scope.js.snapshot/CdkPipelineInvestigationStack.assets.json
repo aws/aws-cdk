@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "54.0.0",
   "files": {
-    "9f87e2b2a12d2057418c771fb885baf7bb0ba20e4fbfd3cc35057f1dee62afb8": {
+    "b37918c528e17c911734c9fca77611c617a06fab81f24fcf664e96a0e49edcbd": {
       "displayName": "CdkPipelineInvestigationStack Template",
       "source": {
         "path": "CdkPipelineInvestigationStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-daef62ef": {
+        "current_account-current_region-5779b71a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9f87e2b2a12d2057418c771fb885baf7bb0ba20e4fbfd3cc35057f1dee62afb8.json",
+          "objectKey": "b37918c528e17c911734c9fca77611c617a06fab81f24fcf664e96a0e49edcbd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

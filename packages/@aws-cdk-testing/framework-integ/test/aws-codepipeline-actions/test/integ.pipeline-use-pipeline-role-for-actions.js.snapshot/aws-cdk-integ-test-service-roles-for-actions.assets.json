@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "files": {
-    "685e2ada78523728d7e5e89310f6843233ecf8831cbeda7e8ebeda219f32ebd3": {
+    "6dc22abd52b40cb43651d988083fed8e9660fa840c307a09f257a08db96eece6": {
       "displayName": "aws-cdk-integ-test-service-roles-for-actions Template",
       "source": {
         "path": "aws-cdk-integ-test-service-roles-for-actions.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-2eeb0436": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "685e2ada78523728d7e5e89310f6843233ecf8831cbeda7e8ebeda219f32ebd3.json",
+          "objectKey": "6dc22abd52b40cb43651d988083fed8e9660fa840c307a09f257a08db96eece6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
