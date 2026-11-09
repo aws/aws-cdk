@@ -1,0 +1,242 @@
+{
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "GatewayTargetCertificateDefaultTestDeployAssertA6CAA5CF.template.json"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke97c06628749c62dc3cb3afb13f1f4389/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke97c06628749c62dc3cb3afb13f1f4389/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke97c06628749c62dc3cb3afb13f1f4389Invoke090C3BFA"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke97c06628749c62dc3cb3afb13f1f4389/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke97c06628749c62dc3cb3afb13f1f4389"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvokeb45842137fa9d983c0ccd73a79041711/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvokeb45842137fa9d983c0ccd73a79041711/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb45842137fa9d983c0ccd73a79041711Invoke6A8229EF"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvokeb45842137fa9d983c0ccd73a79041711/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeb45842137fa9d983c0ccd73a79041711"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35Invoke287936C4"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke0c1e26b8367b74bc76423bd875bc0e35"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke97c06628749c62dc3cb3afb13f1f4389/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke97c06628749c62dc3cb3afb13f1f4389"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke97c06628749c62dc3cb3afb13f1f4389/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke97c06628749c62dc3cb3afb13f1f4389WaitForRoleBD7B1DAF"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke97c06628749c62dc3cb3afb13f1f4389/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke97c06628749c62dc3cb3afb13f1f4389WaitFor90B4DFDD"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvokeb45842137fa9d983c0ccd73a79041711/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb45842137fa9d983c0ccd73a79041711"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvokeb45842137fa9d983c0ccd73a79041711/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb45842137fa9d983c0ccd73a79041711WaitForRole19C7AAC7"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvokeb45842137fa9d983c0ccd73a79041711/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb45842137fa9d983c0ccd73a79041711WaitFor4504073C"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35WaitForRole1BBF8B27"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35WaitFor1251A58E"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke97c06628749c62dc3cb3afb13f1f4389/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke97c06628749c62dc3cb3afb13f1f4389WaitForIsCompleteProviderInvokeB40CE8C5"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke97c06628749c62dc3cb3afb13f1f4389/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke97c06628749c62dc3cb3afb13f1f4389WaitForTimeoutProviderInvoke8FDFF12D"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvokeb45842137fa9d983c0ccd73a79041711/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb45842137fa9d983c0ccd73a79041711WaitForIsCompleteProviderInvoke6DE490B7"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvokeb45842137fa9d983c0ccd73a79041711/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb45842137fa9d983c0ccd73a79041711WaitForTimeoutProviderInvoke8A13A72B"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35WaitForIsCompleteProviderInvokeBA4F512C"
+    }
+  ],
+  "/GatewayTargetCertificate/DefaultTest/DeployAssert/LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke0c1e26b8367b74bc76423bd875bc0e35WaitForTimeoutProviderInvoke1E92E0AE"
+    }
+  ]
+}

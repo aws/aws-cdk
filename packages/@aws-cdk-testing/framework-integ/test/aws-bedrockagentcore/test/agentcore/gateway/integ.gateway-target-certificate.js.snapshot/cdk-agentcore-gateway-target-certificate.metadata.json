@@ -1,0 +1,1136 @@
+{
+  "/cdk-agentcore-gateway-target-certificate": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/gateway/integ.gateway-target-certificate.js:121:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-agentcore-gateway-target-certificate.template.json"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/McpServer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*",
+        "subnetConfiguration": [
+          {
+            "name": "*",
+            "subnetType": "Isolated"
+          }
+        ],
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Alb": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/ResourceGatewaySecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEgressRule": [
+          "*",
+          {},
+          "*",
+          true
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CaBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CaSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCa": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/ResourceGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResourceGateway"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/ResourceConfiguration": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResourceConfiguration"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/McpServer/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/McpServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpServerD7E15234"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/McpServer/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/McpServer/Invoke2UTWxhlfyqbT5FTn--5jvgbLgj+FfJwzswGk55DU1H--Y=": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpServerInvoke2UTWxhlfyqbT5FTn5jvgbLgjFfJwzswGk55DU1HY50EF9830"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Alb/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alb16C2F182"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Alb/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": false
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          "*",
+          {},
+          "*",
+          false
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Alb/Https": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/ResourceGatewaySecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResourceGatewaySecurityGroupD9C47918"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CaBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CaBucketB5F27F18"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CaBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CaBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CaSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CaSecretDDF0A10D"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCaGenerator6C23F2AD"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCa/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCa"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "signInCaseSensitive": false
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Gateway43CB3636"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/S3CaTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/SecretCaTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/SelfManagedLatticeTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayTargetGetter4CEECE39"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Ref\":\"CaBucketB5F27F18\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCaBucketB5F27F185E5D4FE2"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Ref\":\"Vpc8378EB38\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefVpc8378EB38272D6E3A"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Ref\":\"GatewayTargetGetter4CEECE39\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefGatewayTargetGetter4CEECE393411A838"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Fn::GetAtt\":[\"Gateway43CB3636\",\"GatewayIdentifier\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGateway43CB3636GatewayIdentifier8B82BE81"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Fn::GetAtt\":[\"GatewayS3CaTarget9851B7E9\",\"TargetId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGatewayS3CaTarget9851B7E9TargetId5E92C5AE"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Ref\":\"CaSecretDDF0A10D\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCaSecretDDF0A10D05756EA6"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Fn::GetAtt\":[\"GatewaySecretCaTarget85C8978E\",\"TargetId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGatewaySecretCaTarget85C8978ETargetId8169D337"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Fn::GetAtt\":[\"ResourceConfiguration\",\"Id\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttResourceConfigurationId3ECAD3CA"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Exports/Output{\"Fn::GetAtt\":[\"GatewaySelfManagedLatticeTarget847E4851\",\"TargetId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGatewaySelfManagedLatticeTarget847E4851TargetIdCE1CEAD8"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/McpServer/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpServerServiceRole9E526485"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/McpServer/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "McpServerLogGroup767EA142"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1SubnetE48C5737"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2Subnet16364B91"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Alb/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlbSecurityGroup580F65A6"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Alb/SecurityGroup/from cdkagentcoregatewaytargetcertificateResourceGatewaySecurityGroup962E4D1D:443": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlbSecurityGroupfromcdkagentcoregatewaytargetcertificateResourceGatewaySecurityGroup962E4D1D443EE7F0116"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Alb/Https/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlbHttpsB7CA700A"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CaBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CaBucketPolicy1A5986F9"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/CaBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CaBucketAutoDeleteObjectsCustomResource4AD6FFF2"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCaGeneratorServiceRole9EE947B3"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCaGeneratorLogGroupC4CC5081"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCaProviderframeworkonEventA7454400"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayServiceRole162DEA77"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayUserPoolAC9C51BE"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/UserPool/ResourceServer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "identifier": "*",
+        "scopes": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/UserPool/DefaultClient": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "generateSecret": true,
+        "oAuth": {
+          "flows": {
+            "clientCredentials": true
+          },
+          "scopes": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/UserPool/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "cognitoDomain": {
+          "domainPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/S3CaTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayS3CaTarget9851B7E9"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/SecretCaTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewaySecretCaTarget85C8978E"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/SelfManagedLatticeTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewaySelfManagedLatticeTarget847E4851"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayTargetGetterServiceRole0D93EF8D"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayTargetGetterLogGroup59DB59BB"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Alb/Https/McpServerGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AlbHttpsMcpServerGroupBBACCA8C"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaGenerator/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCaGeneratorServiceRoleDefaultPolicy0FF69DCE"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCaProviderframeworkonEventServiceRoleBAAB196F"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCaProviderframeworkonEventLogGroupB2AB3A6A"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayServiceRoleDefaultPolicy5A851A93"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/UserPool/ResourceServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayUserPoolResourceServerA9AA7EAD"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/UserPool/DefaultClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayUserPoolDefaultClient48FC6ADE"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/Gateway/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayUserPoolDomainCD8A1197"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/GatewayTargetGetter/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayTargetGetterServiceRoleDefaultPolicy2DC8843B"
+    }
+  ],
+  "/cdk-agentcore-gateway-target-certificate/PrivateCaProvider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateCaProviderframeworkonEventServiceRoleDefaultPolicyCAD75E3B"
+    }
+  ]
+}
