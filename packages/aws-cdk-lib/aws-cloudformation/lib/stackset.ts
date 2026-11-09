@@ -863,7 +863,7 @@ export class StackSet extends Resource implements IStackSet {
       throw new ValidationError(lit`StackSetSelfManagedCannotHaveOrganizationalUnits`, `a self managed StackSet cannot deploy to organizational units ${JSON.stringify(targetConfig.organizationalUnits)}, set 'deploymentType: DeploymentType.serviceManaged' or use StackSetTarget.fromAccounts`, this);
     }
     if (this.permissionModel === PermissionModel.SERVICE_MANAGED && targetConfig.organizationalUnits === undefined) {
-      throw new ValidationError(lit`StackSetServiceManagedRequiresOrganizationalUnits`, `a service managed StackSet cannot deploy without organizational units, use StackSetTarget.fromOrganizationalUnits or set 'deploymentType: DeploymentType.selfManaged'`, this);
+      throw new ValidationError(lit`StackSetServiceManagedRequiresOrganizationalUnits`, 'a service managed StackSet cannot deploy without organizational units, use StackSetTarget.fromOrganizationalUnits or set \'deploymentType: DeploymentType.selfManaged\'', this);
     }
 
     if (this.adminRole && iam.Role.isRole(this.adminRole)) {
