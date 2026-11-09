@@ -1,5 +1,6 @@
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
+import type { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 
 /**
  * Properties for a rewrite rule
@@ -38,9 +39,11 @@ export abstract class ListenerTransform {
   }
 
   /**
-   * Render the raw Cfn listener rule transform object.
+   * Render this transform to its CloudFormation representation.
+   *
+   * @internal
    */
-  public abstract renderRawTransform(): any;
+  public abstract _render(): CfnListenerRule.TransformProperty;
 }
 
 /**
@@ -77,7 +80,7 @@ class HostHeaderRewriteTransform extends ListenerTransform {
     validateRewrites(rewrites);
   }
 
-  public renderRawTransform(): any {
+  public _render(): CfnListenerRule.TransformProperty {
     return {
       type: 'host-header-rewrite',
       hostHeaderRewriteConfig: {
@@ -96,7 +99,7 @@ class UrlRewriteTransform extends ListenerTransform {
     validateRewrites(rewrites);
   }
 
-  public renderRawTransform(): any {
+  public _render(): CfnListenerRule.TransformProperty {
     return {
       type: 'url-rewrite',
       urlRewriteConfig: {

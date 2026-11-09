@@ -422,7 +422,7 @@ export class ApplicationListenerRule extends Construct {
       return undefined;
     }
 
-    const rendered = transforms.map(transform => transform.renderRawTransform());
+    const rendered = transforms.map(transform => transform._render());
 
     const hostHeaderRewriteCount = rendered.filter(t => t.type === 'host-header-rewrite').length;
     const urlRewriteCount = rendered.filter(t => t.type === 'url-rewrite').length;
