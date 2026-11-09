@@ -33,7 +33,7 @@
     "outputPaths": [
      "events.0.message"
     ],
-    "salt": "1793988898277"
+    "salt": "1794229243397"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -87,7 +87,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5264798d487f36f00af4e51a9af7597dd66e0c343c22b6ec7ef30c197fb4013f.zip"
+     "S3Key": "0c27302dd127441f84341af708066b603946169453a79140d9f0031e15377670.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
