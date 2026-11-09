@@ -11,6 +11,8 @@ import type { ICredentialProviderConfig } from './outbound-auth/credential-provi
 import { GATEWAY_KMS_KEY_PERMS } from './perms';
 import type { IGatewayProtocolConfig } from './protocol';
 import { McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
+import type { CertificateConfiguration } from './targets/certificate';
+import type { PrivateEndpoint } from './targets/private-endpoint';
 import type { IRestApi } from '../../../aws-apigateway';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as cognito from '../../../aws-cognito';
@@ -90,6 +92,29 @@ export interface AddOpenApiTargetOptions {
   readonly description?: string;
 
   /**
+   * Private certificate authority (CA) certificates that the gateway trusts when it
+   * establishes TLS connections to the target endpoint.
+   *
+   * Use this when the target endpoint presents a certificate issued by a private CA.
+   * The gateway's execution role is granted read access to each certificate.
+   * Currently at most one certificate can be specified, and `privateEndpoint`
+   * must also be specified.
+   *
+   * @default - no private CA certificate; the endpoint certificate is verified against publicly trusted CAs
+   */
+  readonly certificateConfigurations?: CertificateConfiguration[];
+
+  /**
+   * The private endpoint that the gateway uses to reach the target in your VPC
+   * through Amazon VPC Lattice.
+   *
+   * Required when `certificateConfigurations` is specified.
+   *
+   * @default - the gateway reaches the target endpoint over the internet
+   */
+  readonly privateEndpoint?: PrivateEndpoint;
+
+  /**
    * The OpenAPI schema defining the API
    */
   readonly apiSchema: ApiSchema;
@@ -155,6 +180,29 @@ export interface AddMcpServerTargetOptions {
    * @default - No description
    */
   readonly description?: string;
+
+  /**
+   * Private certificate authority (CA) certificates that the gateway trusts when it
+   * establishes TLS connections to the target endpoint.
+   *
+   * Use this when the target endpoint presents a certificate issued by a private CA.
+   * The gateway's execution role is granted read access to each certificate.
+   * Currently at most one certificate can be specified, and `privateEndpoint`
+   * must also be specified.
+   *
+   * @default - no private CA certificate; the endpoint certificate is verified against publicly trusted CAs
+   */
+  readonly certificateConfigurations?: CertificateConfiguration[];
+
+  /**
+   * The private endpoint that the gateway uses to reach the target in your VPC
+   * through Amazon VPC Lattice.
+   *
+   * Required when `certificateConfigurations` is specified.
+   *
+   * @default - the gateway reaches the target endpoint over the internet
+   */
+  readonly privateEndpoint?: PrivateEndpoint;
 
   /**
    * The HTTPS endpoint URL of the MCP server
@@ -742,6 +790,8 @@ export class Gateway extends GatewayBase {
     const target = GatewayTarget.forOpenApi(this, id, {
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      certificateConfigurations: props.certificateConfigurations,
+      privateEndpoint: props.privateEndpoint,
       gateway: this,
       apiSchema: props.apiSchema,
       validateOpenApiSchema: props.validateOpenApiSchema,
@@ -798,6 +848,8 @@ export class Gateway extends GatewayBase {
     const targetProps: any = {
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      certificateConfigurations: props.certificateConfigurations,
+      privateEndpoint: props.privateEndpoint,
       gateway: this,
       endpoint: props.endpoint,
       ...(props.credentialProviderConfigurations && props.credentialProviderConfigurations.length > 0

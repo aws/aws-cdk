@@ -1,4 +1,6 @@
 import type { Construct } from 'constructs';
+import type { CertificateConfiguration } from './certificate';
+import type { PrivateEndpoint } from './private-endpoint';
 import type { IRestApi } from '../../../../aws-apigateway';
 import * as bedrockagentcore from '../../../../aws-bedrockagentcore';
 import * as iam from '../../../../aws-iam';
@@ -68,6 +70,29 @@ export interface GatewayTargetProps extends GatewayTargetCommonProps {
    * @default - [GatewayCredentialProvider.fromIamRole()]
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
+
+  /**
+   * Private certificate authority (CA) certificates that the gateway trusts when it
+   * establishes TLS connections to the target endpoint.
+   *
+   * Use this when the target endpoint presents a certificate issued by a private CA.
+   * The gateway's execution role is granted read access to each certificate.
+   * Currently at most one certificate can be specified, and `privateEndpoint`
+   * must also be specified.
+   *
+   * @default - no private CA certificate; the endpoint certificate is verified against publicly trusted CAs
+   */
+  readonly certificateConfigurations?: CertificateConfiguration[];
+
+  /**
+   * The private endpoint that the gateway uses to reach the target in your VPC
+   * through Amazon VPC Lattice.
+   *
+   * Required when `certificateConfigurations` is specified.
+   *
+   * @default - the gateway reaches the target endpoint over the internet
+   */
+  readonly privateEndpoint?: PrivateEndpoint;
 }
 
 /**
@@ -126,6 +151,29 @@ export interface GatewayTargetOpenApiProps extends GatewayTargetCommonProps {
    * @default - If not provided, defaults to IAM role which will fail at runtime
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
+
+  /**
+   * Private certificate authority (CA) certificates that the gateway trusts when it
+   * establishes TLS connections to the target endpoint.
+   *
+   * Use this when the target endpoint presents a certificate issued by a private CA.
+   * The gateway's execution role is granted read access to each certificate.
+   * Currently at most one certificate can be specified, and `privateEndpoint`
+   * must also be specified.
+   *
+   * @default - no private CA certificate; the endpoint certificate is verified against publicly trusted CAs
+   */
+  readonly certificateConfigurations?: CertificateConfiguration[];
+
+  /**
+   * The private endpoint that the gateway uses to reach the target in your VPC
+   * through Amazon VPC Lattice.
+   *
+   * Required when `certificateConfigurations` is specified.
+   *
+   * @default - the gateway reaches the target endpoint over the internet
+   */
+  readonly privateEndpoint?: PrivateEndpoint;
 }
 
 /**
@@ -173,6 +221,29 @@ export interface GatewayTargetMcpServerProps extends GatewayTargetCommonProps {
    * Credential providers for authentication
    */
   readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+
+  /**
+   * Private certificate authority (CA) certificates that the gateway trusts when it
+   * establishes TLS connections to the target endpoint.
+   *
+   * Use this when the target endpoint presents a certificate issued by a private CA.
+   * The gateway's execution role is granted read access to each certificate.
+   * Currently at most one certificate can be specified, and `privateEndpoint`
+   * must also be specified.
+   *
+   * @default - no private CA certificate; the endpoint certificate is verified against publicly trusted CAs
+   */
+  readonly certificateConfigurations?: CertificateConfiguration[];
+
+  /**
+   * The private endpoint that the gateway uses to reach the target in your VPC
+   * through Amazon VPC Lattice.
+   *
+   * Required when `certificateConfigurations` is specified.
+   *
+   * @default - the gateway reaches the target endpoint over the internet
+   */
+  readonly privateEndpoint?: PrivateEndpoint;
 }
 
 /**
@@ -358,6 +429,8 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gateway: props.gateway,
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      certificateConfigurations: props.certificateConfigurations,
+      privateEndpoint: props.privateEndpoint,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: OpenApiTargetConfiguration.create(props.apiSchema, props.validateOpenApiSchema),
     });
@@ -405,6 +478,8 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gateway: props.gateway,
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
+      certificateConfigurations: props.certificateConfigurations,
+      privateEndpoint: props.privateEndpoint,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
       targetConfiguration: McpServerTargetConfiguration.create(props.endpoint),
     });
@@ -505,6 +580,16 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    */
   public readonly updatedAt?;
 
+  /**
+   * The private CA certificates that the gateway trusts for this target
+   */
+  public readonly certificateConfigurations?: CertificateConfiguration[];
+
+  /**
+   * The private endpoint that the gateway uses to reach this target
+   */
+  public readonly privateEndpoint?: PrivateEndpoint;
+
   private readonly targetResource: bedrockagentcore.CfnGatewayTarget;
   private readonly targetConfiguration: ITargetConfiguration;
 
@@ -538,6 +623,10 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
 
     this.validateIamCredentialProviderTargetType();
 
+    this.certificateConfigurations = props.certificateConfigurations;
+    this.privateEndpoint = props.privateEndpoint;
+    this.validateCertificateConfigurations();
+
     // Bind the target configuration
     // This sets up permissions and dependencies
     this.targetConfiguration.bind(this, this.gateway);
@@ -550,6 +639,12 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       credentialProviderConfigurations: Lazy.any({ produce: () => this._renderCredentialProviderConfigurations() }),
 
       targetConfiguration: Lazy.any({ produce: () => this.targetConfiguration._render() }),
+
+      certificateConfigurations: this.certificateConfigurations?.length
+        ? this.certificateConfigurations.map(certificate => certificate._render())
+        : undefined,
+
+      privateEndpoint: this.privateEndpoint?._render(),
 
       // Add metadata configuration for API Gateway targets
       metadataConfiguration: this.targetType === McpTargetType.API_GATEWAY &&
@@ -574,6 +669,12 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
           .grantNeededPermissionsToRole(this.gateway)
           ?.applyBefore(this.targetResource);
       }
+    }
+
+    // The gateway reads the private CA certificates when it creates the target,
+    // so the read permissions must exist before the target resource.
+    for (const certificate of this.certificateConfigurations ?? []) {
+      certificate._grantRead(this.gateway.role).applyBefore(this.targetResource);
     }
 
     this.targetId = this.targetResource.attrTargetId;
@@ -672,6 +773,39 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       throw new ValidationError(
         lit`IamCredentialProviderUnsupportedTargetType`,
         `IamCredentialProvider with explicit service/region is only supported for MCP Server and OpenAPI targets, got target type "${this.targetType}"`,
+        this,
+      );
+    }
+  }
+
+  /**
+   * Validates that at most one private CA certificate is configured, which is the
+   * current limit of the Bedrock AgentCore service, that the target type supports it
+   * (MCP server and OpenAPI; HTTP passthrough targets are not modeled by this L2),
+   * and that a private endpoint is configured with it. The service fails the target with "Certificate configuration
+   * is only supported for targets with a private endpoint" otherwise.
+   */
+  private validateCertificateConfigurations(): void {
+    const count = this.certificateConfigurations?.length ?? 0;
+    if (count > 1) {
+      throw new ValidationError(
+        lit`GatewayTargetTooManyCertificates`,
+        `At most 1 certificate configuration can be specified for a gateway target, got ${count}`,
+        this,
+      );
+    }
+    const certificateTargetTypes = [McpTargetType.MCP_SERVER, McpTargetType.OPENAPI_SCHEMA];
+    if (count > 0 && !certificateTargetTypes.includes(this.targetType)) {
+      throw new ValidationError(
+        lit`GatewayTargetCertificateUnsupportedTargetType`,
+        `certificateConfigurations is only supported for MCP Server and OpenAPI targets, got target type "${this.targetType}"`,
+        this,
+      );
+    }
+    if (count > 0 && this.privateEndpoint === undefined) {
+      throw new ValidationError(
+        lit`GatewayTargetCertificateRequiresPrivateEndpoint`,
+        'certificateConfigurations can only be specified for a gateway target with a privateEndpoint, specify privateEndpoint (for example PrivateEndpoint.fromVpc()) or remove certificateConfigurations',
         this,
       );
     }
