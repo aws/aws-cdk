@@ -25,6 +25,7 @@ const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
     { id: 'CloudFormation-Validate::W7001', reason: 'Tests do not always reference mappings' },
     { id: 'CloudFormation-Validate::W9008', reason: 'Do not care about storage encryption of RDS instances in tests' },
     { id: 'CloudFormation-Validate::W3696', reason: 'Service is about to get shut down, no reason not to test' },
+    { id: 'CloudFormation-Validate::W3697', reason: 'Services in maintenance mode are intentionally exercised in unit tests' },
     { id: 'CloudFormation-Validate::F3031', reason: 'Some test value does not match the expected regex' },
     { id: 'CloudFormation-Validate::F3017', reason: 'Many tests use placeholder KMS key identifiers; valid forms are documented at https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id' },
     { id: 'CloudFormation-Validate::E1151', reason: 'vpc-12345 is not a valid VPC ID' },
