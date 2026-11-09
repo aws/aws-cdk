@@ -1313,6 +1313,26 @@ describe('cluster', () => {
       )).toEqual(true);
     });
 
+    test('addAutoScalingGroupCapacity with an instance type name that cannot be parsed keeps the x86_64 AMI', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        ...commonProps,
+        prune: false,
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType('custom-node-type'),
+      });
+
+      // THEN
+      const parameters = app.synth().getStackByName(stack.stackName).template.Parameters;
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('amazon-linux-2/'),
+      )).toEqual(true);
+    });
+
     test('addNodegroupCapacity with C7g instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();

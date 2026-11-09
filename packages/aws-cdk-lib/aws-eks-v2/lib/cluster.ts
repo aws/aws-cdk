@@ -2538,11 +2538,15 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
+  // Unresolved (token) instance types can't be inspected at synth time; keep the x86_64 default.
+  if (Token.isUnresolved(instanceType.toString())) {
+    return CpuArch.X86_64;
+  }
   let architecture: ec2.InstanceArchitecture;
   try {
     architecture = instanceType.architecture;
   } catch {
-    // Instance types that cannot be parsed (for example, tokens) keep the x86_64 default.
+    // The getter throws MalformedInstanceTypeIdentifier for names it can't parse; keep the x86_64 default, as before.
     return CpuArch.X86_64;
   }
   return architecture === ec2.InstanceArchitecture.ARM_64 ? CpuArch.ARM_64 : CpuArch.X86_64;
