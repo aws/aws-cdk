@@ -235,7 +235,8 @@ function redactPropertyValues(props: unknown, redactProperties: readonly string[
 
 /**
  * Returns a copy of the response with every `Data` value replaced, for logging
- * a response that has `NoEcho` set.
+ * a response that has `NoEcho` set. The `Data` key names are kept: they are the
+ * attribute names the template reads with `Fn::GetAtt`, so they are not secret.
  *
  * The same rule is implemented in `core/nodejs-entrypoint-handler/index.ts` and by `redactDataFromPayload` in the
  * aws-cdk-lib provider framework; they cannot share code, so keep them in step.

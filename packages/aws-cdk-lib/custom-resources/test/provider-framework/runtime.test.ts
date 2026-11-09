@@ -337,6 +337,68 @@ test('onTimeout with an unreadable Cause logs a sanitized summary and throws wit
   expect(logged).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
 });
 
+describe('submitResponse NoEcho', () => {
+  const event = {
+    StackId: mocks.MOCK_REQUEST.StackId,
+    RequestId: mocks.MOCK_REQUEST.RequestId,
+    LogicalResourceId: mocks.MOCK_REQUEST.LogicalResourceId,
+    PhysicalResourceId: 'phys',
+    ResponseURL: mocks.MOCK_REQUEST.ResponseURL,
+    Data: { Foo: 'SECRET-ATTR' },
+  };
+
+  test.each([
+    ['the option is true and the event is not', { noEcho: true }, undefined],
+    ['the event is true and the option is not given', {}, true],
+    ['the event is true and the option is false', { noEcho: false }, true],
+  ])('is set when %s', async (_desc, options, eventNoEcho) => {
+    const logMock = console.log as jest.Mock;
+    logMock.mockClear();
+
+    await cfnResponse.submitResponse('SUCCESS', { ...event, NoEcho: eventNoEcho }, options);
+
+    expect(mocks.cfnResponse.NoEcho).toBe(true);
+    expect(mocks.cfnResponse.Data).toEqual({ Foo: 'SECRET-ATTR' });
+    expect(logMock.mock.calls.map(args => args.join(' ')).join('\n')).not.toContain('SECRET-ATTR');
+  });
+
+  test('is not set, and Data is logged, when neither says so', async () => {
+    const logMock = console.log as jest.Mock;
+    logMock.mockClear();
+
+    await cfnResponse.submitResponse('SUCCESS', event, { noEcho: false });
+
+    expect(mocks.cfnResponse.NoEcho).toBeUndefined();
+    expect(logMock.mock.calls.map(args => args.join(' ')).join('\n')).toContain('SECRET-ATTR');
+  });
+});
+
+test('the malformed-event log of a failing handler does not log NoEcho Data', async () => {
+  // GIVEN - an isComplete-style event without a PhysicalResourceId
+  const logMock = console.log as jest.Mock;
+  logMock.mockClear();
+  const handler = cfnResponse.safeHandler(async () => {
+    throw new Error('boom');
+  });
+
+  // WHEN
+  await handler({
+    RequestType: 'Update',
+    StackId: mocks.MOCK_REQUEST.StackId,
+    RequestId: mocks.MOCK_REQUEST.RequestId,
+    LogicalResourceId: mocks.MOCK_REQUEST.LogicalResourceId,
+    ResponseURL: mocks.MOCK_REQUEST.ResponseURL,
+    NoEcho: true,
+    Data: { Foo: 'SECRET-ATTR' },
+  });
+
+  // THEN
+  const logged = logMock.mock.calls.map(args => args.join(' ')).join('\n');
+  expect(logged).toContain('ERROR: Malformed event.');
+  expect(logged).not.toContain('SECRET-ATTR');
+  expect(logged).not.toContain(mocks.MOCK_REQUEST.ResponseURL);
+});
+
 describe('redactDataFromPayload', () => {
   test('masks every value of object Data', () => {
     expect(cfnResponse.redactDataFromPayload({ NoEcho: true, Data: { A: 'secret-a', B: 'secret-b' } }).Data)
