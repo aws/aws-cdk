@@ -228,7 +228,7 @@ account instead.
 ```ts
 const app = new App();
 const stack = new Stack(app, 'Admin');
-const stackSetStack = new StackSetStack(app, 'MyStackSet');
+const stackSetStack = new StackSetStack(stack, 'MyStackSet');
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromOrganizationalUnits({
