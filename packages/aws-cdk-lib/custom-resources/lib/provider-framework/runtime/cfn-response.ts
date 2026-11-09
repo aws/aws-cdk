@@ -121,7 +121,9 @@ export function safeHandler(block: (event: any) => Promise<void>) {
  *
  * The same rule is implemented by `redactResponseData` in
  * `@aws-cdk/custom-resource-handlers` (`nodejs-entrypoint.ts` and
- * `core/nodejs-entrypoint-handler/index.ts`), which cannot import it; keep them in step.
+ * `core/nodejs-entrypoint-handler/index.ts`), which cannot import it.
+ * `custom-resources/test/provider-framework/redact-data-parity.test.ts` runs all
+ * three on the same inputs.
  */
 export function redactDataFromPayload(payload: OnEventResponse): OnEventResponse {
   // Create a deep copy of the payload object

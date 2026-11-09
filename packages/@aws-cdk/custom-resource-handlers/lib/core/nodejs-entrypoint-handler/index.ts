@@ -156,7 +156,9 @@ const REDACTED = '*****';
  * attribute names the template reads with `Fn::GetAtt`, so they are not secret.
  *
  * The same rule is implemented in `nodejs-entrypoint.ts` and by `redactDataFromPayload` in the
- * aws-cdk-lib provider framework; they cannot share code, so keep them in step.
+ * aws-cdk-lib provider framework; they cannot share code.
+ * `custom-resources/test/provider-framework/redact-data-parity.test.ts` in
+ * aws-cdk-lib runs all three on the same inputs.
  */
 function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {
   if (json.Data === undefined || json.Data === null) {

@@ -38,9 +38,11 @@ export interface MakeHandlerOptions {
    * `makeHandler` is called, that is when the handler module is loaded, so the
    * handler's unit tests fail on import and the value cannot be released.
    *
-   * Scope: only the log lines this wrapper writes are redacted. Logging done by
-   * the user handler itself, and the `Reason` of a failed request (for example an
-   * error message that quotes a property value), are not. Handlers deployed
+   * Scope: only the event this wrapper logs is redacted. The response's `Data` is
+   * masked in the log only when the handler returns `NoEcho: true`, so a handler
+   * that returns a redacted value in `Data` must set `NoEcho`. Logging done by the
+   * user handler itself, and the `Reason` of a failed request (for example an
+   * error message that quotes a property value), are not redacted. Handlers deployed
    * through the `custom-resources` Provider framework do not use this wrapper.
    *
    * @default - no properties are redacted
@@ -239,7 +241,9 @@ function redactPropertyValues(props: unknown, redactProperties: readonly string[
  * attribute names the template reads with `Fn::GetAtt`, so they are not secret.
  *
  * The same rule is implemented in `core/nodejs-entrypoint-handler/index.ts` and by `redactDataFromPayload` in the
- * aws-cdk-lib provider framework; they cannot share code, so keep them in step.
+ * aws-cdk-lib provider framework; they cannot share code.
+ * `custom-resources/test/provider-framework/redact-data-parity.test.ts` in
+ * aws-cdk-lib runs all three on the same inputs.
  */
 function redactResponseData(json: AWSLambda.CloudFormationCustomResourceResponse) {
   if (json.Data === undefined || json.Data === null) {
