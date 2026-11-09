@@ -1,8 +1,18 @@
 {
+  "/aws-stepfunctions-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "comment": "*",
+        "definitionBody": "*",
+        "tracingEnabled": false
+      }
     }
   ],
   "/aws-stepfunctions-integ/BootstrapVersion": [
@@ -20,7 +30,12 @@
   "/aws-stepfunctions-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/aws-stepfunctions-integ/StateMachine/Resource": [

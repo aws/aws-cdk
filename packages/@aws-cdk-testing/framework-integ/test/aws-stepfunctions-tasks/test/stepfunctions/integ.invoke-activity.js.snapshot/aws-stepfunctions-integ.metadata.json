@@ -1,4 +1,10 @@
 {
+  "/aws-stepfunctions-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-integ/SubmitJob": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -14,7 +20,10 @@
   "/aws-stepfunctions-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/aws-stepfunctions-integ/stateMachineArn": [
@@ -50,7 +59,12 @@
   "/aws-stepfunctions-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/aws-stepfunctions-integ/StateMachine/Resource": [

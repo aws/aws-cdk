@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "023c4b11fc4722e123b1accc6a453e3d006aaa2723f0ff689be960354233ff39": {
+    "127fdc3cfcd4a686baffacc33df1a4a84be3317a6ef753d55550d0bff787e38f": {
       "displayName": "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout Template",
       "source": {
         "path": "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-dd71866d": {
+        "current_account-current_region-cdb9ed75": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "023c4b11fc4722e123b1accc6a453e3d006aaa2723f0ff689be960354233ff39.json",
+          "objectKey": "127fdc3cfcd4a686baffacc33df1a4a84be3317a6ef753d55550d0bff787e38f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

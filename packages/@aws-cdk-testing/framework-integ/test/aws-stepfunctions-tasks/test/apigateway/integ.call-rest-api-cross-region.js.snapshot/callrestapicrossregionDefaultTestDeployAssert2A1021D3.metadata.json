@@ -1,4 +1,10 @@
 {
+  "/call-rest-api-cross-region/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "callrestapicrossregionDefaultTestDeployAssert2A1021D3.template.json"
+    }
+  ],
   "/call-rest-api-cross-region/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

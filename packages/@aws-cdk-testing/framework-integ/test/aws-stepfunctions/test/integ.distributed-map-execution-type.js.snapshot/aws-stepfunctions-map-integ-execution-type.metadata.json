@@ -1,33 +1,40 @@
 {
+  "/aws-stepfunctions-map-integ-execution-type": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-map-integ-execution-type.template.json"
+    }
+  ],
   "/aws-stepfunctions-map-integ-execution-type/DistributedMap": [
     {
       "type": "aws:cdk:warning",
       "data": "Property 'ProcessorConfig.executionType' is ignored, use the 'mapExecutionType' in the 'DistributedMap' class instead. [ack: @aws-cdk/aws-stepfunctions:propertyIgnored]",
       "trace": [
-        "Annotations.addMessage (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:234:29)",
-        "Annotations.addWarningV2 (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:103:18)",
-        "DistributedMap.toStateJson (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map.js:187:41)",
-        "StateGraph.toGraphJson (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-graph.js:143:43)",
-        "ChainDefinitionBody.bind (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:626:33)",
-        "new StateMachine (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:477:35)",
-        "new StateMachine (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DistributedMapStack (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-execution-type.js:50:29)",
-        "Object.<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-execution-type.js:56:15)",
-        "Module._compile (node:internal/modules/cjs/loader:1562:14)",
-        "Object..js (node:internal/modules/cjs/loader:1699:10)",
-        "Module.load (node:internal/modules/cjs/loader:1313:32)",
-        "Function._load (node:internal/modules/cjs/loader:1123:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:217:24)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)",
-        "node:internal/main/run_main_module:36:49"
+        "Annotations.addMessage (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "DistributedMap.toStateJson (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/states/distributed-map.js:264:43)",
+        "StateGraph.toGraphJson (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-graph.js:199:43)",
+        "ChainDefinitionBody.bind (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:738:33)",
+        "new StateMachine (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:507:35)",
+        "new StateMachine (/Users/jhawk/projects/pr/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DistributedMapStack (/Users/jhawk/projects/pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-execution-type.js:50:29)",
+        "Object.<anonymous> (/Users/jhawk/projects/pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distributed-map-execution-type.js:56:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
+        "Object..js (node:internal/modules/cjs/loader:2002:10)",
+        "Module.load (node:internal/modules/cjs/loader:1594:32)",
+        "Module._load (node:internal/modules/cjs/loader:1396:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
     }
   ],
   "/aws-stepfunctions-map-integ-execution-type/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
     }
   ],
   "/aws-stepfunctions-map-integ-execution-type/BootstrapVersion": [
@@ -45,15 +52,28 @@
   "/aws-stepfunctions-map-integ-execution-type/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-map-integ-execution-type/StateMachine/Resource": [
@@ -69,23 +89,43 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-stepfunctions-map-integ-execution-type/StateMachine/Role/Resource": [

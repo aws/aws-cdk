@@ -1,8 +1,16 @@
 {
+  "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/Testing-Default-Role-StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
     }
   ],
   "/aws-stepfunctions-StateMachine-Role-TrustPolicy-BestPractices-integ/BootstrapVersion": [

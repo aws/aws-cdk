@@ -1,4 +1,10 @@
 {
+  "/InvokeModel/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "InvokeModelDefaultTestDeployAssert9C0D2DFC.template.json"
+    }
+  ],
   "/InvokeModel/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

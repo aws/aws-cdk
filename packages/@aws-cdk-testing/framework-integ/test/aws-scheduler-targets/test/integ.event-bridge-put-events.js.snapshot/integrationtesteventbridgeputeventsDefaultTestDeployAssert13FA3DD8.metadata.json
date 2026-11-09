@@ -1,4 +1,10 @@
 {
+  "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integrationtesteventbridgeputeventsDefaultTestDeployAssert13FA3DD8.template.json"
+    }
+  ],
   "/integrationtest-event-bridge-put-events/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

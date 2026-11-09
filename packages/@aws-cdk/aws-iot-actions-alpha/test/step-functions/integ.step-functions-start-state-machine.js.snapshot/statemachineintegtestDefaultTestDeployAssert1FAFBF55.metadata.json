@@ -1,4 +1,10 @@
 {
+  "/state-machine-integtest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "statemachineintegtestDefaultTestDeployAssert1FAFBF55.template.json"
+    }
+  ],
   "/state-machine-integtest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

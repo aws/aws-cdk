@@ -1,4 +1,10 @@
 {
+  "/AwsSfnIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "AwsSfnIntegTestDefaultTestDeployAssert8F32A58A.template.json"
+    }
+  ],
   "/AwsSfnIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

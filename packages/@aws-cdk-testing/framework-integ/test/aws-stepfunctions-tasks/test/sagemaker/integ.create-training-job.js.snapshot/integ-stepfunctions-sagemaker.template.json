@@ -221,11 +221,6 @@
            ]
           ]
          }
-        },
-        "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
-         }
         }
        },
        "Effect": "Allow",
@@ -495,11 +490,6 @@
             ":stateMachine:*"
            ]
           ]
-         }
-        },
-        "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
          }
         }
        },

@@ -21,9 +21,6 @@
            ]
           ]
          }
-        },
-        "StringEquals": {
-         "aws:SourceAccount": "234567890123"
         }
        },
        "Effect": "Allow",

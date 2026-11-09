@@ -1,4 +1,10 @@
 {
+  "/aws-StepFunctionsTasks-rest-api-JSONataExpression": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-StepFunctionsTasks-rest-api-JSONataExpression.template.json"
+    }
+  ],
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -8,11 +14,18 @@
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "queryLanguage": "JSONata"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/BootstrapVersion": [
@@ -36,17 +49,27 @@
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Deployment": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/DeploymentStage.prod": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "deployment": "*"
+      }
     }
   ],
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Endpoint": [
@@ -64,19 +87,36 @@
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine/Resource": [
@@ -100,7 +140,12 @@
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Default/GET": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
     }
   ],
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/StateMachine/Role/Resource": [
@@ -116,15 +161,27 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-StepFunctionsTasks-rest-api-JSONataExpression/example-stepfunctions-rest-api/Default/GET/Resource": [

@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-pipes-enrichments-stepfunctions": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-pipes-enrichments-stepfunctions.template.json"
+    }
+  ],
   "/aws-cdk-pipes-enrichments-stepfunctions/SourceQueue": [
     {
       "type": "aws:cdk:analytics:construct",

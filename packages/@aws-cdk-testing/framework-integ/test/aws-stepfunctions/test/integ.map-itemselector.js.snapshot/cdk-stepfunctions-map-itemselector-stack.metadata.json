@@ -1,8 +1,17 @@
 {
+  "/cdk-stepfunctions-map-itemselector-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-stepfunctions-map-itemselector-stack.template.json"
+    }
+  ],
   "/cdk-stepfunctions-map-itemselector-stack/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/cdk-stepfunctions-map-itemselector-stack/BootstrapVersion": [
@@ -20,7 +29,12 @@
   "/cdk-stepfunctions-map-itemselector-stack/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/cdk-stepfunctions-map-itemselector-stack/StateMachine/Resource": [

@@ -1,8 +1,17 @@
 {
+  "/LabeledDistributedMapRedrive": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "LabeledDistributedMapRedrive.template.json"
+    }
+  ],
   "/LabeledDistributedMapRedrive/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "autoDeleteObjects": true,
+        "removalPolicy": "destroy"
+      }
     }
   ],
   "/LabeledDistributedMapRedrive/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -14,15 +23,25 @@
   "/LabeledDistributedMapRedrive/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/LabeledDistributedMapRedrive/BootstrapVersion": [
@@ -45,14 +64,16 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
       }
     }
   ],
   "/LabeledDistributedMapRedrive/Bucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "bucket": "*"
+      }
     }
   ],
   "/LabeledDistributedMapRedrive/Bucket/AutoDeleteObjectsCustomResource": [
@@ -76,31 +97,60 @@
   "/LabeledDistributedMapRedrive/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/LabeledDistributedMapRedrive/StateMachine/Resource": [
@@ -116,23 +166,43 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/LabeledDistributedMapRedrive/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
@@ -155,7 +225,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
       }
     }
   ],
@@ -178,19 +248,35 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/LabeledDistributedMapRedrive/StateMachine/DistributedMapPolicy/Resource": [

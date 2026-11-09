@@ -1,16 +1,16 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "463370a2ebd3a8a49e6fe52369514daa17a894f8a973260f3998b50df4794b1c": {
+    "13a72e7ec52fa454ce4ef896085b715002e5917329d16cd96f26d766998381ed": {
       "displayName": "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet Template",
       "source": {
         "path": "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-43c51cd9": {
+        "current_account-current_region-56809086": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "463370a2ebd3a8a49e6fe52369514daa17a894f8a973260f3998b50df4794b1c.json",
+          "objectKey": "13a72e7ec52fa454ce4ef896085b715002e5917329d16cd96f26d766998381ed.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

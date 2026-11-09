@@ -116,11 +116,6 @@
            ]
           ]
          }
-        },
-        "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
-         }
         }
        },
        "Effect": "Allow",
