@@ -327,7 +327,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
+     "S3Key": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip"
     },
     "Environment": {
      "Variables": {
@@ -504,6 +504,9 @@
    },
    "me-south-1": {
     "endpoint": "s3-website.me-south-1.amazonaws.com"
+   },
+   "me-west-1": {
+    "endpoint": "s3-website.me-west-1.amazonaws.com"
    },
    "mx-central-1": {
     "endpoint": "s3-website.mx-central-1.amazonaws.com"
