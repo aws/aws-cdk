@@ -3,7 +3,6 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import { App, Stack } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
-import { USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE } from 'aws-cdk-lib/cx-api';
 import { UserPool, UserPoolDomain } from 'aws-cdk-lib/aws-cognito';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -25,9 +24,7 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App({
-  context: { [USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE]: true },
-});
+const app = new App();
 const stack = new TestStack(app, 'userpool-domain-alias-target');
 new IntegTest(app, 'userpool-domain-alias-target-integ', {
   testCases: [stack],
