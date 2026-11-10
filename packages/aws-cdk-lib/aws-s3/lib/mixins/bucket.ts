@@ -52,6 +52,15 @@ export class BucketAutoDeleteObjects extends Mixin {
       description: `Lambda function for auto-deleting objects in ${bucketRef.bucketName} S3 bucket.`,
     });
 
+    // Grant s3:GetBucketTagging directly on the IAM execution role so it works
+    // even if the bucket policy is removed first (e.g., when disabling autoDeleteObjects).
+    // Without this, the Lambda would lose permission to call getBucketTagging() during
+    // the CFN CLEANUP phase when the bucket policy is removed in the UPDATE phase.
+    provider.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['s3:GetBucketTagging'],
+      resources: [bucketRef.bucketArn],
+    }));
+
     // Use a bucket policy to allow the custom resource to delete
     // objects in the bucket
     const policyResult = iam.ResourceWithPolicies.of(construct)?.addToResourcePolicy(new iam.PolicyStatement({
