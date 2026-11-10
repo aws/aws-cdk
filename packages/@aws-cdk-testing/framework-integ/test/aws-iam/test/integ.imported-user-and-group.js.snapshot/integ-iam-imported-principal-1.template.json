@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "UserPolicyintegiamimportedprincipal1User27F47915AE273841": {
+  "UserPolicy7D689AB7": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -21,7 +21,7 @@
     ]
    }
   },
-  "GroupDefaultPolicyintegiamimportedprincipal1GroupE2588493AAABA743": {
+  "GroupDefaultPolicy402C318A": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "Groups": [

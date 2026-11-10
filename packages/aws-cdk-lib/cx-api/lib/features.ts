@@ -162,8 +162,6 @@ export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefa
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
-export const IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName';
-export const IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2020,50 +2018,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME]: {
-    type: FlagType.BugFix,
-    summary: 'Enable this feature to create default policy names for imported users that depend on the stack the user is in.',
-    detailsMd: `
-      An imported user creates its default policy with a hardcoded construct id, so the policy name only depends on the
-      path inside the stack. Importing the same user into two stacks under the same construct id therefore attaches two
-      inline policies with the same name to the same physical user, and because an inline policy is identified by
-      (principal, policy name), the stack that deploys second silently replaces the permissions granted by the first.
-
-      When this flag is enabled, the default policy name is derived from the construct's path in the app, which includes
-      the stack, so each stack gets its own inline policy. This is the same treatment imported roles received in
-      \`@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName\`.
-
-      Enabling this on an app that already granted permissions to an imported user renames that policy, so CloudFormation
-      replaces it: the new inline policy is created and the old one is deleted.
-      `,
-    introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: true,
-    unconfiguredBehavesLike: { v2: false },
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: {
-    type: FlagType.BugFix,
-    summary: 'Enable this feature to create default policy names for imported groups that depend on the stack the group is in.',
-    detailsMd: `
-      An imported group creates its default policy with a hardcoded construct id, so the policy name only depends on the
-      path inside the stack. Importing the same group into two stacks under the same construct id therefore attaches two
-      inline policies with the same name to the same physical group, and because an inline policy is identified by
-      (principal, policy name), the stack that deploys second silently replaces the permissions granted by the first.
-
-      When this flag is enabled, the default policy name is derived from the construct's path in the app, which includes
-      the stack, so each stack gets its own inline policy. This is the same treatment imported roles received in
-      \`@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName\`.
-
-      Enabling this on an app that already granted permissions to an imported group renames that policy, so CloudFormation
-      replaces it: the new inline policy is created and the old one is deleted.
-      `,
-    introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: true,
-    unconfiguredBehavesLike: { v2: false },
   },
 };
 

@@ -122,8 +122,6 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
-| [@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedgroupstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported groups that depend on the stack the group is in. | V2NEXT | fix |
-| [@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported users that depend on the stack the user is in. | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -178,9 +176,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
-    "@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
-    "@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:minimizePolicies": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
@@ -2665,56 +2661,6 @@ running executions finish first.
 | 2.275.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
-
-
-### @aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName
-
-*Enable this feature to create default policy names for imported groups that depend on the stack the group is in.*
-
-Flag type: Backwards incompatible bugfix
-
-An imported group creates its default policy with a hardcoded construct id, so the policy name only depends on the
-path inside the stack. Importing the same group into two stacks under the same construct id therefore attaches two
-inline policies with the same name to the same physical group, and because an inline policy is identified by
-(principal, policy name), the stack that deploys second silently replaces the permissions granted by the first.
-
-When this flag is enabled, the default policy name is derived from the construct's path in the app, which includes
-the stack, so each stack gets its own inline policy. This is the same treatment imported roles received in
-`@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName`.
-
-Enabling this on an app that already granted permissions to an imported group renames that policy, so CloudFormation
-replaces it: the new inline policy is created and the old one is deleted.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-
-### @aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName
-
-*Enable this feature to create default policy names for imported users that depend on the stack the user is in.*
-
-Flag type: Backwards incompatible bugfix
-
-An imported user creates its default policy with a hardcoded construct id, so the policy name only depends on the
-path inside the stack. Importing the same user into two stacks under the same construct id therefore attaches two
-inline policies with the same name to the same physical user, and because an inline policy is identified by
-(principal, policy name), the stack that deploys second silently replaces the permissions granted by the first.
-
-When this flag is enabled, the default policy name is derived from the construct's path in the app, which includes
-the stack, so each stack gets its own inline policy. This is the same treatment imported roles received in
-`@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName`.
-
-Enabling this on an app that already granted permissions to an imported user renames that policy, so CloudFormation
-replaces it: the new inline policy is created and the old one is deleted.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

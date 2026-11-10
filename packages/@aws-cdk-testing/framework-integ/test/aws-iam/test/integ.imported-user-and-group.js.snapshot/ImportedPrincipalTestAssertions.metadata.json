@@ -1,4 +1,10 @@
 {
+  "/ImportedPrincipalTestAssertions": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ImportedPrincipalTestAssertions.template.json"
+    }
+  ],
   "/ImportedPrincipalTestAssertions/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

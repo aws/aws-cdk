@@ -11,7 +11,7 @@
     },
     "service": "IAM",
     "api": "listUserPolicies",
-    "expected": "{\"$ObjectLike\":{\"PolicyNames\":{\"$ArrayWith\":[{\"$StringLike\":\"^Policyintegiamimportedprincipal1User.{8}$\"},{\"$StringLike\":\"^Policyintegiamimportedprincipal2User.{8}$\"},{\"$StringLike\":\"^Policyintegiamimportedprincipal2Userx+.{8}$\"}]}}}",
+    "expected": "{\"$ObjectLike\":{\"PolicyNames\":{\"$ArrayWith\":[{\"$StringLike\":\"^Policyintegiamimportedprincipal1User.{8}$\"},{\"$StringLike\":\"^Policyintegiamimportedprincipal2User.{8}$\"}]}}}",
     "parameters": {
      "UserName": {
       "Fn::Join": [
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1790337636353"
+    "salt": "1794271443694"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -90,7 +90,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
+     "S3Key": "d7f9338b4576900400045da036ccb545a4259eaa0624a3fff37d4427c8762626.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -133,7 +133,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1790337636355"
+    "salt": "1794271443696"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

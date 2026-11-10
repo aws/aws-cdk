@@ -2,7 +2,6 @@ import type { IConstruct } from 'constructs';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
 import {
   DefaultTokenResolver,
-  FeatureFlags,
   Names,
   StringConcat,
   Token,
@@ -18,48 +17,15 @@ export const MAX_POLICY_NAME_LEN = 128;
 export const LITERAL_STRING_KEY = 'LiteralString';
 
 /**
- * The name to give to the default policy of an imported principal.
+ * The physical name of the default policy of an imported user or group.
  *
- * Without the feature flag the policy keeps its historical name, which only depends on the path inside
- * the stack. Importing the same principal into two stacks then attaches two inline policies with the
- * same name to the same physical principal, and since an inline policy is identified by (principal,
- * policy name), the stack that deploys last replaces the permissions granted by the other one.
- *
- * With the feature flag enabled the name is derived from the principal's path in the app, which
- * includes the stack, so every stack gets an inline policy of its own.
+ * An inline policy is identified by the principal it is attached to and its name. The name is
+ * derived from the principal's path including the stack name, so importing the same user or group
+ * into several stacks gives each stack an inline policy of its own, instead of letting the stack
+ * that deploys last replace the grants made by the others.
  */
-export function defaultPolicyNameFor(scope: IConstruct, featureFlag: string, prefix: string): DefaultPolicyName {
-  const useUniqueName = FeatureFlags.of(scope).isEnabled(featureFlag) ?? false;
-  if (!useUniqueName) {
-    return { useUniqueName, name: prefix };
-  }
-
-  // To preserve existing policy names, use Names.uniqueResourceName() only when exceeding the limit of policy names
-  // See https://github.com/aws/aws-cdk/pull/27548 for more
-  let name = `${prefix}${Names.uniqueId(scope)}`;
-  if (name.length > MAX_POLICY_NAME_LEN) {
-    name = `${prefix}${Names.uniqueResourceName(scope, { maxLength: MAX_POLICY_NAME_LEN - prefix.length })}`;
-  }
-  return { useUniqueName, name };
-}
-
-/**
- * The outcome of `defaultPolicyNameFor`.
- */
-export interface DefaultPolicyName {
-  /**
-   * Whether the stack-safe name is in effect, i.e. whether the feature flag is enabled.
-   *
-   * The name is only given to the policy as a physical name when it is, so that apps that have not
-   * enabled the flag keep the physical name CloudFormation generates for them today.
-   */
-  readonly useUniqueName: boolean;
-
-  /**
-   * The name to use, both as the construct id of the policy and, when `useUniqueName` is set, as its
-   * physical name.
-   */
-  readonly name: string;
+export function importedDefaultPolicyName(principal: IConstruct, prefix: string): string {
+  return prefix + Names.uniqueResourceName(principal, { maxLength: MAX_POLICY_NAME_LEN - prefix.length });
 }
 
 /**

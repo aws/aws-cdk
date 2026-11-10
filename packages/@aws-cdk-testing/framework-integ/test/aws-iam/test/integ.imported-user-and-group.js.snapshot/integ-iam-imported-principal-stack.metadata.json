@@ -1,4 +1,10 @@
 {
+  "/integ-iam-imported-principal-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-iam-imported-principal-stack.template.json"
+    }
+  ],
   "/integ-iam-imported-principal-stack/TestUser": [
     {
       "type": "aws:cdk:analytics:construct",
