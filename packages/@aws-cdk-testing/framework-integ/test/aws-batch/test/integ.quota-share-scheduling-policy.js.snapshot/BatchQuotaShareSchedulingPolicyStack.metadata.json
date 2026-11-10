@@ -1,0 +1,26 @@
+{
+  "/BatchQuotaShareSchedulingPolicyStack/QuotaSharePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BatchQuotaShareSchedulingPolicyStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BatchQuotaShareSchedulingPolicyStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BatchQuotaShareSchedulingPolicyStack/QuotaSharePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QuotaSharePolicy1C147B0D"
+    }
+  ]
+}
