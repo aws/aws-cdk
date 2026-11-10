@@ -108,6 +108,40 @@ describe('ExpressCluster', () => {
     });
   });
 
+  test('imports an existing cluster from its attributes', () => {
+    // GIVEN
+    const stack = testStack();
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+    // WHEN
+    const cluster = ExpressCluster.fromExpressClusterAttributes(stack, 'Imported', {
+      clusterIdentifier: 'my-express-cluster',
+      clusterResourceIdentifier: 'cluster-ABCDEFGHIJKL',
+      clusterEndpointAddress: 'my-express-cluster.cluster-xyz.us-test-1.rds.amazonaws.com',
+      port: 5432,
+    });
+    cluster.grantConnect(role, 'postgres');
+
+    // THEN
+    expect(cluster.clusterIdentifier).toEqual('my-express-cluster');
+    expect(cluster.clusterEndpoint.socketAddress).toEqual('my-express-cluster.cluster-xyz.us-test-1.rds.amazonaws.com:5432');
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 'rds-db:connect',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds-db:us-test-1:12345:dbuser:cluster-ABCDEFGHIJKL/postgres',
+            ]],
+          },
+        }],
+      },
+    });
+  });
+
   test('with all supported properties', () => {
     // GIVEN
     const stack = testStack();

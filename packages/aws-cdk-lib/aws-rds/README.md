@@ -581,6 +581,18 @@ The Data API, RDS Proxy, an initial database (`defaultDatabaseName`) and storage
 for a cluster with express configuration. Because the cluster is not associated with a VPC,
 `cluster.connections` has no security groups.
 
+To import an existing cluster with express configuration, use `ExpressCluster.fromExpressClusterAttributes()`:
+
+```ts
+declare const myRole: iam.Role;
+
+const importedCluster = rds.ExpressCluster.fromExpressClusterAttributes(this, 'ImportedExpressCluster', {
+  clusterIdentifier: 'my-express-cluster',
+  clusterResourceIdentifier: 'cluster-ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+});
+importedCluster.grantConnect(myRole, 'postgres');
+```
+
 ## Starting an instance database
 
 To set up an instance database, define a `DatabaseInstance`. You must

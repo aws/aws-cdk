@@ -1,8 +1,9 @@
 import type { Construct, IConstruct } from 'constructs';
 import type { DBClusterStorageType } from './cluster';
-import { DatabaseClusterBase } from './cluster';
+import { DatabaseCluster, DatabaseClusterBase } from './cluster';
 import type { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterEngine } from './cluster-engine';
+import type { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseInsightsMode } from './database-insights-mode';
 import { Endpoint } from './endpoint';
 import { defaultDeletionProtection } from './private/util';
@@ -213,6 +214,13 @@ export class ExpressCluster extends DatabaseClusterBase {
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ExpressCluster';
+
+  /**
+   * Import an existing cluster with express configuration.
+   */
+  public static fromExpressClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
+    return DatabaseCluster.fromDatabaseClusterAttributes(scope, id, attrs);
+  }
 
   /**
    * The engine of this cluster, which is always the default version of Aurora PostgreSQL.
