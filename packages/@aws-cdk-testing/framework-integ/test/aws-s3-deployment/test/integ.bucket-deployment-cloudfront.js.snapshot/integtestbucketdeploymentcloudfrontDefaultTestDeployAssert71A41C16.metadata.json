@@ -1,4 +1,10 @@
 {
+  "/integ-test-bucket-deployment-cloudfront/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestbucketdeploymentcloudfrontDefaultTestDeployAssert71A41C16.template.json"
+    }
+  ],
   "/integ-test-bucket-deployment-cloudfront/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

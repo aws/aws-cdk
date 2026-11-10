@@ -30,6 +30,12 @@ export * from './params-and-secrets-layers';
 export * from './snapstart-config';
 export * from './schema-registry';
 export * from './capacity-provider';
+export * from './webfunction';
+export * from './webfunction-code';
+export * from './webfunction-endpoint';
+export * from './webfunction-endpoint-grants';
+export * from './network-connector';
+export * from './webfunction-runtime';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';

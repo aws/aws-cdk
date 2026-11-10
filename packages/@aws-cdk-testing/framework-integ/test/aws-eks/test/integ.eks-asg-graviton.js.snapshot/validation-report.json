@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.12.1",
+      "conclusion": "success",
+      "violations": [],
+      "suppressedViolations": [
+        {
+          "ruleName": "W2506",
+          "description": "Parameters/SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: Parameter 'SsmParameterValueawsserviceeksoptimizedami132amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter' is used as an ImageId but has Type 'AWS::SSM::Parameter::Value<String>' - consider using 'AWS::EC2::Image::Id'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-eks-asg-graviton-test",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W2506",
+          "reason": "SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.",
+          "acknowledgedAt": "aws-cdk-eks-asg-graviton-test",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)\n    at EksOptimizedImage.getImage (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1823:59)\n    at new LaunchTemplate (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-ec2/lib/launch-template.js:403:53)\n    at new AutoScalingGroup (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-autoscaling/lib/auto-scaling-group.js:896:48)\n    at PropertyInjectable.addAutoScalingGroupCapacity (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1283:25)\n    at PropertyInjectable.<anonymous> (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)\n    at new EksAsgGravitonStack (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdkfull/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-asg-graviton.js:65:31)"
+        }
+      ]
+    }
+  ]
+}
