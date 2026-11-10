@@ -78,12 +78,21 @@ describe('cluster engine', () => {
     expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._combineImportAndExportRoles).toEqual(true);
   });
 
+  test('AuroraMysqlEngineVersion.of() infers the major version from the full version', () => {
+    expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3').auroraMysqlMajorVersion).toEqual('5.7');
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.12.0').auroraMysqlMajorVersion).toEqual('8.0');
+    expect(AuroraMysqlEngineVersion.of('8.4.mysql_aurora.8.4.7').auroraMysqlMajorVersion).toEqual('8.4');
+  });
+
   test('AuroraMysqlEngineVersion.of() determines serverlessV2AutoPauseSupported', () => {
     expect(AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.12.3', '5.7')._serverlessV2AutoPauseSupported).toEqual(false);
     expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.07.1', '8.0')._serverlessV2AutoPauseSupported).toEqual(false);
     expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.08.1', '8.0')._serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.08.1')._serverlessV2AutoPauseSupported).toEqual(true);
     expect(AuroraMysqlEngineVersion.of('8.0.mysql_aurora.3.10.0', '8.0')._serverlessV2AutoPauseSupported).toEqual(true);
     expect(AuroraMysqlEngineVersion.of('8.4.mysql_aurora.4.00.0', '8.4')._serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraMysqlEngineVersion.of('8.4.mysql_aurora.8.4.7')._serverlessV2AutoPauseSupported).toEqual(true);
+    expect(AuroraMysqlEngineVersion.VER_8_4_7._serverlessV2AutoPauseSupported).toEqual(true);
     expect(AuroraMysqlEngineVersion.of('10.0.mysql_aurora.x.xx.x', '10.0')._serverlessV2AutoPauseSupported).toEqual(true);
   });
 
