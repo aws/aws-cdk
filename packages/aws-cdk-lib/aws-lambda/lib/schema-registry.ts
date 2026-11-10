@@ -2,32 +2,27 @@ import type { IEventSourceMapping } from './event-source-mapping';
 import type { IFunction } from './function-base';
 
 /**
- * The record format that Lambda delivers to your function after schema validation.
+ * How Lambda passes schema-validated records to your function.
  */
 export class EventRecordFormat {
   /**
-   * The target function will receive the validated attributes in standard JSON format.
+   * Your function receives the validated parts of each record as JSON.
    *
-   * Lambda deserializes each validated attribute and delivers it as a Base64-encoded string
-   * of its JSON representation. This format is recommended for languages that are not
-   * strongly typed, such as Python or Node.js.
+   * A good fit for languages such as Python and Node.js.
    */
   public static readonly JSON = new EventRecordFormat('JSON');
 
   /**
-   * The target function will receive records in the same format as the schema source.
+   * Your function receives the validated parts of each record in their original format.
    *
-   * Lambda validates the selected attributes but doesn't deserialize them. It delivers the
-   * original binary data as a Base64-encoded string, with the metadata that the producer
-   * appended removed. This format is recommended when you use Avro-generated or
-   * Protobuf-generated classes to handle the data.
+   * A good fit when you use Avro or Protobuf generated classes.
    */
   public static readonly SOURCE = new EventRecordFormat('SOURCE');
 
   /**
    * A custom event record format.
    *
-   * @param name the value to pass to the `EventRecordFormat` property in CloudFormation
+   * @param name the name of the record format
    */
   public static of(name: string): EventRecordFormat {
     return new EventRecordFormat(name);
@@ -46,8 +41,8 @@ export class EventRecordFormat {
 /**
  * The type of authentication protocol for your schema registry.
  *
- * Use it to tell Lambda how to authenticate with a Confluent schema registry. For an AWS Glue
- * schema registry, Lambda uses the function's execution role instead.
+ * Used with Confluent schema registries. For an AWS Glue schema registry, Lambda uses the
+ * function's execution role instead.
  */
 export class KafkaSchemaRegistryAccessConfigType {
   /**
@@ -125,16 +120,12 @@ export interface KafkaSchemaRegistryAccessConfig {
  */
 export class KafkaSchemaValidationAttribute {
   /**
-   * Validate the key of each record against the schema registry.
-   *
-   * With `EventRecordFormat.JSON`, Lambda also deserializes the key.
+   * Validate the key of each record.
    */
   public static readonly KEY = new KafkaSchemaValidationAttribute('KEY');
 
   /**
-   * Validate the value of each record against the schema registry.
-   *
-   * With `EventRecordFormat.JSON`, Lambda also deserializes the value.
+   * Validate the value of each record.
    */
   public static readonly VALUE = new KafkaSchemaValidationAttribute('VALUE');
 

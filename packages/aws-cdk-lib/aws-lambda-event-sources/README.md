@@ -617,56 +617,26 @@ ordersFunction.addEventSource(new ManagedKafkaEventSource({
 
 ### Schema Registry
 
-Kafka stores the key and value of each record as raw bytes and doesn't enforce their structure.
-With the `schemaRegistryConfig` property of `ManagedKafkaEventSource` and `SelfManagedKafkaEventSource`,
-Lambda validates the key, the value, or both against a schema in your schema registry before it
-invokes your function. Lambda supports these schema registries:
+Lambda can validate the key, the value, or both of each Kafka record against a schema registry before it
+invokes your function. Set `schemaRegistryConfig` on `ManagedKafkaEventSource` or `SelfManagedKafkaEventSource`
+to an AWS Glue schema registry with `GlueSchemaRegistry`, or to a Confluent schema registry, cloud or
+self-managed, with `ConfluentSchemaRegistry`. The registry can validate Avro, Protobuf and JSON Schema records.
 
-* AWS Glue Schema Registry, configured with `GlueSchemaRegistry`
-* Confluent Cloud Schema Registry and self-managed Confluent Schema Registry, configured with `ConfluentSchemaRegistry`
+Schema registries need provisioned pollers, so also set `provisionedPollerConfig`. Then choose:
 
-The schema registry can validate records in the Apache Avro, Protocol Buffers (Protobuf) and JSON Schema
-formats.
+* `eventRecordFormat`: `JSON` passes the validated parts to your function as JSON, which suits languages such as
+  Python and Node.js; `SOURCE` passes them in their original format, which suits Avro or Protobuf generated classes.
+* `schemaValidationConfigs`: whether to validate the key, the value, or both.
 
-Lambda supports schema registries only for event source mappings in provisioned mode, so set
-`provisionedPollerConfig` together with `schemaRegistryConfig`. Otherwise, Lambda rejects the schema
-registry configuration.
+For Confluent, give the registry URL, an authentication type and the Secrets Manager secret that goes with it;
+the function gets read access to the secret. For Glue, pass the registry; the function gets the Glue
+permissions it needs to read it.
 
-Both `GlueSchemaRegistry` and `ConfluentSchemaRegistry` require these properties:
-
-* `eventRecordFormat`: how Lambda delivers the validated attributes to your function.
-  * `EventRecordFormat.JSON`: Lambda deserializes each validated attribute and delivers it as a Base64-encoded
-    string of its JSON representation. Recommended for languages that aren't strongly typed, such as Python or Node.js.
-  * `EventRecordFormat.SOURCE`: Lambda delivers the original binary data as a Base64-encoded string, with the
-    metadata that the producer appended removed, so that your code can convert it to Avro or Protobuf objects.
-    Recommended when you use Avro-generated or Protobuf-generated classes, for example in Java.
-* `schemaValidationConfigs`: the record attributes to validate, `KafkaSchemaValidationAttribute.KEY`,
-  `KafkaSchemaValidationAttribute.VALUE`, or both.
-
-For a Confluent schema registry, `ConfluentSchemaRegistry` also requires the HTTPS URL of the registry in
-`schemaRegistryUri`, an access type in `authenticationType`, and the Secrets Manager secret for that type in
-`secret`. Use `KafkaSchemaRegistryAccessConfigType.BASIC_AUTH` with a secret that holds a username and password
-or an API key and secret, or `CLIENT_CERTIFICATE_TLS_AUTH` with a secret that holds the client certificate and
-private key for mutual TLS. Use `SERVER_ROOT_CA_CERTIFICATE` with a secret that holds the root CA certificate
-when the registry needs no client authentication but its TLS certificate is signed by a private certificate
-authority. `ConfluentSchemaRegistry` sets a single access configuration, so it can't combine a root CA
-certificate with `BASIC_AUTH` or `CLIENT_CERTIFICATE_TLS_AUTH`. The function is granted read access to the
-secret. This authentication is separate from the authentication you configure for your Kafka cluster.
-
-For an AWS Glue schema registry, pass either the `CfnRegistry` in `schemaRegistry` or the registry ARN in
-`schemaRegistryArn`; `schemaRegistry` takes precedence when you pass both, and an error is thrown when you pass
-neither or when `schemaRegistryArn` doesn't have the form `arn:<partition>:glue:<region>:<account>:registry/<name>`
-at synthesis time. An ARN that is a single deploy-time value, such as a registry's `attrArn` or an imported value,
-is rejected; for a registry defined in your app, pass the `CfnRegistry` in `schemaRegistry`. The registry must be
-in the same account and Region as the function. Lambda accesses the registry with the function's execution role, and `GlueSchemaRegistry`
-grants that role `glue:GetRegistry` and `glue:GetSchemaVersion` on the registry and its schemas, so you don't
-need to add these permissions yourself.
-
-For more information, see
+For details, see
 [Using schema registries with Kafka event sources in Lambda](https://docs.aws.amazon.com/lambda/latest/dg/services-consume-kafka-events.html)
 in the AWS Lambda Developer Guide.
 
-The following example validates record keys with a Confluent schema registry for an Amazon MSK event source:
+This example uses a Confluent schema registry with Amazon MSK:
 
 ```ts
 import { ManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -700,7 +670,7 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
-The following example validates record keys with an AWS Glue schema registry for an Amazon MSK event source:
+This example uses an AWS Glue schema registry with Amazon MSK:
 
 ```ts
 import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
@@ -735,8 +705,7 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
-The following example validates record values with a self-managed Confluent schema registry for a
-self-managed Kafka cluster, and delivers them in their source format:
+This example uses a self-managed Confluent schema registry with a self-managed Kafka cluster:
 
 ```ts
 import { SelfManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
