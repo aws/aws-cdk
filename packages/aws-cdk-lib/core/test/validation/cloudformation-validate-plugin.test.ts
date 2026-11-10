@@ -1013,12 +1013,11 @@ function validationContext(templatePath: string): IPolicyValidationContext {
 }
 
 describe('nested stack templates', () => {
-  function appWithNestedResource(isValidatingNestedTemplates: boolean) {
+  function appWithNestedResource() {
     const app = new core.App({
       context: {
         [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: 'true',
         [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
-        [cxapi.VALIDATE_NESTED_STACK_TEMPLATES]: isValidatingNestedTemplates,
       },
     });
     const parent = new core.Stack(app, 'Parent');
@@ -1032,20 +1031,14 @@ describe('nested stack templates', () => {
     return { app, child };
   }
 
-  test('fails synthesis for an invalid resource in a nested stack when the flag is enabled', () => {
-    const { app } = appWithNestedResource(true);
+  test('fails synthesis for an invalid resource in a nested stack', () => {
+    const { app } = appWithNestedResource();
 
     expect(() => app.synth()).toThrow(/BogusProperty/);
   });
 
-  test('does not validate nested stack templates when the flag is not enabled', () => {
-    const { app } = appWithNestedResource(false);
-
-    expect(() => app.synth()).not.toThrow();
-  });
-
   test('findings in a nested stack can be acknowledged on the nested stack', () => {
-    const { app, child } = appWithNestedResource(true);
+    const { app, child } = appWithNestedResource();
     core.Validations.of(child).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'testing acknowledgement in nested stacks' });
 
     expect(() => app.synth()).not.toThrow();
@@ -1058,7 +1051,7 @@ describe('nested stack templates', () => {
   });
 
   test('passes the nested stack template to plugins with the nested stack construct path', () => {
-    const app = new core.App({ context: { [cxapi.VALIDATE_NESTED_STACK_TEMPLATES]: true } });
+    const app = new core.App();
     const parent = new core.Stack(app, 'Parent');
     const child = new core.NestedStack(parent, 'Child');
     new core.CfnResource(child, 'Queue', { type: 'AWS::SQS::Queue' });
