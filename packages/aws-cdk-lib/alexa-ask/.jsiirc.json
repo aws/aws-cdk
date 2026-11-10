@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.alexa_ask"
+    },
+    "ruby": {
+      "module": "AWSCDK::AlexaAsk"
     }
   }
 }
