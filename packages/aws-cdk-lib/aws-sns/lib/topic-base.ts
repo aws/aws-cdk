@@ -57,7 +57,16 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   readonly fifo: boolean;
 
   /**
-   * Subscribe some endpoint to this topic
+   * Subscribe some endpoint to this topic.
+   *
+   * Creates an `AWS::SNS::Subscription` resource. The endpoint and protocol
+   * come from the given `ITopicSubscription` (for example an SQS queue, a
+   * Lambda function or an email address). For some subscribers the
+   * subscription also waits for a related resource; for example, an SQS
+   * subscription is created only after the queue policy that lets the topic
+   * send to the queue.
+   *
+   * Subscribing the same subscriber to this topic twice throws an error.
    */
   addSubscription(subscription: ITopicSubscription): Subscription;
 
@@ -71,12 +80,35 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sns:Publish
+   *
+   * If the topic is encrypted with a customer-managed KMS key, permission
+   * to use the key for encryption will also be granted to the same principal.
+   *
+   * This will grant the following KMS permissions:
+   *
+   *  - kms:Decrypt
+   *  - kms:GenerateDataKey*
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sns:Subscribe
+   *
+   * Note that this only grants permission to call the `Subscribe` API;
+   * it does not grant permission to receive messages on a particular
+   * delivery protocol. KMS permissions are not required because subscribing
+   * does not access topic message payloads.
    */
   grantSubscribe(identity: iam.IGrantable): iam.Grant;
 }
@@ -127,7 +159,16 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Subscribe some endpoint to this topic
+   * Subscribe some endpoint to this topic.
+   *
+   * Creates an `AWS::SNS::Subscription` resource. The endpoint and protocol
+   * come from the given `ITopicSubscription` (for example an SQS queue, a
+   * Lambda function or an email address). For some subscribers the
+   * subscription also waits for a related resource; for example, an SQS
+   * subscription is created only after the queue policy that lets the topic
+   * send to the queue.
+   *
+   * Subscribing the same subscriber to this topic twice throws an error.
    */
   public addSubscription(topicSubscription: ITopicSubscription): Subscription {
     const subscriptionConfig = topicSubscription.bind(this);
@@ -225,18 +266,41 @@ export abstract class TopicBase extends Resource implements ITopic, IEncryptedRe
   }
 
   /**
-   * Grant topic publishing permissions to the given identity
+   * Grant topic publishing permissions to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sns:Publish
+   *
+   * If the topic is encrypted with a customer-managed KMS key, permission
+   * to use the key for encryption will also be granted to the same principal.
+   *
+   * This will grant the following KMS permissions:
+   *
+   *  - kms:Decrypt
+   *  - kms:GenerateDataKey*
    *
    * The use of this method is discouraged. Please use `grants.publish()` instead.
    *
    * [disable-awslint:no-grants]
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html
    */
   public grantPublish(grantee: iam.IGrantable) {
     return this.grants.publish(grantee);
   }
 
   /**
-   * Grant topic subscribing permissions to the given identity
+   * Grant topic subscribing permissions to the given identity.
+   *
+   * This will grant the following permissions:
+   *
+   *  - sns:Subscribe
+   *
+   * Note that this only grants permission to call the `Subscribe` API;
+   * it does not grant permission to receive messages on a particular
+   * delivery protocol. KMS permissions are not required because subscribing
+   * does not access topic message payloads.
    *
    * The use of this method is discouraged. Please use `grants.subscribe()` instead.
    *
