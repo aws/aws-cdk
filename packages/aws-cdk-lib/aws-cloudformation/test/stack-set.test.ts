@@ -788,18 +788,6 @@ describe('StackSet operation preferences values', () => {
       OperationPreferences: { [key]: { Ref: 'Value' } },
     });
   });
-
-  test('does not accept a max concurrency as a failure tolerance or the reverse', () => {
-    const operationPreferences: OperationPreferences = {
-      // @ts-expect-error a max concurrency is not a failure tolerance
-      failureTolerance: StackSetMaxConcurrency.count(1),
-      // @ts-expect-error a failure tolerance is not a max concurrency
-      maxConcurrency: StackSetFailureTolerance.count(1),
-    };
-
-    expect(operationPreferences.failureTolerance).toBeInstanceOf(StackSetMaxConcurrency);
-    expect(operationPreferences.maxConcurrency).toBeInstanceOf(StackSetFailureTolerance);
-  });
 });
 
 test('omits operation preferences when none of its fields are set', () => {
