@@ -694,7 +694,7 @@ export class StackSetFailureTolerance {
     if (!isIntegerInRange(count, 0)) {
       throw new UnscopedValidationError(lit`StackSetFailureToleranceCountInvalid`, `failure tolerance count must be an integer greater than or equal to 0, got ${JSON.stringify(count)}`);
     }
-    return new StackSetFailureTolerance(count, undefined);
+    return new StackSetFailureTolerance({ failureToleranceCount: count });
   }
 
   /**
@@ -707,18 +707,16 @@ export class StackSetFailureTolerance {
     if (!isIntegerInRange(percentage, 0, 100)) {
       throw new UnscopedValidationError(lit`StackSetFailureTolerancePercentageInvalid`, `failure tolerance percentage must be an integer from 0 to 100, got ${JSON.stringify(percentage)}`);
     }
-    return new StackSetFailureTolerance(undefined, percentage);
+    return new StackSetFailureTolerance({ failureTolerancePercentage: percentage });
   }
 
-  /** @internal */
-  public readonly _count?: number;
+  private constructor(
+    private readonly properties: Pick<CfnStackSet.OperationPreferencesProperty, 'failureToleranceCount' | 'failureTolerancePercentage'>,
+  ) {}
 
   /** @internal */
-  public readonly _percentage?: number;
-
-  private constructor(count: number | undefined, percentage: number | undefined) {
-    this._count = count;
-    this._percentage = percentage;
+  public _render(): Pick<CfnStackSet.OperationPreferencesProperty, 'failureToleranceCount' | 'failureTolerancePercentage'> {
+    return this.properties;
   }
 }
 
@@ -736,7 +734,7 @@ export class StackSetMaxConcurrency {
     if (!isIntegerInRange(count, 1)) {
       throw new UnscopedValidationError(lit`StackSetMaxConcurrencyCountInvalid`, `max concurrency count must be an integer greater than or equal to 1, got ${JSON.stringify(count)}`);
     }
-    return new StackSetMaxConcurrency(count, undefined);
+    return new StackSetMaxConcurrency({ maxConcurrentCount: count });
   }
 
   /**
@@ -748,18 +746,16 @@ export class StackSetMaxConcurrency {
     if (!isIntegerInRange(percentage, 1, 100)) {
       throw new UnscopedValidationError(lit`StackSetMaxConcurrencyPercentageInvalid`, `max concurrency percentage must be an integer from 1 to 100, got ${JSON.stringify(percentage)}`);
     }
-    return new StackSetMaxConcurrency(undefined, percentage);
+    return new StackSetMaxConcurrency({ maxConcurrentPercentage: percentage });
   }
 
-  /** @internal */
-  public readonly _count?: number;
+  private constructor(
+    private readonly properties: Pick<CfnStackSet.OperationPreferencesProperty, 'maxConcurrentCount' | 'maxConcurrentPercentage'>,
+  ) {}
 
   /** @internal */
-  public readonly _percentage?: number;
-
-  private constructor(count: number | undefined, percentage: number | undefined) {
-    this._count = count;
-    this._percentage = percentage;
+  public _render(): Pick<CfnStackSet.OperationPreferencesProperty, 'maxConcurrentCount' | 'maxConcurrentPercentage'> {
+    return this.properties;
   }
 }
 
@@ -944,10 +940,8 @@ export class StackSet extends Resource implements IStackSet {
         Active: props.managedExecution ?? true,
       },
       operationPreferences: props.operationPreferences ? undefinedIfNoKeys({
-        failureToleranceCount: props.operationPreferences.failureTolerance?._count,
-        failureTolerancePercentage: props.operationPreferences.failureTolerance?._percentage,
-        maxConcurrentCount: props.operationPreferences.maxConcurrency?._count,
-        maxConcurrentPercentage: props.operationPreferences.maxConcurrency?._percentage,
+        ...props.operationPreferences.failureTolerance?._render(),
+        ...props.operationPreferences.maxConcurrency?._render(),
         concurrencyMode: props.operationPreferences.concurrencyMode?.value,
         regionConcurrencyType: props.operationPreferences.regionConcurrencyType?.value,
         regionOrder: props.operationPreferences.regionOrder,
