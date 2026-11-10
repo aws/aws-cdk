@@ -3,18 +3,6 @@ import type { IFunction } from './function-base';
 
 /**
  * The record format that Lambda delivers to your function after schema validation.
- *
- * @example
- * import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
- * import { GlueSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
- *
- * declare const registry: CfnRegistry;
- *
- * const schemaRegistry = new GlueSchemaRegistry({
- *   schemaRegistry: registry,
- *   eventRecordFormat: lambda.EventRecordFormat.SOURCE,
- *   schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.VALUE }],
- * });
  */
 export class EventRecordFormat {
   /**
@@ -60,20 +48,6 @@ export class EventRecordFormat {
  *
  * Use it to tell Lambda how to authenticate with a Confluent schema registry. For an AWS Glue
  * schema registry, Lambda uses the function's execution role instead.
- *
- * @example
- * import { ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
- * import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
- *
- * declare const registryCredentials: ISecret;
- *
- * const schemaRegistry = new ConfluentSchemaRegistry({
- *   schemaRegistryUri: 'https://schema-registry.example.com',
- *   authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.BASIC_AUTH,
- *   secret: registryCredentials,
- *   eventRecordFormat: lambda.EventRecordFormat.JSON,
- *   schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.VALUE }],
- * });
  */
 export class KafkaSchemaRegistryAccessConfigType {
   /**
