@@ -11,7 +11,7 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"\\\"redacted/no-secret\\\"\"}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":\"\\\"marker-found/no-secret\\\"\"}}",
     "stateMachineArn": {
      "Ref": "LambdaInvoke80918088e76da94a63385a201595d7a4WaitFor30A17673"
     },
@@ -30,7 +30,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1794263546561"
+    "salt": "1794273112733"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -653,13 +653,23 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n    const { CloudWatchLogsClient, FilterLogEventsCommand } = require('@aws-sdk/client-cloudwatch-logs');\n    const client = new CloudWatchLogsClient({});\n    exports.handler = async () => {\n      let redacted = false;\n      let secret = false;\n      let nextToken;\n      do {\n        const page = await client.send(new FilterLogEventsCommand({ logGroupName: process.env.LOG_GROUP, nextToken }));\n        for (const event of page.events ?? []) {\n          if (event.message.includes('\"Configuration\": \"*****\"')) { redacted = true; }\n          if (event.message.includes(process.env.SECRET)) { secret = true; }\n        }\n        nextToken = page.nextToken;\n      } while (nextToken);\n      return (redacted ? 'redacted' : 'no-redacted-configuration') + '/' + (secret ? 'secret-logged' : 'no-secret');\n    };"
+     "ZipFile": "\n      const { CloudWatchLogsClient, FilterLogEventsCommand } = require('@aws-sdk/client-cloudwatch-logs');\n      const client = new CloudWatchLogsClient({});\n      exports.handler = async () => {\n        let markerEverywhere = true;\n        let secret = false;\n        for (const logGroupName of JSON.parse(process.env.LOG_GROUPS)) {\n          let marker = false;\n          let nextToken;\n          try {\n            do {\n              const page = await client.send(new FilterLogEventsCommand({ logGroupName, nextToken }));\n              for (const event of page.events ?? []) {\n                // with the JSON log format, the logged text is the record's message field\n                let text = event.message;\n                try { const record = JSON.parse(text); if (typeof record.message === 'string') { text = record.message; } } catch { }\n                if (text.includes(process.env.MARKER)) { marker = true; }\n                if (event.message.includes(process.env.SECRET) || text.includes(process.env.SECRET)) { secret = true; }\n              }\n              nextToken = page.nextToken;\n            } while (nextToken);\n          } catch (e) {\n            if (e.name !== 'ResourceNotFoundException') { throw e; }\n          }\n          markerEverywhere = markerEverywhere && marker;\n        }\n        return (markerEverywhere ? 'marker-found' : 'marker-missing') + '/' + (secret ? 'secret-logged' : 'no-secret');\n      };"
     },
     "Environment": {
      "Variables": {
-      "LOG_GROUP": {
-       "Ref": "CopyLogGroup921A8ED8"
+      "LOG_GROUPS": {
+       "Fn::Join": [
+        "",
+        [
+         "[\"",
+         {
+          "Ref": "CopyLogGroup921A8ED8"
+         },
+         "\"]"
+        ]
+       ]
       },
+      "MARKER": "\"Configuration\": \"*****\"",
       "SECRET": "webfunction-copy-redaction-secret"
      }
     },
