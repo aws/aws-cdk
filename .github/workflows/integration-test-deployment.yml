@@ -90,6 +90,8 @@ jobs:
       # Build integration test packages: @aws-cdk-testing/framework-integ (stable tests) and @aws-cdk/* (alpha tests)
       - name: Build Integration Test packages 
         run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
 
       - name: Run integration tests using integration-test-deployment script
         run: yarn run atmosphere-integ-test

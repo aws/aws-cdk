@@ -62,6 +62,13 @@ const python314 = new Function(stack, 'PYTHON_3_14', {
 });
 new CfnOutput(stack, 'PYTHON_3_14-functionName', { value: python314.functionName });
 
+const python315 = new Function(stack, 'PYTHON_3_15', {
+  code: new InlineCode('def handler(event, context):\n  return "success"'),
+  handler: 'index.handler',
+  runtime: Runtime.PYTHON_3_15,
+});
+new CfnOutput(stack, 'PYTHON_3_15-functionName', { value: python315.functionName });
+
 const node20xfn = new Function(stack, 'NODEJS_20_X', {
   code: new InlineCode('exports.handler = async function(event) { return "success" }'),
   handler: 'index.handler',
