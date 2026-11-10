@@ -1691,12 +1691,12 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('metricTotalErrors() produces TotalErrors with Sum statistic', () => {
+  test('metricTotalErrors() produces Errors with Sum statistic', () => {
     alarmForMetric('TotalErrAlarm', runtime.metricTotalErrors());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
-      MetricName: 'TotalErrors',
+      MetricName: 'Errors',
       Namespace: 'AWS/Bedrock-AgentCore',
       Statistic: 'Sum',
     });

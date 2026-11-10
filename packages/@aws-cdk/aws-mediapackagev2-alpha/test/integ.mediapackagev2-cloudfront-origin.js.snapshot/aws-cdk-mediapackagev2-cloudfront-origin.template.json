@@ -93,7 +93,10 @@
      ],
      "Version": "2012-10-17"
     }
-   }
+   },
+   "DependsOn": [
+    "EndpointEEF1FD8F"
+   ]
   },
   "DistributionOrigin1MediaPackageV2OAC7A801A77": {
    "Type": "AWS::CloudFront::OriginAccessControl",
