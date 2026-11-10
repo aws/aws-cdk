@@ -137,9 +137,11 @@ Balancer that the other two convenience methods don't:
 * **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
   redirect response (ALB only).
 * **Authentication**: use `ListenerAction.authenticateOidc()` to
-  perform OpenID authentication before serving a request, or
+  perform OpenID authentication before serving a request,
   `ListenerAction.authenticateJwt()` to verify JSON Web Tokens (JWT)
-  for secure service-to-service communications (see the
+  for secure service-to-service communications, or
+  `ListenerAction.authenticateJwtWithCognito()` to verify JWTs using
+  Amazon Cognito User Pool (see the
   `aws-cdk-lib/aws-elasticloadbalancingv2-actions` package for direct authentication
   integration with Cognito) (ALB only).
 
@@ -199,6 +201,47 @@ const listener = lb.addListener('Listener', {
   defaultAction: elbv2.ListenerAction.authenticateJwt({
     issuer: 'https://issuer.example.com',
     jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+    next: elbv2.ListenerAction.forward([myTargetGroup]),
+  }),
+});
+```
+
+If you are using Amazon Cognito as the IdP, you can use `ListenerAction.authenticateJwtWithCognito()` which automatically constructs the issuer and JWKS endpoint URLs from the User Pool:
+
+```ts
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const certificate: elbv2.IListenerCertificate;
+declare const userPool: cognito.UserPool;
+declare const myTargetGroup: elbv2.ApplicationTargetGroup;
+
+lb.addListener('Listener', {
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  port: 443,
+  certificates: [certificate],
+  defaultAction: elbv2.ListenerAction.authenticateJwtWithCognito({
+    userPool,
+    next: elbv2.ListenerAction.forward([myTargetGroup]),
+  }),
+});
+```
+
+The JWKS endpoint must be publicly accessible. You can automatically configure the ALB security group to allow outbound HTTPS (port 443) for JWKS endpoint access by setting `allowHttpsOutbound` to `true`:
+
+```ts
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const certificate: elbv2.IListenerCertificate;
+declare const myTargetGroup: elbv2.ApplicationTargetGroup;
+
+lb.addListener('Listener', {
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  port: 443,
+  certificates: [certificate],
+  defaultAction: elbv2.ListenerAction.authenticateJwt({
+    issuer: 'https://issuer.example.com',
+    jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+    allowHttpsOutbound: true,
     next: elbv2.ListenerAction.forward([myTargetGroup]),
   }),
 });
