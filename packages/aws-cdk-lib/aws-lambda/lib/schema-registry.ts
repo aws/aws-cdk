@@ -2,20 +2,45 @@ import type { IEventSourceMapping } from './event-source-mapping';
 import type { IFunction } from './function-base';
 
 /**
- * The format target function should receive record in.
+ * The record format that Lambda delivers to your function after schema validation.
+ *
+ * @example
+ * import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
+ * import { GlueSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+ *
+ * declare const registry: CfnRegistry;
+ *
+ * const schemaRegistry = new GlueSchemaRegistry({
+ *   schemaRegistry: registry,
+ *   eventRecordFormat: lambda.EventRecordFormat.SOURCE,
+ *   schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.VALUE }],
+ * });
  */
 export class EventRecordFormat {
   /**
-   * The target function will receive records as json objects.
+   * The target function will receive the validated attributes in standard JSON format.
+   *
+   * Lambda deserializes each validated attribute and delivers it as a Base64-encoded string
+   * of its JSON representation. This format is recommended for languages that are not
+   * strongly typed, such as Python or Node.js.
    */
   public static readonly JSON = new EventRecordFormat('JSON');
 
   /**
-   * The target function will receive records in same format as the schema source.
+   * The target function will receive records in the same format as the schema source.
+   *
+   * Lambda validates the selected attributes but doesn't deserialize them. It delivers the
+   * original binary data as a Base64-encoded string, with the metadata that the producer
+   * appended removed. This format is recommended when you use Avro-generated or
+   * Protobuf-generated classes to handle the data.
    */
   public static readonly SOURCE = new EventRecordFormat('SOURCE');
 
-  /** A custom event record format */
+  /**
+   * A custom event record format.
+   *
+   * @param name the value to pass to the `EventRecordFormat` property in CloudFormation
+   */
   public static of(name: string): EventRecordFormat {
     return new EventRecordFormat(name);
   }
@@ -32,6 +57,23 @@ export class EventRecordFormat {
 
 /**
  * The type of authentication protocol for your schema registry.
+ *
+ * Use it to tell Lambda how to authenticate with a Confluent schema registry. For an AWS Glue
+ * schema registry, Lambda uses the function's execution role instead.
+ *
+ * @example
+ * import { ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+ * import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+ *
+ * declare const registryCredentials: ISecret;
+ *
+ * const schemaRegistry = new ConfluentSchemaRegistry({
+ *   schemaRegistryUri: 'https://schema-registry.example.com',
+ *   authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.BASIC_AUTH,
+ *   secret: registryCredentials,
+ *   eventRecordFormat: lambda.EventRecordFormat.JSON,
+ *   schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.VALUE }],
+ * });
  */
 export class KafkaSchemaRegistryAccessConfigType {
   /**
@@ -109,12 +151,16 @@ export interface KafkaSchemaRegistryAccessConfig {
  */
 export class KafkaSchemaValidationAttribute {
   /**
-   * De-serialize the key field of the parload to target function.
+   * Validate the key of each record against the schema registry.
+   *
+   * With `EventRecordFormat.JSON`, Lambda also deserializes the key.
    */
   public static readonly KEY = new KafkaSchemaValidationAttribute('KEY');
 
   /**
-   * De-serialize the value field of the parload to target function.
+   * Validate the value of each record against the schema registry.
+   *
+   * With `EventRecordFormat.JSON`, Lambda also deserializes the value.
    */
   public static readonly VALUE = new KafkaSchemaValidationAttribute('VALUE');
 
