@@ -1,3 +1,8 @@
+# Stage 1 of the Security Guardian 2-stage workflow. This workflow is
+# treated as untrusted: it runs with minimal, read-only permissions on
+# every pull request (including forks). It only produces scan artifacts.
+# The second workflow (`security-report.yml`) validates everything and
+# posts the findings on the PR.
 name: Security Guardian
 on:
   pull_request:
@@ -20,12 +25,20 @@ jobs:
       !startsWith(github.event.pull_request.title, 'chore(release):') &&
       !startsWith(github.event.pull_request.title, 'chore(merge-back):')
     runs-on: ubuntu-latest
-    steps:      
-      - name: Checkout
+    steps:
+      # Check out the base branch so the security-guardian tool, rules, and
+      # dependencies come from a trusted source rather than the fork's PR head.
+      - name: Checkout base branch
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0  
+          ref: ${{ github.event.pull_request.base.ref }}
+          fetch-depth: 0
+
+      # Fetch the PR head commit so the security-guardian tool can read it in
+      # a later step. Fetch by SHA to pin the exact commit that triggered this
+      # workflow.
+      - name: Fetch PR head commit
+        run: git fetch origin ${{ github.event.pull_request.head.sha }}
 
       - name: Install cfn-guard
         run: |
@@ -46,12 +59,7 @@ jobs:
           base_sha: ${{ github.event.pull_request.base.sha }}
           head_sha: ${{ github.event.pull_request.head.sha }}
           rule_set_path: './tools/@aws-cdk/security-guardian/rules'
-      - name: Save PR info for security-report
-        if: always()
-        run: |
-          echo "${{ github.event.pull_request.number }}" > ./test-results/pr_number
-          echo "${{ github.event.pull_request.head.sha }}" > ./test-results/pr_sha
-      
+
       - name: Upload Security Guardian XML Reports
         uses: actions/upload-artifact@v7
         if: always()

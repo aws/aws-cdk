@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "54.0.0",
   "testCases": {
     "LambdaS3FilesIntegTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStackName": "LambdaS3FilesIntegTestDefaultTestDeployAssert0F4D084A"
     }
   },
-  "minimumCliVersion": "2.1107.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

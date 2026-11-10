@@ -1280,7 +1280,7 @@ AWS Step functions integrate directly with other services, either through an opt
 Therefore, it is possible to change the `integrationPattern` of services, to enable additional functionality of the said AWS Service:
 
 ```ts
-import * as glue from "@aws-cdk/aws-glue-alpha";
+import * as glue from "aws-cdk-lib/aws-glue";
 
 declare const submitGlue: glue.Job;
 

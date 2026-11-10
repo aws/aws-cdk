@@ -93,6 +93,22 @@ export interface IBucket extends IResource, IBucketRef {
   readonly isWebsite?: boolean;
 
   /**
+   * The default server-side encryption mode that S3 applies to new objects in this bucket.
+   *
+   * For a bucket defined in this app, the mode is derived from the typed `bucketEncryption`
+   * property of the underlying `CfnBucket`, so it includes changes made by assigning that
+   * property through an escape hatch. Raw overrides made with `addPropertyOverride()` or
+   * `addOverride()` are applied only when the template is rendered and are not reflected
+   * here.
+   *
+   * S3 applies SSE-S3 to every bucket that has no default encryption rule, so such a
+   * bucket reports `S3_MANAGED` and `UNENCRYPTED` is never returned.
+   *
+   * @default - undefined when the mode cannot be determined at synthesis time, or for an imported bucket that does not specify it
+   */
+  readonly encryption?: BucketEncryption;
+
+  /**
    * Optional KMS encryption key associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -415,12 +431,19 @@ export interface IBucket extends IResource, IBucketRef {
   enableEventBridgeNotification(): void;
 
   /**
-   * Function to add required permissions to the destination bucket for cross account
-   * replication. These permissions will be added as a resource based policy on the bucket.
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
-   * account ID in which destination bucket is hosted. For more information on accessControlTransition
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   * Adds resource policy statements to this bucket that permit cross-account replication.
+   *
+   * Call this method on the destination bucket. If the destination bucket is a referenced bucket,
+   * its policy cannot be modified by CDK and the permissions must be added in the destination
+   * account.
+   *
+   * To change replica ownership to the destination bucket owner, set `accessControlTransition` to
+   * true and provide the source bucket owner's account ID.
+   *
+   * @param roleArn The ARN of the source bucket's replication role.
+   * @param accessControlTransition Whether to change replica ownership to the destination bucket owner.
+   * @param account The source bucket owner's AWS account ID. Required when `accessControlTransition` is true.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string): void;
 }
@@ -478,6 +501,16 @@ export interface BucketAttributes {
    * Alternatively provide the full `bucketWebsiteUrl` manually.
    */
   readonly bucketWebsiteNewUrlFormat?: boolean;
+
+  /**
+   * The default server-side encryption mode of the imported bucket.
+   *
+   * `UNENCRYPTED` is reported as `S3_MANAGED`, because S3 applies SSE-S3 to every bucket
+   * that has no default encryption rule.
+   *
+   * @default - the encryption mode of the imported bucket is unknown
+   */
+  readonly encryption?: BucketEncryption;
 
   /**
    * KMS encryption key associated with this bucket.
@@ -581,6 +614,15 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   public abstract readonly bucketWebsiteDomainName: string;
   public abstract readonly bucketRegionalDomainName: string;
   public abstract readonly bucketDualStackDomainName: string;
+
+  /**
+   * The default server-side encryption mode that S3 applies to new objects in this bucket.
+   *
+   * `UNENCRYPTED` is never returned; see `IBucket.encryption`.
+   */
+  public get encryption(): BucketEncryption | undefined {
+    return undefined;
+  }
 
   /**
    * Optional KMS encryption key associated with this bucket.
@@ -1077,12 +1119,19 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   }
 
   /**
-   * Function to add required permissions to the destination bucket for cross account
-   * replication. These permissions will be added as a resource based policy on the bucket
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
-   * If owner of the bucket needs to be overridden, set accessControlTransition to true and provide
-   * account ID in which destination bucket is hosted. For more information on accessControlTransition
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-accesscontroltranslation.html
+   * Adds resource policy statements to this bucket that permit cross-account replication.
+   *
+   * Call this method on the destination bucket. If the destination bucket is a referenced bucket,
+   * its policy cannot be modified by CDK and the permissions must be added in the destination
+   * account.
+   *
+   * To change replica ownership to the destination bucket owner, set `accessControlTransition` to
+   * true and provide the source bucket owner's account ID.
+   *
+   * @param roleArn The ARN of the source bucket's replication role.
+   * @param accessControlTransition Whether to change replica ownership to the destination bucket owner.
+   * @param account The source bucket owner's AWS account ID. Required when `accessControlTransition` is true.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   public addReplicationPolicy(roleArn: string, accessControlTransition?: boolean, account?: string) {
     const results: boolean[] = [];
@@ -1588,21 +1637,36 @@ export interface ReplicationRule {
   /**
    * The destination bucket for the replicated objects.
    *
-   * The destination can be either in the same AWS account or a cross account.
+   * The destination can be in the same AWS account or a different account.
    *
-   * If you want to configure cross-account replication,
-   * the destination bucket must have a policy that allows the source bucket to replicate objects to it.
+   * For cross-account replication, the destination bucket must have a policy that allows the source
+   * bucket to replicate objects to it. Use `addReplicationPolicy()` to add the required permissions
+   * when the destination bucket is managed by CDK. If the destination bucket is referenced, configure
+   * the policy separately in the destination account.
+   *
+   * When importing a cross-account destination into the source stack, use
+   * `Bucket.fromBucketAttributes()` and set the `account` attribute to the destination bucket owner's
+   * account ID. `Bucket.fromBucketArn()` and `Bucket.fromBucketName()` assume the bucket is owned by
+   * the same account as the scope in which it is imported.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-walkthrough-2.html
    */
   readonly destination: IBucket;
 
   /**
-   * Whether to want to change replica ownership to the AWS account that owns the destination bucket.
+   * Whether to change replica ownership to the AWS account that owns the destination bucket.
    *
    * This can only be specified if the source bucket and the destination bucket are not in the same AWS account.
    *
-   * @default - The replicas are owned by same AWS account that owns the source object
+   * When enabled, use `addReplicationPolicy()` on the destination bucket with the source bucket
+   * owner's account ID to grant the required permissions.
+   *
+   * This is not required when the destination bucket uses `ObjectOwnership.BUCKET_OWNER_ENFORCED`,
+   * because the destination bucket owner automatically owns all objects.
+   *
+   * @default - The replicas are owned by the source object owner, unless the destination bucket uses
+   * `ObjectOwnership.BUCKET_OWNER_ENFORCED`
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-change-owner.html
    */
   readonly accessControlTransition?: boolean;
 
@@ -1615,9 +1679,12 @@ export interface ReplicationRule {
   readonly replicationTimeControl?: ReplicationTimeValue;
 
   /**
-   * A container specifying replication metrics-related settings enabling replication metrics and events.
+   * A container specifying replication metrics-related settings to configure `Status` of replication metrics and `EventThreshold` .
    *
-   * When a value is set, metrics will be output to indicate whether the replication took longer than the specified time.
+   * The specified eventThreshold duration takes effect only when `replicationTimeControl` is enabled .
+   * Otherwise, the duration is ignored and replication metrics are enabled without an event threshold.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/repl-metrics.html
    *
    * @default - Replication metrics are not enabled
    */
@@ -2204,6 +2271,8 @@ export class Bucket extends BucketBase {
       bucketWebsiteDomainName: attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain,
       bucketRegionalDomainName: attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`,
       bucketDualStackDomainName: attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`,
+      // S3 applies SSE-S3 to every bucket without a default rule, so report one consistent mode.
+      encryption: attrs.encryption === BucketEncryption.UNENCRYPTED ? BucketEncryption.S3_MANAGED : attrs.encryption,
       encryptionKey: attrs.encryptionKey,
       isWebsite: attrs.isWebsite ?? false,
       autoCreatePolicy: false,
@@ -2276,6 +2345,10 @@ export class Bucket extends BucketBase {
 
       public get isWebsite(): boolean | undefined {
         return this.reflection.isWebsite;
+      }
+
+      public get encryption(): BucketEncryption | undefined {
+        return effectiveEncryption(this.reflection);
       }
 
       public get disallowPublicAccess(): boolean | undefined {
@@ -2467,6 +2540,9 @@ export class Bucket extends BucketBase {
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
+  public get encryption(): BucketEncryption | undefined {
+    return effectiveEncryption(this.reflection);
+  }
   public readonly encryptionKey?: kms.IKey;
   public get isWebsite(): boolean | undefined {
     return this.reflection.isWebsite;
@@ -3249,10 +3325,12 @@ export class Bucket extends BucketBase {
             } : undefined,
             metrics: rule.metrics !== undefined ? {
               status: 'Enabled',
-              eventThreshold: {
-                minutes: rule.metrics.minutes,
-              },
-            } : undefined,
+              ...(rule.replicationTimeControl !== undefined ? {
+                eventThreshold: {
+                  minutes: rule.metrics.minutes,
+                },
+              } : {}),
+            }:undefined,
           },
           filter,
           // To avoid deploy error when there are multiple replication rules with undefined deleteMarkerReplication,
@@ -3960,6 +4038,36 @@ function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U
 }
 
 /**
+ * Maps the default encryption rule of a CfnBucket to the mode S3 applies to new objects.
+ *
+ * - No rule, or a rule without `SSEAlgorithm`: S3 applies SSE-S3 to every bucket.
+ * - `aws:kms` / `aws:kms:dsse` without `KMSMasterKeyID`: S3 uses the AWS managed key `aws/s3`,
+ *   so the mode is `KMS_MANAGED` / `DSSE_MANAGED`. With a key ID it is `KMS` / `DSSE`.
+ * - An algorithm CDK does not model, or a rule that is unresolved at synthesis time: `undefined`.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-bucket-encryption.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-s3-bucket-serversideencryptionbydefault.html
+ */
+function effectiveEncryption(reflection: BucketReflection): BucketEncryption | undefined {
+  const rule = reflection.defaultEncryption;
+  if (rule === undefined) {
+    return undefined;
+  }
+
+  switch (rule.sseAlgorithm) {
+    case undefined:
+    case 'AES256':
+      return BucketEncryption.S3_MANAGED;
+    case 'aws:kms':
+      return rule.hasKmsMasterKeyId ? BucketEncryption.KMS : BucketEncryption.KMS_MANAGED;
+    case 'aws:kms:dsse':
+      return rule.hasKmsMasterKeyId ? BucketEncryption.DSSE : BucketEncryption.DSSE_MANAGED;
+    default:
+      return undefined;
+  }
+}
+
+/**
  * An instance of a referenced Bucket
  *
  * An explicit class declaration to save memory; previously,
@@ -3987,6 +4095,11 @@ class ReferencedBucket extends BucketBase {
   protected autoCreatePolicy: boolean;
   public disallowPublicAccess?: boolean | undefined;
   protected notificationsHandlerRole?: iam.IRole;
+  private readonly encryptionMode?: BucketEncryption;
+
+  public get encryption(): BucketEncryption | undefined {
+    return this.encryptionMode;
+  }
 
   constructor(scope: Construct, id: string, props: {
     account?: string;
@@ -3998,6 +4111,7 @@ class ReferencedBucket extends BucketBase {
     bucketWebsiteDomainName: string;
     bucketRegionalDomainName: string;
     bucketDualStackDomainName: string;
+    encryption?: BucketEncryption | undefined;
     encryptionKey?: kms.IKey | undefined;
     isWebsite?: boolean | undefined;
     policy?: BucketPolicy | undefined;
@@ -4019,6 +4133,7 @@ class ReferencedBucket extends BucketBase {
     this.bucketWebsiteDomainName = props.bucketWebsiteDomainName;
     this.bucketRegionalDomainName = props.bucketRegionalDomainName;
     this.bucketDualStackDomainName = props.bucketDualStackDomainName;
+    this.encryptionMode = props.encryption;
     this.encryptionKey = props.encryptionKey;
     this.isWebsite = props.isWebsite;
     this.policy = props.policy;
