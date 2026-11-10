@@ -28,7 +28,7 @@ const cluster = new ExpressCluster(stack, 'Cluster', {
 cdk.Tags.of(cluster).add('integ-test', 'express-cluster');
 
 const role = new iam.Role(stack, 'ConnectRole', {
-  assumedBy: new iam.AccountRootPrincipal(),
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
 cluster.grantConnect(role, 'appadmin');
 
