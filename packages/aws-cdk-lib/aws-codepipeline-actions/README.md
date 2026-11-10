@@ -574,7 +574,7 @@ new codepipeline_actions.CodeBuildAction({
 By default, the build action runs under the role created for the CodeBuild
 project. To run the action's build under a different existing role, use the
 `serviceRoleOverride` property. This maps to the CodePipeline action
-configuration key `ServiceRoleArnOverride`, and the pipeline role is granted
+configuration key `ServiceRoleArnOverride`, and the action's role is granted
 `iam:PassRole` on the given role automatically:
 
 ```ts

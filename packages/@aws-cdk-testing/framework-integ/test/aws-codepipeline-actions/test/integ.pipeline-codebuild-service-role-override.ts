@@ -5,7 +5,6 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
-import { Template } from 'aws-cdk-lib/assertions';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
@@ -62,28 +61,6 @@ pipeline.addStage({
 
 new IntegTest(app, 'codebuild-service-role-override', {
   testCases: [stack],
-});
-
-// Assert that the ServiceRoleArnOverride is set on the CodeBuild action in the pipeline
-const template = new Template(stack);
-template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-  Stages: [
-    {},
-    {
-      Actions: [
-        {
-          Configuration: {
-            ServiceRoleArnOverride: {
-              'Fn::GetAtt': [
-                'CustomBuildRole38027779',
-                'Arn',
-              ],
-            },
-          },
-        },
-      ],
-    },
-  ],
 });
 
 app.synth();

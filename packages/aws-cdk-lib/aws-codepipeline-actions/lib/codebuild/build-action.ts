@@ -115,7 +115,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * An optional role to assume when running this action, overriding the
    * service role configured on this action's CodeBuild project.
    *
-   * The pipeline's role will be granted `iam:PassRole` on this role.
+   * The action's role will be granted `iam:PassRole` on this role.
    *
    * @default - the CodeBuild project's service role is used
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-codepipeline-pipeline-actiondeclaration.html#cfn-codepipeline-pipeline-actiondeclaration-configuration

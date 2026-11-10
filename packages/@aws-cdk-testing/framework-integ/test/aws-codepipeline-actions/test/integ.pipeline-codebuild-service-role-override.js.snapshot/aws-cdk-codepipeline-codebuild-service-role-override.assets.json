@@ -1,7 +1,7 @@
 {
   "version": "54.0.0",
   "files": {
-    "fbc81b739671bbc89f40db822420a5dfe0c5f686b71fd75efe6c0cc69f1565e2": {
+    "46e8c3e713855aa336d1c8df83535d7c2887c2d38f3a9a6cf2613a96b9a9baad": {
       "displayName": "aws-cdk-codepipeline-codebuild-service-role-override Template",
       "source": {
         "path": "aws-cdk-codepipeline-codebuild-service-role-override.template.json",
@@ -10,7 +10,7 @@
       "destinations": {
         "current_account-current_region-9d134d39": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fbc81b739671bbc89f40db822420a5dfe0c5f686b71fd75efe6c0cc69f1565e2.json",
+          "objectKey": "46e8c3e713855aa336d1c8df83535d7c2887c2d38f3a9a6cf2613a96b9a9baad.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

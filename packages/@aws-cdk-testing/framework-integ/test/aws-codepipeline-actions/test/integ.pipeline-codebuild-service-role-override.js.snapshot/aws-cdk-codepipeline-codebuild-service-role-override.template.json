@@ -459,6 +459,11 @@
       },
       {
        "Action": "iam:PassRole",
+       "Condition": {
+        "StringEquals": {
+         "iam:PassedToService": "codebuild.amazonaws.com"
+        }
+       },
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
