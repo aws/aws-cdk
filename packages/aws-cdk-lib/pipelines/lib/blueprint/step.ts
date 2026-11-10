@@ -5,6 +5,8 @@ import { Token, UnscopedValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { StepOutput } from '../helpers-internal/step-output';
 
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
 /**
  * A generic Step which can be added to a Pipeline
  *
@@ -41,7 +43,13 @@ export abstract class Step implements IFileSetProducer {
    */
   public readonly isSource: boolean = false;
 
-  private _primaryOutput?: FileSet;
+  /**
+   * The primary FileSet produced by this Step
+   *
+   * Not all steps produce an output FileSet--if they do
+   * you can substitute the `Step` object for the `FileSet` object.
+   */
+  public readonly primaryOutput?: FileSet;
 
   private _dependencies = new Set<Step>();
 
@@ -71,17 +79,6 @@ export abstract class Step implements IFileSetProducer {
   }
 
   /**
-   * The primary FileSet produced by this Step
-   *
-   * Not all steps produce an output FileSet--if they do
-   * you can substitute the `Step` object for the `FileSet` object.
-   */
-  public get primaryOutput(): FileSet | undefined {
-    // Accessor so it can be mutable in children
-    return this._primaryOutput;
-  }
-
-  /**
    * Add a dependency on another step.
    */
   public addStepDependency(step: Step) {
@@ -101,7 +98,9 @@ export abstract class Step implements IFileSetProducer {
    * Configure the given FileSet as the primary output of this step
    */
   protected configurePrimaryOutput(fs: FileSet) {
-    this._primaryOutput = fs;
+    // `primaryOutput` is `readonly` to consumers, but is populated internally
+    // here — including after construction, for steps that produce output.
+    (this as Writeable<Step>).primaryOutput = fs;
   }
 
   /**
