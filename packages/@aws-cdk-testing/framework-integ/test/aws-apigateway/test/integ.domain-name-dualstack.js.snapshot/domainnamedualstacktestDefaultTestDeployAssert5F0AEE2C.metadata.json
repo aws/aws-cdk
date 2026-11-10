@@ -1,0 +1,71 @@
+{
+  "/domain-name-dualstack-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:236:29)",
+        "Annotations.addWarningV2 (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:105:18)",
+        "resolveValue (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:196:52)",
+        "resolveReferences (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:30)",
+        "prepareApp (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:45:34)",
+        "synthesize (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "process.<anonymous> (/Users/pedro/dev/trash/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:155:51)",
+        "Object.onceWrapper (node:events:623:26)",
+        "process.emit (node:events:508:28)"
+      ]
+    }
+  ],
+  "/domain-name-dualstack-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/domain-name-dualstack-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/domain-name-dualstack-test/DefaultTest/DeployAssert/HttpApiCall366a276bc97c38989646f44fc742c3ea/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/domain-name-dualstack-test/DefaultTest/DeployAssert/HttpApiCall366a276bc97c38989646f44fc742c3ea/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsHttpApiCall366a276bc97c38989646f44fc742c3ea"
+    }
+  ],
+  "/domain-name-dualstack-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/domain-name-dualstack-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/domain-name-dualstack-test/DefaultTest/DeployAssert/HttpApiCall366a276bc97c38989646f44fc742c3ea/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCall366a276bc97c38989646f44fc742c3ea"
+    }
+  ]
+}
