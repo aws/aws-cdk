@@ -16,7 +16,7 @@ import type * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import type * as secretsmanager from '../../aws-secretsmanager';
 import type { Duration, IAspect } from '../../core';
-import { Annotations, AspectPriority, Aspects, RemovalPolicy, Token } from '../../core';
+import { Annotations, AspectPriority, Aspects, RemovalPolicy, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -85,7 +85,7 @@ export interface ExpressClusterProps {
   /**
    * The amount of time that the Aurora Serverless writer instance can be idle before it is automatically paused.
    *
-   * Only used when `serverlessV2MinCapacity` is 0. Valid values are 5 minutes to 24 hours.
+   * Can only be specified when `serverlessV2MinCapacity` is 0. Valid values are 5 minutes to 24 hours.
    *
    * @default - the express configuration default (5 minutes)
    */
@@ -170,6 +170,16 @@ export interface ExpressClusterProps {
    * @default true
    */
   readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * Tags to apply to the cluster.
+   *
+   * Creating a cluster with express configuration through CloudFormation currently requires at least one tag.
+   * You can also add tags with `Tags.of(cluster).add(key, value)`.
+   *
+   * @default - no tags
+   */
+  readonly tags?: { [key: string]: string };
 
   /**
    * Indicates whether the DB cluster should have deletion protection enabled.
@@ -302,6 +312,7 @@ export class ExpressCluster extends DatabaseClusterBase {
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
+      tags: props.tags ? Object.entries(props.tags).map(([key, value]) => ({ key, value })) : undefined,
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -359,6 +370,9 @@ export class ExpressCluster extends DatabaseClusterBase {
     if (!Token.isUnresolved(min) && !Token.isUnresolved(max) && max < min) {
       throw new ValidationError(lit`ExpressClusterServerlessV2MaxCapacityTooLow`, `\`serverlessV2MaxCapacity\` (${max}) must be greater than or equal to \`serverlessV2MinCapacity\` (${min})`, this);
     }
+    if (autoPause !== undefined && !Token.isUnresolved(min) && min !== 0) {
+      throw new ValidationError(lit`ExpressClusterServerlessV2AutoPauseRequiresZeroMinCapacity`, `\`serverlessV2AutoPauseDuration\` can only be specified when \`serverlessV2MinCapacity\` is 0, got ${min}`, this);
+    }
     if (autoPause !== undefined && !autoPause.isUnresolved() && (autoPause.toSeconds() < 300 || autoPause.toSeconds() > 86400)) {
       throw new ValidationError(lit`ExpressClusterInvalidServerlessV2AutoPauseDuration`, `\`serverlessV2AutoPauseDuration\` must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), got ${autoPause.toSeconds()} seconds`, this);
     }
@@ -381,11 +395,12 @@ class ExpressClusterTagCheck implements IAspect {
     if (node !== this.cluster) {
       return;
     }
-    if (!this.cluster.tags.hasTags()) {
+    // Stack-level tags are propagated to the cluster by CloudFormation, so they also avoid the error
+    if (!this.cluster.tags.hasTags() && !Stack.of(this.cluster).tags.hasTags()) {
       Annotations.of(this.cluster.node.scope ?? this.cluster).addWarningV2(
         '@aws-cdk/aws-rds:expressClusterRequiresTags',
         'Creating a cluster with express configuration through CloudFormation currently fails with an internal error unless the cluster has at least one tag. ' +
-        'Add a tag with `Tags.of(cluster).add(key, value)`.',
+        'Add a tag with the `tags` property or `Tags.of(cluster).add(key, value)`, or deploy the stack with stack-level tags.',
       );
     }
   }

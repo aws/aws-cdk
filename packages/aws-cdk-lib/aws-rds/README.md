@@ -568,10 +568,10 @@ const cluster = new rds.ExpressCluster(this, 'ExpressCluster', {
   serverlessV2MaxCapacity: 4,
   backup: { retention: Duration.days(7) },
   cloudwatchLogsExports: ['postgresql'],
+  // Creating a cluster with express configuration through CloudFormation currently requires at least one tag
+  // on the cluster or on the stack
+  tags: { project: 'my-project' },
 });
-
-// Creating a cluster with express configuration through CloudFormation currently requires at least one tag
-Tags.of(cluster).add('project', 'my-project');
 
 // Allow the role to connect as the master user (`postgres` by default) with IAM database authentication
 cluster.grantConnect(myRole, 'postgres');

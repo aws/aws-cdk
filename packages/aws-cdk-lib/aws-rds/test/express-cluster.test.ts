@@ -117,7 +117,7 @@ describe('ExpressCluster', () => {
       masterUsername: 'appadmin',
       backup: { retention: cdk.Duration.days(7), preferredWindow: '18:00-19:00' },
       preferredMaintenanceWindow: 'Sun:20:00-Sun:21:00',
-      serverlessV2MinCapacity: 0.5,
+      serverlessV2MinCapacity: 0,
       serverlessV2MaxCapacity: 4,
       serverlessV2AutoPauseDuration: cdk.Duration.minutes(10),
       storageType: DBClusterStorageType.AURORA_IOPT1,
@@ -135,7 +135,7 @@ describe('ExpressCluster', () => {
       PreferredBackupWindow: '18:00-19:00',
       PreferredMaintenanceWindow: 'Sun:20:00-Sun:21:00',
       ServerlessV2ScalingConfiguration: {
-        MinCapacity: 0.5,
+        MinCapacity: 0,
         MaxCapacity: 4,
         SecondsUntilAutoPause: 600,
       },
@@ -248,6 +248,37 @@ describe('ExpressCluster', () => {
     });
   });
 
+  test('does not warn when the stack has tags', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, undefined, {
+      env: { account: '12345', region: 'us-test-1' },
+      tags: { project: 'test' },
+    });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'WithExpressConfiguration is a newly launched property not yet in the bundled schema' });
+
+    // WHEN
+    new ExpressCluster(stack, 'Cluster');
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/Cluster', Match.stringLikeRegexp('at least one tag'));
+  });
+
+  test('applies tags and does not warn', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ExpressCluster(stack, 'Cluster', {
+      tags: { project: 'test', env: 'dev' },
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/Cluster', Match.stringLikeRegexp('at least one tag'));
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      Tags: [{ Key: 'env', Value: 'dev' }, { Key: 'project', Value: 'test' }],
+    });
+  });
+
   test('fails to grant Data API access', () => {
     // GIVEN
     const stack = testStack();
@@ -274,6 +305,7 @@ describe('ExpressCluster', () => {
     [{ serverlessV2MaxCapacity: 257 }, '`serverlessV2MaxCapacity` must be between 1 and 256 in 0.5 increments, got 257'],
     [{ serverlessV2MinCapacity: 4, serverlessV2MaxCapacity: 2 }, '`serverlessV2MaxCapacity` (2) must be greater than or equal to `serverlessV2MinCapacity` (4)'],
     [{ serverlessV2AutoPauseDuration: cdk.Duration.minutes(1) }, '`serverlessV2AutoPauseDuration` must be between 300 seconds (5 minutes) and 86,400 seconds (24 hours), got 60 seconds'],
+    [{ serverlessV2MinCapacity: 0.5, serverlessV2AutoPauseDuration: cdk.Duration.minutes(10) }, '`serverlessV2AutoPauseDuration` can only be specified when `serverlessV2MinCapacity` is 0, got 0.5'],
   ])('fails with invalid serverless v2 capacity settings %j', (props, message) => {
     // GIVEN
     const stack = testStack();
