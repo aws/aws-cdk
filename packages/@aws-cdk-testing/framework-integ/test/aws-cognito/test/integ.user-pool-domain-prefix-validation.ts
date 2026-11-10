@@ -1,3 +1,4 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 
@@ -28,4 +29,8 @@ const domain = userpool.addDomain('Domain', {
 
 new CfnOutput(stack, 'Domain', {
   value: domain.domainName,
+});
+
+new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
 });
