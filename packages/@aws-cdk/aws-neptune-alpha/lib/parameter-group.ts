@@ -25,6 +25,10 @@ export class ParameterGroupFamily {
    * Family used by Neptune engine versions 1.4.0.0 and later
    */
   public static readonly NEPTUNE_1_4 = new ParameterGroupFamily('neptune1.4');
+  /**
+   * Family used by Neptune engine versions 1.5.0.0 and later
+   */
+  public static readonly NEPTUNE_1_5 = new ParameterGroupFamily('neptune1.5');
 
   /**
    * Constructor for specifying a custom parameter group family

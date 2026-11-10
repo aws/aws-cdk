@@ -1,4 +1,10 @@
 {
+  "/aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awsstepfunctionstasksemrcontainersallservicesDefaultTestDeployAssertE09C88B0.template.json"
+    }
+  ],
   "/aws-stepfunctions-tasks-emr-containers-all-services/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
