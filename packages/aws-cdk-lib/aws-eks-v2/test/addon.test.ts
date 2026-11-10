@@ -1,8 +1,9 @@
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
+import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import * as eks from '../lib';
-import { Addon, KubernetesVersion, Cluster } from '../lib';
+import { Addon, KubernetesVersion, Cluster, ResolveConflictsType } from '../lib';
 
 describe('Addon', () => {
   let app: App;
@@ -95,6 +96,151 @@ describe('Addon', () => {
       },
       ConfigurationValues: '{\"replicaCount\":2}',
     });
+  });
+
+  test('create a new Addon with namespace', () => {
+    // GIVEN
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithNamespace', {
+      addonName: 'test-addon',
+      cluster,
+      namespace: 'test-namespace',
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'ClusterEB0386A7',
+      },
+      NamespaceConfig: {
+        Namespace: 'test-namespace',
+      },
+    });
+  });
+
+  test('create a new Addon with podIdentityAssociations', () => {
+    // GIVEN
+    const testRole = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('test.com'),
+    });
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithNamespace', {
+      addonName: 'test-addon',
+      cluster,
+      podIdentityAssociations: [{
+        role: testRole,
+        serviceAccount: 'test-serviceAccount',
+      }],
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'ClusterEB0386A7',
+      },
+      PodIdentityAssociations: [{
+        RoleArn: {
+          'Fn::GetAtt': ['TestRole6C9272DF', 'Arn'],
+        },
+        ServiceAccount: 'test-serviceAccount',
+      }],
+    });
+  });
+
+  test('create a new Addon with resolveConflicts', () => {
+    // GIVEN
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithNamespace', {
+      addonName: 'test-addon',
+      cluster,
+      resolveConflicts: ResolveConflictsType.PRESERVE,
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'ClusterEB0386A7',
+      },
+      ResolveConflicts: 'PRESERVE',
+    });
+  });
+
+  test('create a new Addon with ServiceAccountRole', () => {
+    // GIVEN
+    const testRole = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('test.com'),
+    });
+
+    // WHEN
+    new Addon(stack, 'TestAddonWithNamespace', {
+      addonName: 'test-addon',
+      cluster,
+      serviceAccountRole: testRole,
+    });
+
+    // THEN
+    const t = Template.fromStack(stack);
+    t.hasResourceProperties('AWS::EKS::Addon', {
+      AddonName: 'test-addon',
+      ClusterName: {
+        Ref: 'ClusterEB0386A7',
+      },
+      ServiceAccountRoleArn: {
+        'Fn::GetAtt': ['TestRole6C9272DF', 'Arn'],
+      },
+    });
+  });
+
+  test('warns when both podIdentityAssociations and serviceAccountRole are specified', () => {
+    // GIVEN
+    const testRole = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('test.com'),
+    });
+
+    // WHEN
+    new Addon(stack, 'TestAddon', {
+      addonName: 'test-addon',
+      cluster,
+      podIdentityAssociations: [{
+        role: testRole,
+        serviceAccount: 'test-serviceAccount',
+      }],
+      serviceAccountRole: testRole,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Stack/TestAddon',
+      Match.stringLikeRegexp('Both podIdentityAssociations and serviceAccountRole are specified'));
+  });
+
+  test('no warning when only podIdentityAssociations is specified', () => {
+    // GIVEN
+    const testRole = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('test.com'),
+    });
+
+    // WHEN
+    new Addon(stack, 'TestAddon', {
+      addonName: 'test-addon',
+      cluster,
+      podIdentityAssociations: [{
+        role: testRole,
+        serviceAccount: 'test-serviceAccount',
+      }],
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TestAddon',
+      Match.stringLikeRegexp('Both podIdentityAssociations and serviceAccountRole are specified'));
   });
 
   test('creates an Addon from attributes', () => {
