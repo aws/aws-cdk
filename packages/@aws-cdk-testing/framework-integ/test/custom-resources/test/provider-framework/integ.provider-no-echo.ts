@@ -1,48 +1,11 @@
 /// !cdk-integ *
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import type * as log from 'aws-cdk-lib/aws-logs';
 import { App, CustomResource, Duration, Stack } from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import type { Construct } from 'constructs';
 import { Provider } from 'aws-cdk-lib/custom-resources';
+import { logRedactionChecker } from '../log-redaction-checker';
 
 const SECRET_VALUE = 'secret-value';
-
-class TestStack extends Stack {
-  public readonly entrypointLogGroup: log.ILogGroup;
-
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
-
-    const handler = new lambda.Function(this, 'my-handler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline(`
-      exports.handler = async (event, context) => {
-        return {
-          PhysicalResourceId: '1234',
-          NoEcho: true,
-          Data: {
-            mySecret: '${SECRET_VALUE}',
-          },
-        };
-      };`),
-    });
-
-    const provider = new Provider(this, 'my-provider', {
-      onEventHandler: handler,
-      // the framework Lambdas log at FATAL by default; this test reads their INFO logs
-      frameworkLambdaLoggingLevel: lambda.ApplicationLogLevel.INFO,
-    });
-
-    this.entrypointLogGroup = (provider.node.findChild('framework-onEvent') as lambda.Function).logGroup;
-
-    new CustomResource(this, 'my-cr', {
-      serviceToken: provider.serviceToken,
-    });
-  }
-}
 
 const app = new App({
   postCliContext: {
@@ -50,53 +13,62 @@ const app = new App({
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
   },
 });
-const stack = new TestStack(app, 'integ-provider-no-echo');
+const stack = new Stack(app, 'integ-provider-no-echo');
+
+// A user onEvent handler that returns NoEcho Data. The provider framework must not
+// write the Data to its own logs.
+const onEvent = new lambda.Function(stack, 'my-handler', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+  exports.handler = async () => ({
+    PhysicalResourceId: '1234',
+    NoEcho: true,
+    Data: { mySecret: '${SECRET_VALUE}' },
+  });`),
+});
+
+// Synchronous: onEvent only.
+const syncProvider = new Provider(stack, 'my-provider', {
+  onEventHandler: onEvent,
+  // the framework Lambdas log at FATAL by default; this test reads their INFO logs
+  frameworkLambdaLoggingLevel: lambda.ApplicationLogLevel.INFO,
+});
+new CustomResource(stack, 'my-cr', { serviceToken: syncProvider.serviceToken });
+
+// Asynchronous: the isComplete request carries the Data returned by onEvent, so the
+// framework's isComplete function sees it too. Completes on the first poll.
+const asyncProvider = new Provider(stack, 'my-async-provider', {
+  onEventHandler: onEvent,
+  isCompleteHandler: new lambda.Function(stack, 'my-is-complete', {
+    runtime: lambda.Runtime.NODEJS_20_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = async () => ({ IsComplete: true });'),
+  }),
+  queryInterval: Duration.seconds(10),
+  frameworkLambdaLoggingLevel: lambda.ApplicationLogLevel.INFO,
+});
+new CustomResource(stack, 'my-async-cr', { serviceToken: asyncProvider.serviceToken });
+
+const frameworkLogGroup = (provider: Provider, name: string) => (provider.node.findChild(name) as lambda.Function).logGroup;
 
 const test = new integ.IntegTest(app, 'IntegProviderFrameworkNoEchoTest', {
   testCases: [stack],
 });
 
-// When `NoEcho` is used, the framework's log lines say 'redacted' and never contain
-// the secret. A checker function reads every event in the log group (a single
-// FilterLogEvents call can return an empty page with a nextToken) and reports both.
-const checker = new lambda.Function(stack, 'LogChecker', {
-  runtime: lambda.Runtime.NODEJS_22_X,
-  handler: 'index.handler',
-  timeout: Duration.minutes(1),
-  environment: {
-    LOG_GROUP: stack.entrypointLogGroup.logGroupName,
-    SECRET: SECRET_VALUE,
-  },
-  code: lambda.Code.fromInline(`
-    const { CloudWatchLogsClient, FilterLogEventsCommand } = require('@aws-sdk/client-cloudwatch-logs');
-    const client = new CloudWatchLogsClient({});
-    exports.handler = async () => {
-      let redacted = false;
-      let secret = false;
-      let nextToken;
-      do {
-        let page;
-        try {
-          page = await client.send(new FilterLogEventsCommand({ logGroupName: process.env.LOG_GROUP, nextToken }));
-        } catch (e) {
-          if (e.name === 'ResourceNotFoundException') { return 'no-log-group'; }
-          throw e;
-        }
-        for (const event of page.events ?? []) {
-          if (event.message.includes('redacted')) { redacted = true; }
-          if (event.message.includes(process.env.SECRET)) { secret = true; }
-        }
-        nextToken = page.nextToken;
-      } while (nextToken);
-      return (redacted ? 'redacted' : 'no-redacted-line') + '/' + (secret ? 'secret-logged' : 'no-secret');
-    };`),
+// Every framework function that handled the resources logs its redacted response, and
+// none of their log lines contains the secret.
+const checker = logRedactionChecker(stack, 'LogChecker', {
+  logGroups: [
+    frameworkLogGroup(syncProvider, 'framework-onEvent'),
+    frameworkLogGroup(asyncProvider, 'framework-onEvent'),
+    frameworkLogGroup(asyncProvider, 'framework-isComplete'),
+  ],
+  marker: '"mySecret": "*****"',
+  secret: SECRET_VALUE,
 });
-checker.addToRolePolicy(new iam.PolicyStatement({
-  actions: ['logs:FilterLogEvents'],
-  resources: [stack.entrypointLogGroup.logGroupArn],
-}));
 
 // log events reach CloudWatch a few seconds after they are written
 test.assertions.invokeFunction({ functionName: checker.functionName })
-  .expect(integ.ExpectedResult.objectLike({ Payload: '"redacted/no-secret"' }))
+  .expect(integ.ExpectedResult.objectLike({ Payload: '"marker-found/no-secret"' }))
   .waitForAssertions({ totalTimeout: Duration.minutes(5), interval: Duration.seconds(30) });

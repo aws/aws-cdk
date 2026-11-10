@@ -1,10 +1,9 @@
 import * as path from 'path';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { WebFunction, WebFunctionAuthType, WebFunctionCode, WebFunctionRuntime } from 'aws-cdk-lib/aws-lambda';
+import { logRedactionChecker } from '../../custom-resources/test/log-redaction-checker';
 
 /**
  * The code copy handler behind `WebFunctionCode.fromAssetToManagedBucket()` receives the
@@ -39,36 +38,11 @@ new WebFunction(stack, 'Function', {
   environment: { SECRET: secret.valueAsString },
 });
 
-const checker = new lambda.Function(stack, 'LogChecker', {
-  runtime: lambda.Runtime.NODEJS_22_X,
-  handler: 'index.handler',
-  timeout: cdk.Duration.minutes(1),
-  environment: {
-    LOG_GROUP: copyLogGroup.logGroupName,
-    SECRET: SECRET_VALUE,
-  },
-  code: lambda.Code.fromInline(`
-    const { CloudWatchLogsClient, FilterLogEventsCommand } = require('@aws-sdk/client-cloudwatch-logs');
-    const client = new CloudWatchLogsClient({});
-    exports.handler = async () => {
-      let redacted = false;
-      let secret = false;
-      let nextToken;
-      do {
-        const page = await client.send(new FilterLogEventsCommand({ logGroupName: process.env.LOG_GROUP, nextToken }));
-        for (const event of page.events ?? []) {
-          if (event.message.includes('"Configuration": "*****"')) { redacted = true; }
-          if (event.message.includes(process.env.SECRET)) { secret = true; }
-        }
-        nextToken = page.nextToken;
-      } while (nextToken);
-      return (redacted ? 'redacted' : 'no-redacted-configuration') + '/' + (secret ? 'secret-logged' : 'no-secret');
-    };`),
+const checker = logRedactionChecker(stack, 'LogChecker', {
+  logGroups: [copyLogGroup],
+  marker: '"Configuration": "*****"',
+  secret: SECRET_VALUE,
 });
-checker.addToRolePolicy(new iam.PolicyStatement({
-  actions: ['logs:FilterLogEvents'],
-  resources: [copyLogGroup.logGroupArn],
-}));
 
 const testCase = new integ.IntegTest(app, 'WebFunctionCopyLogRedactionTest', {
   testCases: [stack],
@@ -79,5 +53,5 @@ const testCase = new integ.IntegTest(app, 'WebFunctionCopyLogRedactionTest', {
 
 // log events reach CloudWatch a few seconds after they are written
 testCase.assertions.invokeFunction({ functionName: checker.functionName })
-  .expect(integ.ExpectedResult.objectLike({ Payload: '"redacted/no-secret"' }))
+  .expect(integ.ExpectedResult.objectLike({ Payload: '"marker-found/no-secret"' }))
   .waitForAssertions({ totalTimeout: cdk.Duration.minutes(5), interval: cdk.Duration.seconds(30) });

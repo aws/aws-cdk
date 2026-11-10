@@ -377,6 +377,35 @@ describe('submitResponse NoEcho', () => {
   });
 });
 
+// isComplete's response is merged into the request it completes, so a NoEcho it returns
+// (outside the IsCompleteResponse contract) decides the SUCCESS response too. Truthy
+// values, including the strings "false" and "0", mask; falsy values do not.
+test.each([
+  [true, true],
+  ['false', true],
+  ['0', true],
+  [1, true],
+  [false, undefined],
+  [0, undefined],
+  ['', undefined],
+])('NoEcho %j returned only by isComplete gives a SUCCESS response with NoEcho %j', async (isCompleteNoEcho, expected) => {
+  // GIVEN
+  mocks.onEventImplMock = async () => ({ Data: { Foo: 'SECRET-ATTR' }, PhysicalResourceId: MOCK_PHYSICAL_ID });
+  mocks.isCompleteImplMock = async () => ({ IsComplete: true, NoEcho: isCompleteNoEcho } as any);
+  const logMock = console.log as jest.Mock;
+  logMock.mockClear();
+
+  // WHEN
+  await simulateEvent({ RequestType: 'Create' });
+
+  // THEN
+  expect(mocks.cfnResponse.Status).toEqual('SUCCESS');
+  expect(mocks.cfnResponse.NoEcho).toEqual(expected);
+  const responseLogs = logMock.mock.calls.filter(args => /submit (redacted )?response/.test(String(args[1])));
+  expect(responseLogs).toHaveLength(1);
+  expect(String(responseLogs[0][1])).toEqual(expected ? 'submit redacted response to cloudformation' : 'submit response to cloudformation');
+});
+
 test('NoEcho returned by onEvent as a non-boolean truthy value is honored', async () => {
   // GIVEN - for example a handler that builds its JSON by hand
   mocks.onEventImplMock = async () => ({ Data: { Foo: 'SECRET-ATTR' }, NoEcho: 'true' as any, PhysicalResourceId: MOCK_PHYSICAL_ID });
