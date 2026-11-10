@@ -51,7 +51,7 @@ class EksGrantAccessWithType extends Stack {
 
     new eks.AccessEntry(this, 'EC2LinuxAccess', {
       cluster,
-      principal: ec2LinuxRole.roleArn,
+      iamPrincipal: ec2LinuxRole,
       accessPolicies: [],
       accessEntryType: eks.AccessEntryType.EC2_LINUX,
     });
