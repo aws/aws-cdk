@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "testCases": {
     "ApiGatewayTargetIntegTest/DefaultTest": {
       "stacks": [
@@ -25,5 +25,6 @@
       "assertionStackName": "ApiGatewayTargetIntegTestDefaultTestDeployAssertCF16720E"
     }
   },
-  "minimumCliVersion": "2.1121.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
 }

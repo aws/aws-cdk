@@ -120,7 +120,8 @@ Flags come in three types:
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
 | [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
-| [@aws-cdk/core:validateNestedStackTemplates](#aws-cdkcorevalidatenestedstacktemplates) | Pass the templates of nested stacks and other stacks synthesized as assets to synthesis-time validation | V2NEXT | fix |
+| [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 
 <!-- END table -->
 
@@ -135,6 +136,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
     "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
@@ -219,7 +221,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
       "aws-cn"
     ],
     "@aws-cdk/core:validateAgainstDefaultRules": true,
-    "@aws-cdk/core:validateNestedStackTemplates": true,
     "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
@@ -274,6 +275,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
 | [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | new default |  | `false` | `true` |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | config |  | `false` | `"strong"` |
+| [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | fix |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -2613,31 +2615,52 @@ viewer then follows with a second request. That additional request is billable.
 **Compatibility with old behavior:** Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.
 
 
-### @aws-cdk/core:validateNestedStackTemplates
+### @aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard
 
-*Pass the templates of nested stacks and other stacks synthesized as assets to synthesis-time validation*
+*Render the API Gateway access log destination ARN without the trailing `:*`*
 
 Flag type: Backwards incompatible bugfix
 
-Synthesis-time template validation, including the default CloudFormation validation and any plugin
-registered with `Validations.of(app).addPlugins()`, only receives the templates of top-level stacks.
-The template of a `NestedStack`, or of any other stack synthesized as an asset of its parent, is never
-validated, so a resource that fails validation in a top-level stack passes silently inside a nested stack.
+API Gateway stores the access log destination ARN without the trailing `:*` that
+`LogGroup.logGroupArn` carries. When the CDK renders the log group `Arn` attribute,
+CloudFormation drift detection reports the stage as `MODIFIED` on every run, even
+though the access logging configuration has not changed.
 
-When this flag is enabled, every `Stack` construct in a stage whose template was written to the cloud
-assembly is validated, including nested stacks. Findings in nested templates are reported against the
-constructs that produced them and can be acknowledged with `Validations.of(scope).acknowledge()`.
+When this flag is enabled, `LogGroupLogDestination` rebuilds the ARN from the log
+group name, so the synthesized template matches the value stored by the service and
+drift detection reports the stage as `IN_SYNC`.
 
-Enabling this can surface new findings in nested stacks: errors fail synthesis when
-`@aws-cdk/core:validateAgainstDefaultRules` is enabled, and new warnings can fail `cdk synth --strict`.
+When disabled, the destination ARN keeps using the log group `Arn` attribute.
 
 
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.274.0 | `false` | `true` |
 
-**Compatibility with old behavior:** Leave this flag unset to keep validating only top-level stack templates, or acknowledge new findings with `Validations.of(scope).acknowledge()`.
+**Compatibility with old behavior:** Disable this flag to keep using the log group `Arn` attribute as the destination ARN.
+
+
+### @aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction
+
+*When enabled, each EvaluateExpression task gets its own Lambda function*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, each `EvaluateExpression` task creates its own Lambda function.
+When this feature flag is disabled, all `EvaluateExpression` tasks in a stack that use the same runtime and
+architecture share one Lambda function, even across state machines.
+
+Enabling this flag replaces the shared function with one function per task on the next deployment, so let
+running executions finish first.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.275.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
 
 
 <!-- END details -->
