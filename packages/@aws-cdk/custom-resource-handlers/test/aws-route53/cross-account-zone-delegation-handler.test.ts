@@ -1,26 +1,14 @@
 import type { CrossAccountZoneDelegationEvent } from '../../lib/aws-route53/cross-account-zone-delegation-handler/index';
 import { handler } from '../../lib/aws-route53/cross-account-zone-delegation-handler/index';
 
-const mockAssumeRole = jest.fn();
 const mockChangeResourceRecordSets = jest.fn();
 const mockListHostedZonesByName = jest.fn();
-
-const mockStsClient = {
-  assumeRole: mockAssumeRole,
-};
+const mockFromTemporaryCredentials = jest.fn();
 
 const mockRoute53Client = {
   changeResourceRecordSets: mockChangeResourceRecordSets,
   listHostedZonesByName: mockListHostedZonesByName,
 };
-
-jest.mock('@aws-sdk/client-sts', () => {
-  return {
-    STS: jest.fn().mockImplementation(() => {
-      return mockStsClient;
-    }),
-  };
-});
 
 jest.mock('@aws-sdk/client-route-53', () => {
   return {
@@ -30,10 +18,22 @@ jest.mock('@aws-sdk/client-route-53', () => {
   };
 });
 
+jest.mock('@aws-sdk/credential-providers', () => {
+  return {
+    fromTemporaryCredentials: (...args: any[]) => mockFromTemporaryCredentials(...args),
+  };
+});
+
 beforeEach(() => {
-  mockStsClient.assumeRole.mockClear();
   mockRoute53Client.changeResourceRecordSets.mockClear();
   mockRoute53Client.listHostedZonesByName.mockClear();
+  mockFromTemporaryCredentials.mockClear();
+
+  mockFromTemporaryCredentials.mockReturnValue({
+    accessKeyId: 'MOCK_ACCESS_KEY',
+    secretAccessKey: 'MOCK_SECRET_KEY',
+    sessionToken: 'MOCK_SESSION_TOKEN',
+  });
 });
 
 afterAll(() => {
@@ -53,7 +53,6 @@ test('throws error if both ParentZoneId and ParentZoneName are not provided', as
 
 test('calls create resource record set with Upsert for Create event', async () => {
   // GIVEN
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
   mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
 
   // WHEN
@@ -80,7 +79,6 @@ test('calls create resource record set with Upsert for Create event', async () =
 
 test('calls create resource record set with DELETE for Delete event', async () => {
   // GIVEN
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
   mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
 
   // WHEN
@@ -110,7 +108,6 @@ test('calls listHostedZonesByName to get public zoneId if ParentZoneId is not pr
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';
 
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
   mockRoute53Client.listHostedZonesByName.mockResolvedValueOnce({
     HostedZones: [
       { Name: `${parentZoneName}.`, Id: parentZoneId },
@@ -152,7 +149,6 @@ test('throws if more than one HostedZones are returned for the provided ParentHo
   const parentZoneName = 'some.zone';
   const parentZoneId = 'zone-id';
 
-  mockStsClient.assumeRole.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
   mockRoute53Client.listHostedZonesByName.mockResolvedValueOnce({
     HostedZones: [
       { Name: `${parentZoneName}.`, Id: parentZoneId },
@@ -170,6 +166,87 @@ test('throws if more than one HostedZones are returned for the provided ParentHo
   await expect(invokeHandler(event)).rejects.toThrow(/Expected one hosted zone to match the given name but found 2/);
   expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledTimes(1);
   expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledWith({ DNSName: parentZoneName });
+});
+
+describe('credential chain logic', () => {
+  test('uses intermediate role in credential chain when IntermediateRoleArn is provided', async () => {
+    // GIVEN
+    const intermediateRoleArn = 'arn:aws:iam::123456789012:role/IntermediateRole';
+    const delegationRoleArn = 'arn:aws:iam::987654321098:role/DelegationRole';
+
+    mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
+
+    // WHEN
+    const event = getCfnEvent({}, {
+      AssumeRoleArn: delegationRoleArn,
+      IntermediateRoleArn: intermediateRoleArn,
+    });
+    await invokeHandler(event);
+
+    // THEN
+    expect(mockFromTemporaryCredentials).toHaveBeenCalledTimes(2);
+
+    // First call should be for the intermediate role (without masterCredentials)
+    const firstCall = mockFromTemporaryCredentials.mock.calls[0][0];
+    expect(firstCall.params.RoleArn).toBe(intermediateRoleArn);
+    expect(firstCall.params.RoleSessionName).toMatch(/^intermediate-role-assumption-/);
+    expect(firstCall.masterCredentials).toBeUndefined();
+
+    // Second call should be for the delegation role (with masterCredentials)
+    const secondCall = mockFromTemporaryCredentials.mock.calls[1][0];
+    expect(secondCall.params.RoleArn).toBe(delegationRoleArn);
+    expect(secondCall.params.RoleSessionName).toMatch(/^cross-account-zone-delegation-/);
+    expect(secondCall.masterCredentials).toBeDefined();
+  });
+
+  test('does not use intermediate role when IntermediateRoleArn is not provided', async () => {
+    // GIVEN
+    const delegationRoleArn = 'arn:aws:iam::987654321098:role/DelegationRole';
+
+    mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
+
+    // WHEN
+    const event = getCfnEvent({}, {
+      AssumeRoleArn: delegationRoleArn,
+      IntermediateRoleArn: undefined,
+    });
+    await invokeHandler(event);
+
+    // THEN
+    expect(mockFromTemporaryCredentials).toHaveBeenCalledTimes(1);
+
+    // Should only call for the delegation role (without masterCredentials)
+    const call = mockFromTemporaryCredentials.mock.calls[0][0];
+    expect(call.params.RoleArn).toBe(delegationRoleArn);
+    expect(call.params.RoleSessionName).toMatch(/^cross-account-zone-delegation-/);
+    expect(call.masterCredentials).toBeUndefined();
+  });
+
+  test('maintains backward compatibility when IntermediateRoleArn is absent from resource properties', async () => {
+    // GIVEN
+    const delegationRoleArn = 'arn:aws:iam::987654321098:role/DelegationRole';
+
+    mockRoute53Client.changeResourceRecordSets.mockResolvedValueOnce({});
+
+    // WHEN
+    const event = getCfnEvent({}, {
+      AssumeRoleArn: delegationRoleArn,
+      // IntermediateRoleArn is not included at all
+    });
+    await invokeHandler(event);
+
+    // THEN
+    expect(mockFromTemporaryCredentials).toHaveBeenCalledTimes(1);
+
+    // Should behave exactly like the case without intermediate role
+    const call = mockFromTemporaryCredentials.mock.calls[0][0];
+    expect(call.params.RoleArn).toBe(delegationRoleArn);
+    expect(call.params.RoleSessionName).toMatch(/^cross-account-zone-delegation-/);
+    expect(call.masterCredentials).toBeUndefined();
+
+    // Should successfully complete the Route53 operation
+    expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledTimes(1);
+  });
 });
 
 function getCfnEvent(
