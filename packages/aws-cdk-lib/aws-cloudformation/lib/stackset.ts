@@ -80,15 +80,64 @@ enum AccountFilterType {
   DIFFERENCE = 'DIFFERENCE',
 
   /**
-   * (default value) include both OUs and Accounts
-   * Allows you to deploy to an OU _and_ specific accounts in a different OU
-   */
-  UNION = 'UNION',
-
-  /**
    * Only deploy to accounts in an OU
    */
   NONE = 'NONE',
+}
+
+interface AccountFilterConfig {
+  readonly accountFilterType: AccountFilterType;
+  readonly accounts: string[];
+}
+
+/**
+ * Refines which accounts to deploy stacks to by specifying how to use the accounts and organizational units together.
+ *
+ * `intersection()` deploys only to the listed accounts that are in the organizational units.
+ * `difference()` deploys to every account in the organizational units except the listed ones.
+ */
+export abstract class StackSetAccountFilter {
+  /**
+   * Deploy only to the listed accounts that are in the organizational units
+   *
+   * With automatic deployments on, accounts that join the organizational units later also get
+   * the stack, see `accountFilter`.
+   *
+   * @param accounts the AWS account IDs to deploy to
+   */
+  public static intersection(accounts: string[]): StackSetAccountFilter {
+    return new AccountFilter('intersection', AccountFilterType.INTERSECTION, accounts);
+  }
+
+  /**
+   * Deploy to every account in the organizational units except the listed ones
+   *
+   * @param accounts the AWS account IDs to skip
+   */
+  public static difference(accounts: string[]): StackSetAccountFilter {
+    return new AccountFilter('difference', AccountFilterType.DIFFERENCE, accounts);
+  }
+
+  /**
+   * Render the account filter
+   *
+   * @internal
+   */
+  public abstract _bind(): AccountFilterConfig;
+}
+
+class AccountFilter extends StackSetAccountFilter {
+  constructor(factory: string, private readonly accountFilterType: AccountFilterType, private readonly accounts: string[]) {
+    super();
+
+    if (!Token.isUnresolved(accounts) && accounts.length === 0) {
+      throw new UnscopedValidationError(lit`StackSetAccountFilterAccountsRequired`, `StackSetAccountFilter.${factory}() requires at least one account, omit 'accountFilter' to deploy to every account in the organizational units`);
+    }
+  }
+
+  public _bind(): AccountFilterConfig {
+    return { accountFilterType: this.accountFilterType, accounts: this.accounts };
+  }
 }
 
 /**
@@ -119,43 +168,25 @@ export interface OrganizationsTargetOptions extends StackSetTargetOptions {
   /**
    * A list of organizational unit ids to deploy to. The StackSet will
    * deploy the provided Stack template to all accounts in the OU.
-   * This can be further filtered by specifying either `additionalAccounts`
-   * or `excludeAccounts`.
+   * This can be further filtered by specifying `accountFilter`.
    *
-   * If the `deploymentType` is specified with `autoDeployEnabled` then
-   * the StackSet will automatically deploy the Stack to new accounts as they
+   * If the `deploymentType` is specified with `autoDeployEnabled` (enabled for `DeploymentType.serviceManaged()`)
+   * then the StackSet will automatically deploy the Stack to new accounts as they
    * are added to the specified `organizationalUnits`
    */
   readonly organizationalUnits: string[];
 
   /**
-   * A list of additional AWS accounts to deploy the StackSet to. This can be
-   * used to deploy the StackSet to additional AWS accounts that exist in a
-   * different OU than what has been provided in `organizationalUnits`
+   * Which accounts to deploy to, in combination with the organizational units
    *
-   * @default - Stacks will only be deployed to accounts that exist in the
-   * specified organizationalUnits
-   */
-  readonly additionalAccounts?: string[];
-
-  /**
-   * A list of AWS accounts to exclude from deploying the StackSet to. This can
-   * be useful if there are accounts that exist in an OU that is provided in
-   * `organizationalUnits`, but you do not want the StackSet to be deployed.
+   * Automatic deployments, on by default with `DeploymentType.serviceManaged()`, don't apply the
+   * filter, so accounts that join the organizational units later get the stack even if the filter
+   * leaves them out. Set `autoDeployEnabled: false` to deploy only to the accounts the filter selects.
    *
-   * @default - Stacks will be deployed to all accounts that exist in the OUs
-   * specified in the organizationUnits property
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html#stacksets-orgs-auto-deployment-considerations
+   * @default - deploys to every account in the organizational units
    */
-  readonly excludeAccounts?: string[];
-
-  /**
-   * A list of AWS accounts to intersect with the organizational units.
-   * Only accounts that are BOTH in the specified OUs AND in this list
-   * will have the StackSet deployed.
-   *
-   * @default - Stacks will be deployed to all accounts in the specified OUs
-   */
-  readonly intersectionAccounts?: string[];
+  readonly accountFilter?: StackSetAccountFilter;
 }
 
 /**
@@ -174,7 +205,7 @@ interface Parameter {
 }
 
 interface StackSetTargetConfig {
-  readonly accountFilterType: AccountFilterType;
+  readonly accountFilterType?: AccountFilterType;
   readonly regions: string[];
   readonly parameterOverrides?: Parameter[];
   readonly accounts?: string[];
@@ -184,43 +215,24 @@ interface StackSetTargetConfig {
 interface TargetBindOptions {}
 
 /**
- * Which organizational units and/or accounts the stack set
+ * Which organizational units or accounts the stack set
  * should be deployed to.
  *
- * `fromAccounts` can be used to deploy the stack set to specific AWS accounts
+ * `fromAccounts` deploys the stack set to specific AWS accounts. Use it with a self managed StackSet.
  *
- * `fromOrganizationalUnits` can be used to deploy the stack set to specific organizational units
- * and optionally include additional accounts from other OUs, or exclude accounts from the specified
- * OUs
- *
- * @example
- * // deploy to specific accounts
- * StackSetTarget.fromAccounts({
- *   accounts: ['11111111111', '22222222222'],
- *   regions: ['us-east-1', 'us-east-2'],
- * });
- *
- * // deploy to OUs and 1 additional account
- * StackSetTarget.fromOrganizationalUnits({
- *   regions: ['us-east-1', 'us-east-2'],
- *   organizationalUnits: ['ou-1111111', 'ou-2222222'],
- *   additionalAccounts: ['33333333333'],
- * });
- *
- * // deploy to OUs but exclude 1 account
- * StackSetTarget.fromOrganizationalUnits({
- *   regions: ['us-east-1', 'us-east-2'],
- *   organizationalUnits: ['ou-1111111', 'ou-2222222'],
- *   excludeAccounts: ['11111111111'],
- * });
+ * `fromOrganizationalUnits` deploys the stack set to specific organizational units. With an
+ * `accountFilter` it can also filter the accounts in the
+ * specified OUs. Use it with a service managed StackSet.
  */
 export abstract class StackSetTarget {
   /**
    * Deploy the StackSet to a list of accounts
    *
+   * Only a self managed StackSet (`DeploymentType.selfManaged()`) can use this target.
+   *
    * @example
    * StackSetTarget.fromAccounts({
-   *   accounts: ['11111111111', '22222222222'],
+   *   accounts: ['111111111111', '222222222222'],
    *   regions: ['us-east-1', 'us-east-2'],
    * });
    */
@@ -231,7 +243,9 @@ export abstract class StackSetTarget {
   /**
    * Deploy the StackSet to a list of AWS Organizations organizational units.
    *
-   * You can optionally include/exclude individual AWS accounts.
+   * You can optionally narrow the accounts with `accountFilter`.
+   *
+   * Only a service managed StackSet (`DeploymentType.serviceManaged()`) can use this target.
    *
    * @example
    * StackSetTarget.fromOrganizationalUnits({
@@ -279,47 +293,29 @@ class AccountsTarget extends StackSetTarget {
     return {
       regions: this.options.regions,
       parameterOverrides: this._renderParameters(this.options.parameterOverrides),
-      accountFilterType: AccountFilterType.INTERSECTION,
       accounts: this.options.accounts,
     };
   }
 }
 
 class OrganizationsTarget extends StackSetTarget {
-  private readonly additionalAccounts?: string[];
-  private readonly excludeAccounts?: string[];
-  private readonly intersectionAccounts?: string[];
-
   constructor(private readonly options: OrganizationsTargetOptions) {
     super();
 
-    // Normalize empty arrays to undefined — empty arrays are truthy in JS
-    // but CloudFormation requires at least one item for account lists.
-    this.additionalAccounts = this.options.additionalAccounts?.length ? this.options.additionalAccounts : undefined;
-    this.excludeAccounts = this.options.excludeAccounts?.length ? this.options.excludeAccounts : undefined;
-    this.intersectionAccounts = this.options.intersectionAccounts?.length ? this.options.intersectionAccounts : undefined;
-
-    const specified = [
-      this.additionalAccounts,
-      this.excludeAccounts,
-      this.intersectionAccounts,
-    ].filter(Boolean).length;
-    if (specified > 1) {
-      throw new UnscopedValidationError(lit`StackSetAccountFiltersMutuallyExclusive`, "specify at most one of 'additionalAccounts', 'excludeAccounts', or 'intersectionAccounts'");
+    const organizationalUnits = this.options.organizationalUnits;
+    if (organizationalUnits === undefined || (!Token.isUnresolved(organizationalUnits) && organizationalUnits.length === 0)) {
+      throw new UnscopedValidationError(lit`StackSetOrganizationalUnitsRequired`, 'fromOrganizationalUnits requires at least one organizational unit');
     }
   }
 
   public _bind(_scope: Construct, _options: TargetBindOptions = {}): StackSetTargetConfig {
-    const filterType = this.additionalAccounts ? AccountFilterType.UNION
-      : this.excludeAccounts ? AccountFilterType.DIFFERENCE
-        : this.intersectionAccounts ? AccountFilterType.INTERSECTION
-          : AccountFilterType.NONE;
+    const filter = this.options.accountFilter?._bind();
     return {
       regions: this.options.regions,
       parameterOverrides: this._renderParameters(this.options.parameterOverrides),
-      accountFilterType: filterType,
+      accountFilterType: filter?.accountFilterType ?? AccountFilterType.NONE,
       organizationalUnits: this.options.organizationalUnits,
-      accounts: this.additionalAccounts ?? this.excludeAccounts ?? this.intersectionAccounts,
+      accounts: filter?.accounts,
     };
   }
 }
@@ -332,8 +328,6 @@ export interface ServiceManagedOptions {
    * Whether or not the StackSet should automatically create/remove the Stack
    * from AWS accounts that are added/removed from an organizational unit.
    *
-   * This has no effect if {@link StackSetTarget.fromAccounts} is used
-   *
    * @default true
    */
   readonly autoDeployEnabled?: boolean;
@@ -343,8 +337,6 @@ export interface ServiceManagedOptions {
    * from an organizational unit.
    *
    * By default the stack will be retained (not deleted)
-   *
-   * This has no effect if {@link StackSetTarget.fromAccounts} is used
    *
    * @default true
    */
@@ -431,6 +423,8 @@ export abstract class DeploymentType {
    * This model requires you to be operating in either the AWS Organizations management account
    * or the delegated administrator account
    *
+   * Its targets must use `StackSetTarget.fromOrganizationalUnits()`.
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-concepts.html#stacksets-concepts-stackset-permission-models
    */
   public static serviceManaged(options: ServiceManagedOptions = {}): DeploymentType {
@@ -443,6 +437,8 @@ export abstract class DeploymentType {
    *
    * Using this model you can only deploy to AWS accounts that have the necessary IAM roles/permissions
    * pre-created.
+   *
+   * Its targets must use `StackSetTarget.fromAccounts()`.
    */
   public static selfManaged(options: SelfManagedOptions = {}): DeploymentType {
     return new SelfDeploymentType(options);
@@ -863,6 +859,13 @@ export class StackSet extends Resource implements IStackSet {
   public addTarget(target: StackSetTarget) {
     const targetConfig = target._bind(this);
 
+    if (this.permissionModel === PermissionModel.SELF_MANAGED && targetConfig.organizationalUnits !== undefined) {
+      throw new ValidationError(lit`StackSetSelfManagedCannotHaveOrganizationalUnits`, `a self managed StackSet cannot deploy to organizational units ${JSON.stringify(targetConfig.organizationalUnits)}, set 'deploymentType: DeploymentType.serviceManaged' or use StackSetTarget.fromAccounts`, this);
+    }
+    if (this.permissionModel === PermissionModel.SERVICE_MANAGED && targetConfig.organizationalUnits === undefined) {
+      throw new ValidationError(lit`StackSetServiceManagedRequiresOrganizationalUnits`, 'a service managed StackSet cannot deploy without organizational units, use StackSetTarget.fromOrganizationalUnits or set \'deploymentType: DeploymentType.selfManaged\'', this);
+    }
+
     if (this.adminRole && iam.Role.isRole(this.adminRole)) {
       const disabledPrincipals: iam.IPrincipal[] = [];
       targetConfig.regions.forEach(region => {
@@ -884,9 +887,7 @@ export class StackSet extends Resource implements IStackSet {
       parameterOverrides: targetConfig.parameterOverrides,
       deploymentTargets: {
         accounts: targetConfig.accounts,
-        accountFilterType: this.permissionModel === PermissionModel.SERVICE_MANAGED
-          ? targetConfig.accountFilterType
-          : undefined, // field not supported for self managed
+        accountFilterType: targetConfig.accountFilterType,
         organizationalUnitIds: targetConfig.organizationalUnits,
       },
     });

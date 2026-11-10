@@ -15,6 +15,7 @@ import {
   DefaultStackSynthesizer,
   Stack,
   Stage,
+  Token,
   Validations,
 } from '../../core';
 import type { StackSynthesizer } from '../../core';
@@ -25,6 +26,7 @@ import {
   DeploymentType,
   RegionConcurrencyType,
   StackSet,
+  StackSetAccountFilter,
   StackSetTarget,
   StackSetTemplate,
   StackSetStack,
@@ -207,9 +209,9 @@ test('service managed stackset', () => {
   const stack = new Stack(app);
 
   new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromAccounts({
+    target: StackSetTarget.fromOrganizationalUnits({
       regions: ['us-east-1'],
-      accounts: ['11111111111'],
+      organizationalUnits: ['ou-1111111'],
       parameterOverrides: {
         Param1: 'Value1',
       },
@@ -236,8 +238,8 @@ test('service managed stackset', () => {
       }],
       Regions: ['us-east-1'],
       DeploymentTargets: {
-        Accounts: ['11111111111'],
-        AccountFilterType: 'INTERSECTION',
+        OrganizationalUnitIds: ['ou-1111111'],
+        AccountFilterType: 'NONE',
       },
     }],
   });
@@ -248,9 +250,9 @@ test('service managed stackset with options', () => {
   const stack = new Stack(app);
 
   new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromAccounts({
+    target: StackSetTarget.fromOrganizationalUnits({
       regions: ['us-east-1'],
-      accounts: ['11111111111'],
+      organizationalUnits: ['ou-1111111'],
       parameterOverrides: {
         Param1: 'Value1',
       },
@@ -275,8 +277,8 @@ test('service managed stackset with options', () => {
     StackInstancesGroup: [{
       Regions: ['us-east-1'],
       DeploymentTargets: {
-        Accounts: ['11111111111'],
-        AccountFilterType: 'INTERSECTION',
+        OrganizationalUnitIds: ['ou-1111111'],
+        AccountFilterType: 'NONE',
       },
     }],
   });
@@ -288,9 +290,9 @@ test('service managed stackset throws error if autoDeployRetainStacks is provide
 
   expect(() => {
     new StackSet(stack, 'StackSet', {
-      target: StackSetTarget.fromAccounts({
+      target: StackSetTarget.fromOrganizationalUnits({
         regions: ['us-east-1'],
-        accounts: ['11111111111'],
+        organizationalUnits: ['ou-1111111'],
         parameterOverrides: {
           Param1: 'Value1',
         },
@@ -343,155 +345,126 @@ test('fromOrganizations default', () => {
   });
 });
 
-test('fromOrganizations with intersectionAccounts', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromOrganizationalUnits({
-      regions: ['us-east-1'],
-      organizationalUnits: ['ou-1111111'],
-      intersectionAccounts: ['222222222222', '333333333333'],
-    }),
-    deploymentType: DeploymentType.serviceManaged({
-      delegatedAdmin: false,
-      autoDeployEnabled: false,
-    }),
-    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-    StackInstancesGroup: [{
-      Regions: ['us-east-1'],
-      DeploymentTargets: {
-        AccountFilterType: 'INTERSECTION',
-        OrganizationalUnitIds: ['ou-1111111'],
-        Accounts: ['222222222222', '333333333333'],
-      },
-    }],
-  });
-});
-
-test('fromOrganizations with additionalAccounts', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromOrganizationalUnits({
-      regions: ['us-east-1'],
-      organizationalUnits: ['ou-1111111'],
-      additionalAccounts: ['222222222222', '333333333333'],
-    }),
-    deploymentType: DeploymentType.serviceManaged({
-      delegatedAdmin: false,
-      autoDeployEnabled: false,
-    }),
-    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-    StackInstancesGroup: [{
-      Regions: ['us-east-1'],
-      DeploymentTargets: {
-        AccountFilterType: 'UNION',
-        OrganizationalUnitIds: ['ou-1111111'],
-        Accounts: ['222222222222', '333333333333'],
-      },
-    }],
-  });
-});
-
-test('fromOrganizations with excludeAccounts', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromOrganizationalUnits({
-      regions: ['us-east-1'],
-      organizationalUnits: ['ou-1111111'],
-      excludeAccounts: ['222222222222', '333333333333'],
-    }),
-    deploymentType: DeploymentType.serviceManaged({
-      delegatedAdmin: false,
-      autoDeployEnabled: false,
-    }),
-    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-    StackInstancesGroup: [{
-      Regions: ['us-east-1'],
-      DeploymentTargets: {
-        AccountFilterType: 'DIFFERENCE',
-        OrganizationalUnitIds: ['ou-1111111'],
-        Accounts: ['222222222222', '333333333333'],
-      },
-    }],
-  });
-});
-
-test('fromOrganizations throws when intersectionAccounts and excludeAccounts are both specified', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  expect(() => {
+describe('organizational unit account filters', () => {
+  function deploymentTargetsOf(accountFilter?: StackSetAccountFilter) {
+    const app = new App();
+    const stack = new Stack(app);
     new StackSet(stack, 'StackSet', {
       target: StackSetTarget.fromOrganizationalUnits({
         regions: ['us-east-1'],
         organizationalUnits: ['ou-1111111'],
-        intersectionAccounts: ['222222222222'],
-        excludeAccounts: ['333333333333'],
+        accountFilter,
       }),
-      deploymentType: DeploymentType.serviceManaged({
-        delegatedAdmin: false,
-        autoDeployEnabled: false,
-      }),
+      deploymentType: DeploymentType.serviceManaged(),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     });
-  }).toThrow(/specify at most one of 'additionalAccounts', 'excludeAccounts', or 'intersectionAccounts'/);
-});
+    const stackSets = Template.fromStack(stack).findResources('AWS::CloudFormation::StackSet');
+    return Object.values(stackSets)[0].Properties.StackInstancesGroup[0].DeploymentTargets;
+  }
 
-test('fromOrganizations throws when intersectionAccounts and additionalAccounts are both specified', () => {
-  const app = new App();
-  const stack = new Stack(app);
+  test.each([
+    ['no filter', undefined, { OrganizationalUnitIds: ['ou-1111111'], AccountFilterType: 'NONE' }],
+    ['intersection', StackSetAccountFilter.intersection(['222222222222', '333333333333']), {
+      OrganizationalUnitIds: ['ou-1111111'],
+      AccountFilterType: 'INTERSECTION',
+      Accounts: ['222222222222', '333333333333'],
+    }],
+    ['difference', StackSetAccountFilter.difference(['222222222222', '333333333333']), {
+      OrganizationalUnitIds: ['ou-1111111'],
+      AccountFilterType: 'DIFFERENCE',
+      Accounts: ['222222222222', '333333333333'],
+    }],
+  ])('%s renders the matching account filter type', (_name, accountFilter, expected) => {
+    expect(deploymentTargetsOf(accountFilter)).toEqual(expected);
+  });
 
-  expect(() => {
+  test.each([
+    ['intersection', StackSetAccountFilter.intersection],
+    ['difference', StackSetAccountFilter.difference],
+  ])('%s accepts a tokenized account list', (_name, factory) => {
+    const app = new App();
+    const stack = new Stack(app);
+    const accounts = new CfnParameter(stack, 'Accounts', { type: 'CommaDelimitedList' }).valueAsList;
     new StackSet(stack, 'StackSet', {
       target: StackSetTarget.fromOrganizationalUnits({
         regions: ['us-east-1'],
         organizationalUnits: ['ou-1111111'],
-        intersectionAccounts: ['222222222222'],
-        additionalAccounts: ['333333333333'],
+        accountFilter: factory(accounts),
       }),
-      deploymentType: DeploymentType.serviceManaged({
-        delegatedAdmin: false,
-        autoDeployEnabled: false,
-      }),
+      deploymentType: DeploymentType.serviceManaged(),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     });
-  }).toThrow(/specify at most one of 'additionalAccounts', 'excludeAccounts', or 'intersectionAccounts'/);
-});
 
-test('fromOrganizations throws when all three account filters are specified', () => {
-  const app = new App();
-  const stack = new Stack(app);
+    expect(Token.isUnresolved(accounts)).toBe(true);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      StackInstancesGroup: [{
+        DeploymentTargets: {
+          OrganizationalUnitIds: ['ou-1111111'],
+          Accounts: { Ref: 'Accounts' },
+        },
+      }],
+    });
+  });
 
-  expect(() => {
+  test('fromOrganizationalUnits accepts a tokenized organizational unit list', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const organizationalUnits = new CfnParameter(stack, 'OrganizationalUnits', { type: 'CommaDelimitedList' }).valueAsList;
     new StackSet(stack, 'StackSet', {
       target: StackSetTarget.fromOrganizationalUnits({
         regions: ['us-east-1'],
-        organizationalUnits: ['ou-1111111'],
-        intersectionAccounts: ['111111111111'],
-        excludeAccounts: ['222222222222'],
-        additionalAccounts: ['333333333333'],
+        organizationalUnits,
       }),
-      deploymentType: DeploymentType.serviceManaged({
-        delegatedAdmin: false,
-        autoDeployEnabled: false,
-      }),
+      deploymentType: DeploymentType.serviceManaged(),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     });
-  }).toThrow(/specify at most one of 'additionalAccounts', 'excludeAccounts', or 'intersectionAccounts'/);
+
+    expect(Token.isUnresolved(organizationalUnits)).toBe(true);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      StackInstancesGroup: [{
+        DeploymentTargets: {
+          OrganizationalUnitIds: { Ref: 'OrganizationalUnits' },
+          AccountFilterType: 'NONE',
+        },
+      }],
+    });
+  });
+
+  test('a service managed StackSet renders an organizational unit target added with addTarget', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const stackSet = new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromOrganizationalUnits({
+        regions: ['us-east-1'],
+        organizationalUnits: ['ou-1111111'],
+      }),
+      deploymentType: DeploymentType.serviceManaged(),
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
+    });
+
+    stackSet.addTarget(StackSetTarget.fromOrganizationalUnits({
+      regions: ['us-west-2'],
+      organizationalUnits: ['ou-2222222'],
+      accountFilter: StackSetAccountFilter.intersection(['333333333333']),
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      StackInstancesGroup: [
+        {
+          Regions: ['us-east-1'],
+          DeploymentTargets: { OrganizationalUnitIds: ['ou-1111111'], AccountFilterType: 'NONE' },
+        },
+        {
+          Regions: ['us-west-2'],
+          DeploymentTargets: {
+            OrganizationalUnitIds: ['ou-2222222'],
+            AccountFilterType: 'INTERSECTION',
+            Accounts: ['333333333333'],
+          },
+        },
+      ],
+    });
+  });
 });
 
 test('has IAM capabilities', () => {
@@ -738,81 +711,6 @@ test('omits operation preferences when none of its fields are set', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
     OperationPreferences: Match.absent(),
-  });
-});
-
-test('empty additionalAccounts renders AccountFilterType NONE', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromOrganizationalUnits({
-      regions: ['us-east-1'],
-      organizationalUnits: ['ou-1111111'],
-      additionalAccounts: [],
-    }),
-    deploymentType: DeploymentType.serviceManaged(),
-    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-    StackInstancesGroup: [{
-      Regions: ['us-east-1'],
-      DeploymentTargets: {
-        AccountFilterType: 'NONE',
-        OrganizationalUnitIds: ['ou-1111111'],
-      },
-    }],
-  });
-});
-
-test('empty excludeAccounts renders AccountFilterType NONE', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromOrganizationalUnits({
-      regions: ['us-east-1'],
-      organizationalUnits: ['ou-1111111'],
-      excludeAccounts: [],
-    }),
-    deploymentType: DeploymentType.serviceManaged(),
-    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-    StackInstancesGroup: [{
-      Regions: ['us-east-1'],
-      DeploymentTargets: {
-        AccountFilterType: 'NONE',
-        OrganizationalUnitIds: ['ou-1111111'],
-      },
-    }],
-  });
-});
-
-test('empty intersectionAccounts renders AccountFilterType NONE', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  new StackSet(stack, 'StackSet', {
-    target: StackSetTarget.fromOrganizationalUnits({
-      regions: ['us-east-1'],
-      organizationalUnits: ['ou-1111111'],
-      intersectionAccounts: [],
-    }),
-    deploymentType: DeploymentType.serviceManaged(),
-    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
-    StackInstancesGroup: [{
-      Regions: ['us-east-1'],
-      DeploymentTargets: {
-        AccountFilterType: 'NONE',
-        OrganizationalUnitIds: ['ou-1111111'],
-      },
-    }],
   });
 });
 
@@ -1534,6 +1432,10 @@ test('a service managed StackSet has no admin role', () => {
   const stack = new Stack(app);
 
   const stackSet = new StackSet(stack, 'StackSet', {
+    target: StackSetTarget.fromOrganizationalUnits({
+      regions: ['us-east-1'],
+      organizationalUnits: ['ou-1111111'],
+    }),
     deploymentType: DeploymentType.serviceManaged(),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
   });
@@ -1606,15 +1508,6 @@ describe('importing a StackSet', () => {
   });
 });
 
-test('fromStackSetStack returns a StackSetTemplate instance', () => {
-  const app = new App();
-  const stack = new Stack(app);
-
-  const template = StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack'));
-
-  expect(template).toBeInstanceOf(StackSetTemplate);
-});
-
 describe('StackSet validation errors', () => {
   function templateIn(stack: Stack) {
     return StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack'));
@@ -1627,16 +1520,93 @@ describe('StackSet validation errors', () => {
     }));
   });
 
-  test('fails with an error code when more than one account filter is specified', () => {
-    expect(() => StackSetTarget.fromOrganizationalUnits({
-      regions: ['us-east-1'],
-      organizationalUnits: ['ou-1111111'],
-      additionalAccounts: ['111111111111'],
-      excludeAccounts: ['222222222222'],
-    })).toThrow(expect.objectContaining({
-      name: 'StackSetAccountFiltersMutuallyExclusive',
-      message: "specify at most one of 'additionalAccounts', 'excludeAccounts', or 'intersectionAccounts'",
+  test.each([
+    ['no', []],
+    ['a missing list of', undefined as unknown as string[]],
+  ])('fails with an error code when fromOrganizationalUnits has %s organizational units', (_name, organizationalUnits) => {
+    expect(() => StackSetTarget.fromOrganizationalUnits({ regions: ['us-east-1'], organizationalUnits })).toThrow(expect.objectContaining({
+      name: 'StackSetOrganizationalUnitsRequired',
+      message: 'fromOrganizationalUnits requires at least one organizational unit',
     }));
+  });
+
+  test.each([
+    ['intersection', StackSetAccountFilter.intersection],
+    ['difference', StackSetAccountFilter.difference],
+  ])('fails with an error code when the %s account filter has no accounts', (name, factory) => {
+    expect(() => factory([])).toThrow(expect.objectContaining({
+      name: 'StackSetAccountFilterAccountsRequired',
+      message: `StackSetAccountFilter.${name}() requires at least one account, omit 'accountFilter' to deploy to every account in the organizational units`,
+    }));
+  });
+
+  const organizationalUnitsTarget = () => StackSetTarget.fromOrganizationalUnits({
+    regions: ['us-east-1'],
+    organizationalUnits: ['ou-1111111'],
+  });
+  const accountsTarget = () => StackSetTarget.fromAccounts({
+    regions: ['us-east-1'],
+    accounts: ['111111111111'],
+  });
+  const selfManagedCannotHaveOrganizationalUnits = expect.objectContaining({
+    name: 'StackSetSelfManagedCannotHaveOrganizationalUnits',
+    message: 'a self managed StackSet cannot deploy to organizational units ["ou-1111111"], set \'deploymentType: DeploymentType.serviceManaged\' or use StackSetTarget.fromAccounts',
+    constructPath: 'Default/StackSet',
+  });
+  const serviceManagedRequiresOrganizationalUnits = expect.objectContaining({
+    name: 'StackSetServiceManagedRequiresOrganizationalUnits',
+    message: 'a service managed StackSet cannot deploy without organizational units, use StackSetTarget.fromOrganizationalUnits or set \'deploymentType: DeploymentType.selfManaged\'',
+    constructPath: 'Default/StackSet',
+  });
+
+  test.each([
+    ['the default', undefined],
+    ['an explicit self managed', DeploymentType.selfManaged()],
+  ])('fails with an error code when %s deployment type gets an organizational unit target prop', (_name, deploymentType) => {
+    const app = new App();
+    const stack = new Stack(app);
+
+    expect(() => new StackSet(stack, 'StackSet', {
+      deploymentType,
+      target: organizationalUnitsTarget(),
+      template: templateIn(stack),
+    })).toThrow(selfManagedCannotHaveOrganizationalUnits);
+  });
+
+  test.each([
+    ['the default', undefined],
+    ['an explicit self managed', DeploymentType.selfManaged()],
+  ])('fails with an error code when %s deployment type gets an organizational unit target from addTarget', (_name, deploymentType) => {
+    const app = new App();
+    const stack = new Stack(app);
+    const stackSet = new StackSet(stack, 'StackSet', {
+      deploymentType,
+      template: templateIn(stack),
+    });
+
+    expect(() => stackSet.addTarget(organizationalUnitsTarget())).toThrow(selfManagedCannotHaveOrganizationalUnits);
+  });
+
+  test('fails with an error code when a service managed StackSet gets an accounts target prop', () => {
+    const app = new App();
+    const stack = new Stack(app);
+
+    expect(() => new StackSet(stack, 'StackSet', {
+      deploymentType: DeploymentType.serviceManaged(),
+      target: accountsTarget(),
+      template: templateIn(stack),
+    })).toThrow(serviceManagedRequiresOrganizationalUnits);
+  });
+
+  test('fails with an error code when a service managed StackSet gets an accounts target from addTarget', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const stackSet = new StackSet(stack, 'StackSet', {
+      deploymentType: DeploymentType.serviceManaged(),
+      template: templateIn(stack),
+    });
+
+    expect(() => stackSet.addTarget(accountsTarget())).toThrow(serviceManagedRequiresOrganizationalUnits);
   });
 
   test('fails with an error code when autoDeployRetainStacks is set without autoDeploy', () => {
