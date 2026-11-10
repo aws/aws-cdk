@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "8085e06468e42983731816f1f0de8aa1012c4a8b8028b9cd4c534aafa4e26a2f": {
       "displayName": "aws-cdk-rds-integ Template",

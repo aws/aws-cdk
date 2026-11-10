@@ -134,6 +134,11 @@ describe('CDK Include', () => {
   });
 
   test('accepts booleans for properties with type string', () => {
+    core.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3030',
+      reason: 'Yes this will be schematically illegal, that\'s not the point',
+    });
+
     includeTestTemplate(stack, 'boolean-for-string.json');
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
@@ -237,6 +242,14 @@ describe('CDK Include', () => {
 
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('if-in-tags.json'),
+    );
+  });
+
+  test('can ingest a template using Fn::If as the Tags property, and output it unchanged', () => {
+    includeTestTemplate(stack, 'if-tags-property.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('if-tags-property.json'),
     );
   });
 
@@ -523,6 +536,10 @@ describe('CDK Include', () => {
   });
 
   test('correctly parses templates with parameters', () => {
+    core.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W1030',
+      reason: 'This test validates parameter ingestion, not the fixture bucket name',
+    });
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {

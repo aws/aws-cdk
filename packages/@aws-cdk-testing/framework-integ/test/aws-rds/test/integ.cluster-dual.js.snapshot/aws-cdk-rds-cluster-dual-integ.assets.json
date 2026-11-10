@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "20e96a9880ce8e1e048903f3a8c23e9d4a7a1dd72df48f3ea9339032a13de4ce": {
       "displayName": "aws-cdk-rds-cluster-dual-integ Template",

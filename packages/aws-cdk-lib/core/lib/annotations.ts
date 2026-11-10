@@ -1,9 +1,30 @@
 import type { IConstruct, MetadataEntry } from 'constructs';
-import { App } from './app';
 import { UnscopedValidationError } from './errors';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
+import { appOf } from './private/core-construct-finders';
 import { lit, type LiteralString } from './private/literal-string';
+import { Match } from '../../matching/lib/match';
+
+/**
+ * Options for adding an acknowledgeable warning via `Annotations.addWarningV2`
+ * or `Validations.addWarning`.
+ */
+export interface WarningOptions {
+  /**
+   * Structured context describing this specific warning occurrence.
+   *
+   * The construct chooses the keys and values (e.g. `{ service: 'aiops' }`, or
+   * richer values such as numbers or arrays). A later `acknowledge({ where })`
+   * is matched against this context as an `objectLike` partial match, to
+   * selectively suppress only the matching occurrences of the warning id while
+   * the rest continue to warn. When omitted, the warning carries no context and
+   * can only be suppressed by an unfiltered acknowledgement.
+   *
+   * @default - no context is attached
+   */
+  readonly context?: { [key: string]: any };
+}
 
 /**
  * Includes API for attaching annotations such as warning messages to constructs.
@@ -41,7 +62,23 @@ export class Annotations {
    * @param message optional message to explain the reason for acknowledgement
    */
   public acknowledgeWarning(id: string, message?: string): void {
-    Acknowledgements.of(this.scope).add(this.scope, id);
+    this._acknowledgeWarning(id, undefined, message);
+  }
+
+  /**
+   * Acknowledge a warning, optionally only the occurrences whose call-site
+   * context matches the given `where` filter.
+   *
+   * When `where` is omitted, all warnings with the id are acknowledged (the
+   * behavior of the public `acknowledgeWarning`). When `where` is provided it is
+   * treated as an `objectLike` partial match against each occurrence's context:
+   * only occurrences whose context is a superset of `where` are suppressed, and
+   * other occurrences of the same id continue to warn.
+   *
+   * @internal
+   */
+  public _acknowledgeWarning(id: string, where?: { [key: string]: any }, message?: string): void {
+    Acknowledgements.of(this.scope).add(this.scope, id, where);
 
     // We don't use message currently, but encouraging people to supply it is good for documentation
     // purposes, and we can always add a report on it in the future.
@@ -49,7 +86,7 @@ export class Annotations {
 
     // Iterate over the construct and remove any existing instances of this warning
     // (addWarningV2 will prevent future instances of it)
-    removeWarningDeep(this.scope, id);
+    removeWarningDeep(this.scope, id, where);
   }
 
   /**
@@ -69,10 +106,19 @@ export class Annotations {
    *
    * @param id the unique identifier for the warning. This can be used to acknowledge the warning
    * @param message The warning message.
+   * @param options optional settings, including structured `context` describing this
+   * occurrence. A `Validations.acknowledge({ where })` filter is matched against that
+   * context (as an objectLike partial match) to selectively suppress a subset of the
+   * occurrences of this id.
    */
-  public addWarningV2(id: string, message: string) {
-    if (!Acknowledgements.of(this.scope).has(this.scope, id)) {
-      this.addMessage(cxschema.ArtifactMetadataEntryType.WARN, `${message} ${ackTag(id)}`);
+  public addWarningV2(id: string, message: string, options?: WarningOptions) {
+    const context = options?.context;
+    if (!Acknowledgements.of(this.scope).has(this.scope, id, context)) {
+      const data = `${message} ${ackTag(id)}`;
+      this.addMessage(cxschema.ArtifactMetadataEntryType.WARN, data);
+      if (context && Object.keys(context).length > 0) {
+        WarningContexts.of(this.scope).record(this.scope, data, context);
+      }
     }
   }
 
@@ -230,7 +276,7 @@ export class Annotations {
  */
 class Acknowledgements {
   public static of(scope: IConstruct): Acknowledgements {
-    const app = App.of(scope);
+    const app = appOf(scope);
     if (!app) {
       return new Acknowledgements();
     }
@@ -247,24 +293,35 @@ class Acknowledgements {
 
   private static ACKNOWLEDGEMENTS_SYM = Symbol.for('@aws-cdk/core.Acknowledgements');
 
-  private readonly acks = new Map<string, Set<string>>();
+  // path -> ack id -> list of acknowledgement records (one per acknowledge call).
+  // An undefined/empty `where` means "suppress all occurrences of this id"
+  // (backwards-compatible behavior). A warning is suppressed if ANY record for
+  // the id matches its context.
+  private readonly acks = new Map<string, Map<string, AckRecord[]>>();
 
   private constructor() {}
 
-  public add(node: string | IConstruct, ack: string) {
+  public add(node: string | IConstruct, ack: string, where?: { [key: string]: any }) {
     const nodePath = this.nodePath(node);
 
-    let arr = this.acks.get(nodePath);
-    if (!arr) {
-      arr = new Set();
-      this.acks.set(nodePath, arr);
+    let byId = this.acks.get(nodePath);
+    if (!byId) {
+      byId = new Map();
+      this.acks.set(nodePath, byId);
     }
-    arr.add(ack);
+    let records = byId.get(ack);
+    if (!records) {
+      records = [];
+      byId.set(ack, records);
+    }
+    records.push({ where });
   }
 
-  public has(node: string | IConstruct, ack: string): boolean {
+  public has(node: string | IConstruct, ack: string, context?: { [key: string]: any }): boolean {
+    const ctx = context ?? {};
     for (const candidate of this.searchPaths(this.nodePath(node))) {
-      if (this.acks.get(candidate)?.has(ack)) {
+      const records = this.acks.get(candidate)?.get(ack);
+      if (records && records.some((r) => ackRecordMatches(r, ctx))) {
         return true;
       }
     }
@@ -291,6 +348,11 @@ class Acknowledgements {
         start = path.length;
       }
     }
+    // Include the node's own full path, not just its ancestor prefixes. Without
+    // this, an acknowledgement recorded on a construct is not found by has() when
+    // a warning with the same id is later emitted on that same construct (the ack
+    // is stored under the exact path, but searchPaths only yielded ancestors).
+    ret.push(path);
     return ret.reverse();
   }
 }
@@ -300,12 +362,12 @@ class Acknowledgements {
  *
  * No recursion to avoid blowing out the stack.
  */
-function removeWarningDeep(construct: IConstruct, id: string) {
+function removeWarningDeep(construct: IConstruct, id: string, where?: { [key: string]: any }) {
   const stack = [construct];
 
   while (stack.length > 0) {
     const next = stack.pop()!;
-    removeWarning(next, id);
+    removeWarning(next, id, where);
     stack.push(...next.node.children);
   }
 }
@@ -316,18 +378,27 @@ function removeWarningDeep(construct: IConstruct, id: string) {
  * This uses private APIs for now; we could consider adding this functionality
  * to the constructs library itself.
  */
-function removeWarning(construct: IConstruct, id: string) {
+function removeWarning(construct: IConstruct, id: string, where?: { [key: string]: any }) {
   const meta: MetadataEntry[] | undefined = (construct.node as any)._metadata;
   if (!meta) { return; }
+
+  const hasFilter = where !== undefined && Object.keys(where).length > 0;
 
   let i = 0;
   while (i < meta.length) {
     const m = meta[i];
     if (m.type === cxschema.ArtifactMetadataEntryType.WARN && (m.data as string).includes(ackTag(id))) {
-      meta.splice(i, 1);
-    } else {
-      i += 1;
+      // An unfiltered acknowledgement removes every occurrence of the id (backwards compatible).
+      // A filtered acknowledgement only removes occurrences whose recorded context matches `where`
+      // as an objectLike partial match.
+      const recordedContext = WarningContexts.of(construct).get(construct, m.data as string) ?? {};
+      const remove = !hasFilter || Match.objectLike(where!).test(recordedContext).isSuccess;
+      if (remove) {
+        meta.splice(i, 1);
+        continue;
+      }
     }
+    i += 1;
   }
 }
 
@@ -369,4 +440,77 @@ function removeInfo(construct: IConstruct, id: string) {
 
 function ackTag(id: string) {
   return `[ack: ${id}]`;
+}
+
+/**
+ * A single acknowledgement of a warning id, optionally narrowed to occurrences
+ * whose call-site context matches `where` (treated as an objectLike partial
+ * match).
+ */
+interface AckRecord {
+  readonly where?: { [key: string]: any };
+}
+
+function ackRecordMatches(record: AckRecord, context: { [key: string]: any }): boolean {
+  // No filter => suppress all occurrences of the id (backwards compatible).
+  if (!record.where || Object.keys(record.where).length === 0) {
+    return true;
+  }
+  // `where` is matched against the occurrence's context as an objectLike partial
+  // match: every key in `where` must be present with an equal value, and any key
+  // not mentioned in `where` is left unconstrained. A context-less warning (`{}`)
+  // is therefore never matched by a non-empty filter.
+  return Match.objectLike(record.where).test(context).isSuccess;
+}
+
+/**
+ * Tracks the structured context attached to emitted warnings, so a later
+ * filtered acknowledgement can selectively purge only the matching occurrences.
+ *
+ * Keyed by (construct path, full warning message) — the same string stored as
+ * the WARN metadata `data` — so multiple occurrences of one id with different
+ * context on the same construct are disambiguated. There is a singleton
+ * instance per `App`, mirroring `Acknowledgements`.
+ */
+class WarningContexts {
+  public static of(scope: IConstruct): WarningContexts {
+    const app = appOf(scope);
+    if (!app) {
+      return new WarningContexts();
+    }
+
+    const existing = (app as any)[WarningContexts.WARNING_CONTEXTS_SYM];
+    if (existing) {
+      return existing as WarningContexts;
+    }
+
+    const fresh = new WarningContexts();
+    (app as any)[WarningContexts.WARNING_CONTEXTS_SYM] = fresh;
+    return fresh;
+  }
+
+  private static WARNING_CONTEXTS_SYM = Symbol.for('@aws-cdk/core.WarningContexts');
+
+  // construct path -> full warning message -> context
+  private readonly contexts = new Map<string, Map<string, { [key: string]: any }>>();
+
+  private constructor() {}
+
+  public record(node: IConstruct, data: string, context: { [key: string]: any }) {
+    const nodePath = this.nodePath(node);
+    let byData = this.contexts.get(nodePath);
+    if (!byData) {
+      byData = new Map();
+      this.contexts.set(nodePath, byData);
+    }
+    byData.set(data, context);
+  }
+
+  public get(node: IConstruct, data: string): { [key: string]: any } | undefined {
+    return this.contexts.get(this.nodePath(node))?.get(data);
+  }
+
+  private nodePath(node: IConstruct) {
+    return node.node.path.replace(/^\//, '');
+  }
 }

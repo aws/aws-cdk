@@ -1,0 +1,215 @@
+{
+ "Resources": {
+  "network39EEAA36": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "10.0.0.0/16"
+       }
+      ]
+     }
+    },
+    "Name": "srt-network"
+   }
+  },
+  "SrtRole4A15E705": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SrtRoleDefaultPolicy4E376502": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "SrtSecret4F4908EE"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SrtRoleDefaultPolicy4E376502",
+    "Roles": [
+     {
+      "Ref": "SrtRole4A15E705"
+     }
+    ]
+   }
+  },
+  "SrtSecret4F4908EE": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "SRT decryption key for RouterInput",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "routerInputSrtListenerDB4E18D8": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "network39EEAA36",
+        "Arn"
+       ]
+      },
+      "Protocol": "SRT_LISTENER",
+      "ProtocolConfiguration": {
+       "SrtListener": {
+        "DecryptionConfiguration": {
+         "EncryptionKey": {
+          "RoleArn": {
+           "Fn::GetAtt": [
+            "SrtRole4A15E705",
+            "Arn"
+           ]
+          },
+          "SecretArn": {
+           "Ref": "SrtSecret4F4908EE"
+          }
+         }
+        },
+        "MinimumLatencyMilliseconds": 120,
+        "Port": 7000
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 3000000,
+    "Name": "srt-listener-input",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "INPUT_20",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   },
+   "DependsOn": [
+    "SrtRoleDefaultPolicy4E376502"
+   ]
+  },
+  "routerInputSrtCallerEFA0C5BD": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "network39EEAA36",
+        "Arn"
+       ]
+      },
+      "Protocol": "SRT_CALLER",
+      "ProtocolConfiguration": {
+       "SrtCaller": {
+        "DecryptionConfiguration": {
+         "EncryptionKey": {
+          "RoleArn": {
+           "Fn::GetAtt": [
+            "SrtRole4A15E705",
+            "Arn"
+           ]
+          },
+          "SecretArn": {
+           "Ref": "SrtSecret4F4908EE"
+          }
+         }
+        },
+        "MinimumLatencyMilliseconds": 150,
+        "SourceAddress": "203.0.113.10",
+        "SourcePort": 8000,
+        "StreamId": "test-stream-input"
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 4000000,
+    "Name": "srt-caller-input",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "GLOBAL",
+    "Tier": "INPUT_50",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   },
+   "DependsOn": [
+    "SrtRoleDefaultPolicy4E376502"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

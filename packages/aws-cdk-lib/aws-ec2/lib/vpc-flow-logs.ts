@@ -980,13 +980,13 @@ export class FlowLog extends FlowLogBase {
     // VPC service implicitly tries to create a bucket policy when adding a vpc flow log.
     // To avoid the race condition, we add an explicit dependency here.
     if (this.bucket?.policy?.node.defaultChild instanceof CfnResource) {
-      flowLog.addDependency(this.bucket?.policy.node.defaultChild);
+      flowLog.addResourceDependency(this.bucket?.policy.node.defaultChild);
     }
 
     // we must remove a flow log configuration first before deleting objects.
     const deleteObjects = this.bucket?.node.tryFindChild('AutoDeleteObjectsCustomResource')?.node.defaultChild;
     if (deleteObjects instanceof CfnResource) {
-      flowLog.addDependency(deleteObjects);
+      flowLog.addResourceDependency(deleteObjects);
     }
 
     this.flowLogId = flowLog.ref;

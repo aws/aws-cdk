@@ -222,6 +222,15 @@ export class Runtime {
   });
 
   /**
+   * The Python 3.15 runtime (python3.15)
+   */
+  public static readonly PYTHON_3_15 = new Runtime('python3.15', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
    * The Java 8 runtime (java8)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Java runtime.
    */
@@ -264,6 +273,29 @@ export class Runtime {
    * The Java 25 runtime (java25)
    */
   public static readonly JAVA_25 = new Runtime('java25', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Java 8 AL2023 runtime (java8.al2023)
+   */
+  public static readonly JAVA_8_AL2023 = new Runtime('java8.al2023', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
+   * The Java 11 AL2023 runtime (java11.al2023)
+   */
+  public static readonly JAVA_11_AL2023 = new Runtime('java11.al2023', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Java 17 AL2023 runtime (java17.al2023)
+   */
+  public static readonly JAVA_17_AL2023 = new Runtime('java17.al2023', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
     supportsSnapStart: true,
   });

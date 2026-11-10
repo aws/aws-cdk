@@ -1,0 +1,50 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W2501",
+          "description": "MasterUserPassword: Property 'MasterUserPassword' should not be a hardcoded string - use a parameter with NoEcho or a dynamic reference",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "cluster-applyimmediately-integ/DatabaseCluster/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "cluster-applyimmediately-integ.template.json",
+                "logicalId": "DatabaseCluster68FC2945",
+                "propertyPaths": [
+                  "Properties.MasterUserPassword"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "test-cluster-applyimmediately-integ/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

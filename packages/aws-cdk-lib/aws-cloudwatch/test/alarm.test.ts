@@ -369,6 +369,25 @@ describe('Alarm', () => {
     });
   });
 
+  test('IQM renders as ExtendedStatistic, not Statistic (issue #28812)', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.with({
+      statistic: Stats.IQM,
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Statistic: Match.absent(),
+      ExtendedStatistic: 'IQM',
+    });
+  });
+
   test('can use stats class to make alarm', () => {
     // GIVEN
     const stack = new Stack();

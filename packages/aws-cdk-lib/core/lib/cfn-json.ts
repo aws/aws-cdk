@@ -2,9 +2,9 @@ import { Construct } from 'constructs';
 import { CustomResource } from './custom-resource';
 import { CfnUtilsProvider } from './private/cfn-utils-provider';
 import { CfnUtilsResourceType } from './private/cfn-utils-provider/consts';
+import { stackOf } from './private/core-construct-finders';
 import type { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
-import { Stack } from './stack';
 
 export interface CfnJsonProps {
   /**
@@ -46,7 +46,7 @@ export class CfnJson extends Construct implements IResolvable {
     super(scope, id);
 
     // stringify the JSON object in a token-aware way.
-    this.jsonString = Stack.of(this).toJsonString(props.value);
+    this.jsonString = stackOf(this).toJsonString(props.value);
 
     const resource = new CustomResource(this, 'Resource', {
       serviceToken: CfnUtilsProvider.getOrCreate(this),

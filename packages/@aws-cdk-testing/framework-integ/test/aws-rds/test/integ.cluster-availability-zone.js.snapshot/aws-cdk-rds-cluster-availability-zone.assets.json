@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "3e8668549218cf1a20244b1385aab11c7a95eb3d5a44d599a475c81ab78bf15e": {
       "displayName": "aws-cdk-rds-cluster-availability-zone Template",

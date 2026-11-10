@@ -978,20 +978,23 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_44 = MysqlEngineVersion.of('5.7.44', '5.7');
   /**
    * Version "5.7.44-rds.20240408"
-   * @deprecate MySQL 5.7.44-rds.20240408 is no longer supported by Amazon RDS.
+   * @deprecated MySQL 5.7.44-rds.20240408 is no longer supported by Amazon RDS.
    */
   public static readonly VER_5_7_44_RDS_20240408 = MysqlEngineVersion.of('5.7.44-rds.20240408', '5.7');
   /**
    * Version "5.7.44-rds.20240529"
-   * @deprecate MySQL 5.7.44-rds.20240529 is no longer supported by Amazon RDS.
+   * @deprecated MySQL 5.7.44-rds.20240529 is no longer supported by Amazon RDS.
    */
   public static readonly VER_5_7_44_RDS_20240529 = MysqlEngineVersion.of('5.7.44-rds.20240529', '5.7');
   /**
    * Version "5.7.44-rds.20240808"
-   * @deprecate MySQL 5.7.44-rds.20240808 is no longer supported by Amazon RDS.
+   * @deprecated MySQL 5.7.44-rds.20240808 is no longer supported by Amazon RDS.
    */
   public static readonly VER_5_7_44_RDS_20240808 = MysqlEngineVersion.of('5.7.44-rds.20240808', '5.7');
-  /** Version "5.7.44-rds.20250103". */
+  /**
+   * Version "5.7.44-rds.20250103"
+   * @deprecated MySQL 5.7.44-rds.20250103 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_5_7_44_RDS_20250103 = MysqlEngineVersion.of('5.7.44-rds.20250103', '5.7');
   /** Version "5.7.44-rds.20250213". */
   public static readonly VER_5_7_44_RDS_20250213 = MysqlEngineVersion.of('5.7.44-rds.20250213', '5.7');
@@ -1003,6 +1006,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_44_RDS_20251212 = MysqlEngineVersion.of('5.7.44-rds.20251212', '5.7');
   /** Version "5.7.44-rds.20260212". */
   public static readonly VER_5_7_44_RDS_20260212 = MysqlEngineVersion.of('5.7.44-rds.20260212', '5.7');
+  /** Version "5.7.44-rds.20260521". */
+  public static readonly VER_5_7_44_RDS_20260521 = MysqlEngineVersion.of('5.7.44-rds.20260521', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -1121,9 +1126,15 @@ export class MysqlEngineVersion {
    * @deprecated MySQL 8.0.39 is no longer supported by Amazon RDS.
    */
   public static readonly VER_8_0_39 = MysqlEngineVersion.of('8.0.39', '8.0');
-  /** Version "8.0.40". */
+  /**
+   * Version "8.0.40"
+   * @deprecated MySQL 8.0.40 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_0_40 = MysqlEngineVersion.of('8.0.40', '8.0');
-  /** Version "8.0.41". */
+  /**
+   * Version "8.0.41"
+   * @deprecated MySQL 8.0.41 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_0_41 = MysqlEngineVersion.of('8.0.41', '8.0');
   /** Version "8.0.42". */
   public static readonly VER_8_0_42 = MysqlEngineVersion.of('8.0.42', '8.0');
@@ -1135,9 +1146,15 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_45 = MysqlEngineVersion.of('8.0.45', '8.0');
   /** Version "8.0.46". */
   public static readonly VER_8_0_46 = MysqlEngineVersion.of('8.0.46', '8.0');
-  /** Version "8.4.3". */
+  /**
+   * Version "8.4.3"
+   * @deprecated MySQL 8.4.3 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_4_3 = MysqlEngineVersion.of('8.4.3', '8.4');
-  /** Version "8.4.4". */
+  /**
+   * Version "8.4.4"
+   * @deprecated MySQL 8.4.4 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_8_4_4 = MysqlEngineVersion.of('8.4.4', '8.4');
   /** Version "8.4.5". */
   public static readonly VER_8_4_5 = MysqlEngineVersion.of('8.4.5', '8.4');
@@ -1149,6 +1166,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_4_8 = MysqlEngineVersion.of('8.4.8', '8.4');
   /** Version "8.4.9". */
   public static readonly VER_8_4_9 = MysqlEngineVersion.of('8.4.9', '8.4');
+  /** Version "8.4.10". */
+  public static readonly VER_8_4_10 = MysqlEngineVersion.of('8.4.10', '8.4');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -2607,6 +2626,8 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2025_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2025-01.rur-2025-01.r1', '19');
   /** Version "19.0.0.0.ru-2025-07.rur-2025-07.r1". */
   public static readonly VER_19_0_0_0_2025_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2025-07.rur-2025-07.r1', '19');
+  /** Version "19.0.0.0.ru-2025-10.rur-2025-10.r1". */
+  public static readonly VER_19_0_0_0_2025_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2025-10.rur-2025-10.r1', '19');
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
@@ -2947,7 +2968,10 @@ export class SqlServerEngineVersion {
    */
   public static readonly VER_12_00_6449_1_V1 = SqlServerEngineVersion.of('12.00.6449.1.v1', '12.00');
 
-  /** Version "13.00" (only a major version, without a specific minor version). */
+  /**
+   * Version "13.00" (only a major version, without a specific minor version).
+   * @deprecated SQL Server 13.00 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13 = SqlServerEngineVersion.of('13.00', '13.00');
   /**
    * Version "13.00.2164.0.v1".
@@ -3014,28 +3038,66 @@ export class SqlServerEngineVersion {
    * @deprecated SQL Server 13.00.5882.1.v1 is no longer supported by Amazon RDS.
    */
   public static readonly VER_13_00_5882_1_V1 = SqlServerEngineVersion.of('13.00.5882.1.v1', '13.00');
-  /** Version "13.00.6300.2.v1". */
+  /**
+   * Version "13.00.6300.2.v1".
+   * @deprecated SQL Server 13.00.6300.2.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6300_2_V1 = SqlServerEngineVersion.of('13.00.6300.2.v1', '13.00');
-  /** Version "13.00.6419.1.v1". */
+  /**
+   * Version "13.00.6419.1.v1".
+   * @deprecated SQL Server 13.00.6419.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6419_1_V1 = SqlServerEngineVersion.of('13.00.6419.1.v1', '13.00');
-  /** Version "13.00.6430.49.v1". */
+  /**
+   * Version "13.00.6430.49.v1".
+   * @deprecated SQL Server 13.00.6430.49.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6430_49_V1 = SqlServerEngineVersion.of('13.00.6430.49.v1', '13.00');
-  /** Version "13.00.6435.1.v1". */
+  /**
+   * Version "13.00.6435.1.v1".
+   * @deprecated SQL Server 13.00.6435.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6435_1_V1 = SqlServerEngineVersion.of('13.00.6435.1.v1', '13.00');
-  /** Version "13.00.6441.1.v1". */
+  /**
+   * Version "13.00.6441.1.v1".
+   * @deprecated SQL Server 13.00.6441.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6441_1_V1 = SqlServerEngineVersion.of('13.00.6441.1.v1', '13.00');
-  /** Version "13.00.6445.1.v1". */
+  /**
+   * Version "13.00.6445.1.v1".
+   * @deprecated SQL Server 13.00.6445.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6445_1_V1 = SqlServerEngineVersion.of('13.00.6445.1.v1', '13.00');
-  /** Version "13.00.6450.1.v1". */
+  /**
+   * Version "13.00.6450.1.v1".
+   * @deprecated SQL Server 13.00.6450.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6450_1_V1 = SqlServerEngineVersion.of('13.00.6450.1.v1', '13.00');
-  /** Version "13.00.6455.2.v1". */
+  /**
+   * Version "13.00.6455.2.v1".
+   * @deprecated SQL Server 13.00.6455.2.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6455_2_V1 = SqlServerEngineVersion.of('13.00.6455.2.v1', '13.00');
-  /** Version "13.00.6460.7.v1". */
+  /**
+   * Version "13.00.6460.7.v1".
+   * @deprecated SQL Server 13.00.6460.7.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6460_7_V1 = SqlServerEngineVersion.of('13.00.6460.7.v1', '13.00');
-  /** Version "13.00.6465.1.v1". */
+  /**
+   * Version "13.00.6465.1.v1".
+   * @deprecated SQL Server 13.00.6465.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6465_1_V1 = SqlServerEngineVersion.of('13.00.6465.1.v1', '13.00');
-  /** Version "13.00.6470.1.v1". */
+  /**
+   * Version "13.00.6470.1.v1".
+   * @deprecated SQL Server 13.00.6470.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6470_1_V1 = SqlServerEngineVersion.of('13.00.6470.1.v1', '13.00');
+  /**
+   * Version "13.00.6475.1.v1".
+   * @deprecated SQL Server 13.00.6475.1.v1 is no longer supported by Amazon RDS.
+   */
+  public static readonly VER_13_00_6475_1_V1 = SqlServerEngineVersion.of('13.00.6475.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -3101,6 +3163,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3500_1_V1 = SqlServerEngineVersion.of('14.00.3500.1.v1', '14.00');
   /** Version "14.00.3505.1.v1". */
   public static readonly VER_14_00_3505_1_V1 = SqlServerEngineVersion.of('14.00.3505.1.v1', '14.00');
+  /** Version "14.00.3515.1.v1". */
+  public static readonly VER_14_00_3515_1_V1 = SqlServerEngineVersion.of('14.00.3515.1.v1', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');

@@ -339,7 +339,7 @@ The exact CloudFormation realization depends on the strength and whether the ref
 crosses region or account boundaries:
 
 |                            | Strong (default)                                  | Both                                                                                         | Weak                                                            |
-|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| -------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | Same account and region    | Generates a `Fn::ImportValue` reference           | Generates a `Fn::GetStackOutput` reference AND an Export, but not the `Fn::ImportValue`      | Generates a `Fn::GetStackOutput` reference                      |
 | Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                      |
 | Cross-account              | Not possible. Falls back to weak.                 | Generates a `Fn::GetStackOutput` reference + cross-account role                              | Generates a `Fn::GetStackOutput` reference + cross-account role |
@@ -695,7 +695,7 @@ happens when an resource from one stack is referenced in another stack. In
 that case, CDK records the cross-stack referencing of resources,
 automatically produces the right CloudFormation primitives, and adds a
 dependency between the two stacks. You can also manually add a dependency
-between two stacks by using the `stackA.addDependency(stackB)` method.
+between two stacks by using the `stackA.addStackDependency(stackB)` method.
 
 A stack dependency has the following implications:
 
@@ -709,7 +709,7 @@ A stack dependency has the following implications:
 
 ### CfnResource Dependencies
 
-To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
+To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addResourceDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeResourceDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
 
 ## Custom Resources
 
@@ -1159,7 +1159,7 @@ Resource dependencies (the `DependsOn` attribute) is modified using the
 const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
 const resourceB = new CfnResource(this, 'ResourceB', resourceProps);
 
-resourceB.addDependency(resourceA);
+resourceB.addResourceDependency(resourceA);
 ```
 
 [cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
@@ -1759,6 +1759,26 @@ Validations.of(app).addPlugins(new CloudFormationValidatePlugin({
 }));
 ```
 
+In addition to the validation engine's built-in rule set, the CDK ships its
+own default rules that catch cross-field and cross-resource misconfigurations
+which pass template validation but fail (or silently misbehave) at deployment
+time. These run automatically on every synth. Their findings are reported as
+warnings unless the `@aws-cdk/core:validateAgainstDefaultRules` context key is
+set to `true`, in which case they become errors and fail synthesis. Suppress an
+individual rule by its ID using the same `acknowledge` mechanism shown above
+(for example `CloudFormation-Validate::CDK-GameLift-001`).
+
+An explicitly registered `CloudFormationValidatePlugin` still runs the CDK
+default rules in addition to your custom rules; pass
+`includeDefaultRules: false` to opt out of the default rules entirely.
+
+If you want to disable the automatic plugin registration without registering
+your own, you can do one of the following things:
+
+- Run `cdk synth --no-validation`.
+- Set `CDK_VALIDATION=false` in your environment.
+- Do `new App({ builtinCloudFormationValidation: false })`
+
 ### Additional plugins
 
 You can also add custom plugins like [cdk-nag](https://github.com/cdklabs/cdk-nag) and
@@ -1905,6 +1925,37 @@ Validations.of(this).acknowledge({
   reason: 'Account has quota increased to 20',
 });
 ```
+
+#### Acknowledging a subset of a warning (context filters)
+
+A single warning `id` is sometimes emitted for a range of situations. A construct
+can attach structured **context** to each occurrence (the keys and values are the
+construct's choice — values may be strings, numbers, booleans, or arrays), and you
+can then acknowledge only the occurrences whose context matches — leaving the rest
+to still warn.
+
+```ts
+// The construct attaches context describing this specific occurrence:
+Validations.of(this).addWarning(
+  'my-lib:unsupportedActionType',
+  'This action type is not supported and will be ignored',
+  { context: { service: 'aiops', resource: 'investigation-group' } },
+);
+
+// Acknowledge only the occurrences that match. `where` is an objectLike partial
+// match against the context: any key you do not mention is left unconstrained,
+// so the filter below also suppresses an occurrence whose context is
+// `{ service: 'aiops', resource: 'other' }`:
+Validations.of(this).acknowledge({
+  id: 'my-lib:unsupportedActionType',
+  reason: 'aiops actions are attached intentionally',
+  where: { service: 'aiops' },
+});
+```
+
+Omitting `where` acknowledges every occurrence of the `id`, which is the default
+behavior. A warning emitted without any context can only be acknowledged by an
+unfiltered acknowledgement, so a specific filter never silences it accidentally.
 
 ### Acknowledging Infos
 

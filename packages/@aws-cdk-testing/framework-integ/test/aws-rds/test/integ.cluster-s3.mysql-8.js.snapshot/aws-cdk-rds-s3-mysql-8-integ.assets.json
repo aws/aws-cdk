@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "83743c597ef399999c7af56f37510647068c7485f7777c60ece55bb41f49a1c6": {
       "displayName": "aws-cdk-rds-s3-mysql-8-integ Template",

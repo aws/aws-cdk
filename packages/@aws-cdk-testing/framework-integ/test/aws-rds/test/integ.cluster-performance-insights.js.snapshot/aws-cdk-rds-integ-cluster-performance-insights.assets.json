@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "a4e42ca9685b6cc67fa7a7a35e3472cb1e6781ae45b97d95e8ae8ef5ae5fba95": {
       "displayName": "aws-cdk-rds-integ-cluster-performance-insights Template",

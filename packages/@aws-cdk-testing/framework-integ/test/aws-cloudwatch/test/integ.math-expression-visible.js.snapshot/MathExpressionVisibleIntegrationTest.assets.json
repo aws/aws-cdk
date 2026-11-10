@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "ee830910b83ae098db5d44a0f4f3c29bd6a0efc24bfafe23bb096e096cc580ba": {
+      "displayName": "MathExpressionVisibleIntegrationTest Template",
+      "source": {
+        "path": "MathExpressionVisibleIntegrationTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4e445d17": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ee830910b83ae098db5d44a0f4f3c29bd6a0efc24bfafe23bb096e096cc580ba.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
