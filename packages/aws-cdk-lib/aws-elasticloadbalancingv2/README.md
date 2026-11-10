@@ -112,9 +112,9 @@ The following condition types are supported:
 - **Host headers (regex)** (`hostHeadersRegex`) - Match against the host header using
   regular expressions.
 - **Path patterns** (`pathPatterns`) - Match against the URL path. Supports wildcards
-  (e.g., `/api/*`). Up to 5 patterns can be specified.
+  (e.g., `/api/*`).
 - **Path patterns (regex)** (`pathPatternsRegex`) - Match against the URL path using
-  regular expressions. Up to 5 patterns can be specified.
+  regular expressions.
 - **HTTP headers** (`httpHeader`) - Match against a specific HTTP header name and value(s).
 - **HTTP headers (regex)** (`httpHeaderRegex`) - Match against a specific HTTP header
   name using regular expressions for values.
@@ -123,6 +123,12 @@ The following condition types are supported:
 - **Query strings** (`queryStrings`) - Match against query string key/value pairs.
 - **Source IPs** (`sourceIps`) - Match against the source IP address of the request.
   Supports CIDR blocks.
+
+A listener rule can hold up to 5 host header, HTTP header and path pattern values in
+total, counting both plain and regex values across all of its conditions. A single
+`pathPatterns`, `pathPatternsRegex`, `hostHeadersRegex` or `httpHeaderRegex` condition
+with more than 5 values throws at synthesis; a rule whose conditions only exceed the limit
+together is rejected by the service at deployment.
 
 Example using multiple condition types:
 

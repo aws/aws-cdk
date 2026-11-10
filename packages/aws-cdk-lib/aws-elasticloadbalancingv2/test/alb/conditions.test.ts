@@ -30,6 +30,34 @@ describe('tests', () => {
     }).toThrow(/A rule can only have '5' condition values/);
   });
 
+  test('hostHeadersRegex length greater than 5 will throw exception', () => {
+    // GIVEN
+    const array = ['^h1\\.', '^h2\\.', '^h3\\.', '^h4\\.', '^h5\\.'];
+
+    // WHEN
+    elbv2.ListenerCondition.hostHeadersRegex(array); // Does not throw
+    array.push('^h6\\.');
+
+    // THEN
+    expect(() => {
+      elbv2.ListenerCondition.hostHeadersRegex(array);
+    }).toThrow(/A rule can only have '5' condition values/);
+  });
+
+  test('httpHeaderRegex length greater than 5 will throw exception', () => {
+    // GIVEN
+    const array = ['^v1', '^v2', '^v3', '^v4', '^v5'];
+
+    // WHEN
+    elbv2.ListenerCondition.httpHeaderRegex('X-Header', array); // Does not throw
+    array.push('^v6');
+
+    // THEN
+    expect(() => {
+      elbv2.ListenerCondition.httpHeaderRegex('X-Header', array);
+    }).toThrow(/A rule can only have '5' condition values/);
+  });
+
   test('pathPatternsRegex renders with regexValues', () => {
     // GIVEN
     const condition = elbv2.ListenerCondition.pathPatternsRegex(['/api/v[0-9]+/.*', '/admin/.*']);

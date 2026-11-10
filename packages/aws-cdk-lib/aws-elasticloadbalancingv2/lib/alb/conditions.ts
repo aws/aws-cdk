@@ -214,6 +214,7 @@ class HostHeaderListenerCondition extends ListenerCondition {
 class HostHeaderRegexListenerCondition extends ListenerCondition {
   constructor(public readonly values: string[]) {
     super();
+    validateMaxCount(5, ...values);
     validateMaxLength('host header regex value', 128, ...values);
   }
 
@@ -257,6 +258,7 @@ class HttpHeaderRegexListenerCondition extends ListenerCondition {
     super();
     validateNonEmpty('HTTP header name', name);
     validateMaxLength('HTTP header name', 40, name);
+    validateMaxCount(5, ...values);
     validateMaxLength('HTTP header regex value', 128, ...values);
   }
 
