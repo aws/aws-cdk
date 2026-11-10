@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1793980740177"
+    "salt": "1794312964135"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -142,7 +142,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1793980740178"
+    "salt": "1794312964136"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -158,7 +158,7 @@
     },
     "service": "elastic-load-balancing-v2",
     "api": "describeRules",
-    "expected": "{\"$ObjectLike\":{\"Rules\":[{\"$ObjectLike\":{\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"path-pattern\",\"PathPatternConfig\":{\"RegexValues\":[\"/images/.*\\\\.(jpg|png|gif)\",\"/docs/.*\\\\.pdf\"]}}}]}}]}}",
+    "expected": "{\"$ObjectLike\":{\"Rules\":[{\"$ObjectLike\":{\"Conditions\":[{\"$ObjectLike\":{\"Field\":\"path-pattern\",\"PathPatternConfig\":{\"RegexValues\":[\"/docs/.*\\\\.pdf\",\"/images/.*\\\\.(jpg|png|gif)\"]}}}]}}]}}",
     "parameters": {
      "RuleArns": {
       "Fn::Join": [
@@ -174,7 +174,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1793980740179"
+    "salt": "1794312964137"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

@@ -11,7 +11,7 @@
         "    at get availabilityZones (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
         "    at new Vpc (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
         "    at new TestStack (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:61:21)",
-        "    at <anonymous> (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:185:15)",
+        "    at <anonymous> (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-elasticloadbalancingv2/test/integ.alb.listener-conditions.js:186:15)",
         "    ...node internals..."
       ]
     },

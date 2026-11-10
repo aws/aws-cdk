@@ -781,8 +781,8 @@
       "Field": "path-pattern",
       "PathPatternConfig": {
        "RegexValues": [
-        "/images/.*\\.(jpg|png|gif)",
-        "/docs/.*\\.pdf"
+        "/docs/.*\\.pdf",
+        "/images/.*\\.(jpg|png|gif)"
        ]
       }
      }

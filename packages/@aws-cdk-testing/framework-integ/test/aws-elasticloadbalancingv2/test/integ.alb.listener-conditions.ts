@@ -123,9 +123,10 @@ class TestStack extends cdk.Stack {
       listener,
       priority: 50,
       conditions: [
+        // Listed in sorted order, which is the order the service returns them in.
         elbv2.ListenerCondition.pathPatternsRegex([
-          '/images/.*\\.(jpg|png|gif)',
           '/docs/.*\\.pdf',
+          '/images/.*\\.(jpg|png|gif)',
         ]),
       ],
       action: elbv2.ListenerAction.fixedResponse(200, {
@@ -199,6 +200,6 @@ expectRuleCondition(stack.httpHeaderRegexRule, {
 expectRuleCondition(stack.pathPatternRegexRule, {
   Field: 'path-pattern',
   PathPatternConfig: {
-    RegexValues: ['/images/.*\\.(jpg|png|gif)', '/docs/.*\\.pdf'],
+    RegexValues: ['/docs/.*\\.pdf', '/images/.*\\.(jpg|png|gif)'],
   },
 });
