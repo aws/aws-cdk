@@ -15,6 +15,7 @@ import {
   DefaultStackSynthesizer,
   Stack,
   Stage,
+  Token,
   Validations,
 } from '../../core';
 import type { StackSynthesizer } from '../../core';
@@ -705,7 +706,7 @@ describe('StackSet operation preferences values', () => {
     const stack = new Stack(app);
 
     new StackSet(stack, 'StackSet', {
-      template: StackSetTemplate.fromStackSetStack(new StackSetStack(app, 'Stack')),
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
       operationPreferences,
     });
     return stack;
