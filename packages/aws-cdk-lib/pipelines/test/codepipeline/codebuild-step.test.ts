@@ -252,6 +252,53 @@ test('role passed it used for project and code build action', () => {
     ],
   });
 });
+test('assumeRole grants sts:AssumeRole and injects profile commands', () => {
+  const assumeRoleArn = 'arn:aws:iam::123456789012:role/AssumeRole';
+  const assumeRole = iam.Role.fromRoleArn(pipelineStack, 'AssumeRole', assumeRoleArn);
+
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['./test.sh'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      assumeRole,
+    }),
+  });
+
+  // THEN
+  const tpl = Template.fromStack(pipelineStack);
+
+  // The project's role can assume the target role
+  tpl.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: Match.objectLike({
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Resource: assumeRoleArn,
+        }),
+      ]),
+    }),
+  });
+
+  // The buildspec configures and exports the assumed-role profile before running commands
+  tpl.hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: Match.arrayWith([
+              `aws configure --profile cdk-assume-role set role_arn ${assumeRoleArn}`,
+              'aws configure --profile cdk-assume-role set credential_source EcsContainer',
+              'export AWS_PROFILE=cdk-assume-role',
+            ]),
+          },
+        },
+      })),
+    },
+  });
+});
+
 test('exportedVariables', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
