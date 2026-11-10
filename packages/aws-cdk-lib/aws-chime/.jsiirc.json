@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.chime"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Chime"
+    },
+    "python": {
+      "module": "aws_cdk.aws_chime"
+    }
+  }
+}

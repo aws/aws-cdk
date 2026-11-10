@@ -1,0 +1,20 @@
+{
+  "/CrossRegionSSMReferenceTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3.template.json"
+    }
+  ],
+  "/CrossRegionSSMReferenceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CrossRegionSSMReferenceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

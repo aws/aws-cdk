@@ -1,0 +1,20 @@
+{
+  "/BedrockAgentCoreGatewayIdentityOutbound/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockAgentCoreGatewayIdentityOutboundDefaultTestDeployAssert882D4745.template.json"
+    }
+  ],
+  "/BedrockAgentCoreGatewayIdentityOutbound/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayIdentityOutbound/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

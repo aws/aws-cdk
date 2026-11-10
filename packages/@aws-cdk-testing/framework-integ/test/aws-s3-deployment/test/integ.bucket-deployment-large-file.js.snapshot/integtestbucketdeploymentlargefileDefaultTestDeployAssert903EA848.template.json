@@ -1,177 +1,5 @@
 {
  "Resources": {
-  "AwsApiCallS3getObject02d076df441f8e79c1b96c584b36a542": {
-   "Type": "Custom::DeployAssert@SdkCallS3getObject",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "S3",
-    "api": "getObject",
-    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"secret_value\\\":\\\"test\\\\\\\"with\\\\\\\"quotes\\\"}\"}}",
-    "parameters": {
-     "Bucket": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "test-bucket-deployment-large-file:ExportsOutputRefBucket83908E7781C90AC0"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Key": "\"my-json/secret-config.json\""
-    },
-    "flattenResponse": "false",
-    "salt": "1762211959826"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ],
-    "Policies": [
-     {
-      "PolicyName": "Inline",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Action": [
-          "s3:GetObject"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "s3:GetObject"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "s3:ListObjectsV2"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "states:StartExecution"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "s3:ListObjectsV2"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "states:StartExecution"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Runtime": "nodejs22.x",
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
-    },
-    "Timeout": 120,
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "AwsApiCallS3getObject205bb8cf37f6ae58b8123115787e2175": {
-   "Type": "Custom::DeployAssert@SdkCallS3getObject",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "S3",
-    "api": "getObject",
-    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"secret_value\\\":\\\"test\\\"with\\\"quotes\\\"}\"}}",
-    "parameters": {
-     "Bucket": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "test-bucket-deployment-large-file:ExportsOutputRefBucket83908E7781C90AC0"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Key": "\"my-json/secret-config-no-escape.json\""
-    },
-    "flattenResponse": "false",
-    "salt": "1762211959826"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "AwsApiCallS3listObjectsV2dcf6e2df109208a6b0e45f43b6af0b37": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
@@ -204,7 +32,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1762211959826"
+    "salt": "1793971764019"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -326,6 +154,98 @@
     "AwsApiCallS3listObjectsV2dcf6e2df109208a6b0e45f43b6af0b37WaitForRoleDC50E13E"
    ]
   },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:ListObjectsV2"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "0c27302dd127441f84341af708066b603946169453a79140d9f0031e15377670.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
   "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -399,12 +319,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "0c27302dd127441f84341af708066b603946169453a79140d9f0031e15377670.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -413,6 +333,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -441,12 +365,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "0c27302dd127441f84341af708066b603946169453a79140d9f0031e15377670.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -455,6 +379,10 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -490,7 +418,7 @@
      "MaxKeys": "1"
     },
     "flattenResponse": "false",
-    "salt": "1762211959827"
+    "salt": "1793971764020"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -614,22 +542,6 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallS3getObject02d076df441f8e79c1b96c584b36a542": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallS3getObject02d076df441f8e79c1b96c584b36a542",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallS3getObject205bb8cf37f6ae58b8123115787e2175": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallS3getObject205bb8cf37f6ae58b8123115787e2175",
-     "assertion"
-    ]
-   }
-  },
   "AssertionResultsAwsApiCallS3listObjectsV2dcf6e2df109208a6b0e45f43b6af0b37": {
    "Value": {
     "Fn::GetAtt": [

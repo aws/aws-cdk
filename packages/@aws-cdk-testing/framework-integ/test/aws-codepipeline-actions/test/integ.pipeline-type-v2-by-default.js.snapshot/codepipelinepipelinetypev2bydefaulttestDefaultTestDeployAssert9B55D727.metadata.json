@@ -1,0 +1,20 @@
+{
+  "/codepipeline-pipeline-type-v2-by-default-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "codepipelinepipelinetypev2bydefaulttestDefaultTestDeployAssert9B55D727.template.json"
+    }
+  ],
+  "/codepipeline-pipeline-type-v2-by-default-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/codepipeline-pipeline-type-v2-by-default-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

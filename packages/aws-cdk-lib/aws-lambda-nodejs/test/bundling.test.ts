@@ -1,8 +1,8 @@
 
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import child_process from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { version as delayVersion } from 'delay/package.json';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
@@ -15,6 +15,8 @@ import * as util from '../lib/util';
 const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
 const STANDARD_TARGET = 'node20';
 const STANDARD_EXTERNAL = '@aws-sdk/*';
+// Docker bundling adds --ignoreConfig at run time when the image has TypeScript 6 or later
+const DOCKER_TSC_IGNORE_CONFIG = '$(TSC_VERSION=$(\'tsc\' --version); TSC_VERSION=${TSC_VERSION##* }; [ "${TSC_VERSION%%.*}" -ge 6 ] 2>/dev/null && echo --ignoreConfig)';
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 const app = new App();
@@ -29,14 +31,14 @@ beforeEach(() => {
   jest.spyOn(Code, 'fromAsset');
 
   detectPackageInstallationMock = jest.spyOn(PackageInstallation, 'detect').mockReturnValue({
-    isLocal: true,
+    isWorkspacePackage: true,
     version: '0.8.8',
   });
 
   jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'dest-path',
-    run: () => {},
+    run: () => { },
     toJSON: () => 'built-image',
   });
 });
@@ -78,7 +80,7 @@ test('esbuild bundling in Docker', () => {
     }),
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-nodejs\/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-nodejs\/lib\/docker$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-nodejs/),
     }),
@@ -202,8 +204,8 @@ test('esbuild bundling with externals and dependencies', () => {
         'bash', '-c',
         [
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
-          'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
+          "cp '/asset-input/package-lock.json' '/asset-output/package-lock.json'",
           'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
@@ -290,6 +292,84 @@ test('throws with ESM and NODEJS_12_X', () => {
   })).toThrow(/ECMAScript module output format is not supported by the nodejs12.x runtime/);
 });
 
+test('allows entry whose filename contains ".." (regression for issue #38017)', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry: '/project/lib/app..js',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('allows entry inside a directory whose name contains ".." (regression for issue #38017)', () => {
+  // pnpm content-addressed tarball deps land at paths like
+  // node_modules/.pnpm/file+..+other+pkg+0.0.1 which contain '..' mid-segment
+  // but are clearly under projectRoot.
+  expect(() => Bundling.bundle(stack, {
+    entry: '/project/node_modules/.pnpm/file+..+other+pkg+0.0.1/lib/handler.ts',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('allows depsLockFilePath inside a directory whose name contains ".." (regression for issue #38017)', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath: '/project/.pnpm/file+..+pkg/yarn.lock',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('throws when entry is outside projectRoot', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry: '/other/escape.ts',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/entryPath \(\/other\/escape\.ts\) should be under projectRoot/);
+});
+
+test('throws when depsLockFilePath is outside projectRoot', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath: '/other/yarn.lock',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/depsLockFilePath \(\/other\/yarn\.lock\) should be under projectRoot/);
+});
+
+test('throws when entry is on a different Windows drive than projectRoot', () => {
+  // On Windows, path.relative() cannot produce a relative path across drives and
+  // returns the absolute target path instead. Simulate that here: mock the
+  // platform, the relative() result, and isAbsolute() to apply win32 rules.
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  jest.spyOn(path, 'relative').mockReturnValueOnce('D:\\other\\entry.ts');
+  jest.spyOn(path, 'isAbsolute').mockImplementation((p) => path.win32.isAbsolute(p));
+
+  expect(() => Bundling.bundle(stack, {
+    entry: 'D:\\other\\entry.ts',
+    projectRoot: 'C:\\my-project',
+    depsLockFilePath: 'C:\\my-project\\package-lock.json',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/entryPath \(D:\\other\\entry\.ts\) should be under projectRoot/);
+
+  osPlatformMock.mockRestore();
+});
+
 test('esbuild bundling source map default', () => {
   Bundling.bundle(stack, {
     entry,
@@ -318,7 +398,7 @@ test('esbuild bundling source map default', () => {
 
 test.each([
   [Runtime.NODEJS_20_X, 'node20'],
-]) ('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
+])('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
   const cdkApp = new App({
     context: {
       '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
@@ -394,7 +474,7 @@ test('esbuild bundling with feature flag enabled using Node Latest', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node22\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node24\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
       ],
     }),
   });
@@ -599,7 +679,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
       ]),
     }),
   });
@@ -664,7 +744,7 @@ test('with Docker build args', () => {
     forceDockerBundling: true,
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib\/docker$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       HELLO: 'WORLD',
     }),
@@ -731,7 +811,7 @@ test('Local bundling', () => {
 
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
-    isLocal: true,
+    isWorkspacePackage: true,
     version: '3.4.5',
   });
 
@@ -846,8 +926,8 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
         'bash', '-c',
         [
           `'esbuild' '--bundle' '/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
-          'cp "/asset-input/common/package-lock.json" "/asset-output/package-lock.json"',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
+          "cp '/asset-input/common/package-lock.json' '/asset-output/package-lock.json'",
           'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
@@ -879,7 +959,7 @@ test('esbuild bundling with pre compilations', () => {
       command: [
         'bash', '-c',
         [
-          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} &&`,
+          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} ${DOCKER_TSC_IGNORE_CONFIG} &&`,
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.js' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:${STANDARD_EXTERNAL}'`,
         ].join(' '),
       ],
@@ -1087,7 +1167,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node22\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node24\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
       ],
     }),
   });
@@ -1215,7 +1295,7 @@ test('Docker bundling with preCompilation uses getTsconfigCompilerOptionsArray f
       command: [
         'bash', '-c',
         [
-          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} &&`,
+          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} ${DOCKER_TSC_IGNORE_CONFIG} &&`,
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.js' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:${STANDARD_EXTERNAL}'`,
         ].join(' '),
       ],
@@ -1469,6 +1549,40 @@ test('Local bundling with preCompilation spawns tsc directly', () => {
   spawnSyncMock.mockRestore();
 });
 
+test.each([
+  ['0.8.8', true, false],
+  ['5.9.3', true, false],
+  ['6.0.3', true, true],
+  ['Version 7.0.2', false, true],
+])('Local bundling with preCompilation and TypeScript %s (workspace package: %s) passes --ignoreConfig: %s', (tscVersion, isWorkspacePackage, expectIgnoreConfig) => {
+  detectPackageInstallationMock.mockImplementation((module: string) => module === 'typescript'
+    ? { isWorkspacePackage, version: tscVersion }
+    : { isWorkspacePackage: true, version: '0.8.8' });
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename.replace('.js', '.ts'),
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    preCompilation: true,
+    architecture: Architecture.X86_64,
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const tscCall = spawnSyncMock.mock.calls.find(c => (c[1] as string[])?.some(a => a.endsWith('.ts')));
+  expect(tscCall).toBeDefined();
+  if (expectIgnoreConfig) {
+    expect(tscCall![1]).toContain('--ignoreConfig');
+  } else {
+    expect(tscCall![1]).not.toContain('--ignoreConfig');
+  }
+
+  spawnSyncMock.mockRestore();
+});
+
 test('Local bundling with shell metacharacters in externalModules does not cause injection', () => {
   const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
 
@@ -1526,6 +1640,50 @@ test('Local bundling on Windows uses powershell for spawn steps', () => {
   const cmdString = (psCall![1] as string[])[2];
   expect(cmdString).toContain("'--bundle'");
   expect(cmdString).toContain("'--platform=node'");
+
+  // The executable is resolved to an Application so PowerShell cannot select the
+  // .ps1 shim, which the AllSigned execution policy refuses. See issue #38439.
+  expect(cmdString).toMatch(/^& \(Get-Command '[^']+' -CommandType Application\)\[0\]\.Source /);
+
+  spawnSyncMock.mockRestore();
+  osPlatformMock.mockRestore();
+});
+
+test('Local bundling on Windows resolves the spawned executable to an Application', () => {
+  // A bare command name passed to the PowerShell call operator can resolve to the
+  // .ps1 shim (e.g. npm.ps1), which is blocked under an AllSigned execution policy.
+  // Resolving with -CommandType Application only matches npm.cmd / npm.exe.
+  // See https://github.com/aws/aws-cdk/issues/38439
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  jest.spyOn(fs, 'copyFileSync').mockReturnValue();
+  jest.spyOn(fs, 'writeFileSync').mockReturnValue();
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const psCommands = spawnSyncMock.mock.calls
+    .filter(c => c[0] === 'powershell.exe')
+    .map(c => (c[1] as string[])[2]);
+  expect(psCommands.length).toBeGreaterThan(0);
+
+  for (const command of psCommands) {
+    // Every spawn resolves its executable rather than invoking a bare name.
+    expect(command).toMatch(/^& \(Get-Command '[^']+' -CommandType Application\)\[0\]\.Source/);
+    expect(command).not.toMatch(/^& '/);
+  }
+
+  // The npm install step is present and goes through the resolved form.
+  expect(psCommands.some(c => c.includes('-CommandType Application') && c.includes("'ci'"))).toEqual(true);
 
   spawnSyncMock.mockRestore();
   osPlatformMock.mockRestore();
@@ -1626,6 +1784,62 @@ test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {
   rmSyncMock.mockRestore();
 });
 
+test('Docker bundling escapes shell metacharacters in nodeModules dependency versions does not cause injection', () => {
+  // A malicious (e.g. transitive) dependency version containing a single quote must not
+  // break out of the `echo '...'`.
+  const maliciousVersion = "1.0.0' && touch /asset-input/PWNED && echo '";
+  jest.spyOn(util, 'extractDependencies').mockReturnValue({ delay: maliciousVersion });
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  const fromAssetCall = (Code.fromAsset as jest.Mock).mock.calls[0];
+  const bashScript: string = fromAssetCall[1].bundling.command[2];
+
+  const shellEscape = (s: string) => "'" + s.replace(/'/g, "'\\''") + "'";
+  const expectedArg = shellEscape(JSON.stringify({ dependencies: { delay: maliciousVersion } }));
+  expect(bashScript).toContain(`echo ${expectedArg} > `);
+
+  // The vulnerable (unescaped) breakout sequence must NOT be present.
+  expect(bashScript).not.toContain('1.0.0\' && touch');
+});
+
+test('Docker bundling escapes shell metacharacters in the nodeModules lock file path', () => {
+  jest.spyOn(util, 'extractDependencies').mockReturnValue({ delay: '5.0.0' });
+
+  const pkgRoot = path.join(__dirname, '..');
+
+  // The lock file path flows into `cp <src> ...` via OsCommand.copy
+  const depsLockPath = path.join(pkgRoot, '$(touch PWNED)', 'package-lock.json');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: pkgRoot,
+    depsLockFilePath: depsLockPath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  const fromAssetCall = (Code.fromAsset as jest.Mock).mock.calls[0];
+  const bashScript: string = fromAssetCall[1].bundling.command[2];
+
+  const shellEscape = (s: string) => "'" + s.replace(/'/g, "'\\''") + "'";
+  const src = path.join('/asset-input', path.relative(pkgRoot, depsLockPath));
+  expect(bashScript).toContain(`cp ${shellEscape(src)} `);
+
+  // The vulnerable double-quoted rendering (where `$(...)` would execute) must NOT be present.
+  expect(bashScript).not.toContain(`cp "${src}"`);
+});
+
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {
   const target = path.join(dir, 'tsconfig.json');
   if (fs.existsSync(target)) {
@@ -1636,3 +1850,67 @@ function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 
 
   throw new Error(`No \`package.json\` file found within ${depth} parent directories`);
 }
+
+test('repeated esbuild arguments use separate shell-escaped Docker arguments', () => {
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    esbuildArgs: {
+      '--alias': ['first=./path with spaces', "second=./it's second"],
+      '--pure': ['console.log', 'console.debug'],
+      '--supported': ['bigint=true', 'top-level-await=false'],
+      '--conditions': 'first,second',
+      '--drop': [],
+      '--minify': true,
+      '--splitting': false,
+    },
+  });
+
+  const command = bundler.command[2];
+  expect(command).toContain("'--alias:first=./path with spaces'");
+  expect(command).toContain("'--alias:second=./it'\\''s second'");
+  expect(command).toContain("'--pure:console.log' '--pure:console.debug'");
+  expect(command).toContain("'--supported:bigint=true' '--supported:top-level-await=false'");
+  expect(command).toContain("'--conditions=first,second'");
+  expect(command).not.toContain('--drop');
+  expect(command).toContain("'--minify'");
+  expect(command).not.toContain('--splitting');
+});
+
+test('repeated esbuild arguments are individual values in local spawn', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    esbuildArgs: {
+      '--alias': ['first=./path with spaces', "second=./it's second"],
+      '--pure': ['console.log', 'console.debug'],
+      '--supported': ['bigint=true', 'top-level-await=false'],
+      '--conditions': 'first,second',
+      '--drop': [],
+    },
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const esbuildCall = spawnSyncMock.mock.calls.find(c => c[1]?.includes('--bundle'));
+  const args = esbuildCall![1] as string[];
+  expect(args).toEqual(expect.arrayContaining([
+    '--alias:first=./path with spaces',
+    "--alias:second=./it's second",
+    '--pure:console.log',
+    '--pure:console.debug',
+    '--supported:bigint=true',
+    '--supported:top-level-await=false',
+    '--conditions=first,second',
+  ]));
+  expect(args.some(arg => arg.startsWith('--drop'))).toBe(false);
+});

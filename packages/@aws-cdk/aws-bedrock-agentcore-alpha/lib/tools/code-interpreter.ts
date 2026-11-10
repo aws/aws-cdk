@@ -65,6 +65,7 @@ const CODE_INTERPRETER_TAG_MAX_LENGTH = 256;
  *****************************************************************************/
 /**
  * Interface for CodeInterpreterCustom resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.IConnectable, ICodeInterpreterCustomRef {
   /**
@@ -172,6 +173,7 @@ export interface ICodeInterpreterCustom extends IResource, iam.IGrantable, ec2.I
 /**
  * Abstract base class for a Code Interpreter.
  * Contains methods and attributes valid for Code Interpreters either created with CDK or imported.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class CodeInterpreterCustomBase extends Resource implements ICodeInterpreterCustom {
   public abstract readonly codeInterpreterArn: string;
@@ -444,6 +446,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
  *****************************************************************************/
 /**
  * Properties for creating a CodeInterpreter resource
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface CodeInterpreterCustomProps {
   /**
@@ -494,6 +497,7 @@ export interface CodeInterpreterCustomProps {
  *****************************************************************************/
 /**
  * Attributes for specifying an imported Code Interpreter Custom.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface CodeInterpreterCustomAttributes {
   /**
@@ -540,6 +544,10 @@ export interface CodeInterpreterCustomAttributes {
  * @resource AWS::BedrockAgentCore::CodeInterpreterCustom
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.CodeInterpreterCustom';

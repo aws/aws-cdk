@@ -145,7 +145,7 @@ test('endpointgroup with all parameters', () => {
     healthCheckPath: '/ping',
     healthCheckPort: 123,
     healthCheckProtocol: ga.HealthCheckProtocol.HTTPS,
-    healthCheckThreshold: 23,
+    healthCheckThreshold: 10,
     trafficDialPercentage: 86,
     portOverrides: [
       {
@@ -168,7 +168,7 @@ test('endpointgroup with all parameters', () => {
         ListenerPort: 80,
       },
     ],
-    ThresholdCount: 23,
+    ThresholdCount: 10,
     TrafficDialPercentage: 86,
   });
 });

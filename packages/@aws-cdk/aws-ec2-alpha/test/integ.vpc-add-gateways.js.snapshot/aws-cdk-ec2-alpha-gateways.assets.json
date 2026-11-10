@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "files": {
     "268c276ca412d4a19eb0d433d6aebbaafda03058594a7f052f0ae8b5a4ba14d5": {
       "displayName": "aws-cdk-ec2-alpha-gateways Template",

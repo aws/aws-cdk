@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "671e72e3915a1c2ab0cc69bc6e564f3195a56094b5855b8dfe821f56bd499cc8": {
+      "displayName": "CrossRegionWeakRefProducerInteg Template",
+      "source": {
+        "path": "CrossRegionWeakRefProducerInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-c8ce4597": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "671e72e3915a1c2ab0cc69bc6e564f3195a56094b5855b8dfe821f56bd499cc8.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

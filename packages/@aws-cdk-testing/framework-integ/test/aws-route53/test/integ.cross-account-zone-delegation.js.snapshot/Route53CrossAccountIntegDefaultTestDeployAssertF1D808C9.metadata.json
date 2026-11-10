@@ -1,0 +1,20 @@
+{
+  "/Route53CrossAccountInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9.template.json"
+    }
+  ],
+  "/Route53CrossAccountInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/Route53CrossAccountInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

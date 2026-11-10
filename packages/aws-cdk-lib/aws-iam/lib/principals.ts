@@ -946,9 +946,9 @@ export class CompositePrincipal extends PrincipalBase {
  * A lazy token that requires an instance of Stack to evaluate
  */
 class StackDependentToken implements cdk.IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
+
   constructor(private readonly fn: (stack: cdk.Stack) => any) {
-    this.creationStack = cdk.captureStackTrace();
   }
 
   public resolve(context: cdk.IResolveContext) {
@@ -970,11 +970,11 @@ class StackDependentToken implements cdk.IResolvable {
 }
 
 class ServicePrincipalToken implements cdk.IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
+
   constructor(
     private readonly service: string,
     private readonly opts: ServicePrincipalOpts) {
-    this.creationStack = cdk.captureStackTrace();
   }
 
   public resolve(ctx: cdk.IResolveContext) {

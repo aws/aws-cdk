@@ -662,7 +662,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "test-capacity-provider"
+    "Name": "cp-aws-ecs-integ-alb-ec2-cmd-entrypointCapacityProvier8A0D6D92"
    }
   },
   "ALBECSServiceWithCommandEntryPointLB2FFE407F": {

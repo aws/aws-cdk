@@ -26,6 +26,7 @@ import { validateStringField, validateFieldPattern } from '../validation-helpers
 
 /**
  * Common properties for all Gateway Target types
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayTargetCommonProps {
   /**
@@ -46,6 +47,7 @@ export interface GatewayTargetCommonProps {
 
 /**
  * Properties for creating a Gateway Target resource
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayTargetProps extends GatewayTargetCommonProps {
   /**
@@ -72,6 +74,7 @@ export interface GatewayTargetProps extends GatewayTargetCommonProps {
 /**
  * Properties for creating a Lambda-based Gateway Target
  * Convenience interface for the most common use case
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayTargetLambdaProps extends GatewayTargetCommonProps {
   /**
@@ -99,6 +102,7 @@ export interface GatewayTargetLambdaProps extends GatewayTargetCommonProps {
 
 /**
  * Properties for creating an OpenAPI-based Gateway Target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayTargetOpenApiProps extends GatewayTargetCommonProps {
   /**
@@ -129,6 +133,7 @@ export interface GatewayTargetOpenApiProps extends GatewayTargetCommonProps {
 
 /**
  * Properties for creating a Smithy-based Gateway Target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayTargetSmithyProps extends GatewayTargetCommonProps {
   /**
@@ -151,6 +156,7 @@ export interface GatewayTargetSmithyProps extends GatewayTargetCommonProps {
 
 /**
  * Properties for creating an MCP Server-based Gateway Target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayTargetMcpServerProps extends GatewayTargetCommonProps {
   /**
@@ -176,6 +182,7 @@ export interface GatewayTargetMcpServerProps extends GatewayTargetCommonProps {
 
 /**
  * Properties for creating an API Gateway-based Gateway Target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayTargetApiGatewayProps extends GatewayTargetCommonProps {
   /**
@@ -219,6 +226,7 @@ export interface GatewayTargetApiGatewayProps extends GatewayTargetCommonProps {
 
 /**
  * Attributes for importing an existing Gateway Target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayTargetAttributes {
   /**
@@ -275,6 +283,10 @@ export interface GatewayTargetAttributes {
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-building-adding-targets.html
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarget {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.GatewayTarget';
@@ -574,7 +586,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     if (this.credentialProviderConfigurations) {
       for (const provider of this.credentialProviderConfigurations) {
         provider
-          .grantNeededPermissionsToRole(this.gateway.role)
+          .grantNeededPermissionsToRole(this.gateway)
           ?.applyBefore(this.targetResource);
       }
     }

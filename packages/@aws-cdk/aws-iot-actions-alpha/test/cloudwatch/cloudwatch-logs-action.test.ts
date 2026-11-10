@@ -63,7 +63,10 @@ test('Default cloudwatch logs action', () => {
         {
           Action: 'logs:DescribeLogStreams',
           Effect: 'Allow',
-          Resource: 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
+          Resource: [
+            'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group',
+            'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
+          ],
         },
       ],
       Version: '2012-10-17',

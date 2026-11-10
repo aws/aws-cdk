@@ -16,7 +16,7 @@
      "FunctionName": "\"global-table-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1773831200135"
+    "salt": "1773947519282"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -111,7 +111,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip"
+     "S3Key": "bb53f01495ae32257e19d365048b3328df6f5a714f8d3c0ed1ef3170dd17855b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

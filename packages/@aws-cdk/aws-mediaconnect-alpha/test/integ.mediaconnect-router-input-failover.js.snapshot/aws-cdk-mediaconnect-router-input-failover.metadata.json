@@ -1,0 +1,38 @@
+{
+  "/aws-cdk-mediaconnect-router-input-failover/network": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-failover/routerInputFailover": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-failover/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-failover/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-failover/network/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "network39EEAA36"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-failover/routerInputFailover/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "routerInputFailoverF90481E1"
+    }
+  ]
+}
