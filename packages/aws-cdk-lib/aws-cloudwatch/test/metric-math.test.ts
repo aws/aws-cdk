@@ -100,6 +100,68 @@ describe('Metric Math', () => {
     expect(m.with({ period: Duration.minutes(5) })).not.toEqual(m);
   });
 
+  test('MathExpression stores visible property and includes it in toMetricConfig', () => {
+    const withVisibleFalse = new MathExpression({
+      expression: 'a + b',
+      usingMetrics: { a, b },
+      visible: false,
+    });
+
+    expect(withVisibleFalse.visible).toBe(false);
+    expect(withVisibleFalse.toMetricConfig().renderingProperties!.visible).toBe(false);
+
+    const withVisibleTrue = new MathExpression({
+      expression: 'a + b',
+      usingMetrics: { a, b },
+      visible: true,
+    });
+
+    expect(withVisibleTrue.visible).toBe(true);
+    expect(withVisibleTrue.toMetricConfig().renderingProperties!.visible).toBe(true);
+  });
+
+  test('MathExpression visible defaults to undefined when not set (backwards compat)', () => {
+    const m = new MathExpression({
+      expression: 'a + b',
+      usingMetrics: { a, b },
+    });
+
+    expect(m.visible).toBeUndefined();
+    expect(m.toMetricConfig().renderingProperties!.visible).toBeUndefined();
+  });
+
+  test('MathExpression optimization: "with" the same visible returns the same object', () => {
+    const m = new MathExpression({ expression: 'a + b', usingMetrics: { a, b }, visible: false });
+
+    // Note: object equality, NOT deep equality on purpose
+    expect(m.with({})).toBe(m);
+    expect(m.with({ visible: false })).toBe(m);
+
+    // A different visible value produces a new object
+    expect(m.with({ visible: true })).not.toBe(m);
+    expect(m.with({ visible: true }).visible).toBe(true);
+  });
+
+  test('MathExpression optimization: "with" visible on an expression without one produces a new object', () => {
+    const m = new MathExpression({ expression: 'a + b', usingMetrics: { a, b } });
+
+    expect(m.with({})).toBe(m);
+    expect(m.with({ visible: false })).not.toBe(m);
+    expect(m.with({ visible: false }).visible).toBe(false);
+  });
+
+  test('Metric.anomalyDetectionFor forwards visible without clobbering internal defaults', () => {
+    const expr = Metric.anomalyDetectionFor({
+      metric: a,
+      visible: false,
+    });
+
+    expect(expr.visible).toBe(false);
+    expect(expr.toMetricConfig().renderingProperties!.visible).toBe(false);
+    // The internal default label is preserved (props spread does not overwrite it)
+    expect(expr.label).toBe('Anomaly Detection Band');
+  });
+
   test('math expression referring to unknown expressions produces a warning', () => {
     const m = new MathExpression({
       expression: 'm1 + m2',
@@ -108,6 +170,48 @@ describe('Metric Math', () => {
     expect(m.warningsV2).toMatchObject({
       'CloudWatch:Math:UnknownIdentifier': expect.stringContaining("'m1 + m2' references unknown identifiers"),
     });
+  });
+
+  test('math expression with CDK token does not produce warning', () => {
+    const token = Lazy.string({ produce: () => 'metric1' });
+    const m = new MathExpression({
+      expression: `TIME_SERIES(${token})`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('math expression with multiple CDK tokens does not produce warning', () => {
+    const token1 = Lazy.string({ produce: () => 'metric1' });
+    const token2 = Lazy.string({ produce: () => 'metric2' });
+    const m = new MathExpression({
+      expression: `${token1} + ${token2}`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('math expression with CDK token and real identifier warns only about real identifier', () => {
+    const token = Lazy.string({ produce: () => 'metric1' });
+    const m = new MathExpression({
+      expression: `m1 + ${token}`,
+    });
+
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:UnknownIdentifier': expect.stringContaining('references unknown identifiers: m1'),
+    });
+    // Should NOT mention "oken" as an unknown identifier (only "m1" should be listed)
+    expect(m.warningsV2?.['CloudWatch:Math:UnknownIdentifier']).not.toMatch(/identifiers:.*oken/);
+  });
+
+  test('math expression with complex token pattern does not produce warning', () => {
+    const token1 = Lazy.string({ produce: () => 'metric1' });
+    const token2 = Lazy.string({ produce: () => 'metric2' });
+    const m = new MathExpression({
+      expression: `SUM([${token1}, ${token2}])`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
   });
 
   test('metrics METRICS expression does not produce warning for unknown identifier', () => {
@@ -152,6 +256,22 @@ describe('Metric Math', () => {
     });
 
     expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('quoted strings in math expressions do not produce unknown identifier warnings', () => {
+    const m1 = new MathExpression({
+      expression: 'LAMBDA(\'myFunction\', "gc", \'count\')',
+      usingMetrics: {},
+    });
+
+    expect(m1.warningsV2).toBeUndefined();
+
+    const m2 = new MathExpression({
+      expression: 'DB_PERF_INSIGHTS("RDS", \'db-ABC123\', "os.cpuUtilization.user.avg")',
+      usingMetrics: {},
+    });
+
+    expect(m2.warningsV2).toBeUndefined();
   });
 
   test('math expression referring to unknown expressions produces a warning, even when nested', () => {
@@ -266,6 +386,48 @@ describe('Metric Math', () => {
       });
 
       // THEN
+      graphMetricsAre(graph, [
+        [{ expression: 'a + b', label: 'a + b' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
+      ]);
+    });
+
+    test('visible is passed through to the graph JSON for a top-level MathExpression', () => {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + b',
+            usingMetrics: { a, b },
+            visible: false,
+          }),
+        ],
+      });
+
+      // THEN
+      // A hidden top-level expression flows `visible: false` through and does not
+      // auto-generate a label (matching the rendering behavior for hidden metrics).
+      graphMetricsAre(graph, [
+        [{ expression: 'a + b', visible: false }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
+      ]);
+    });
+
+    test('visible defaults are unchanged in the graph JSON when visible is not set', () => {
+      // GIVEN
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + b',
+            usingMetrics: { a, b },
+          }),
+        ],
+      });
+
+      // THEN
+      // No `visible` key is rendered for the top-level expression (backwards compat).
       graphMetricsAre(graph, [
         [{ expression: 'a + b', label: 'a + b' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],

@@ -1,0 +1,20 @@
+{
+  "/integ-test-custom-resource-config-removal-policy-logGroup/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestcustomresourceconfigremovalpolicylogGroupDefaultTestDeployAssert3B9FD773.template.json"
+    }
+  ],
+  "/integ-test-custom-resource-config-removal-policy-logGroup/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-test-custom-resource-config-removal-policy-logGroup/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

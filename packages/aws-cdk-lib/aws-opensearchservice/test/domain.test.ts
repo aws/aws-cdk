@@ -49,6 +49,8 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_19,
   EngineVersion.OPENSEARCH_3_1,
   EngineVersion.OPENSEARCH_3_3,
+  EngineVersion.OPENSEARCH_3_5,
+  EngineVersion.OPENSEARCH_3_7,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -2687,13 +2689,54 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
     });
   });
 
-  test('SoftwareUpdateOptions is absent when enableAutoSoftwareUpdate is not specified', () => {
+  test('SoftwareUpdateOptions is absent when neither enableAutoSoftwareUpdate nor useLatestServiceSoftwareForBlueGreen is specified', () => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       SoftwareUpdateOptions: Match.absent(),
+    });
+  });
+
+  test('with useLatestServiceSoftwareForBlueGreen', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      useLatestServiceSoftwareForBlueGreen: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        UseLatestServiceSoftwareForBlueGreen: true,
+      },
+    });
+  });
+
+  test('with useLatestServiceSoftwareForBlueGreen set to false', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      useLatestServiceSoftwareForBlueGreen: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        UseLatestServiceSoftwareForBlueGreen: false,
+      },
+    });
+  });
+
+  test('with both enableAutoSoftwareUpdate and useLatestServiceSoftwareForBlueGreen', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      enableAutoSoftwareUpdate: true,
+      useLatestServiceSoftwareForBlueGreen: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: true,
+        UseLatestServiceSoftwareForBlueGreen: true,
+      },
     });
   });
 
@@ -2831,11 +2874,11 @@ describe('EBS Options Configurations', () => {
         ebs: {
           volumeSize: 30,
           volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
-          throughput: 1024,
+          throughput: 2048,
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
+    }).toThrow('throughput property takes a minimum of 125 and a maximum of 2000.');
 
     expect(() => {
       const domainProps: DomainProps = {
@@ -2847,7 +2890,7 @@ describe('EBS Options Configurations', () => {
         },
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
-    }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
+    }).toThrow('throughput property takes a minimum of 125 and a maximum of 2000.');
   });
 });
 

@@ -1,4 +1,10 @@
 {
+  "/TestStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "TestStack.template.json"
+    }
+  ],
   "/TestStack/Function": [
     {
       "type": "aws:cdk:analytics:construct",

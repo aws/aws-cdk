@@ -5,7 +5,10 @@ import * as iam from '../../aws-iam';
 import type * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CertificateRequestCertificateRequestFunction } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
@@ -71,6 +74,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * @deprecated use {@link Certificate} instead
  */
 @propertyInjectable
+@noBoxStackTraces
 export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.DnsValidatedCertificate';
@@ -81,12 +85,15 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
    */
 
-  public readonly tags: cdk.TagManager;
+  public get tags(): cdk.TagManager {
+    return this._tags.getMutable();
+  }
+  private readonly _tags: IBox<cdk.TagManager> = Box.fromValue(new cdk.TagManager(cdk.TagType.MAP, 'AWS::CertificateManager::Certificate'));
   protected readonly region?: string;
-  private normalizedZoneName: string;
-  private hostedZoneId: string;
-  private domainName: string;
-  private _removalPolicy?: cdk.RemovalPolicy;
+  private readonly normalizedZoneName: string;
+  private readonly hostedZoneId: string;
+  private readonly domainName: string;
+  private readonly removalPolicy: IBox<cdk.RemovalPolicy | undefined> = Box.fromValue(undefined);
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
@@ -112,7 +119,6 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     }
     // Remove any `/hostedzone/` prefix from the Hosted Zone ID
     this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
-    this.tags = new cdk.TagManager(cdk.TagType.MAP, 'AWS::CertificateManager::Certificate');
 
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
@@ -157,10 +163,10 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
-        RemovalPolicy: cdk.Lazy.any({ produce: () => this._removalPolicy }),
+        RemovalPolicy: this.removalPolicy,
         // Custom resources properties are always converted to strings; might as well be explicit here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
-        Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
+        Tags: this._tags.derive(tags => tags.renderTags()),
       },
     });
 
@@ -171,7 +177,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
 
   @MethodMetadata()
   public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
-    this._removalPolicy = policy;
+    this.removalPolicy.set(policy);
   }
 
   private validateDnsValidatedCertificate(): string[] {

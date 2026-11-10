@@ -4,20 +4,26 @@
       "type": "aws:cdk:warning",
       "data": "Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]",
       "trace": [
-        "Annotations.addMessage (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:200:29)",
-        "Annotations.addWarningV2 (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:70:18)",
-        "new Bundling (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:102:41)",
-        "Bundling.bundle (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:30:23)",
-        "new NodejsFunction (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:59:45)",
-        "new TestStack (/Users/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.latest.js:13:31)",
-        "Object.<anonymous> (/Users/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.latest.js:28:15)",
-        "Module._compile (node:internal/modules/cjs/loader:1469:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1548:10)",
-        "Module.load (node:internal/modules/cjs/loader:1288:32)",
-        "Module._load (node:internal/modules/cjs/loader:1104:12)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:174:12)",
-        "node:internal/main/run_main_module:28:49"
+        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new Bundling (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:289:45)",
+        "Bundling.bundle (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:213:27)",
+        "new NodejsFunction (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:100:45)",
+        "new TestStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.latest.js:46:31)",
+        "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk4/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.latest.js:61:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-integ-lambda-nodejs-latest.template.json"
     }
   ],
   "/cdk-integ-lambda-nodejs-latest/latest": [

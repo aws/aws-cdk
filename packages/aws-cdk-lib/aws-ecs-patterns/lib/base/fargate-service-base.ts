@@ -1,4 +1,4 @@
-import type { FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
+import type { DeploymentCircuitBreaker, FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
 
 export interface FargateServiceBaseProps {
   /**
@@ -89,4 +89,11 @@ export interface FargateServiceBaseProps {
    * @default - If the property is undefined, `operatingSystemFamily` is LINUX and `cpuArchitecture` is X86_64
    */
   readonly runtimePlatform?: RuntimePlatform;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }

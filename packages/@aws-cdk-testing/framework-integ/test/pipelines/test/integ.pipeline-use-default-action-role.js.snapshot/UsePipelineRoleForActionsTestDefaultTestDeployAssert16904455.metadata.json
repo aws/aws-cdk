@@ -1,0 +1,58 @@
+{
+  "/UsePipelineRoleForActionsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "UsePipelineRoleForActionsTestDefaultTestDeployAssert16904455.template.json"
+    }
+  ],
+  "/UsePipelineRoleForActionsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/UsePipelineRoleForActionsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/UsePipelineRoleForActionsTest/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelinebe0c602b9092b725420683de1936e572/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/UsePipelineRoleForActionsTest/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelinebe0c602b9092b725420683de1936e572/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodePipelinegetPipelinebe0c602b9092b725420683de1936e572"
+    }
+  ],
+  "/UsePipelineRoleForActionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/UsePipelineRoleForActionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/UsePipelineRoleForActionsTest/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelinebe0c602b9092b725420683de1936e572/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodePipelinegetPipelinebe0c602b9092b725420683de1936e572"
+    }
+  ]
+}

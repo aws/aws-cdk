@@ -1,0 +1,125 @@
+{
+  "/integ-distribution-lambda-cross-region": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-distribution-lambda-cross-region.template.json"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Dist": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*",
+          "cachePolicy": "*",
+          "edgeLambdas": [
+            {
+              "functionVersion": "*",
+              "eventType": "origin-request"
+            },
+            {
+              "functionVersion": "*",
+              "eventType": "origin-response"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda/ArnReader": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda2/ArnReader": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Dist/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistB3B78991"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda/ArnReader/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaArnReaderAB4FC772"
+    }
+  ],
+  "/integ-distribution-lambda-cross-region/Lambda2/ArnReader/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Lambda2ArnReader5ACFBE1F"
+    }
+  ]
+}

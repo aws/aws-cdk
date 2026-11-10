@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`can generate interface types into a separate module 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
@@ -86,6 +86,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _id?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -135,6 +139,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -258,6 +263,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _id?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -307,6 +316,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -425,6 +435,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -466,6 +478,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -579,6 +592,8 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
     return resource.somethingRef.somethingArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Something\`.
    *
@@ -630,6 +645,7 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnSomething.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -743,6 +759,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return resource.resourceRef.resourceArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -794,6 +812,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -908,6 +927,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _arn?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    arn: "Arn"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -966,6 +989,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1088,6 +1112,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return resource.resourceRef.resourceArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1129,6 +1155,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1238,6 +1265,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1289,6 +1318,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1436,6 +1466,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _id?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1485,6 +1519,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1613,6 +1648,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _id?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    anotherId: "AnotherId",
+    id: "Id"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1679,6 +1719,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1812,6 +1853,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   private _id?: string;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1861,6 +1906,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 

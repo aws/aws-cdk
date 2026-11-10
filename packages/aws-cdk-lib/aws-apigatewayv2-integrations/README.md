@@ -288,7 +288,9 @@ httpApi.addRoutes({
 
 You can configure the custom parameter mappings of the EventBridge integration using the `parameterMapping` property of the `HttpEventBridgeIntegration` object.
 
-By default, the integration expects the request body to contain `Detail`, `DetailType`, and `Source` fields. 
+By default, the integration expects the request body to contain `Detail`, `DetailType`, and `Source` fields. The `EventBusName` is automatically included from `eventBusRef` in all cases, even when a custom `parameterMapping` is provided (unless explicitly overridden). This ensures consistency and eliminates redundant configuration.
+
+The default parameter mapping is as follows:
 
 ```ts
 import * as events from 'aws-cdk-lib/aws-events';
@@ -298,8 +300,12 @@ new apigwv2.ParameterMapping()
   // The following fields are required for the EventBridge PutEvents integration
   .custom('Detail', '$request.body.Detail')
   .custom('DetailType', '$request.body.DetailType')
-  .custom('Source', '$request.body.Source');
+  .custom('Source', '$request.body.Source')
+  // EventBusName is automatically included from eventBusRef
+  .custom('EventBusName', bus.eventBusName);
 ```
+
+When providing a custom `parameterMapping`, you don't need to include `EventBusName` - it will be automatically added from `eventBusRef`:
 
 ### Private Integration
 

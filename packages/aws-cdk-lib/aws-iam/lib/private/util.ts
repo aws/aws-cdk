@@ -1,21 +1,19 @@
 import type { IConstruct } from 'constructs';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
-import { captureStackTrace, DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
+import {
+  DefaultTokenResolver,
+  StringConcat,
+  Token,
+  Tokenization,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IPolicy } from '../policy';
 
 export const MAX_POLICY_NAME_LEN = 128;
 
 export const LITERAL_STRING_KEY = 'LiteralString';
-
-export function undefinedIfEmpty(f: () => string[]): string[] {
-  return Lazy.list({
-    produce: () => {
-      const array = f();
-      return (array && array.length > 0) ? array : undefined;
-    },
-  });
-}
 
 /**
  * Used to generate a unique policy name based on the policy resource construct.
@@ -113,10 +111,9 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
     return Token.asList(new UniqueStringSet(fn));
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   private constructor(private readonly fn: () => string[]) {
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext) {

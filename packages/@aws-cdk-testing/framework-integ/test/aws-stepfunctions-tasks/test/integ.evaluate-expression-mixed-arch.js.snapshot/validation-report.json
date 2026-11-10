@@ -1,0 +1,62 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.12.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "EvaluateExpressionMixedArchTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'nodejs24.x'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ/EvalExpressionArm/EvalFunction/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ.template.json",
+                "logicalId": "EvalExpressionArmEvalFunction6D9BC052",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ/EvalExpressionX86/EvalFunction/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-sfn-evaluate-expression-mixed-arch-integ.template.json",
+                "logicalId": "EvalExpressionX86EvalFunction163BF1F5",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -200,7 +200,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
 
       this.associatedResources.add(stack.node.addr);
       if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack) && !stack.nested) {
-        stack.addDependency(cdk.Stack.of(this));
+        stack.addStackDependency(cdk.Stack.of(this));
       }
     }
   }
@@ -291,6 +291,7 @@ export class Application extends ApplicationBase {
     const applicationId = arn.resourceName;
 
     if (!applicationId) {
+      // eslint-disable-next-line @cdklabs/no-throw-default-error
       throw new Error('Missing required Application ID from Application ARN: ' + applicationArn);
     }
 

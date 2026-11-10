@@ -5,7 +5,10 @@ import { renderEnvironment, renderTags } from './private/utils';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
-import { Duration, Lazy, Size, Stack, Token, ValidationError } from '../../../core';
+import { Duration, Size, Stack, Token, ValidationError } from '../../../core';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
@@ -114,6 +117,7 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps,
  * Class representing the SageMaker Create Training Job task.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   /**
    * Uniquely identifies this class.
@@ -172,7 +176,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
 
   private readonly vpc?: ec2.IVpc;
   private securityGroup?: ec2.ISecurityGroup;
-  private readonly securityGroups: ec2.ISecurityGroup[] = [];
+  private readonly _securityGroups: IArrayBox<ec2.ISecurityGroup>;
   private readonly subnets?: string[];
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role?: iam.IRole;
@@ -180,6 +184,8 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
 
   constructor(scope: Construct, id: string, private readonly props: SageMakerCreateTrainingJobProps) {
     super(scope, id, props);
+
+    this._securityGroups = Box.fromArray([], { omitEmpty: false });
 
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateTrainingJob.SUPPORTED_INTEGRATION_PATTERNS);
@@ -261,7 +267,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
    * @param securityGroup: The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
-    this.securityGroups.push(securityGroup);
+    this._securityGroups.push(securityGroup);
   }
 
   /**
@@ -367,7 +373,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return config
       ? {
         VpcConfig: {
-          SecurityGroupIds: Lazy.list({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          SecurityGroupIds: Token.asList(this._securityGroups.map((sg) => sg.securityGroupId), { displayHint: 'SecurityGroupIds' }),
           Subnets: this.subnets,
         },
       }
@@ -441,7 +447,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
         vpc: this.vpc,
       });
       this.connections.addSecurityGroup(this.securityGroup);
-      this.securityGroups.push(this.securityGroup);
+      this._securityGroups.push(this.securityGroup);
     }
 
     const stack = Stack.of(this);

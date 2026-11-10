@@ -15,7 +15,7 @@ const stack = new cdk.Stack(app, 'sqs-bucket-notifications');
 const bucket1 = new s3.Bucket(stack, 'Bucket1', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-const queue = new sqs.Queue(stack, 'MyQueue');
+const queue = new sqs.Queue(stack, 'MyQueue', { encryption: sqs.QueueEncryption.SQS_MANAGED });
 
 bucket1.addObjectCreatedNotification(new s3n.SqsDestination(queue));
 
@@ -32,7 +32,9 @@ const bucket3 = new s3.Bucket(stack, 'Bucket3WithSkipDestinationValidation', {
   notificationsSkipDestinationValidation: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-const queueWithIncorrectS3Permissions = new sqs.Queue(stack, 'MyQueueWithIncorrectS3Permissions');
+const queueWithIncorrectS3Permissions = new sqs.Queue(stack, 'MyQueueWithIncorrectS3Permissions', {
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
+});
 queueWithIncorrectS3Permissions.addToResourcePolicy(
   new cdk.aws_iam.PolicyStatement({
     effect: cdk.aws_iam.Effect.DENY,

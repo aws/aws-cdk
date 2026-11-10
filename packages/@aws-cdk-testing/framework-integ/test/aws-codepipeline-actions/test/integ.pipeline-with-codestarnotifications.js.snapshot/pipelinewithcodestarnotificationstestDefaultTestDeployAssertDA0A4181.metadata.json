@@ -1,0 +1,20 @@
+{
+  "/pipeline-with-codestarnotifications-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "pipelinewithcodestarnotificationstestDefaultTestDeployAssertDA0A4181.template.json"
+    }
+  ],
+  "/pipeline-with-codestarnotifications-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/pipeline-with-codestarnotifications-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

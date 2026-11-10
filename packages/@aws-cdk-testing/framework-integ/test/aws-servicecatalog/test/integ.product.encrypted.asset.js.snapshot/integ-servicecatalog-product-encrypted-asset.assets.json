@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "55.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "integ-servicecatalog-product-encrypted-asset/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -31,31 +31,31 @@
         }
       }
     },
-    "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18": {
+    "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec": {
       "displayName": "TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Code",
       "source": {
-        "path": "asset.0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip",
+        "path": "asset.98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region-73b588ab": {
+        "12345678-test-region-3895253a": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip",
+          "objectKey": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
       }
     },
-    "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9": {
+    "9a429549ac40e3ec3e6335de0a56794665ab2c4602d6e60ec7b31ea303b149a4": {
       "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
       "source": {
-        "path": "asset.3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9",
+        "path": "asset.9a429549ac40e3ec3e6335de0a56794665ab2c4602d6e60ec7b31ea303b149a4",
         "packaging": "zip"
       },
       "destinations": {
-        "12345678-test-region-7fcc97d1": {
+        "12345678-test-region-178ee279": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip",
+          "objectKey": "9a429549ac40e3ec3e6335de0a56794665ab2c4602d6e60ec7b31ea303b149a4.zip",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
@@ -77,7 +77,7 @@
       }
     },
     "b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e": {
-      "displayName": "TestProduct/Templatea276ac60c9a6",
+      "displayName": "TestProduct/Templatee4fb3ca9ed25",
       "source": {
         "path": "asset.b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e.json",
         "packaging": "file"
@@ -92,7 +92,7 @@
       }
     },
     "6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5": {
-      "displayName": "TestProduct/Template4146814bb60c",
+      "displayName": "TestProduct/Template12d2791ced07",
       "source": {
         "path": "asset.6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5.json",
         "packaging": "file"
@@ -136,16 +136,16 @@
         }
       }
     },
-    "dbf297d45d24a23c92e9f0562c0065adfc4c2b7788f4f3af64b39a41f97954de": {
+    "a6c2f8be21218fd0c0f9b7fb73f9626f1afaa421fc6b1dddf709eca3986d11cc": {
       "displayName": "integ-servicecatalog-product-encrypted-asset Template",
       "source": {
         "path": "integ-servicecatalog-product-encrypted-asset.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region-65fbe7a8": {
+        "12345678-test-region-baace03a": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "dbf297d45d24a23c92e9f0562c0065adfc4c2b7788f4f3af64b39a41f97954de.json",
+          "objectKey": "a6c2f8be21218fd0c0f9b7fb73f9626f1afaa421fc6b1dddf709eca3986d11cc.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
