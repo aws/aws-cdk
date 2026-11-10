@@ -550,6 +550,37 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 
 **Note**: Cannot create a read replica cluster with `credentials` as the value is inherited from the source DB cluster.
 
+## Starting a cluster with express configuration
+
+Use `ExpressCluster` to create an Aurora PostgreSQL cluster with
+[express configuration](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/CHAP_GettingStartedAurora.AuroraPostgreSQL.ExpressConfig.html),
+which is ready to use in seconds. A cluster with express configuration has the following characteristics:
+
+- It is not associated with a VPC. Clients connect to it through an internet access gateway.
+- It supports IAM database authentication only, so no master password or secret is created.
+- RDS creates the writer instance (an Aurora Serverless instance) by itself.
+- It uses the default engine version and the default DB cluster parameter group.
+
+```ts
+declare const myRole: iam.IRole;
+
+const cluster = new rds.ExpressCluster(this, 'ExpressCluster', {
+  serverlessV2MaxCapacity: 4,
+  backup: { retention: Duration.days(7) },
+  cloudwatchLogsExports: ['postgresql'],
+});
+
+// Creating a cluster with express configuration through CloudFormation currently requires at least one tag
+Tags.of(cluster).add('project', 'my-project');
+
+// Allow the role to connect as the master user (`postgres` by default) with IAM database authentication
+cluster.grantConnect(myRole, 'postgres');
+```
+
+The Data API, RDS Proxy, an initial database (`defaultDatabaseName`) and storage encryption are not supported
+for a cluster with express configuration. Because the cluster is not associated with a VPC,
+`cluster.connections` has no security groups.
+
 ## Starting an instance database
 
 To set up an instance database, define a `DatabaseInstance`. You must
