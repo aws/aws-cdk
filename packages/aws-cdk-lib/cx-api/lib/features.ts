@@ -146,6 +146,7 @@ export const LOG_USER_POOL_CLIENT_SECRET_VALUE = '@aws-cdk/cognito:logUserPoolCl
 export const PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope';
 export const S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS = '@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions';
 export const EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY = '@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway';
+export const EC2_FLOW_LOGS_CLOUDWATCH_LOGS_TRUST_SCOPED = '@aws-cdk/aws-ec2:flowLogsCloudWatchLogsTrustScoped';
 export const USE_RESOURCEID_FOR_VPCV2_MIGRATION = '@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration';
 export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccessBlockedByDefault';
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
@@ -164,6 +165,23 @@ export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
 
 export const FLAGS: Record<string, FlagInfo> = {
+  //////////////////////////////////////////////////////////////////////
+  [EC2_FLOW_LOGS_CLOUDWATCH_LOGS_TRUST_SCOPED]: {
+    type: FlagType.BugFix,
+    summary: 'Scope the default VPC Flow Logs CloudWatch Logs role trust policy',
+    detailsMd: `
+      When enabled, the automatically created IAM role for a CloudWatch Logs flow log
+      trusts the VPC Flow Logs service only when the source account matches the stack
+      account and the source ARN matches a flow log in the stack's account and region.
+
+      If unset, existing applications continue to synthesize the legacy, unconditioned
+      trust policy. User-supplied IAM roles remain under caller control.
+      Enabling the flag on an existing stack updates the default role's trust policy
+      in place; check the CloudFormation change set before deploying.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
   //////////////////////////////////////////////////////////////////////
   [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
     type: FlagType.BugFix,

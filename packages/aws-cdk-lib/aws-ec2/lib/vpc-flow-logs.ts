@@ -24,7 +24,7 @@ import {
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
+import { EC2_FLOW_LOGS_CLOUDWATCH_LOGS_TRUST_SCOPED, S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
 
 /**
  * Name tag constant
@@ -434,9 +434,24 @@ class CloudWatchLogsDestination extends FlowLogDestination {
     let iamRole: iam.IRole;
     let logGroup: logs.ILogGroupRef;
     if (this.props.iamRole === undefined) {
+      const stack = Stack.of(scope);
+      const assumedBy = new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com', {
+        conditions: FeatureFlags.of(scope).isEnabled(EC2_FLOW_LOGS_CLOUDWATCH_LOGS_TRUST_SCOPED)
+          ? {
+            StringEquals: { 'aws:SourceAccount': stack.account },
+            ArnLike: {
+              'aws:SourceArn': stack.formatArn({
+                service: 'ec2',
+                resource: 'vpc-flow-log',
+                resourceName: '*',
+              }),
+            },
+          }
+          : undefined,
+      });
       iamRole = new iam.Role(scope, 'IAMRole', {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com'),
+        assumedBy,
       });
     } else {
       iamRole = this.props.iamRole;
