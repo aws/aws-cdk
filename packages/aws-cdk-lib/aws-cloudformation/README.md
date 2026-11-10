@@ -260,12 +260,12 @@ percentage of accounts, and choose how failures affect the concurrency with `con
 ```ts
 const app = new App();
 const stack = new Stack(app, 'Admin');
-const stackSetStack = new StackSetStack(app, 'MyStackSet');
+const stackSetStack = new StackSetStack(stack, 'MyStackSet');
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromAccounts({
     regions: ['us-east-1', 'eu-west-1'],
-    accounts: ['11111111111', '22222222222'],
+    accounts: ['111111111111', '222222222222'],
   }),
   template: StackSetTemplate.fromStackSetStack(stackSetStack),
   operationPreferences: {
