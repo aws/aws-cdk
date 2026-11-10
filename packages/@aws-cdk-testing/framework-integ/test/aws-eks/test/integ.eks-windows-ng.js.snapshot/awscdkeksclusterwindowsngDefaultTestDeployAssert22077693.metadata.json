@@ -16,5 +16,43 @@
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
     }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks5d1d7401519ed0d0f796c0e6f55a5686/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks5d1d7401519ed0d0f796c0e6f55a5686/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFormationdescribeStacks5d1d7401519ed0d0f796c0e6f55a5686"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacks5d1d7401519ed0d0f796c0e6f55a5686/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStacks5d1d7401519ed0d0f796c0e6f55a5686"
+    }
   ]
 }
