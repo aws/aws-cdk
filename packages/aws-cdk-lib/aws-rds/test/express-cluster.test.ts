@@ -167,6 +167,47 @@ describe('ExpressCluster', () => {
     });
   });
 
+  test('fills the default max capacity when only the min capacity is specified', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ExpressCluster(stack, 'Cluster', {
+      serverlessV2MinCapacity: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      ServerlessV2ScalingConfiguration: {
+        MinCapacity: 0,
+        MaxCapacity: 16,
+      },
+    });
+  });
+
+  test('accepts token capacity values', () => {
+    // GIVEN
+    const stack = testStack();
+    const minCapacity = new cdk.CfnParameter(stack, 'MinCapacity', { type: 'Number' }).valueAsNumber;
+    const maxCapacity = new cdk.CfnParameter(stack, 'MaxCapacity', { type: 'Number' }).valueAsNumber;
+
+    // WHEN
+    new ExpressCluster(stack, 'Cluster', {
+      serverlessV2MinCapacity: minCapacity,
+      serverlessV2MaxCapacity: maxCapacity,
+      serverlessV2AutoPauseDuration: cdk.Duration.minutes(10),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      ServerlessV2ScalingConfiguration: {
+        MinCapacity: { Ref: 'MinCapacity' },
+        MaxCapacity: { Ref: 'MaxCapacity' },
+        SecondsUntilAutoPause: 600,
+      },
+    });
+  });
+
   test('advanced database insights mode defaults the retention to 15 months', () => {
     // GIVEN
     const stack = testStack();
@@ -277,6 +318,24 @@ describe('ExpressCluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Tags: [{ Key: 'env', Value: 'dev' }, { Key: 'project', Value: 'test' }],
     });
+  });
+
+  test.each([
+    ['metricServerlessDatabaseCapacity', 'ServerlessDatabaseCapacity'],
+    ['metricACUUtilization', 'ACUUtilization'],
+  ] as const)('%s returns the %s metric', (method, metricName) => {
+    // GIVEN
+    const stack = testStack();
+    const cluster = new ExpressCluster(stack, 'Cluster');
+
+    // WHEN
+    const metric = cluster[method]();
+
+    // THEN
+    expect(metric.metricName).toEqual(metricName);
+    expect(metric.namespace).toEqual('AWS/RDS');
+    expect(metric.statistic).toEqual('Average');
+    expect(stack.resolve(metric.dimensions)).toEqual({ DBClusterIdentifier: { Ref: 'ClusterEB0386A7' } });
   });
 
   test('fails to grant Data API access', () => {

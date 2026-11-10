@@ -10,6 +10,7 @@ import type { BackupProps } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxy, DatabaseProxyOptions } from './proxy';
 import { CfnDBCluster } from './rds.generated';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import type { IRole } from '../../aws-iam';
 import type * as kms from '../../aws-kms';
@@ -67,8 +68,7 @@ export interface ExpressClusterProps {
    *
    * Valid values are 0 to 256 in increments of 0.5. A value of 0 lets the instance automatically pause.
    *
-   * @default - 0 ACU when any of the Aurora Serverless v2 capacity settings is specified,
-   * otherwise the express configuration default (0 ACU)
+   * @default - 0 ACU
    */
   readonly serverlessV2MinCapacity?: number;
 
@@ -77,8 +77,7 @@ export interface ExpressClusterProps {
    *
    * Valid values are 1 to 256 in increments of 0.5.
    *
-   * @default - 16 ACU when any of the Aurora Serverless v2 capacity settings is specified,
-   * otherwise the express configuration default (16 ACU)
+   * @default - 16 ACU
    */
   readonly serverlessV2MaxCapacity?: number;
 
@@ -343,6 +342,31 @@ export class ExpressCluster extends DatabaseClusterBase {
     // Creating a cluster with express configuration through CloudFormation currently fails
     // with an internal error from RDS unless the cluster has at least one user-defined tag.
     Aspects.of(this).add(new ExpressClusterTagCheck(cluster), { priority: AspectPriority.READONLY });
+  }
+
+  /**
+   * As a cluster-level metric, it represents the average of the ServerlessDatabaseCapacity
+   * values of all the Aurora Serverless v2 DB instances in the cluster.
+   *
+   * @default - average over 5 minutes
+   */
+  @MethodMetadata()
+  public metricServerlessDatabaseCapacity(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('ServerlessDatabaseCapacity', { statistic: 'Average', ...props });
+  }
+
+  /**
+   * This value is represented as a percentage. It's calculated as the value of the
+   * ServerlessDatabaseCapacity metric divided by the maximum ACU value of the DB cluster.
+   *
+   * If this metric approaches a value of 100.0, the DB instance has scaled up as high as it can.
+   * Consider increasing `serverlessV2MaxCapacity`.
+   *
+   * @default - average over 5 minutes
+   */
+  @MethodMetadata()
+  public metricACUUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('ACUUtilization', { statistic: 'Average', ...props });
   }
 
   /**
