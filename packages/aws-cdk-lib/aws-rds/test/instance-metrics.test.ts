@@ -127,6 +127,22 @@ describe('DatabaseInstanceMetrics', () => {
     });
   });
 
+  test('dimensionsMap replaces the default dimension', () => {
+    // WHEN
+    const metrics = rds.DatabaseInstanceMetrics.fromDatabaseInstance(importInstance());
+
+    // THEN
+    expect(stack.resolve(metrics.metric('CPUUtilization', {
+      dimensionsMap: { DBInstanceClass: 'db.t3.micro' },
+    }))).toEqual({
+      dimensions: { DBInstanceClass: 'db.t3.micro' },
+      namespace: 'AWS/RDS',
+      metricName: 'CPUUtilization',
+      period: cdk.Duration.minutes(5),
+      statistic: 'Average',
+    });
+  });
+
   test('metrics are attached to the environment of the instance', () => {
     // GIVEN
     const env = { account: '123456789012', region: 'us-east-1' };

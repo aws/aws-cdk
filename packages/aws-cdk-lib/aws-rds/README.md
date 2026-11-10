@@ -1228,6 +1228,11 @@ for the full list of metrics.
 - Network: `networkReceiveThroughput`, `networkTransmitThroughput`
 - Replication: `replicaLag`
 
+`replicaLag`, `burstBalance` and `swapUsage` only publish data for some instances (read replicas,
+General Purpose SSD (gp2) storage and certain engines). An alarm on one of these metrics for an
+instance that never publishes it stays in the `INSUFFICIENT_DATA` state and never fires, so set
+`treatMissingData` on the alarm to choose how missing data is evaluated.
+
 ## Enabling S3 integration
 
 Data in S3 buckets can be imported to and exported from certain database engines using SQL queries. To enable this

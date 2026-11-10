@@ -22,6 +22,10 @@ export class DatabaseInstanceMetrics {
   /**
    * Return the given named metric for this database instance.
    *
+   * If `dimensionsMap` is set, it replaces the default `DBInstanceIdentifier`
+   * dimension, so the metric no longer refers to this instance unless the new
+   * dimensions include it.
+   *
    * @param metricName The name of the metric in the `AWS/RDS` namespace
    * @param props Properties to override on the metric
    */
