@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "df297d88fcbaac095a4f97395b91f812945e8c4c4e9a1e95e18ad17db9b18aed": {
+      "displayName": "SearchExpressionVisibleIntegrationTest Template",
+      "source": {
+        "path": "SearchExpressionVisibleIntegrationTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-540106ce": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "df297d88fcbaac095a4f97395b91f812945e8c4c4e9a1e95e18ad17db9b18aed.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

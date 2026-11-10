@@ -18,7 +18,7 @@ Here is the minimal example of defining an AWS EKS cluster
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 ```
 
@@ -54,7 +54,7 @@ In a nutshell:
 
   ```ts
   const cluster = new eks.Cluster(this, 'AutoModeCluster', {
-    version: eks.KubernetesVersion.V1_36,
+    version: eks.KubernetesVersion.V1_37,
     // Auto Mode is enabled by default
   });
   ```
@@ -67,7 +67,7 @@ In a nutshell:
 
   ```ts
   const cluster = new eks.Cluster(this, 'ManagedNodeCluster', {
-    version: eks.KubernetesVersion.V1_36,
+    version: eks.KubernetesVersion.V1_37,
     defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   });
   
@@ -84,7 +84,7 @@ In a nutshell:
 
   ```ts
   const cluster = new eks.FargateCluster(this, 'FargateCluster', {
-    version: eks.KubernetesVersion.V1_36,
+    version: eks.KubernetesVersion.V1_37,
   });
   ```
 
@@ -94,7 +94,7 @@ In a nutshell:
 
   ```ts
   const cluster = new eks.Cluster(this, 'SelfManagedCluster', {
-    version: eks.KubernetesVersion.V1_36,
+    version: eks.KubernetesVersion.V1_37,
   });
   
   // Add self-managed Auto Scaling Group
@@ -114,7 +114,7 @@ Creating a new cluster is done using the `Cluster` constructs. The only required
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 ```
 
@@ -122,7 +122,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 ```
 
@@ -131,12 +131,12 @@ be created by default. It will only be deployed when `kubectlProviderOptions`
 property is used.**
 
 ```ts
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV36Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
   }
 });
 ```
@@ -154,7 +154,7 @@ Auto Mode is enabled by default when creating a new cluster without specifying a
 ```ts
 // Create EKS cluster with Auto Mode implicitly enabled
 const cluster = new eks.Cluster(this, 'EksAutoCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 ```
 
@@ -163,7 +163,7 @@ You can also explicitly enable Auto Mode using `defaultCapacityType`:
 ```ts
 // Create EKS cluster with Auto Mode explicitly enabled
 const cluster = new eks.Cluster(this, 'EksAutoCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
 });
 ```
@@ -179,7 +179,7 @@ These node pools are managed automatically by EKS. You can configure which node 
 
 ```ts
 const cluster = new eks.Cluster(this, 'EksAutoCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
   compute: {
     nodePools: ['system', 'general-purpose'],
@@ -195,7 +195,7 @@ You can disable the default node pools entirely by setting an empty array for `n
 
 ```ts
 const cluster = new eks.Cluster(this, 'EksAutoCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
   compute: {
     nodePools: [], // Disable default node pools
@@ -212,7 +212,7 @@ If you prefer to manage your own node groups instead of using Auto Mode, you can
 ```ts
 // Create EKS cluster with traditional managed node group
 const cluster = new eks.Cluster(this, 'EksCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 3, // Number of instances
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
@@ -223,7 +223,7 @@ You can also create a cluster with no initial capacity and add node groups later
 
 ```ts
 const cluster = new eks.Cluster(this, 'EksCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 0,
 });
@@ -244,7 +244,7 @@ You can combine Auto Mode with traditional node groups for specific workload req
 
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.AUTOMODE,
   compute: {
     nodePools: ['system', 'general-purpose'],
@@ -281,7 +281,7 @@ The scaling tier is configured through the `controlPlaneScalingTier` property us
 
 ```ts
 const cluster = new eks.Cluster(this, 'HighPerformanceCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   controlPlaneScalingTier: eks.ControlPlaneScalingTier.TIER_XL,
 });
 ```
@@ -311,7 +311,7 @@ By default, when using `DefaultCapacityType.NODEGROUP`, this library will alloca
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
 });
 ```
@@ -320,7 +320,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
@@ -333,7 +333,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
   defaultCapacity: 0,
 });
@@ -423,7 +423,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 ```
 
@@ -442,7 +442,7 @@ You can add self-managed capacity to any cluster using the `addAutoScalingGroupC
 
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 
 cluster.addAutoScalingGroupCapacity('self-managed-nodes', {
@@ -474,7 +474,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
 });
 ```
@@ -496,7 +496,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   albController: {
     version: eks.AlbControllerVersion.V3_2_2,
   },
@@ -506,10 +506,10 @@ new eks.Cluster(this, 'HelloEKS', {
 To provide additional Helm chart values supported by `albController` in CDK, use the `additionalHelmChartValues` property. For example, the following code snippet shows how to set the `enableWafV2` flag:
 
 ```ts
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   albController: {
     version: eks.AlbControllerVersion.V3_2_2,
     additionalHelmChartValues: {
@@ -523,7 +523,7 @@ To overwrite an existing ALB controller service account, use the `overwriteServi
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   albController: {
     version: eks.AlbControllerVersion.V3_2_2,
     overwriteServiceAccount: true,
@@ -559,13 +559,76 @@ if (cluster.albController) {
 }
 ```
 
+#### OIDC authentication on Ingresses
+
+Ingresses can authenticate users against an OIDC identity provider with the
+`alb.ingress.kubernetes.io/auth-type: oidc` and `alb.ingress.kubernetes.io/auth-idp-oidc` annotations.
+The OIDC client ID and client secret live in a Kubernetes Secret in the Ingress's namespace (the
+`secretName` in `auth-idp-oidc`), and the controller reads it with its own service account,
+`aws-load-balancer-controller` in `kube-system`. The controller's Helm chart does not grant access to
+secrets by default, so without additional RBAC the Ingress fails to reconcile with an error like
+`secrets "my-oidc-secret" is forbidden: User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot get resource "secrets"`.
+
+The Secret must be in the Ingress's namespace and contain `clientID` and `clientSecret` keys
+(see [`auth-idp-oidc`](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/guide/ingress/annotations/#auth-idp-oidc)).
+Create it outside CDK, for example with `kubectl`, not with `cluster.addManifest`, which would store the
+client secret in plain text in the CloudFormation template. Anything that can create an Ingress in that
+namespace can use the secret for OIDC authentication, so limit who can create Ingresses there.
+
+Grant the controller read access to that one secret with a Role and RoleBinding in the Ingress's namespace:
+
+```ts
+declare const cluster: eks.Cluster;
+
+const namespace = 'my-app'; // namespace of the Ingress and its OIDC secret
+const oidcSecretName = 'my-oidc-secret'; // the `secretName` in `auth-idp-oidc`
+
+cluster.addManifest('AlbControllerOidcSecretAccess', {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'Role',
+  metadata: { name: 'aws-load-balancer-controller-oidc', namespace },
+  rules: [{
+    apiGroups: [''],
+    resources: ['secrets'],
+    resourceNames: [oidcSecretName],
+    verbs: ['get', 'list', 'watch'],
+  }],
+}, {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'RoleBinding',
+  metadata: { name: 'aws-load-balancer-controller-oidc', namespace },
+  roleRef: {
+    apiGroup: 'rbac.authorization.k8s.io',
+    kind: 'Role',
+    name: 'aws-load-balancer-controller-oidc',
+  },
+  subjects: [{
+    kind: 'ServiceAccount',
+    name: 'aws-load-balancer-controller',
+    namespace: 'kube-system',
+  }],
+});
+```
+
+For several OIDC Ingresses, list every `secretName` in `resourceNames`, with one Role and RoleBinding
+per namespace.
+
+Restricting `list` and `watch` with `resourceNames` works because the controller first does a `get` of the
+secret, then watches it with a `metadata.name` field selector (see
+[Referring to resources](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#referring-to-resources)
+in the Kubernetes RBAC documentation). The chart's `clusterSecretsPermissions.allowAllSecrets` value
+grants access to every secret in the cluster instead; the chart recommends a namespaced Role and
+RoleBinding like the one above.
+
+### VPC Support
+
 You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
 
 ```ts
 declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
 });
@@ -608,12 +671,12 @@ To create a `Kubectl Handler`, use `kubectlProviderOptions` when creating the cl
 `kubectlLayer` is the only required property in `kubectlProviderOptions`.
 
 ```ts
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV36Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
   }
 });
 ```
@@ -642,12 +705,12 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
 You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV36Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
     environment: {
         'http_proxy': 'http://proxy.myproxy.com',
     },
@@ -668,12 +731,12 @@ Depending on which version of kubernetes you're targeting, you will need to use 
 the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV36Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
   },
 });
 ```
@@ -683,14 +746,14 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 By default, the kubectl provider is configured with 1024MiB of memory. You can use the `memory` option to specify the memory size for the AWS Lambda function:
 
 ```ts
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 new eks.Cluster(this, 'MyCluster', {
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV36Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
     memory: Size.gibibytes(4),
   },
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 ```
 
@@ -721,7 +784,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 declare const role: iam.Role;
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   mastersRole: role,
 });
 ```
@@ -742,7 +805,7 @@ You can use the `secretsEncryptionKey` to configure which key the cluster will u
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 ```
 
@@ -752,7 +815,7 @@ You can also use a similar configuration for running a cluster built using the F
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
 });
 ```
 
@@ -770,10 +833,10 @@ When you create an Amazon EKS cluster, you can configure it to leverage the [EKS
 Once you have identified the on-premises node and pod (optional) CIDRs you will use for your hybrid nodes and the workloads running on them, you can specify them during cluster creation using the `remoteNodeNetworks` and `remotePodNetworks` (optional) properties:
 
 ```ts
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 new eks.Cluster(this, 'Cluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   remoteNodeNetworks: [
     {
       cidrs: ['10.0.0.0/16'],
@@ -823,7 +886,7 @@ eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', {
 Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
 
 ```ts
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 declare const vpc: ec2.Vpc;
 
 const clusterAdminRole = new iam.Role(this, 'ClusterAdminRole', {
@@ -837,9 +900,9 @@ const eksAdminRole = new iam.Role(this, 'EKSAdminRole', {
 const cluster = new eks.Cluster(this, 'Cluster', {
   vpc,
   mastersRole: clusterAdminRole,
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV36Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
     memory: Size.gibibytes(4),
   },
 });
@@ -886,7 +949,7 @@ The following access entry types are supported:
 - `HYBRID_LINUX` - For EKS Hybrid Nodes
 - `HYPERPOD_LINUX` - For Amazon SageMaker HyperPod
 
-**Note**: Access entries with type `EC2`, `HYBRID_LINUX`, or `HYPERPOD_LINUX` cannot have access policies attached per AWS EKS API constraints. For these types, use the `AccessEntry` construct directly with an empty access policies array.
+**Note**: Access entries with type `HYBRID_LINUX` or `HYPERPOD_LINUX` cannot have access policies attached per AWS EKS API constraints. For these types, use the `AccessEntry` construct directly with an empty access policies array.
 
 By default, the cluster creator role will be granted the cluster admin permissions. You can disable it by setting 
 `bootstrapClusterCreatorAdminPermissions` to false. 
@@ -962,13 +1025,13 @@ const provider2 = new eks.OidcProviderNative(this, 'Provider', {
   url: issuerUrl,
 });
 
-import { KubectlV36Layer } from '@aws-cdk/lambda-layer-kubectl-v36';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   clusterName: 'Cluster',
   openIdConnectProvider: provider,
   kubectlProviderOptions: {
-    kubectlLayer: new KubectlV36Layer(this, 'kubectl'),
+    kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
   }});
 	
 const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
@@ -1219,7 +1282,7 @@ when a cluster is defined:
 
 ```ts
 new eks.Cluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   prune: false,
 });
 ```
@@ -1304,6 +1367,28 @@ cluster.addHelmChart('ExternalSecretsOperator', {
     }
   },
 });
+```
+
+`null` values are passed through to Helm, which is how many charts let you remove a default
+(for example, disabling one of the OpenTelemetry Collector's default receivers). This works in
+TypeScript and JavaScript. In the other jsii languages (Python, Java, .NET, Go), the jsii runtime
+turns `null` (`None` in Python) inside `values` into `undefined`, so those keys are silently
+left out of the rendered values. To keep them, pass the values as a JSON string with a property
+override on the chart's underlying resource:
+
+```ts
+declare const cluster: eks.Cluster;
+
+const chart = cluster.addHelmChart('OpenTelemetryCollector', {
+  chart: 'opentelemetry-collector',
+  release: 'opentelemetry-collector',
+  repository: 'https://open-telemetry.github.io/opentelemetry-helm-charts',
+  namespace: 'opentelemetry',
+});
+
+// A JSON string keeps `null` values intact in every language.
+const chartResource = chart.node.findChild('Resource').node.defaultChild as CfnResource;
+chartResource.addPropertyOverride('Values', '{"mode":"deployment","image":{"repository":"otel/opentelemetry-collector-k8s"},"config":{"receivers":{"jaeger":null,"zipkin":null},"service":{"pipelines":{"traces":{"receivers":["otlp"]}}}}}');
 ```
 
 Helm chart can come with Custom Resource Definitions (CRDs) defined that by default will be installed by helm as well. However in special cases it might be needed to skip the installation of CRDs, for that the property `skipCrds` can be used.
@@ -1535,7 +1620,7 @@ property. For example:
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
   // ...
-  version: eks.KubernetesVersion.V1_36,
+  version: eks.KubernetesVersion.V1_37,
   clusterLogging: [
     eks.ClusterLoggingTypes.API,
     eks.ClusterLoggingTypes.AUTHENTICATOR,

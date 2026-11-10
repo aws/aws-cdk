@@ -1,0 +1,27 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.quoteIdentifier = quoteIdentifier;
+exports.quoteQualifiedIdentifier = quoteQualifiedIdentifier;
+exports.quoteLiteral = quoteLiteral;
+/** A valid bare identifier (letter/underscore then letters, digits, `_`, or `$`); needs no quoting. */
+const BARE_IDENTIFIER = /^[\p{L}_][\p{L}\p{N}_$]*$/u;
+/** Returns a bare-safe identifier unchanged; otherwise double-quotes it, doubling embedded double quotes. */
+function quoteIdentifier(identifier) {
+    if (BARE_IDENTIFIER.test(identifier)) {
+        return identifier;
+    }
+    return `"${identifier.replace(/"/g, '""')}"`;
+}
+/** Applies {@link quoteIdentifier} to each `.`-separated component, keeping the dot separator. */
+function quoteQualifiedIdentifier(qualified) {
+    return qualified.split('.').map(quoteIdentifier).join('.');
+}
+/**
+ * Quotes a SQL string literal, doubling any embedded backslash and then any embedded single quote.
+ *
+ * Redshift processes backslash escape sequences in string literals, so a backslash is doubled to be read as written.
+ */
+function quoteLiteral(literal) {
+    return `'${literal.replace(/\\/g, '\\\\').replace(/'/g, "''")}'`;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXNjYXBlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiZXNjYXBlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBSUEsMENBS0M7QUFHRCw0REFFQztBQU9ELG9DQUVDO0FBdkJELHVHQUF1RztBQUN2RyxNQUFNLGVBQWUsR0FBRyw0QkFBNEIsQ0FBQztBQUVyRCw2R0FBNkc7QUFDN0csU0FBZ0IsZUFBZSxDQUFDLFVBQWtCO0lBQ2hELElBQUksZUFBZSxDQUFDLElBQUksQ0FBQyxVQUFVLENBQUMsRUFBRSxDQUFDO1FBQ3JDLE9BQU8sVUFBVSxDQUFDO0lBQ3BCLENBQUM7SUFDRCxPQUFPLElBQUksVUFBVSxDQUFDLE9BQU8sQ0FBQyxJQUFJLEVBQUUsSUFBSSxDQUFDLEdBQUcsQ0FBQztBQUMvQyxDQUFDO0FBRUQsa0dBQWtHO0FBQ2xHLFNBQWdCLHdCQUF3QixDQUFDLFNBQWlCO0lBQ3hELE9BQU8sU0FBUyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsQ0FBQyxHQUFHLENBQUMsZUFBZSxDQUFDLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxDQUFDO0FBQzdELENBQUM7QUFFRDs7OztHQUlHO0FBQ0gsU0FBZ0IsWUFBWSxDQUFDLE9BQWU7SUFDMUMsT0FBTyxJQUFJLE9BQU8sQ0FBQyxPQUFPLENBQUMsS0FBSyxFQUFFLE1BQU0sQ0FBQyxDQUFDLE9BQU8sQ0FBQyxJQUFJLEVBQUUsSUFBSSxDQUFDLEdBQUcsQ0FBQztBQUNuRSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqIEEgdmFsaWQgYmFyZSBpZGVudGlmaWVyIChsZXR0ZXIvdW5kZXJzY29yZSB0aGVuIGxldHRlcnMsIGRpZ2l0cywgYF9gLCBvciBgJGApOyBuZWVkcyBubyBxdW90aW5nLiAqL1xuY29uc3QgQkFSRV9JREVOVElGSUVSID0gL15bXFxwe0x9X11bXFxwe0x9XFxwe059XyRdKiQvdTtcblxuLyoqIFJldHVybnMgYSBiYXJlLXNhZmUgaWRlbnRpZmllciB1bmNoYW5nZWQ7IG90aGVyd2lzZSBkb3VibGUtcXVvdGVzIGl0LCBkb3VibGluZyBlbWJlZGRlZCBkb3VibGUgcXVvdGVzLiAqL1xuZXhwb3J0IGZ1bmN0aW9uIHF1b3RlSWRlbnRpZmllcihpZGVudGlmaWVyOiBzdHJpbmcpOiBzdHJpbmcge1xuICBpZiAoQkFSRV9JREVOVElGSUVSLnRlc3QoaWRlbnRpZmllcikpIHtcbiAgICByZXR1cm4gaWRlbnRpZmllcjtcbiAgfVxuICByZXR1cm4gYFwiJHtpZGVudGlmaWVyLnJlcGxhY2UoL1wiL2csICdcIlwiJyl9XCJgO1xufVxuXG4vKiogQXBwbGllcyB7QGxpbmsgcXVvdGVJZGVudGlmaWVyfSB0byBlYWNoIGAuYC1zZXBhcmF0ZWQgY29tcG9uZW50LCBrZWVwaW5nIHRoZSBkb3Qgc2VwYXJhdG9yLiAqL1xuZXhwb3J0IGZ1bmN0aW9uIHF1b3RlUXVhbGlmaWVkSWRlbnRpZmllcihxdWFsaWZpZWQ6IHN0cmluZyk6IHN0cmluZyB7XG4gIHJldHVybiBxdWFsaWZpZWQuc3BsaXQoJy4nKS5tYXAocXVvdGVJZGVudGlmaWVyKS5qb2luKCcuJyk7XG59XG5cbi8qKlxuICogUXVvdGVzIGEgU1FMIHN0cmluZyBsaXRlcmFsLCBkb3VibGluZyBhbnkgZW1iZWRkZWQgYmFja3NsYXNoIGFuZCB0aGVuIGFueSBlbWJlZGRlZCBzaW5nbGUgcXVvdGUuXG4gKlxuICogUmVkc2hpZnQgcHJvY2Vzc2VzIGJhY2tzbGFzaCBlc2NhcGUgc2VxdWVuY2VzIGluIHN0cmluZyBsaXRlcmFscywgc28gYSBiYWNrc2xhc2ggaXMgZG91YmxlZCB0byBiZSByZWFkIGFzIHdyaXR0ZW4uXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiBxdW90ZUxpdGVyYWwobGl0ZXJhbDogc3RyaW5nKTogc3RyaW5nIHtcbiAgcmV0dXJuIGAnJHtsaXRlcmFsLnJlcGxhY2UoL1xcXFwvZywgJ1xcXFxcXFxcJykucmVwbGFjZSgvJy9nLCBcIicnXCIpfSdgO1xufVxuIl19
