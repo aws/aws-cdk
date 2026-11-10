@@ -11,5 +11,6 @@
       "assertionStackName": "integcrossaccountpipelinesfnactionDefaultTestDeployAssert199363B6"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }

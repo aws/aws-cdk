@@ -10,5 +10,6 @@
       "assertionStackName": "integpipelinecfncrossaccountDefaultTestDeployAssertC7E37541"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }

@@ -10,5 +10,6 @@
       "assertionStackName": "integtestbucketdeploymentcloudfrontDefaultTestDeployAssert71A41C16"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }
