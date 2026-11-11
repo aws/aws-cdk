@@ -208,6 +208,11 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * Build arguments to pass into esbuild.
    *
+   * Use an array of strings for options that esbuild supports repeating, for example
+   * `{ "--alias": ["first=./first", "second=./second"] }`. Each array item
+   * uses `--flag:value` syntax. An empty array omits the option. Single-value
+   * options must use a string or boolean instead.
+   *
    * For example, to add the [--log-limit](https://esbuild.github.io/api/#log-limit) flag:
    *
    * ```text
@@ -223,7 +228,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no additional esbuild arguments are passed
    */
-  readonly esbuildArgs?: { [key: string]: string | boolean };
+  readonly esbuildArgs?: { [key: string]: string | boolean | string[] };
 
   /**
    * Build arguments to pass when building the bundling image.

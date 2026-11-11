@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "artifacts": {
     "cdk-sfn-evaluate-expression-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/875d5cc9748bcc2c07401fff666e4b24c96e19405e2441f533f1516dd04ad46c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7681e15807545f21565d0d4c102d028a4c12519b9e5d1c529e901e29cfd46b5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -615,10 +615,25 @@
           "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": {
             "recommendedValue": true,
             "explanation": "Render an empty `LoadBalancers` array on an ECS service that has no target groups"
+          },
+          "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": {
+            "recommendedValue": true,
+            "explanation": "Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS"
+          },
+          "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": {
+            "recommendedValue": true,
+            "explanation": "Render the API Gateway access log destination ARN without the trailing `:*`"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction": {
+            "recommendedValue": true,
+            "explanation": "When enabled, each EvaluateExpression task gets its own Lambda function",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1131.0"
+  "minimumCliVersion": "2.1145.0"
 }

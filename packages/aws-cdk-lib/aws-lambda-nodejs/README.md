@@ -238,7 +238,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
     charset: nodejs.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
     format: nodejs.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js >= 14)
     mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
-    inject: ['./my-shim.js', './other-shim.js'], // allows to automatically replace a global variable with an import from another file
+    inject: ['./my-shim.js', './other-shim.js'], // allows you to automatically replace a global variable with an import from another file
     esbuildArgs: { // Pass additional arguments to esbuild
       "--log-limit": "0",
       "--splitting": true,
@@ -288,6 +288,30 @@ an array of commands to run. Commands are chained with `&&`.
 
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
+
+### Repeated esbuild arguments
+
+Use an array value in `esbuildArgs` for options that esbuild supports repeating.
+Each value becomes a separate CLI argument using `--flag:value` syntax; an empty
+array omits the option. Single-value options must use a string or boolean instead.
+For example:
+
+```ts
+const esbuildArgs = {
+  '--alias': ['first=./first', 'second=./second'],
+  '--pure': ['console.log', 'console.debug'],
+};
+
+new nodejs.NodejsFunction(this, 'aliased-handler', {
+  bundling: {
+    esbuildArgs,
+  },
+});
+```
+
+This passes `--alias:first=./first`, `--alias:second=./second`,
+`--pure:console.log`, and `--pure:console.debug` to esbuild. Existing string and
+boolean values continue to work.
 
 ## Pre Compilation with TSC
 
