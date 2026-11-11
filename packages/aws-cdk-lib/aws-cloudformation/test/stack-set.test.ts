@@ -30,6 +30,8 @@ import {
   StackSetConcurrencyMode,
   StackSetFailureTolerance,
   StackSetMaxConcurrency,
+  StackSetAutoDeployment,
+  StackSetCallAs,
   StackSetTarget,
   StackSetTemplate,
   StackSetStack,
@@ -261,8 +263,8 @@ test('service managed stackset with options', () => {
       },
     }),
     deploymentType: DeploymentType.serviceManaged({
-      delegatedAdmin: false,
-      autoDeployEnabled: false,
+      callAs: StackSetCallAs.SELF,
+      autoDeployment: StackSetAutoDeployment.disabled(),
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
   });
@@ -287,27 +289,84 @@ test('service managed stackset with options', () => {
   });
 });
 
-test('service managed stackset throws error if autoDeployRetainStacks is provided and autoDeploy is disabled', () => {
-  const app = new App();
-  const stack = new Stack(app);
+describe('service managed stackset auto-deployment', () => {
+  test.each([
+    ['is not set', undefined, { Enabled: true, RetainStacksOnAccountRemoval: true }],
+    ['is enabled()', StackSetAutoDeployment.enabled(), { Enabled: true, RetainStacksOnAccountRemoval: true }],
+    [
+      'is enabled and retains stacks',
+      StackSetAutoDeployment.enabled({ retainStacksOnAccountRemoval: true }),
+      { Enabled: true, RetainStacksOnAccountRemoval: true },
+    ],
+    [
+      'is enabled and does not retain stacks',
+      StackSetAutoDeployment.enabled({ retainStacksOnAccountRemoval: false }),
+      { Enabled: true, RetainStacksOnAccountRemoval: false },
+    ],
+    ['is disabled', StackSetAutoDeployment.disabled(), { Enabled: false }],
+  ])('renders AutoDeployment when it %s', (_description, autoDeployment, expected) => {
+    const app = new App();
+    const stack = new Stack(app);
 
-  expect(() => {
     new StackSet(stack, 'StackSet', {
       target: StackSetTarget.fromOrganizationalUnits({
         regions: ['us-east-1'],
         organizationalUnits: ['ou-1111111'],
-        parameterOverrides: {
-          Param1: 'Value1',
-        },
       }),
-      deploymentType: DeploymentType.serviceManaged({
-        delegatedAdmin: false,
-        autoDeployEnabled: false,
-        autoDeployRetainStacks: true,
-      }),
+      deploymentType: DeploymentType.serviceManaged({ autoDeployment }),
       template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
     });
-  }).toThrow(/autoDeployRetainStacks only applies if autoDeploy is enabled/);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      AutoDeployment: Match.objectEquals(expected),
+    });
+  });
+});
+
+describe('service managed stackset call-as', () => {
+  test.each([
+    ['is not set', undefined, 'DELEGATED_ADMIN'],
+    ['is DELEGATED_ADMIN', StackSetCallAs.DELEGATED_ADMIN, 'DELEGATED_ADMIN'],
+    ['is SELF', StackSetCallAs.SELF, 'SELF'],
+    ['is a custom value', StackSetCallAs.of('CUSTOM_VALUE'), 'CUSTOM_VALUE'],
+  ])('renders CallAs when it %s', (_description, callAs, expected) => {
+    const app = new App();
+    const stack = new Stack(app);
+
+    new StackSet(stack, 'StackSet', {
+      target: StackSetTarget.fromOrganizationalUnits({
+        regions: ['us-east-1'],
+        organizationalUnits: ['ou-1111111'],
+      }),
+      deploymentType: DeploymentType.serviceManaged({ callAs }),
+      template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
+    });
+    Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3030', reason: 'of() accepts values newer than the CloudFormation schema' });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      CallAs: expected,
+    });
+  });
+});
+
+test('self managed stackset renders neither AutoDeployment nor CallAs', () => {
+  const app = new App();
+  const stack = new Stack(app);
+
+  new StackSet(stack, 'StackSet', {
+    target: StackSetTarget.fromAccounts({
+      regions: ['us-east-1'],
+      accounts: ['11111111111'],
+    }),
+    deploymentType: DeploymentType.selfManaged(),
+    template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+    PermissionModel: 'SELF_MANAGED',
+    AutoDeployment: Match.absent(),
+    CallAs: Match.absent(),
+  });
 });
 
 test('fromOrganizations default', () => {
@@ -323,8 +382,8 @@ test('fromOrganizations default', () => {
       },
     }),
     deploymentType: DeploymentType.serviceManaged({
-      delegatedAdmin: false,
-      autoDeployEnabled: false,
+      callAs: StackSetCallAs.SELF,
+      autoDeployment: StackSetAutoDeployment.disabled(),
     }),
     template: StackSetTemplate.fromStackSetStack(new StackSetStack(stack, 'Stack')),
   });
@@ -590,13 +649,8 @@ test('stackset without target', () => {
     TemplateURL: {
       'Fn::Sub': 'https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a.json',
     },
+    StackInstancesGroup: Match.absent(),
   });
-
-  // No StackInstancesGroup should be present when no target is provided
-  const template = Template.fromStack(stack);
-  const stackSets = template.findResources('AWS::CloudFormation::StackSet');
-  const stackSetResource = Object.values(stackSets)[0];
-  expect(stackSetResource.Properties.StackInstancesGroup).toEqual([]);
 });
 
 test('stackset without target then addTarget', () => {
@@ -1711,20 +1765,6 @@ describe('StackSet validation errors', () => {
     });
 
     expect(() => stackSet.addTarget(accountsTarget())).toThrow(serviceManagedRequiresOrganizationalUnits);
-  });
-
-  test('fails with an error code when autoDeployRetainStacks is set without autoDeploy', () => {
-    const app = new App();
-    const stack = new Stack(app);
-
-    expect(() => new StackSet(stack, 'StackSet', {
-      deploymentType: DeploymentType.serviceManaged({ autoDeployEnabled: false, autoDeployRetainStacks: true }),
-      template: templateIn(stack),
-    })).toThrow(expect.objectContaining({
-      name: 'StackSetAutoDeployRetainStacksRequiresAutoDeploy',
-      message: 'autoDeployRetainStacks only applies if autoDeploy is enabled',
-      constructPath: 'Default/StackSet',
-    }));
   });
 
   test('fails with an error code when a service managed StackSet uses AUTO_EXPAND', () => {
