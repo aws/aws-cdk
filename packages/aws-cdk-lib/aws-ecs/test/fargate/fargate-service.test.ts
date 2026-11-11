@@ -988,6 +988,70 @@ describe('fargate service', () => {
       }).toThrow(/The ephemeralStorageGiB feature requires platform version/);
     });
 
+    test('does not error for ephemeralStorageGiB on Windows with platform version 1.0.0 during synth', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_FULL,
+          cpuArchitecture: ecs.CpuArchitecture.X86_64,
+        },
+        memoryLimitMiB: 4096,
+        cpu: 2048,
+        ephemeralStorageGiB: 100,
+      });
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('somecontainer'),
+      });
+
+      // WHEN - should not throw
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_0,
+      });
+
+      // THEN - the Windows task keeps its ephemeral storage and runtime platform
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        EphemeralStorage: { SizeInGiB: 100 },
+        RuntimePlatform: { OperatingSystemFamily: 'WINDOWS_SERVER_2019_FULL' },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        PlatformVersion: '1.0.0',
+      });
+    });
+
+    test('does not error for ephemeralStorageGiB when operatingSystemFamily is a token on platform version 1.0.0', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const osFamilyParam = new cdk.CfnParameter(stack, 'OsFamily', { type: 'String' });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.of(osFamilyParam.valueAsString),
+          cpuArchitecture: ecs.CpuArchitecture.X86_64,
+        },
+        memoryLimitMiB: 4096,
+        cpu: 2048,
+        ephemeralStorageGiB: 100,
+      });
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('somecontainer'),
+      });
+
+      // WHEN / THEN - an unresolved OS family defers to deploy-time validation, so synth must not throw
+      expect(() => {
+        new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_0,
+        });
+      }).not.toThrow();
+    });
+
     test('errors when platform version does not support pidMode', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1311,7 +1375,7 @@ describe('fargate service', () => {
         memoryLimitMiB: 512,
       });
 
-      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
 
       new ecs.FargateService(stack, 'ExternalService', {
         cluster,

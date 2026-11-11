@@ -1,14 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
-import type { AdditionalSchemaSource, Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
+import { CompositeEngine, TemplateContent, version } from '@aws/cloudformation-validate';
+import type { AdditionalSchemaSource, CompositeEngineConfig, Engine, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
-import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
-import { UnscopedValidationError } from '../errors';
+import type { IPolicyValidationPlugin, IPolicyValidationContext, PolicyValidationStack } from './validation';
+import { AssumptionError, UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 import { profileSpan, recordPerformanceEntry } from '../private/perf';
+import type { RegoRuleIndex } from './private/rego-rule-index-types';
 
-const VALIDATE_DETAILED_METRIC = 'CloudFormationValidate.validate';
+const VALIDATE_METRIC = 'CloudFormationValidate.validate';
 const DIAGNOSTICS_METRIC = 'CloudFormationValidate.diagnostics';
 
 interface MutableViolation {
@@ -52,6 +53,18 @@ export interface CloudFormationValidatePluginProps {
    * @default - no guard rules
    */
   readonly guardRules?: ValidationRuleSource[];
+
+  /**
+   * Whether to evaluate the default Rego rules that ship with the CDK.
+   *
+   * Registering a `CloudFormationValidatePlugin` explicitly replaces the
+   * auto-registered default instance, so without this flag adding custom
+   * rules would silently drop the CDK default rules. Individual default
+   * rules can be suppressed by ID via `Validations.of(scope).acknowledge()`.
+   *
+   * @default true
+   */
+  readonly includeDefaultRules?: boolean;
 
   /**
    * Path to a directory containing additional CloudFormation resource provider
@@ -109,29 +122,42 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
    * @internal
    */
   public static _configureSingleton(props: CloudFormationValidatePluginProps) {
+    CloudFormationValidatePlugin._disposeSingleton();
     CloudFormationValidatePlugin._instance = new CloudFormationValidatePlugin(props);
+  }
+
+  /**
+   * Release the validator engine’s off-heap WASM memory and forget the instance
+   *
+   * @internal
+   */
+  public static _disposeSingleton() {
+    CloudFormationValidatePlugin._instance?._dispose();
+    CloudFormationValidatePlugin._instance = undefined;
   }
 
   private static _instance: CloudFormationValidatePlugin | undefined;
 
   public readonly name = CloudFormationValidatePlugin.PLUGIN_NAME;
 
-  private readonly engine: Engine;
+  private engine?: Engine;
+  private engineResourceTypes?: Set<string>;
+  private disposed = false;
 
-  constructor(props: CloudFormationValidatePluginProps = {}) {
-    const config: EngineConfig = {};
-    if (props.regoRules) {
-      config.customRules = props.regoRules;
+  constructor(private readonly props: CloudFormationValidatePluginProps = {}) {
+  }
+
+  /**
+   * Release the validator engine’s off-heap WASM memory
+   *
+   * @internal
+   */
+  public _dispose(): void {
+    if (this.disposed) {
+      return;
     }
-    if (props.guardRules) {
-      config.guardRules = props.guardRules;
-    }
-    if (props._additionalSchemasDirectory) {
-      config.schemaValidatorConfig = {
-        additionalSchemas: loadSchemasFromDirectory(props._additionalSchemasDirectory),
-      };
-    }
-    this.engine = new RegoEngine(config);
+    this.disposed = true;
+    this.engine?.free();
   }
 
   public get version(): string | undefined {
@@ -139,24 +165,34 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   }
 
   public get ruleIds(): string[] | undefined {
-    return this.engine.listRules()
-      // Pretend the ignored rules don't exist
-      .filter((r: RuleInfo) => !IGNORE_RULES.has(r.id) && r.severity !== 'INFO' && r.severity !== 'DEBUG')
-      .map((r: RuleInfo) => r.id);
+    // The engine might not have been initialized yet, and initializing the engine is expensive.
+    // Just for answering this query, *which is only used for analytics*, that seems unnecessary.
+    //
+    // We just return the engine version, which implies the set of rules it
+    // supports without actually needing to initialize the engine.
+    return [version()];
   }
 
   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     const violations: MutableViolation[] = [];
 
-    for (const { stackConstructPath, templatePath } of context.stackTemplates) {
-      const templateFile = new TemplateFile(templatePath);
-      const report = (() => {
-        using _span = profileSpan(VALIDATE_DETAILED_METRIC, { telemetry: true });
+    // First read all resource types from all templates so that we can initialize the engine with all rules for these
+    // types. We assume here that `validate()` will be called only once, and if not that, that multiple invocations of this method will
+    // have the same resource types so that reinitialization will be rare.
+    const allTemplates = loadTemplates(context.stackTemplates);
+    const allResourceTypes = resourceTypesInTemplates(Object.values(allTemplates));
+    const engine = this.initializeEngine(allResourceTypes);
 
-        return this.engine.validateDetailed(templateFile, {
+    for (const { stackConstructPath, templatePath, accountId, region } of context.stackTemplates) {
+      const templateFile = new TemplateContent(allTemplates[templatePath], templatePath);
+      const report = (() => {
+        using _span = profileSpan(VALIDATE_METRIC, { telemetry: true });
+
+        return engine.validateTemplate(templateFile, {
+          detailLevel: 'STANDARD',
           pseudoParameterOverrides: {
-            accountId: context.accountId,
-            region: context.region,
+            accountId,
+            region,
           },
           exclude: {
             ids: [...IGNORE_RULES],
@@ -206,18 +242,21 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
           locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : [],
         };
 
-        const existing = violations.find(
-          v => v.ruleName === diagnostic.ruleId && v.severity === severity,
-        );
-
         const propertyPathPefix = diagnostic.propertyPath ? `${diagnostic.propertyPath.replace(/^Properties\./, '')}: ` : '';
+        const description = `${propertyPathPefix}${diagnostic.message}`;
+
+        // Only diagnostics with the same description share a violation, so each
+        // violating resource is reported with its own message.
+        const existing = violations.find(
+          v => v.ruleName === diagnostic.ruleId && v.severity === severity && v.description === description,
+        );
 
         if (existing) {
           existing.violatingResources.push(violatingResource);
         } else {
           violations.push({
             ruleName: diagnostic.ruleId,
-            description: `${propertyPathPefix}${diagnostic.message}`,
+            description,
             severity,
             fix: diagnostic.suggestedFix,
             violatingResources: [violatingResource],
@@ -231,6 +270,37 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
       success: violations.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
       violations,
     };
+  }
+
+  private initializeEngine(resourceTypes: Set<string>): Engine {
+    if (this.disposed) {
+      throw new AssumptionError(lit`CloudFormationValidatePluginDisposed`, 'CloudFormationValidatePlugin already disposed, cannot re-initialize engine');
+    }
+    if (this.engine && this.engineResourceTypes && isSubset(resourceTypes, this.engineResourceTypes)) {
+      return this.engine;
+    }
+
+    const config: CompositeEngineConfig = {};
+    const regoRules = [
+      ...(this.props.includeDefaultRules ?? true) ? loadBuiltinRegoRules(resourceTypes) : [],
+      ...this.props.regoRules ?? [],
+    ];
+    if (regoRules.length > 0) {
+      config.regoRules = regoRules;
+    }
+    if (this.props.guardRules) {
+      config.guardRules = this.props.guardRules;
+    }
+    if (this.props._additionalSchemasDirectory) {
+      config.schemaValidatorConfig = {
+        additionalSchemas: loadSchemasFromDirectory(this.props._additionalSchemasDirectory),
+      };
+    }
+
+    this.engine?.free();
+    this.engine = new CompositeEngine(config);
+    this.engineResourceTypes = resourceTypes;
+    return this.engine;
   }
 }
 
@@ -248,6 +318,46 @@ function mapSeverity(severity: Severity): string {
   }
 }
 
+/**
+ * Directory holding the CDK-authored default Rego rules, shipped with aws-cdk-lib.
+ */
+const RULES_DIRECTORY = path.join(__dirname, 'rules');
+
+let ruleIndex: RegoRuleIndex | undefined;
+
+/**
+ * The applicability index, generated at build time by
+ * `core/build-tools/generate-rego-rule-index.ts`.
+ */
+function defaultRegoRuleIndex(): RegoRuleIndex {
+  if (!ruleIndex) {
+    const indexFile = path.join(RULES_DIRECTORY, 'index.generated.json');
+    ruleIndex = JSON.parse(fs.readFileSync(indexFile, 'utf-8')) as RegoRuleIndex;
+  }
+  return ruleIndex;
+}
+
+/**
+ * CDK-authored default Rego rules that can fire on one of the given resource types.
+ *
+ * These are ports of L2 construct validations to template-level rules, so the
+ * same checks also apply to templates produced via L1 constructs, escape
+ * hatches, or `CfnInclude`. See `rules/` next to this file.
+ *
+ * Loading any Rego rule at all costs a fixed ~150ms to spin up the Rego
+ * evaluator, so apps that use none of the covered resource types (most of them)
+ * should not be loading rules in the first place.
+ */
+function loadBuiltinRegoRules(resourceTypes: Set<string>): ValidationRuleSource[] {
+  return defaultRegoRuleIndex().rules
+    .filter(r => r.types === null || r.types.some(type => resourceTypes.has(type)))
+    .sort((a, b) => a.file.localeCompare(b.file))
+    .map((r) => ({
+      name: r.file,
+      content: fs.readFileSync(path.join(RULES_DIRECTORY, r.file), 'utf-8'),
+    }));
+}
+
 // Rules that the engine will report but we want to ignore because CDK creates
 // the violation and customers don't control it.
 const IGNORE_RULES = new Set([
@@ -261,16 +371,11 @@ const IGNORE_RULES = new Set([
   // Will be silenced forever.
   'W1020',
 
-  // WHAT: Fn::GetStackOutput is not an allowed direct source for Fn::Split.
-  // WHY: CDK generates this nesting when deserializing weak string-list cross-stack references,
-  // and customers cannot control the generated expression.
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference-split.html
-  'E1018',
-
-  // WHAT: Circular dependency detection
-  // WHY: Something seems fishy about it
-  // Remove after <https://github.com/aws-cloudformation/cloudformation-validate/issues/53>.
-  'F3004',
+  // WHAT: CloudFormation Metadata Context blocks are missing, lack a rationale, or do not match the schema.
+  // WHY: CDK only adds Metadata Context when users explicitly opt in, so requiring it would warn for existing apps.
+  'I4010',
+  'W4011',
+  'W4012',
 
   // WHAT: Hardcoded ARNs
   // WHY: Hardcoding an ARN is part of the behavior of some constructs (e.g., setting up multi-account DynamoDB table replicas)
@@ -281,13 +386,12 @@ const IGNORE_RULES = new Set([
   // span accounts.
   'W9013',
 
-  // WHAT: value type tracking (parameter default should be a string)
-  // WHY: This is a valid finding, but CDK can synthesize Fn::ImportValue as a parameter default when resolving
-  // a cross-stack reference. CloudFormation does not support intrinsic functions in the Parameters section.
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html
-  // https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/intrinsic-function-reference.html
-  // <https://github.com/aws-cloudformation/cloudformation-validate/issues/194>
-  'E2001',
+  // WHAT: built-in function not recognized
+  // WHY: there are intrinsic functions that the plugin doesn't know about that are nevertheless valid.
+  // This diagnostic is intended to protect against typos in templates, but since the intrinsics
+  // are generated by CDK the chances of mistyping them is tiny, and so this diagnostic is more verbose
+  // than it's worth.
+  'W1103',
 ]);
 
 /**
@@ -383,3 +487,38 @@ function loadSchemasFromDirectory(dir: string): AdditionalSchemaSource[] {
   return schemas;
 }
 
+function loadTemplates(stacks: PolicyValidationStack[]): Record<string, string> {
+  const ret: Record<string, string> = {};
+  for (const stack of stacks) {
+    ret[stack.templatePath] = fs.readFileSync(stack.templatePath, 'utf-8');
+  }
+  return ret;
+}
+
+function resourceTypesInTemplates(templateData: Iterable<string>): Set<string> {
+  const ret = new Set<string>();
+  for (const template of templateData) {
+    try {
+      const parsed = JSON.parse(template);
+
+      for (const resource of Object.values(parsed?.Resources ?? {})) {
+        if (resource && typeof resource === 'object' && typeof (resource as any).Type === 'string') {
+          ret.add((resource as any).Type);
+        }
+      }
+    } catch (e) {
+      /* Ignore */
+    }
+  }
+
+  return ret;
+}
+
+function isSubset<A>(subset: Set<A>, superset: Set<A>): boolean {
+  for (const elem of subset) {
+    if (!superset.has(elem)) {
+      return false;
+    }
+  }
+  return true;
+}

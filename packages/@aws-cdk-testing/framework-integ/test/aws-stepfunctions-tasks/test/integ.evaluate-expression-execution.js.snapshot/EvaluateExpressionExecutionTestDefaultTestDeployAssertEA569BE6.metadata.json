@@ -4,18 +4,23 @@
       "type": "aws:cdk:warning",
       "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
       "trace": [
-        "Annotations.addMessage (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "resolveValue (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/private/refs.js:204:54)",
-        "resolveReferences (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
-        "prepareApp (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
-        "synthesize (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
-        "App.synth (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
-        "App.synth (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/app.js:216:27)",
-        "process.<anonymous> (/local/home/abidhsn/repository/aws-cdk-pr426/packages/aws-cdk-lib/core/lib/app.js:163:51)",
-        "Object.onceWrapper (node:events:634:26)",
-        "process.emit (node:events:519:28)"
+        "Annotations.addMessage (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:164:51)",
+        "Object.onceWrapper (node:events:631:12)",
+        "process.emit (node:events:509:20)"
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EvaluateExpressionExecutionTestDefaultTestDeployAssertEA569BE6.template.json"
     }
   ],
   "/EvaluateExpressionExecutionTest/DefaultTest/DeployAssert/BootstrapVersion": [

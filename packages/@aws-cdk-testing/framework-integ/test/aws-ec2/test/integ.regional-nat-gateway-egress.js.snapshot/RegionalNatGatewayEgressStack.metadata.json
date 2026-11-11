@@ -1,0 +1,531 @@
+{
+  "/RegionalNatGatewayEgressStack": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at RegionalNatGatewayEgressStack._silenceLiteralAzWarning (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new RegionalNatGatewayEgressStack (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.regional-nat-gateway-egress.js:70:85)",
+        "    at <anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.regional-nat-gateway-egress.js:101:15)",
+        "    ...node internals..."
+      ]
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/NatEip": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NatEip"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGatewayProvider": "*",
+        "subnetConfiguration": [
+          {
+            "name": "*",
+            "subnetType": "Private"
+          }
+        ]
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeProbe": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "environment": "*",
+        "timeout": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnetType": "Private"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGatewayProvider": "*",
+        "subnetConfiguration": [
+          {
+            "name": "*",
+            "subnetType": "Private"
+          }
+        ]
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeProbe": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "environment": "*",
+        "timeout": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnetType": "Private"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEcho41FBE38C"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/FunctionUrl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "function": "*",
+        "authType": "NONE"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/invoke-function-url": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoinvokefunctionurlCC2BAB62"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/invoke-function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoinvokefunctionA612F9DE"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcD2BB252A"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcIGWE835A8AC"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcVPCGW24A1A902"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/RegionalNatGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcRegionalNatGateway9B258FF3"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeProbe/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeProbe/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": "*",
+        "allowAllIpv6Outbound": "*"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeProbe/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeProbe20297005"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeProbe/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpc4A6FADD8"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpcIGW0B90EB7F"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpcVPCGWD196BFE8"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/RegionalNatGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpcRegionalNatGateway22462E08"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeProbe/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeProbe/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": "*",
+        "allowAllIpv6Outbound": "*"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeProbe/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeProbe324C6D4D"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeProbe/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/Exports/Output{\"Fn::GetAtt\":[\"NatEip\",\"PublicIp\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttNatEipPublicIp43CDB27B"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/Exports/Output{\"Ref\":\"ManualModeProbe20297005\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefManualModeProbe2029700530D9707F"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/Exports/Output{\"Ref\":\"AutomaticModeProbe324C6D4D\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAutomaticModeProbe324C6D4D16E8595B"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoServiceRoleE4956266"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoLogGroup32674E6C"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/SourceIpEcho/FunctionUrl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceIpEchoFunctionUrl9EFEB490"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcPrivateSubnet1SubnetE346C724"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcPrivateSubnet1RouteTableF8F25A2A"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcPrivateSubnet1RouteTableAssociationA9987458"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcPrivateSubnet1DefaultRoute0EF5F574"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeVpcRestrictDefaultSecurityGroupCustomResource91B28002"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeProbe/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeProbeServiceRole0715D02E"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeProbe/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeProbeSecurityGroup37C45D49"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/ManualModeProbe/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ManualModeProbeLogGroupBFA2822D"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpcPrivateSubnet1Subnet9F80FC5F"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpcPrivateSubnet1RouteTable970803D7"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpcPrivateSubnet1RouteTableAssociationB3241954"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpcPrivateSubnet1DefaultRoute8477F31D"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeVpcRestrictDefaultSecurityGroupCustomResourceA5E68F30"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeProbe/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeProbeServiceRoleACCE46F6"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeProbe/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeProbeSecurityGroup2175FE5A"
+    }
+  ],
+  "/RegionalNatGatewayEgressStack/AutomaticModeProbe/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutomaticModeProbeLogGroupEE0CA3E5"
+    }
+  ]
+}

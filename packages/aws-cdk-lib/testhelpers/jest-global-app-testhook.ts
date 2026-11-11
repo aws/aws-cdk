@@ -14,13 +14,16 @@ if (hasTemporarySchemas()) {
   });
 }
 
+afterAll(() => {
+  cdk.CloudFormationValidatePlugin._disposeSingleton();
+});
+
 const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
 (globalThis as any)[APP_INIT_HOOK_SYMBOL] = (app: cdk.App) => {
   cdk.Validations.of(app).acknowledge(
     { id: 'CloudFormation-Validate::F0001', reason: 'Empty resource sections are expected in some tests' },
     { id: 'CloudFormation-Validate::W7001', reason: 'Tests do not always reference mappings' },
     { id: 'CloudFormation-Validate::W9008', reason: 'Do not care about storage encryption of RDS instances in tests' },
-    { id: 'CloudFormation-Validate::W3010', reason: 'Tests hardcode availability zone strings' },
     { id: 'CloudFormation-Validate::W3696', reason: 'Service is about to get shut down, no reason not to test' },
     { id: 'CloudFormation-Validate::F3031', reason: 'Some test value does not match the expected regex' },
     { id: 'CloudFormation-Validate::F3017', reason: 'Many tests use placeholder KMS key identifiers; valid forms are documented at https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id' },

@@ -1759,6 +1759,26 @@ Validations.of(app).addPlugins(new CloudFormationValidatePlugin({
 }));
 ```
 
+In addition to the validation engine's built-in rule set, the CDK ships its
+own default rules that catch cross-field and cross-resource misconfigurations
+which pass template validation but fail (or silently misbehave) at deployment
+time. These run automatically on every synth. Their findings are reported as
+warnings unless the `@aws-cdk/core:validateAgainstDefaultRules` context key is
+set to `true`, in which case they become errors and fail synthesis. Suppress an
+individual rule by its ID using the same `acknowledge` mechanism shown above
+(for example `CloudFormation-Validate::CDK-GameLift-001`).
+
+An explicitly registered `CloudFormationValidatePlugin` still runs the CDK
+default rules in addition to your custom rules; pass
+`includeDefaultRules: false` to opt out of the default rules entirely.
+
+If you want to disable the automatic plugin registration without registering
+your own, you can do one of the following things:
+
+- Run `cdk synth --no-validation`.
+- Set `CDK_VALIDATION=false` in your environment.
+- Do `new App({ builtinCloudFormationValidation: false })`
+
 ### Additional plugins
 
 You can also add custom plugins like [cdk-nag](https://github.com/cdklabs/cdk-nag) and
@@ -1905,6 +1925,37 @@ Validations.of(this).acknowledge({
   reason: 'Account has quota increased to 20',
 });
 ```
+
+#### Acknowledging a subset of a warning (context filters)
+
+A single warning `id` is sometimes emitted for a range of situations. A construct
+can attach structured **context** to each occurrence (the keys and values are the
+construct's choice — values may be strings, numbers, booleans, or arrays), and you
+can then acknowledge only the occurrences whose context matches — leaving the rest
+to still warn.
+
+```ts
+// The construct attaches context describing this specific occurrence:
+Validations.of(this).addWarning(
+  'my-lib:unsupportedActionType',
+  'This action type is not supported and will be ignored',
+  { context: { service: 'aiops', resource: 'investigation-group' } },
+);
+
+// Acknowledge only the occurrences that match. `where` is an objectLike partial
+// match against the context: any key you do not mention is left unconstrained,
+// so the filter below also suppresses an occurrence whose context is
+// `{ service: 'aiops', resource: 'other' }`:
+Validations.of(this).acknowledge({
+  id: 'my-lib:unsupportedActionType',
+  reason: 'aiops actions are attached intentionally',
+  where: { service: 'aiops' },
+});
+```
+
+Omitting `where` acknowledges every occurrence of the `id`, which is the default
+behavior. A warning emitted without any context can only be acknowledged by an
+unfiltered acknowledgement, so a specific filter never silences it accidentally.
 
 ### Acknowledging Infos
 

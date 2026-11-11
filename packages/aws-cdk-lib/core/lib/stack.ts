@@ -446,6 +446,11 @@ export class Stack extends Construct implements ITaggable {
   private _terminationProtection: boolean;
 
   /**
+   * Silencing a specific diagnostic, should only do this once.
+   */
+  private azLiteralWarningSilenced = false;
+
+  /**
    * Creates a new stack.
    *
    * @param scope Parent of this stack, usually an `App` or a `Stage`, but could be any construct.
@@ -922,6 +927,8 @@ export class Stack extends Construct implements ITaggable {
    * To specify a different strategy for selecting availability zones override this method.
    */
   public get availabilityZones(): string[] {
+    this._silenceLiteralAzWarning();
+
     // if account/region are tokens, we can't obtain AZs through the context
     // provider, so we fallback to use Fn::GetAZs. the current lowest common
     // denominator is 2 AZs across all AWS regions.
@@ -1113,6 +1120,8 @@ export class Stack extends Construct implements ITaggable {
     // methods on Stack, and I don't really see the value in refactoring
     // this right now, so some parts still happen here.
     const builder = session.assembly;
+
+    this.node.addMetadata(cxapi.CDK_TEMPLATE_FILE_KEY, this.templateFile);
 
     const template = this._toCloudFormation();
 
@@ -1330,6 +1339,41 @@ export class Stack extends Construct implements ITaggable {
     }
 
     return importValue;
+  }
+
+  /**
+   * Returns `true` if this stack is a top-level stack (i.e., not a nested stack).
+   *
+   * For better or worse, `Stack` is being subclassed by other constructs to mean "template producer".
+   * For example, `NestedStack` is a subclass of `Stack` but is not a top-level stack, and so
+   * is `CloudFormationProduct`.
+   *
+   * This indicates whether the current class represents a top-level stack
+   * (should only be true for instances of the main `Stack` class), or false for
+   * a construct that simply produces a template and happens to reuse `Stack`
+   * for that purpose.
+   *
+   * Here is the class hierarchy we should have had:
+   *
+   * ```
+   * TemplateProducer
+   * ├── Stack
+   * ├── NestedStack
+   * └── CloudFormationProduct
+   * ```
+   *
+   * Here is the class hierarchy we actually have:
+   *
+   * ```
+   * Stack
+   * ├── NestedStack
+   * └── CloudFormationProduct
+   * ```
+   *
+   * @internal
+   */
+  public get _isTopLevelStack(): boolean {
+    return true;
   }
 
   /**
@@ -1567,6 +1611,30 @@ export class Stack extends Construct implements ITaggable {
     }
 
     return makeStackName(ids, prefix);
+  }
+
+  /**
+   * Silence CloudFormation validate warning W3010 ("literal AZs limit portability")
+   *
+   * This is true! But the Validation Plugin is looking at the template and cannot tell
+   * the difference between a literal AZ in the template because a user typed it in the
+   * CDK code, vs a user using CDK's facilities to reflect on AZs and using those.
+   *
+   * So once a user calls `stack.availabilityZones`, we will take that as a signal
+   * they are "doing the right thing" and silencing this warning for them.
+   *
+   * @internal
+   */
+  public _silenceLiteralAzWarning() {
+    if (this.azLiteralWarningSilenced) {
+      return;
+    }
+    this.azLiteralWarningSilenced = true;
+
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::W3010',
+      reason: 'Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe',
+    });
   }
 
   private resolveExportedValue(exportedValue: any): ResolvedExport {
@@ -1927,6 +1995,7 @@ import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './private/stack-trace';
 import { STACK_TYPE, stackOf } from './private/core-construct-finders';
 import { dispatchDependencyOperation } from './private/deps';
+import { Validations } from './validation';
 /* eslint-enable import/order */
 
 function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {

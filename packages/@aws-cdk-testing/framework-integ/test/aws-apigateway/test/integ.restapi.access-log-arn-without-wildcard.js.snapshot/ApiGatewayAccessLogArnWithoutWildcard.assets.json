@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "9d900c66583759ba6ad1e3d86d7e04b6fef33b837e6e917c880116c5ff21ad73": {
+      "displayName": "ApiGatewayAccessLogArnWithoutWildcard Template",
+      "source": {
+        "path": "ApiGatewayAccessLogArnWithoutWildcard.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f8262854": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9d900c66583759ba6ad1e3d86d7e04b6fef33b837e6e917c880116c5ff21ad73.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
