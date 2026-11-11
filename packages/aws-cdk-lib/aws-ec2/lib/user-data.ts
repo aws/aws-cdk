@@ -3,6 +3,7 @@ import type { IBucketRef } from '../../aws-s3';
 import type { Resource, CfnResource } from '../../core';
 import { Fn, Stack, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
+import { posixShellEscape, posixShellEscapeMinimal, powershellEscape } from '../../core/lib/private/shell-escape';
 
 /**
  * Options when constructing UserData for Linux
@@ -180,8 +181,8 @@ class LinuxUserData extends UserData {
     const s3Path = `s3://${params.bucket.bucketRef.bucketName}/${params.bucketKey}`;
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
     this.addCommands(
-      `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'` + (params.region !== undefined ? ` --region ${params.region}` : ''),
+      `mkdir -p $(dirname ${posixShellEscape(localPath)})`,
+      `aws s3 cp ${posixShellEscape(s3Path)} ${posixShellEscape(localPath)}` + (params.region !== undefined ? ` --region ${posixShellEscapeMinimal(params.region)}` : ''),
     );
 
     return localPath;
@@ -190,15 +191,15 @@ class LinuxUserData extends UserData {
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
     this.addCommands(
       'set -e',
-      `chmod +x '${params.filePath}'`,
-      `'${params.filePath}' ${params.arguments ?? ''}`.trim(),
+      `chmod +x ${posixShellEscape(params.filePath)}`,
+      `${posixShellEscape(params.filePath)} ${params.arguments ?? ''}`.trim(),
     );
   }
 
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
     const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
-    this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
+    this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${posixShellEscapeMinimal(stack.region)} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
   }
 
   private renderOnExitLines(): string[] {
@@ -239,16 +240,16 @@ class WindowsUserData extends UserData {
   public addS3DownloadCommand(params: S3DownloadOptions): string {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
-      `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketRef.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
+      `mkdir (Split-Path -Path ${powershellEscape(localPath)} ) -ea 0`,
+      `Read-S3Object -BucketName ${powershellEscape(params.bucket.bucketRef.bucketName)} -key ${powershellEscape(params.bucketKey)} -file ${powershellEscape(localPath)} -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${powershellEscape(params.region)}` : ''),
     );
     return localPath;
   }
 
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
     this.addCommands(
-      `&'${params.filePath}' ${params.arguments ?? ''}`.trim(),
-      `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`,
+      `&${powershellEscape(params.filePath)} ${params.arguments ?? ''}`.trim(),
+      `if (!$?) { Write-Error ${powershellEscape(`Failed to execute the file "${params.filePath}"`)} -ErrorAction Stop }`,
     );
   }
 

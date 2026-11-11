@@ -9,6 +9,7 @@ import * as iam from '../../aws-iam';
 import type { CfnResource } from '../../core';
 import { Aws, UnscopedValidationError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
+import { posixShellEscapeMinimal, powershellEscapeMinimal } from '../../core/lib/private/shell-escape';
 
 /**
  * A CloudFormation-init configuration
@@ -150,7 +151,7 @@ export class CloudFormationInit {
       const errCode = attachOptions.ignoreFailures ? '0' : '$LASTEXITCODE';
       attachOptions.userData.addCommands(
         ...[
-          `cfn-init.exe -v ${resourceLocator} -c ${configSets}`,
+          `cfn-init.exe -v ${resourceLocator} -c ${powershellEscapeMinimal(configSets)}`,
           `cfn-signal.exe -e ${errCode} ${notifyResourceLocator}`,
           ...(printLog ? ['type C:\\cfn\\log\\cfn-init.log'] : []),
         ],
@@ -162,7 +163,7 @@ export class CloudFormationInit {
           // Run a subshell without 'errexit', so we can signal using the exit code of cfn-init
           '(',
           '  set +e',
-          `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${configSets}`,
+          `  /opt/aws/bin/cfn-init -v ${resourceLocator} -c ${posixShellEscapeMinimal(configSets)}`,
           `  /opt/aws/bin/cfn-signal -e ${errCode} ${notifyResourceLocator}`,
           ...(printLog ? ['  cat /var/log/cfn-init.log >&2'] : []),
           ')',
