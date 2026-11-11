@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-mediaconnect-attributes/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-attributes"
+      ],
+      "assertionStack": "cdk-integ-mediaconnect-attributes/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediaconnectattributesDefaultTestDeployAssert2E391901"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

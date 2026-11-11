@@ -36,6 +36,7 @@ const PROMPT_MAX_LENGTH = 30000;
 
 /**
  * Configuration for overriding model and prompt template
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OverrideConfig {
   /**
@@ -55,6 +56,7 @@ export interface OverrideConfig {
 
 /**
  * Configuration for episodic memory reflection
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface EpisodicReflectionConfiguration {
   /**
@@ -67,6 +69,7 @@ export interface EpisodicReflectionConfiguration {
 /**
  * Configuration parameters for a memory strategy that can override
  * existing built-in default prompts/models
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ManagedStrategyProps extends MemoryStrategyCommonProps {
   /**
@@ -114,6 +117,7 @@ export interface ManagedStrategyProps extends MemoryStrategyCommonProps {
  * Managed memory strategy that handles both built-in and override configurations.
  * This strategy can be used for quick setup with built-in defaults or customized
  * with specific models and prompt templates.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ManagedMemoryStrategy implements IMemoryStrategy {
   public readonly name: string;

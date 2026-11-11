@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { Construct } from 'constructs';
 
 const app = new cdk.App({
   postCliContext: {
@@ -35,29 +36,46 @@ userData.addCommands('set -x');
 // error out on any commands failure in the UserData so that cfn-signal will not run at the end, thus, failing the cfn deployment
 userData.addCommands('set -e');
 
-const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  vpc,
-  role: insRole,
-  userData,
-  instanceType: new ec2.InstanceType('t2.micro'),
+class EC2CapacityProvider extends Construct {
+  constructor(scope: Construct, id: string, props: {
+    instanceType: ec2.InstanceType;
+    machineImage?: ec2.IMachineImage;
+  }) {
+    super(scope, id);
+
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+      vpc,
+      role: insRole,
+      userData,
+      minCapacity: 1,
+      signals: autoscaling.Signals.waitForMinCapacity({
+        timeout: cdk.Duration.minutes(10),
+      }),
+      ...props,
+    });
+
+    const cp = new ecs.AsgCapacityProvider(this, 'Resource', {
+      autoScalingGroup,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(cp);
+    autoScalingGroup.addUserData('yum install -y aws-cfn-bootstrap');
+    // cfn-signal sends a signal to CFN to indicate ASG creation is completed
+    autoScalingGroup.addUserData(`/opt/aws/bin/cfn-signal -e $? --stack ${stack.stackId}`
+      + ` --resource ${(autoScalingGroup.node.defaultChild as autoscaling.CfnAutoScalingGroup).logicalId}`
+      + ` --region ${stack.region}`);
+  }
+}
+
+new EC2CapacityProvider(stack, 'Standard', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2023(),
-  minCapacity: 1,
-  signals: autoscaling.Signals.waitForMinCapacity({
-    timeout: cdk.Duration.minutes(10),
-  }),
 });
-
-const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
-  autoScalingGroup,
-  enableManagedTerminationProtection: false,
+new EC2CapacityProvider(stack, 'Neuron', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.INF2, ec2.InstanceSize.XLARGE),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2023(ecs.AmiHardwareType.NEURON),
 });
-
-cluster.addAsgCapacityProvider(cp);
-autoScalingGroup.addUserData('yum install -y aws-cfn-bootstrap');
-// cfn-signal sends a signal to CFN to indicate ASG creation is completed
-autoScalingGroup.addUserData(`/opt/aws/bin/cfn-signal -e $? --stack ${stack.stackId}`
-  +` --resource ${(autoScalingGroup.node.defaultChild as autoscaling.CfnAutoScalingGroup).logicalId}`
-  + ` --region ${stack.region}`);
 
 new integ.IntegTest(app, 'ClusterAL2023', {
   testCases: [stack],

@@ -11,9 +11,11 @@ import {
   SubnetNetworkAclAssociation,
   SubnetType,
 } from 'aws-cdk-lib/aws-ec2';
-import type { SubnetReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
+type SubnetReference = aws_ec2.SubnetReference;
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { aws_ec2 } from 'aws-cdk-lib/interfaces';
 import type { IDependable } from 'constructs';
 import { Construct, DependencyGroup } from 'constructs';
 import { RouteTable } from './route';
@@ -299,7 +301,7 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     const ipv6CidrBlock = props.ipv6CidrBlock?.cidr;
 
     if (!checkCidrRanges(props.vpc, props.ipv4CidrBlock.cidr)) {
-      throw new ValidationError('CIDR block should be within the range of VPC', this);
+      throw new ValidationError(lit`CidrBlockOutsideVpcRange`, 'CIDR block should be within the range of VPC', this);
     }
 
     let overlap: boolean = false;
@@ -316,15 +318,15 @@ export class SubnetV2 extends Resource implements ISubnetV2 {
     }
 
     if (overlap || overlapIpv6) {
-      throw new ValidationError('CIDR block should not overlap with existing subnet blocks', this);
+      throw new ValidationError(lit`CidrBlockOverlapsWithExistingSubnets`, 'CIDR block should not overlap with existing subnet blocks', this);
     }
 
     if (props.assignIpv6AddressOnCreation && !props.ipv6CidrBlock) {
-      throw new ValidationError('IPv6 CIDR block is required when assigning IPv6 address on creation', this);
+      throw new ValidationError(lit`Ipv6CidrBlockRequiredForIpv6Assignment`, 'IPv6 CIDR block is required when assigning IPv6 address on creation', this);
     }
 
     if (props.mapPublicIpOnLaunch === true && props.subnetType !== SubnetType.PUBLIC) {
-      throw new ValidationError('mapPublicIpOnLaunch can only be set to true for public subnets', this);
+      throw new ValidationError(lit`MapPublicIpOnLaunchOnlyForPublicSubnets`, 'mapPublicIpOnLaunch can only be set to true for public subnets', this);
     }
 
     const subnet = new CfnSubnet(this, 'Subnet', {
@@ -483,7 +485,7 @@ function storeSubnetToVpcByType(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType)
   if (findFunctionType) {
     findFunctionType(vpc, subnet);
   } else {
-    throw new UnscopedValidationError(`Unsupported subnet type: ${type}`);
+    throw new UnscopedValidationError(lit`UnsupportedSubnetType`, `Unsupported subnet type: ${type}`);
   }
 
   /**
@@ -511,7 +513,7 @@ function validateSupportIpv6(vpc: IVpcV2) {
   secondaryAddress.ipv6IpamPoolId !== undefined || secondaryAddress.ipv6Pool !== undefined)) {
       return true;
     } else {
-      throw new UnscopedValidationError('To use IPv6, the VPC must enable IPv6 support.');
+      throw new UnscopedValidationError(lit`Ipv6NotSupported`, 'To use IPv6, the VPC must enable IPv6 support.');
     }
   } else {return false;}
 }
@@ -529,7 +531,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
   const subnetCidrBlock = new CidrBlock(cidrRange);
   const allCidrs: CidrBlock[] = [];
 
-  // Secondary IP addresses assoicated using user defined IPv4 range
+  // Secondary IP addresses associated using user defined IPv4 range
   if (vpc.secondaryCidrBlock) {
     for (const ipAddress of vpc.secondaryCidrBlock) {
       if (ipAddress.cidrBlock) {
@@ -540,7 +542,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
     allCidrs.push(...cidrs);
   }
 
-  // Secondary IP addresses assoicated using IPAM IPv4 range
+  // Secondary IP addresses associated using IPAM IPv4 range
   if (vpc.ipv4IpamProvisionedCidrs) {
     const cidrs = vpc.ipv4IpamProvisionedCidrs.map(cidr => new CidrBlock(cidr));
     allCidrs.push(...cidrs);
@@ -548,7 +550,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
 
   // If no IPv4 is assigned as secondary address
   if (allCidrs.length === 0) {
-    throw new UnscopedValidationError('No secondary IP address attached to VPC');
+    throw new UnscopedValidationError(lit`NoSecondaryIpAddress`, 'No secondary IP address attached to VPC');
   }
 
   return allCidrs.some(c => c.containsCidr(subnetCidrBlock));

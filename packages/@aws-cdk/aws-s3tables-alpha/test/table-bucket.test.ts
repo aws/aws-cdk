@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
@@ -265,6 +265,67 @@ describe('TableBucket', () => {
     });
   });
 
+  describe('created with request metrics enabled', () => {
+    const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'metrics-enabled-bucket',
+      requestMetricsStatus: s3tables.RequestMetricsStatus.ENABLED,
+    };
+
+    beforeEach(() => {
+      new s3tables.TableBucket(stack, 'MetricsEnabledBucket', TABLE_BUCKET_PROPS);
+    });
+
+    test(`creates a ${TABLE_BUCKET_CFN_RESOURCE} resource`, () => {
+      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_CFN_RESOURCE, 1);
+    });
+
+    test('has MetricsConfiguration with Enabled status', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'TableBucketName': TABLE_BUCKET_PROPS.tableBucketName,
+        'MetricsConfiguration': {
+          'Status': 'Enabled',
+        },
+      });
+    });
+  });
+
+  describe('created with request metrics disabled', () => {
+    const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'metrics-disabled-bucket',
+      requestMetricsStatus: s3tables.RequestMetricsStatus.DISABLED,
+    };
+
+    beforeEach(() => {
+      new s3tables.TableBucket(stack, 'MetricsDisabledBucket', TABLE_BUCKET_PROPS);
+    });
+
+    test('has MetricsConfiguration with Disabled status', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'TableBucketName': TABLE_BUCKET_PROPS.tableBucketName,
+        'MetricsConfiguration': {
+          'Status': 'Disabled',
+        },
+      });
+    });
+  });
+
+  describe('created without request metrics configuration', () => {
+    const TABLE_BUCKET_PROPS: s3tables.TableBucketProps = {
+      tableBucketName: 'no-metrics-bucket',
+    };
+
+    beforeEach(() => {
+      new s3tables.TableBucket(stack, 'NoMetricsBucket', TABLE_BUCKET_PROPS);
+    });
+
+    test('does not have MetricsConfiguration property', () => {
+      const template = Template.fromStack(stack);
+      const resources = template.findResources(TABLE_BUCKET_CFN_RESOURCE);
+      const resourceKey = Object.keys(resources)[0];
+      expect(resources[resourceKey].Properties.MetricsConfiguration).toBeUndefined();
+    });
+  });
+
   describe('validateUnreferencedFileRemoval', () => {
     it('should not throw error when unreferencedFileRemovalProperty is undefined', () => {
       expect(() => s3tables.TableBucket.validateUnreferencedFileRemoval(undefined)).not.toThrow();
@@ -401,6 +462,45 @@ describe('TableBucket', () => {
       expect(() => s3tables.TableBucket.validateTableBucketName('')).toThrow(
         /Bucket name must be at least 3/,
       );
+    });
+  });
+
+  describe('tagging', () => {
+    test('implements ITaggableV2', () => {
+      const tableBucket = new s3tables.TableBucket(stack, 'TaggedBucket', {
+        tableBucketName: 'tagged-bucket',
+      });
+      expect(core.TagManager.of(tableBucket)).toBeDefined();
+    });
+
+    test('tags are applied to the table bucket', () => {
+      const tableBucket = new s3tables.TableBucket(stack, 'TaggedBucket', {
+        tableBucketName: 'tagged-bucket',
+      });
+
+      core.Tags.of(tableBucket).add('Environment', 'Production');
+      core.Tags.of(tableBucket).add('Team', 'DataEng');
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'Environment', Value: 'Production' }),
+          Match.objectLike({ Key: 'Team', Value: 'DataEng' }),
+        ]),
+      });
+    });
+
+    test('stack-level tags propagate to table bucket', () => {
+      new s3tables.TableBucket(stack, 'TaggedBucket', {
+        tableBucketName: 'tagged-bucket',
+      });
+
+      core.Tags.of(stack).add('StackTag', 'Propagated');
+
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        Tags: Match.arrayWith([
+          Match.objectLike({ Key: 'StackTag', Value: 'Propagated' }),
+        ]),
+      });
     });
   });
 });

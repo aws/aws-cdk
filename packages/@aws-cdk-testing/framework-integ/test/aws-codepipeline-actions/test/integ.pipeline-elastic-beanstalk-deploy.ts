@@ -47,7 +47,6 @@ const serviceRole = new iam.Role(stack, 'service-role', {
   assumedBy: new iam.ServicePrincipal('elasticbeanstalk.amazonaws.com'),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSElasticBeanstalkEnhancedHealth'),
-    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy'),
   ],
 });
 

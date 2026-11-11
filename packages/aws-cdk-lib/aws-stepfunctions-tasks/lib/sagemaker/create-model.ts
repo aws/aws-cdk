@@ -4,6 +4,9 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
@@ -87,6 +90,7 @@ export interface SageMakerCreateModelProps extends sfn.TaskStateBaseProps, SageM
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
  */
 @propertyInjectable
+@noBoxStackTraces
 export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   /**
    * Uniquely identifies this class.
@@ -129,12 +133,15 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
   protected readonly taskPolicies?: iam.PolicyStatement[];
   private readonly vpc?: ec2.IVpc;
   private securityGroup?: ec2.ISecurityGroup;
-  private readonly securityGroups: ec2.ISecurityGroup[] = [];
+  private readonly _securityGroups: IArrayBox<ec2.ISecurityGroup>;
   private readonly subnets?: string[];
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   constructor(scope: Construct, id: string, private readonly props: SageMakerCreateModelProps) {
     super(scope, id, props);
+
+    this._securityGroups = Box.fromArray([], { omitEmpty: false });
+
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateModel.SUPPORTED_INTEGRATION_PATTERNS);
 
@@ -156,7 +163,7 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
    * @param securityGroup: The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
-    this.securityGroups.push(securityGroup);
+    this._securityGroups.push(securityGroup);
   }
 
   /**
@@ -266,12 +273,12 @@ export class SageMakerCreateModel extends sfn.TaskStateBase implements iam.IGran
         vpc: this.vpc,
       });
       this.connections.addSecurityGroup(this.securityGroup);
-      this.securityGroups.push(this.securityGroup);
+      this._securityGroups.push(this.securityGroup);
     }
     return this.vpc
       ? {
         VpcConfig: {
-          SecurityGroupIds: cdk.Lazy.list({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          SecurityGroupIds: cdk.Token.asList(this._securityGroups.map((sg) => sg.securityGroupId), { displayHint: 'SecurityGroupIds' }),
           Subnets: this.subnets,
         },
       }

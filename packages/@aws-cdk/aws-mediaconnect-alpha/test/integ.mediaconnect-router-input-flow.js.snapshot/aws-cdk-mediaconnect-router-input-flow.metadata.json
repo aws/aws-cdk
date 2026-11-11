@@ -1,0 +1,165 @@
+{
+  "/aws-cdk-mediaconnect-router-input-flow/SourceFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/TransitRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/TransitSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/EncryptedRouterOutputFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/SimpleRouterOutputFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/routerInputFlowEncrypted": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/routerInputFlowSimple": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/SourceFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceFlow80460280"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/TransitRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TransitRoleF5930357"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/TransitRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/TransitSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TransitSecretCF30D961"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/EncryptedRouterOutputFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedRouterOutputFlowE287EB3A"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/SimpleRouterOutputFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SimpleRouterOutputFlow10C06729"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/routerInputFlowEncrypted/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "routerInputFlowEncryptedF178525F"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/routerInputFlowSimple/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "routerInputFlowSimpleF742FCB5"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-flow/TransitRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TransitRoleDefaultPolicy229C024C"
+    }
+  ]
+}

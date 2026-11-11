@@ -6,6 +6,33 @@ Depending on demand from the community, developers at aws from the aws-cdk team 
 
 If you wish to create new L2 (or potentially L3) constructs, this guide can help you get started.
 
+## Consider Mixins First
+
+Before building a full L2 construct, consider whether the functionality you need
+can be delivered as a **Mixin**, **Facade**, or **Trait**. These composable
+building blocks work with L1, L2, and custom constructs alike, and are the
+preferred approach for new features in `aws-cdk-lib`.
+
+- **Mixins** modify a resource's own configuration (e.g. enabling versioning,
+  auto-deleting objects). They are applied via `.with()` and target L1 resources.
+- **Facades** provide resource-specific integrations with external things (e.g.
+  `BucketGrants`, `BucketMetrics`). They are standalone classes with a static
+  factory method.
+- **Traits** describe service-agnostic capabilities that any resource can have
+  (e.g. "has a resource policy", "is encrypted"). Facades use Traits to
+  discover capabilities on L1 resources.
+
+A full L2 construct is a composition of these building blocks around a CFN
+Resource. If you only need one or two features, implementing them as Mixins or
+Facades is faster, more reusable, and does not require building an entire L2.
+
+For details, see the [Design Guidelines](./DESIGN_GUIDELINES.md#mixins-facades-and-traits)
+and the [Mixins Design Guidelines](./MIXINS_DESIGN_GUIDELINES.md).
+
+A full L2 is still the right choice when you need to provide curated defaults,
+integrate multiple resources into a single abstraction, or offer a
+comprehensive opinionated experience for a service.
+
 ## Do My Constructs Belong in aws-cdk-lib?
 
 Users of the aws-cdk can use constructs from a number of packages within their application. `aws-cdk-lib` and/or any of the other constructs vended from npm, maven, pypi, nuget, or GitHub (for go) that are publicly available are indexed and searchable on [Construct Hub](constructs.dev). Anyone can create and publish new constructs that will be indexed on Construct Hub using repositories and packages that they own. However, if you believe your constructs should be part of the core aws construct library, here are some guidelines that they must adhere to.

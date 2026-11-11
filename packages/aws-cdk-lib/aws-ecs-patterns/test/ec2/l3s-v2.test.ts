@@ -21,11 +21,13 @@ import { PublicHostedZone } from '../../../aws-route53';
 import { NamespaceType } from '../../../aws-servicediscovery';
 import { Duration, Stack } from '../../../core';
 import { ApplicationMultipleTargetGroupsEc2Service, NetworkMultipleTargetGroupsEc2Service } from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('test ECS ALB construct with default settings', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -89,6 +91,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('test ECS ALB construct with all settings', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -284,6 +287,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('able to pass pre-defined task definition', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -337,6 +341,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('able to output correct load balancer DNS and URLs for each protocol type', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -465,6 +470,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors if no essential container in pre-defined task definition', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -489,6 +495,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('set default load balancer, listener, target group correctly', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
@@ -543,6 +550,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('setting vpc and cluster throws error', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -559,6 +567,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('creates AWS Cloud Map service for Private DNS namespace', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'MyVpc', {});
     const cluster = new Cluster(stack, 'EcsCluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -634,6 +643,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when setting both taskDefinition and taskImageOptions', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -665,6 +675,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when setting neither taskDefinition nor taskImageOptions', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -686,6 +697,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when setting domainName but not domainZone', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -721,6 +733,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when loadBalancers is empty', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -739,6 +752,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when targetGroups is empty', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -757,6 +771,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when no listener specified', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -780,6 +795,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when setting both HTTP protocol and certificate', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -809,6 +825,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when setting HTTPS protocol but not domain name', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -837,6 +854,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors when listener is not defined but used in creating target groups', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -870,6 +888,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('errors if desiredTaskCount is 0', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -897,6 +916,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('test ECS NLB construct with default settings', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -973,6 +993,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('Assert EnableExecuteCommand is missing if not set', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1066,6 +1087,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('test ECS NLB construct with all settings', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1251,6 +1273,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
 
   test('EnableExecuteCommand flag generated IAM Permissions', () => {
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1378,6 +1401,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('able to pass pre-defined task definition', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1431,6 +1455,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors if no essential container in pre-defined task definition', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1455,6 +1480,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('set default load balancer, listener, target group correctly', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 
@@ -1507,6 +1533,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('setting vpc and cluster throws error', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -1523,6 +1550,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('creates AWS Cloud Map service for Private DNS namespace', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'MyVpc', {});
     const cluster = new Cluster(stack, 'EcsCluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1598,6 +1626,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors when setting both taskDefinition and taskImageOptions', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1629,6 +1658,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors when setting neither taskDefinition nor taskImageOptions', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1650,6 +1680,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors when setting domainName but not domainZone', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1683,6 +1714,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors when loadBalancers is empty', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -1701,6 +1733,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors when targetGroups is empty', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -1719,6 +1752,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors when no listener specified', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -1742,6 +1776,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors when listener is not defined but used in creating target groups', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
 
@@ -1775,6 +1810,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors if desiredTaskCount is 0', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -1800,6 +1836,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('errors when container port range is set for essential container', () => {
     // GIVEN
     const stack = new Stack();
+    acknowledgeTestValidationRules(stack);
     const vpc = new Vpc(stack, 'VPC');
     const cluster = new Cluster(stack, 'Cluster', { vpc });
     const taskDefinition = new Ec2TaskDefinition(stack, 'FargateTaskDef');

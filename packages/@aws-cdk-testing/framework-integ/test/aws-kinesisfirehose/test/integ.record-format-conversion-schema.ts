@@ -37,7 +37,7 @@ class TestStack extends cdk.Stack {
     });
 
     const registry = new glue.CfnRegistry(this, 'SchemaRegistry', {
-      name: 'my_schema_registry',
+      name: `schema-registry-${this.stackName}`,
     });
 
     const inlineSchemaTable = this.createTableWithInlineSchema(database);
@@ -85,7 +85,7 @@ class TestStack extends cdk.Stack {
       },
       compatibility: 'NONE',
       dataFormat: 'AVRO',
-      name: 'my_schema',
+      name: `schema-${this.stackName}`,
       schemaDefinition: schemaDefinition,
     });
 
@@ -120,6 +120,7 @@ class TestStack extends cdk.Stack {
 const stack = new TestStack(app, 'RecordFormatConversionSchema');
 const testCase = new integ.IntegTest(app, 'RecordFormatConversionSchemaTest', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'eu-west-1', 'eu-west-2', 'ap-southeast-1', 'ap-northeast-1'],
 });
 
 const assertions = testCase.assertions;

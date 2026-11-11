@@ -2,7 +2,7 @@
 import * as path from 'path';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
-import { ArtifactsEncryptionMode, Canary, Cleanup, Code, Runtime, Schedule, Test } from 'aws-cdk-lib/aws-synthetics';
+import { ArtifactsEncryptionMode, Canary, Code, Runtime, Schedule, Test } from 'aws-cdk-lib/aws-synthetics';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -27,7 +27,7 @@ new Canary(stack, 'CanarySseS3Puppeteer', {
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-  cleanup: Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
   artifactS3EncryptionMode: ArtifactsEncryptionMode.S3_MANAGED,
 });
 
@@ -39,7 +39,7 @@ new Canary(stack, 'CanarySseS3PlayWright', {
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
-  cleanup: Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
   artifactS3EncryptionMode: ArtifactsEncryptionMode.S3_MANAGED,
 });
 
@@ -54,7 +54,7 @@ new Canary(stack, 'CanarySseKmsWithoutKeySetting', {
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-  cleanup: Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
   artifactS3EncryptionMode: ArtifactsEncryptionMode.KMS,
 });
 
@@ -71,7 +71,7 @@ new Canary(stack, 'CanarySseKmsWith', {
   schedule: Schedule.rate(cdk.Duration.minutes(1)),
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-  cleanup: Cleanup.LAMBDA,
+  provisionedResourceCleanup: true,
   artifactS3EncryptionMode: ArtifactsEncryptionMode.KMS,
   artifactS3KmsKey: encryptKey,
 });

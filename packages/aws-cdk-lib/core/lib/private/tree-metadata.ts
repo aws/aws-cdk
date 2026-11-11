@@ -7,12 +7,13 @@ import type { ConstructInfo } from './runtime-info';
 import { constructInfoFromConstruct } from './runtime-info';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import { Annotations } from '../annotations';
-import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers';
 import type { IInspectable } from '../tree';
 import { TreeInspector } from '../tree';
 import { iterateBfs } from './construct-iteration';
 import { AssumptionError } from '../errors';
+import { stackOf } from './core-construct-finders';
+import { lit } from './literal-string';
 
 const FILE_PATH = 'tree.json';
 
@@ -73,7 +74,7 @@ export class TreeMetadata extends Construct {
     // get attributes from the inspector
     if (canInspect(construct)) {
       construct.inspect(inspector);
-      return Stack.of(construct).resolve(inspector.attributes);
+      return stackOf(construct).resolve(inspector.attributes);
     }
     return undefined;
   }
@@ -269,7 +270,7 @@ class FragmentedTreeWriter {
 
     if (parent === undefined) {
       if (this.forest.length > 0) {
-        throw new AssumptionError('Can only add exactly one node without a parent');
+        throw new AssumptionError(lit`OnlyOneNodeWithoutParent`, 'Can only add exactly one node without a parent');
       }
 
       this.addNewTree(node, this.mainTreePointer);
@@ -314,7 +315,7 @@ class FragmentedTreeWriter {
       // parent node in the original tree to a subtreereference.
       const grandParent = this.parent.get(parent);
       if (!grandParent) {
-        throw new AssumptionError(`Could not find parent of ${JSON.stringify(parent)}`);
+        throw new AssumptionError(lit`CouldNotFindParent`, `Could not find parent of ${JSON.stringify(parent)}`);
       }
 
       const subtreeReference: SubTreeReference = {
@@ -365,21 +366,25 @@ class FragmentedTreeWriter {
     if (tree) {
       return tree;
     }
-    throw new AssumptionError(`Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
+    throw new AssumptionError(lit`CouldNotFindTreeForNode`, `Could not find tree for node: ${JSON.stringify(node)}, tried ${tried}`);
   }
 }
 
 function nodeCount(root: Node) {
-  let ret = 0;
-  recurse(root);
-  return ret;
+  let count = 0;
+  const stack = [root];
 
-  function recurse(x: Node) {
-    ret += 1;
-    for (const child of Object.values(x.children ?? {})) {
-      recurse(child);
+  while (stack.length > 0) {
+    const current = stack.pop()!;
+    count += 1;
+    if (current.children) {
+      for (const child of Object.values(current.children)) {
+        stack.push(child);
+      }
     }
   }
+
+  return count;
 }
 
 /**

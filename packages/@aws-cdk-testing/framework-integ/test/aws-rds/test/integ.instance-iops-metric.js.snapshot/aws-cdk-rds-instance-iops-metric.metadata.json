@@ -1,0 +1,901 @@
+{
+  "/aws-cdk-rds-instance-iops-metric": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "engine": {
+          "engineType": "*",
+          "engineVersion": {
+            "fullVersion": "*",
+            "majorVersion": "*"
+          },
+          "parameterGroupFamily": "*",
+          "singleUserRotationApplication": "*",
+          "engineFamily": "*",
+          "supportsReadReplicaBackups": "*",
+          "defaultUsername": "*"
+        },
+        "vpc": "*",
+        "multiAz": false
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/ReadIOPSAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "alarmName": "*",
+        "alarmDescription": "*",
+        "comparisonOperator": "*",
+        "datapointsToAlarm": "*",
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "evaluateLowSampleCountPercentile": "*",
+        "treatMissingData": "*",
+        "actionsEnabled": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/WriteIOPSAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "alarmName": "*",
+        "alarmDescription": "*",
+        "comparisonOperator": "*",
+        "datapointsToAlarm": "*",
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "evaluateLowSampleCountPercentile": "*",
+        "treatMissingData": "*",
+        "actionsEnabled": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:768:29)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:823:29)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:826:29)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/SubnetGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "removalPolicy": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/Secret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryptionKey": "*",
+        "secretName": "*",
+        "replicaRegions": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "username": "*",
+        "secretName": "*",
+        "encryptionKey": "*",
+        "excludeCharacters": "*",
+        "replaceOnPasswordCriteriaChanges": "*",
+        "replicaRegions": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceC1063A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:735:30)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/ReadIOPSAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReadIOPSAlarmD1D52864"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:333:16)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:20:4)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/WriteIOPSAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WriteIOPSAlarmADBE1E65"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Metric.createAlarm (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:333:16)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:27:4)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
+        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "Array.forEach (:)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1553:50)",
+        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:25)",
+        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
+        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "Array.forEach (:)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1553:50)",
+        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:25)",
+        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
+        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
+        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/SubnetGroup/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSubnetGroupF2CBA54F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
+        "new SubnetGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:438:50)",
+        "new DatabaseInstanceSource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecurityGroupB4E5FA83"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
+        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:444:57)",
+        "new DatabaseInstanceSource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/Secret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecret478E0A47"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:497:30)",
+        "new Secret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseSecret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
+        "new DatabaseSecret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "renderCredentials (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:733:64)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/Secret/Attachment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "secret": "*",
+        "target": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-instance-iops-metric/Instance/Secret/Attachment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSecretAttachment83BEE581"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecretTargetAttachment (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:687:32)",
+        "new SecretTargetAttachment (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.attach (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:306:16)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:752:38)",
+        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-iops-metric.js:12:18)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

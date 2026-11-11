@@ -17,5 +17,6 @@ rule NEPTUNE_ENCRYPTION_ENABLED when %neptune_clusters !empty {
     %neptune_clusters {
         Properties.StorageEncrypted exists
         Properties.StorageEncrypted == true
+            <<##ERROR:Neptune cluster must have encryption enabled. Set 'StorageEncrypted' to true.##>>
     }
 }

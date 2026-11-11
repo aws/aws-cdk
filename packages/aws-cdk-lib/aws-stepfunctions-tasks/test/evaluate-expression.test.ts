@@ -35,7 +35,7 @@ test('Eval with Node.js', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: 'nodejs22.x',
+    Runtime: 'nodejs24.x',
   });
 });
 
@@ -116,6 +116,21 @@ test('With Node.js 22.x', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs22.x',
+  });
+});
+
+test('With Node.js 24.x', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    runtime: Runtime.NODEJS_24_X,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs24.x',
   });
 });
 

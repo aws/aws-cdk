@@ -83,6 +83,22 @@ const bucket = new s3.Bucket(stack, 'MyDSSEBucket', {
 });
 ```
 
+Explicitly block uploads encrypted with SSE-C:
+
+```ts
+const bucket = new s3.Bucket(this, 'MySsecBlockedBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.SSE_C],
+});
+```
+
+Allow uploads with all encryption types:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  blockedEncryptionTypes: [s3.BlockedEncryptionType.NONE],
+});
+```
+
 ## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to
@@ -170,7 +186,7 @@ s3.BucketGrants.fromBucket(bucket).delete(principal);
 
 If `bucket` is an instance of `CfnBucket`, and the grants process involves adding statements
 to the bucket policy, then the `BucketGrants` class will, by default, do the same thing it
-would do for an instance of `Bucket`: create a new bucket policy (or reuse an existing one) 
+would do for an instance of `Bucket`: create a new bucket policy (or reuse an existing one)
 and add the necessary statements to it.
 
 But if you want to customize this behavior, you can register an instance of `IResourcePolicyFactory`
@@ -201,7 +217,7 @@ ResourceWithPolicies.register(scope, 'AWS::S3::Bucket', new MyFactory());
 effectively providing an ad-hoc way to extend the behavior of L1s to support grants the same way
 as L2s do.
 
-The `BucketGrants` class has many methods, but two of them have a special behavior. These two 
+The `BucketGrants` class has many methods, but two of them have a special behavior. These two
 accept an `objectsKeyPattern` parameter to restrict granted permissions to specific resources:
 - `read`
 - `readWrite`
@@ -254,6 +270,26 @@ const bucket = new s3.Bucket(this, 'Bucket', {
   minimumTLSVersion: 1.2,
 });
 ```
+
+## Bucket Naming
+
+By default, CloudFormation assigns a unique bucket name. You can also specify a `bucketName` directly, but this creates a globally unique name that could conflict with other accounts.
+
+### Account-Regional Bucket Namespace
+
+Using `bucketNamePrefix` with `bucketNamespace` set to `ACCOUNT_REGIONAL`, the bucket name is scoped to your account and region, reducing the risk of name conflicts. CloudFormation appends `-<accountId>-<region>-an` to the prefix to form the full name.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  bucketNamePrefix: 'my-app',
+  bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+});
+// Resulting bucket name: my-app-123456789012-us-east-1-an
+```
+
+Note that `bucketName` cannot be used together with `bucketNamePrefix` or `bucketNamespace`.
+
+For more information, see the [AWS documentation on bucket namespaces](https://docs.aws.amazon.com/AmazonS3/latest/userguide/gpbucketnamespaces.html).
 
 ## Sharing buckets between stacks
 
@@ -669,8 +705,8 @@ const bucketPolicy = new s3.CfnBucketPolicy(this, "BucketPolicy", {
   },
 });
 
-// Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent 
-// generated bucket policy to allow access log delivery would append 
+// Wrap L1 Construct with L2 Bucket Policy Construct. Subsequent
+// generated bucket policy to allow access log delivery would append
 // to the current policy.
 s3.BucketPolicy.fromCfnBucketPolicy(bucketPolicy);
 
@@ -1132,4 +1168,52 @@ const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
 if (sourceBucket.replicationRoleArn) {
   destinationBucket.addReplicationPolicy(sourceBucket.replicationRoleArn, true, '111111111111');
   }
+```
+
+## Mixins
+
+S3 provides several [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### BucketAutoDeleteObjects
+
+Automatically deletes all objects from a bucket when the bucket is removed from the stack or when the stack is deleted. Requires the bucket's removal policy to be set to `DESTROY`:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketAutoDeleteObjects());
+```
+
+### BucketVersioning
+
+Enables or suspends versioning on an S3 bucket:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketVersioning());
+```
+
+### BucketBlockPublicAccess
+
+Blocks public access on an S3 bucket. Defaults to blocking all public access:
+
+```ts
+new s3.CfnBucket(this, 'Bucket')
+  .with(new s3.mixins.BucketBlockPublicAccess());
+```
+
+### BucketPolicyStatements
+
+Adds IAM policy statements to a bucket policy:
+
+```ts
+new s3.CfnBucketPolicy(this, 'Policy', {
+  bucket: new s3.CfnBucket(this, 'Bucket').ref,
+  policyDocument: new iam.PolicyDocument(),
+}).with(new s3.mixins.BucketPolicyStatements([
+  new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: ['*'],
+    principals: [new iam.AnyPrincipal()],
+  }),
+]));
 ```

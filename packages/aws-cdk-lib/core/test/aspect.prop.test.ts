@@ -1,18 +1,13 @@
 
-import type { IConstruct } from 'constructs';
-import { Construct } from 'constructs';
+import type { IConstruct, Construct } from 'constructs';
 import * as fc from 'fast-check';
 import * as fs from 'fs-extra';
-import type { AppProps, AspectApplication, IAspect } from '../lib';
-import { App, Aspects } from '../lib';
+import type { AspectApplication, IAspect, App } from '../lib';
+import { Aspects } from '../lib';
+import type { AppFactory, ConstructLoc } from './arbitraries/arbitrary-constructs';
+import { arbCdkAppFactory, ArbConstruct, arbConstructLoc, ConstructTree, initializeFastCheck, TreeRenderer } from './arbitraries/arbitrary-constructs';
 
-// Control number of runs from an env var for a burn-in test
-if (process.env.FAST_CHECK_NUM_RUNS) {
-  fc.configureGlobal({
-    ...fc.readConfigureGlobal(),
-    numRuns: Number(process.env.FAST_CHECK_NUM_RUNS),
-  });
-}
+initializeFastCheck();
 
 //////////////////////////////////////////////////////////////////////
 //  Tests
@@ -35,7 +30,7 @@ describe('every aspect gets invoked exactly once', () => {
   test('all aspects that exist at the start of synthesis get invoked on all nodes in its scope at the start of synthesis', () =>
     fc.assert(
       fc.property(appWithAspects(), fc.boolean(), (app, stabilizeAspects) => {
-        const originalConstructsOnApp = app.cdkApp.node.findAll();
+        const originalConstructsOnApp = app.constructTree.node.findAll();
         const originalAspectApplications = getAllAspectApplications(originalConstructsOnApp);
         afterSynth((testApp) => {
           const visitsMap = getVisitsMap(testApp.actionLog);
@@ -59,7 +54,7 @@ describe('every aspect gets invoked exactly once', () => {
     fc.assert(
       fc.property(appWithAspects(), (app) => {
         afterSynth((testApp) => {
-          const allConstructsOnApp = testApp.cdkApp.node.findAll();
+          const allConstructsOnApp = testApp.constructTree.node.findAll();
           const allAspectApplications = getAllAspectApplications(allConstructsOnApp);
           const visitsMap = getVisitsMap(testApp.actionLog);
 
@@ -190,7 +185,7 @@ function afterSynth(block: (x: PrettyApp) => void, aspectStabilization: boolean)
   return (app: PrettyApp) => {
     let asm;
     try {
-      asm = app.cdkApp.synth({ aspectStabilization });
+      asm = app.constructTree.synth({ aspectStabilization });
     } catch (error: any) {
       if (error.message.includes('Cannot invoke Aspect')) {
         return;
@@ -202,7 +197,7 @@ function afterSynth(block: (x: PrettyApp) => void, aspectStabilization: boolean)
 
       // Make sure we're not accidentally sharing constructs between runs due to the
       // way we're writing combinators.
-      deepFreeze(app.cdkApp);
+      deepFreeze(app.constructTree);
       Object.freeze(app);
     } finally {
       fs.rmSync(asm.directory, { recursive: true, force: true });
@@ -358,52 +353,16 @@ function appWithAspects() {
 }
 
 /**
- * Generate an arbitrary CDK app
- *
- * First builds a tree of factories and then applies the factories
- *
- * Returns a wrapper class for `App` with a `toString()` method, so
- * that if we find a counterexample `fast-check` will pretty-print it nicely.
- */
-function arbCdkAppFactory(props?: AppProps): fc.Arbitrary<AppFactory> {
-  return arbConstructTreeFactory().map((fac) => () => {
-    const app = new App(props);
-    fac(app, 'First');
-    return app;
-  });
-}
-
-/**
- * Produce an arbitrary construct tree
- */
-function arbConstructTreeFactory(): fc.Arbitrary<ConstructFactory> {
-  const { tree } = fc.letrec((rec) => {
-    return {
-      tree: fc.oneof({ depthSize: 'small', withCrossShrink: true }, rec('leaf'), rec('node')) as fc.Arbitrary<ConstructFactory>,
-      leaf: fc.constant(constructFactory({})),
-      node: fc.tuple(
-        fc.array(fc.tuple(identifierString(), rec('tree') as fc.Arbitrary<ConstructFactory>), { maxLength: 5 }),
-      ).map(([children]) => {
-        const c = Object.fromEntries(children);
-        return constructFactory(c);
-      }),
-    };
-  });
-  return tree;
-}
-
-/**
  * A class to pretty print a CDK app if a property test fails, so it becomes readable.
  *
  * Also holds the aspect visit log because why not.
  */
-class PrettyApp {
-  private readonly initialTree: Set<string>;
+class PrettyApp extends ConstructTree<ExecutionState> {
   private readonly _initialAspects: Map<string, Set<string>>;
 
-  constructor(public readonly cdkApp: App, public readonly executionState: ExecutionState) {
+  constructor(cdkApp: App, executionState: ExecutionState) {
+    super(cdkApp, executionState);
     const constructs = cdkApp.node.findAll();
-    this.initialTree = new Set(constructs.map(c => c.node.path));
     this._initialAspects = new Map(constructs.map(c => [c.node.path, new Set(renderAspects(c))]));
   }
 
@@ -411,65 +370,53 @@ class PrettyApp {
    * Return the log of all aspect visits
    */
   public get actionLog() {
-    return this.executionState.actionLog;
+    return this.state.actionLog;
   }
 
   /**
    * Return a list of all aspects added by other aspects
    */
   public get addedAspects() {
-    return this.executionState.actionLog
+    return this.state.actionLog
       .map((visit, i) => [i, visit] as const)
       .filter(([_, visit]) => visit.action === 'aspectApplied');
   }
 
-  public toString() {
-    const self = this;
+  private renderVisits(tree: TreeRenderer) {
+    this.actionLog.forEach((visit, i) => {
+      tree.line(`t=${i}. ${renderAspectAction(visit)}`);
+    });
+  }
 
-    const lines: string[] = [];
-    const prefixes: string[] = [];
+  protected annotateConstruct(construct: Construct): string[] {
+    const aspects = renderAspects(construct);
+
+    for (let i = 0; i < aspects.length; i++) {
+      if (!(this._initialAspects.get(construct.node.path) ?? new Set()).has(aspects[i])) {
+        aspects[i] += ' (added)';
+      }
+    }
+
+    return aspects.length > 0 ? [` <-- ${aspects.join(', ')}`] : [];
+  }
+
+  public toString() {
+    const tree = new TreeRenderer();
 
     // Add some empty lines to render better in the fast-check error message
-    lines.push('', '');
+    tree.emptyLine(2);
+    tree.line('TREE');
+    tree.pushPrefix('  ');
+    this.renderTree(tree);
+    tree.popPrefix();
 
-    prefixes.push('  ');
-    lines.push('TREE');
-    recurse(this.cdkApp);
-    lines.push('VISITS');
-    this.actionLog.forEach((visit, i) => {
-      lines.push(`  t=${i}. ${renderAspectAction(visit)}`);
-    });
+    tree.line('VISITS');
+    tree.pushPrefix('  ');
+    this.renderVisits(tree);
 
-    lines.push('', '');
+    tree.emptyLine(2);
 
-    return lines.join('\n');
-
-    function line(x: string) {
-      lines.push(`${prefixes.join('')}${x}`);
-    }
-
-    function recurse(construct: Construct) {
-      const aspects = renderAspects(construct);
-
-      for (let i = 0; i < aspects.length; i++) {
-        if (!(self._initialAspects.get(construct.node.path) ?? new Set()).has(aspects[i])) {
-          aspects[i] += ' (added)';
-        }
-      }
-
-      line([
-        '+-',
-        ...self.initialTree.has(construct.node.path) ? [] : ['(added)'],
-        construct.node.id || '(root)',
-        ...aspects.length > 0 ? [` <-- ${aspects.join(', ')}`] : [],
-      ].join(' '));
-
-      prefixes.push('     ');
-      construct.node.children.forEach((child) => {
-        recurse(child);
-      });
-      prefixes.pop();
-    }
+    return tree.toString();
   }
 }
 
@@ -555,7 +502,6 @@ function buildApplication(appFac: AppFactory, appls: TestAspectApplication[]): P
   const state: ExecutionState = {
     actionLog: [],
   };
-  (tree as any)[EXECUTIONSTATE_SYM] = state; // Stick this somewhere the aspects can find it
 
   for (const app of appls) {
     const ctrs = app.constructPaths.map((p) => findConstructDeep(tree, p));
@@ -600,45 +546,12 @@ function arbAspect(constructs: Construct[]): fc.Arbitrary<IAspect> {
   ) satisfies fc.Arbitrary<() => fc.Arbitrary<IAspect>>).chain((fact) => fact());
 }
 
-function arbConstructLoc(constructs: Construct[]): fc.Arbitrary<ConstructLoc> {
-  return fc.record({
-    scope: fc.constantFrom(...constructs.map(c => c.node.path)),
-    id: identifierString(),
-  });
-}
-
-/**
- * A location for a construct (scope and id)
- */
-interface ConstructLoc {
-  readonly scope: string;
-  readonly id: string;
-}
-
-/**
- * fast-check is fully value-based, but Constructs must be added to their parent at construction time
- *
- * Instead of fast-check returning constructs, we will have it return construct FACTORIES,
- * which are functions that are given a parent and add the construct to it.
- *
- * We also have the parent control the `id`, so that we can avoid accidentally generating constructs
- * with conflicting names.
- */
-type ConstructFactory = (scope: Construct, id: string) => Construct;
-
-type AppFactory = () => App;
-
 interface ExecutionState {
   /**
    * Visit log of all aspects
    */
   readonly actionLog: AspectActionLog;
 }
-
-/**
- * A unique symbol for the root construct to hold dynamic information
- */
-const EXECUTIONSTATE_SYM = Symbol();
 
 function findConstructDeep(root: IConstruct, path: string) {
   if (path === '') {
@@ -650,39 +563,6 @@ function findConstructDeep(root: IConstruct, path: string) {
     ctr = ctr.node.findChild(part);
   }
   return ctr;
-}
-
-function identifierString() {
-  return fc.string({ minLength: 1, maxLength: 3, unit: fc.constantFrom('Da', 'Fu', 'Glo', 'Ba', 'Ro', 'ni', 'za', 'go', 'moo', 'flub', 'bu', 'vin', 'e', 'be') });
-}
-
-/**
- * Create a construct factory
- */
-function constructFactory(childGenerators: Record<string, ConstructFactory>): ConstructFactory {
-  return (scope, id) => {
-    const construct = new ArbConstruct(scope, id);
-    for (const [childId, generator] of Object.entries(childGenerators)) {
-      generator(construct, childId);
-    }
-    return construct;
-  };
-}
-
-/**
- * A construct class specifically for this test to distinguish it from other constructs
- */
-class ArbConstruct extends Construct {
-  /**
-   * The state of a construct.
-   *
-   * This is an arbitrary number that can be modified by aspects.
-   */
-  public state: number = 0;
-
-  public toString() {
-    return this.node.path;
-  }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -703,7 +583,7 @@ abstract class TracingAspect implements IAspect {
   }
 
   protected executionState(node: IConstruct): ExecutionState {
-    return (node.node.root as any)[EXECUTIONSTATE_SYM];
+    return ConstructTree.stateOf(node);
   }
 
   visit(node: IConstruct): void {

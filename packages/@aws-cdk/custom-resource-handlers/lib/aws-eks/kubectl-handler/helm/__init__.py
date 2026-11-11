@@ -90,6 +90,11 @@ def helm_handler(event, context):
             tmpdir = tempfile.TemporaryDirectory()
             chart_dir = get_chart_from_oci(tmpdir.name, repository, version)
             chart = chart_dir
+            # Chart is now local — clear repository and version so helm() doesn't
+            # pass --repo/--version to "helm upgrade". Helm v4 (kubectl-v35+)
+            # rejects --repo with oci:// URLs ("invalid reference"), unlike v3.
+            repository = None
+            version = None
 
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace, skip_crds, atomic=atomic)
     elif request_type == "Delete":

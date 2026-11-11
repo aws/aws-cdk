@@ -1,0 +1,609 @@
+{
+ "Resources": {
+  "Vpc8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-dual-source/Vpc"
+     }
+    ]
+   }
+  },
+  "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "Vpc8378EB38",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "Vpc8378EB38",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "Subnet53F41B8F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
+     ]
+    },
+    "CidrBlock": "10.0.172.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-dual-source/Subnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "SubnetRouteTableB722C9E4": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-dual-source/Subnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "SubnetRouteTableAssociation3CCBAA31": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SubnetRouteTableB722C9E4"
+    },
+    "SubnetId": {
+     "Ref": "Subnet53F41B8F"
+    }
+   }
+  },
+  "SGADB53937": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-mediaconnect-dual-source/SG",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcRoleB96698AB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "ec2:CreateNetworkInterface",
+          "ec2:CreateNetworkInterfacePermission",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSubnets"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "eni"
+     }
+    ]
+   }
+  },
+  "EncryptionSecretA7F02943": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptionRole96CADEBA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "secretsmanager:GetSecretValue",
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "EncryptionSecretA7F02943"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "secrets"
+     }
+    ]
+   }
+  },
+  "DualSourceFlowD417E451": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
+     ]
+    },
+    "Maintenance": {
+     "MaintenanceDay": "Tuesday",
+     "MaintenanceStartHour": "03:00"
+    },
+    "Name": "dual-source-flow",
+    "Source": {
+     "Description": "Primary source on VPC (not encrypted)",
+     "IngestPort": 5000,
+     "MaxBitrate": 50000000,
+     "MinLatency": 200,
+     "Name": "primary-source-vpc",
+     "Protocol": "srt-listener",
+     "VpcInterfaceName": "source-vpc-iface"
+    },
+    "SourceFailoverConfig": {
+     "FailoverMode": "FAILOVER",
+     "State": "ENABLED"
+    },
+    "SourceMonitoringConfig": {
+     "ContentQualityAnalysisState": "ENABLED",
+     "ThumbnailState": "ENABLED"
+    },
+    "VpcInterfaces": [
+     {
+      "Name": "source-vpc-iface",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "VpcRoleB96698AB",
+        "Arn"
+       ]
+      },
+      "SecurityGroupIds": [
+       {
+        "Fn::GetAtt": [
+         "SGADB53937",
+         "GroupId"
+        ]
+       }
+      ],
+      "SubnetId": {
+       "Ref": "Subnet53F41B8F"
+      }
+     },
+     {
+      "Name": "output-vpc-iface",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "VpcRoleB96698AB",
+        "Arn"
+       ]
+      },
+      "SecurityGroupIds": [
+       {
+        "Fn::GetAtt": [
+         "SGADB53937",
+         "GroupId"
+        ]
+       }
+      ],
+      "SubnetId": {
+       "Ref": "Subnet53F41B8F"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DualSourceFlowRouterFlowOutputC0A2C3C5": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "DualSourceFlowD417E451",
+      "FlowArn"
+     ]
+    },
+    "Name": "awscdkmediaconnectdualsourceDualSourceFlowRouterFlowOutputC162F224",
+    "RouterIntegrationState": "ENABLED",
+    "RouterIntegrationTransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   }
+  },
+  "SecondarySource30531C00": {
+   "Type": "AWS::MediaConnect::FlowSource",
+   "Properties": {
+    "Decryption": {
+     "KeyType": "srt-password",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "EncryptionRole96CADEBA",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "EncryptionSecretA7F02943"
+     }
+    },
+    "Description": "Secondary encrypted source (not on VPC)",
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "DualSourceFlowD417E451",
+      "FlowArn"
+     ]
+    },
+    "IngestPort": 5001,
+    "MaxBitrate": 50000000,
+    "Name": "secondary-source-encrypted",
+    "Protocol": "srt-listener",
+    "WhitelistCidr": "10.1.0.0/16"
+   }
+  },
+  "RouterNI824411F4": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "10.0.0.0/16"
+       }
+      ]
+     }
+    },
+    "Name": "dual-source-router-ni"
+   }
+  },
+  "RouterInputEFD0F32D": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "MediaConnectFlow": {
+      "FlowArn": {
+       "Fn::GetAtt": [
+        "DualSourceFlowD417E451",
+        "FlowArn"
+       ]
+      },
+      "FlowOutputArn": {
+       "Fn::GetAtt": [
+        "DualSourceFlowRouterFlowOutputC0A2C3C5",
+        "OutputArn"
+       ]
+      },
+      "SourceTransitDecryption": {
+       "EncryptionKeyConfiguration": {
+        "Automatic": {}
+       },
+       "EncryptionKeyType": "AUTOMATIC"
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 20000000,
+    "Name": "dual-source-router-input",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "INPUT_20",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   }
+  },
+  "RouterOutputD335589D": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "RouterNI824411F4",
+        "Arn"
+       ]
+      },
+      "Protocol": "RTP",
+      "ProtocolConfiguration": {
+       "Rtp": {
+        "DestinationAddress": "203.0.113.10",
+        "DestinationPort": 5000
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 20000000,
+    "Name": "dual-source-router-output",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "OUTPUT_100"
+   }
+  },
+  "Entitlement27911D97": {
+   "Type": "AWS::MediaConnect::FlowEntitlement",
+   "Properties": {
+    "Description": "Entitlement for another AWS account",
+    "Encryption": {
+     "Algorithm": "aes256",
+     "KeyType": "static-key",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "EncryptionRole96CADEBA",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "EncryptionSecretA7F02943"
+     }
+    },
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "DualSourceFlowD417E451",
+      "FlowArn"
+     ]
+    },
+    "Name": "awscdkmediaconnectdualsourceEntitlementAC0C15F3",
+    "Subscribers": [
+     "111122223333"
+    ]
+   }
+  },
+  "VpcOutput4F10CDA5": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "Destination": "10.0.1.100",
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "DualSourceFlowD417E451",
+      "FlowArn"
+     ]
+    },
+    "Name": "vpc-interface-output",
+    "Port": 6000,
+    "Protocol": "rist",
+    "VpcInterfaceAttachment": {
+     "VpcInterfaceName": "output-vpc-iface"
+    }
+   }
+  },
+  "EncryptedOutput0ED4EC5B": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "Destination": "203.0.113.100",
+    "Encryption": {
+     "KeyType": "srt-password",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "EncryptionRole96CADEBA",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "EncryptionSecretA7F02943"
+     }
+    },
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "DualSourceFlowD417E451",
+      "FlowArn"
+     ]
+    },
+    "Name": "encrypted-srt-output",
+    "Port": 7000,
+    "Protocol": "srt-caller"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

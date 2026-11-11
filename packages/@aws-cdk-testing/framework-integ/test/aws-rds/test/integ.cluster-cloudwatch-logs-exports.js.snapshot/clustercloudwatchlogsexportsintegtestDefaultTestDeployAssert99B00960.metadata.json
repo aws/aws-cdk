@@ -1,0 +1,78 @@
+{
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallRDSdescribeDBClusters98df35cdf046926e2e3a0e9385810d04"
+    }
+  ],
+  "/cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallRDSdescribeDBClusters5fdd3a1a2b2e75889da8dd11f7006392"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "/aws-cdk-s3-bucket-name-prefix": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-two/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-name-prefix.js:7:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-s3-bucket-name-prefix/BucketWithNamePrefix": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-bucket-name-prefix/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-s3-bucket-name-prefix/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-s3-bucket-name-prefix/BucketWithNamePrefix/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketWithNamePrefix2630E286"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-two/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-two/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-name-prefix.js:8:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

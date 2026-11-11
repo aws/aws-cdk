@@ -2,6 +2,7 @@ import { EOL } from 'os';
 import { Token, UnscopedValidationError } from 'aws-cdk-lib';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import type * as constructs from 'constructs';
 import type { Code } from '../code';
@@ -219,7 +220,7 @@ function validateSparkUiPrefix(prefix?: string): void {
   }
 
   if (errors.length > 0) {
-    throw new UnscopedValidationError(`Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
+    throw new UnscopedValidationError(lit`InvalidSparkUiPrefix`, `Invalid prefix format (value: ${prefix})${EOL}${errors.join(EOL)}`);
   }
 }
 

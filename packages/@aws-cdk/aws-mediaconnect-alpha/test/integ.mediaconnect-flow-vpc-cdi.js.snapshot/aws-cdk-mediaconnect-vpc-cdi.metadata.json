@@ -1,0 +1,229 @@
+{
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "ipAddresses": "*",
+        "subnetConfiguration": [
+          {
+            "name": "*",
+            "subnetType": "Isolated",
+            "cidrMask": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/mysubnet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "cidrBlock": "*",
+        "vpcId": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "cidrBlock": "*",
+        "vpcId": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/myrole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/sg": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/flow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testvpc5C6845CD"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/mysubnet/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mysubnetSubnet269B0887"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/mysubnet/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mysubnetRouteTable0F7D5D45"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/mysubnet/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "mysubnetRouteTableAssociationC339E1ED"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/myrole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrole08546DD7"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/sg/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "sg29196201"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/flow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "flowAF0E31A5"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testvpcsubnet1Subnet1Subnet03E4EA12"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testvpcsubnet1Subnet1RouteTableEBA4A3E2"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testvpcsubnet1Subnet1RouteTableAssociation10E9C707"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testvpcsubnet1Subnet2Subnet9B683CC7"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testvpcsubnet1Subnet2RouteTableECD4BB74"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/subnet1Subnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testvpcsubnet1Subnet2RouteTableAssociation43B7036D"
+    }
+  ],
+  "/aws-cdk-mediaconnect-vpc-cdi/testvpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testvpcRestrictDefaultSecurityGroupCustomResource937ADC3F"
+    }
+  ]
+}

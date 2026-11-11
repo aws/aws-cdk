@@ -1,0 +1,854 @@
+{
+  "/aws-cdk-mediaconnect-encryption-auto-role/TransitSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/StaticKeySecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtPasswordSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterSrtSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterTransitSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Network": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/OutputSrtSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/OutputTransitSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/MediaLiveOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/TransitSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TransitSecretCF30D961"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/StaticKeySecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StaticKeySecret0015B52A"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtPasswordSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtPasswordSecret3F306C2E"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterSrtSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterSrtSecret91A5209A"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterTransitSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterTransitSecret110DD0B0"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow/RouterTransitDecryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowA74D6E88"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput/EncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPullOutputEC920845"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput/EncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerOutputAD1E91F4"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Network/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Network1C6012B5"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/DecryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/TransitEncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputEFD0F32D"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/OutputSrtSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OutputSrtSecret96F09B8D"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/OutputTransitSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OutputTransitSecretDE7B0CBF"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtOutput/EncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtOutput8A7CB851"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/MediaLiveOutput/DestinationTransitEncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/MediaLiveOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MediaLiveOutput4691BEFF"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow/RouterTransitDecryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowRouterTransitDecryptionRole0305A46E"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow/RouterTransitDecryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput/EncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPullOutputEncryptionRole49B6B2B6"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput/EncryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput/EncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerOutputEncryptionRole34317E9C"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput/EncryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/DecryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputDecryptionRoleDB242EE5"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/DecryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/TransitEncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputTransitEncryptionRoleBC375875"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/TransitEncryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtOutput/EncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtOutputEncryptionRoleF645F1F6"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtOutput/EncryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/MediaLiveOutput/DestinationTransitEncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MediaLiveOutputDestinationTransitEncryptionRole4279D17B"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/MediaLiveOutput/DestinationTransitEncryptionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow/RouterTransitDecryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowRouterTransitDecryptionRoleDefaultPolicyBB88BEDA"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput/EncryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPullOutputEncryptionRoleDefaultPolicy47CEB40C"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput/EncryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerOutputEncryptionRoleDefaultPolicy1DE39D42"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/DecryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputDecryptionRoleDefaultPolicyDDDCB041"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/TransitEncryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputTransitEncryptionRoleDefaultPolicyF6C631B1"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtOutput/EncryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtOutputEncryptionRoleDefaultPolicyAB6F91BF"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/MediaLiveOutput/DestinationTransitEncryptionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MediaLiveOutputDestinationTransitEncryptionRoleDefaultPolicy1D0E9AD5"
+    }
+  ]
+}

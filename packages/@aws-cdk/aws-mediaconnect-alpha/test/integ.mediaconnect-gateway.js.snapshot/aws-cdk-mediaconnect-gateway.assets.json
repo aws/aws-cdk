@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "0e01fe07ccb23f1e81dac1d2e3136fb2a407029bee1d66b42789c338138f26db": {
+      "displayName": "aws-cdk-mediaconnect-gateway Template",
+      "source": {
+        "path": "aws-cdk-mediaconnect-gateway.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a98053fc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0e01fe07ccb23f1e81dac1d2e3136fb2a407029bee1d66b42789c338138f26db.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

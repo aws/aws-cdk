@@ -1,0 +1,145 @@
+{
+  "/source-stack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:131:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/source-stack/EventBus": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/source-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/source-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/source-stack/EventBus/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBus7B8748AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventBus (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.js:365:30)",
+        "new EventBus (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SourceStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:110:26)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:131:21)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/mixins-preview.aws_events.mixins.CfnEventBusLogsMixin"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/mixins-preview.aws_events.mixins.CfnEventBusLogsMixin"
+      }
+    }
+  ],
+  "/source-stack/EventBus/Resource/CDKSourceERROR_LOGSsourcestackEventBus5CCE9092": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCDKSourceERRORLOGSsourcestackEventBus5CCE9092B0479940"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "getOrCreateDeliverySource (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.js:314:27)",
+        "DestinationLogsDelivery.bind (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.js:271:32)",
+        "CfnEventBusLogsMixin.applyTo (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-events/logs-delivery-mixins.generated.js:387:26)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "new SourceStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:120:22)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:131:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/source-stack/EventBus/Resource/CdkDestsourcestacks3DestF499B7A7ErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCdkDestsourcestacks3DestF499B7A7ErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9Delivery40A06194"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "DestinationLogsDelivery.bind (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.js:275:26)",
+        "CfnEventBusLogsMixin.applyTo (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-events/logs-delivery-mixins.generated.js:387:26)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "new SourceStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:120:22)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:131:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/source-stack/EventBus/Resource/CdkDestsourcestackFhDest056D7D0DErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCdkDestsourcestackFhDest056D7D0DErrorLogsDeliverysourcestackEventBus5CCE9092sourcestackEventBusCDKSourceERRORLOGSsourcestackEventBus5CCE909246DED3B9Delivery05D12C1A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "DestinationLogsDelivery.bind (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.js:275:26)",
+        "CfnEventBusLogsMixin.applyTo (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-events/logs-delivery-mixins.generated.js:387:26)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "new SourceStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:122:22)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:131:21)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.quoteIdentifier = quoteIdentifier;
+exports.quoteQualifiedIdentifier = quoteQualifiedIdentifier;
+exports.quoteLiteral = quoteLiteral;
+/** A valid bare identifier (letter/underscore then letters, digits, `_`, or `$`); needs no quoting. */
+const BARE_IDENTIFIER = /^[\p{L}_][\p{L}\p{N}_$]*$/u;
+/** Returns a bare-safe identifier unchanged; otherwise double-quotes it, doubling embedded double quotes. */
+function quoteIdentifier(identifier) {
+    if (BARE_IDENTIFIER.test(identifier)) {
+        return identifier;
+    }
+    return `"${identifier.replace(/"/g, '""')}"`;
+}
+/** Applies {@link quoteIdentifier} to each `.`-separated component, keeping the dot separator. */
+function quoteQualifiedIdentifier(qualified) {
+    return qualified.split('.').map(quoteIdentifier).join('.');
+}
+/** Quotes a SQL string literal, doubling any embedded single quote. */
+function quoteLiteral(literal) {
+    return `'${literal.replace(/'/g, "''")}'`;
+}
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXNjYXBlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiZXNjYXBlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBSUEsMENBS0M7QUFHRCw0REFFQztBQUdELG9DQUVDO0FBbkJELHVHQUF1RztBQUN2RyxNQUFNLGVBQWUsR0FBRyw0QkFBNEIsQ0FBQztBQUVyRCw2R0FBNkc7QUFDN0csU0FBZ0IsZUFBZSxDQUFDLFVBQWtCO0lBQ2hELElBQUksZUFBZSxDQUFDLElBQUksQ0FBQyxVQUFVLENBQUMsRUFBRSxDQUFDO1FBQ3JDLE9BQU8sVUFBVSxDQUFDO0lBQ3BCLENBQUM7SUFDRCxPQUFPLElBQUksVUFBVSxDQUFDLE9BQU8sQ0FBQyxJQUFJLEVBQUUsSUFBSSxDQUFDLEdBQUcsQ0FBQztBQUMvQyxDQUFDO0FBRUQsa0dBQWtHO0FBQ2xHLFNBQWdCLHdCQUF3QixDQUFDLFNBQWlCO0lBQ3hELE9BQU8sU0FBUyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsQ0FBQyxHQUFHLENBQUMsZUFBZSxDQUFDLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxDQUFDO0FBQzdELENBQUM7QUFFRCx1RUFBdUU7QUFDdkUsU0FBZ0IsWUFBWSxDQUFDLE9BQWU7SUFDMUMsT0FBTyxJQUFJLE9BQU8sQ0FBQyxPQUFPLENBQUMsSUFBSSxFQUFFLElBQUksQ0FBQyxHQUFHLENBQUM7QUFDNUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKiBBIHZhbGlkIGJhcmUgaWRlbnRpZmllciAobGV0dGVyL3VuZGVyc2NvcmUgdGhlbiBsZXR0ZXJzLCBkaWdpdHMsIGBfYCwgb3IgYCRgKTsgbmVlZHMgbm8gcXVvdGluZy4gKi9cbmNvbnN0IEJBUkVfSURFTlRJRklFUiA9IC9eW1xccHtMfV9dW1xccHtMfVxccHtOfV8kXSokL3U7XG5cbi8qKiBSZXR1cm5zIGEgYmFyZS1zYWZlIGlkZW50aWZpZXIgdW5jaGFuZ2VkOyBvdGhlcndpc2UgZG91YmxlLXF1b3RlcyBpdCwgZG91YmxpbmcgZW1iZWRkZWQgZG91YmxlIHF1b3Rlcy4gKi9cbmV4cG9ydCBmdW5jdGlvbiBxdW90ZUlkZW50aWZpZXIoaWRlbnRpZmllcjogc3RyaW5nKTogc3RyaW5nIHtcbiAgaWYgKEJBUkVfSURFTlRJRklFUi50ZXN0KGlkZW50aWZpZXIpKSB7XG4gICAgcmV0dXJuIGlkZW50aWZpZXI7XG4gIH1cbiAgcmV0dXJuIGBcIiR7aWRlbnRpZmllci5yZXBsYWNlKC9cIi9nLCAnXCJcIicpfVwiYDtcbn1cblxuLyoqIEFwcGxpZXMge0BsaW5rIHF1b3RlSWRlbnRpZmllcn0gdG8gZWFjaCBgLmAtc2VwYXJhdGVkIGNvbXBvbmVudCwga2VlcGluZyB0aGUgZG90IHNlcGFyYXRvci4gKi9cbmV4cG9ydCBmdW5jdGlvbiBxdW90ZVF1YWxpZmllZElkZW50aWZpZXIocXVhbGlmaWVkOiBzdHJpbmcpOiBzdHJpbmcge1xuICByZXR1cm4gcXVhbGlmaWVkLnNwbGl0KCcuJykubWFwKHF1b3RlSWRlbnRpZmllcikuam9pbignLicpO1xufVxuXG4vKiogUXVvdGVzIGEgU1FMIHN0cmluZyBsaXRlcmFsLCBkb3VibGluZyBhbnkgZW1iZWRkZWQgc2luZ2xlIHF1b3RlLiAqL1xuZXhwb3J0IGZ1bmN0aW9uIHF1b3RlTGl0ZXJhbChsaXRlcmFsOiBzdHJpbmcpOiBzdHJpbmcge1xuICByZXR1cm4gYCcke2xpdGVyYWwucmVwbGFjZSgvJy9nLCBcIicnXCIpfSdgO1xufVxuIl19

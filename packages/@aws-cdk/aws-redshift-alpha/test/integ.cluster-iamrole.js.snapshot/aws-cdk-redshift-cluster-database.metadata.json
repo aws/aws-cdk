@@ -1,0 +1,53 @@
+{
+  "/aws-cdk-redshift-cluster-database": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.cluster-iamrole.js:103:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ]
+}

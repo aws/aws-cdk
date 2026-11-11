@@ -90,6 +90,10 @@ describe('stage', () => {
   test('SpecRestApi - stage depends on the CloudWatch role when it exists', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W3660',
+      reason: 'We mix resources and Flutter definitions on purpose',
+    });
     const api = new apigateway.SpecRestApi(stack, 'test-api', { apiDefinition: apigateway.ApiDefinition.fromInline( { foo: 'bar' }) });
     const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
     api.root.addMethod('GET');

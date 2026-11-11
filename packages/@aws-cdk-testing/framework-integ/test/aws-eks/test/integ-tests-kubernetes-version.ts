@@ -23,8 +23,19 @@ const versionMap: { [key: string]: new (scope: Construct, id: string) => lambda.
   '1.35': KubectlV35Layer,
 };
 
+const sortedVersions = Object.keys(versionMap).sort((a, b) => parseFloat(a) - parseFloat(b));
+
+/**
+ * Returns the N latest version strings from the versionMap (default 2).
+ * e.g. ['1.34', '1.35'] for the latest two.
+ */
+export function getLatestVersions(count = 2): string[] {
+  return sortedVersions.slice(-count);
+}
+
 export function getClusterVersionConfig(scope: Construct, version?: eks.KubernetesVersion) {
-  const _version = version ?? eks.KubernetesVersion.V1_32;
+  const latestVersion = sortedVersions[sortedVersions.length - 1];
+  const _version = version ?? eks.KubernetesVersion.of(latestVersion);
   return {
     version: _version,
     // Crazy type-casting is required because KubectlLayer peer depends on

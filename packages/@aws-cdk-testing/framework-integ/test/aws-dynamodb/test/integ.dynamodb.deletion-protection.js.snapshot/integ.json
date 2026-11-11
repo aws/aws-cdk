@@ -1,15 +1,10 @@
 {
-  "version": "31.0.0",
+  "version": "48.0.0",
   "testCases": {
     "deletion-protection-integ-test/DefaultTest": {
       "stacks": [
         "deletion-protection-stack"
       ],
-      "hooks": {
-        "postDeploy": [
-          "aws dynamodb update-table --no-cli-pager --region us-east-1 --table-name deletion-protection-test --no-deletion-protection-enabled"
-        ]
-      },
       "regions": [
         "us-east-1"
       ],
@@ -23,5 +18,6 @@
       "assertionStack": "deletion-protection-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "deletionprotectionintegtestDefaultTestDeployAssertA66823A5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

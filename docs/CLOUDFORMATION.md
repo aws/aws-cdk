@@ -97,6 +97,35 @@ state resource `Creates`, `Updates` or `Deletes` are performed.
      ╚════════════════════╝
 ```
 
+### Failing Resource Deletions
+
+Resources can be deleted during 3 operations:
+
+- Stack Create that is being rolled back
+- Stack Delete
+- Stack Update (if the resource disappears from the template, or is replaced,
+  or a newly added resource is rolled back)
+
+Because a Stack Update operation must be able to be rolled back, and deletes are
+not possible to roll back in general, a Stack Update is done in 2 phases: first
+rollback-able changes and then deletes. Succesful updates to through the
+following state sequence:
+
+```
+UPDATE_IN_PROGRESS -> UPDATE_COMPLETE_CLEANUP_IN_PROGRESS -> UPDATE_COMPLETE
+       ^                            ^
+  new resources           delete replaced resources
+    updates               delete removed resources
+```
+
+Once the `UPDATE_IN_PROGRESS` phase concludes, no rollback will be started
+anymore. This means that even if a resource delete fails during the
+`UPDATE_COMPLETE_CLEANUP_IN_PROGRESS`, *this will not fail the stack update
+operation*.
+
+During other stack operations (which do not have a rollback requirement), a
+failing resource deletion *will* fail and block the operation.
+
 ### Rollbacks
 
 When rolling back:

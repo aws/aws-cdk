@@ -1,0 +1,141 @@
+{
+ "Resources": {
+  "gatewayB15F83BA": {
+   "Type": "AWS::MediaConnect::Gateway",
+   "Properties": {
+    "EgressCidrBlocks": [
+     "10.0.0.0/23"
+    ],
+    "Name": "awscdkmediacridgegatewayAE9914F3",
+    "Networks": [
+     {
+      "CidrBlock": "10.0.0.0/23",
+      "Name": "network-1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "bridge6E10D0E7": {
+   "Type": "AWS::MediaConnect::Bridge",
+   "Properties": {
+    "IngressGatewayBridge": {
+     "MaxBitrate": 5000000,
+     "MaxOutputs": 1
+    },
+    "Name": "awscdkmediaconnectbridgeAB72BCDB",
+    "PlacementArn": {
+     "Fn::GetAtt": [
+      "gatewayB15F83BA",
+      "GatewayArn"
+     ]
+    },
+    "Sources": [
+     {
+      "NetworkSource": {
+       "MulticastIp": "239.0.0.0",
+       "MulticastSourceSettings": {},
+       "Name": "ingress-network-source",
+       "NetworkName": "network-1",
+       "Port": 5000,
+       "Protocol": "rtp-fec"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "testflowB44BC918": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "awscdkmediaconnectbridgetestflow45FB9F86",
+    "Source": {
+     "IngestPort": 5000,
+     "Name": "ingest",
+     "Protocol": "rtp",
+     "WhitelistCidr": "203.0.113.0/24"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "bridgeWithOutputCB448FD8": {
+   "Type": "AWS::MediaConnect::Bridge",
+   "Properties": {
+    "EgressGatewayBridge": {
+     "MaxBitrate": 10000000
+    },
+    "Name": "awscdkmediaconnectbridgebridgeWithOutput854C29E3",
+    "Outputs": [
+     {
+      "NetworkOutput": {
+       "IpAddress": "192.168.1.100",
+       "Name": "bridge-network-output",
+       "NetworkName": "network-1",
+       "Port": 5000,
+       "Protocol": "rtp",
+       "Ttl": 100
+      }
+     }
+    ],
+    "PlacementArn": {
+     "Fn::GetAtt": [
+      "gatewayB15F83BA",
+      "GatewayArn"
+     ]
+    },
+    "Sources": [
+     {
+      "FlowSource": {
+       "FlowArn": {
+        "Fn::GetAtt": [
+         "testflowB44BC918",
+         "FlowArn"
+        ]
+       },
+       "Name": "imported"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

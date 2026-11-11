@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "LambdaS3FilesIntegTest/DefaultTest": {
+      "stacks": [
+        "test-lambda-s3files-integ"
+      ],
+      "assertionStack": "LambdaS3FilesIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaS3FilesIntegTestDefaultTestDeployAssert0F4D084A"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

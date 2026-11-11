@@ -44,7 +44,10 @@ export class ClusterResourceHandler extends ResourceHandler {
     const resp = await this.eks.createCluster({
       ...this.newProps,
       name: clusterName,
-    });
+      // deletionProtection is not yet in the SDK types, so we need to explicitly
+      // pass it to prevent SDK v3 from stripping the unknown property during serialization.
+      deletionProtection: (this.newProps as any).deletionProtection,
+    } as any);
 
     if (!resp.cluster) {
       throw new Error(`Error when trying to create cluster ${clusterName}: CreateCluster returned without cluster information`);
@@ -196,7 +199,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode || updates.updateDeletionProtection) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -261,6 +264,10 @@ export class ClusterResourceHandler extends ResourceHandler {
           subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
           securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
         };
+      }
+
+      if (updates.updateDeletionProtection) {
+        (config as any).deletionProtection = (this.newProps as any).deletionProtection;
       }
 
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -413,6 +420,10 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     }
   }
 
+  if (typeof (parsed.deletionProtection) === 'string') {
+    parsed.deletionProtection = parsed.deletionProtection === 'true';
+  }
+
   return parsed;
 }
 
@@ -429,6 +440,7 @@ interface UpdateMap {
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
   updateBootstrapSelfManagedAddons: boolean; // cluster with default networking add-ons
+  updateDeletionProtection: boolean; // deletionProtection
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -473,6 +485,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
       newProps.bootstrapSelfManagedAddons,
       oldProps.bootstrapSelfManagedAddons,
     ),
+    updateDeletionProtection: (newProps as any).deletionProtection !== (oldProps as any).deletionProtection,
   };
 }
 

@@ -1,0 +1,13 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-emx-flow-zixi-push/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-flow-zixi-push"
+      ],
+      "assertionStack": "cdk-integ-emx-flow-zixi-push/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxflowzixipushDefaultTestDeployAssert8794164D"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

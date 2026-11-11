@@ -133,7 +133,7 @@ describe('PasswordUser', () => {
 
       expect(user.userId).toBe('test-user-id');
       expect(user.userName).toBe('test-user-name');
-      expect(user.engine).toBe('valkey');
+      expect(user.engine?.engineType).toBe('valkey');
       expect(user.accessString).toBe('on ~app:* +@read');
       expect(user.userArn).toBeDefined();
       expect(user.userStatus).toBeDefined();
@@ -148,7 +148,7 @@ describe('PasswordUser', () => {
       });
 
       expect(user.userName).toBe('my-user-id');
-      expect(user.engine).toBe('redis');
+      expect(user.engine?.engineType).toBe('redis');
     });
 
     test('handles mixed password types', () => {
@@ -268,7 +268,7 @@ describe('PasswordUser', () => {
 
       expect(user.userArn).toBe(arn);
       expect(user.userId).toBe('my-user');
-      expect(user.engine).toBe('valkey');
+      expect(user.engine?.engineType).toBe('valkey');
       expect(user.userName).toBe('display-name');
     });
 

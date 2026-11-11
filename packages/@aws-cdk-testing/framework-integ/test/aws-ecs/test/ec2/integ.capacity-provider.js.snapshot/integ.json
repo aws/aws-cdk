@@ -1,15 +1,18 @@
 {
   "version": "48.0.0",
   "testCases": {
-    "integ.capacity-provider": {
+    "Ec2CapacityProviderTest/DefaultTest": {
       "stacks": [
         "integ-ec2-capacity-provider"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
+      "assertionStack": "Ec2CapacityProviderTest/DefaultTest/DeployAssert",
+      "assertionStackName": "Ec2CapacityProviderTestDefaultTestDeployAssert3DEB6F87"
     }
   },
-  "synthContext": {},
-  "enableLookups": false,
   "minimumCliVersion": "2.1033.0"
 }

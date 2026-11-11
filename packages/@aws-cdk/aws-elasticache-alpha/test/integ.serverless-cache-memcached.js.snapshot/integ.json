@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "testCases": {
     "aws-cdk-serverless-cache-memcached-integ/DefaultTest": {
       "stacks": [
@@ -13,5 +13,5 @@
       "assertionStackName": "awscdkserverlesscachememcachedintegDefaultTestDeployAssert34CED61A"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1123.0"
 }

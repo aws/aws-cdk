@@ -18,7 +18,7 @@ new rds.DatabaseCluster(stack, 'Database', {
     version: INTEG_TEST_LATEST_AURORA_MYSQL,
   }),
   credentials: rds.Credentials.fromUsername('admin', {
-    password: cdk.SecretValue.plainText('7959866cacc02c2d243ecfe177464fe6'),
+    password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
   }),
   writer: rds.ClusterInstance.provisioned('Instance1', { isFromLegacyInstanceProps: true }),
   vpc,

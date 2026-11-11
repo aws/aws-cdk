@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { getWarnings, getInfos } from './util';
+import { lit } from '../../core/lib/private/literal-string';
 import { App, Stack } from '../lib';
 import { Annotations } from '../lib/annotations';
 
@@ -219,6 +220,34 @@ describe('annotations', () => {
         message: expect.stringMatching(/stackId: \${Token\[AWS::StackId\.\d+\]} \[ack: INFO\]/),
       },
     ]);
+  });
+
+  test('_addTrackableError adds error and trackable metadata', () => {
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    Annotations.of(c1)._addTrackableError(lit`MyErrorCode`, 'Something went wrong');
+
+    const metadata = c1.node.metadata;
+    expect(metadata).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'aws:cdk:error', data: 'Something went wrong' }),
+        expect.objectContaining({ type: 'aws:cdk:error-code', data: 'MyErrorCode' }),
+      ]),
+    );
+  });
+
+  test('_addTrackableError deduplicates trackable metadata', () => {
+    const app = new App();
+    const stack = new Stack(app, 'S1');
+    const c1 = new Construct(stack, 'C1');
+
+    Annotations.of(c1)._addTrackableError(lit`MyErrorCode`, 'Something went wrong');
+    Annotations.of(c1)._addTrackableError(lit`MyErrorCode`, 'Something went wrong');
+
+    const trackable = c1.node.metadata.filter(m => m.type === 'aws:cdk:error-code');
+    expect(trackable).toHaveLength(1);
   });
 
   test('messages with same ID are treated separately across different levels', () => {

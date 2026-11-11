@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: "*"
         env:
@@ -28,7 +28,7 @@ jobs:
         run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
       - name: Restore Yarn cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -58,7 +58,7 @@ jobs:
           ncu --upgrade --reject=@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=jsii,jsii-rosetta,typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@aws-cdk/asset-awscli-v1,@types/conventional-commits-parser,@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
+          lerna exec --parallel ncu -- --upgrade --reject='@aws/cloudformation-validate,@aws-cdk/asset-awscli-v1,@types/conventional-commits-parser,@types/node,@types/prettier,constructs,jsii,jsii-rosetta,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
           # Upgrade dependencies at an aws-eks integ test docker image
           cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject='@aws-sdk/*,${{ steps.list-packages.outputs.list }}'
 
@@ -76,7 +76,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/upgrade.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}/upgrade.patch
@@ -88,12 +88,13 @@ jobs:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - name: Check Out
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download patch
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: upgrade.patch
           path: ${{ runner.temp }}

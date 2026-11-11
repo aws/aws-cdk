@@ -11,7 +11,7 @@ class TestStack extends cdk.Stack {
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
     const vpc = new ec2.Vpc(this, 'VPC', {
-      cidr: '10.0.0.0/16',
+      ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
       natGateways: 0,
       maxAzs: 3,
       subnetConfiguration: [

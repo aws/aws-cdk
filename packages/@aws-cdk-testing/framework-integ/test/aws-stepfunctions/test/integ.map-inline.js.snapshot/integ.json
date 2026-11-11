@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "53.0.0",
   "testCases": {
     "cdk-stepfunctions-map-inline-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-stepfunctions-map-inline-integ/DefaultTest/DeployAssert",
       "assertionStackName": "cdkstepfunctionsmapinlineintegDefaultTestDeployAssertD29BA3EB"
     }
-  }
+  },
+  "minimumCliVersion": "2.1108.0"
 }

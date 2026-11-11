@@ -1,0 +1,831 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generates multiple event methods on a resource events class 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as service from "aws-cdk-lib/aws-service";
+import * as events from "aws-cdk-lib/aws-events";
+
+/**
+ * EventBridge event pattern for aws.service@Created
+ */
+export class Created {
+  /**
+   * EventBridge event pattern for Created
+   */
+  public static eventPattern(options?: Created.CreatedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedDetailToEventPattern(options),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+export namespace Created {
+  /**
+   * Props type for aws.service@Created event
+   */
+  export interface CreatedProps {
+    /**
+     * resource property
+     *
+     * Specify an array of string values to match this event if the actual value of resource is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly resource?: Created.Resource;
+
+    /**
+     * prop1 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop1 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop1?: Array<string>;
+
+    /**
+     * EventBridge event metadata
+     *
+     * @default - -
+     */
+    readonly eventMetadata?: cdk.AWSEventMetadataProps;
+  }
+
+  /**
+   * Type definition for Resource
+   *
+   * @struct
+   */
+  export interface Resource {
+    /**
+     * id property
+     *
+     * Specify an array of string values to match this event if the actual value of id is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Filter with the Resource reference
+     */
+    readonly id?: Array<string>;
+  }
+}
+
+// @ts-ignore TS6133
+function convertCreatedResourceToEventPattern(obj?: Created.Resource, iRef?: service.IResourceRef): any {
+  const ret = ({
+    id: (obj?.id ?? [iRef?.resourceRef.resourceId])
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+// @ts-ignore TS6133
+function convertCreatedDetailToEventPattern(obj?: Created.CreatedProps, iRef?: service.IResourceRef): any {
+  const ret = ({
+    resource: convertCreatedResourceToEventPattern(obj?.resource, iRef),
+    prop1: obj?.prop1
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+/**
+ * EventBridge event patterns for Resource
+ */
+export class ResourceEvents {
+  /**
+   * Create ResourceEvents from a Resource reference
+   */
+  public static fromResource(resourceRef: service.IResourceRef): ResourceEvents {
+    return new ResourceEvents(resourceRef);
+  }
+
+  /**
+   * Reference to the Resource construct
+   */
+  private readonly resourceRef: service.IResourceRef;
+
+  private constructor(resourceRef: service.IResourceRef) {
+    this.resourceRef = resourceRef;
+  }
+
+  /**
+   * EventBridge event pattern for Resource Created
+   */
+  public createdPattern(options?: Created.CreatedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedDetailToEventPattern(options, this.resourceRef),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+
+  /**
+   * EventBridge event pattern for Resource Deleted
+   */
+  public deletedPattern(options?: Deleted.DeletedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Deleted"],
+      detail: convertDeletedDetailToEventPattern(options, this.resourceRef),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+/**
+ * EventBridge event pattern for aws.service@Deleted
+ */
+export class Deleted {
+  /**
+   * EventBridge event pattern for Deleted
+   */
+  public static eventPattern(options?: Deleted.DeletedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Deleted"],
+      detail: convertDeletedDetailToEventPattern(options),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+export namespace Deleted {
+  /**
+   * Props type for aws.service@Deleted event
+   */
+  export interface DeletedProps {
+    /**
+     * resource property
+     *
+     * Specify an array of string values to match this event if the actual value of resource is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly resource?: Deleted.Resource;
+
+    /**
+     * prop1 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop1 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop1?: Array<string>;
+
+    /**
+     * EventBridge event metadata
+     *
+     * @default - -
+     */
+    readonly eventMetadata?: cdk.AWSEventMetadataProps;
+  }
+
+  /**
+   * Type definition for Resource
+   *
+   * @struct
+   */
+  export interface Resource {
+    /**
+     * id property
+     *
+     * Specify an array of string values to match this event if the actual value of id is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Filter with the Resource reference
+     */
+    readonly id?: Array<string>;
+  }
+}
+
+// @ts-ignore TS6133
+function convertDeletedResourceToEventPattern(obj?: Deleted.Resource, iRef?: service.IResourceRef): any {
+  const ret = ({
+    id: (obj?.id ?? [iRef?.resourceRef.resourceId])
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+// @ts-ignore TS6133
+function convertDeletedDetailToEventPattern(obj?: Deleted.DeletedProps, iRef?: service.IResourceRef): any {
+  const ret = ({
+    resource: convertDeletedResourceToEventPattern(obj?.resource, iRef),
+    prop1: obj?.prop1
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}"
+`;
+
+exports[`generates nested type definitions for complex event shapes 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as service from "aws-cdk-lib/aws-service";
+import * as events from "aws-cdk-lib/aws-events";
+
+/**
+ * EventBridge event pattern for aws.service@Created
+ */
+export class Created {
+  /**
+   * EventBridge event pattern for Created
+   */
+  public static eventPattern(options?: Created.CreatedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedDetailToEventPattern(options),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+export namespace Created {
+  /**
+   * Props type for aws.service@Created event
+   */
+  export interface CreatedProps {
+    /**
+     * resource property
+     *
+     * Specify an array of string values to match this event if the actual value of resource is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly resource?: Created.ResourceRef;
+
+    /**
+     * metadata property
+     *
+     * Specify an array of string values to match this event if the actual value of metadata is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly metadata?: Created.Metadata;
+
+    /**
+     * prop1 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop1 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop1?: Array<string>;
+
+    /**
+     * EventBridge event metadata
+     *
+     * @default - -
+     */
+    readonly eventMetadata?: cdk.AWSEventMetadataProps;
+  }
+
+  /**
+   * Type definition for ResourceRef
+   *
+   * @struct
+   */
+  export interface ResourceRef {
+    /**
+     * id property
+     *
+     * Specify an array of string values to match this event if the actual value of id is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Filter with the Resource reference
+     */
+    readonly id?: Array<string>;
+  }
+
+  /**
+   * Type definition for Metadata
+   *
+   * @struct
+   */
+  export interface Metadata {
+    /**
+     * prop1 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop1 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop1?: Array<string>;
+
+    /**
+     * prop2 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop2 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop2?: Array<string>;
+  }
+}
+
+// @ts-ignore TS6133
+function convertCreatedResourceRefToEventPattern(obj?: Created.ResourceRef, iRef?: service.IResourceRef): any {
+  const ret = ({
+    id: (obj?.id ?? [iRef?.resourceRef.resourceId])
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+// @ts-ignore TS6133
+function convertCreatedMetadataToEventPattern(obj?: Created.Metadata, iRef?: service.IResourceRef): any {
+  const ret = ({
+    prop1: obj?.prop1,
+    prop2: obj?.prop2
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+// @ts-ignore TS6133
+function convertCreatedDetailToEventPattern(obj?: Created.CreatedProps, iRef?: service.IResourceRef): any {
+  const ret = ({
+    resource: convertCreatedResourceRefToEventPattern(obj?.resource, iRef),
+    metadata: convertCreatedMetadataToEventPattern(obj?.metadata, iRef),
+    prop1: obj?.prop1
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+/**
+ * EventBridge event patterns for Resource
+ */
+export class ResourceEvents {
+  /**
+   * Create ResourceEvents from a Resource reference
+   */
+  public static fromResource(resourceRef: service.IResourceRef): ResourceEvents {
+    return new ResourceEvents(resourceRef);
+  }
+
+  /**
+   * Reference to the Resource construct
+   */
+  private readonly resourceRef: service.IResourceRef;
+
+  private constructor(resourceRef: service.IResourceRef) {
+    this.resourceRef = resourceRef;
+  }
+
+  /**
+   * EventBridge event pattern for Resource Created
+   */
+  public createdPattern(options?: Created.CreatedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedDetailToEventPattern(options, this.resourceRef),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}"
+`;
+
+exports[`generates standalone event when event has no resourcesField 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as events from "aws-cdk-lib/aws-events";
+
+/**
+ * EventBridge event pattern for aws.service@Created
+ */
+export class Created {
+  /**
+   * EventBridge event pattern for Created
+   */
+  public static eventPattern(options?: Created.CreatedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedDetailToEventPattern(options),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+export namespace Created {
+  /**
+   * Props type for aws.service@Created event
+   */
+  export interface CreatedProps {
+    /**
+     * prop1 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop1 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop1?: Array<string>;
+
+    /**
+     * prop2 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop2 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop2?: Array<string>;
+
+    /**
+     * EventBridge event metadata
+     *
+     * @default - -
+     */
+    readonly eventMetadata?: cdk.AWSEventMetadataProps;
+  }
+}
+
+// @ts-ignore TS6133
+function convertCreatedDetailToEventPattern(obj?: Created.CreatedProps): any {
+  const ret = ({
+    prop1: obj?.prop1,
+    prop2: obj?.prop2
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}"
+`;
+
+exports[`mixed resource-bound and standalone events in the same service 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as service from "aws-cdk-lib/aws-service";
+import * as events from "aws-cdk-lib/aws-events";
+
+/**
+ * EventBridge event pattern for aws.service@Deleted
+ */
+export class Deleted {
+  /**
+   * EventBridge event pattern for Deleted
+   */
+  public static eventPattern(options?: Deleted.DeletedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Deleted"],
+      detail: convertDeletedDetailToEventPattern(options),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+export namespace Deleted {
+  /**
+   * Props type for aws.service@Deleted event
+   */
+  export interface DeletedProps {
+    /**
+     * prop1 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop1 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop1?: Array<string>;
+
+    /**
+     * EventBridge event metadata
+     *
+     * @default - -
+     */
+    readonly eventMetadata?: cdk.AWSEventMetadataProps;
+  }
+}
+
+// @ts-ignore TS6133
+function convertDeletedDetailToEventPattern(obj?: Deleted.DeletedProps): any {
+  const ret = ({
+    prop1: obj?.prop1
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+/**
+ * EventBridge event pattern for aws.service@Created
+ */
+export class Created {
+  /**
+   * EventBridge event pattern for Created
+   */
+  public static eventPattern(options?: Created.CreatedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedDetailToEventPattern(options),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+export namespace Created {
+  /**
+   * Props type for aws.service@Created event
+   */
+  export interface CreatedProps {
+    /**
+     * resource property
+     *
+     * Specify an array of string values to match this event if the actual value of resource is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly resource?: Created.ResourceRef;
+
+    /**
+     * prop1 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop1 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop1?: Array<string>;
+
+    /**
+     * EventBridge event metadata
+     *
+     * @default - -
+     */
+    readonly eventMetadata?: cdk.AWSEventMetadataProps;
+  }
+
+  /**
+   * Type definition for ResourceRef
+   *
+   * @struct
+   */
+  export interface ResourceRef {
+    /**
+     * resourceId property
+     *
+     * Specify an array of string values to match this event if the actual value of resourceId is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Filter with the Resource reference
+     */
+    readonly resourceId?: Array<string>;
+  }
+}
+
+// @ts-ignore TS6133
+function convertCreatedResourceRefToEventPattern(obj?: Created.ResourceRef, iRef?: service.IResourceRef): any {
+  const ret = ({
+    resourceId: (obj?.resourceId ?? [iRef?.resourceRef.resourceId])
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+// @ts-ignore TS6133
+function convertCreatedDetailToEventPattern(obj?: Created.CreatedProps, iRef?: service.IResourceRef): any {
+  const ret = ({
+    resource: convertCreatedResourceRefToEventPattern(obj?.resource, iRef),
+    prop1: obj?.prop1
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}
+
+/**
+ * EventBridge event patterns for Resource
+ */
+export class ResourceEvents {
+  /**
+   * Create ResourceEvents from a Resource reference
+   */
+  public static fromResource(resourceRef: service.IResourceRef): ResourceEvents {
+    return new ResourceEvents(resourceRef);
+  }
+
+  /**
+   * Reference to the Resource construct
+   */
+  private readonly resourceRef: service.IResourceRef;
+
+  private constructor(resourceRef: service.IResourceRef) {
+    this.resourceRef = resourceRef;
+  }
+
+  /**
+   * EventBridge event pattern for Resource Created
+   */
+  public createdPattern(options?: Created.CreatedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedDetailToEventPattern(options, this.resourceRef),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}"
+`;
+
+exports[`special characters in property names are sanitized 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as events from "aws-cdk-lib/aws-events";
+
+/**
+ * EventBridge event pattern for aws.service@Created-event
+ */
+export class CreatedEvent {
+  /**
+   * EventBridge event pattern for Created
+   */
+  public static eventPattern(options?: CreatedEvent.CreatedEventProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedEventDetailToEventPattern(options),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+export namespace CreatedEvent {
+  /**
+   * Props type for aws.service@Created-event event
+   */
+  export interface CreatedEventProps {
+    /**
+     * source-class property
+     *
+     * Specify an array of string values to match this event if the actual value of source-class is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly sourceClass?: Array<string>;
+
+    /**
+     * dest-class property
+     *
+     * Specify an array of string values to match this event if the actual value of dest-class is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly destClass?: Array<string>;
+
+    /**
+     * foo:bar:id property
+     *
+     * Specify an array of string values to match this event if the actual value of foo:bar:id is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly fooBarId?: Array<string>;
+
+    /**
+     * EventBridge event metadata
+     *
+     * @default - -
+     */
+    readonly eventMetadata?: cdk.AWSEventMetadataProps;
+  }
+}
+
+// @ts-ignore TS6133
+function convertCreatedEventDetailToEventPattern(obj?: CreatedEvent.CreatedEventProps): any {
+  const ret = ({
+    "source-class": obj?.sourceClass,
+    "dest-class": obj?.destClass,
+    "foo:bar:id": obj?.fooBarId
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}"
+`;
+
+exports[`unresolvable resourcesField makes event standalone 1`] = `
+"/* eslint-disable prettier/prettier, @stylistic/max-len */
+import * as cdk from "aws-cdk-lib/core";
+import * as events from "aws-cdk-lib/aws-events";
+
+/**
+ * EventBridge event pattern for aws.service@Created
+ */
+export class Created {
+  /**
+   * EventBridge event pattern for Created
+   */
+  public static eventPattern(options?: Created.CreatedProps): events.EventPattern {
+    return {
+      source: ["aws.service"],
+      detailType: ["Created"],
+      detail: convertCreatedDetailToEventPattern(options),
+      version: options?.eventMetadata?.version,
+      resources: options?.eventMetadata?.resources,
+      region: options?.eventMetadata?.region
+    };
+  }
+}
+
+export namespace Created {
+  /**
+   * Props type for aws.service@Created event
+   */
+  export interface CreatedProps {
+    /**
+     * prop1 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop1 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop1?: Array<string>;
+
+    /**
+     * prop2 property
+     *
+     * Specify an array of string values to match this event if the actual value of prop2 is one of the values in the array. Use one of the constructors on the \`aws_events.Match\`  for more advanced matching options.
+     *
+     * @default - Do not filter on this field
+     */
+    readonly prop2?: Array<string>;
+
+    /**
+     * EventBridge event metadata
+     *
+     * @default - -
+     */
+    readonly eventMetadata?: cdk.AWSEventMetadataProps;
+  }
+}
+
+// @ts-ignore TS6133
+function convertCreatedDetailToEventPattern(obj?: Created.CreatedProps): any {
+  const ret = ({
+    prop1: obj?.prop1,
+    prop2: obj?.prop2
+  } as any);
+  for (const [key, value] of Object.entries(ret)) {
+    if ((value === undefined)) delete ret[key];
+  }
+  if (Object.keys(ret).length === 0) return undefined;;
+  return ret;
+}"
+`;

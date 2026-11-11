@@ -4,7 +4,7 @@ import { InstanceProfile, Role, ServicePrincipal } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
-import { App, Stack, Duration } from '../../core';
+import { App, Stack, Duration, Validations } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { LaunchTemplate } from '../lib';
 import {
@@ -441,6 +441,10 @@ describe('instance', () => {
     });
 
     test('warning if iops and invalid volumeType', () => {
+      Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::W3671',
+        reason: 'We already have a warning here',
+      });
       new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),

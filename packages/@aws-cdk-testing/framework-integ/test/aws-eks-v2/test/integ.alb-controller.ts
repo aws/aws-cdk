@@ -3,13 +3,13 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
+import { EKS_USE_NATIVE_OIDC_PROVIDER, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS } from 'aws-cdk-lib/cx-api';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 import { Pinger } from './pinger/pinger';
 
-const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V2_8_2;
+const LATEST_VERSION: eks.AlbControllerVersion = eks.AlbControllerVersion.V3_2_2;
 class EksClusterAlbControllerStack extends Stack {
   constructor(scope: App, id: string) {
     super(scope, id);
@@ -65,7 +65,7 @@ class EksClusterAlbControllerStack extends Stack {
     });
 
     // the pinger must wait for the ingress and echoServer to be deployed.
-    pinger.node.addDependency(ingress, echoServer);
+    pinger.node.addDependency(echoServer);
 
     // this should display the 'hello' text we gave to the server
     new CfnOutput(this, 'IngressPingerResponse', {
@@ -77,6 +77,7 @@ class EksClusterAlbControllerStack extends Stack {
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },

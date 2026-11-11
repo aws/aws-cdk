@@ -1,0 +1,189 @@
+{
+  "name": "@aws-cdk/metrics-facade-alpha",
+  "version": "0.0.0",
+  "private": false,
+  "description": "The CDK Construct Library for Metrics Facade",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.MetricsFacade.Alpha",
+        "packageId": "Amazon.CDK.MetricsFacade.Alpha",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.metricsfacade.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-metrics-facade-alpha"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.metrics-facade-alpha",
+        "module": "aws_cdk.metrics_facade_alpha",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkmetricsfacadealpha"
+      }
+    },
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
+    "tsconfig": "tsconfig.json",
+    "validateTsconfig": "minimal"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/metrics-facade-alpha"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "exports": {
+    ".": "./lib/index.js",
+    "./.jsii": "./.jsii",
+    "./.warnings.jsii.js": "./.warnings.jsii.js",
+    "./aws-amazonmq": "./lib/services/aws-amazonmq/index.js",
+    "./aws-apigateway": "./lib/services/aws-apigateway/index.js",
+    "./aws-apigatewayv2": "./lib/services/aws-apigatewayv2/index.js",
+    "./aws-appstream": "./lib/services/aws-appstream/index.js",
+    "./aws-appsync": "./lib/services/aws-appsync/index.js",
+    "./aws-autoscaling": "./lib/services/aws-autoscaling/index.js",
+    "./aws-bedrock": "./lib/services/aws-bedrock/index.js",
+    "./aws-cloudfront": "./lib/services/aws-cloudfront/index.js",
+    "./aws-cloudwatch": "./lib/services/aws-cloudwatch/index.js",
+    "./aws-codebuild": "./lib/services/aws-codebuild/index.js",
+    "./aws-codepipeline": "./lib/services/aws-codepipeline/index.js",
+    "./aws-cognito": "./lib/services/aws-cognito/index.js",
+    "./aws-datasync": "./lib/services/aws-datasync/index.js",
+    "./aws-dax": "./lib/services/aws-dax/index.js",
+    "./aws-dms": "./lib/services/aws-dms/index.js",
+    "./aws-docdb": "./lib/services/aws-docdb/index.js",
+    "./aws-dynamodb": "./lib/services/aws-dynamodb/index.js",
+    "./aws-ec2": "./lib/services/aws-ec2/index.js",
+    "./aws-ecs": "./lib/services/aws-ecs/index.js",
+    "./aws-efs": "./lib/services/aws-efs/index.js",
+    "./aws-eks": "./lib/services/aws-eks/index.js",
+    "./aws-elasticache": "./lib/services/aws-elasticache/index.js",
+    "./aws-elasticbeanstalk": "./lib/services/aws-elasticbeanstalk/index.js",
+    "./aws-elasticloadbalancing": "./lib/services/aws-elasticloadbalancing/index.js",
+    "./aws-elasticloadbalancingv2": "./lib/services/aws-elasticloadbalancingv2/index.js",
+    "./aws-emr": "./lib/services/aws-emr/index.js",
+    "./aws-events": "./lib/services/aws-events/index.js",
+    "./aws-fsx": "./lib/services/aws-fsx/index.js",
+    "./aws-gamelift": "./lib/services/aws-gamelift/index.js",
+    "./aws-iot": "./lib/services/aws-iot/index.js",
+    "./aws-kinesis": "./lib/services/aws-kinesis/index.js",
+    "./aws-kinesisanalytics": "./lib/services/aws-kinesisanalytics/index.js",
+    "./aws-kinesisfirehose": "./lib/services/aws-kinesisfirehose/index.js",
+    "./aws-kinesisvideo": "./lib/services/aws-kinesisvideo/index.js",
+    "./aws-kms": "./lib/services/aws-kms/index.js",
+    "./aws-lambda": "./lib/services/aws-lambda/index.js",
+    "./aws-lex": "./lib/services/aws-lex/index.js",
+    "./aws-logs": "./lib/services/aws-logs/index.js",
+    "./aws-mediaconvert": "./lib/services/aws-mediaconvert/index.js",
+    "./aws-medialive": "./lib/services/aws-medialive/index.js",
+    "./aws-mediapackage": "./lib/services/aws-mediapackage/index.js",
+    "./aws-mediastore": "./lib/services/aws-mediastore/index.js",
+    "./aws-memorydb": "./lib/services/aws-memorydb/index.js",
+    "./aws-neptune": "./lib/services/aws-neptune/index.js",
+    "./aws-opsworks": "./lib/services/aws-opsworks/index.js",
+    "./aws-qldb": "./lib/services/aws-qldb/index.js",
+    "./aws-quicksight": "./lib/services/aws-quicksight/index.js",
+    "./aws-rds": "./lib/services/aws-rds/index.js",
+    "./aws-redshift": "./lib/services/aws-redshift/index.js",
+    "./aws-route53": "./lib/services/aws-route53/index.js",
+    "./aws-route53resolver": "./lib/services/aws-route53resolver/index.js",
+    "./aws-s3": "./lib/services/aws-s3/index.js",
+    "./aws-sagemaker": "./lib/services/aws-sagemaker/index.js",
+    "./aws-servicecatalog": "./lib/services/aws-servicecatalog/index.js",
+    "./aws-ses": "./lib/services/aws-ses/index.js",
+    "./aws-sns": "./lib/services/aws-sns/index.js",
+    "./aws-sqs": "./lib/services/aws-sqs/index.js",
+    "./aws-stepfunctions": "./lib/services/aws-stepfunctions/index.js",
+    "./aws-synthetics": "./lib/services/aws-synthetics/index.js",
+    "./aws-timestream": "./lib/services/aws-timestream/index.js",
+    "./aws-transfer": "./lib/services/aws-transfer/index.js",
+    "./aws-workspaces": "./lib/services/aws-workspaces/index.js"
+  },
+  "scripts": {
+    "gen": "tsx scripts/gen.ts",
+    "build": "cdk-build",
+    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "metrics",
+    "facade"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "^2.202.3",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/service-spec-types": "0.0.259",
+    "@aws-cdk/spec2cdk": "0.0.0",
+    "@cdklabs/tskb": "^0.0.4",
+    "@cdklabs/typewriter": "^0.0.16",
+    "@types/jest": "^29.5.14",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.5.0",
+    "jest": "^29.7.0",
+    "tsx": "^4.23.1"
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "aws-cdk-lib": "^0.0.0",
+    "constructs": "^10.5.0"
+  },
+  "separate-module": false,
+  "engines": {
+    "node": ">= 20.0.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "pkglint": {
+    "exclude": []
+  }
+}

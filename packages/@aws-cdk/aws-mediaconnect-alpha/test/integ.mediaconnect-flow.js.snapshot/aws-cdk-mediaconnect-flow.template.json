@@ -1,0 +1,54 @@
+{
+ "Resources": {
+  "flowAF0E31A5": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "awscdkmediaconnectflow03BA7967",
+    "Source": {
+     "Description": "my test flow",
+     "IngestPort": 2099,
+     "MaxBitrate": 10000000,
+     "Name": "my-flow",
+     "Protocol": "rtp-fec",
+     "WhitelistCidr": "10.1.0.0/16"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

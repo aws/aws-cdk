@@ -7,7 +7,11 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import type { IResolveContext, IResource, ResourceProps, SecretsManagerSecretOptions } from '../../core';
 import { ArnFormat, FeatureFlags, Fn, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 import type { ISecretRef, SecretReference, ISecretTargetAttachmentRef, SecretTargetAttachmentReference } from '../../interfaces/generated/aws-secretsmanager-interfaces.generated';
@@ -302,7 +306,7 @@ export class SecretStringValueBeta1 {
    */
   public static fromToken(secretValueFromToken: string) {
     if (!Token.isUnresolved(secretValueFromToken)) {
-      throw new UnscopedValidationError('SecretStringValueBeta1 appears to be plaintext (unsafe) string (or resolved Token); use fromUnsafePlaintext if this is intentional');
+      throw new UnscopedValidationError(lit`SecretStringValueBetaAppears`, 'SecretStringValueBeta1 appears to be plaintext (unsafe) string (or resolved Token); use fromUnsafePlaintext if this is intentional');
     }
     return new SecretStringValueBeta1(secretValueFromToken);
   }
@@ -358,6 +362,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
+    // eslint-disable-next-line no-restricted-syntax
     this._arnForPolicies = Lazy.uncachedString({
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
@@ -425,7 +430,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
     if (this instanceof Secret && result.resourceStatement && (!this.encryptionKey && crossAccount === TokenComparison.DIFFERENT)) {
-      throw new ValidationError('KMS Key must be provided for cross account access to Secret', this);
+      throw new ValidationError(lit`KeyProvidedCrossAccountAccess`, 'KMS Key must be provided for cross account access to Secret', this);
     }
 
     return result;
@@ -456,7 +461,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
     // Throw if secret is not imported and it's shared cross account and no KMS key is provided
     if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
-      throw new ValidationError('KMS Key must be provided for cross account access to Secret', this);
+      throw new ValidationError(lit`KeyProvidedCrossAccountAccess`, 'KMS Key must be provided for cross account access to Secret', this);
     }
 
     return result;
@@ -519,7 +524,7 @@ abstract class SecretBase extends Resource implements ISecret {
     const existing = this.node.tryFindChild(id);
 
     if (existing) {
-      throw new ValidationError('Secret is already attached to a target.', this);
+      throw new ValidationError(lit`SecretAlreadyAttachedTarget`, 'Secret is already attached to a target.', this);
     }
 
     return new SecretTargetAttachment(this, id, {
@@ -533,6 +538,7 @@ abstract class SecretBase extends Resource implements ISecret {
  * Creates a new secret in AWS SecretsManager.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Secret extends SecretBase {
   /**
    * Uniquely identifies this class.
@@ -628,17 +634,17 @@ export class Secret extends SecretBase {
 
     if (attrs.secretArn) {
       if (attrs.secretCompleteArn || attrs.secretPartialArn) {
-        throw new ValidationError('cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`', scope);
+        throw new ValidationError(lit`CannotSecretArnSecretComplete`, 'cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`', scope);
       }
       secretArn = attrs.secretArn;
       secretArnIsPartial = false;
     } else {
       if ((attrs.secretCompleteArn && attrs.secretPartialArn) ||
           (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
-        throw new ValidationError('must use only one of `secretCompleteArn` or `secretPartialArn`', scope);
+        throw new ValidationError(lit`Only`, 'must use only one of `secretCompleteArn` or `secretPartialArn`', scope);
       }
       if (attrs.secretCompleteArn && !arnIsComplete(attrs.secretCompleteArn)) {
-        throw new ValidationError('`secretCompleteArn` does not appear to be complete; missing 6-character suffix', scope);
+        throw new ValidationError(lit`DoesAppearCompleteMissing`, '`secretCompleteArn` does not appear to be complete; missing 6-character suffix', scope);
       }
       [secretArn, secretArnIsPartial] = attrs.secretCompleteArn ? [attrs.secretCompleteArn, false] : [attrs.secretPartialArn!, true];
     }
@@ -663,7 +669,7 @@ export class Secret extends SecretBase {
    */
   public readonly excludeCharacters?: string;
 
-  private replicaRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
+  private readonly _replicaRegions: IArrayBox<secretsmanager.CfnSecret.ReplicaRegionProperty>;
 
   protected readonly autoCreatePolicy = true;
 
@@ -674,10 +680,12 @@ export class Secret extends SecretBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this._replicaRegions = Box.fromArray();
+
     if (props.generateSecretString &&
         (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
         !(props.generateSecretString.secretStringTemplate && props.generateSecretString.generateStringKey)) {
-      throw new ValidationError('`secretStringTemplate` and `generateStringKey` must be specified together.', this);
+      throw new ValidationError(lit`MustBeSpecifiedTogether`, '`secretStringTemplate` and `generateStringKey` must be specified together.', this);
     }
 
     if ((props.generateSecretString ? 1 : 0)
@@ -685,7 +693,7 @@ export class Secret extends SecretBase {
       + (props.secretStringValue ? 1 : 0)
       + (props.secretObjectValue ? 1 : 0)
       > 1) {
-      throw new ValidationError('Cannot specify more than one of `generateSecretString`, `secretStringValue`, `secretObjectValue`, and `secretStringBeta1`.', this);
+      throw new ValidationError(lit`CannotSpecifyOneGenerateSecret`, 'Cannot specify more than one of `generateSecretString`, `secretStringValue`, `secretObjectValue`, and `secretStringBeta1`.', this);
     }
 
     const secretString = props.secretObjectValue
@@ -698,7 +706,7 @@ export class Secret extends SecretBase {
       generateSecretString: props.generateSecretString ?? (secretString ? undefined : {}),
       secretString,
       name: this.physicalName,
-      replicaRegions: Lazy.any({ produce: () => this.replicaRegions }, { omitEmptyArray: true }),
+      replicaRegions: this._replicaRegions,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy, {
@@ -766,10 +774,10 @@ export class Secret extends SecretBase {
   public addReplicaRegion(region: string, encryptionKey?: kms.IKeyRef): void {
     const stack = Stack.of(this);
     if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
-      throw new ValidationError('Cannot add the region where this stack is deployed as a replica region.', this);
+      throw new ValidationError(lit`CannotAddRegionStackDeployed`, 'Cannot add the region where this stack is deployed as a replica region.', this);
     }
 
-    this.replicaRegions.push({
+    this._replicaRegions.push({
       region,
       kmsKeyId: encryptionKey?.keyRef.keyArn,
     });
@@ -933,7 +941,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     this.encryptionKey = this.attachedSecret.encryptionKey;
     this.secretName = this.attachedSecret.secretName;
 
-    // This allows to reference the secret after attachment (dependency).
+    // This allows you to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
     this.secretTargetAttachmentSecretArn = attachment.ref;
   }
@@ -1051,7 +1059,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
     const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.slice(lastHyphenIndex + 1).length === 6;
     return hasSecretsSuffix ? resourceName.slice(0, lastHyphenIndex) : resourceName;
   }
-  throw new ValidationError('invalid ARN format; no secret name provided', construct);
+  throw new ValidationError(lit`InvalidFormatSecretNameProvided`, 'invalid ARN format; no secret name provided', construct);
 }
 
 /**
@@ -1066,7 +1074,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
 function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, secretName?: string) {
   const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (!resourceName) {
-    throw new ValidationError('invalid ARN format; no secret name provided', construct);
+    throw new ValidationError(lit`InvalidFormatSecretNameProvided`, 'invalid ARN format; no secret name provided', construct);
   }
 
   // Secret name was explicitly provided, but is unresolved; best option is to use it directly.

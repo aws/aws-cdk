@@ -567,7 +567,7 @@ describe('capacity provider', () => {
     test('configures function with only scaling config', () => {
       // GIVEN
       const func = new lambda.Function(stack, 'MyFunction', {
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => {}'),
       });

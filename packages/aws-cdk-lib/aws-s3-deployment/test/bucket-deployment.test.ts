@@ -11,6 +11,7 @@ import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
 
@@ -75,6 +76,21 @@ test('deploy from local directory asset', () => {
     DestinationBucketName: {
       Ref: 'DestC383B82A',
     },
+  });
+});
+
+test('empty sources array is preserved', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  new s3deploy.BucketDeployment(stack, 'EmptyDeployment', {
+    destinationBucket: bucket,
+    sources: [],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceBucketNames: [],
   });
 });
 
@@ -1743,7 +1759,7 @@ function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
     }
   }
 
-  throw new UnscopedValidationError(`File ${relativePath} not found in any of the assets of the assembly`);
+  throw new UnscopedValidationError(lit`FileFoundAssetsAssembly`, `File ${relativePath} not found in any of the assets of the assembly`);
 }
 
 test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {

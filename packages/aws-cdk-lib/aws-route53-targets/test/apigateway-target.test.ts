@@ -123,7 +123,6 @@ test('targets.ApiGateway accepts a SpecRestApi', () => {
   const zone = new route53.HostedZone(stack, 'zone', {
     zoneName: 'example.com',
   });
-  api.root.addMethod('GET');
 
   // WHEN
   new route53.ARecord(stack, 'A', {

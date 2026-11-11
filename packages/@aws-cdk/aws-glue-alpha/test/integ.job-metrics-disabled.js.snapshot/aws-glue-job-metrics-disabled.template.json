@@ -124,41 +124,6 @@
     "WorkerType": "G.1X"
    }
   },
-  "RayJobNoMetricsBE507C8E": {
-   "Type": "AWS::Glue::Job",
-   "Properties": {
-    "Command": {
-     "Name": "glueray",
-     "Runtime": "Ray2.4",
-     "ScriptLocation": {
-      "Fn::Join": [
-       "",
-       [
-        "s3://",
-        {
-         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-        },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
-       ]
-      ]
-     }
-    },
-    "DefaultArguments": {
-     "--enable-continuous-cloudwatch-log": "true"
-    },
-    "GlueVersion": "4.0",
-    "JobRunQueuingEnabled": false,
-    "Name": "RayJobNoMetrics",
-    "NumberOfWorkers": 3,
-    "Role": {
-     "Fn::GetAtt": [
-      "IAMServiceRole61C662C4",
-      "Arn"
-     ]
-    },
-    "WorkerType": "Z.2X"
-   }
-  },
   "PySparkETLJobSelectiveMetrics9B08F2F0": {
    "Type": "AWS::Glue::Job",
    "Properties": {
