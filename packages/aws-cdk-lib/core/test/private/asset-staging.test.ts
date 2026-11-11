@@ -1,7 +1,7 @@
 import child_process from 'child_process';
 import sinon from 'sinon';
 import { AssetStaging, DockerImage } from '../../lib';
-import { AssetBundlingBindMount, AssetBundlingVolumeCopy } from '../../lib/private/asset-staging';
+import { AssetBundlingBindMount, AssetBundlingVolumeCopy, dockerExec } from '../../lib/private/asset-staging';
 
 const DOCKER_CMD = process.env.CDK_DOCKER ?? 'docker';
 
@@ -34,20 +34,20 @@ describe('bundling', () => {
     // volume Creation
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'volume', 'create', sinon.match(/assetInput.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
 
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'volume', 'create', sinon.match(/assetOutput.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
 
     // volume removal
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'volume', 'rm', sinon.match(/assetInput.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
 
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'volume', 'rm', sinon.match(/assetOutput.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
 
     // prepare copy container
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
@@ -59,22 +59,22 @@ describe('bundling', () => {
       'sh',
       '-c',
       `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
 
     // delete copy container
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'rm', sinon.match(/copyContainer.*/g),
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
 
     // copy files to copy container
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'cp', `${options.sourcePath}/.`, `${helper.copyContainerName}:${AssetStaging.BUNDLING_INPUT_DIR}`,
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
 
     // copy files from copy container to host
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
       'cp', `${helper.copyContainerName}:${AssetStaging.BUNDLING_OUTPUT_DIR}/.`, options.bundleDir,
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
 
     // actual docker run
     expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
@@ -82,7 +82,7 @@ describe('bundling', () => {
       '--platform', 'linux/amd64',
       '--volumes-from', helper.copyContainerName,
       'public.ecr.aws/docker/library/alpine',
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
   });
 
   test('AssetBundlingBindMount bundles with bind mount ', () => {
@@ -114,6 +114,27 @@ describe('bundling', () => {
       '--platform', 'linux/amd64',
       '-v',
       'public.ecr.aws/docker/library/alpine',
-    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ]), { encoding: 'utf-8', maxBuffer: Infinity, stdio: ['ignore', 'pipe', 'pipe'] })).toEqual(true);
+  });
+});
+
+describe('dockerExec', () => {
+  const previousDocker = process.env.CDK_DOCKER;
+
+  afterEach(() => {
+    if (previousDocker === undefined) {
+      delete process.env.CDK_DOCKER;
+    } else {
+      process.env.CDK_DOCKER = previousDocker;
+    }
+  });
+
+  test('throws an error that includes stdout and stderr when docker exits non-zero', () => {
+    process.env.CDK_DOCKER = process.execPath;
+
+    expect(() => dockerExec([
+      '-e',
+      'process.stdout.write("docker-stdout-marker\\n"); process.stderr.write("permission denied while trying to connect to the Docker daemon socket\\n"); process.exit(1);',
+    ])).toThrow(/exited with status 1[\s\S]*docker-stdout-marker[\s\S]*permission denied while trying to connect to the Docker daemon socket/);
   });
 });
