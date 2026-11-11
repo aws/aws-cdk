@@ -1268,6 +1268,13 @@
       }
     ]
   },
+  "aws-licensemanagerusersubscriptions": {
+    "scopes": [
+      {
+        "namespace": "AWS::LicenseManagerUserSubscriptions"
+      }
+    ]
+  },
   "aws-lightsail": {
     "scopes": [
       {
@@ -1650,6 +1657,13 @@
     "scopes": [
       {
         "namespace": "AWS::Pipes"
+      }
+    ]
+  },
+  "aws-polly": {
+    "scopes": [
+      {
+        "namespace": "AWS::Polly"
       }
     ]
   },

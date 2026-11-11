@@ -1,0 +1,20 @@
+{
+  "Description": "IAM_NO_WILDCARD_ACTIONS passes: the managed policy allows only specific actions",
+  "Resources": {
+    "SpecificActionPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": ["s3:GetObject", "s3:PutObject"],
+              "Resource": "arn:aws:s3:::example-bucket/*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
