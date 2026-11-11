@@ -34,7 +34,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"start\":\"-9H\",\"end\":\"2018-12-17T06:00:00.000Z\",\"periodOverride\":\"inherit\",\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# This is my dashboard\"}},{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":6,\"y\":0,\"properties\":{\"markdown\":\"you like?\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":2,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Messages in queue\",\"region\":\"",
+       "{\"start\":\"-9H\",\"end\":\"2018-12-17T06:00:00.000Z\",\"periodOverride\":\"inherit\",\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# This is my dashboard\",\"background\":\"transparent\"}},{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":6,\"y\":0,\"properties\":{\"markdown\":\"you like?\",\"background\":\"transparent\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":2,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Messages in queue\",\"region\":\"",
        {
         "Ref": "AWS::Region"
        },
@@ -124,7 +124,18 @@
          "QueueName"
         ]
        },
-       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"custom\",\"width\":6,\"height\":6,\"x\":0,\"y\":68,\"properties\":{\"endpoint\":\"arn:aws:lambda:us-west-2:123456789012:function:my-function\",\"title\":\"My custom alarm\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
+       "\"]],\"singleValueFullPrecision\":true}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":68,\"properties\":{\"view\":\"singleValue\",\"title\":\"Live data of sent message size\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SQS\",\"SentMessageSize\",\"QueueName\",\"",
+       {
+        "Fn::GetAtt": [
+         "queue",
+         "QueueName"
+        ]
+       },
+       "\"]],\"liveData\":true}},{\"type\":\"custom\",\"width\":6,\"height\":6,\"x\":0,\"y\":71,\"properties\":{\"endpoint\":\"arn:aws:lambda:us-west-2:123456789012:function:my-function\",\"title\":\"My custom alarm\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":true}}}]}"
       ]
      ]
     },

@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.276.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.275.0-alpha.0...v2.276.0-alpha.0) (2026-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **redshift-alpha:** `Table` now interprets dots in `tableName` as `schema.table` or `database.schema.table` for every table operation, as grants already did. Tables created with 2.262.0 or later from a dotted `tableName` exist as one identifier (for example `"analytics.orders"` in the default schema); after upgrading, updates and `RemovalPolicy.DESTROY` deletion address `analytics.orders` instead. Names with empty components now fail at synthesis, and renames cannot add, remove or change the qualifier.
+
+### Features
+
+* **neptune-alpha:** add engine version v1.5.0.0 ([#39259](https://github.com/aws/aws-cdk/issues/39259)) ([7fac0fe](https://github.com/aws/aws-cdk/commit/7fac0fe9deb80bb2225c0ae12cf6d38c0edfa147)), closes [#39395](https://github.com/aws/aws-cdk/issues/39395)
+
+
+### Bug Fixes
+
+* **medialive-alpha:** cannot use out-of-band captions on MediaPackage v2 outputs ([#39619](https://github.com/aws/aws-cdk/issues/39619)) ([af41b6e](https://github.com/aws/aws-cdk/commit/af41b6eacc8e745465cd42865726cac1814b7044))
+* **mediapackagev2-alpha:** origin endpoint policy can be created before its origin endpoint ([#38946](https://github.com/aws/aws-cdk/issues/38946)) ([d7c8aa5](https://github.com/aws/aws-cdk/commit/d7c8aa5c09ce66ad546a8f916762217ad5a8296a)), closes [#38945](https://github.com/aws/aws-cdk/issues/38945)
+* **redshift-alpha:** align qualified table names ([#39304](https://github.com/aws/aws-cdk/issues/39304)) ([21f38da](https://github.com/aws/aws-cdk/commit/21f38da07f18cce95d05a9f93c67861446899fbc))
+
+## [2.275.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.274.0-alpha.0...v2.275.0-alpha.0) (2026-10-26)
+
 ## [2.274.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.273.0-alpha.0...v2.274.0-alpha.0) (2026-10-20)
 
 

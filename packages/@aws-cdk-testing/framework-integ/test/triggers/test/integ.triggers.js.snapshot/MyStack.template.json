@@ -241,7 +241,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "74d7dac7f3bcc8feeda7fdc22da0af17731a739b7a8226f9b2d7c9e76efde2ff.zip"
+     "S3Key": "91917c2430ef8b540593f5859014d91fdd6a534642da9ac37a9f6f7403e91d48.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -261,7 +261,8 @@
   "TestQueue6F0069AA": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "QueueName": "trigger-assertion-queue"
+    "QueueName": "trigger-assertion-queue",
+    "SqsManagedSseEnabled": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

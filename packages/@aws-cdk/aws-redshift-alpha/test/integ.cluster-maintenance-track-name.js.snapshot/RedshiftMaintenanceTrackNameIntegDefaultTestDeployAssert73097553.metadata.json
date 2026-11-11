@@ -1,4 +1,10 @@
 {
+  "/RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "RedshiftMaintenanceTrackNameIntegDefaultTestDeployAssert73097553.template.json"
+    }
+  ],
   "/RedshiftMaintenanceTrackNameInteg/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
