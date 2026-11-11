@@ -677,11 +677,23 @@ describe('WebFunction template', () => {
     });
   });
 
-  test('throws when entryPoint is set for a non-Node.js runtime', () => {
+  test('throws when entryPoint is set for a runtime other than Node.js or Python', () => {
     expect(() => new WebFunction(stack, 'Test', minimalProps({
-      runtime: WebFunctionRuntime.of('python3.13'),
-      entryPoint: 'app.py',
-    }))).toThrow(/entryPoint is only supported for Node.js runtimes, got 'python3.13'/);
+      runtime: WebFunctionRuntime.of('java21'),
+      entryPoint: 'app.jar',
+    }))).toThrow(/entryPoint is only supported for Node.js and Python runtimes, got 'java21'/);
+  });
+
+  test('entryPoint is injected as AWS_LAMBDA_PYTHON_ENTRYPOINT for a Python runtime', () => {
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.PYTHON_3_15,
+      entryPoint: 'wsgi:app:application',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: { AWS_LAMBDA_PYTHON_ENTRYPOINT: 'wsgi:app:application' },
+      }),
+    });
   });
 
   test('entryPoint is accepted for a Node.js runtime given with of()', () => {
@@ -696,18 +708,22 @@ describe('WebFunction template', () => {
     });
   });
 
-  test('throws when entryPoint and AWS_LAMBDA_NODEJS_ENTRYPOINT env var are both set', () => {
+  test.each([
+    [WebFunctionRuntime.NODEJS_24_X, 'AWS_LAMBDA_NODEJS_ENTRYPOINT', 'app.js'],
+    [WebFunctionRuntime.PYTHON_3_15, 'AWS_LAMBDA_PYTHON_ENTRYPOINT', 'main:app'],
+  ])('throws on %s when entryPoint and the %s env var are both set', (runtime, variable, entryPoint) => {
     expect(() => {
       new WebFunction(
         stack,
         'Test',
         minimalProps({
           webFunctionName: 'my-func',
-          entryPoint: 'app.js',
-          environment: { AWS_LAMBDA_NODEJS_ENTRYPOINT: 'other.js' },
+          runtime,
+          entryPoint,
+          environment: { [variable]: 'other' },
         }),
       );
-    }).toThrow(/entryPoint cannot be used together with an AWS_LAMBDA_NODEJS_ENTRYPOINT environment variable/);
+    }).toThrow(new RegExp(`entryPoint cannot be used together with an ${variable} environment variable`));
   });
 
   test('WebFunctionRevision includes telemetry config', () => {

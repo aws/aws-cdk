@@ -8,6 +8,11 @@ export class WebFunctionRuntime {
   public static readonly NODEJS_24_X = new WebFunctionRuntime('nodejs24.x');
 
   /**
+   * Python 3.15 runtime
+   */
+  public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15');
+
+  /**
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    *

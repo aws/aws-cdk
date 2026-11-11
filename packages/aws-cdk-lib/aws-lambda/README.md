@@ -2649,6 +2649,26 @@ new lambda.WebFunction(this, 'MyWebFunction', {
 });
 ```
 
+On a Python runtime the runtime serves the application object `app` from `main.py` by
+default. `entryPoint` names a different object as `module:attribute`, optionally prefixed
+with `asgi:` or `wsgi:` to state the interface (surfaced to the runtime via the reserved
+`AWS_LAMBDA_PYTHON_ENTRYPOINT` environment variable):
+
+```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const codeBucket: s3.IBucket;
+
+new lambda.WebFunction(this, 'MyPythonWebFunction', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.PYTHON_3_15,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
+  entryPoint: 'wsgi:app:application',
+});
+```
+
+`entryPoint` is not supported for other runtimes.
+
 ### VPC Access with a Network Connector
 
 A WebFunction reaches resources in a VPC through a `NetworkConnector`: a Lambda resource

@@ -67,6 +67,27 @@ function topLevelStack(stack: Stack): Stack {
 }
 
 /**
+ * The reserved environment variable the runtime reads `entryPoint` from.
+ *
+ * A runtime that is a token can't be inspected; it keeps the Node.js variable, which is what
+ * `entryPoint` mapped to before Python runtimes were supported.
+ */
+function entryPointEnvironmentVariable(runtime: WebFunctionRuntime, scope: Construct): string {
+  const name = runtime.name;
+  if (Token.isUnresolved(name) || name.startsWith('nodejs')) {
+    return 'AWS_LAMBDA_NODEJS_ENTRYPOINT';
+  }
+  if (name.startsWith('python')) {
+    return 'AWS_LAMBDA_PYTHON_ENTRYPOINT';
+  }
+  throw new ValidationError(
+    lit`WebFunctionEntryPointUnsupportedRuntime`,
+    `entryPoint is only supported for Node.js and Python runtimes, got '${name}'`,
+    scope,
+  );
+}
+
+/**
  * Properties for defining a `WebFunction`.
  */
 export interface WebFunctionProps {
@@ -110,14 +131,19 @@ export interface WebFunctionProps {
   readonly runtime: WebFunctionRuntime;
 
   /**
-   * The entry file the runtime executes, relative to the root of the deployment
-   * package.
+   * The entry point of the application.
    *
-   * Only supported for Node.js runtimes. When set, it is passed to the runtime via the reserved
-   * `AWS_LAMBDA_NODEJS_ENTRYPOINT` environment variable. Do not set that
-   * variable through `environment` as well.
+   * - Node.js runtimes: the file the runtime executes, relative to the root of the deployment
+   *   package. Passed to the runtime in the reserved `AWS_LAMBDA_NODEJS_ENTRYPOINT`
+   *   environment variable.
+   * - Python runtimes: the application object the runtime imports and serves, in the form
+   *   `[asgi:|wsgi:]module:attribute`. Passed to the runtime in the reserved
+   *   `AWS_LAMBDA_PYTHON_ENTRYPOINT` environment variable.
    *
-   * @default - the runtime's default entry point, `index.js`
+   * Not supported for other runtimes. Do not set the same variable through `environment` as
+   * well.
+   *
+   * @default - the runtime's default entry point: `index.js` for Node.js, `main:app` for Python
    */
   readonly entryPoint?: string;
 
@@ -556,25 +582,18 @@ export class WebFunction extends WebFunctionBase {
     // Prepare environment variables
     const environment = { ...props.environment };
 
-    // `entryPoint` is surfaced to the runtime through the reserved
-    // AWS_LAMBDA_NODEJS_ENTRYPOINT env var. Reject setting it both ways.
+    // `entryPoint` is surfaced to the runtime through a reserved env var that depends on the
+    // runtime family. Reject setting it both ways.
     if (props.entryPoint !== undefined) {
-      const runtimeName = props.runtime.name;
-      if (!Token.isUnresolved(runtimeName) && !runtimeName.startsWith('nodejs')) {
-        throw new ValidationError(
-          lit`WebFunctionEntryPointRequiresNode`,
-          `entryPoint is only supported for Node.js runtimes, got '${runtimeName}'`,
-          this,
-        );
-      }
-      if (environment.AWS_LAMBDA_NODEJS_ENTRYPOINT !== undefined) {
+      const entryPointVariable = entryPointEnvironmentVariable(props.runtime, this);
+      if (environment[entryPointVariable] !== undefined) {
         throw new ValidationError(
           lit`WebFunctionEntryPointConflict`,
-          'entryPoint cannot be used together with an AWS_LAMBDA_NODEJS_ENTRYPOINT environment variable; set only one',
+          `entryPoint cannot be used together with an ${entryPointVariable} environment variable; set only one`,
           this,
         );
       }
-      environment.AWS_LAMBDA_NODEJS_ENTRYPOINT = props.entryPoint;
+      environment[entryPointVariable] = props.entryPoint;
     }
 
     const logGroup = props.logGroup ?? new logs.LogGroup(this, 'LogGroup');
