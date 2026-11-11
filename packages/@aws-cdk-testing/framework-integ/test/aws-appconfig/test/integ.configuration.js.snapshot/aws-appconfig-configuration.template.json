@@ -740,7 +740,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
+     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -765,14 +765,6 @@
     "SourceObjectKeys": [
      "9f148cad39f325035dfec935c0a2e907135f10cb64e7c4ef78c2320fc9ad24ae.zip",
      "9b7590a121e3b39547297cbf009beb8a27e1cf9daaa760cb82c42bd530d5ef8f.zip"
-    ],
-    "SourceMarkers": [
-     {},
-     {}
-    ],
-    "SourceMarkersConfig": [
-     {},
-     {}
     ],
     "DestinationBucketName": {
      "Ref": "MyBucketF68F3FF0"
@@ -913,11 +905,14 @@
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "815da5705747b4685c56b7d9a7eae6a81e75f489fb8fa7020032ef255f6923be.zip"
     },
     "Environment": {
      "Variables": {
@@ -930,6 +925,7 @@
       "Ref": "DeployConfigInBucketAwsCliLayerFC57D055"
      }
     ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",

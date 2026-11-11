@@ -2,9 +2,11 @@ import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
-import { UnscopedValidationError } from '../../core';
+import { Annotations, FeatureFlags, Stack, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { PATH_PATTERN, pathsInsideStringLiterals } from './private/evaluate-expression-paths';
 import { lit } from '../../core/lib/private/literal-string';
-import { EvalNodejsSingletonFunction } from '../../custom-resource-handlers/dist/aws-stepfunctions-tasks/eval-nodejs-provider.generated';
+import { EvalNodejsFunction, EvalNodejsSingletonFunction } from '../../custom-resource-handlers/dist/aws-stepfunctions-tasks/eval-nodejs-provider.generated';
+import * as cxapi from '../../cx-api';
 
 /**
  * Properties for EvaluateExpression
@@ -13,6 +15,12 @@ import { EvalNodejsSingletonFunction } from '../../custom-resource-handlers/dist
 export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The expression to evaluate. The expression may contain state paths.
+   *
+   * A referenced path is only resolved where it is used as code (for example `$.a + $.b`, or
+   * a function argument). To build a string that contains a value, use a template literal
+   * interpolation (`${$.count}`); a path placed as literal text inside a plain string, or as
+   * bare text inside a template literal (for example `'items: $.count'`), is not resolved and
+   * is rejected at synth time.
    *
    * Example value: `'$.a + $.b'`
    */
@@ -57,6 +65,9 @@ export interface Event {
 /**
  * A Step Functions Task to evaluate an expression
  *
+ * The expression is evaluated in a Lambda function that belongs to this task, unless the
+ * `@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction` feature flag is disabled.
+ *
  * OUTPUT: the output of this task is the evaluated expression.
  *
  */
@@ -64,12 +75,50 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  private readonly evalFn: lambda.SingletonFunction;
+  private readonly evalFn: lambda.IFunction;
 
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime, this.props.architecture, this);
+    // A path placed as literal text inside a plain string or template literal no longer
+    // resolves, so fail fast at synth instead of failing at runtime or silently evaluating
+    // to the wrong value.
+    // Skip when the expression is an unresolved token that can't be inspected at synth time.
+    if (!Token.isUnresolved(props.expression)) {
+      const pathsInLiterals = pathsInsideStringLiterals(props.expression);
+      const plainStringPaths = pathsInLiterals.filter((p) => p.context === 'plainString').map((p) => p.path);
+      const templateTextPaths = pathsInLiterals.filter((p) => p.context === 'templateText').map((p) => p.path);
+      if (plainStringPaths.length > 0) {
+        throw new ValidationError(
+          lit`ExpressionPathInStringLiteral`,
+          'state path(s) ' + JSON.stringify(plainStringPaths) +
+          ' are used as literal text inside a plain string in the EvaluateExpression \'expression\'; ' +
+          'a path inside a plain string used to be resolved but is no longer resolved - use a template literal with ' +
+          'interpolation instead, e.g. `...${' + plainStringPaths[0] + '}...`',
+          this,
+        );
+      }
+      if (templateTextPaths.length > 0) {
+        throw new ValidationError(
+          lit`ExpressionPathInStringLiteral`,
+          'state path(s) ' + JSON.stringify(templateTextPaths) +
+          ' are used as literal text inside a template literal in the EvaluateExpression \'expression\'; ' +
+          'a path in template text used to be resolved but is no longer resolved - reference it via interpolation like ${' + templateTextPaths[0] + '} instead',
+          this,
+        );
+      }
+    }
+
+    const isDedicatedFunction = FeatureFlags.of(this).isEnabled(cxapi.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION);
+    if (isDedicatedFunction) {
+      this.evalFn = createDedicatedEvalFn(this, this.props.runtime, this.props.architecture);
+    } else {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionSharedFunction',
+        `The feature flag '${cxapi.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION}' is disabled, so EvaluateExpression tasks ` +
+        'in this stack that use the same runtime and architecture share one Lambda function, including tasks in different state machines. ' +
+        'Remove the flag or set it to true to give each task its own function.');
+      this.evalFn = createEvalFn(this.props.runtime, this.props.architecture, this);
+    }
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -83,7 +132,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9-_]+/g);
+    const matches = this.props.expression.match(PATH_PATTERN);
 
     let expressionAttributeValues = {};
     if (matches) {
@@ -107,6 +156,9 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   }
 }
 
+/**
+ * The function shared by all tasks in the stack with the same runtime and architecture.
+ */
 function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.Architecture | undefined, scope: Construct) {
   const NO_RUNTIME = Symbol.for('no-runtime');
   const lambdaPurpose = 'Eval';
@@ -153,4 +205,33 @@ function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.
     runtime,
     architecture,
   });
+}
+
+function createDedicatedEvalFn(
+  scope: Construct,
+  runtime?: lambda.Runtime,
+  architecture?: lambda.Architecture,
+): lambda.IFunction {
+  const isNodejs = runtime?.family === lambda.RuntimeFamily.NODEJS || runtime?.name.startsWith('nodejs');
+  if (runtime && !isNodejs) {
+    throw new UnscopedValidationError(lit`RuntimeCurrentlySupported`, `The runtime ${runtime.name} is currently not supported.`);
+  }
+
+  return new EvalNodejsFunction(scope, 'EvalFunction', {
+    runtime,
+    architecture,
+    role: evalFnRole(scope),
+  });
+}
+
+/** Logs-only role shared by the dedicated functions in a stack, immutable so no task can add permissions. */
+function evalFnRole(scope: Construct): iam.IRole {
+  const stack = Stack.of(scope);
+  const id = 'EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd';
+  const existing = stack.node.tryFindChild(id) as iam.Role | undefined;
+  const role = existing ?? new iam.Role(stack, id, {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+  });
+  return role.withoutPolicyUpdates();
 }

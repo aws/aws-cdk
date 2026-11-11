@@ -1,0 +1,142 @@
+{
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapi2B22AE87"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapiEndpoint9942D237"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapiDeploymentA06E43AD85a1acfb00c77d0a0782f87a5ba7b421"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapiDeploymentStageprod0494BB5F"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/example-stepfunctions-rest-api/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "examplestepfunctionsrestapiGET18556D73"
+    }
+  ],
+  "/aws-stepfunctions-apigw-CallApiGatewayRestApiEndpoint-JSONataExpression/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    }
+  ]
+}
