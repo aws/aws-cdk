@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "935483371c504e4a9e16b0a7d69d3ac922b3bc9afc15765a6bb32a651d78e47c": {
+      "source": {
+        "path": "asset.935483371c504e4a9e16b0a7d69d3ac922b3bc9afc15765a6bb32a651d78e47c.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-87b831e5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "935483371c504e4a9e16b0a7d69d3ac922b3bc9afc15765a6bb32a651d78e47c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f403785d2415fd9549fc5cbd79516b928a1921acbcaa3301e2fa736946377b13": {
+      "displayName": "SubmitJobIntegTestDefaultTestDeployAssertBDC05524 Template",
+      "source": {
+        "path": "SubmitJobIntegTestDefaultTestDeployAssertBDC05524.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7955dd46": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f403785d2415fd9549fc5cbd79516b928a1921acbcaa3301e2fa736946377b13.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

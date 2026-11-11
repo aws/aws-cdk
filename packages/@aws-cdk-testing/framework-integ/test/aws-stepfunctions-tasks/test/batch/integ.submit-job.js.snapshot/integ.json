@@ -1,15 +1,14 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "testCases": {
-    "integ.submit-job": {
+    "SubmitJobIntegTest/DefaultTest": {
       "stacks": [
         "aws-stepfunctions-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "SubmitJobIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SubmitJobIntegTestDefaultTestDeployAssertBDC05524"
     }
   },
-  "synthContext": {},
   "enableLookups": true,
-  "minimumCliVersion": "2.1131.0"
+  "minimumCliVersion": "2.1147.0"
 }

@@ -60,9 +60,6 @@ class RunBatchStack extends cdk.Stack {
       }),
       attempts: 3,
       taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(60)),
-      tags: {
-        key: 'value',
-      },
     });
 
     const definition = new sfn.Pass(this, 'Start', {
