@@ -248,9 +248,9 @@ export interface CommonAutoScalingGroupProps {
   /**
    * Default scaling cooldown for simple scaling policies on this AutoScalingGroup.
    *
-   * Target tracking and step scaling policies use instance warmup instead of cooldown.
-   * If neither policy-specific nor default instance warmup is set, they fall back
-   * to this value for warmup.
+   * Target tracking and step scaling policies use instance warmup instead of cooldown:
+   * the policy's `estimatedInstanceWarmup`, then the group's `defaultInstanceWarmup`,
+   * and only if neither is set, this value.
    *
    * @default Duration.minutes(5)
    */
