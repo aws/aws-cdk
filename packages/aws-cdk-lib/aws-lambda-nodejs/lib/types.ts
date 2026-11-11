@@ -199,6 +199,27 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly nodeModules?: string[];
 
   /**
+   * The contents of a `pnpm-workspace.yaml` file to write into the bundling
+   * directory when installing `nodeModules` with pnpm.
+   *
+   * This is useful for pnpm workspaces that use catalogs (the `catalog:`
+   * protocol). Because bundling happens in an isolated directory that is
+   * decoupled from the parent workspace, the catalog configuration is otherwise
+   * unavailable and `pnpm install` fails to resolve `catalog:` specifiers. Supply
+   * the catalog configuration here so it can be resolved.
+   *
+   * When this is not set, CDK auto-detects catalog usage: if any installed module
+   * uses the `catalog:` protocol, the `catalog`/`catalogs` blocks from the
+   * project's `pnpm-workspace.yaml` are copied into the bundling directory
+   * automatically.
+   *
+   * Only used when the lock file is a `pnpm-lock.yaml`.
+   *
+   * @default - auto-detected from the project's `pnpm-workspace.yaml` when a module uses the `catalog:` protocol; otherwise an empty file
+   */
+  readonly pnpmWorkspaceYaml?: string;
+
+  /**
    * The version of esbuild to use when running in a Docker container.
    *
    * @default - latest v0
