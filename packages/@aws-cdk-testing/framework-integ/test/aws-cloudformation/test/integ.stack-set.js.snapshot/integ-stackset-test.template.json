@@ -78,6 +78,11 @@
     "ManagedExecution": {
      "Active": true
     },
+    "OperationPreferences": {
+     "ConcurrencyMode": "SOFT_FAILURE_TOLERANCE",
+     "FailureToleranceCount": 1,
+     "MaxConcurrentCount": 2
+    },
     "PermissionModel": "SELF_MANAGED",
     "StackInstancesGroup": [
      {
