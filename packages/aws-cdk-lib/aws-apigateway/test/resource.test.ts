@@ -636,5 +636,101 @@ describe('resource', () => {
         },
       });
     });
+
+    test('keeps the method path parameter when per-method requestParameters are given', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+
+      // WHEN
+      const proxy = api.root.addResource('items').addProxy({
+        autoConfigurePathParameter: true,
+        anyMethod: false,
+        defaultMethodOptions: {
+          requestParameters: {
+            'method.request.header.Authorization': true,
+          },
+        },
+      });
+
+      proxy.addMethod('GET', new apigw.HttpIntegration('http://example.com/items/{proxy}'), {
+        requestParameters: {
+          'method.request.querystring.page': false,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'GET',
+        RequestParameters: Match.objectEquals({
+          'method.request.path.proxy': true,
+          'method.request.querystring.page': false,
+        }),
+        Integration: {
+          RequestParameters: {
+            'integration.request.path.proxy': 'method.request.path.proxy',
+          },
+        },
+      });
+    });
+
+    test('does not add the integration path parameter to the CORS preflight mock integration', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+      const proxy = api.root.addResource('items').addProxy({
+        autoConfigurePathParameter: true,
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/items/{proxy}'),
+      });
+
+      // WHEN
+      proxy.addCorsPreflight({ allowOrigins: ['https://example.com'] });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'OPTIONS',
+        Integration: {
+          Type: 'MOCK',
+          RequestParameters: Match.absent(),
+        },
+      });
+    });
+
+    test('does not configure the path parameter on the root method when mounted under the root', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new apigw.RestApi(stack, 'api');
+
+      // WHEN
+      api.root.addProxy({
+        autoConfigurePathParameter: true,
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/{proxy}'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'ANY',
+        ResourceId: { 'Fn::GetAtt': ['apiC8550315', 'RootResourceId'] },
+        RequestParameters: Match.absent(),
+        Integration: {
+          Type: 'MOCK',
+          RequestParameters: Match.absent(),
+        },
+      });
+      template.hasResourceProperties('AWS::ApiGateway::Method', {
+        HttpMethod: 'ANY',
+        ResourceId: { Ref: Match.stringLikeRegexp('^apiproxy') },
+        RequestParameters: {
+          'method.request.path.proxy': true,
+        },
+        Integration: {
+          Uri: 'http://example.com/{proxy}',
+          RequestParameters: {
+            'integration.request.path.proxy': 'method.request.path.proxy',
+          },
+        },
+      });
+    });
   });
 });

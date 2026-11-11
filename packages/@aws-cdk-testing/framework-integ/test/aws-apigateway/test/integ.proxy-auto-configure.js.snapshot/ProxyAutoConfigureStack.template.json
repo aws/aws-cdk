@@ -35,7 +35,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "\n        exports.handler = async (event) => {\n          return {\n            statusCode: 200,\n            headers: { 'content-type': 'application/json' },\n            body: JSON.stringify({\n              path: event.path,\n              pathParameters: event.pathParameters,\n              httpMethod: event.httpMethod\n            })\n          };\n        };\n      "
+     "ZipFile": "\n        exports.handler = async (event) => {\n          return {\n            statusCode: 200,\n            headers: { 'content-type': 'application/json' },\n            body: JSON.stringify({\n              path: event.path,\n              httpMethod: event.httpMethod\n            })\n          };\n        };\n      "
     },
     "Handler": "index.handler",
     "Role": {
@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "EchoHandlerServiceRole659EA5BA"
@@ -69,13 +69,302 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
+  "EchoApi8D2F2FF3": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "EchoApi"
+   }
+  },
+  "EchoApiDeploymentB8040D68fd0683b8c4183ce04ce2d812d4537ae8": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "EchoApi8D2F2FF3"
+    }
+   },
+   "DependsOn": [
+    "EchoApiproxyANY5F890123",
+    "EchoApiproxyF2F1122A",
+    "EchoApiANY5EDAA043"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "EchoApiDeploymentStageprod74C7DC01": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "EchoApiDeploymentB8040D68fd0683b8c4183ce04ce2d812d4537ae8"
+    },
+    "RestApiId": {
+     "Ref": "EchoApi8D2F2FF3"
+    },
+    "StageName": "prod"
+   }
+  },
+  "EchoApiproxyF2F1122A": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "EchoApi8D2F2FF3",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "{proxy+}",
+    "RestApiId": {
+     "Ref": "EchoApi8D2F2FF3"
+    }
+   }
+  },
+  "EchoApiproxyANYApiPermissionProxyAutoConfigureStackEchoApi249555C0ANYproxy76DD7002": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "EchoHandlerB75BC5D4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "EchoApi8D2F2FF3"
+       },
+       "/",
+       {
+        "Ref": "EchoApiDeploymentStageprod74C7DC01"
+       },
+       "/*/*"
+      ]
+     ]
+    }
+   }
+  },
+  "EchoApiproxyANYApiPermissionTestProxyAutoConfigureStackEchoApi249555C0ANYproxy5095C935": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "EchoHandlerB75BC5D4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "EchoApi8D2F2FF3"
+       },
+       "/test-invoke-stage/*/*"
+      ]
+     ]
+    }
+   }
+  },
+  "EchoApiproxyANY5F890123": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "EchoHandlerB75BC5D4",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "EchoApiproxyF2F1122A"
+    },
+    "RestApiId": {
+     "Ref": "EchoApi8D2F2FF3"
+    }
+   }
+  },
+  "EchoApiANYApiPermissionProxyAutoConfigureStackEchoApi249555C0ANY382E4D25": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "EchoHandlerB75BC5D4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "EchoApi8D2F2FF3"
+       },
+       "/",
+       {
+        "Ref": "EchoApiDeploymentStageprod74C7DC01"
+       },
+       "/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "EchoApiANYApiPermissionTestProxyAutoConfigureStackEchoApi249555C0ANY9F843F4B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "EchoHandlerB75BC5D4",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "EchoApi8D2F2FF3"
+       },
+       "/test-invoke-stage/*/"
+      ]
+     ]
+    }
+   }
+  },
+  "EchoApiANY5EDAA043": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "EchoHandlerB75BC5D4",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "EchoApi8D2F2FF3",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "EchoApi8D2F2FF3"
+    }
+   }
+  },
   "ProxyApi0DF2D7AE": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
     "Name": "ProxyApi"
    }
   },
-  "ProxyApiDeployment6107D4F39a536222630e6097464b3619b5b76ced": {
+  "ProxyApiDeployment6107D4F3cf63abc3f624f0f53c85e718bf468b3c": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -96,7 +385,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "ProxyApiDeployment6107D4F39a536222630e6097464b3619b5b76ced"
+     "Ref": "ProxyApiDeployment6107D4F3cf63abc3f624f0f53c85e718bf468b3c"
     },
     "RestApiId": {
      "Ref": "ProxyApi0DF2D7AE"
@@ -131,115 +420,38 @@
     }
    }
   },
-  "ProxyApiapiproxyANYApiPermissionProxyAutoConfigureStackProxyApi3A9C8C63ANYapiproxyE2DABDAD": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "EchoHandlerB75BC5D4",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "ProxyApi0DF2D7AE"
-       },
-       "/",
-       {
-        "Ref": "ProxyApiDeploymentStageprod9EF20FCC"
-       },
-       "/*/api/*"
-      ]
-     ]
-    }
-   }
-  },
-  "ProxyApiapiproxyANYApiPermissionTestProxyAutoConfigureStackProxyApi3A9C8C63ANYapiproxy48450BF7": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "EchoHandlerB75BC5D4",
-      "Arn"
-     ]
-    },
-    "Principal": "apigateway.amazonaws.com",
-    "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":execute-api:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":",
-       {
-        "Ref": "ProxyApi0DF2D7AE"
-       },
-       "/test-invoke-stage/*/api/*"
-      ]
-     ]
-    }
-   }
-  },
   "ProxyApiapiproxyANY2023283D": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
     "HttpMethod": "ANY",
     "Integration": {
-     "IntegrationHttpMethod": "POST",
+     "IntegrationHttpMethod": "GET",
      "RequestParameters": {
       "integration.request.path.proxy": "method.request.path.proxy"
      },
-     "Type": "AWS_PROXY",
+     "Type": "HTTP_PROXY",
      "Uri": {
       "Fn::Join": [
        "",
        [
-        "arn:",
+        "https://",
         {
-         "Ref": "AWS::Partition"
+         "Ref": "EchoApi8D2F2FF3"
         },
-        ":apigateway:",
+        ".execute-api.",
         {
          "Ref": "AWS::Region"
         },
-        ":lambda:path/2015-03-31/functions/",
+        ".",
         {
-         "Fn::GetAtt": [
-          "EchoHandlerB75BC5D4",
-          "Arn"
-         ]
+         "Ref": "AWS::URLSuffix"
         },
-        "/invocations"
+        "/",
+        {
+         "Ref": "EchoApiDeploymentStageprod74C7DC01"
+        },
+        "/echo/{proxy}"
        ]
       ]
      }
@@ -254,9 +466,151 @@
      "Ref": "ProxyApi0DF2D7AE"
     }
    }
+  },
+  "RootProxyApi2E1670E9": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "RootProxyApi"
+   }
+  },
+  "RootProxyApiDeployment2AC1439Cb9298e21c607f91385009b0ed9e16289": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "RootProxyApi2E1670E9"
+    }
+   },
+   "DependsOn": [
+    "RootProxyApiproxyANY332653E0",
+    "RootProxyApiproxy8FFA9F33",
+    "RootProxyApiANYAAEDBCED"
+   ],
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "RootProxyApiDeploymentStageprod31FE8219": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "RootProxyApiDeployment2AC1439Cb9298e21c607f91385009b0ed9e16289"
+    },
+    "RestApiId": {
+     "Ref": "RootProxyApi2E1670E9"
+    },
+    "StageName": "prod"
+   }
+  },
+  "RootProxyApiproxy8FFA9F33": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "RootProxyApi2E1670E9",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "{proxy+}",
+    "RestApiId": {
+     "Ref": "RootProxyApi2E1670E9"
+    }
+   }
+  },
+  "RootProxyApiproxyANY332653E0": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "IntegrationHttpMethod": "GET",
+     "RequestParameters": {
+      "integration.request.path.proxy": "method.request.path.proxy"
+     },
+     "Type": "HTTP_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Ref": "EchoApi8D2F2FF3"
+        },
+        ".execute-api.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/",
+        {
+         "Ref": "EchoApiDeploymentStageprod74C7DC01"
+        },
+        "/echo/{proxy}"
+       ]
+      ]
+     }
+    },
+    "RequestParameters": {
+     "method.request.path.proxy": true
+    },
+    "ResourceId": {
+     "Ref": "RootProxyApiproxy8FFA9F33"
+    },
+    "RestApiId": {
+     "Ref": "RootProxyApi2E1670E9"
+    }
+   }
+  },
+  "RootProxyApiANYAAEDBCED": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
+    "Integration": {
+     "Type": "MOCK"
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "RootProxyApi2E1670E9",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "RootProxyApi2E1670E9"
+    }
+   }
   }
  },
  "Outputs": {
+  "EchoApiEndpoint2E8C05E7": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "EchoApi8D2F2FF3"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "EchoApiDeploymentStageprod74C7DC01"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
   "ProxyApiEndpoint2177970D": {
    "Value": {
     "Fn::Join": [
@@ -281,6 +635,64 @@
       "/"
      ]
     ]
+   }
+  },
+  "RootProxyApiEndpoint3F5FBEC7": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "RootProxyApi2E1670E9"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "RootProxyApiDeploymentStageprod31FE8219"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ExportsOutputRefProxyApi0DF2D7AE021446AD": {
+   "Value": {
+    "Ref": "ProxyApi0DF2D7AE"
+   },
+   "Export": {
+    "Name": "ProxyAutoConfigureStack:ExportsOutputRefProxyApi0DF2D7AE021446AD"
+   }
+  },
+  "ExportsOutputRefProxyApiDeploymentStageprod9EF20FCCE2363757": {
+   "Value": {
+    "Ref": "ProxyApiDeploymentStageprod9EF20FCC"
+   },
+   "Export": {
+    "Name": "ProxyAutoConfigureStack:ExportsOutputRefProxyApiDeploymentStageprod9EF20FCCE2363757"
+   }
+  },
+  "ExportsOutputRefRootProxyApi2E1670E91042FE69": {
+   "Value": {
+    "Ref": "RootProxyApi2E1670E9"
+   },
+   "Export": {
+    "Name": "ProxyAutoConfigureStack:ExportsOutputRefRootProxyApi2E1670E91042FE69"
+   }
+  },
+  "ExportsOutputRefRootProxyApiDeploymentStageprod31FE8219461AF5CA": {
+   "Value": {
+    "Ref": "RootProxyApiDeploymentStageprod31FE8219"
+   },
+   "Export": {
+    "Name": "ProxyAutoConfigureStack:ExportsOutputRefRootProxyApiDeploymentStageprod31FE8219461AF5CA"
    }
   }
  },

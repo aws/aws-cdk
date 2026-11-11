@@ -536,6 +536,10 @@ export interface ProxyResourceOptions extends ResourceOptions {
    * This matches the behavior of the AWS Console when creating proxy resources
    * and eliminates the need to manually configure path parameters.
    *
+   * Mock integrations are left unchanged. When the proxy is added to the root
+   * resource, the method that is also added to the root has no `{proxy}` path
+   * parameter, so it is not configured.
+   *
    * @default false
    */
   readonly autoConfigurePathParameter?: boolean;
@@ -561,6 +565,10 @@ class AutoProxyIntegration extends Integration {
 
   public bind(method: Method): IntegrationConfig {
     const baseConfig = this.innerIntegration.bind(method);
+    // Mock integrations (e.g. CORS preflight) have no backend to forward the path to
+    if (baseConfig.type === IntegrationType.MOCK) {
+      return baseConfig;
+    }
 
     return {
       ...baseConfig,
@@ -592,22 +600,11 @@ export class ProxyResource extends Resource {
   private readonly _autoConfigurePathParameter: boolean;
 
   constructor(scope: Construct, id: string, props: ProxyResourceProps) {
-    // Auto-configure method request path parameter if requested
-    const methodOptions = props.autoConfigurePathParameter
-      ? {
-        ...props.defaultMethodOptions,
-        requestParameters: {
-          'method.request.path.proxy': true,
-          ...props.defaultMethodOptions?.requestParameters,
-        },
-      }
-      : props.defaultMethodOptions;
-
     super(scope, id, {
       parent: props.parent,
       pathPart: '{proxy+}',
       defaultIntegration: props.defaultIntegration,
-      defaultMethodOptions: methodOptions,
+      defaultMethodOptions: props.defaultMethodOptions,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
@@ -622,24 +619,33 @@ export class ProxyResource extends Resource {
 
   @MethodMetadata()
   public addMethod(httpMethod: string, integration?: Integration, options?: MethodOptions): Method {
-    // Wrap integration to auto-configure integration request path parameters if enabled
-    let finalIntegration = integration;
-    if (this._autoConfigurePathParameter) {
-      const integrationToWrap = integration ?? this.defaultIntegration;
-      if (integrationToWrap) {
-        finalIntegration = new AutoProxyIntegration(integrationToWrap);
-      }
-    }
-
     // In case this proxy is mounted under the root, also add this method to
-    // the root so that empty paths are proxied as well.
+    // the root so that empty paths are proxied as well. The root has no
+    // `{proxy}` path parameter, so it must not get the auto-configured mapping.
     if (this.parentResource && this.parentResource.path === '/') {
       // skip if the root resource already has this method defined
       if (!(this.parentResource.node.tryFindChild(httpMethod) instanceof Method)) {
-        this.parentResource.addMethod(httpMethod, finalIntegration, options);
+        this.parentResource.addMethod(httpMethod, integration, options);
       }
     }
-    return super.addMethod(httpMethod, finalIntegration, options);
+
+    if (!this._autoConfigurePathParameter) {
+      return super.addMethod(httpMethod, integration, options);
+    }
+
+    // Configure the method request and integration request path parameters
+    // together, so per-method `requestParameters` (which replace the defaults
+    // rather than merging with them) cannot drop one side of the mapping.
+    const integrationToWrap = integration ?? this.defaultIntegration;
+    const finalIntegration = integrationToWrap ? new AutoProxyIntegration(integrationToWrap) : undefined;
+    const finalOptions: MethodOptions = {
+      ...options,
+      requestParameters: {
+        'method.request.path.proxy': true,
+        ...(options?.requestParameters ?? this.defaultMethodOptions?.requestParameters),
+      },
+    };
+    return super.addMethod(httpMethod, finalIntegration, finalOptions);
   }
 }
 
