@@ -2,6 +2,60 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.276.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.275.0-alpha.0...v2.276.0-alpha.0) (2026-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* **redshift-alpha:** `Table` now interprets dots in `tableName` as `schema.table` or `database.schema.table` for every table operation, as grants already did. Tables created with 2.262.0 or later from a dotted `tableName` exist as one identifier (for example `"analytics.orders"` in the default schema); after upgrading, updates and `RemovalPolicy.DESTROY` deletion address `analytics.orders` instead. Names with empty components now fail at synthesis, and renames cannot add, remove or change the qualifier.
+
+### Features
+
+* **neptune-alpha:** add engine version v1.5.0.0 ([#39259](https://github.com/aws/aws-cdk/issues/39259)) ([7fac0fe](https://github.com/aws/aws-cdk/commit/7fac0fe9deb80bb2225c0ae12cf6d38c0edfa147)), closes [#39395](https://github.com/aws/aws-cdk/issues/39395)
+
+
+### Bug Fixes
+
+* **medialive-alpha:** cannot use out-of-band captions on MediaPackage v2 outputs ([#39619](https://github.com/aws/aws-cdk/issues/39619)) ([af41b6e](https://github.com/aws/aws-cdk/commit/af41b6eacc8e745465cd42865726cac1814b7044))
+* **mediapackagev2-alpha:** origin endpoint policy can be created before its origin endpoint ([#38946](https://github.com/aws/aws-cdk/issues/38946)) ([d7c8aa5](https://github.com/aws/aws-cdk/commit/d7c8aa5c09ce66ad546a8f916762217ad5a8296a)), closes [#38945](https://github.com/aws/aws-cdk/issues/38945)
+* **redshift-alpha:** align qualified table names ([#39304](https://github.com/aws/aws-cdk/issues/39304)) ([21f38da](https://github.com/aws/aws-cdk/commit/21f38da07f18cce95d05a9f93c67861446899fbc))
+
+## [2.275.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.274.0-alpha.0...v2.275.0-alpha.0) (2026-10-26)
+
+## [2.274.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.273.0-alpha.0...v2.274.0-alpha.0) (2026-10-20)
+
+
+### Features
+
+* **bedrock-alpha:** add VectorKnowledgeBase L2 construct for bedrock knowledge bases ([#38883](https://github.com/aws/aws-cdk/issues/38883)) ([5041639](https://github.com/aws/aws-cdk/commit/5041639479aaa5204ff2ff1068f1bae40b32164d)), closes [aws/aws-cdk-rfcs#686](https://github.com/aws/aws-cdk-rfcs/issues/686)
+
+
+### Bug Fixes
+
+* **ec2-alpha:** allow valid secondary CIDR blocks outside RFC 1918 ([#36873](https://github.com/aws/aws-cdk/issues/36873)) ([8f48c90](https://github.com/aws/aws-cdk/commit/8f48c9024329100068d8376a8f309912e7fb2b13)), closes [#36111](https://github.com/aws/aws-cdk/issues/36111)
+* **redshift-alpha:** backslashes in user passwords and comments are not preserved ([#39306](https://github.com/aws/aws-cdk/issues/39306)) ([1f752b6](https://github.com/aws/aws-cdk/commit/1f752b67bfdd52181273e9ffb17ae9005c16b9f9))
+
+## [2.273.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.272.0-alpha.0...v2.273.0-alpha.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **redshift-alpha:** PUBLIC in any ASCII letter case is rejected as the name of a created user, or of an imported user that is granted table privileges. Existing PUBLIC grants are not removed, but narrowing one is rejected. Migrating to an ordinary name still works.
+* **redshift-alpha:** The `loggingProperties` prop on `ClusterProps` (and the `LoggingProperties` interface) has been removed from `@aws-cdk/aws-redshift-alpha`. Use the new `logging` prop with `ClusterLogging.s3({ bucket, keyPrefix })` or `ClusterLogging.cloudWatch({ logExports })` instead.
+
+### Features
+
+* **redshift-alpha:** audit logging to cloudwatch ([#36410](https://github.com/aws/aws-cdk/issues/36410)) ([f2bf5d3](https://github.com/aws/aws-cdk/commit/f2bf5d31af8aa4da1863ebc08b1a98182d525eb7)), closes [#25755](https://github.com/aws/aws-cdk/issues/25755)
+
+
+### Bug Fixes
+
+* **redshift-alpha:** reject PUBLIC user names ([#38935](https://github.com/aws/aws-cdk/issues/38935)) ([3335407](https://github.com/aws/aws-cdk/commit/3335407fa794c9b7183ccc2667a1c815429cb9c6))
+
+## [2.272.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.271.0-alpha.0...v2.272.0-alpha.0) (2026-09-30)
+
+## [2.271.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.270.0-alpha.0...v2.271.0-alpha.0) (2026-09-25)
+
 ## [2.270.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.269.0-alpha.0...v2.270.0-alpha.0) (2026-09-17)
 
 ## [2.269.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.268.0-alpha.0...v2.269.0-alpha.0) (2026-09-10)

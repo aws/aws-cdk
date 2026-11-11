@@ -1,6 +1,47 @@
 {
  "Resources": {
-  "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027": {
+  "EvaluateExpressionEvalFunctionD463D928": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c3f237981e8bcc3fdc75c6f7402efab5fdd7b3f9136ca3ab6430daeb27a43853.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x"
+   },
+   "DependsOn": [
+    "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41"
+   ]
+  },
+  "EvaluateExpressionEvalFunctionLogGroup7C023450": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "EvaluateExpressionEvalFunctionD463D928"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,47 +72,6 @@
     ]
    }
   },
-  "Eval41256dc5445742738ed917bc818694e54EB1134F": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "c3f237981e8bcc3fdc75c6f7402efab5fdd7b3f9136ca3ab6430daeb27a43853.zip"
-    },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs24.x"
-   },
-   "DependsOn": [
-    "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
-   ]
-  },
-  "Eval41256dc5445742738ed917bc818694e5LogGroup308B9405": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "LogGroupName": {
-     "Fn::Join": [
-      "",
-      [
-       "/aws/lambda/",
-       {
-        "Ref": "Eval41256dc5445742738ed917bc818694e54EB1134F"
-       }
-      ]
-     ]
-    },
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
   "StateMachineRoleB840431D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -79,6 +79,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":states:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stateMachine:*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"
@@ -100,7 +129,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "Eval41256dc5445742738ed917bc818694e54EB1134F",
+          "EvaluateExpressionEvalFunctionD463D928",
           "Arn"
          ]
         },
@@ -110,7 +139,7 @@
           [
            {
             "Fn::GetAtt": [
-             "Eval41256dc5445742738ed917bc818694e54EB1134F",
+             "EvaluateExpressionEvalFunctionD463D928",
              "Arn"
             ]
            },
@@ -141,7 +170,7 @@
        "{\"StartAt\":\"EvaluateExpression\",\"States\":{\"EvaluateExpression\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Eval41256dc5445742738ed917bc818694e54EB1134F",
+         "EvaluateExpressionEvalFunctionD463D928",
          "Arn"
         ]
        },
