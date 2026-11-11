@@ -7,6 +7,7 @@ import { type BundlingOptions } from '../bundling';
 import { ExecutionError } from '../errors';
 import { lit } from './literal-string';
 import { profileFn } from './perf';
+import { posixShellEscape } from './shell-escape';
 
 /**
  * Options for Docker based bundling of assets
@@ -138,7 +139,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
       'public.ecr.aws/docker/library/alpine',
       'sh',
       '-c',
-      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${posixShellEscape(user)} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${posixShellEscape(user)} ${AssetStaging.BUNDLING_INPUT_DIR}`,
     ]);
   }
 
