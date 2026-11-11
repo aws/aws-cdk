@@ -1,14 +1,21 @@
 import { Construct } from 'constructs';
 import { assertNoPrototypePollution } from './prototype-pollution';
 import { getWarnings } from './util';
+import { AssemblyValidationReport } from '../../assertions/lib/helpers-internal';
 import * as cxschema from '../../cloud-assembly-schema';
+import * as cxapi from '../../cx-api';
 import { DISABLE_CREATION_STACK_TRACES, VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '../../cx-api';
 import * as core from '../lib';
 import { Names } from '../lib';
 
 let app: core.App;
 beforeEach(() => {
-  app = new core.App();
+  app = new core.App({
+    postCliContext: {
+      [cxapi.ANNOTATIONS_IN_VALIDATION_REPORT]: true,
+      ...AssemblyValidationReport.APP_CONTEXT,
+    },
+  });
   core.Validations.of(app).acknowledge({
     id: 'CloudFormation-Validate::F3003',
     reason: 'Yeah we are missing some required properties',
@@ -146,6 +153,40 @@ describe('cfn resource', () => {
           message: 'AWS::Lambda::Function does not support snapshot removal policy. This policy will be ignored. [ack: @aws-cdk/core:AWS::Lambda::FunctionSnapshotRemovalPolicyIgnored]',
         },
       ]);
+    });
+
+    test.each(['Annotations', 'Validations'])('warning on unsupported resource (without feature flag) can be suppressed using %s', (api) => {
+      // GIVEN
+      core.Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::F3016',
+        reason: 'SNAPSHOT technically doesnt make sense here',
+      });
+      core.Validations.of(app).acknowledge({
+        id: 'CloudFormation-Validate::F0018',
+        reason: 'SNAPSHOT technically doesnt make sense here',
+      });
+
+      const stack = new core.Stack(app);
+      const resource = new core.CfnResource(stack, 'Resource', {
+        type: 'AWS::Lambda::Function',
+      });
+      // WHEN
+      resource.applyRemovalPolicy(core.RemovalPolicy.SNAPSHOT);
+
+      if (api === 'Annotations') {
+        core.Annotations.of(stack).acknowledgeWarning('@aws-cdk/core:AWS::Lambda::FunctionSnapshotRemovalPolicyIgnored');
+
+        // If we use the annotations API, we expect not to find annotations anymore
+        expect(getWarnings(app.synth())).toEqual([]);
+      } else {
+        core.Validations.of(app).acknowledge({
+          id: 'Annotation::@aws-cdk/core:AWS_Lambda_FunctionSnapshotRemovalPolicyIgnored',
+          reason: 'demonstrating that acknowledging works',
+        });
+      }
+
+      // In either case, we expect not to find a Validation
+      AssemblyValidationReport.fromApp(app).hasNoViolation();
     });
 
     test('fails on unsupported resources (under feature flag)', () => {
