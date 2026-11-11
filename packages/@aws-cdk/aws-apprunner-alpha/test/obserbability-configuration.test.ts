@@ -5,6 +5,10 @@ import { ObservabilityConfiguration, TraceConfigurationVendor } from '../lib';
 let stack: cdk.Stack;
 beforeEach(() => {
   stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3697',
+    reason: 'App Runner is in maintenance mode and is intentionally exercised by this unit test',
+  });
 });
 
 test.each([
