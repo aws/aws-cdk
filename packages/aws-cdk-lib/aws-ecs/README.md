@@ -307,7 +307,7 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
-### Amazon Linux 2 (Neuron) Instances
+### Neuron Instances
 
 To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.
 
@@ -1140,26 +1140,26 @@ Since AWS has changed the [ARN format for ECS](https://docs.aws.amazon.com/Amazo
 feature flag `@aws-cdk/aws-ecs:arnFormatIncludesClusterName` must be enabled to use the new ARN format.
 The feature flag changes behavior for the entire CDK project. Therefore it is not possible to mix the old and the new format in one CDK project.
 
-```tss
+```ts
 declare const cluster: ecs.Cluster;
 
 // Import service from EC2 service attributes
-const service = ecs.Ec2Service.fromEc2ServiceAttributes(this, 'EcsService', {
+const ec2ServiceFromAttributes = ecs.Ec2Service.fromEc2ServiceAttributes(this, 'Ec2ServiceFromAttributes', {
   serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
   cluster,
 });
 
 // Import service from EC2 service ARN
-const service = ecs.Ec2Service.fromEc2ServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+const ec2ServiceFromArn = ecs.Ec2Service.fromEc2ServiceArn(this, 'Ec2ServiceFromArn', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 
 // Import service from Fargate service attributes
-const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsService', {
+const fargateServiceFromAttributes = ecs.FargateService.fromFargateServiceAttributes(this, 'FargateServiceFromAttributes', {
   serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
   cluster,
 });
 
 // Import service from Fargate service ARN
-const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+const fargateServiceFromArn = ecs.FargateService.fromFargateServiceArn(this, 'FargateServiceFromArn', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
 ### Availability Zone rebalancing
@@ -1246,6 +1246,8 @@ scaling.scaleOnRequestCount('RequestScaling', {
 
 Task auto-scaling is powered by *Application Auto-Scaling*.
 See that section for details.
+
+To scale on SQS queue depth, see [Autoscaling consumers on queue depth](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_sqs-readme.html#autoscaling-consumers-on-queue-depth).
 
 ## Integration with CloudWatch Events
 
@@ -1555,6 +1557,51 @@ ecsService.associateCloudMapService({
 });
 ```
 
+### Using an Existing Cloud Map Namespace
+
+You can use an existing Cloud Map namespace as the default namespace for a cluster
+instead of creating a new one. This is useful when you want to share a namespace
+across multiple clusters or when you want to use a namespace that was created
+outside of CDK:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Create or reference an existing namespace
+const existingNamespace = new cloudmap.PrivateDnsNamespace(this, 'Namespace', {
+  name: 'example.local',
+  vpc,
+});
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+// Use the existing namespace as the default
+cluster.addExistingDefaultCloudMapNamespace({
+  namespace: existingNamespace,
+  useForServiceConnect: true,
+});
+```
+
+You can also import an existing namespace:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const importedNamespace = cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
+  this, 'ImportedNamespace', {
+    namespaceId: 'ns-xxxxxxxxxxxxx',
+    namespaceArn: 'arn:aws:servicediscovery:us-east-1:123456789012:namespace/ns-xxxxxxxxxxxxx',
+    namespaceName: 'example.local',
+  }
+);
+
+const cluster = new ecs.Cluster(this, 'Cluster', { vpc });
+
+cluster.addExistingDefaultCloudMapNamespace({
+  namespace: importedNamespace,
+});
+```
+
 ## Capacity Providers
 
 There are two major families of Capacity Providers: [AWS
@@ -1634,8 +1681,9 @@ Managed Termination Protection to work.
 
 Managed instance draining facilitates graceful termination of Amazon ECS instances.
 This allows your service workloads to stop safely and be rescheduled to non-terminating instances.
-Infrastructure maintenance and updates are preformed without disruptions to workloads.
-To use managed instance draining, set enableManagedDraining to true.
+Infrastructure maintenance and updates are performed without disruptions to workloads.
+When `enableManagedDraining` is not specified (recommended), CloudFormation will implicitly
+enable managed draining. Set it to `true` for explicit enablement or `false` to disable.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -2523,6 +2571,28 @@ service.forceNewDeployment();
 // Or provide your own nonce to control when deployments are triggered
 service.forceNewDeployment('my-custom-nonce-v2');
 ```
+
+Alternatively, you can configure `forceNewDeployment` declaratively as a constructor option.
+This approach also allows you to explicitly disable the feature with `enabled: false`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+// Force a new deployment on every `cdk deploy` by using a time-based nonce
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  forceNewDeployment: {
+    enabled: true,
+    nonce: Date.now().toString(),
+  },
+});
+```
+
+Calling the `forceNewDeployment()` method takes precedence over the constructor option. The nonce passed
+to the method (or the auto-generated one when none is provided) overrides any value configured through the
+`forceNewDeployment` property.
 
 ## Mixins
 

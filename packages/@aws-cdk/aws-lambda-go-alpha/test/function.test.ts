@@ -1,6 +1,6 @@
 
 import * as path from 'path';
-import { Stack } from 'aws-cdk-lib';
+import { Stack, Validations } from 'aws-cdk-lib';
 import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { GoFunction } from '../lib';
@@ -22,6 +22,10 @@ jest.mock('../lib/bundling', () => {
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E2531',
+    reason: 'Deprecated runtimes',
+  });
   jest.clearAllMocks();
 });
 

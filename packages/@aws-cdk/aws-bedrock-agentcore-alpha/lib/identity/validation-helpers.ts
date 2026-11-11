@@ -16,43 +16,92 @@ import type { IConstruct } from 'constructs';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from '../memory/validation-helpers';
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const CREDENTIAL_PROVIDER_NAME_MIN = 1;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const CREDENTIAL_PROVIDER_NAME_MAX = 128;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const CREDENTIAL_PROVIDER_NAME_PATTERN = /^[a-zA-Z0-9\-_]+$/;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const API_KEY_VALUE_MIN = 1;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const API_KEY_VALUE_MAX = 65536;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const CREDENTIAL_PROVIDER_TAG_MIN = 1;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const CREDENTIAL_PROVIDER_TAG_MAX = 256;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const WORKLOAD_IDENTITY_NAME_MIN = 3;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const WORKLOAD_IDENTITY_NAME_MAX = 255;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const WORKLOAD_IDENTITY_NAME_PATTERN = /^[A-Za-z0-9_.-]+$/;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const ALLOWED_OAUTH2_RETURN_URL_MIN = 1;
 
 /** @internal */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export const ALLOWED_OAUTH2_RETURN_URL_MAX = 2048;
 
 /**
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateWorkloadIdentityName(name: string, scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -74,6 +123,7 @@ export function validateWorkloadIdentityName(name: string, scope?: IConstruct): 
 
 /**
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateAllowedResourceOauth2ReturnUrls(urls: string[] | undefined, scope?: IConstruct): string[] {
   if (urls == null) {
@@ -103,6 +153,7 @@ export function validateAllowedResourceOauth2ReturnUrls(urls: string[] | undefin
 
 /**
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateCredentialProviderName(name: string, scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -124,6 +175,7 @@ export function validateCredentialProviderName(name: string, scope?: IConstruct)
 
 /**
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateApiKeyValue(apiKey: string | undefined, scope?: IConstruct): string[] {
   if (apiKey == null || apiKey === '') {
@@ -142,6 +194,7 @@ export function validateApiKeyValue(apiKey: string | undefined, scope?: IConstru
 
 /**
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateCredentialProviderTags(tags?: { [key: string]: string }, scope?: IConstruct): string[] {
   let errors: string[] = [];

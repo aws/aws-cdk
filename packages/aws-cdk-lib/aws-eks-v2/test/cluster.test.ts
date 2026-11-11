@@ -12,6 +12,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as eks from '../lib';
 import { HelmChart, KubectlProvider } from '../lib';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
@@ -1201,6 +1202,45 @@ describe('cluster', () => {
       });
     });
 
+    test('default cluster capacity with EKS_DEFAULT_AL2023 flag uses AL2023_x86_64_STANDARD', () => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.EKS_DEFAULT_AL2023]: true } });
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        prune: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_x86_64_STANDARD',
+      });
+    });
+
+    test('default cluster capacity with EKS_DEFAULT_AL2023 flag and ARM64 instance uses AL2023_ARM_64_STANDARD', () => {
+      // GIVEN
+      const app = new cdk.App({ context: { [cxapi.EKS_DEFAULT_AL2023]: true } });
+      const stack = new cdk.Stack(app, 'Stack');
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        defaultCapacityType: eks.DefaultCapacityType.NODEGROUP,
+        defaultCapacity: 1,
+        version: CLUSTER_VERSION,
+        prune: false,
+        defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+        AmiType: 'AL2023_ARM_64_STANDARD',
+      });
+    });
+
     test('addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType', () => {
       // GIVEN
       const { app, stack } = testFixtureNoVpc();
@@ -1219,6 +1259,77 @@ describe('cluster', () => {
       expect(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
           (v as any).Default.includes('amazon-linux-2-arm64/'),
+      )).toEqual(true);
+    });
+
+    test.each([
+      ['m7g.large', 'amazon-linux-2-arm64/'],
+      ['r7g.large', 'amazon-linux-2-arm64/'],
+      ['c7gn.large', 'amazon-linux-2-arm64/'],
+      ['m8g.large', 'amazon-linux-2-arm64/'],
+      ['c8g.large', 'amazon-linux-2-arm64/'],
+      ['x2gd.large', 'amazon-linux-2-arm64/'],
+      ['a1.large', 'amazon-linux-2-arm64/'],
+      ['m5.large', 'amazon-linux-2/'],
+      ['c7i.large', 'amazon-linux-2/'],
+    ])('addAutoScalingGroupCapacity with %s selects the %s AMI', (instanceType, amiPath) => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        ...commonProps,
+        prune: false,
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType(instanceType),
+      });
+
+      // THEN
+      const parameters = app.synth().getStackByName(stack.stackName).template.Parameters;
+      const amiParameters = Object.entries(parameters)
+        .filter(([k]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami'))
+        .map(([, v]) => (v as any).Default);
+      expect(amiParameters).toEqual([expect.stringContaining(`/${amiPath}recommended/image_id`)]);
+    });
+
+    test('addAutoScalingGroupCapacity with an unresolved instance type keeps the x86_64 AMI', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+      const instanceTypeParam = new cdk.CfnParameter(stack, 'NodeInstanceType', { default: 'm7g.large' });
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        ...commonProps,
+        prune: false,
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType(instanceTypeParam.valueAsString),
+      });
+
+      // THEN
+      const parameters = app.synth().getStackByName(stack.stackName).template.Parameters;
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('amazon-linux-2/'),
+      )).toEqual(true);
+    });
+
+    test('addAutoScalingGroupCapacity with an instance type name that cannot be parsed keeps the x86_64 AMI', () => {
+      // GIVEN
+      const { app, stack } = testFixtureNoVpc();
+
+      // WHEN
+      new eks.Cluster(stack, 'cluster', {
+        ...commonProps,
+        prune: false,
+      }).addAutoScalingGroupCapacity('ng', {
+        instanceType: new ec2.InstanceType('custom-node-type'),
+      });
+
+      // THEN
+      const parameters = app.synth().getStackByName(stack.stackName).template.Parameters;
+      expect(Object.entries(parameters).some(
+        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
+          (v as any).Default.includes('amazon-linux-2/'),
       )).toEqual(true);
     });
 
@@ -2553,6 +2664,10 @@ describe('cluster', () => {
   test('create a cluster using custom resource with secrets encryption using KMS CMK', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'EncryptionConfig.Resources is intentionally retained for backwards compatibility',
+    });
 
     // WHEN
     new eks.Cluster(stack, 'Cluster', {
@@ -3031,6 +3146,10 @@ describe('cluster', () => {
     test('skips cross-network validation when all CIDRs are tokens', () => {
       // GIVEN
       const { stack } = testFixture();
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'Two remote node network entries are intentional to test token-aware cross-network validation',
+      });
       const unresolvedNodeCidr1 = cdk.Fn.importValue('NodeCidr1');
       const unresolvedNodeCidr2 = cdk.Fn.importValue('NodeCidr2');
 

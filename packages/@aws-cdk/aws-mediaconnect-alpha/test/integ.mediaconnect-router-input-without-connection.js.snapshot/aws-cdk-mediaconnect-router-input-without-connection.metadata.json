@@ -1,0 +1,38 @@
+{
+  "/aws-cdk-mediaconnect-router-input-without-connection/FlowWithoutConnection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-without-connection/MediaLiveChannelWithoutConnection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-without-connection/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-without-connection/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-without-connection/FlowWithoutConnection/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowWithoutConnectionCCD14C92"
+    }
+  ],
+  "/aws-cdk-mediaconnect-router-input-without-connection/MediaLiveChannelWithoutConnection/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MediaLiveChannelWithoutConnection91881A6F"
+    }
+  ]
+}

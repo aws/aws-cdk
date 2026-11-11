@@ -142,6 +142,37 @@ describe('bucket', () => {
     });
   });
 
+  test.each([
+    [undefined, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.UNENCRYPTED, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.S3_MANAGED, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.KMS_MANAGED, s3.BucketEncryption.KMS_MANAGED],
+    [s3.BucketEncryption.KMS, s3.BucketEncryption.KMS],
+    [s3.BucketEncryption.DSSE_MANAGED, s3.BucketEncryption.DSSE_MANAGED],
+    [s3.BucketEncryption.DSSE, s3.BucketEncryption.DSSE],
+  ])('exposes the effective encryption mode for %p', (encryption, expected) => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket', { encryption });
+
+    expect(bucket.encryption).toBe(expected);
+  });
+
+  test('reflects changes to the underlying encryption configuration', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    const resource = bucket.node.defaultChild as s3.CfnBucket;
+
+    resource.bucketEncryption = {
+      serverSideEncryptionConfiguration: [{
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: 'aws:kms:dsse',
+        },
+      }],
+    };
+
+    expect(bucket.encryption).toBe(s3.BucketEncryption.DSSE_MANAGED);
+  });
+
   test('empty blockedEncryptionTypes not allowed', () => {
     const stack = new cdk.Stack();
 
@@ -208,6 +239,7 @@ describe('bucket', () => {
 
   test('bucket with custom blockedEncryptionTypes', () => {
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::W3030', reason: 'Bogus encryption types are only for tests' });
 
     new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.S3_MANAGED,
@@ -1678,6 +1710,7 @@ describe('bucket', () => {
 
       expect(bucket.bucketArn).toEqual(bucketArn);
       expect(stack.resolve(bucket.bucketName)).toEqual('my-bucket');
+      expect(bucket.encryption).toBeUndefined();
 
       Template.fromStack(stack).templateMatches({});
     });
@@ -1693,6 +1726,19 @@ describe('bucket', () => {
 
       // at this point we technically didn't create any resources in the consuming stack.
       Template.fromStack(stack).templateMatches({});
+    });
+
+    test.each([
+      [s3.BucketEncryption.DSSE_MANAGED, s3.BucketEncryption.DSSE_MANAGED],
+      [s3.BucketEncryption.UNENCRYPTED, s3.BucketEncryption.S3_MANAGED],
+    ])('import with encryption %p reports %p', (encryption, expected) => {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'my-bucket',
+        encryption,
+      });
+
+      expect(bucket.encryption).toBe(expected);
     });
 
     test('import can also be used to import arbitrary ARNs', () => {
@@ -1836,6 +1882,27 @@ describe('bucket', () => {
       });
     });
 
+    test.each([
+      ['no encryption configuration', undefined, s3.BucketEncryption.S3_MANAGED],
+      ['a rule without a default algorithm', { serverSideEncryptionConfiguration: [{ bucketKeyEnabled: true }] }, s3.BucketEncryption.S3_MANAGED],
+      ['AES256', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }] }, s3.BucketEncryption.S3_MANAGED],
+      ['aws:kms without a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }] }, s3.BucketEncryption.KMS_MANAGED],
+      ['aws:kms with a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms', kmsMasterKeyId: 'key-id' } }] }, s3.BucketEncryption.KMS],
+      ['aws:kms:dsse without a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' } }] }, s3.BucketEncryption.DSSE_MANAGED],
+      ['aws:kms:dsse with a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse', kmsMasterKeyId: 'key-id' } }] }, s3.BucketEncryption.DSSE],
+      ['an unrecognized algorithm', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:future' } }] }, undefined],
+    ])("reflects the 'encryption' property for %s", (_description, bucketEncryption, expected) => {
+      cfnBucket.bucketEncryption = bucketEncryption;
+
+      expect(bucket.encryption).toBe(expected);
+    });
+
+    test("reports an unknown 'encryption' when the configuration is unresolved", () => {
+      cfnBucket.bucketEncryption = cdk.Lazy.any({ produce: () => ({ serverSideEncryptionConfiguration: [] }) });
+
+      expect(bucket.encryption).toBeUndefined();
+    });
+
     test('allows setting the RemovalPolicy of the underlying resource', () => {
       bucket.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 
@@ -1843,6 +1910,23 @@ describe('bucket', () => {
         UpdateReplacePolicy: 'Retain',
         DeletionPolicy: 'Retain',
       });
+    });
+
+    test('allows overriding cross-stack reference strength', () => {
+      const app = new cdk.App();
+      const producerStack = new cdk.Stack(app, 'Producer', { env: { region: 'us-east-1', account: '111111111111' } });
+      const consumerStack = new cdk.Stack(app, 'Consumer', { env: { region: 'us-east-1', account: '111111111111' } });
+
+      const b = new s3.Bucket(producerStack, 'MyBucket');
+      cdk.CrossStackReferences.of(b).produce(cdk.ReferenceStrength.WEAK);
+
+      new cdk.CfnOutput(consumerStack, 'BucketName', { value: b.bucketName });
+
+      const assembly = app.synth();
+      const consumerTemplate = assembly.getStackByName(consumerStack.stackName).template;
+
+      const output = consumerTemplate.Outputs.BucketName;
+      expect(output.Value).toHaveProperty('Fn::GetStackOutput');
     });
 
     test('correctly sets the default child of the returned L2', () => {
@@ -1956,6 +2040,11 @@ describe('bucket', () => {
     });
 
     test('allows importing a BucketPolicy that references a Bucket', () => {
+      cdk.Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::E3019',
+        reason: 'This test is asserting something pointless',
+      });
+
       new s3.CfnBucketPolicy(stack, 'CfnBucketPolicy', {
         policyDocument: {
           'Statement': [
@@ -5364,6 +5453,78 @@ describe('bucket', () => {
             'Ref': 'SrcBucketReplicationRole5B31865A',
           },
         ],
+      });
+    });
+
+    describe('replication metrics behavior', () => {
+      test('replication metrics can be enabled without replication time control', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ReplicationMetricsStackNoRTC');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES, // metrics only
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          ReplicationConfiguration: {
+            Rules: [
+              {
+                Destination: {
+                  Metrics: {
+                    Status: 'Enabled',
+                    EventThreshold: Match.absent(), // Explicitly ensure no EventThreshold field
+                  },
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('replication metrics includes eventThreshold when replication time control is defined', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ReplicationMetricsStackWithRTC');
+        const dstBucket = new s3.Bucket(stack, 'DstBucket');
+
+        new s3.Bucket(stack, 'SrcBucket', {
+          versioned: true,
+          replicationRules: [
+            {
+              destination: dstBucket,
+              replicationTimeControl: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+              metrics: s3.ReplicationTimeValue.FIFTEEN_MINUTES,
+            },
+          ],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+          VersioningConfiguration: { Status: 'Enabled' },
+          ReplicationConfiguration: {
+            Rules: [
+              {
+                Destination: {
+                  ReplicationTime: {
+                    Status: 'Enabled',
+                    Time: { Minutes: 15 },
+                  },
+                  Metrics: {
+                    Status: 'Enabled',
+                    EventThreshold: {
+                      Minutes: 15,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        });
       });
     });
 

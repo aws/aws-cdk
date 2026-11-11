@@ -3,12 +3,14 @@
  *****************************************************************************/
 /**
  * Permissions to invoke the agent runtime
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_INVOKE_PERMS = ['bedrock-agentcore:InvokeAgentRuntime'];
 
 /**
  * Permissions to invoke the agent runtime on behalf of a user
  * Required when using the X-Amzn-Bedrock-AgentCore-Runtime-User-Id header
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_INVOKE_USER_PERMS = ['bedrock-agentcore:InvokeAgentRuntimeForUser'];
 
@@ -17,6 +19,7 @@ export const RUNTIME_INVOKE_USER_PERMS = ['bedrock-agentcore:InvokeAgentRuntimeF
  *****************************************************************************/
 /**
  * Grants control plane operations to manage the runtime (CRUD)
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_ADMIN_PERMS = [
   'bedrock-agentcore:CreateAgentRuntime',
@@ -39,6 +42,7 @@ export const RUNTIME_ADMIN_PERMS = [
 /**
  * ECR permissions for pulling container images
  * Used to download container images from ECR repositories
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_ECR_IMAGE_ACTIONS = [
   'ecr:BatchGetImage',
@@ -48,12 +52,14 @@ export const RUNTIME_ECR_IMAGE_ACTIONS = [
 /**
  * ECR authorization token permissions
  * Required to authenticate with ECR (must use * resource)
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_ECR_TOKEN_ACTIONS = ['ecr:GetAuthorizationToken'];
 
 /**
  * CloudWatch Logs permissions for log group operations
  * Used to create and describe log groups for runtime logs
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_LOGS_GROUP_ACTIONS = [
   'logs:DescribeLogStreams',
@@ -63,12 +69,14 @@ export const RUNTIME_LOGS_GROUP_ACTIONS = [
 /**
  * CloudWatch Logs describe permissions
  * Used to list and describe all log groups
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_LOGS_DESCRIBE_ACTIONS = ['logs:DescribeLogGroups'];
 
 /**
  * CloudWatch Logs permissions for log stream operations
  * Used to create log streams and write log events
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_LOGS_STREAM_ACTIONS = [
   'logs:CreateLogStream',
@@ -78,6 +86,7 @@ export const RUNTIME_LOGS_STREAM_ACTIONS = [
 /**
  * X-Ray tracing permissions
  * Required for distributed tracing (must use * resource)
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_XRAY_ACTIONS = [
   'xray:PutTraceSegments',
@@ -89,12 +98,14 @@ export const RUNTIME_XRAY_ACTIONS = [
 /**
  * CloudWatch metrics permissions
  * Used to publish custom metrics
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_CLOUDWATCH_METRICS_ACTIONS = ['cloudwatch:PutMetricData'];
 
 /**
  * Bedrock AgentCore workload identity permissions
  * Used to obtain access tokens for workload identity
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_WORKLOAD_IDENTITY_ACTIONS = [
   'bedrock-agentcore:GetWorkloadAccessToken',
@@ -104,5 +115,6 @@ export const RUNTIME_WORKLOAD_IDENTITY_ACTIONS = [
 /**
  * CloudWatch namespace for metrics
  * Used as a condition for CloudWatch metrics permissions
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const RUNTIME_CLOUDWATCH_NAMESPACE = 'bedrock-agentcore';

@@ -1,0 +1,123 @@
+{
+  "/aws-cdk-s3-server-access-logs-sse-kms": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-s3-server-access-logs-sse-kms.template.json"
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "autoDeleteObjects": true,
+        "removalPolicy": "destroy",
+        "encryption": "KMS"
+      }
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "serverAccessLogsBucket": "*",
+        "serverAccessLogsPrefix": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "enableKeyRotation": true
+      }
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServerAccessLogsBucket05F29982"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServerAccessLogsBucketKey95B7E326"
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServerAccessLogsBucketPolicy947BE3EE"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServerAccessLogsBucketAutoDeleteObjectsCustomResourceDA32BBFB"
+    }
+  ]
+}

@@ -1,4 +1,21 @@
 {
+  "/EventApiRdsStack": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at EventApiRdsStack._silenceLiteralAzWarning (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
+        "    at get availabilityZones (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new EventApiRdsStack (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-rds.js:52:21)",
+        "    at <anonymous> (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-rds.js:160:15)",
+        "    ...node internals..."
+      ]
+    }
+  ],
   "/EventApiRdsStack/Integ-VPC": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -159,7 +176,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -195,7 +215,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }

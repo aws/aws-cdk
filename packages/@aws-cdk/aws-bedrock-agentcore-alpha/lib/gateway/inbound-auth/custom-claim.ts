@@ -21,6 +21,7 @@ import { CustomClaimOperator, CustomClaimValueType } from '../../common/types';
  * Represents a custom claim validation configuration for Gateway JWT authorizers.
  * Custom claims allow you to validate additional fields in JWT tokens beyond
  * the standard audience, client, and scope validations.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class GatewayCustomClaim {
   /**

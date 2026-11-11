@@ -1,0 +1,103 @@
+{
+  "/aws-cdk-medialive-mediapackage-sidecar-captions": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-medialive-mediapackage-sidecar-captions.template.json"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/EmpGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/EmpChannel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/HlsEndpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/SrtInput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/MediaLiveRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/SidecarCaptionChannel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/ChannelArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChannelArn"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/EmpGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EmpGroupC5CC4626"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/EmpChannel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EmpChannel894EADAC"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/HlsEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HlsEndpointB1B8983D"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/SrtInput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtInputC96BD065"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/MediaLiveRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MediaLiveRole1149D189"
+    }
+  ],
+  "/aws-cdk-medialive-mediapackage-sidecar-captions/SidecarCaptionChannel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SidecarCaptionChannel1F31CCA9"
+    }
+  ]
+}

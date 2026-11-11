@@ -1,18 +1,19 @@
-import * as cdk from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { testStack } from './test-stack';
 import * as route from '../lib/route';
 import { IpCidr, SubnetV2 } from '../lib/subnet-v2';
 import * as vpc from '../lib/vpc-v2';
 
+let stack: Stack;
+
 describe('VPC with shared route tables', () => {
-  let stack: cdk.Stack;
   let myVpc: vpc.VpcV2;
   let sharedRouteTable: route.RouteTable;
 
   beforeEach(() => {
-    const app = new cdk.App();
-    stack = new cdk.Stack(app);
+    stack = testStack();
     myVpc = new vpc.VpcV2(stack, 'TestVpc', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.1.0.0/16'),
       secondaryAddressBlocks: [vpc.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonProvided' })],
