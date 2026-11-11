@@ -367,6 +367,12 @@ export interface SubnetSelection {
   /**
    * Select subnets only in the given AZs.
    *
+   * Filtering happens at synthesis time. Literal AZ names do not match subnets
+   * whose availability zones are unresolved tokens (for example, from
+   * `Fn.getAzs()` in an environment-agnostic stack). To filter by literal names,
+   * the subnet AZs must also be known at synthesis time. For a new VPC, you can
+   * specify explicit AZ names in `VpcProps.availabilityZones`.
+   *
    * @default no filtering on AZs is done
    */
   readonly availabilityZones?: string[];
@@ -1657,6 +1663,11 @@ export class Vpc extends VpcBase {
     } else {
       const maxAZs = props.maxAzs ?? 3;
       this.availabilityZones = stack.availabilityZones.slice(0, maxAZs);
+    }
+    if (props.availabilityZones !== undefined && !Token.isUnresolved(props.availabilityZones) &&
+      props.availabilityZones.length === 0 && props.subnetConfiguration?.length !== 0) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:emptyAvailabilityZonesInVpc',
+        'The VPC has no availability zones, so no subnets will be created. Specify at least one availability zone or omit availabilityZones to use the stack availability zones.');
     }
     for (let i = 0; props.reservedAzs && i < props.reservedAzs; i++) {
       this.availabilityZones.push(FAKE_AZ_NAME);

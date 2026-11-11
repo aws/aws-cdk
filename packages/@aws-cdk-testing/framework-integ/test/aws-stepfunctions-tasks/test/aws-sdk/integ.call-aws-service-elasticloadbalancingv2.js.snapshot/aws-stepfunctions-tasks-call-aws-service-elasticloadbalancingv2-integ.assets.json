@@ -1,15 +1,16 @@
 {
-  "version": "38.0.1",
+  "version": "54.0.0",
   "files": {
-    "cdfd6322b93719edc4785afdb6ff6513055e557e52b9166b6781009118841168": {
+    "dbae84055481a531934e14ab38c842aeff81b9ec3336264294962d7f3db95622": {
+      "displayName": "aws-stepfunctions-tasks-call-aws-service-elasticloadbalancingv2-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-call-aws-service-elasticloadbalancingv2-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-e32a600b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cdfd6322b93719edc4785afdb6ff6513055e557e52b9166b6781009118841168.json",
+          "objectKey": "dbae84055481a531934e14ab38c842aeff81b9ec3336264294962d7f3db95622.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

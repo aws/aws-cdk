@@ -55,11 +55,6 @@ When approved this pushes the PR to the testing pipeline,
 thus starting the cli integ test build.
 Owner: Core CDK team
 
-### Initial Priority Assignment
-
-[project-prioritization-assignment.yml](project-prioritization-assignment.yml): GitHub action for automatically adding PR's with priorities to the project priority board based on their labels.
-Owner: CDK Support team
-
 ## Issue Triggered
 
 ### Closed Issue Message
@@ -71,11 +66,6 @@ Owner: CDK support team
 ### Label Assigner
 
 [issue-label-assign.yml](issue-label-assign.yml): Github action for automatically adding labels and/or setting assignees when an Issue or PR is opened or edited based on user-defined Area
-Owner: CDK support team
-
-### P1 Bug Priority Assignment
-
-[project-prioritization-bug.yml](project-prioritization-bug.yml): Github action for automatically adding P1 bugs to the prioritization project board
 Owner: CDK support team
 
 ## Scheduled Actions
@@ -104,12 +94,6 @@ Owner: Core CDK team
 and submits an auto-approve PR for it.
 Owner: Core CDK team
 
-### Issue Reprioritizer
-
-[issue-reprioritization.yml](issue-reprioritization.yml): GitHub action that labels `p2`
-issues as `p1` if a certain level of community engagement is met.
-Owner: Core CDK team
-
 ### Issue Metrics
 
 [repo-metrics.yml](repo-metrics.yml): GitHub action that runs monthly to report on metrics for issues and PRs created last month.
@@ -120,30 +104,6 @@ Owner: Core CDK team
 [update-contributors.yml](update-contributors.yml): GitHub action that runs monthly to create a pull request for updating a CONTRIBUTORS file with the top contributors.
 Owner: Core CDK team
 
-### R2 Priority Assignment
-
-[project-prioritization-r2-assignment.yml](project-prioritization-r2-assignment.yml): GitHub action that runs every 6 hours to add PR's to the priority project board that satisfies R2 Priority.
-Owner: CDK Support team
-
-### R5 Priority Assignment
-
-[project-prioritization-r5-assignment.yml](project-prioritization-r5-assignment.yml): GitHub action that runs every day to add PR's to the priority project board that satisfies R5 Priority.
-Owner: CDK Support team
-
-### Needs Attention Status Update
-
-[project-prioritization-needs-attention.yml](project-prioritization-needs-attention.yml): GitHub action that runs every day to update Needs Attention field in the prioritization project board.
-Owner: CDK Support team
-
-### PR Prioritization AddedOn update
-
-[project-prioritization-added-on.yml](project-prioritization-added-on.yml): GitHub action that runs every day to update AddedOn field in the prioritization project board.
-Owner: CDK Support team
-
-### Pending Maintainer Action Check
-
-[pending-maintainer-action-check.yml](pending-maintainer-action-check.yml): GitHub action that runs daily to track beginning-contributor PRs that need maintainer CI action (pending workflow approval, or no build CI activity). Creates a weekly tracking issue (labeled `ci-pending-tracking`, with a week key in the title combining the ISO week number and the week's start date) listing the PRs that entered the pending state during that week, and keeps it updated throughout the week.
-Owner: Core CDK team
-
 ### Issue sync
-[issue-sync.yml](issue-sync.yml): Github action that syncs issue metadat with the project board. More details can be found on the [project-sync](../../tools/@aws-cdk/project-sync) package.
+
+[issue-sync.yml](issue-sync.yml): Github action that syncs issue metadata with the project board. More details can be found on the [project-sync](../../tools/@aws-cdk/project-sync) package.
