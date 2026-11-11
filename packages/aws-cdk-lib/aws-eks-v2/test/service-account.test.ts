@@ -1,5 +1,5 @@
 import { testFixture, testFixtureCluster } from './util';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as eks from '../lib';
@@ -380,7 +380,175 @@ describe('service account', () => {
       // should not create OpenIdConnectProvider
       t.resourceCountIs('Custom::AWSCDKOpenIdConnectProvider', 0);
     });
+
+    test('uses provided role when role prop is specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: existingRole,
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN
+      // the provided role ARN should be used in PodIdentityAssociation
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        ClusterName: { Ref: 'ClusterEB0386A7' },
+        Namespace: 'default',
+        RoleArn: { 'Fn::GetAtt': ['ExistingRole5EDF2D93', 'Arn'] },
+        ServiceAccount: 'stackmyserviceaccount58b9529e',
+      });
+      // no auto-generated IAM role for ServiceAccount should exist
+      // the auto-generated role has a statement with sts:TagSession; ExistingRole does not
+      t.resourcePropertiesCountIs('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({ Action: Match.arrayWith(['sts:TagSession']), Principal: { Service: 'pods.eks.amazonaws.com' } }),
+          ]),
+        },
+      }, 0);
+      // the Pod Identity Agent addon should be created
+      t.hasResourceProperties('AWS::EKS::Addon', {
+        AddonName: 'eks-pod-identity-agent',
+      });
+    });
+
+    test('throws if role is specified with IRSA identity type', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN / THEN
+      expect(() => new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.IRSA,
+        role: existingRole,
+      })).toThrow('The `role` option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.');
+    });
+
+    test('throws if role is specified with default identity type (IRSA)', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN / THEN
+      expect(() => new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        // identityType is not specified, defaults to IRSA
+        role: existingRole,
+      })).toThrow('The `role` option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.');
+    });
+
+    test('sa.role returns the provided role', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+
+      // WHEN
+      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: existingRole,
+      });
+
+      // THEN: the provided role is returned as-is
+      expect(sa.role).toBe(existingRole);
+    });
+
+    test('grants on the service account are applied to the provided role', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+      });
+      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: existingRole,
+      });
+
+      // WHEN
+      iam.Grant.addToPrincipal({
+        grantee: sa,
+        actions: ['s3:GetObject'],
+        resourceArns: ['arn:aws:s3:::my-bucket/*'],
+      });
+
+      // THEN: the policy is attached to the provided role
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{ Action: 's3:GetObject', Effect: 'Allow', Resource: 'arn:aws:s3:::my-bucket/*' }],
+        },
+        Roles: [{ Ref: 'ExistingRole5EDF2D93' }],
+      });
+    });
+
+    test('accepts an L1 CfnRole imported with Role.fromRoleArn', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+      const cfnRole = new iam.CfnRole(stack, 'CfnRole', {
+        assumeRolePolicyDocument: {
+          Statement: [{
+            Action: ['sts:AssumeRole', 'sts:TagSession'],
+            Effect: 'Allow',
+            Principal: { Service: 'pods.eks.amazonaws.com' },
+          }],
+        },
+      });
+
+      // WHEN
+      new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+        role: iam.Role.fromRoleArn(stack, 'ImportedRole', cfnRole.attrArn),
+      });
+      const t = Template.fromStack(stack);
+
+      // THEN: the ARN of the L1 role reaches the PodIdentityAssociation
+      t.hasResourceProperties('AWS::EKS::PodIdentityAssociation', {
+        RoleArn: { 'Fn::GetAtt': ['CfnRole', 'Arn'] },
+      });
+      // no auto-generated role: CfnRole is the only role with the Pod Identity trust policy
+      t.resourcePropertiesCountIs('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({ Action: Match.arrayWith(['sts:TagSession']), Principal: { Service: 'pods.eks.amazonaws.com' } }),
+          ]),
+        },
+      }, 1);
+    });
+
+    test('sa.role returns auto-generated role when no role prop is provided with POD_IDENTITY', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      const sa = new eks.ServiceAccount(stack, 'MyServiceAccount', {
+        cluster,
+        identityType: eks.IdentityType.POD_IDENTITY,
+      });
+
+      // THEN: an IRole is returned
+      expect(sa.role).toBeDefined();
+      // addToPrincipalPolicy should be callable (functioning as IRole)
+      expect(() => sa.addToPrincipalPolicy(
+        new iam.PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] }),
+      )).not.toThrow();
+    });
   });
+
   describe('Service Account with eks.IdentityType.IRSA', () => {
     test('default', () => {
       // GIVEN
