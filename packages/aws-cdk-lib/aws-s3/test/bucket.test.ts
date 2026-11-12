@@ -142,6 +142,37 @@ describe('bucket', () => {
     });
   });
 
+  test.each([
+    [undefined, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.UNENCRYPTED, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.S3_MANAGED, s3.BucketEncryption.S3_MANAGED],
+    [s3.BucketEncryption.KMS_MANAGED, s3.BucketEncryption.KMS_MANAGED],
+    [s3.BucketEncryption.KMS, s3.BucketEncryption.KMS],
+    [s3.BucketEncryption.DSSE_MANAGED, s3.BucketEncryption.DSSE_MANAGED],
+    [s3.BucketEncryption.DSSE, s3.BucketEncryption.DSSE],
+  ])('exposes the effective encryption mode for %p', (encryption, expected) => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket', { encryption });
+
+    expect(bucket.encryption).toBe(expected);
+  });
+
+  test('reflects changes to the underlying encryption configuration', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    const resource = bucket.node.defaultChild as s3.CfnBucket;
+
+    resource.bucketEncryption = {
+      serverSideEncryptionConfiguration: [{
+        serverSideEncryptionByDefault: {
+          sseAlgorithm: 'aws:kms:dsse',
+        },
+      }],
+    };
+
+    expect(bucket.encryption).toBe(s3.BucketEncryption.DSSE_MANAGED);
+  });
+
   test('empty blockedEncryptionTypes not allowed', () => {
     const stack = new cdk.Stack();
 
@@ -1679,6 +1710,7 @@ describe('bucket', () => {
 
       expect(bucket.bucketArn).toEqual(bucketArn);
       expect(stack.resolve(bucket.bucketName)).toEqual('my-bucket');
+      expect(bucket.encryption).toBeUndefined();
 
       Template.fromStack(stack).templateMatches({});
     });
@@ -1694,6 +1726,19 @@ describe('bucket', () => {
 
       // at this point we technically didn't create any resources in the consuming stack.
       Template.fromStack(stack).templateMatches({});
+    });
+
+    test.each([
+      [s3.BucketEncryption.DSSE_MANAGED, s3.BucketEncryption.DSSE_MANAGED],
+      [s3.BucketEncryption.UNENCRYPTED, s3.BucketEncryption.S3_MANAGED],
+    ])('import with encryption %p reports %p', (encryption, expected) => {
+      const stack = new cdk.Stack();
+      const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketName: 'my-bucket',
+        encryption,
+      });
+
+      expect(bucket.encryption).toBe(expected);
     });
 
     test('import can also be used to import arbitrary ARNs', () => {
@@ -1835,6 +1880,27 @@ describe('bucket', () => {
       expect(stack.resolve(bucket.bucketArn)).toStrictEqual({
         'Fn::GetAtt': ['CfnBucket', 'Arn'],
       });
+    });
+
+    test.each([
+      ['no encryption configuration', undefined, s3.BucketEncryption.S3_MANAGED],
+      ['a rule without a default algorithm', { serverSideEncryptionConfiguration: [{ bucketKeyEnabled: true }] }, s3.BucketEncryption.S3_MANAGED],
+      ['AES256', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }] }, s3.BucketEncryption.S3_MANAGED],
+      ['aws:kms without a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }] }, s3.BucketEncryption.KMS_MANAGED],
+      ['aws:kms with a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms', kmsMasterKeyId: 'key-id' } }] }, s3.BucketEncryption.KMS],
+      ['aws:kms:dsse without a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' } }] }, s3.BucketEncryption.DSSE_MANAGED],
+      ['aws:kms:dsse with a key', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse', kmsMasterKeyId: 'key-id' } }] }, s3.BucketEncryption.DSSE],
+      ['an unrecognized algorithm', { serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:future' } }] }, undefined],
+    ])("reflects the 'encryption' property for %s", (_description, bucketEncryption, expected) => {
+      cfnBucket.bucketEncryption = bucketEncryption;
+
+      expect(bucket.encryption).toBe(expected);
+    });
+
+    test("reports an unknown 'encryption' when the configuration is unresolved", () => {
+      cfnBucket.bucketEncryption = cdk.Lazy.any({ produce: () => ({ serverSideEncryptionConfiguration: [] }) });
+
+      expect(bucket.encryption).toBeUndefined();
     });
 
     test('allows setting the RemovalPolicy of the underlying resource', () => {
