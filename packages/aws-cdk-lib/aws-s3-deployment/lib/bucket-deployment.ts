@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import type { ISource, SourceConfig } from './source';
+import type { ISource, MarkersConfig, SourceConfig } from './source';
 import { Source } from './source';
 import type * as cloudfront from '../../aws-cloudfront';
 import type * as ec2 from '../../aws-ec2';
@@ -471,23 +471,19 @@ export class BucketDeployment extends Construct {
       properties: {
         SourceBucketNames: this.sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: this.sources.map(source => source.zipObjectKey),
-        SourceMarkers: sanitize(this.sources.map((source) => {
-          if (source.markers) {
-            return source.markers;
-            // if there are more than 1 source, then all sources
-            // require markers (custom resource will throw an error otherwise)
-          } else if (this.sources.length > 1) {
-            return {};
-          }
-          return undefined;
+        SourceMarkers: removeTrailingEmptyObjects(this.sources.map((source) => {
+          return source.markers ?? {};
         })),
-        SourceMarkersConfig: sanitize(this.sources.map((source) => {
-          if (source.markersConfig) {
-            return source.markersConfig;
-          } else if (this.sources.length > 1) {
-            return {};
-          }
-          return undefined;
+        SourceMarkersConfig: removeTrailingEmptyObjects(this.sources.map((source): MarkersConfig => {
+          // Normalize to an object with only defined properties
+          return {
+            ...dropEmpty({
+              // Only render a 'true', omit if falsy
+              ...source.markersConfig?.jsonEscape ? { jsonEscape: true } : {},
+              // Make the list of encodings undefined if it ends up empty
+              markerEncodings: dropEmpty(source.markersConfig?.markerEncodings),
+            } satisfies MarkersConfig),
+          };
         })),
         DestinationBucketName: this.destinationBucket.bucketName,
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
@@ -1056,7 +1052,35 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
     && a.markers === undefined && b.markers === undefined);
 }
 
-function sanitize<A>(box: IReadableBox<Array<A>>) {
-  return box.derive(arr => arr.filter(Boolean))
-    .derive(arr => arr.length === 0 ? undefined : arr);
+/**
+ * Remove trailing empty objects from an array box, returning `undefined` if the array ends up empty
+ */
+function removeTrailingEmptyObjects<A extends object>(box: IReadableBox<Array<A>>) {
+  return box.derive(arr => {
+    const ret = [...arr];
+    while (ret.length > 0 && Object.keys(ret[ret.length - 1]).length === 0) {
+      ret.pop();
+    }
+    return ret.length > 0 ? ret : undefined;
+  });
+}
+
+/**
+ * Drop `undefined` values from the object, drop the object entirely if it is empty after that
+ */
+function dropEmpty<A extends object>(obj: A | undefined): A | undefined {
+  if (obj === undefined) {
+    return undefined;
+  }
+
+  const ret: any = {};
+  for (const key of Object.keys(obj)) {
+    if (!obj.hasOwnProperty(key)) { continue; }
+
+    const value = (obj as any)[key];
+    if (value !== undefined) {
+      ret[key] = value;
+    }
+  }
+  return Object.keys(ret).length === 0 ? undefined : ret;
 }

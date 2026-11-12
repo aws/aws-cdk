@@ -27,7 +27,10 @@ interface ObjectVersion {
   readonly VersionId: string;
 }
 
-export const handler = makeHandler(s3ObjectCopyHandler);
+// `Configuration` is only hash input for the destination key, and it can carry
+// deploy-time values resolved by CloudFormation (for example environment variables
+// that reference a NoEcho parameter), so keep it out of the logged event.
+export const handler = makeHandler(s3ObjectCopyHandler, { redactProperties: ['Configuration'] });
 
 export async function s3ObjectCopyHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props = event.ResourceProperties as unknown as ResourceProperties;
