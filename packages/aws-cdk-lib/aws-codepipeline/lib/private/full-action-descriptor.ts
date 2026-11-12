@@ -2,6 +2,7 @@ import type * as iam from '../../../aws-iam';
 import type { Duration } from '../../../core';
 import type { ActionArtifactBounds, ActionCategory, ActionConfig, IAction } from '../action';
 import type { Artifact } from '../artifact';
+import type { EnvironmentVariable } from '../environment-variable';
 
 export interface FullActionDescriptorProps {
   readonly action: IAction;
@@ -31,6 +32,7 @@ export class FullActionDescriptor {
   public readonly commands?: string[];
   public readonly outputVariables?: string[];
   public readonly timeout?: Duration;
+  public readonly environmentVariables?: EnvironmentVariable[];
 
   constructor(props: FullActionDescriptorProps) {
     this.action = props.action;
@@ -52,6 +54,7 @@ export class FullActionDescriptor {
     this.commands = actionProperties.commands;
     this.outputVariables = actionProperties.outputVariables;
     this.timeout = actionProperties.timeout;
+    this.environmentVariables = actionProperties.actionEnvironmentVariables;
   }
 }
 
