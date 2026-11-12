@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "55.0.0",
   "testCases": {
     "VpcEndpointTest/DefaultTest": {
       "stacks": [
@@ -27,5 +27,6 @@
       "assertionStackName": "VpcEndpointTestDefaultTestDeployAssert7589C6E5"
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
 }
