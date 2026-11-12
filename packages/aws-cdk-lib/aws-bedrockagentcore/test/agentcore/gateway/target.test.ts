@@ -35,6 +35,7 @@ import {
   ApiGatewayTargetConfiguration,
   ApiGatewayHttpMethod,
   LambdaTargetConfiguration,
+  McpListingMode,
 } from '../../../lib/gateway/targets/target-configuration';
 
 describe('GatewayTarget Tests', () => {
@@ -199,6 +200,29 @@ describe('GatewayTarget Tests', () => {
       });
 
       expect(target.credentialProviderConfigurations).toBe(customCredentials);
+    });
+
+    test('Should configure listingMode on MCP Server target', () => {
+      GatewayTarget.forMcpServer(stack, 'McpTargetWithListingMode', {
+        gateway: gateway,
+        gatewayTargetName: 'mcp-target-listing-mode',
+        endpoint: 'https://mcp-server.example.com',
+        credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
+        listingMode: McpListingMode.DEFAULT,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'mcp-target-listing-mode',
+        TargetConfiguration: {
+          Mcp: {
+            McpServer: {
+              Endpoint: 'https://mcp-server.example.com',
+              ListingMode: 'DEFAULT',
+            },
+          },
+        },
+      });
     });
 
     test('Should use provided credentials for OpenAPI target', () => {
