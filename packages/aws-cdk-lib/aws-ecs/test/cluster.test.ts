@@ -5585,3 +5585,235 @@ test('throws when InstanceWarmupPeriod is greater than 10000', () => {
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: 99999./);
 });
+
+describe('Action Logs', () => {
+  test('enables action logs with CloudWatch Logs destination via constructor prop', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+    const logGroup = new logs.LogGroup(stack, 'ActionLogs');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', {
+      vpc,
+      actionLogs: {
+        destination: ecs.ActionLogsDestination.toCloudWatchLogs(logGroup),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'ACTION_LOGS',
+      ResourceArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('EcsCluster'), 'Arn'] },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DestinationResourceArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('ActionLogs'), 'Arn'] },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+  });
+
+  test('enables action logs with auto-created log group when none provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', {
+      vpc,
+      actionLogs: {
+        destination: ecs.ActionLogsDestination.toCloudWatchLogs(),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: 7,
+    });
+    Template.fromStack(stack).hasResource('AWS::Logs::LogGroup', {
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+  });
+
+  test('auto-created log group uses vendedlogs naming convention with explicit cluster name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', {
+      vpc,
+      clusterName: 'my-test-cluster',
+      actionLogs: {
+        destination: ecs.ActionLogsDestination.toCloudWatchLogs(),
+      },
+    });
+
+    // THEN - LogGroupName resolves as a CFN intrinsic since clusterName goes through getResourceNameAttribute
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: {
+        'Fn::Join': ['', ['/aws/vendedlogs/ecs/action-logs/', { Ref: Match.stringLikeRegexp('EcsCluster') }]],
+      },
+    });
+  });
+
+  test('enables action logs with S3 destination', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+    const bucket = new s3.Bucket(stack, 'LogBucket');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', {
+      vpc,
+      actionLogs: {
+        destination: ecs.ActionLogsDestination.toS3(bucket),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'ACTION_LOGS',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DestinationResourceArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('LogBucket'), 'Arn'] },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+  });
+
+  test('enables action logs via enableActionLogs() method', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+    const logGroup = new logs.LogGroup(stack, 'ActionLogs');
+
+    // WHEN
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.enableActionLogs({
+      destination: ecs.ActionLogsDestination.toCloudWatchLogs(logGroup),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'ACTION_LOGS',
+      ResourceArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('EcsCluster'), 'Arn'] },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 1);
+  });
+
+  test('fails when enabling action logs twice', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+      vpc,
+      actionLogs: {
+        destination: ecs.ActionLogsDestination.toCloudWatchLogs(),
+      },
+    });
+
+    // THEN
+    expect(() => {
+      cluster.enableActionLogs({
+        destination: ecs.ActionLogsDestination.toCloudWatchLogs(),
+      });
+    }).toThrow(/action logs can only be enabled once/);
+  });
+
+  test('no action logs resources created when not configured', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 0);
+  });
+
+  test('delivery source name respects 60 character limit', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    // WHEN
+    new ecs.Cluster(stack, 'MyVeryLongClusterNameThatCouldExceedSixtyCharactersWhenUsedInNaming', {
+      vpc,
+      actionLogs: {
+        destination: ecs.ActionLogsDestination.toCloudWatchLogs(),
+      },
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    const sources = template.findResources('AWS::Logs::DeliverySource');
+    for (const [, resource] of Object.entries(sources)) {
+      expect((resource.Properties.Name as string).length).toBeLessThanOrEqual(60);
+    }
+    const destinations = template.findResources('AWS::Logs::DeliveryDestination');
+    for (const [, resource] of Object.entries(destinations)) {
+      expect((resource.Properties.Name as string).length).toBeLessThanOrEqual(60);
+    }
+  });
+
+  test('backward compatibility - existing cluster without action logs unchanged', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', {
+      vpc,
+      containerInsightsV2: ecs.ContainerInsights.ENHANCED,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliverySource', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::DeliveryDestination', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::Delivery', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ClusterSettings: [{ Name: 'containerInsights', Value: 'enhanced' }],
+    });
+  });
+
+  test('delivery has DependsOn source and destination', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'MyVpc');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', {
+      vpc,
+      actionLogs: {
+        destination: ecs.ActionLogsDestination.toCloudWatchLogs(),
+      },
+    });
+
+    // THEN
+    const deliveries = Template.fromStack(stack).findResources('AWS::Logs::Delivery');
+    for (const [, resource] of Object.entries(deliveries)) {
+      const dependsOn = resource.DependsOn as string[];
+      expect(dependsOn).toBeDefined();
+      expect(dependsOn.length).toBeGreaterThanOrEqual(2);
+      expect(dependsOn.some((d: string) => d.match(/ActionLogsSource/))).toBe(true);
+      expect(dependsOn.some((d: string) => d.match(/ActionLogsDest/))).toBe(true);
+    }
+  });
+});
