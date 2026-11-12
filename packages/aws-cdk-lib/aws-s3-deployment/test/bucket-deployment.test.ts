@@ -79,6 +79,21 @@ test('deploy from local directory asset', () => {
   });
 });
 
+test('empty sources array is preserved', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  new s3deploy.BucketDeployment(stack, 'EmptyDeployment', {
+    destinationBucket: bucket,
+    sources: [],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceBucketNames: [],
+  });
+});
+
 test('deploy with configured log retention', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -794,6 +809,62 @@ test('lambda execution role gets putObjectAcl permission when deploying with acc
   });
 });
 
+test('default memory limit is 1024MB', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    // memoryLimit not specified - should default to 1024MB
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { MemorySize: 1024 });
+});
+
+test('deployment handler runs on ARM_64', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['arm64'],
+  });
+});
+
+test('the ARM_64 handler is still a singleton shared across deployments', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+  new s3deploy.BucketDeployment(stack, 'Deploy2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN - a single handler, on arm64
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::Lambda::Function', 1);
+  template.hasResourceProperties('AWS::Lambda::Function', {
+    Architectures: ['arm64'],
+  });
+});
+
 test('memoryLimit can be used to specify the memory limit for the deployment resource handler', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -1020,6 +1091,113 @@ test('deploy without extracting files in destination and get the object key', ()
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     Extract: false,
   });
+});
+
+test('OutputObjectVersionIds is absent from the custom resource when objectVersionIds is never read', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  // THEN - no snapshot churn for existing users: the property must not appear
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectVersionIds: Match.absent(),
+  });
+});
+
+test('reading objectVersionIds opts in via OutputObjectVersionIds and renders a Fn::GetAtt list', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  // WHEN
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+  });
+
+  const versionId = cdk.Fn.select(0, deployment.objectVersionIds);
+  new cdk.CfnOutput(stack, 'VersionId', { value: versionId });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
+    OutputObjectVersionIds: true,
+  });
+  // the accessor resolves to a GetAtt on SourceObjectVersionIds
+  template.hasOutput('VersionId', {
+    Value: {
+      'Fn::Select': [0, { 'Fn::GetAtt': [Match.stringLikeRegexp('CustomResource'), 'SourceObjectVersionIds'] }],
+    },
+  });
+});
+
+test('objectVersionIds throws when extract is true (the default)', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    // extract defaults to true
+  });
+
+  // THEN
+  expect(() => deployment.objectVersionIds).toThrow("'objectVersionIds' is only supported when 'extract' is set to false");
+});
+
+test('objectVersionIds throws when extract is explicitly true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: true,
+  });
+
+  // THEN
+  expect(() => deployment.objectVersionIds).toThrow("'objectVersionIds' is only supported when 'extract' is set to false");
+});
+
+test('objectVersionIds throws when outputObjectKeys is disabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    extract: false,
+    outputObjectKeys: false,
+  });
+
+  // THEN - the documented positional alignment with objectKeys cannot hold when keys aren't output
+  expect(() => deployment.objectVersionIds).toThrow("'objectVersionIds' requires 'outputObjectKeys' to be enabled");
+});
+
+test('DeployTimeSubstitutedFile.objectVersionIds throws a subclass-specific error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest', { versioned: true });
+
+  const file = new s3deploy.DeployTimeSubstitutedFile(stack, 'File', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: {},
+  });
+
+  // THEN - files are always extracted, so the base "extract must be false" message would be misleading
+  expect(() => file.objectVersionIds).toThrow("'objectVersionIds' is not supported for 'DeployTimeSubstitutedFile' since its file is always extracted");
 });
 
 test('given a source with markers and extract is false, BucketDeployment throws an error', () => {
@@ -1442,17 +1620,16 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 
   const result = app.synth();
-  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","baz":null,"sub":{"hello":<<marker:0xbaba:0>>},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
+  // A string token is quoted in the file like any other string, and its marker receives the
+  // bare value. Supplying the quotes from the deploy-time value instead would make
+  // `jsonEscape` escape them along with the contents.
+  expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","baz":null,"sub":{"hello":"<<marker:0xbaba:0>>"},"<<marker:0xbaba:1>>":"Token can be a key as well!"}');
 
   // verify marker is mapped to the bucket ARN in the resource props
   Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
       {
-        '<<marker:0xbaba:0>>': {
-          'Fn::Join': ['', ['"',
-            { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
-            '"']],
-        },
+        '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
         '<<marker:0xbaba:1>>': {
           Ref: 'Bucket83908E77',
         },
@@ -1484,17 +1661,128 @@ test('Source.jsonData() can be used with list tokens', () => {
   });
 
   const result = app.synth();
+  // A list token sits unquoted in the file; its marker receives the list itself and renders
+  // it as a complete JSON value.
   expect(readDataFile(result, 'app-config.json')).toBe('{"foo":"bar","sub":{"hello":<<marker:0xbaba:0>>}}');
 
-  // verify marker is mapped to the bucket ARN in the resource props
-  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+  const template = Template.fromJSON(result.stacks[0].template);
+  template.hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
       {
-        '<<marker:0xbaba:0>>': {
-          'Fn::GetAtt': ['CdkJsonStringifyFnSplitresolvessmreprosubnets67ED8B00', 'Value'],
-        },
+        '<<marker:0xbaba:0>>': { 'Fn::Split': [',', '{{resolve:ssm:/repro/subnets}}'] },
       },
     ],
+    SourceMarkersConfig: [
+      { jsonEscape: true, markerEncodings: { '<<marker:0xbaba:0>>': 'JSON_VALUE' } },
+    ],
+  });
+  // The list is delivered to the provider as a list, so it no longer needs a custom resource
+  // to turn it into JSON text first.
+  template.resourceCountIs('Custom::AWSCDKCfnJsonStringify', 0);
+});
+
+test('Source.jsonData() with escape gives a string token a bare value inside the quotes', () => {
+  // `jsonEscape` escapes everything in a marker's value. That only yields valid JSON when the
+  // value is the bare string and the quotes come from the file, as they do for any literal.
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const param = new ssm.StringParameter(stack, 'Param', { stringValue: 'value' });
+
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.jsonData('secret.json', { secret_value: param.stringValue }, { escape: true })],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  expect(readDataFile(result, 'secret.json')).toBe('{"secret_value":"<<marker:0xbaba:0>>"}');
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [{ '<<marker:0xbaba:0>>': { 'Fn::GetAtt': [Match.stringLikeRegexp('^Param'), 'Value'] } }],
+    SourceMarkersConfig: [{ jsonEscape: true }],
+  });
+});
+
+describe('marker encodings', () => {
+  // Each deploy-time value is encoded according to where the serializer put its marker: inside
+  // quotes it is escaped by the source's default encoding, unquoted it is rendered as a complete
+  // JSON value. Only markers that differ from the default get an entry in `markerEncodings`.
+  function synth(source: (stack: cdk.Stack) => s3deploy.ISource, fileName: string) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Test');
+    new s3deploy.BucketDeployment(stack, 'Deploy', {
+      sources: [source(stack)],
+      destinationBucket: new s3.Bucket(stack, 'Bucket'),
+    });
+    const result = app.synth();
+    return { text: readDataFile(result, fileName), template: Template.fromJSON(result.stacks[0].template) };
+  }
+
+  const stringToken = (stack: cdk.Stack, id: string) => new ssm.StringParameter(stack, id, { stringValue: 'x' }).stringValue;
+  const listToken = (stack: cdk.Stack, id: string) => ssm.StringListParameter.fromStringListParameterName(stack, id, `/${id}`).stringListValue;
+
+  test('Source.jsonData() encodes each kind of token by its position', () => {
+    const { text, template } = synth((stack) => s3deploy.Source.jsonData('f.json', {
+      s: stringToken(stack, 'S'),
+      l: listToken(stack, 'L'),
+      n: cdk.Token.asNumber(stringToken(stack, 'N')),
+      o: cdk.Fn.getAtt('SomeResource', 'Arn'),
+    }), 'f.json');
+
+    expect(text).toBe('{"s":"<<marker:0xbaba:0>>","l":<<marker:0xbaba:1>>,"n":<<marker:0xbaba:2>>,"o":<<marker:0xbaba:3>>}');
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{
+        jsonEscape: true,
+        markerEncodings: Match.objectEquals({
+          '<<marker:0xbaba:1>>': 'JSON_VALUE',
+          '<<marker:0xbaba:3>>': 'JSON_VALUE',
+        }),
+      }],
+    });
+  });
+
+  test('a value used both unquoted and inside a string gets an encoding for each use', () => {
+    const { text, template } = synth(() => {
+      const arn = cdk.Fn.getAtt('SomeResource', 'Arn');
+      return s3deploy.Source.jsonData('f.json', { bare: arn, label: `id=${arn}` });
+    }, 'f.json');
+
+    expect(text).toBe('{"bare":<<marker:0xbaba:0>>,"label":"id=<<marker:0xbaba:1>>"}');
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{ markerEncodings: Match.objectEquals({ '<<marker:0xbaba:0>>': 'JSON_VALUE' }) }],
+    });
+  });
+
+  test('Source.jsonData() with escaping turned off still renders lists as JSON values', () => {
+    const { template } = synth((stack) => s3deploy.Source.jsonData('f.json', {
+      s: stringToken(stack, 'S'),
+      l: listToken(stack, 'L'),
+    }, { escape: false }), 'f.json');
+
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{
+        markerEncodings: Match.objectEquals({ '<<marker:0xbaba:1>>': 'JSON_VALUE' }),
+      }],
+    });
+  });
+
+  test('Source.yamlData() leaves literal strings to the serializer and encodes deploy-time strings', () => {
+    const { text, template } = synth((stack) => s3deploy.Source.yamlData('f.yaml', {
+      literal: 'plain words',
+      token: stringToken(stack, 'S'),
+    }), 'f.yaml');
+
+    expect(text.trim()).toBe('literal: plain words\ntoken: <<marker:0xbaba:0>>');
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: [{ markerEncodings: Match.objectEquals({ '<<marker:0xbaba:0>>': 'YAML_STRING' }) }],
+    });
+  });
+
+  test('Source.data() sends no marker encodings', () => {
+    const { template } = synth((stack) => s3deploy.Source.data('f.txt', `value=${stringToken(stack, 'S')}`), 'f.txt');
+
+    template.hasResourceProperties('Custom::CDKBucketDeployment', {
+      SourceMarkersConfig: Match.absent(),
+    });
   });
 });
 
@@ -1522,6 +1810,9 @@ test('Source.yamlData() can be used to create a file with YAML content', () => {
     'sub:',
     '  hello: <<marker:0xbaba:0>>',
   ].join('\n'));
+  Template.fromJSON(result.stacks[0].template).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceMarkers: [{ '<<marker:0xbaba:0>>': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] } }],
+  });
 });
 
 test('can add sources with addSource', () => {
@@ -1532,17 +1823,19 @@ test('can add sources with addSource', () => {
     sources: [s3deploy.Source.data('my/path.txt', 'helloWorld')],
     destinationBucket: bucket,
   });
-  deployment.addSource(s3deploy.Source.data('my/other/path.txt', 'hello world'));
+  deployment.addSource(s3deploy.Source.data('my/other/path.txt', `hello world from ${cdk.Aws.REGION}`));
 
   const result = app.synth();
   const content = readDataFile(result, 'my/path.txt');
   const content2 = readDataFile(result, 'my/other/path.txt');
   expect(content).toStrictEqual('helloWorld');
-  expect(content2).toStrictEqual('hello world');
+  expect(content2).toStrictEqual('hello world from <<marker:0xbaba:0>>');
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     SourceMarkers: [
       {},
-      {},
+      {
+        '<<marker:0xbaba:0>>': { Ref: 'AWS::Region' },
+      },
     ],
   });
 });
@@ -1561,27 +1854,6 @@ test('deploy with payload signing enabled', () => {
 
   Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
     SignContent: true,
-  });
-});
-
-test('if any source has markers then all sources have markers', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'Test');
-  const bucket = new s3.Bucket(stack, 'Bucket');
-  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
-    sources: [s3deploy.Source.data('my/path.txt', 'helloWorld')],
-    destinationBucket: bucket,
-  });
-  deployment.addSource(s3deploy.Source.asset(path.join(__dirname, 'my-website')));
-
-  const result = app.synth();
-  const content = readDataFile(result, 'my/path.txt');
-  expect(content).toStrictEqual('helloWorld');
-  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
-    SourceMarkers: [
-      {},
-      {},
-    ],
   });
 });
 
@@ -1637,14 +1909,14 @@ test('DeployTimeSubstitutedFile throws error when source file path is invalid', 
 
   expect(() => {
     new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
-      source: path.join(__dirname, 'non-existant-file.yaml'),
+      source: path.join(__dirname, 'non-existent-file.yaml'),
       destinationBucket: bucket,
       substitutions: {
         testMethod: 'changedTestMethodSuccess',
         mock: 'changedMockTypeSuccess',
       },
     });
-  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existant-file.yaml')}`);
+  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existent-file.yaml')}`);
 });
 
 test('DeployTimeSubstitutedFile does not make substitutions when no substitutions are passed in', () => {

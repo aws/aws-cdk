@@ -3,9 +3,11 @@ import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import * as os from 'os';
 import { AssetStaging } from '../asset-staging';
-import type { BundlingOptions } from '../bundling';
+import { type BundlingOptions } from '../bundling';
 import { ExecutionError } from '../errors';
 import { lit } from './literal-string';
+import { profileFn } from './perf';
+import { posixShellEscape } from './shell-escape';
 
 /**
  * Options for Docker based bundling of assets
@@ -52,6 +54,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
   /**
    * Bundle files with bind mount as copy method
    */
+  @profileFn('AssetBundlingBindMount.run', { telemetry: true })
   public run() {
     this.options.image.run({
       command: this.options.command,
@@ -136,7 +139,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
       'public.ecr.aws/docker/library/alpine',
       'sh',
       '-c',
-      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${posixShellEscape(user)} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${posixShellEscape(user)} ${AssetStaging.BUNDLING_INPUT_DIR}`,
     ]);
   }
 
@@ -174,6 +177,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
   /**
    * Bundle files with VOLUME_COPY method
    */
+  @profileFn('AssetBundlingVolumeCopy.run', { telemetry: true })
   public run() {
     const user = this.determineUser();
     this.prepareVolumes();

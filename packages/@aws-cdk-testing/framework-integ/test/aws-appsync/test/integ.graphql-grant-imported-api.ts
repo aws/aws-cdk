@@ -25,7 +25,9 @@ class OriginalStack extends Stack {
 
     const api = new GraphqlApi(this, 'Api', {
       name: 'Integ_Test_IAM',
-      schema: SchemaFile.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
+      definition: {
+        schema: SchemaFile.fromAsset(join(__dirname, 'integ.graphql-iam.graphql')),
+      },
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: AuthorizationType.USER_POOL,

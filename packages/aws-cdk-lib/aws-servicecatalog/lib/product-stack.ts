@@ -2,12 +2,16 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Construct } from 'constructs';
+import * as cxapi from '../../cx-api';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import type { ProductStackHistory } from './product-stack-history';
 import type { IBucket } from '../../aws-s3';
 import type { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -71,10 +75,11 @@ export interface ProductStackProps {
  * but rather only synthesized as a template and uploaded as an asset to S3.
  *
  */
+@noBoxStackTraces
 export class ProductStack extends cdk.Stack {
   public readonly templateFile: string;
   private _parentProductStackHistory?: ProductStackHistory;
-  private _templateUrl?: string;
+  private _templateUrl: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
   private _parentStack: cdk.Stack;
   private assetBucket?: IBucket;
 
@@ -115,7 +120,7 @@ export class ProductStack extends cdk.Stack {
    * @internal
    */
   public _getTemplateUrl(): string {
-    return cdk.Lazy.uncachedString({ produce: () => this._templateUrl });
+    return cdk.Token.asString(this._templateUrl);
   }
 
   /**
@@ -147,19 +152,29 @@ export class ProductStack extends cdk.Stack {
   public _synthesizeTemplate(session: cdk.ISynthesisSession): void {
     const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
+    this.node.addMetadata(cxapi.CDK_TEMPLATE_FILE_KEY, this.templateFile);
 
-    this._templateUrl = this._parentStack.synthesizer.addFileAsset({
+    this._templateUrl.set(this._parentStack.synthesizer.addFileAsset({
       packaging: cdk.FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
       displayName: `${this.node.path} Template`,
-    }).httpUrl;
+    }).httpUrl);
 
     if (this._parentProductStackHistory) {
       this._parentProductStackHistory._writeTemplateToSnapshot(cfn);
     }
 
     fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
+  }
+
+  /**
+   * Not a true top-level stack.
+   *
+   * @internal
+   */
+  public get _isTopLevelStack(): boolean {
+    return false;
   }
 }
 

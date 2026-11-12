@@ -1,0 +1,342 @@
+{
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineDynamic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineStatic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestBucket93893AF2"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineDynamic/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineDynamic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestStateMachineDynamic6769141D"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineDynamic/DistributedMapPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineStatic/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineStatic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestStateMachineStatic1CA40774"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineStatic/DistributedMapPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/Exports/Output{\"Ref\":\"S3JsonItemReaderTestBucket93893AF2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefS3JsonItemReaderTestBucket93893AF2E063DC1C"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/Exports/Output{\"Ref\":\"S3JsonItemReaderTestStateMachineDynamic6769141D\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefS3JsonItemReaderTestStateMachineDynamic6769141D4901B01C"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/Exports/Output{\"Ref\":\"S3JsonItemReaderTestStateMachineStatic1CA40774\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefS3JsonItemReaderTestStateMachineStatic1CA40774D917AE39"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestBucketPolicyCC218CEA"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestBucketAutoDeleteObjectsCustomResource9E9E4C78"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineDynamic/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestStateMachineDynamicRole35A1C188"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineDynamic/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineDynamic/DistributedMapPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestStateMachineDynamicDistributedMapPolicyB5A7E072"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineStatic/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestStateMachineStaticRole9E28FC9E"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineStatic/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineStatic/DistributedMapPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestStateMachineStaticDistributedMapPolicy5B6D90A3"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineDynamic/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestStateMachineDynamicRoleDefaultPolicy5421FCA0"
+    }
+  ],
+  "/S3JsonItemReaderTestStack/S3JsonItemReaderTestStateMachineStatic/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3JsonItemReaderTestStateMachineStaticRoleDefaultPolicyA40919EA"
+    }
+  ]
+}

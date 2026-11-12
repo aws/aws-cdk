@@ -1,4 +1,3 @@
-import type { IConstruct } from 'constructs';
 import type {
   AddToResourcePolicyResult, GrantOnKeyResult,
   IEncryptedResource,
@@ -14,9 +13,10 @@ import {
 } from '../../../aws-iam';
 import type { CfnKey } from '../../../aws-kms';
 import { KeyGrants } from '../../../aws-kms';
+import { CfnKeyMatcher } from '../../../aws-kms/lib/private/cfn-key-matcher';
 import type { CfnResource, ResourceEnvironment } from '../../../core';
 import { Token, ValidationError } from '../../../core';
-import { findClosestRelatedResource, findL1FromRef } from '../../../core/lib/helpers-internal';
+import { ConstructReflection } from '../../../core/lib/helpers-internal';
 import { lit } from '../../../core/lib/private/literal-string';
 import { CfnTable } from '../dynamodb.generated';
 import type { ITableRef } from '../dynamodb.generated';
@@ -120,19 +120,14 @@ function tryFindKmsKeyForTable(table: ITableRef): CfnKey | undefined {
   if (!kmsMasterKeyId) {
     return undefined;
   }
-  return findClosestRelatedResource<IConstruct, CfnKey>(
-    table,
-    'AWS::KMS::Key',
-    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
-  );
+  return ConstructReflection.of(table).findRelatedCfnResource(new CfnKeyMatcher(kmsMasterKeyId)) as CfnKey | undefined;
 }
 
 function tryFindTableConstruct(table: ITableRef): CfnTable | undefined {
-  return findL1FromRef<ITableRef, CfnTable>(
-    table,
-    'AWS::DynamoDB::Table',
-    (cfn, ref) => ref.tableRef == cfn.tableRef,
-  );
+  return ConstructReflection.of(table).findCfnResource({
+    cfnResourceType: 'AWS::DynamoDB::Table',
+    matches: (cfn) => table.tableRef == (cfn as CfnTable).tableRef,
+  }) as CfnTable | undefined;
 }
 
 DefaultPolicyFactories.set('AWS::DynamoDB::Table', new TablePolicyFactory());

@@ -1,0 +1,20 @@
+{
+  "/PreparelessPipelineStack/MyStage/Stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PreparelessPipelineStackMyStageStack3DC192E7.template.json"
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

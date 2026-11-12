@@ -58,6 +58,10 @@ export interface HelmChartOptions {
    *  installationCRDs: true,
    *  webhook: { port: 9443 }
    * }
+   *
+   * In languages other than TypeScript and JavaScript, `null` values (such as
+   * `None` in Python) are dropped when crossing the jsii boundary. To pass
+   * `null` values to the chart, see the "Helm Charts" section of the module README.
    * @default - No values are provided to the chart.
    */
   readonly values?: {[key: string]: any};
@@ -200,9 +204,9 @@ export class HelmChart extends Construct {
     // default to set atomic as false
     const atomic = props.atomic ?? false;
 
-    this.chartAsset?.grantRead(provider.role!);
+    const grant = this.chartAsset?.bucket.grantRead(provider.role!);
 
-    new CustomResource(this, 'Resource', {
+    const customResource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
       removalPolicy: props.removalPolicy,
@@ -222,5 +226,9 @@ export class HelmChart extends Construct {
         Atomic: atomic || undefined, // props are stringified so we encode “false” as undefined
       },
     });
+
+    // Ensure the IAM policy granting S3 read access to the chart asset
+    // is created before the custom resource executes.
+    grant?.applyBefore(customResource);
   }
 }

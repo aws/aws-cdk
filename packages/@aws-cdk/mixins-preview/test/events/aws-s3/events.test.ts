@@ -11,7 +11,7 @@ describe('with L2 Rule', () => {
 
   test('awsAPICallViaCloudTrailPattern with tlsDetails and eventMetadata', () => {
     new Rule(stack, 'Rule', {
-      eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+      eventPattern: AWSAPICallViaCloudTrail.eventPattern({
         tlsDetails: { tlsVersion: ['TLSv1.3'] },
         eventMetadata: { region: ['us-east-1'] },
       }),
@@ -31,7 +31,7 @@ describe('with L2 Rule', () => {
 
   test('awsAPICallViaCloudTrailPattern bare call', () => {
     new Rule(stack, 'Rule', {
-      eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern(),
+      eventPattern: AWSAPICallViaCloudTrail.eventPattern(),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -44,7 +44,7 @@ describe('with L2 Rule', () => {
 
   test('objectCreatedPattern with reason filter', () => {
     new Rule(stack, 'Rule', {
-      eventPattern: ObjectCreated.objectCreatedPattern({ reason: ['PutObject'] }),
+      eventPattern: ObjectCreated.eventPattern({ reason: ['PutObject'] }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -58,7 +58,7 @@ describe('with L2 Rule', () => {
 
   test('objectDeletedPattern with reason filter', () => {
     new Rule(stack, 'Rule', {
-      eventPattern: ObjectDeleted.objectDeletedPattern({ reason: ['DeleteObject'] }),
+      eventPattern: ObjectDeleted.eventPattern({ reason: ['DeleteObject'] }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -80,7 +80,7 @@ describe('with L1 CfnRule', () => {
   test('awsAPICallViaCloudTrailPattern with tlsDetails and eventMetadata', () => {
     new CfnRule(stack, 'Rule', {
       state: 'ENABLED',
-      eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern({
+      eventPattern: AWSAPICallViaCloudTrail.eventPattern({
         tlsDetails: { tlsVersion: ['TLSv1.3'] },
         eventMetadata: { region: ['us-east-1'] },
       }),
@@ -101,7 +101,7 @@ describe('with L1 CfnRule', () => {
   test('awsAPICallViaCloudTrailPattern bare call', () => {
     new CfnRule(stack, 'Rule', {
       state: 'ENABLED',
-      eventPattern: AWSAPICallViaCloudTrail.awsAPICallViaCloudTrailPattern(),
+      eventPattern: AWSAPICallViaCloudTrail.eventPattern(),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -115,7 +115,7 @@ describe('with L1 CfnRule', () => {
   test('objectCreatedPattern with reason filter', () => {
     new CfnRule(stack, 'Rule', {
       state: 'ENABLED',
-      eventPattern: ObjectCreated.objectCreatedPattern({ reason: ['PutObject'] }),
+      eventPattern: ObjectCreated.eventPattern({ reason: ['PutObject'] }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
@@ -130,7 +130,7 @@ describe('with L1 CfnRule', () => {
   test('objectDeletedPattern with reason filter', () => {
     new CfnRule(stack, 'Rule', {
       state: 'ENABLED',
-      eventPattern: ObjectDeleted.objectDeletedPattern({ reason: ['DeleteObject'] }),
+      eventPattern: ObjectDeleted.eventPattern({ reason: ['DeleteObject'] }),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {

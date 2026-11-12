@@ -1,0 +1,130 @@
+{
+  "/oidc-provider-integ-test": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "oidc-provider-integ-test.template.json"
+    }
+  ],
+  "/oidc-provider-integ-test/NoClientsNoThumbprint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*"
+      }
+    }
+  ],
+  "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/oidc-provider-integ-test/Clients": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*",
+        "clientIds": "*"
+      }
+    }
+  ],
+  "/oidc-provider-integ-test/Thumbprints": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*",
+        "thumbprints": "*"
+      }
+    }
+  ],
+  "/oidc-provider-integ-test/NoClientsThumbprints": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoClientsThumbprints"
+    }
+  ],
+  "/oidc-provider-integ-test/ClientsThumbprints": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClientsThumbprints"
+    }
+  ],
+  "/oidc-provider-integ-test/ThumbprintsThumbprints": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ThumbprintsThumbprints"
+    }
+  ],
+  "/oidc-provider-integ-test/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/oidc-provider-integ-test/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/oidc-provider-integ-test/NoClientsNoThumbprint/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+    }
+  ],
+  "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+    }
+  ],
+  "/oidc-provider-integ-test/Clients/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-integ-test/Thumbprints/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/oidc-provider-integ-test/NoClientsNoThumbprint/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoClientsNoThumbprint8BF1533F"
+    }
+  ],
+  "/oidc-provider-integ-test/Clients/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Clients67031123"
+    }
+  ],
+  "/oidc-provider-integ-test/Thumbprints/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Thumbprints9CD6AB02"
+    }
+  ]
+}

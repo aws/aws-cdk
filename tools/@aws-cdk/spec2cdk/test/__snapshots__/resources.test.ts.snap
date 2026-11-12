@@ -84,7 +84,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -99,7 +103,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.id = props.id;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -108,9 +112,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this._id
     };
   }
 
@@ -121,6 +139,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -242,7 +261,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -257,7 +280,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.id = props.id;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -266,9 +289,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this._id
     };
   }
 
@@ -279,6 +316,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -397,6 +435,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -438,6 +478,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -551,6 +592,8 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
     return resource.somethingRef.somethingArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Something\`.
    *
@@ -602,6 +645,7 @@ export class CfnSomething extends cdk.CfnResource implements cdk.IInspectable, I
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnSomething.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -715,6 +759,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return resource.resourceRef.resourceArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -766,6 +812,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -878,7 +925,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The arn for the resource.
    */
-  public arn?: string;
+  private _arn?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    arn: "Arn"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -893,13 +944,27 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.arn = props.arn;
+    this._arn = props.arn;
   }
 
   public get resourceRef(): ResourceReference {
     return {
       resourceId: this.ref
     };
+  }
+
+  /**
+   * The arn for the resource.
+   */
+  public get arn(): string | undefined {
+    return this._arn;
+  }
+  /**
+   * The arn for the resource.
+   */
+  public set arn(value: string | undefined) {
+    cdk.traceProperty(this.node, "Arn");
+    this._arn = value;
   }
 
   /**
@@ -913,7 +978,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      arn: this.arn
+      arn: this._arn
     };
   }
 
@@ -924,6 +989,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1046,6 +1112,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return resource.resourceRef.resourceArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1087,6 +1155,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1196,6 +1265,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::Some::Resource\`.
    *
@@ -1247,6 +1318,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1392,7 +1464,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1407,7 +1483,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.id = props.id;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -1416,9 +1492,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this._id
     };
   }
 
@@ -1429,6 +1519,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1550,12 +1641,17 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * Another identifier of the resource.
    */
-  public anotherId?: string;
+  private _anotherId?: string;
 
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    anotherId: "AnotherId",
+    id: "Id"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1570,8 +1666,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.anotherId = props.anotherId;
-    this.id = props.id;
+    this._anotherId = props.anotherId;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -1581,10 +1677,38 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * Another identifier of the resource.
+   */
+  public get anotherId(): string | undefined {
+    return this._anotherId;
+  }
+  /**
+   * Another identifier of the resource.
+   */
+  public set anotherId(value: string | undefined) {
+    cdk.traceProperty(this.node, "AnotherId");
+    this._anotherId = value;
+  }
+
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      anotherId: this.anotherId,
-      id: this.id
+      anotherId: this._anotherId,
+      id: this._id
     };
   }
 
@@ -1595,6 +1719,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1726,7 +1851,11 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    id: "Id"
+  };
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1741,7 +1870,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.id = props.id;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -1750,9 +1879,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this._id
     };
   }
 
@@ -1763,6 +1906,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 

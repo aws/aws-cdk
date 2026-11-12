@@ -19,6 +19,7 @@ import { McpTargetType } from './target-base';
 
 /**
  * Configuration returned by binding a target configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface TargetConfigurationConfig {
   /**
@@ -29,6 +30,7 @@ export interface TargetConfigurationConfig {
 
 /**
  * Base interface for target configurations
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ITargetConfiguration {
   /**
@@ -56,6 +58,7 @@ export interface ITargetConfiguration {
 /**
  * Abstract base class for MCP target configurations
  * Provides common functionality for all MCP target types
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class McpTargetConfiguration implements ITargetConfiguration {
   /**
@@ -94,6 +97,7 @@ export abstract class McpTargetConfiguration implements ITargetConfiguration {
  *
  * This configuration wraps a Lambda function as MCP tools,
  * allowing the gateway to invoke the function to provide tool capabilities.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class LambdaTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -167,6 +171,7 @@ export class LambdaTargetConfiguration extends McpTargetConfiguration {
  *
  * This configuration exposes an OpenAPI/REST API as MCP tools,
  * allowing the gateway to transform API operations into tool calls.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class OpenApiTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -267,6 +272,7 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
  *
  * This configuration exposes a Smithy-modeled API as MCP tools,
  * allowing the gateway to transform Smithy operations into tool calls.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class SmithyTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -328,6 +334,7 @@ export class SmithyTargetConfiguration extends McpTargetConfiguration {
  * functions for AI agents. When you configure an MCP server as a gateway target,
  * the gateway automatically discovers and indexes available tools through
  * synchronization.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class McpServerTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -419,6 +426,7 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
 
 /**
  * HTTP methods supported by API Gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum ApiGatewayHttpMethod {
   /** GET method */
@@ -444,6 +452,7 @@ export enum ApiGatewayHttpMethod {
  * Each filter supports two path matching strategies:
  * - **Explicit paths**: Matches a single specific path, such as `/pets/{petId}`
  * - **Wildcard paths**: Matches all paths starting with the specified prefix, such as `/pets/*`
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiGatewayToolFilter {
   /**
@@ -468,6 +477,7 @@ export interface ApiGatewayToolFilter {
  * after filtering. Each override must specify an explicit path and a single HTTP method.
  * The override must match an operation that exists in your API and must correspond to one
  * of the operations resolved by your filters.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiGatewayToolOverride {
   /**
@@ -497,6 +507,7 @@ export interface ApiGatewayToolOverride {
 
 /**
  * Configuration for passing metadata (headers and query parameters) to the API Gateway target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface MetadataConfiguration {
   /**
@@ -542,6 +553,7 @@ export interface MetadataConfiguration {
  * The API Gateway tool configuration defines which operations from your REST API
  * are exposed as tools. It requires a list of tool filters to select operations
  * to expose, and optionally accepts tool overrides to customize tool metadata.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiGatewayToolConfiguration {
   /**
@@ -560,6 +572,7 @@ export interface ApiGatewayToolConfiguration {
 
 /**
  * Properties for creating an API Gateway target configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiGatewayTargetConfigurationProps {
   /**
@@ -600,6 +613,7 @@ export interface ApiGatewayTargetConfigurationProps {
  * - API must use a public endpoint type
  * - Methods with both AWS_IAM authorization and API key requirements are not supported
  * - Proxy resources (e.g., `/pets/{proxy+}`) are not supported
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
   /**

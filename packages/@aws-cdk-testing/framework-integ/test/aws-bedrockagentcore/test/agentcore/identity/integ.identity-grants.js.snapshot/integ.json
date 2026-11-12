@@ -1,0 +1,16 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "BedrockAgentCoreIdentityGrants/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-identity-grants-1"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "BedrockAgentCoreIdentityGrants/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreIdentityGrantsDefaultTestDeployAssert5766563E"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

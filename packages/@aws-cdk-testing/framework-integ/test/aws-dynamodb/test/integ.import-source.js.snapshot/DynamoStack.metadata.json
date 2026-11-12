@@ -1,0 +1,146 @@
+{
+  "/DynamoStack": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "Object.onceWrapper (node:events:623:26)",
+        "process.emit (node:events:508:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "DynamoStack.template.json"
+    }
+  ],
+  "/DynamoStack/DynamoDBJsonTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "importSource": {
+          "compressionType": "NONE",
+          "inputFormat": "*",
+          "bucket": "*",
+          "keyPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/DynamoStack/IonTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "importSource": {
+          "compressionType": "NONE",
+          "inputFormat": "*",
+          "bucket": "*",
+          "keyPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/DynamoStack/CsvTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "importSource": {
+          "compressionType": "NONE",
+          "inputFormat": "*",
+          "bucket": "*",
+          "keyPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/DynamoStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/DynamoStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/DynamoStack/DynamoDBJsonTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DynamoDBJsonTable73E42181"
+    }
+  ],
+  "/DynamoStack/DynamoDBJsonTable/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DynamoStack/IonTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IonTableD6B7D52B"
+    }
+  ],
+  "/DynamoStack/IonTable/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DynamoStack/CsvTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CsvTableF720A0A1"
+    }
+  ],
+  "/DynamoStack/CsvTable/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DynamoStack/Exports/Output{\"Ref\":\"DynamoDBJsonTable73E42181\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDynamoDBJsonTable73E42181AA2EAFDC"
+    }
+  ],
+  "/DynamoStack/Exports/Output{\"Ref\":\"IonTableD6B7D52B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefIonTableD6B7D52BC6D72761"
+    }
+  ],
+  "/DynamoStack/Exports/Output{\"Ref\":\"CsvTableF720A0A1\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCsvTableF720A0A12DCFE97C"
+    }
+  ]
+}

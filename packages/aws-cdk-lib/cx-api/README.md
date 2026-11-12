@@ -345,7 +345,7 @@ _cdk.json_
 
 When enabled, the default volume type of the EBS volume will be GP3.
 
-When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
+When this feature flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
 
 _cdk.json_
 
@@ -361,7 +361,7 @@ _cdk.json_
 
 When enabled, remove default deployment alarm settings.
 
-When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
 
 _cdk.json_
 
@@ -770,6 +770,27 @@ _cdk.json_
 {
   "context": {
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true
+  }
+}
+```
+
+* `@aws-cdk/aws-batch:defaultToAL2023`
+
+When enabled, EC2 Batch compute environments (both ECS and EKS) that do not specify an `imageType`
+will default to `ECS_AL2023` or `EKS_AL2023` instead of the deprecated `ECS_AL2` or `EKS_AL2`
+(Amazon Linux 2, reaching EOL June 2026 for ECS; already EOL for EKS).
+
+For EKS compute environments with a launch template, `userdataType` will automatically be set
+to `EKS_NODEADM` when an AL2023 image type is used, as required by the AWS Batch API.
+
+When disabled, the default `imageType` remains `ECS_AL2` / `EKS_AL2` for backward compatibility.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-batch:defaultToAL2023": true
   }
 }
 ```

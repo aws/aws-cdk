@@ -19,7 +19,7 @@ class TestStack extends Stack {
             console.log(\'hello world\');
           };`),
       }),
-      cleanup: synthetics.Cleanup.LAMBDA,
+      provisionedResourceCleanup: true,
     });
 
     const canaryThatWillBeRemoved = new synthetics.Canary(this, 'CanaryRemoved', {
@@ -31,7 +31,7 @@ class TestStack extends Stack {
             console.log(\'hello world\');
           };`),
       }),
-      cleanup: synthetics.Cleanup.LAMBDA,
+      provisionedResourceCleanup: true,
       startAfterCreation: false, // otherwise we get error: canary is in a state that can't be deleted: RUNNING
     });
 

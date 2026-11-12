@@ -1,0 +1,76 @@
+{
+  "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "Object.onceWrapper (node:events:631:26)",
+        "process.emit (node:events:509:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "RuntimeGatewayIntegTestDefaultTestDeployAssert1ACA2D2A.template.json"
+    }
+  ],
+  "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime397ade965f41adbe342e51bad19b17ab/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime397ade965f41adbe342e51bad19b17ab/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime397ade965f41adbe342e51bad19b17ab"
+    }
+  ],
+  "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/RuntimeGatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcoreinvokeAgentRuntime397ade965f41adbe342e51bad19b17ab/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcoreinvokeAgentRuntime397ade965f41adbe342e51bad19b17ab"
+    }
+  ]
+}

@@ -20,15 +20,19 @@ jobs:
       any-changed-files: ${{ steps.changed-cli-files.outputs.cli_any_changed }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
           fetch-depth: 0
           persist-credentials: false
+          # Required since actions/checkout v7 to check out fork PR code from a
+          # pull_request_target workflow. Code is only diffed (never executed)
+          # and credentials are not persisted.
+          allow-unsafe-pr-checkout: true
       - name: Find changed cli files
         id: changed-cli-files
-        uses: step-security/changed-files@60967b822d3001fa82242f8d6b4ed46bc3600a68
+        uses: step-security/changed-files@2e07db73e5ccdb319b9a6c7766bd46d39d304bad
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
@@ -49,12 +53,17 @@ jobs:
     environment: automation
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Needs to run with PROJEN_GITHUB_TOKEN because we need permissions to force push the branch
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+          # Required since actions/checkout v7 to check out fork PR code from a
+          # pull_request_target workflow. Code is force-pushed to the test
+          # pipeline (never executed here) and gated behind the test-pipeline
+          # environment approval.
+          allow-unsafe-pr-checkout: true
       - name: Submit to test-pipeline
         run: |
           git config --global user.name 'aws-cdk-automation'

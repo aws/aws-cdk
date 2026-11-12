@@ -9,13 +9,13 @@ class JobPollerStack extends cdk.Stack {
     const submitJobActivity = new sfn.Activity(this, 'SubmitJob');
     const checkJobActivity = new sfn.Activity(this, 'CheckJob');
 
-    const submitJob = new sfn.Task(this, 'Submit Job', {
-      task: new tasks.InvokeActivity(submitJobActivity),
+    const submitJob = new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
+      activity: submitJobActivity,
       resultPath: '$.guid',
     });
     const waitX = new sfn.Wait(this, 'Wait X Seconds', { time: sfn.WaitTime.secondsPath('$.wait_time') });
-    const getStatus = new sfn.Task(this, 'Get Job Status', {
-      task: new tasks.InvokeActivity(checkJobActivity),
+    const getStatus = new tasks.StepFunctionsInvokeActivity(this, 'Get Job Status', {
+      activity: checkJobActivity,
       inputPath: '$.guid',
       resultPath: '$.status',
     });
@@ -24,8 +24,8 @@ class JobPollerStack extends cdk.Stack {
       cause: 'AWS Batch Job Failed',
       error: 'DescribeJob returned FAILED',
     });
-    const finalStatus = new sfn.Task(this, 'Get Final Job Status', {
-      task: new tasks.InvokeActivity(checkJobActivity),
+    const finalStatus = new tasks.StepFunctionsInvokeActivity(this, 'Get Final Job Status', {
+      activity: checkJobActivity,
       inputPath: '$.guid',
     });
 
@@ -39,7 +39,7 @@ class JobPollerStack extends cdk.Stack {
         .otherwise(waitX));
 
     new sfn.StateMachine(this, 'StateMachine', {
-      definition: chain,
+      definitionBody: sfn.DefinitionBody.fromChainable(chain),
       timeout: cdk.Duration.seconds(30),
     });
   }
