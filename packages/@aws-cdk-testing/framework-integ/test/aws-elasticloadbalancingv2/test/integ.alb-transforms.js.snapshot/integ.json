@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "AlbTransformsInteg/DefaultTest": {
+      "stacks": [
+        "AlbTransformsStack"
+      ],
+      "assertionStack": "AlbTransformsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbTransformsIntegDefaultTestDeployAssert56C52755"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
+}

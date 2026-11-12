@@ -3,6 +3,7 @@ import type { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import type { IApplicationTargetGroup } from './application-target-group';
 import type { ListenerCondition } from './conditions';
+import type { ListenerTransform } from './transforms';
 import * as cdk from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
@@ -105,6 +106,16 @@ export interface BaseApplicationListenerRuleProps {
    * @deprecated Use `conditions` instead.
    */
   readonly pathPatterns?: string[];
+
+  /**
+   * Transforms to apply to the request before routing to targets.
+   *
+   * You can add one host header rewrite transform and one URL rewrite transform per rule.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/rule-transforms.html
+   * @default - No transforms are applied
+   */
+  readonly transforms?: ListenerTransform[];
 }
 
 /**
@@ -211,6 +222,7 @@ export class ApplicationListenerRule extends Construct {
 
   private readonly conditions: IArrayBox<ListenerCondition>;
   private readonly legacyConditions: {[key: string]: string[]} = {};
+  private readonly transforms: IArrayBox<ListenerTransform>;
 
   private readonly listener: IApplicationListener;
   private readonly _action: IBox<IListenerAction | undefined>;
@@ -219,6 +231,7 @@ export class ApplicationListenerRule extends Construct {
     super(scope, id);
 
     this.conditions = Box.fromArray(props.conditions ?? [], { omitEmpty: false });
+    this.transforms = Box.fromArray(props.transforms ?? [], { omitEmpty: false });
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
     if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
@@ -243,6 +256,7 @@ export class ApplicationListenerRule extends Construct {
       priority: props.priority,
       conditions: this.conditions.derive(_ => this.renderConditions()),
       actions: this._action.derive(a => a ? a.renderRuleActions() : []),
+      transforms: this.transforms.derive(_ => this.renderTransforms()),
     });
 
     if (props.hostHeader) {
@@ -297,6 +311,13 @@ export class ApplicationListenerRule extends Construct {
    */
   public addCondition(condition: ListenerCondition) {
     this.conditions.push(condition);
+  }
+
+  /**
+   * Add transforms to this rule
+   */
+  public addTransforms(transforms: ListenerTransform[]) {
+    this.transforms.push(...transforms);
   }
 
   /**
@@ -390,6 +411,30 @@ export class ApplicationListenerRule extends Construct {
       ...legacyConditions,
       ...conditions,
     ];
+  }
+
+  /**
+   * Render the transforms for this rule
+   */
+  private renderTransforms(): CfnListenerRule.TransformProperty[] | undefined {
+    const transforms = Array.from(this.transforms);
+    if (transforms.length === 0) {
+      return undefined;
+    }
+
+    const rendered = transforms.map(transform => transform._render());
+
+    const hostHeaderRewriteCount = rendered.filter(t => t.type === 'host-header-rewrite').length;
+    const urlRewriteCount = rendered.filter(t => t.type === 'url-rewrite').length;
+
+    if (hostHeaderRewriteCount > 1) {
+      throw new ValidationError(lit`HostHeaderRewriteLimit`, 'Only one host-header-rewrite transform is allowed per rule', this);
+    }
+    if (urlRewriteCount > 1) {
+      throw new ValidationError(lit`UrlRewriteLimit`, 'Only one url-rewrite transform is allowed per rule', this);
+    }
+
+    return rendered;
   }
 }
 
