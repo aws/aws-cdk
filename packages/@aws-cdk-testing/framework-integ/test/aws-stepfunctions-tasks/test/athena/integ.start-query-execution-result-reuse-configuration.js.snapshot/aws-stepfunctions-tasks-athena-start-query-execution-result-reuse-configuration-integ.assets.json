@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "aws-stepfunctions-tasks-athena-start-query-execution-result-reuse-configuration-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "617e9591440d7ca9c1d0953719f4156c37908fa61fcfb0eb9a6fa8d56260eab9": {
+    "5b27b4ff4f96f93c98bc73b37f0291f389194ecf93db6a541091c2bf5177691e": {
       "displayName": "aws-stepfunctions-tasks-athena-start-query-execution-result-reuse-configuration-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-athena-start-query-execution-result-reuse-configuration-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-27fa3e1d": {
+        "current_account-current_region-d702e1df": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "617e9591440d7ca9c1d0953719f4156c37908fa61fcfb0eb9a6fa8d56260eab9.json",
+          "objectKey": "5b27b4ff4f96f93c98bc73b37f0291f389194ecf93db6a541091c2bf5177691e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

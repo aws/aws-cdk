@@ -446,7 +446,8 @@ export interface MediaPackageV2OutputGroupBaseProps {
    * The outputs for this output group.
    *
    * MediaPackage V2 uses CMAF ingest which requires one track per output.
-   * Create a separate output for each encode (e.g. one for HD video, one for SD video, one for audio).
+   * Create a separate output for each encode (e.g. one for HD video, one for SD video, one for
+   * audio, one for each out-of-band caption).
    * Do NOT put multiple encodes in a single output.
    */
   readonly outputs: MediaPackageV2OutputDefinition[];
