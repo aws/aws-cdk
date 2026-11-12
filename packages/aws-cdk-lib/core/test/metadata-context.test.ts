@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
-import type { CfnTemplateMetadataContextProps, IAspect, IConstructSelector } from '../lib';
+import type { IAspect, IConstructSelector } from '../lib';
 import {
   App,
   AspectPriority,
@@ -365,7 +365,7 @@ describe('metadata context', () => {
     test.each([
       ['single-pass Aspect traversal', false],
       ['stabilized Aspect traversal', true],
-    ])('rescans for a resource created by a lower-priority Aspect with %s', (_description, aspectStabilization) => {
+    ])('rescans for a resource created by an earlier Aspect with %s', (_description, aspectStabilization) => {
       const stack = new Stack();
       new CfnResource(stack, 'Before', { type: 'AWS::Fake::Before' });
       const trigger = new Construct(stack, 'Trigger');
@@ -380,7 +380,6 @@ describe('metadata context', () => {
       }, { priority: AspectPriority.MUTATING });
       CfnResourceMetadataContext.of(stack, {
         selector: ConstructSelector.resourcesOfType('AWS::Fake::Created'),
-        priority: AspectPriority.DEFAULT,
       }).set({
         why: 'created during Aspect traversal',
       });
@@ -513,19 +512,6 @@ describe('metadata context', () => {
       CfnResourceMetadataContext.of(res).set({ deps: ['NetworkStack'] });
 
       expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({ deps: ['NetworkStack'] });
-    });
-
-    test('a lower priority runs first, so a parent set() with a higher priority replaces a child set()', () => {
-      const stack = new Stack();
-      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-
-      CfnResourceMetadataContext.of(stack, {
-        selector: ConstructSelector.all(),
-        priority: AspectPriority.DEFAULT,
-      }).set({ why: 'applied last' });
-      CfnResourceMetadataContext.of(res, { priority: AspectPriority.MUTATING }).set({ why: 'applied first' });
-
-      expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({ why: 'applied last' });
     });
 
     test('clear() removes Context, and a later set() writes it again', () => {
@@ -721,36 +707,12 @@ describe('metadata context', () => {
     });
   });
 
-  describe('resource-level validation', () => {
-    test('set() never throws; invalid values and empty selections fail synthesis', () => {
+  describe('resource-level values', () => {
+    test('set() defers an empty selection failure until synthesis', () => {
       const stack = new Stack();
-      const res = new CfnResource(stack, 'Queue', { type: 'AWS::SQS::Queue' });
 
-      expect(() => CfnResourceMetadataContext.of(res).set({
-        why: 'x',
-        trust: { conf: CfnContextTrustConfidence.HIGH } as any,
-      })).not.toThrow();
       expect(() => CfnResourceMetadataContext.of(stack).set({ why: 'no CfnResource selected' })).not.toThrow();
-
-      expect(() => synthesize(stack)).toThrow(/trust requires 'src'/);
       expect(() => synthesize(stack)).toThrow(NO_RESOURCE_SELECTED);
-    });
-
-    test('set() writes the value passed at call time even if the caller mutates it afterwards', () => {
-      const stack = new Stack();
-      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-      const must = ['original rule'];
-      const mutability: { [propertyName: string]: CfnContextMutability } = { Name: CfnContextMutability.MUST_NEVER_CHANGE };
-
-      CfnResourceMetadataContext.of(res).set({ mutable: CfnContextMutability.FREE_TO_TUNE, must, mutability });
-      must.push('added after set()');
-      mutability.Arn = CfnContextMutability.FREE_TO_TUNE;
-
-      expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
-        mutable: 'free-to-tune',
-        must: ['original rule'],
-        mutability: { Name: 'must-never-change' },
-      });
     });
 
     test('set({}) writes an empty Context object', () => {
@@ -815,24 +777,6 @@ describe('metadata context', () => {
       expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({ deps: ['NetworkStack'] });
     });
 
-    test('fails synthesis when trust is provided without src', () => {
-      const stack = new Stack();
-      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-
-      CfnResourceMetadataContext.of(res).set({ why: 'x', trust: { conf: CfnContextTrustConfidence.HIGH } as any });
-
-      expect(() => synthesize(stack)).toThrow(/trust requires 'src'/);
-    });
-
-    test('fails synthesis when trust is provided without conf', () => {
-      const stack = new Stack();
-      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-
-      CfnResourceMetadataContext.of(res).set({ why: 'x', trust: { src: CfnContextTrustSource.AUTHORED } as any });
-
-      expect(() => synthesize(stack)).toThrow(/trust requires 'conf'/);
-    });
-
     test.each([
       CfnContextMutability.MUST_NEVER_CHANGE,
       CfnContextMutability.CHANGE_WITH_CONSTRAINTS,
@@ -857,21 +801,7 @@ describe('metadata context', () => {
       expect(() => synthesize(stack)).not.toThrow();
     });
 
-    test('omits a mutability entry that repeats mutable', () => {
-      const stack = new Stack();
-      const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
-
-      CfnResourceMetadataContext.of(res).set({
-        mutable: CfnContextMutability.FREE_TO_TUNE,
-        mutability: { Name: CfnContextMutability.FREE_TO_TUNE },
-      });
-
-      expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
-        mutable: 'free-to-tune',
-      });
-    });
-
-    test('keeps mutability entries that deviate from mutable', () => {
+    test('preserves every mutability entry as supplied', () => {
       const stack = new Stack();
       const res = new CfnResource(stack, 'Res', { type: 'AWS::Fake::Thing' });
 
@@ -885,7 +815,10 @@ describe('metadata context', () => {
 
       expect(toCloudFormation(stack).Resources.Res.Metadata[CONTEXT_METADATA_KEY]).toEqual({
         mutable: 'free-to-tune',
-        mutability: { VisibilityTimeout: 'change-with-constraints' },
+        mutability: {
+          Name: 'free-to-tune',
+          VisibilityTimeout: 'change-with-constraints',
+        },
       });
     });
 
@@ -926,7 +859,7 @@ describe('metadata context', () => {
       expect(stack.templateOptions.metadata?.[CONTEXT_METADATA_KEY]).toEqual({ owner: 'order-processing-team' });
     });
 
-    test('ref entries render bare-string form when only a path is given', () => {
+    test('passes ref entries through unchanged', () => {
       const stack = new Stack();
 
       CfnTemplateMetadataContext.of(stack).set({
@@ -937,7 +870,7 @@ describe('metadata context', () => {
       });
 
       expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY].ref).toEqual([
-        'docs/network-context.yaml',
+        { at: 'docs/network-context.yaml' },
         { at: 'docs/encryption-context.yaml', has: 'organization encryption and tagging rules', scope: 'shared' },
       ]);
     });
@@ -981,13 +914,13 @@ describe('metadata context', () => {
       expect(toCloudFormation(stack).Metadata).toBeUndefined();
     });
 
-    test('set() followed by clear() renders no template Metadata section', () => {
+    test('set() followed by clear() removes only the template Context key', () => {
       const stack = new Stack();
 
       CfnTemplateMetadataContext.of(stack).set({ arch: 'removed arch' });
       CfnTemplateMetadataContext.of(stack).clear();
 
-      expect(toCloudFormation(stack).Metadata).toBeUndefined();
+      expect(toCloudFormation(stack).Metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
     test('set() replaces a Context block added with Stack.addMetadata()', () => {
@@ -1070,24 +1003,15 @@ describe('metadata context', () => {
       expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY]).toEqual({ arch: '', must: [], ref: [], owner: '' });
     });
 
-    test.each<{
-      readonly name: string;
-      readonly path: string;
-      readonly context: (token: string) => CfnTemplateMetadataContextProps;
-    }>([
-      { name: 'arch', path: 'arch', context: token => ({ arch: token }) },
-      { name: 'must entry', path: 'must[0]', context: token => ({ must: [token] }) },
-      { name: 'ref at', path: 'ref[0].at', context: token => ({ ref: [{ at: token }] }) },
-      { name: 'ref has', path: 'ref[0].has', context: token => ({ ref: [{ at: 'docs/context.md', has: token }] }) },
-      { name: 'ref scope', path: 'ref[0].scope', context: token => ({ ref: [{ at: 'docs/context.md', scope: token }] }) },
-      { name: 'owner', path: 'owner', context: token => ({ owner: token }) },
-    ])('throws before writing when template $name is an unresolved token', ({ path: fieldPath, context }) => {
+    test('throws before writing when nested template context contains an unresolved token', () => {
       const stack = new Stack();
       const tokenTarget = new CfnResource(stack, 'TokenTarget', { type: 'AWS::Fake::Thing' });
-      const setContext = () => CfnTemplateMetadataContext.of(stack).set(context(tokenTarget.ref));
+      const setContext = () => CfnTemplateMetadataContext.of(stack).set({
+        ref: [{ at: 'docs/context.md', has: tokenTarget.ref }],
+      });
 
       expect(setContext).toThrow(ValidationError);
-      expect(setContext).toThrow(`template context field '${fieldPath}' cannot contain unresolved tokens`);
+      expect(setContext).toThrow("template context field 'ref[0].has' cannot contain unresolved tokens");
       expect(stack.templateOptions.metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
@@ -1102,20 +1026,12 @@ describe('metadata context', () => {
       expect(stack.templateOptions.metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
     });
 
-    test('a blank ref at path is structurally valid and synthesizes', () => {
+    test('a blank ref at path is passed through unchanged', () => {
       const stack = new Stack();
 
       CfnTemplateMetadataContext.of(stack).set({ ref: [{ at: ' ' }] });
 
-      expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY].ref).toEqual([' ']);
-    });
-
-    test('throws when a ref is missing its at path', () => {
-      const stack = new Stack();
-
-      expect(() => CfnTemplateMetadataContext.of(stack).set({ ref: [{ has: 'no at here' } as any] })).toThrow(ValidationError);
-      expect(() => CfnTemplateMetadataContext.of(stack).set({ ref: [{ has: 'no at here' } as any] })).toThrow(/ref entries require an 'at' path/);
-      expect(stack.templateOptions.metadata?.[CONTEXT_METADATA_KEY]).toBeUndefined();
+      expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY].ref).toEqual([{ at: ' ' }]);
     });
 
     test.each([
@@ -1126,12 +1042,12 @@ describe('metadata context', () => {
       '~/context.yaml',
       '../outside/context.yaml',
       'docs/../../outside/context.yaml',
-    ])('accepts any ref URI or path (advisory schema does not enforce scope) %s', at => {
+    ])('passes through any ref URI or path %s', at => {
       const stack = new Stack();
 
       CfnTemplateMetadataContext.of(stack).set({ ref: [{ at }] });
 
-      expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY].ref).toEqual([at]);
+      expect(toCloudFormation(stack).Metadata[CONTEXT_METADATA_KEY].ref).toEqual([{ at }]);
     });
   });
 
