@@ -9,6 +9,7 @@ import * as sns from '../../../../aws-sns';
 import * as cdk from '../../../../core';
 import { Duration } from '../../../../core';
 import {
+  IndexedKeyType,
   Memory,
   StreamDeliveryContentType,
   StreamDeliveryContentLevel,
@@ -3121,6 +3122,286 @@ describe('Memory with KMS-encrypted Kinesis stream tests', () => {
           }),
         ]),
       },
+    });
+  });
+});
+
+describe('Memory namespace keys and indexed keys tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+  });
+
+  function memoryProperties(): any {
+    const memoryResources = Template.fromStack(stack).findResources('AWS::BedrockAgentCore::Memory');
+    return Object.values(memoryResources)[0].Properties;
+  }
+
+  test('renders namespace keys and indexed keys from props', () => {
+    new Memory(stack, 'Memory', {
+      memoryName: 'keyed_memory',
+      namespaceKeys: [
+        { key: 'tenant', validation: { regexPattern: '^[a-z0-9-]+$' } },
+        { key: 'env', validation: { allowedValues: ['dev', 'staging', 'prod'] } },
+        { key: 'region' },
+      ],
+      indexedKeys: [
+        { key: 'priority', type: IndexedKeyType.NUMBER },
+        { key: 'labels', type: IndexedKeyType.STRINGLIST },
+        { key: 'source', type: IndexedKeyType.STRING },
+      ],
+      memoryStrategies: [
+        MemoryStrategy.usingSemantic({
+          strategyName: 'facts',
+          namespaces: ['/tenant/{tenant}/env/{env}/actor/{actorId}'],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      NamespaceKeys: [
+        { Key: 'tenant', Validation: { RegexPattern: '^[a-z0-9-]+$' } },
+        { Key: 'env', Validation: { AllowedValues: ['dev', 'staging', 'prod'] } },
+        { Key: 'region' },
+      ],
+      IndexedKeys: [
+        { Key: 'priority', Type: 'NUMBER' },
+        { Key: 'labels', Type: 'STRINGLIST' },
+        { Key: 'source', Type: 'STRING' },
+      ],
+    });
+    const props = memoryProperties();
+    expect(props.NamespaceKeys[2].Validation).toBeUndefined();
+    expect(props.NamespaceKeys[0].Validation.AllowedValues).toBeUndefined();
+    expect(props.NamespaceKeys[1].Validation.RegexPattern).toBeUndefined();
+  });
+
+  test('renders both validation rules on one namespace key', () => {
+    new Memory(stack, 'Memory', {
+      namespaceKeys: [
+        { key: 'env', validation: { allowedValues: ['dev', 'prod'], regexPattern: '^[a-z]+$' } },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      NamespaceKeys: [
+        { Key: 'env', Validation: { AllowedValues: ['dev', 'prod'], RegexPattern: '^[a-z]+$' } },
+      ],
+    });
+  });
+
+  test('renders keys added with addNamespaceKey and addIndexedKey after the props', () => {
+    const memory = new Memory(stack, 'Memory', {
+      namespaceKeys: [{ key: 'tenant' }],
+      indexedKeys: [{ key: 'priority', type: IndexedKeyType.NUMBER }],
+    });
+    memory.addNamespaceKey({ key: 'region', validation: { allowedValues: ['us', 'eu'] } });
+    memory.addIndexedKey({ key: 'labels', type: IndexedKeyType.STRINGLIST });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      NamespaceKeys: [
+        { Key: 'tenant' },
+        { Key: 'region', Validation: { AllowedValues: ['us', 'eu'] } },
+      ],
+      IndexedKeys: [
+        { Key: 'priority', Type: 'NUMBER' },
+        { Key: 'labels', Type: 'STRINGLIST' },
+      ],
+    });
+    expect(memory.namespaceKeys.map(k => k.key)).toEqual(['tenant', 'region']);
+    expect(memory.indexedKeys.map(k => k.key)).toEqual(['priority', 'labels']);
+  });
+
+  test('renders keys added with the add methods on a memory created without them', () => {
+    const memory = new Memory(stack, 'Memory');
+    memory.addNamespaceKey({ key: 'tenant' });
+    memory.addIndexedKey({ key: 'priority', type: IndexedKeyType.NUMBER });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      NamespaceKeys: [{ Key: 'tenant' }],
+      IndexedKeys: [{ Key: 'priority', Type: 'NUMBER' }],
+    });
+  });
+
+  test('omits NamespaceKeys and IndexedKeys when not configured', () => {
+    const memory = new Memory(stack, 'Memory');
+
+    const props = memoryProperties();
+    expect(props.NamespaceKeys).toBeUndefined();
+    expect(props.IndexedKeys).toBeUndefined();
+    expect(memory.namespaceKeys).toEqual([]);
+    expect(memory.indexedKeys).toEqual([]);
+  });
+
+  test('omits NamespaceKeys and IndexedKeys for empty arrays', () => {
+    new Memory(stack, 'Memory', { namespaceKeys: [], indexedKeys: [] });
+
+    const props = memoryProperties();
+    expect(props.NamespaceKeys).toBeUndefined();
+    expect(props.IndexedKeys).toBeUndefined();
+  });
+
+  test('accepts the boundary values', () => {
+    expect(() => new Memory(stack, 'Memory', {
+      namespaceKeys: [
+        { key: 'a' },
+        { key: 'a' + '1'.repeat(31) },
+        { key: 'b', validation: { allowedValues: ['0', 'a'.repeat(64), 'x-y_z'] } },
+        { key: 'c', validation: { allowedValues: Array.from({ length: 10 }, (_, i) => `v${i}`) } },
+        { key: 'd', validation: { regexPattern: 'r'.repeat(64) } },
+      ],
+      indexedKeys: [
+        { key: 'k'.repeat(128), type: IndexedKeyType.STRING },
+        { key: 'Mixed Case ._:/=+@-', type: IndexedKeyType.STRING },
+        ...Array.from({ length: 8 }, (_, i) => ({ key: `key${i}`, type: IndexedKeyType.NUMBER })),
+      ],
+    })).not.toThrow();
+  });
+
+  test.each([
+    ['tenantId'],
+    ['Tenant'],
+    ['1tenant'],
+    ['tenant_id'],
+    ['tenant-id'],
+    [''],
+    ['a' + '1'.repeat(32)],
+    ['actorId'],
+    ['sessionId'],
+    ['memoryStrategyId'],
+  ])('rejects namespace key %p', (key) => {
+    expect(() => new Memory(stack, 'Memory', {
+      namespaceKeys: [{ key }],
+    })).toThrow(/must start with a lowercase letter, contain only lowercase letters and digits/);
+  });
+
+  test('rejects more than 5 namespace keys', () => {
+    expect(() => new Memory(stack, 'Memory', {
+      namespaceKeys: ['a', 'b', 'c', 'd', 'e', 'f'].map(key => ({ key })),
+    })).toThrow('Memory supports at most 5 namespace keys');
+  });
+
+  test('rejects a sixth namespace key added with addNamespaceKey', () => {
+    const memory = new Memory(stack, 'Memory', {
+      namespaceKeys: ['a', 'b', 'c', 'd', 'e'].map(key => ({ key })),
+    });
+    expect(() => memory.addNamespaceKey({ key: 'f' })).toThrow('Memory supports at most 5 namespace keys');
+  });
+
+  test('rejects a duplicate namespace key', () => {
+    const memory = new Memory(stack, 'Memory', { namespaceKeys: [{ key: 'tenant' }] });
+    expect(() => memory.addNamespaceKey({ key: 'tenant', validation: { regexPattern: '.*' } }))
+      .toThrow('Namespace key "tenant" is already declared on this memory');
+  });
+
+  test('rejects an empty validation object', () => {
+    expect(() => new Memory(stack, 'Memory', {
+      namespaceKeys: [{ key: 'tenant', validation: {} }],
+    })).toThrow('Validation for namespace key "tenant" must specify allowedValues, regexPattern, or both');
+  });
+
+  test.each([
+    [[], 'must contain between 1 and 10 values, got 0'],
+    [Array.from({ length: 11 }, (_, i) => `v${i}`), 'must contain between 1 and 10 values, got 11'],
+    [['Dev'], 'Allowed value "Dev" for namespace key "env" must start with a lowercase letter or a digit'],
+    [['-dev'], 'Allowed value "-dev" for namespace key "env"'],
+    [['dev.1'], 'Allowed value "dev.1" for namespace key "env"'],
+    [['a'.repeat(65)], 'for namespace key "env" must start with a lowercase letter or a digit'],
+  ])('rejects allowedValues %p', (allowedValues, message) => {
+    expect(() => new Memory(stack, 'Memory', {
+      namespaceKeys: [{ key: 'env', validation: { allowedValues } }],
+    })).toThrow(message);
+  });
+
+  test.each([
+    ['', 'is 0 characters long but must be at least 1 characters'],
+    ['r'.repeat(65), 'is 65 characters long but must be less than or equal to 64 characters'],
+  ])('rejects regexPattern %p', (regexPattern, message) => {
+    expect(() => new Memory(stack, 'Memory', {
+      namespaceKeys: [{ key: 'env', validation: { regexPattern } }],
+    })).toThrow(message);
+  });
+
+  test('rejects more than 10 indexed keys', () => {
+    expect(() => new Memory(stack, 'Memory', {
+      indexedKeys: Array.from({ length: 11 }, (_, i) => ({ key: `key${i}`, type: IndexedKeyType.STRING })),
+    })).toThrow('Memory supports at most 10 indexed keys');
+  });
+
+  test('rejects an eleventh indexed key added with addIndexedKey', () => {
+    const memory = new Memory(stack, 'Memory', {
+      indexedKeys: Array.from({ length: 10 }, (_, i) => ({ key: `key${i}`, type: IndexedKeyType.STRING })),
+    });
+    expect(() => memory.addIndexedKey({ key: 'key10', type: IndexedKeyType.NUMBER }))
+      .toThrow('Memory supports at most 10 indexed keys');
+  });
+
+  test('rejects a duplicate indexed key', () => {
+    expect(() => new Memory(stack, 'Memory', {
+      indexedKeys: [
+        { key: 'priority', type: IndexedKeyType.NUMBER },
+        { key: 'priority', type: IndexedKeyType.STRING },
+      ],
+    })).toThrow('Indexed key "priority" is already declared on this memory');
+  });
+
+  test.each([
+    ['', 'is 0 characters long but must be at least 1 characters'],
+    ['k'.repeat(129), 'is 129 characters long but must be less than or equal to 128 characters'],
+    ['key#1', 'Indexed key "key#1" can only contain letters, digits, whitespace'],
+  ])('rejects indexed key %p', (key, message) => {
+    expect(() => new Memory(stack, 'Memory', {
+      indexedKeys: [{ key, type: IndexedKeyType.STRING }],
+    })).toThrow(message);
+  });
+
+  test('skips validation for tokens', () => {
+    const tenantKey = new cdk.CfnParameter(stack, 'TenantKey').valueAsString;
+    const allowed = new cdk.CfnParameter(stack, 'Allowed', { type: 'CommaDelimitedList' }).valueAsList;
+    const pattern = new cdk.CfnParameter(stack, 'Pattern').valueAsString;
+    const indexedKey = new cdk.CfnParameter(stack, 'IndexedKeyName').valueAsString;
+
+    const memory = new Memory(stack, 'Memory', {
+      namespaceKeys: [
+        { key: tenantKey, validation: { allowedValues: allowed } },
+        { key: 'env', validation: { regexPattern: pattern } },
+      ],
+      indexedKeys: [{ key: indexedKey, type: IndexedKeyType.STRING }],
+    });
+    // A second token key is not reported as a duplicate of the first
+    memory.addNamespaceKey({ key: tenantKey });
+    memory.addIndexedKey({ key: indexedKey, type: IndexedKeyType.NUMBER });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      NamespaceKeys: [
+        { Key: { Ref: 'TenantKey' }, Validation: { AllowedValues: { Ref: 'Allowed' } } },
+        { Key: 'env', Validation: { RegexPattern: { Ref: 'Pattern' } } },
+        { Key: { Ref: 'TenantKey' } },
+      ],
+      IndexedKeys: [
+        { Key: { Ref: 'IndexedKeyName' }, Type: 'STRING' },
+        { Key: { Ref: 'IndexedKeyName' }, Type: 'NUMBER' },
+      ],
+    });
+  });
+
+  test('passes an unresolved validation object through without checking it', () => {
+    const validation = cdk.Token.asAny(cdk.Lazy.any({ produce: () => ({ allowedValues: ['dev'] }) })) as any;
+
+    new Memory(stack, 'Memory', {
+      namespaceKeys: [{ key: 'env', validation }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      NamespaceKeys: [{ Key: 'env', Validation: { AllowedValues: ['dev'] } }],
     });
   });
 });

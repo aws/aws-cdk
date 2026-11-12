@@ -1,0 +1,30 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "MemoryNamespaceIndexedKeys/DefaultTest": {
+      "stacks": [
+        "aws-cdk-agentcore-memory-namespace-indexed-keys"
+      ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ca-central-1",
+        "eu-central-1",
+        "eu-north-1",
+        "eu-west-1",
+        "eu-west-2",
+        "eu-west-3",
+        "ap-northeast-1",
+        "ap-northeast-2",
+        "ap-south-1",
+        "ap-southeast-1",
+        "ap-southeast-2"
+      ],
+      "assertionStack": "MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert",
+      "assertionStackName": "MemoryNamespaceIndexedKeysDefaultTestDeployAssert8926F7E6"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

@@ -1,0 +1,76 @@
+{
+  "/MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/annotations.js:261:29)",
+        "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/annotations.js:127:18)",
+        "resolveValue (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/private/refs.js:207:52)",
+        "resolveReferencesInElements (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/private/refs.js:131:30)",
+        "resolveReferences (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/private/refs.js:116:5)",
+        "prepareApp (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:34)",
+        "synthesize (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/stage.js:194:92)",
+        "App.synth (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/app.js:204:27)",
+        "process.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-39708/packages/aws-cdk-lib/core/lib/app.js:160:51)",
+        "Object.onceWrapper (node:events:631:12)",
+        "process.emit (node:events:509:20)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MemoryNamespaceIndexedKeysDefaultTestDeployAssert8926F7E6.template.json"
+    }
+  ],
+  "/MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetMemory1a6b7d477fe37d017f2ba93d4e7dc1e8/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetMemory1a6b7d477fe37d017f2ba93d4e7dc1e8/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallbedrockagentcorecontrolgetMemory1a6b7d477fe37d017f2ba93d4e7dc1e8"
+    }
+  ],
+  "/MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/MemoryNamespaceIndexedKeys/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetMemory1a6b7d477fe37d017f2ba93d4e7dc1e8/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetMemory1a6b7d477fe37d017f2ba93d4e7dc1e8"
+    }
+  ]
+}

@@ -2581,6 +2581,8 @@ To write to long-term memory, you need to configure extraction strategies which 
 | `memoryStrategies` | `MemoryStrategyBase[]` | No | Built-in extraction strategies to use for this memory. Default: No extraction strategies (short term memory only) |
 | `executionRole` | `iam.IRole` | No | The IAM role that provides permissions for the memory to access AWS services. Default: A new role will be created. |
 | `tags` | `{ [key: string]: string }` | No | Tags for memory. Default: no tags. |
+| `namespaceKeys` | `NamespaceKey[]` | No | Custom namespace variables for strategy namespaces (up to 5). Default: no custom variables. |
+| `indexedKeys` | `IndexedKey[]` | No | Metadata keys to index for filtering memory records (up to 10). Default: no indexed keys. |
 
 ### Basic Memory Creation
 
@@ -2967,6 +2969,49 @@ Only one stream delivery resource is currently supported (a CloudFormation maxim
 The memory execution role is automatically granted write permissions (`kinesis:PutRecord`, `kinesis:PutRecords`, `kinesis:ListShards`, `kinesis:DescribeStream`) to each configured Kinesis stream. If the stream uses a customer-managed KMS key, encryption permissions are also granted automatically.
 
 Encryption permissions can only be granted when the stream's key is known to CDK — that is, for streams you create and for streams imported with `Stream.fromStreamAttributes({ encryptionKey })`. A stream imported with `Stream.fromStreamArn()` carries no key reference, so grant the key permissions yourself in that case.
+
+### Memory with Namespace Keys and Indexed Keys
+
+Strategy namespaces can use the built-in variables `{actorId}`, `{sessionId}` and `{memoryStrategyId}`.
+To organize long-term memory by something else, for example a tenant or an environment, declare your own
+namespace variables with `namespaceKeys` and use them in the strategy namespaces. Your application passes
+their values in `extractionConfig.namespaceVariables` when it calls `CreateEvent`.
+
+A namespace key must start with a lowercase letter and contain only lowercase letters and digits
+(at most 32 characters), so `tenant` works but `tenantId` doesn't. A memory can have up to 5 keys.
+Each key can have a `validation` with `allowedValues`, a `regexPattern`, or both; when both are given, a value must pass both.
+
+`indexedKeys` declares metadata keys that the memory indexes, so that memory records can be filtered by them.
+A memory can have up to 10 indexed keys.
+
+```typescript fixture=default
+const memory = new agentcore.Memory(this, 'MultiTenantMemory', {
+  memoryName: 'multi_tenant_memory',
+  namespaceKeys: [
+    { key: 'tenant', validation: { regexPattern: '^[a-z0-9-]+$' } },
+    { key: 'env', validation: { allowedValues: ['dev', 'staging', 'prod'] } },
+  ],
+  indexedKeys: [
+    { key: 'priority', type: agentcore.IndexedKeyType.NUMBER },
+  ],
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingSemantic({
+      strategyName: 'tenant_facts',
+      namespaces: ['/tenant/{tenant}/env/{env}/actor/{actorId}'],
+    }),
+  ],
+});
+
+// Keys can also be added after instantiation
+memory.addNamespaceKey({ key: 'region' });
+memory.addIndexedKey({ key: 'labels', type: agentcore.IndexedKeyType.STRINGLIST });
+```
+
+Keep these in mind when you change the keys of a deployed memory:
+
+- The namespace keys you declare replace the existing ones, so a key you remove is removed from the memory.
+  The service rejects the update if a strategy namespace still uses that key.
+- Indexed keys can't be removed from a memory once they are declared. You can add new ones later.
 
 ## Policy Engine
 
