@@ -32,7 +32,7 @@ import { ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
-import type * as kms from '../../aws-kms';
+import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import type * as sns from '../../aws-sns';
@@ -1709,10 +1709,43 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       retentionDays = config.retentionPeriod.toDays();
     }
 
+    if (config.kmsKey) {
+      this.grantDurableExecutionKeyAccess(config.kmsKey);
+    }
+
     return {
       executionTimeout: config.executionTimeout.toSeconds(),
       retentionPeriodInDays: retentionDays,
+      kmsKeyArn: config.kmsKey?.keyRef.keyArn,
     };
+  }
+
+  private grantDurableExecutionKeyAccess(key: kms.IKeyRef) {
+    const stack = Stack.of(this);
+    const keyGrants = kms.KeyGrants.fromKey(key);
+    const lambdaViaService = `lambda.${stack.region}.${stack.urlSuffix}`;
+
+    // Lambda authorizes durable-function key use only through the key policy.
+    // Account-scoped to avoid a Key -> Function -> Key dependency cycle.
+    keyGrants.actions(
+      new iam.ServicePrincipal('lambda.amazonaws.com', {
+        conditions: { StringEquals: { 'aws:SourceAccount': stack.account } },
+      }),
+      'kms:GenerateDataKey',
+      'kms:Decrypt',
+    );
+
+    // Execution role decrypts durable data at runtime, through Lambda only.
+    keyGrants.decrypt(new kms.ViaServicePrincipal(lambdaViaService, new iam.ArnPrincipal(this.role!.roleArn)));
+
+    // Function author key validation at CreateFunction/UpdateFunctionConfiguration.
+    // Account principal, so IAM policies still gate the deploying identity.
+    keyGrants.actions(
+      new kms.ViaServicePrincipal(lambdaViaService, new iam.AccountPrincipal(stack.account)),
+      'kms:DescribeKey',
+      'kms:GenerateDataKey',
+      'kms:Decrypt',
+    );
   }
 
   private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
