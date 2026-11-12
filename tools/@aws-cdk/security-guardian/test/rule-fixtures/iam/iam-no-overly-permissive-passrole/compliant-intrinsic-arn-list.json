@@ -1,0 +1,54 @@
+{
+  "Description": "IAM_NO_OVERLY_PERMISSIVE_PASSROLE must not fire: iam:PassRole is scoped to a list of specific role ARNs expressed as Fn::GetAtt intrinsics (the EKS FargateCluster creation-role pattern from aws/aws-cdk#39501). A list of intrinsic objects is a correctly-scoped, non-wildcard resource.",
+  "Resources": {
+    "FargateClusterRole8E36B33A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "Service": "eks-fargate-pods.amazonaws.com" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    },
+    "FargateProfileDefaultPodExecutionRole66F2610E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "Service": "eks-fargate-pods.amazonaws.com" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    },
+    "FargateClusterCreationRoleDefaultPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "FargateClusterCreationRoleDefaultPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": [
+                { "Fn::GetAtt": ["FargateClusterRole8E36B33A", "Arn"] },
+                { "Fn::GetAtt": ["FargateProfileDefaultPodExecutionRole66F2610E", "Arn"] }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

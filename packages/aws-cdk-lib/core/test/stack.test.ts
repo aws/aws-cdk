@@ -3092,6 +3092,41 @@ describe('stack', () => {
     const metadata = res.node.metadata.find(m => m.type === 'aws:cdk:creationStack');
     expect(metadata).toBeDefined();
   });
+
+  test('stack adds template-producer metadata to the cloud assembly', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateProducerEntries = artifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    expect(templateProducerEntries).toEqual([
+      { path: '/MyStack', type: cxapi.CDK_TEMPLATE_FILE_KEY, data: stack.templateFile },
+    ]);
+  });
+
+  test('stack inside a Stage has a nested-assembly-relative template path in template-producer metadata', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stage = new Stage(app, 'MyStage');
+    const stack = new Stack(stage, 'MyStack');
+
+    // WHEN
+    const rootAssembly = app.synth();
+    const stageAssembly = rootAssembly.getNestedAssembly(stage.artifactId);
+    const artifact = stageAssembly.getStackArtifact(stack.artifactId);
+
+    // THEN — templateFile is just the filename, relative to the nested assembly directory
+    const templateProducerEntries = artifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    expect(templateProducerEntries).toEqual([
+      { path: '/MyStage/MyStack', type: cxapi.CDK_TEMPLATE_FILE_KEY, data: stack.templateFile },
+    ]);
+    expect(stack.templateFile).not.toContain('/');
+  });
 });
 
 describe('permissions boundary', () => {

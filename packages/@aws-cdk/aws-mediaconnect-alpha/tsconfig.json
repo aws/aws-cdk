@@ -27,7 +27,11 @@
     "composite": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",
     "esModuleInterop": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "types": [
+      "jest",
+      "node"
+    ]
   },
   "include": [
     "**/*.ts"
