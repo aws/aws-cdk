@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"channel\\\":\\\"chat/add\\\",\\\"action\\\":\\\"pubSub\\\",\\\"authMode\\\":\\\"API_KEY\\\",\\\"eventPayload\\\":[{\\\"message\\\":\\\"hello1\\\"}]}\""
     },
     "flattenResponse": "false",
-    "salt": "1789112437022"
+    "salt": "1791826129916"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -128,7 +128,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d25eb84a8d97801ae980f73bea1e6816544f12e16702dd1aa309208182edeb1b.zip"
+     "S3Key": "13c53d1af041ac32db1c99c5bae43b3bd7d29a12d9113921a925efd959ba10dc.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

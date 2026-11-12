@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
@@ -320,4 +320,55 @@ describe('cluster user', () => {
       });
     });
   });
+
+  test.each(["'", '"', '/', '@'])('warns when excludeCharacters leaves out %j', (character) => {
+    new redshift.User(stack, 'User', {
+      ...databaseOptions,
+      excludeCharacters: '"@/\\\ \'`'.replace(character, ''),
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/User', Match.stringLikeRegexp(`does not include ${escapeRegExp(JSON.stringify(character))}`));
+  });
+
+  it('does not warn about the default excludeCharacters', () => {
+    new redshift.User(stack, 'User', databaseOptions);
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/User', Match.stringLikeRegexp('excludeCharacters'));
+  });
+
+  it('does not warn when excludeCharacters leaves out only a backslash', () => {
+    new redshift.User(stack, 'User', {
+      ...databaseOptions,
+      excludeCharacters: '"@/ \'',
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/User', Match.stringLikeRegexp('excludeCharacters'));
+  });
+
+  it('does not warn when excludeCharacters leaves out only a space', () => {
+    new redshift.User(stack, 'User', {
+      ...databaseOptions,
+      excludeCharacters: '"@/\\\'',
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/User', Match.stringLikeRegexp('excludeCharacters'));
+  });
+
+  it('does not check excludeCharacters that is a token', () => {
+    new redshift.User(stack, 'User', {
+      ...databaseOptions,
+      excludeCharacters: cdk.Lazy.string({ produce: () => '' }),
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/User', Match.stringLikeRegexp('excludeCharacters'));
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        ExcludeCharacters: '',
+      },
+    });
+  });
 });
+
+function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
