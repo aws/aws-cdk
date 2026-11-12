@@ -48,6 +48,9 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Lifecycle configuration](#lifecycle-configuration)
       - [Request header configuration](#request-header-configuration)
       - [Application log group](#application-log-group)
+      - [Platform version](#platform-version)
+      - [Build hooks](#build-hooks)
+      - [Minimum memory](#minimum-memory)
   - [Browser](#browser)
     - [Browser Network modes](#browser-network-modes)
     - [Browser Properties](#browser-properties)
@@ -160,6 +163,8 @@ to production by simply updating the endpoint to point to the newer version.
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
 | `lifecycleConfiguration` | LifecycleConfiguration | No | The life cycle configuration for the AgentCore Runtime. Defaults to 900 seconds (15 minutes) for idle, 28800 seconds (8 hours) for max life time |
 | `requestHeaderConfiguration` | RequestHeaderConfiguration | No | Configuration for HTTP request headers that will be passed through to the runtime. Defaults to no configuration |
+| `buildHooks` | `BuildLifecycleHooks` | No | Hooks the service calls on the agent's container while it builds the runtime, such as a warmup hook. Defaults to no build hooks |
+| `minimumMemory` | `Size` | No | The minimum memory for each runtime session. Must be a whole number of MiB. Defaults to the service default |
 | `tracingEnabled` | `boolean` | No | Whether to enable X-Ray tracing for this runtime. When enabled, traces will be delivered to AWS X-Ray. Defaults to `false` |
 | `loggingConfigs` | `LoggingConfig[]` | No | Logging configuration for the runtime. Allows sending APPLICATION_LOGS and USAGE_LOGS to CloudWatch Logs, S3, or Kinesis Data Firehose. Defaults to no logging configured |
 | `manageDeliveryResourcePolicy` | `boolean` | No | Whether to create resource policies for log/trace delivery. When `false`, the `AWS::Logs::ResourcePolicy` and `AWS::XRay::ResourcePolicy` are not created. This is useful when deploying many runtimes per account/Region, as each resource policy consumes an account-level quota slot (CloudWatch Logs: 10, X-Ray: lower). For same-account `/aws/vendedlogs/` delivery, the log-delivery service-linked role provides the necessary write access without an explicit policy. Defaults to `true` |
@@ -945,6 +950,48 @@ new agentcore.Runtime(this, 'test-runtime', {
   runtimeName: 'test_runtime',
   agentRuntimeArtifact: agentRuntimeArtifact,
   platformVersion: agentcore.PlatformVersion.V2,
+});
+```
+
+#### Build hooks
+
+Set `buildHooks` to have the service call your agent's container while it builds the runtime. A `warmup` hook runs before the service snapshots the agent, so the agent can load models, open connections or fill caches once and every session starts from that warmed state.
+
+The only action today is an HTTP POST. Any 2xx response ends the hook and any other response fails the build, so the container must serve the hook path. The path must be 1-32 characters, start with `/`, and must not be a route the service already calls, such as the invocation path or the default health check. The port must be between 8000 and 12000 and defaults to the runtime's server port.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  platformVersion: agentcore.PlatformVersion.V2,
+  buildHooks: {
+    warmup: agentcore.LifecycleHook.httpPost({ path: '/warmup', port: 8080 }),
+  },
+});
+```
+
+#### Minimum memory
+
+Set `minimumMemory` to reserve a minimum amount of memory for each runtime session. The value must be a whole number of MiB, and the service validates which values are allowed.
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  platformVersion: agentcore.PlatformVersion.V2,
+  minimumMemory: cdk.Size.gibibytes(4),
 });
 ```
 

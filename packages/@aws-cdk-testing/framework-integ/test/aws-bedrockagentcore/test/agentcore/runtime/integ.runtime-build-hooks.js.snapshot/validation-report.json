@@ -1,0 +1,57 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3002",
+          "description": "HooksConfiguration: Additional properties are not allowed ('HooksConfiguration' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-bedrock-agentcore-runtime-build-hooks/TestRuntime/Resource",
+              "constructFqn": "aws-cdk-lib.aws_bedrockagentcore.CfnRuntime",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-bedrock-agentcore-runtime-build-hooks.template.json",
+                "logicalId": "TestRuntime65042BB5",
+                "propertyPaths": [
+                  "Properties.HooksConfiguration"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F3002",
+          "description": "ResourceConfigurations: Additional properties are not allowed ('ResourceConfigurations' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-bedrock-agentcore-runtime-build-hooks/TestRuntime/Resource",
+              "constructFqn": "aws-cdk-lib.aws_bedrockagentcore.CfnRuntime",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-bedrock-agentcore-runtime-build-hooks.template.json",
+                "logicalId": "TestRuntime65042BB5",
+                "propertyPaths": [
+                  "Properties.ResourceConfigurations"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
