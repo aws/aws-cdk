@@ -349,6 +349,8 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   }
 }
 
+const TASK_DEFINITION_SYMBOL = Symbol.for('@aws-cdk/aws-ecs.TaskDefinition');
+
 /**
  * The base class for all task definitions.
  */
@@ -358,6 +360,17 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Uniquely identifies this class.
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.TaskDefinition';
+
+  /**
+   * Return whether the given object is an owned TaskDefinition.
+   *
+   * Returns `true` if `x` is a `TaskDefinition` created in this app, and `false`
+   * for imported task definitions (`ITaskDefinition`, e.g. from `fromTaskDefinitionArn`).
+   */
+  public static isTaskDefinition(x: any): x is TaskDefinition {
+    // Symbol-based check instead of `instanceof` for JSII compatibility.
+    return x !== null && typeof(x) === 'object' && TASK_DEFINITION_SYMBOL in x;
+  }
 
   /**
    * Imports a task definition from the specified task definition ARN.
@@ -489,6 +502,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   constructor(scope: Construct, id: string, props: TaskDefinitionProps) {
     super(scope, id);
+    Object.defineProperty(this, TASK_DEFINITION_SYMBOL, { value: true });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
