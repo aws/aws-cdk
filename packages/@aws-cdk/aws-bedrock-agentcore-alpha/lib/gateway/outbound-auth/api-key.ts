@@ -27,6 +27,8 @@ export interface ApiKeyAdditionalConfiguration {
    * The prefix for the API key credential.
    * This prefix is added to the API key when sending it to the target endpoint.
    *
+   * Pass an empty string `''` to omit the prefix.
+   *
    * Length Constraints: Minimum length of 1. Maximum length of 64.
    * @default - 'Bearer ' for HEADER, no prefix for QUERY_PARAMETER
    */
@@ -54,10 +56,11 @@ export class ApiKeyCredentialLocation {
    * @returns ApiKeyCredentialLocation configured for header placement
    */
   public static header(config?: ApiKeyAdditionalConfiguration) {
+    const credentialPrefix = config?.credentialPrefix === '' ? undefined : (config?.credentialPrefix ?? 'Bearer ');
     return new ApiKeyCredentialLocation(
       ApiKeyCredentialLocationType.HEADER,
       config?.credentialParameterName ?? 'Authorization',
-      config?.credentialPrefix ?? 'Bearer ',
+      credentialPrefix,
     );
   }
 
@@ -67,10 +70,11 @@ export class ApiKeyCredentialLocation {
    * @returns ApiKeyCredentialLocation configured for query parameter placement
    */
   public static queryParameter(config?: ApiKeyAdditionalConfiguration) {
+    const credentialPrefix = config?.credentialPrefix === '' ? undefined : config?.credentialPrefix;
     return new ApiKeyCredentialLocation(
       ApiKeyCredentialLocationType.QUERY_PARAMETER,
       config?.credentialParameterName ?? 'api_key',
-      config?.credentialPrefix,
+      credentialPrefix,
     );
   }
 
@@ -94,7 +98,7 @@ export class ApiKeyCredentialLocation {
   ) {
     this.credentialLocationType = credentialLocationType;
     this.credentialParameterName = credentialParameterName;
-    this.credentialPrefix = credentialPrefix;
+    this.credentialPrefix = credentialPrefix === '' ? undefined : credentialPrefix;
   }
 }
 
@@ -234,7 +238,7 @@ export class ApiKeyCredentialProviderConfiguration implements ICredentialProvide
           providerArn: this.providerArn,
           credentialLocation: this.credentialLocation.credentialLocationType,
           credentialParameterName: this.credentialLocation.credentialParameterName,
-          credentialPrefix: this.credentialLocation.credentialPrefix,
+          credentialPrefix: this.credentialLocation.credentialPrefix === '' ? undefined : this.credentialLocation.credentialPrefix,
         },
       },
     };
