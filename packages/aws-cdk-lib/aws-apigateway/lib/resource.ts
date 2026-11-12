@@ -536,6 +536,11 @@ export interface ProxyResourceOptions extends ResourceOptions {
    * This matches the behavior of the AWS Console when creating proxy resources
    * and eliminates the need to manually configure path parameters.
    *
+   * This is meant for integrations whose URI uses `{proxy}`, such as HTTP
+   * integrations. Lambda proxy (`AWS_PROXY`) integrations do not need it, as
+   * Lambda already receives the full request path. The mapping is added even
+   * when the integration URI has no `{proxy}`.
+   *
    * Mock integrations are left unchanged. When the proxy is added to the root
    * resource, the method that is also added to the root has no `{proxy}` path
    * parameter, so it is not configured.
@@ -560,7 +565,11 @@ export interface ProxyResourceProps extends ProxyResourceOptions {
  */
 class AutoProxyIntegration extends Integration {
   constructor(private readonly innerIntegration: Integration) {
-    super({ type: IntegrationType.MOCK }); // Placeholder value, actual type comes from innerIntegration.bind()
+    // The props passed here are never used: `Method` only calls `bind()`, which
+    // returns the inner integration's config. `MOCK` is the only type the
+    // `Integration` constructor accepts without an `integrationHttpMethod`,
+    // and the inner integration's props are private, so they cannot be passed on.
+    super({ type: IntegrationType.MOCK });
   }
 
   public bind(method: Method): IntegrationConfig {

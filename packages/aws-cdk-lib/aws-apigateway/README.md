@@ -821,6 +821,10 @@ When `autoConfigurePathParameter` is set to `true`, the proxy resource automatic
 This matches the behavior of the AWS Console when creating proxy resources and ensures
 that requests like `/api/foo/bar` are correctly forwarded to the backend with the full path.
 
+This option is meant for integrations whose URI uses `{proxy}`, such as HTTP integrations.
+Lambda proxy (`AWS_PROXY`) integrations do not need it, as Lambda already receives the full
+request path. The mapping is added even when the integration URI has no `{proxy}`.
+
 Mock integrations, such as the ones created for CORS preflight requests, are left unchanged.
 When the proxy is added to the root resource (`api.root.addProxy()`), the method that is also
 added to the root resource has no `{proxy}` path parameter, so it is not configured.
