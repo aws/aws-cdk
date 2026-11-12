@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "54.0.0",
   "testCases": {
     "DistributedMap/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStackName": "DistributedMapDefaultTestDeployAssertFD6CBCC4"
     }
   },
-  "minimumCliVersion": "2.1020.2"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

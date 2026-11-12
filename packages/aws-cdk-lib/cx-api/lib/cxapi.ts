@@ -111,3 +111,12 @@ export const CDK_APP_MODE_ENV = 'CDK_APP_MODE';
  */
 export const CDK_APP_MODE_CONTEXT = '@aws-cdk/core:appMode';
 
+/**
+ * Indicates that all CloudFormation resources at this scope and below are part of the specified template file.
+ *
+ * May be overwritten with different values at lower scopes.
+ *
+ * The file name is relative to the containing assembly's output directory,
+ * which may be a nested assembly.
+ */
+export const CDK_TEMPLATE_FILE_KEY = 'aws:cdk:templateFile';

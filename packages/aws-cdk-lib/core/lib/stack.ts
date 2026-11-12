@@ -819,7 +819,15 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
+   * The `AWS::NotificationARNs` pseudo parameter for this stack.
+   *
+   * This is a list token that CloudFormation resolves at deployment time to the
+   * notification Amazon Resource Names (ARNs) of the stack. During synthesis it
+   * does not contain the ARNs passed in the `notificationArns` property.
+   *
+   * To configure notification ARNs, set the `notificationArns` property when
+   * creating the stack. Adding elements to the returned list does not configure
+   * notifications, and causes a synthesis error if the list is used afterwards.
    */
   public get notificationArns(): string[] {
     return new ScopedAws(this).notificationArns;
@@ -1121,6 +1129,8 @@ export class Stack extends Construct implements ITaggable {
     // this right now, so some parts still happen here.
     const builder = session.assembly;
 
+    this.node.addMetadata(cxapi.CDK_TEMPLATE_FILE_KEY, this.templateFile);
+
     const template = this._toCloudFormation();
 
     // write the CloudFormation template as a JSON file
@@ -1337,6 +1347,41 @@ export class Stack extends Construct implements ITaggable {
     }
 
     return importValue;
+  }
+
+  /**
+   * Returns `true` if this stack is a top-level stack (i.e., not a nested stack).
+   *
+   * For better or worse, `Stack` is being subclassed by other constructs to mean "template producer".
+   * For example, `NestedStack` is a subclass of `Stack` but is not a top-level stack, and so
+   * is `CloudFormationProduct`.
+   *
+   * This indicates whether the current class represents a top-level stack
+   * (should only be true for instances of the main `Stack` class), or false for
+   * a construct that simply produces a template and happens to reuse `Stack`
+   * for that purpose.
+   *
+   * Here is the class hierarchy we should have had:
+   *
+   * ```
+   * TemplateProducer
+   * ├── Stack
+   * ├── NestedStack
+   * └── CloudFormationProduct
+   * ```
+   *
+   * Here is the class hierarchy we actually have:
+   *
+   * ```
+   * Stack
+   * ├── NestedStack
+   * └── CloudFormationProduct
+   * ```
+   *
+   * @internal
+   */
+  public get _isTopLevelStack(): boolean {
+    return true;
   }
 
   /**
