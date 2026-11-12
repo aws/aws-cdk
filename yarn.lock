@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.294"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/aws-service-spec@0.1.229":
-  version "0.1.229"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.229.tgz#0d51c3b0f61a1f27e7a79b30483b82a801424923"
-  integrity sha512-WLfCRxWAbvB+1o5rUOg3J6Fll9BlVOoqEsWXo9A47a/ZE+4VEGGlmBixsnMKOfZ6zhWmz5m4dvL/sQeO9VKVwg==
+"@aws-cdk/aws-service-spec@0.1.231":
+  version "0.1.231"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.231.tgz#1d7ce7aa84cd31a65ec1239a803c4027ced22ada"
+  integrity sha512-Cq+z+wDZSujf+2NZlKd5rzrLP40yBWrTpnR5vbeprB2CNRpAFoSv+iwqQEOs3pivn2za41I3Ysas8EyLX0Ot3g==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.295"
+    "@aws-cdk/service-spec-types" "^0.0.297"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-api@^2.5.0":
@@ -156,10 +156,10 @@
     glob "^8"
     sort-json "^2.0.1"
 
-"@aws-cdk/service-spec-types@0.0.295", "@aws-cdk/service-spec-types@^0.0.295":
-  version "0.0.295"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.295.tgz#6bc0045e91b2328380f4e07e0cbc2d621887d6a0"
-  integrity sha512-JDBwK1aR6AG1nZ+Q5E5J1ODX1Y38efOfQ5JhHL6NQdWY3wVFX024O3IXZ06Doi+gTRxGbzkdpDdlIDVaAPZ0Nw==
+"@aws-cdk/service-spec-types@0.0.297", "@aws-cdk/service-spec-types@^0.0.297":
+  version "0.0.297"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.297.tgz#d6aaac1756b02077e937d68f87bf5c6dd46f0b1d"
+  integrity sha512-rxHuW21JvLH+IspLo+pELteP93ps9qQDaEuJCq3EMEjWRhMUwEWRjmRSha0uPS9uoStwURl+BUXeNG+82x/j6Q==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -387,18 +387,18 @@
     "@smithy/util-utf8" "^3.0.0"
     tslib "^2.6.2"
 
-"@aws-sdk/client-bedrock-agentcore-control@3.1143.0":
-  version "3.1143.0"
-  resolved "https://registry.npmjs.org/@aws-sdk/client-bedrock-agentcore-control/-/client-bedrock-agentcore-control-3.1143.0.tgz#29099d4d2f16fb57020671fc8adc3a845e4ec606"
-  integrity sha512-SVoAtkJlv5Z/mdQy2TrnO5+ZT82sJzWaQ6Cz+MFDXfytXtd7mE+B2JyLGw7ih+wCnd2uX6m+XZ0/GWYgrVvD5w==
+"@aws-sdk/client-bedrock-agentcore-control@3.1166.0":
+  version "3.1166.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/client-bedrock-agentcore-control/-/client-bedrock-agentcore-control-3.1166.0.tgz#58f03f6996487bfab19868e247c19838f72a65a7"
+  integrity sha512-j+x61TizNJit8d569N+MX7H5MhEGvt7THnqSaodIu9DzarirXyXH6+MbKwgOkDd/jte4CBMfr68Rl5B6Yp0BHg==
   dependencies:
-    "@aws-sdk/core" "^3.978.1"
-    "@aws-sdk/credential-provider-node" "^3.972.84"
-    "@aws-sdk/types" "^3.974.6"
-    "@smithy/core" "^3.35.0"
-    "@smithy/fetch-http-handler" "^5.8.0"
-    "@smithy/node-http-handler" "^4.12.1"
-    "@smithy/types" "^4.19.0"
+    "@aws-sdk/core" "^3.981.0"
+    "@aws-sdk/credential-provider-node" "^3.972.96"
+    "@aws-sdk/types" "^3.975.1"
+    "@smithy/core" "^3.40.0"
+    "@smithy/fetch-http-handler" "^5.8.1"
+    "@smithy/node-http-handler" "^4.14.2"
+    "@smithy/types" "^4.20.0"
     tslib "^2.6.2"
 
 "@aws-sdk/client-cloudwatch-logs@3.632.0":
@@ -1750,7 +1750,7 @@
     fast-xml-parser "4.4.1"
     tslib "^2.6.2"
 
-"@aws-sdk/core@^3.978.1", "@aws-sdk/core@^3.981.0":
+"@aws-sdk/core@^3.981.0":
   version "3.981.0"
   resolved "https://registry.npmjs.org/@aws-sdk/core/-/core-3.981.0.tgz#dd0b57a63a665bca0bbc386ab906b66a2a2bf88c"
   integrity sha512-Mnu7gaDrC5UCdyH8uLxLfB2eWbjE/HbjKX1U1J2VQxG3TTATUDObW2wU3I8iH3e9YH5NN2CY6w1mlAIe2XJ3jg==
@@ -1901,7 +1901,7 @@
     "@smithy/types" "^3.3.0"
     tslib "^2.6.2"
 
-"@aws-sdk/credential-provider-node@^3.972.84", "@aws-sdk/credential-provider-node@^3.972.96":
+"@aws-sdk/credential-provider-node@^3.972.96":
   version "3.972.96"
   resolved "https://registry.npmjs.org/@aws-sdk/credential-provider-node/-/credential-provider-node-3.972.96.tgz#896190e257bb1417c44adfb0db53512c07f76f69"
   integrity sha512-tBunyyRnxMvKsCn/pu1QrIxUYZ4Z25LkV8zGkFGpSE/YmI2W4m8SLQzloG/hZlelGP2vLRGtIQc5w1+DoXCK1A==
@@ -2296,7 +2296,7 @@
     "@smithy/types" "^3.3.0"
     tslib "^2.6.2"
 
-"@aws-sdk/types@^3.222.0", "@aws-sdk/types@^3.974.6", "@aws-sdk/types@^3.975.1":
+"@aws-sdk/types@^3.222.0", "@aws-sdk/types@^3.975.1":
   version "3.975.1"
   resolved "https://registry.npmjs.org/@aws-sdk/types/-/types-3.975.1.tgz#7e3a704dddf4eb3918cc8ce9f01b38a2944b2284"
   integrity sha512-7rGxUkCB2QPoQOeJmonmAICTN2zrH+fpmi1p4Iwu72lnxNaMhOgqcbpyddifnM1DBb19TWQ1u6z/XjkaFNEDWw==
@@ -4351,7 +4351,7 @@
     "@smithy/util-utf8" "^3.0.0"
     tslib "^2.6.2"
 
-"@smithy/core@^3.33.2", "@smithy/core@^3.35.0", "@smithy/core@^3.38.0", "@smithy/core@^3.39.0", "@smithy/core@^3.40.0":
+"@smithy/core@^3.33.2", "@smithy/core@^3.38.0", "@smithy/core@^3.39.0", "@smithy/core@^3.40.0":
   version "3.40.0"
   resolved "https://registry.npmjs.org/@smithy/core/-/core-3.40.0.tgz#be97dc3dc123d5acadad5b36a34c1f81e596fb34"
   integrity sha512-DssGno52pzZ5m6RlDtyKuBIpZNPg9pqgs0CnNDKz9IatxCsmvNmJNn5Zn6rf77MthZo9wf89OvZFhTY/RwxhxQ==
@@ -4446,7 +4446,7 @@
     "@smithy/util-base64" "^3.0.0"
     tslib "^2.6.2"
 
-"@smithy/fetch-http-handler@^5.8.0", "@smithy/fetch-http-handler@^5.8.1":
+"@smithy/fetch-http-handler@^5.8.1":
   version "5.8.1"
   resolved "https://registry.npmjs.org/@smithy/fetch-http-handler/-/fetch-http-handler-5.8.1.tgz#96679083b3174a3628eac8ceb1188e6a8aa882ff"
   integrity sha512-h8BdMUrUBhMhMaeK7QqAdINRZezCGuYOCpcOZZ1ewxbHST9rdTd09xwNpvLTYfzDRehxQiReK4SKbdYZxBA+ew==
@@ -4606,7 +4606,7 @@
     "@smithy/types" "^3.7.2"
     tslib "^2.6.2"
 
-"@smithy/node-http-handler@^4.12.1", "@smithy/node-http-handler@^4.14.2":
+"@smithy/node-http-handler@^4.14.2":
   version "4.14.2"
   resolved "https://registry.npmjs.org/@smithy/node-http-handler/-/node-http-handler-4.14.2.tgz#b3b44ed33af388322f13a1fd48694d1f9d490507"
   integrity sha512-i1uORV1v3qBqP43ayRKzIdm1q5x14tf8N4Dd06/QUX1Szm6VxHMrTsu20X5E63UFsaNZCRjI4SXG0jDmqYa+3w==

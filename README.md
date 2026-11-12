@@ -142,6 +142,12 @@ We welcome community contributions and pull requests. See
 [CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
 
+## Security model
+
+The AWS CDK has a documented security model that describes what it protects against and
+what it expects from you. See [Security for the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/security.html)
+in the Developer Guide.
+
 ## Metrics collection
 
 This solution collects anonymous operational metrics to help AWS improve the
