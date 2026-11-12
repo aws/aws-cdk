@@ -1,0 +1,20 @@
+{
+  "/ServiceConnectProxyLogLevel/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ServiceConnectProxyLogLevelDefaultTestDeployAssert417C8FEE.template.json"
+    }
+  ],
+  "/ServiceConnectProxyLogLevel/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ServiceConnectProxyLogLevel/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

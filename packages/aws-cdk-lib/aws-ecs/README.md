@@ -2238,6 +2238,37 @@ The `includeQueryParameters` option specifies whether to include query parameter
 When enabled, query parameters from HTTP requests are included in the logs. Consider security and privacy implications, as query parameters may contain sensitive information such as request IDs and tokens.
 By default, this parameter is `false`.
 
+### Service Connect Proxy Log Level
+
+Set `proxyLogLevel` to change the log level of the Service Connect proxy container.
+Use `ServiceConnectProxyLogLevel.DEBUG` to collect more detailed proxy logs while you troubleshoot connectivity between services,
+and set it back to `ServiceConnectProxyLogLevel.INFO` when you finish. When it is not set, Amazon ECS uses `info`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+      },
+    ],
+    // The proxy logs are delivered through the log driver.
+    logDriver: ecs.LogDrivers.awsLogs({
+      streamPrefix: 'sc',
+    }),
+    proxyLogLevel: ecs.ServiceConnectProxyLogLevel.DEBUG,
+  },
+});
+```
+
+Debug logging increases the volume of logs that the proxy writes. A change to the log level applies only to tasks that
+Amazon ECS launches after the service is updated; running tasks keep their setting until they are replaced.
+
 ## ServiceManagedVolume
 
 Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
