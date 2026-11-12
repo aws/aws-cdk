@@ -1918,6 +1918,32 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
 });
 
 ```
+
+You can also set FIPS mode, instance metadata tag propagation and Nitro Sandbox on the instances that the capacity provider launches:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  // Make instance tags unavailable through IMDS, for example when tag keys contain '/'
+  instanceMetadataTagsPropagation: false,
+  // Required to run tasks with the ISOLATED_SANDBOX or CONFIDENTIAL_SANDBOX isolation mode
+  nitroEnclavesEnabled: true,
+});
+```
+
+- `fipsEnabled` turns FIPS 140-2 validated cryptographic modules on or off. When it is not set, Amazon ECS enables FIPS in
+  AWS GovCloud (US) Regions and disables it in other Regions. Amazon ECS Managed Instances supports FIPS only in
+  AWS GovCloud (US) Regions, so setting it to `true` in other Regions fails at deployment. Changing it replaces the capacity provider.
+- `instanceMetadataTagsPropagation` controls whether instance tags are available through the instance metadata service (IMDS).
+  It defaults to `true`. Turn it off if your tag keys contain characters that IMDS doesn't accept, such as `/`.
+- `nitroEnclavesEnabled` enables [Nitro Sandbox](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/isolated-confidential-tasks.html)
+  on the instances. The capacity provider must include at least one instance type that supports Nitro Sandbox, and the
+  setting can't be combined with local storage.
+
 #### Note: Service Replacement When Migrating from LaunchType to CapacityProviderStrategy
 
 **Understanding the Limitation**
