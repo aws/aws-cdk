@@ -24,3 +24,23 @@ export function logGroupArnWithoutStreamSuffix(logGroup: ILogGroupRef): string {
     region: logGroup.env.region,
   }, Stack.of(logGroup));
 }
+
+interface WithLogStreamArn {
+  readonly _logStreamArn: string;
+}
+
+function hasLogStreamArn(logGroup: ILogGroupRef): logGroup is ILogGroupRef & WithLogStreamArn {
+  return typeof (logGroup as Partial<WithLogStreamArn>)._logStreamArn === 'string';
+}
+
+/**
+ * The ARN of a log group with the ':*' log stream suffix.
+ *
+ * `LogGroup` resolves its own ARN without the suffix when it is consumed from a different
+ * account or region, so it provides a dedicated value that always carries the suffix.
+ *
+ * @internal
+ */
+export function logGroupArnWithStreamSuffix(logGroup: ILogGroupRef): string {
+  return hasLogStreamArn(logGroup) ? logGroup._logStreamArn : logGroup.logGroupRef.logGroupArn;
+}
