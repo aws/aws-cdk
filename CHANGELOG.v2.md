@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.277.0](https://github.com/aws/aws-cdk/compare/v2.276.0...v2.277.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-lambda: AWS::Lambda::NetworkConnector: ElasticIpConfiguration property removed from VpcEgressConfiguration type.  
+aws-paymentcryptography: AWS::PaymentCryptography::Key: KmsKeyArn property removed from ReplicationStatusType type.  
+aws-paymentcryptography: AWS::PaymentCryptography::Key: KmsKeyId property removed from ReplicationStatusType type.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#39701](https://github.com/aws/aws-cdk/issues/39701)) ([4327f91](https://github.com/aws/aws-cdk/commit/4327f9100814cd559474632d674fc63ce63c2211)), closes [#37BFF5](https://github.com/aws/aws-cdk/issues/37BFF5) [#37BFF5](https://github.com/aws/aws-cdk/issues/37BFF5)
+* **lambda:** add nodejs 26.x runtime ([#39683](https://github.com/aws/aws-cdk/issues/39683)) ([829d438](https://github.com/aws/aws-cdk/commit/829d43823a5a9d2004588d165ba3fb09c80b76ec))
+* **s3:** expose bucket encryption mode ([#38312](https://github.com/aws/aws-cdk/issues/38312)) ([b952c6d](https://github.com/aws/aws-cdk/commit/b952c6da256c52a603fc21d884ab8d2b9bcda51d)), closes [#38289](https://github.com/aws/aws-cdk/issues/38289)
+
+
+### Bug Fixes
+
+* **core:** bundling 'user' argument is not escaped ([#39685](https://github.com/aws/aws-cdk/issues/39685)) ([9e584ac](https://github.com/aws/aws-cdk/commit/9e584ac702b31ba2f76519ae5f1ec25c407de836))
+* invalid validation rule ID ([#39684](https://github.com/aws/aws-cdk/issues/39684)) ([8ec077c](https://github.com/aws/aws-cdk/commit/8ec077c277a478d6043b4c74a113b46e10fa74b6))
+
 ## [2.276.0](https://github.com/aws/aws-cdk/compare/v2.275.0...v2.276.0) (2026-11-10)
 
 
