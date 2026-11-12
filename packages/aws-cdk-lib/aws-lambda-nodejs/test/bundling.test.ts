@@ -206,7 +206,7 @@ test('esbuild bundling with externals and dependencies', () => {
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
           "cp '/asset-input/package-lock.json' '/asset-output/package-lock.json'",
-          'cd "/asset-output"',
+          "cd '/asset-output'",
           'npm ci',
         ].join(' && '),
       ],
@@ -679,7 +679,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f '\/asset-output\/node_modules\/.modules.yaml'/),
       ]),
     }),
   });
@@ -928,7 +928,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
           `'esbuild' '--bundle' '/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
           "cp '/asset-input/common/package-lock.json' '/asset-output/package-lock.json'",
-          'cd "/asset-output"',
+          "cd '/asset-output'",
           'npm ci',
         ].join(' && '),
       ],

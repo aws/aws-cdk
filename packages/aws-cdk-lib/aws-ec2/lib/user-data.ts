@@ -1,9 +1,9 @@
 import { OperatingSystemType } from './machine-image';
 import type { IBucketRef } from '../../aws-s3';
 import type { Resource, CfnResource } from '../../core';
-import { Fn, Stack, UnscopedValidationError } from '../../core';
+import { Fn, Stack, Token, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
-import { posixShellEscape, posixShellEscapeMinimal, powershellEscape } from '../../core/lib/private/shell-escape';
+import { posixShellEscape, posixShellEscapeMinimal, powershellEscape, powershellEscapeMinimal } from '../../core/lib/private/shell-escape';
 
 /**
  * Options when constructing UserData for Linux
@@ -199,7 +199,9 @@ class LinuxUserData extends UserData {
   public addSignalOnExitCommand( resource: Resource ): void {
     const stack = Stack.of(resource);
     const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
-    this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${posixShellEscapeMinimal(stack.region)} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
+    // An unresolved region is the AWS::Region pseudo parameter, which is always shell-safe; quoting it would change existing user data
+    const region = Token.isUnresolved(stack.region) ? stack.region : posixShellEscapeMinimal(stack.region);
+    this.addOnExitCommands(`/opt/aws/bin/cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${region} -e $exitCode || echo 'Failed to send Cloudformation Signal'`);
   }
 
   private renderOnExitLines(): string[] {
@@ -241,7 +243,7 @@ class WindowsUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir (Split-Path -Path ${powershellEscape(localPath)} ) -ea 0`,
-      `Read-S3Object -BucketName ${powershellEscape(params.bucket.bucketRef.bucketName)} -key ${powershellEscape(params.bucketKey)} -file ${powershellEscape(localPath)} -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${powershellEscape(params.region)}` : ''),
+      `Read-S3Object -BucketName ${powershellEscape(params.bucket.bucketRef.bucketName)} -key ${powershellEscape(params.bucketKey)} -file ${powershellEscape(localPath)} -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${powershellEscapeMinimal(params.region)}` : ''),
     );
     return localPath;
   }
