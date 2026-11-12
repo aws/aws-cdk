@@ -11,6 +11,7 @@ import { FilterPattern } from './pattern';
 import { ResourcePolicy } from './policy';
 import type { ILogSubscriptionDestination } from './subscription-filter';
 import { SubscriptionFilter } from './subscription-filter';
+import type { SystemField } from './system-field';
 import type { IProcessor } from './transformer';
 import { Transformer } from './transformer';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -798,6 +799,25 @@ export interface SubscriptionFilterOptions {
    * @default Distribution.BY_LOG_STREAM
    */
   readonly distribution?: Distribution;
+
+  /**
+   * An expression on system fields that selects which log events the subscription filter processes.
+   *
+   * Use this with centralized log groups that receive events from several accounts or Regions,
+   * for example `@aws.region = "us-east-1"`. CloudWatch Logs validates the expression when the
+   * filter is created. CDK only checks that it is at most 2000 characters long.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutSubscriptionFilter.html
+   * @default - all log events that match the filter pattern are processed
+   */
+  readonly fieldSelectionCriteria?: string;
+
+  /**
+   * The system fields to include in the log events sent to the destination.
+   *
+   * @default - no system fields are added to the forwarded log events
+   */
+  readonly emitSystemFields?: SystemField[];
 }
 
 /**
@@ -873,6 +893,28 @@ export interface MetricFilterOptions {
    * @default - false
    */
   readonly applyOnTransformedLogs?: boolean;
+
+  /**
+   * An expression on system fields that selects which log events the metric filter processes.
+   *
+   * Use this with centralized log groups that receive events from several accounts or Regions,
+   * for example `@aws.region = "us-east-1"`. CloudWatch Logs validates the expression when the
+   * filter is created. CDK only checks that it is at most 2000 characters long.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutMetricFilter.html
+   * @default - all log events that match the filter pattern are processed
+   */
+  readonly fieldSelectionCriteria?: string;
+
+  /**
+   * The system fields to emit as additional dimensions of the metric.
+   *
+   * Only `SystemField.AWS_ACCOUNT` and `SystemField.AWS_REGION` are supported. These dimensions
+   * count toward the limit of 3 dimensions per metric filter, together with `dimensions`.
+   *
+   * @default - no system field dimensions
+   */
+  readonly emitSystemFieldDimensions?: SystemField[];
 }
 
 /**

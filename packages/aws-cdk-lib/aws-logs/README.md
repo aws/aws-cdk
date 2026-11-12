@@ -257,6 +257,52 @@ new cloudwatch.Alarm(this, 'HighDataVolumeAlarm', {
 });
 ```
 
+## Filters on Centralized Log Groups
+
+A centralized log group can receive log events from several accounts and Regions.
+CloudWatch Logs adds system fields such as `@aws.account` and `@aws.region` to these
+events. Metric filters and subscription filters can use them:
+
+- `fieldSelectionCriteria` selects the log events the filter processes with an
+  expression on system fields, for example `@aws.region = "us-east-1"`. CDK only checks
+  that the expression is at most 2000 characters long. CloudWatch Logs validates the
+  expression when the filter is created or updated, so an invalid expression fails the
+  deployment.
+- `emitSystemFieldDimensions` on a metric filter adds system fields as metric dimensions.
+  Only `SystemField.AWS_ACCOUNT` and `SystemField.AWS_REGION` are supported, and they count
+  toward the limit of 3 dimensions per metric filter, together with `dimensions`.
+- `emitSystemFields` on a subscription filter adds system fields to the log events sent to
+  the destination.
+
+```ts
+import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+declare const stream: kinesis.Stream;
+declare const logGroup: logs.LogGroup;
+
+// Count errors from us-east-1, with one metric per source account
+logGroup.addMetricFilter('Errors', {
+  filterPattern: logs.FilterPattern.literal('ERROR'),
+  metricNamespace: 'Central',
+  metricName: 'ErrorCount',
+  fieldSelectionCriteria: '@aws.region = "us-east-1"',
+  emitSystemFieldDimensions: [logs.SystemField.AWS_ACCOUNT],
+});
+
+// Forward events from us-east-1 and tell the destination where each one came from
+logGroup.addSubscriptionFilter('Forward', {
+  destination: new destinations.KinesisDestination(stream),
+  filterPattern: logs.FilterPattern.allEvents(),
+  fieldSelectionCriteria: '@aws.region = "us-east-1"',
+  emitSystemFields: [
+    logs.SystemField.AWS_ACCOUNT,
+    logs.SystemField.AWS_REGION,
+    logs.SystemField.SOURCE_LOG,
+  ],
+});
+```
+
 ## Patterns
 
 Patterns describe which log events match a subscription or metric filter. There
