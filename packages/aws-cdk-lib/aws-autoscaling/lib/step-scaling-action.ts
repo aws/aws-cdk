@@ -28,7 +28,7 @@ export interface StepScalingActionProps {
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
-   * @default Same as the cooldown
+   * @default - The AutoScalingGroup's `defaultInstanceWarmup`, or its `cooldown` if that is not set
    */
   readonly estimatedInstanceWarmup?: Duration;
 
