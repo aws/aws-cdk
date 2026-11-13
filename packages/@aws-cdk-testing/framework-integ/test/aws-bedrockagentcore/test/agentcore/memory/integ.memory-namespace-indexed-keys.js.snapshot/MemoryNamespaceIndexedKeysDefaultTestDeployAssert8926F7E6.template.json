@@ -1,0 +1,154 @@
+{
+ "Resources": {
+  "AwsApiCallbedrockagentcorecontrolgetMemory1a6b7d477fe37d017f2ba93d4e7dc1e8": {
+   "Type": "Custom::DeployAssert@SdkCallbedrock-agentcore-controlgetMemo",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "bedrock-agentcore-control",
+    "api": "getMemory",
+    "expected": "{\"$ObjectLike\":{\"memory\":{\"namespaceKeys\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"key\":\"tenant\",\"validation\":{\"regexPattern\":\"^[a-z0-9-]+$\"}}},{\"$ObjectLike\":{\"key\":\"env\",\"validation\":{\"allowedValues\":[\"dev\",\"staging\",\"prod\"]}}},{\"$ObjectLike\":{\"key\":\"region\"}}]},\"indexedKeys\":{\"$ArrayWith\":[{\"key\":\"priority\",\"type\":\"NUMBER\"},{\"key\":\"source\",\"type\":\"STRING\"},{\"key\":\"labels\",\"type\":\"STRINGLIST\"}]}}}}",
+    "parameters": {
+     "memoryId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-agentcore-memory-namespace-indexed-keys:ExportsOutputFnGetAttMemoryWithKeysMemoryD26B16ECMemoryId68468A2C"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794527321349"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "bedrock-agentcore-control:GetMemory"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "bedrock-agentcore:GetMemory"
+         ],
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3b15667732fc3283fec7d1a033b71f41e8be0d16a04beb3f9dd5666eec9b51b8.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallbedrockagentcorecontrolgetMemory1a6b7d477fe37d017f2ba93d4e7dc1e8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallbedrockagentcorecontrolgetMemory1a6b7d477fe37d017f2ba93d4e7dc1e8",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
