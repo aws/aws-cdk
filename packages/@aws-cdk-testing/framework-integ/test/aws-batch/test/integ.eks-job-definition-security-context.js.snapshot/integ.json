@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "BatchEksJobDefinitionSecurityContextTest/DefaultTest": {
+      "stacks": [
+        "batch-eks-job-definition-security-context"
+      ],
+      "assertionStack": "BatchEksJobDefinitionSecurityContextTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BatchEksJobDefinitionSecurityContextTestDefaultTestDeployAssertD076C762"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

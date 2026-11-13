@@ -3,8 +3,10 @@ import { Construct } from 'constructs';
 import type { CfnJobDefinition } from './batch.generated';
 import type * as ecs from '../../aws-ecs';
 import type { Size } from '../../core';
+import { Token, UnscopedValidationError, ValidationError } from '../../core';
 import type { IArrayBox, IReadableBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/eks-container-definition.EmptyDirVolume');
@@ -239,6 +241,42 @@ export interface IEksContainerDefinition extends IConstruct {
    * @default - the user that is specified in the image metadata.
    */
   readonly runAsUser?: number;
+
+  /**
+   * Linux capabilities to add to the default capability set of the container.
+   *
+   * Give the capability names without the `CAP_` prefix, for example `NET_BIND_SERVICE`.
+   * Up to 64 capabilities.
+   *
+   * @see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container
+   *
+   * @default - no capabilities are added
+   */
+  readonly linuxCapabilitiesToAdd?: string[];
+
+  /**
+   * Linux capabilities to remove from the default capability set of the container.
+   *
+   * Give the capability names without the `CAP_` prefix, for example `ALL` or `NET_RAW`.
+   * Up to 64 capabilities.
+   *
+   * @see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container
+   *
+   * @default - no capabilities are removed
+   */
+  readonly linuxCapabilitiesToDrop?: string[];
+
+  /**
+   * The seccomp profile of the container.
+   *
+   * A container-level profile overrides the pod-level profile set with
+   * `podSecurityContext` on the job definition.
+   *
+   * @see https://kubernetes.io/docs/tutorials/security/seccomp/
+   *
+   * @default - the pod-level profile if one is set, otherwise the container runtime's default behavior
+   */
+  readonly seccompProfile?: EksSeccompProfile;
 
   /**
    * The Volumes to mount to this container.
@@ -521,6 +559,42 @@ export interface EksContainerDefinitionProps {
   readonly runAsUser?: number;
 
   /**
+   * Linux capabilities to add to the default capability set of the container.
+   *
+   * Give the capability names without the `CAP_` prefix, for example `NET_BIND_SERVICE`.
+   * Up to 64 capabilities.
+   *
+   * @see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container
+   *
+   * @default - no capabilities are added
+   */
+  readonly linuxCapabilitiesToAdd?: string[];
+
+  /**
+   * Linux capabilities to remove from the default capability set of the container.
+   *
+   * Give the capability names without the `CAP_` prefix, for example `ALL` or `NET_RAW`.
+   * Up to 64 capabilities.
+   *
+   * @see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container
+   *
+   * @default - no capabilities are removed
+   */
+  readonly linuxCapabilitiesToDrop?: string[];
+
+  /**
+   * The seccomp profile of the container.
+   *
+   * A container-level profile overrides the pod-level profile set with
+   * `podSecurityContext` on the job definition.
+   *
+   * @see https://kubernetes.io/docs/tutorials/security/seccomp/
+   *
+   * @default - the pod-level profile if one is set, otherwise the container runtime's default behavior
+   */
+  readonly seccompProfile?: EksSeccompProfile;
+
+  /**
    * The Volumes to mount to this container.
    * Automatically added to the Pod.
    *
@@ -529,6 +603,76 @@ export interface EksContainerDefinitionProps {
    * @default - no volumes
    */
   readonly volumes?: EksVolume[];
+}
+
+/**
+ * The Linux seccomp profile of a pod or a container that runs on Amazon EKS.
+ *
+ * @see https://kubernetes.io/docs/tutorials/security/seccomp/
+ * @see https://docs.aws.amazon.com/batch/latest/APIReference/API_EksSeccompProfile.html
+ */
+export class EksSeccompProfile {
+  /**
+   * Use the container runtime's default seccomp profile.
+   */
+  public static runtimeDefault(): EksSeccompProfile {
+    return new EksSeccompProfile('RuntimeDefault');
+  }
+
+  /**
+   * Don't filter the container's system calls with seccomp.
+   */
+  public static unconfined(): EksSeccompProfile {
+    return new EksSeccompProfile('Unconfined');
+  }
+
+  /**
+   * Use a custom profile that is stored on the node.
+   *
+   * You are responsible for making sure that the profile exists on every
+   * worker node that can run the job, for example with a launch template.
+   *
+   * @param profilePath the path of the profile on the node, relative to the
+   * kubelet's configured seccomp profile location. Between 1 and 4095 characters.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/eks-launch-templates.html
+   */
+  public static localhost(profilePath: string): EksSeccompProfile {
+    if (!Token.isUnresolved(profilePath) && (profilePath.length < 1 || profilePath.length > 4095)) {
+      throw new UnscopedValidationError(
+        lit`InvalidSeccompProfilePath`,
+        `The localhost seccomp profile path must be between 1 and 4095 characters, got ${profilePath.length}`,
+      );
+    }
+    return new EksSeccompProfile('Localhost', profilePath);
+  }
+
+  /**
+   * The seccomp profile type: `RuntimeDefault`, `Unconfined` or `Localhost`.
+   */
+  public readonly type: string;
+
+  /**
+   * The path of the profile on the node, for the `Localhost` type.
+   *
+   * @default - no path, for the `RuntimeDefault` and `Unconfined` types
+   */
+  public readonly localhostProfile?: string;
+
+  private constructor(type: string, localhostProfile?: string) {
+    this.type = type;
+    this.localhostProfile = localhostProfile;
+  }
+
+  /**
+   * @internal
+   */
+  public _render(): CfnJobDefinition.EksSeccompProfileProperty {
+    return {
+      type: this.type,
+      localhostProfile: this.localhostProfile,
+    };
+  }
 }
 
 /**
@@ -558,6 +702,9 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
   public readonly runAsGroup?: number;
   public readonly runAsRoot?: boolean;
   public readonly runAsUser?: number;
+  public readonly linuxCapabilitiesToAdd?: string[];
+  public readonly linuxCapabilitiesToDrop?: string[];
+  public readonly seccompProfile?: EksSeccompProfile;
   private readonly _volumes: IArrayBox<EksVolume>;
 
   private readonly imageConfig: ecs.ContainerImageConfig;
@@ -586,12 +733,46 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
     this.runAsGroup = props.runAsGroup;
     this.runAsRoot = props.runAsRoot;
     this.runAsUser = props.runAsUser;
+    this.linuxCapabilitiesToAdd = props.linuxCapabilitiesToAdd;
+    this.linuxCapabilitiesToDrop = props.linuxCapabilitiesToDrop;
+    this.seccompProfile = props.seccompProfile;
+    this.validateLinuxCapabilities('linuxCapabilitiesToAdd', this.linuxCapabilitiesToAdd);
+    this.validateLinuxCapabilities('linuxCapabilitiesToDrop', this.linuxCapabilitiesToDrop);
     this._volumes = Box.fromArray(props.volumes ?? []);
     this.imageConfig = props.image.bind(this, this as any);
   }
 
   addVolume(volume: EksVolume) {
     this._volumes.push(volume);
+  }
+
+  private renderLinuxCapabilities(): CfnJobDefinition.EksContainerLinuxCapabilitiesProperty | undefined {
+    const add = nonEmptyList(this.linuxCapabilitiesToAdd);
+    const drop = nonEmptyList(this.linuxCapabilitiesToDrop);
+    if (add === undefined && drop === undefined) {
+      return undefined;
+    }
+    return { add, drop };
+  }
+
+  private validateLinuxCapabilities(propName: string, capabilities?: string[]) {
+    if (capabilities === undefined || Token.isUnresolved(capabilities)) {
+      return;
+    }
+    if (capabilities.length > 64) {
+      throw new ValidationError(lit`TooManyLinuxCapabilities`, `'${propName}' can contain at most 64 capabilities, got ${capabilities.length}`, this);
+    }
+    for (const capability of capabilities) {
+      if (Token.isUnresolved(capability)) {
+        continue;
+      }
+      if (capability.length < 1 || capability.length > 128) {
+        throw new ValidationError(lit`InvalidLinuxCapability`, `Capability names in '${propName}' must be between 1 and 128 characters, got '${capability}'`, this);
+      }
+      if (capability.toUpperCase().startsWith('CAP_')) {
+        throw new ValidationError(lit`InvalidLinuxCapability`, `Capability names in '${propName}' must not include the 'CAP_' prefix, got '${capability}'. Use '${capability.slice(4)}' instead`, this);
+      }
+    }
   }
 
   /**
@@ -636,6 +817,8 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
         runAsGroup: this.runAsGroup,
         runAsNonRoot: !this.runAsRoot,
         runAsUser: this.runAsUser,
+        capabilities: this.renderLinuxCapabilities(),
+        seccompProfile: this.seccompProfile?._render(),
       },
       volumeMounts: this._volumes.map((volume) => ({
         name: volume.name,
@@ -923,3 +1106,13 @@ Object.defineProperty(SecretPathVolume.prototype, SECRET_PATH_VOLUME_SYMBOL, {
   enumerable: false,
   writable: false,
 });
+
+/**
+ * Returns the list, or undefined if it is a concrete empty list.
+ */
+function nonEmptyList(list?: string[]): string[] | undefined {
+  if (list === undefined || Token.isUnresolved(list)) {
+    return list;
+  }
+  return list.length > 0 ? list : undefined;
+}
