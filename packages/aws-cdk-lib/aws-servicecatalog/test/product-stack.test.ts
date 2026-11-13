@@ -550,6 +550,30 @@ describe('ProductStack', () => {
       data: productStack.templateFile,
     });
   });
+
+  test('product stack template is passed to validation plugins', () => {
+    // GIVEN
+    const app = new cdk.App({ stackTraces: false });
+    const parentStack = new cdk.Stack(app, 'ParentStack');
+    const productStack = new servicecatalog.ProductStack(parentStack, 'ProductStack');
+    new cdk.CfnResource(productStack, 'Resource', { type: 'AWS::SQS::Queue' });
+
+    const received: cdk.PolicyValidationStack[] = [];
+    cdk.Validations.of(app).addPlugins({
+      name: 'capturing-plugin',
+      validate(context: cdk.IPolicyValidationContext) {
+        received.push(...context.stackTemplates);
+        return { success: true, violations: [] };
+      },
+    });
+
+    // WHEN
+    app.synth();
+
+    // THEN
+    const product = received.find(s => s.stackConstructPath === productStack.node.path);
+    expect(product?.templatePath).toEqual(path.join(app.outdir, productStack.templateFile));
+  });
 });
 
 class ProductWithAnAsset extends servicecatalog.ProductStack {
