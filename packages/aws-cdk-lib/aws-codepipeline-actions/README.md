@@ -354,6 +354,7 @@ const sourceAction = new codepipeline_actions.EcrSourceAction({
   actionName: 'ECR',
   repository: ecrRepository,
   imageTag: 'some-tag', // optional, default: 'latest'
+  registryId: '123456789012', // optional: only trigger on events from this registry account
   output: sourceOutput,
 });
 pipeline.addStage({
@@ -361,6 +362,12 @@ pipeline.addStage({
   actions: [sourceAction],
 });
 ```
+
+Set `registryId` on `EcrSourceAction` to filter image push events by the registry's
+AWS account ID. Native ECR events identify this account in the top-level `account`
+field. Omit it to preserve the existing event matching behavior. This filter does
+not change which repository the source action reads or grant cross-account access;
+events from another account must already be forwarded to the pipeline's event bus.
 
 The ECR source action emits variables:
 
