@@ -49,6 +49,72 @@ test('additionalinputs creates the right commands', () => {
   });
 });
 
+test('additionalinputs creates PowerShell commands on Windows images', () => {
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['dir'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      additionalInputs: {
+        'some/deep/directory': cdkp.CodePipelineSource.gitHub('test2/test2', 'main'),
+        '../sibling': cdkp.CodePipelineSource.gitHub('test3/test3', 'main'),
+      },
+      buildEnvironment: {
+        buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+        computeType: codebuild.ComputeType.MEDIUM,
+      },
+    }),
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: [
+              'try { if (Test-Path -LiteralPath \'some/deep/directory\') { throw \'additionalInputs: "some/deep/directory" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\' }; New-Item -ItemType Directory -Force -Path \'some/deep\' -ErrorAction Stop; New-Item -ItemType SymbolicLink -Path \'some/deep/directory\' -Target $env:CODEBUILD_SRC_DIR_test2_test2_Source -ErrorAction Stop } catch { Write-Output $_; exit 1 }',
+              'try { if (Test-Path -LiteralPath \'../sibling\') { throw \'additionalInputs: "../sibling" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\' }; New-Item -ItemType SymbolicLink -Path \'../sibling\' -Target $env:CODEBUILD_SRC_DIR_test3_test3_Source -ErrorAction Stop } catch { Write-Output $_; exit 1 }',
+            ],
+          },
+        },
+      })),
+    },
+  });
+});
+
+test('additionalinputs quotes PowerShell paths literally', () => {
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['dir'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      additionalInputs: {
+        'my $libs/o\'brien dir': cdkp.CodePipelineSource.gitHub('test2/test2', 'main'),
+      },
+      buildEnvironment: {
+        buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+        computeType: codebuild.ComputeType.MEDIUM,
+      },
+    }),
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    Source: {
+      BuildSpec: Match.serializedJson(Match.objectLike({
+        phases: {
+          install: {
+            commands: [
+              'try { if (Test-Path -LiteralPath \'my $libs/o\'\'brien dir\') { throw \'additionalInputs: "my $libs/o\'\'brien dir" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\' }; New-Item -ItemType Directory -Force -Path \'my $libs\' -ErrorAction Stop; New-Item -ItemType SymbolicLink -Path \'my $libs/o\'\'brien dir\' -Target $env:CODEBUILD_SRC_DIR_test2_test2_Source -ErrorAction Stop } catch { Write-Output $_; exit 1 }',
+            ],
+          },
+        },
+      })),
+    },
+  });
+});
+
 test('CodeBuild projects have a description', () => {
   new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
     synth: new cdkp.CodeBuildStep('Synth', {
