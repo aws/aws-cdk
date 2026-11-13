@@ -56,6 +56,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: false,
     [feats.APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: false,
     [feats.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: true,
+    [feats.EC2_NAT_INSTANCE_V2_RETRY_IPTABLES_INSTALL]: false,
 
   });
 });

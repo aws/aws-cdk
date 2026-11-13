@@ -122,6 +122,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
+| [@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall](#aws-cdkaws-ec2natinstancev2retryiptablesinstall) | When enabled, the default NatInstanceProviderV2 user data retries the iptables-services install | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -156,6 +157,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
+    "@aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
@@ -2661,6 +2663,31 @@ running executions finish first.
 | 2.275.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
+### @aws-cdk/aws-ec2:natInstanceV2RetryIptablesInstall
+
+*When enabled, the default NatInstanceProviderV2 user data retries the iptables-services install*
+
+Flag type: Backwards incompatible bugfix
+
+Other boot-time processes can run `dnf clean all` while the NAT instance installs
+`iptables-services`, which fails the install and leaves the instance without NAT rules.
+When this flag is enabled, the default user data retries the install up to 30 times,
+10 seconds apart, and fails the user data script if every attempt fails or if any of
+the NAT setup commands after the install fails.
+
+Enabling this changes the UserData of existing NAT instances that do not pass their own
+`userData`. CloudFormation restarts those instances once, and because the provider does not
+attach Elastic IPs they come back with new public IPs.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Set this flag to `false` to keep the current user data, or pass your own `userData` to the provider.
 
 
 <!-- END details -->
