@@ -3,6 +3,7 @@ import type * as EKS from '@aws-sdk/client-eks';
 import { ResourceHandler } from './common';
 
 const MAX_NAME_LEN = 63;
+const MAX_EKS_PROFILE_NAME_LEN = 100;
 
 export class FargateProfileResourceHandler extends ResourceHandler {
   protected async onCreate() {
@@ -34,14 +35,30 @@ export class FargateProfileResourceHandler extends ResourceHandler {
       throw new Error('Cannot delete a profile without a physical id');
     }
 
+    // If CloudFormation cancels the create before this provider reports a physical id (for example,
+    // because another resource in the stack failed while the profile was still being created), it
+    // assigns its own id ("<stack name>-<logical id>-<suffix>") and sends it with the rollback delete.
+    // That id is not the name of a profile, and EKS rejects it if it isn't a valid profile name.
+    if (!isValidProfileName(this.physicalResourceId)) {
+      this.log(`physical id ${this.physicalResourceId} is not a valid fargate profile name, nothing to delete`);
+      return;
+    }
+
     const deleteFargateProfile: EKS.DeleteFargateProfileCommandInput = {
       clusterName: this.event.ResourceProperties.Config.clusterName,
       fargateProfileName: this.physicalResourceId,
     };
 
     this.log({ deleteFargateProfile });
-    const deleteFargateProfileResponse = await this.eks.deleteFargateProfile(deleteFargateProfile);
-    this.log({ deleteFargateProfileResponse });
+    try {
+      const deleteFargateProfileResponse = await this.eks.deleteFargateProfile(deleteFargateProfile);
+      this.log({ deleteFargateProfileResponse });
+    } catch (deleteFargateProfileError: any) {
+      if (deleteFargateProfileError.name !== 'ResourceNotFoundException') {
+        throw deleteFargateProfileError;
+      }
+      this.log(`fargate profile ${this.physicalResourceId} not found, idempotently succeeded`);
+    }
 
     return;
   }
@@ -65,6 +82,11 @@ export class FargateProfileResourceHandler extends ResourceHandler {
   }
 
   protected async isDeleteComplete() {
+    // see onDelete: there is no profile behind a physical id that isn't a valid profile name
+    if (this.physicalResourceId && !isValidProfileName(this.physicalResourceId)) {
+      return { IsComplete: true };
+    }
+
     const status = await this.queryStatus();
     return {
       IsComplete: status === 'NOT_FOUND',
@@ -116,4 +138,12 @@ export class FargateProfileResourceHandler extends ResourceHandler {
       throw describeFargateProfileError;
     }
   }
+}
+
+/**
+ * Whether `name` can be the name of a Fargate profile. EKS rejects names longer
+ * than 100 characters and names that start with the reserved "eks-" prefix.
+ */
+function isValidProfileName(name: string) {
+  return name.length <= MAX_EKS_PROFILE_NAME_LEN && !name.toLowerCase().startsWith('eks-');
 }
