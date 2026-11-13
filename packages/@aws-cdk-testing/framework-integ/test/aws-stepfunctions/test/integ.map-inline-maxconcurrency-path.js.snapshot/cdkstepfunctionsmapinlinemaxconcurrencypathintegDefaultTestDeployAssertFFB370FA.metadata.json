@@ -1,0 +1,140 @@
+{
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:236:29)",
+        "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:105:18)",
+        "resolveValue (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:207:52)",
+        "resolveReferencesInElements (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:30)",
+        "resolveReferences (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:5)",
+        "prepareApp (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:34)",
+        "synthesize (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:222:92)",
+        "App.synth (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:209:27)",
+        "process.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:156:51)",
+        "Object.onceWrapper (node:events:631:12)",
+        "process.emit (node:events:509:20)"
+      ]
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution28ace10e030865fda3cbd2989a4f45c5/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution28ace10e030865fda3cbd2989a4f45c5/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsstartExecution28ace10e030865fda3cbd2989a4f45c5"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184WaitForRole3FBC6FE9"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184WaitFor6E15592A"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184WaitForIsCompleteProviderInvokeFCDD5E8F"
+    }
+  ],
+  "/cdk-stepfunctions-map-inline-maxconcurrency-path-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution48b944afd4cc58d514f0215dddc3d184WaitForTimeoutProviderInvoke54A6AA92"
+    }
+  ]
+}

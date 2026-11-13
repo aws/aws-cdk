@@ -1,0 +1,33 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "d945a8acd14e697ed976b47ab47ff180ed53ef1fcb2fdf84b1d9df0d2c6ad078": {
+      "source": {
+        "path": "asset.d945a8acd14e697ed976b47ab47ff180ed53ef1fcb2fdf84b1d9df0d2c6ad078.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-78b5b9cd": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d945a8acd14e697ed976b47ab47ff180ed53ef1fcb2fdf84b1d9df0d2c6ad078.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "28b6eceb9438515d0174da12dc8bc561ab1e0bc4ec7e88770b5f3e59cb68411d": {
+      "displayName": "cdkstepfunctionsmapinlinemaxconcurrencypathintegDefaultTestDeployAssertFFB370FA Template",
+      "source": {
+        "path": "cdkstepfunctionsmapinlinemaxconcurrencypathintegDefaultTestDeployAssertFFB370FA.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e7f68529": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "28b6eceb9438515d0174da12dc8bc561ab1e0bc4ec7e88770b5f3e59cb68411d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
