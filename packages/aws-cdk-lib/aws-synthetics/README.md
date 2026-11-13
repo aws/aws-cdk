@@ -466,6 +466,49 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 });
 ```
 
+### Multi-location canaries
+
+A canary can run in additional AWS regions as *replicas*. The primary canary runs
+in the stack's region; each replica runs the same script, schedule and
+configuration in the region you specify. Configure replicas with the `replicas`
+property (up to 50, each targeting a distinct region).
+
+Because replicas run in a different region than the stack, cross-region resources
+(the KMS key, VPC, subnets and security groups) are referenced by string
+identifier rather than by CDK construct — constructs are bound to the stack's
+region and cannot represent cross-region resources.
+
+Multi-location canaries require a recent Synthetics runtime (for example
+`syn-nodejs-puppeteer-17.0`).
+
+```ts
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_17_0,
+  replicas: [
+    { region: 'us-west-2' },
+    {
+      region: 'eu-west-1',
+      // The KMS key lives in the replica's region, so it is referenced by ARN.
+      environmentEncryptionKeyArn: 'arn:aws:kms:eu-west-1:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
+      vpcConfig: {
+        vpcId: 'vpc-12345',
+        subnetIds: ['subnet-1', 'subnet-2'],
+        securityGroupIds: ['sg-1'],
+      },
+    },
+  ],
+});
+```
+
+When a replica specifies `environmentEncryptionKeyArn`, the canary's execution
+role is granted `kms:Decrypt` on that key ARN. You must also ensure the key
+policy in the replica's region allows the execution role to decrypt.
+
 ### Tag replication
 
 You can configure a canary to replicate its tags to the underlying Lambda function. This is useful when you want the same tags that are applied to the canary to also be applied to the Lambda function that the canary uses.
