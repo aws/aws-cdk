@@ -1,0 +1,50 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg PipelineStackPipeline9DB740AF.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate";
+"Build.Synth" -> "UpdatePipeline.SelfMutate";
+"BEGIN UpdatePipeline" -> "UpdatePipeline.SelfMutate";
+"UpdatePipeline.SelfMutate" -> "END UpdatePipeline";
+"BEGIN Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Assets.StripAssets";
+"Build.Synth" -> "Assets.StripAssets";
+"UpdatePipeline.SelfMutate" -> "Assets.StripAssets";
+"Assets.FileAsset1";
+"UpdatePipeline.SelfMutate" -> "Assets.FileAsset1";
+"BEGIN Assets" -> "Assets.FileAsset1";
+"BEGIN Assets" -> "Assets.StripAssets";
+"Assets.FileAsset1" -> "END Assets";
+"Assets.StripAssets" -> "END Assets";
+"BEGIN Beta" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Beta" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate" -> "BEGIN Beta";
+"BEGIN Beta.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Beta.Stack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Beta.Stack.Deploy";
+"Beta.Stack.Prepare" -> "Beta.Stack.Deploy";
+"Beta.Stack.Prepare";
+"Build.Synth" -> "Beta.Stack.Prepare";
+"Assets.StripAssets" -> "Beta.Stack.Prepare";
+"Assets.FileAsset1" -> "Beta.Stack.Prepare";
+"BEGIN Beta.Stack" -> "Beta.Stack.Prepare";
+"Beta.Stack.Deploy" -> "END Beta.Stack";
+"BEGIN Beta" -> "BEGIN Beta.Stack";
+"END Beta.Stack" -> "END Beta";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071";
+"BEGIN Source" -> "Source.c82506a27b454f271b71bfc81dcc633cd314f52071";
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071" -> "END Source";
+}

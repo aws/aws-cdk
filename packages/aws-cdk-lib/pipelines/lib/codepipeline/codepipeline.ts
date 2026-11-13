@@ -268,6 +268,23 @@ export interface CodePipelineProps {
   readonly useChangeSets?: boolean;
 
   /**
+   * Deploy stacks from a copy of the cloud assembly that has no asset files
+   *
+   * CodePipeline limits the input artifacts of CloudFormation actions to 256 MB.
+   * By default the deploy actions read the full cloud assembly, which contains
+   * every staged asset (Lambda code, Docker build contexts, ...), even though the
+   * assets have already been published by the time the stacks deploy.
+   *
+   * When enabled, a CodeBuild action in the Assets stage copies the cloud assembly
+   * without its `asset.*` files and directories into a new artifact, and the
+   * CloudFormation actions read their templates from that artifact. Asset
+   * publishing, self-mutation and your own steps keep using the full cloud assembly.
+   *
+   * @default false
+   */
+  readonly templateOnlyDeployArtifact?: boolean;
+
+  /**
    * Enable KMS key rotation for the generated KMS keys.
    *
    * By default KMS key rotation is disabled, but will add
@@ -430,6 +447,16 @@ export class CodePipeline extends PipelineBase {
 
   private _cloudAssemblyFileSet?: FileSet;
 
+  /**
+   * The file set the deployment actions read their templates from
+   */
+  private _deployFileSet?: FileSet;
+
+  /**
+   * The step that copies the cloud assembly without its assets, if enabled
+   */
+  private _stripAssetsStep?: ShellStep;
+
   private readonly singlePublisherPerAssetType: boolean;
   private readonly cliVersion?: string;
   private readonly cdkAssetsCliVersion: string;
@@ -550,8 +577,10 @@ export class CodePipeline extends PipelineBase {
       selfMutation: this.selfMutationEnabled,
       singlePublisherPerAssetType: this.singlePublisherPerAssetType,
       prepareStep: this.useChangeSets,
+      deployFileSet: this.props.templateOnlyDeployArtifact ? this.stripAssetsOutput() : undefined,
     });
     this._cloudAssemblyFileSet = graphFromBp.cloudAssemblyFileSet;
+    this._deployFileSet = graphFromBp.deployFileSet;
 
     this.pipelineStagesAndActionsFromGraph(graphFromBp);
 
@@ -574,6 +603,23 @@ export class CodePipeline extends PipelineBase {
    */
   private get assetsScope(): Construct {
     return obtainScope(this, 'Assets');
+  }
+
+  /**
+   * Create the step that copies the cloud assembly without its assets
+   *
+   * All assets are staged in the root of the cloud assembly as `asset.*`,
+   * including the assets of nested assemblies.
+   */
+  private stripAssetsOutput(): FileSet {
+    this._stripAssetsStep = new ShellStep('StripAssets', {
+      input: this.cloudAssemblyFileSet,
+      commands: [
+        '!LINUX!find . -maxdepth 1 -name "asset.*" -exec rm -rf {} +',
+        '!WINDOWS!Get-ChildItem -Path . -Filter "asset.*" | Remove-Item -Recurse -Force',
+      ],
+    });
+    return this._stripAssetsStep.primaryOutputDirectory('.');
   }
 
   private pipelineStagesAndActionsFromGraph(structure: PipelineGraph) {
@@ -733,6 +779,14 @@ export class CodePipeline extends PipelineBase {
       return step;
     }
 
+    if (this._stripAssetsStep && step === this._stripAssetsStep) {
+      // Like the asset publishing projects, keep the construct path stable when the Assets stage is split
+      return CodeBuildFactory.fromShellStep(step.id, this._stripAssetsStep, {
+        additionalConstructLevel: false,
+        scope: this.assetsScope,
+      });
+    }
+
     // Now built-in steps
     if (step instanceof ShellStep || step instanceof CodeBuildStep) {
       // The 'CdkBuildProject' will be the construct ID of the CodeBuild project, necessary for backwards compat
@@ -766,7 +820,7 @@ export class CodePipeline extends PipelineBase {
   private createChangeSetAction(stack: StackDeployment): ICodePipelineActionFactory {
     const changeSetName = 'PipelineChange';
 
-    const templateArtifact = this.artifacts.toCodePipeline(this._cloudAssemblyFileSet!);
+    const templateArtifact = this.artifacts.toCodePipeline(this._deployFileSet!);
     const templateConfigurationPath = this.writeTemplateConfiguration(stack);
 
     const region = stack.region !== Stack.of(this).region ? stack.region : undefined;
@@ -820,7 +874,7 @@ export class CodePipeline extends PipelineBase {
   }
 
   private executeDeploymentAction(stack: StackDeployment, captureOutputs: boolean): ICodePipelineActionFactory {
-    const templateArtifact = this.artifacts.toCodePipeline(this._cloudAssemblyFileSet!);
+    const templateArtifact = this.artifacts.toCodePipeline(this._deployFileSet!);
     const templateConfigurationPath = this.writeTemplateConfiguration(stack);
 
     const region = stack.region !== Stack.of(this).region ? stack.region : undefined;

@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { Template, Annotations, Match } from '../../../assertions';
+import * as cb from '../../../aws-codebuild';
 import * as ccommit from '../../../aws-codecommit';
 import { ExecutionMode, Pipeline, PipelineType } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
@@ -11,7 +12,7 @@ import { Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
-import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput, MultipleFileAssetsApp } from '../testhelpers';
+import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput, MultipleFileAssetsApp, MegaAssetsApp, OneStackApp, stringLike } from '../testhelpers';
 
 let app: TestApp;
 
@@ -636,6 +637,223 @@ describe('deployment of stack', () => {
       }]),
     });
   });
+});
+
+describe('templateOnlyDeployArtifact', () => {
+  let pipelineStack: cdk.Stack;
+  beforeEach(() => {
+    pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  });
+
+  test('is disabled by default', () => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'App'));
+
+    // THEN
+    const actions = pipelineActions(pipelineStack);
+    expect(actions.map(a => a.Name)).not.toContain('StripAssets');
+
+    const deployActions = actions.filter(a => a.Configuration?.TemplatePath);
+    expect(deployActions).toHaveLength(1);
+    for (const action of deployActions) {
+      expect(action.InputArtifacts).toEqual([{ Name: 'Synth_Output' }]);
+      expect(action.Configuration.TemplatePath).toMatch(/^Synth_Output::assembly-PipelineStack-App\//);
+    }
+  });
+
+  test('copies the cloud assembly without assets in the Assets stage', () => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      templateOnlyDeployArtifact: true,
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'App'));
+
+    // THEN
+    const template = Template.fromStack(pipelineStack);
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
+        Match.objectLike({
+          Name: 'Assets',
+          Actions: Match.arrayWith([
+            Match.objectLike({
+              Name: 'StripAssets',
+              ActionTypeId: Match.objectLike({ Provider: 'CodeBuild' }),
+              InputArtifacts: [{ Name: 'Synth_Output' }],
+              OutputArtifacts: [{ Name: 'StripAssets_Output' }],
+              RunOrder: 1,
+            }),
+          ]),
+        }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CodeBuild::Project', {
+      Description: stringLike('*/Assets/StripAssets'),
+      Source: {
+        BuildSpec: Match.serializedJson({
+          version: '0.2',
+          phases: {
+            build: {
+              commands: ['find . -maxdepth 1 -name "asset.*" -exec rm -rf {} +'],
+            },
+          },
+          artifacts: {
+            'base-directory': '.',
+            'files': '**/*',
+          },
+        }),
+      },
+    });
+  });
+
+  test.each([true, false])('deploy actions read the template-only artifact (useChangeSets: %p)', (useChangeSets) => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      templateOnlyDeployArtifact: true,
+      useChangeSets,
+    });
+    const stage = new FileAssetApp(pipelineStack, 'App');
+    cdk.Tags.of(stage).add('CostCenter', 'F00B4R');
+    pipeline.addStage(stage);
+
+    // THEN
+    const deployActions = pipelineActions(pipelineStack).filter(a => a.Configuration?.TemplatePath);
+    expect(deployActions).toHaveLength(1);
+    for (const action of deployActions) {
+      expect(action.Configuration.ActionMode).toEqual(useChangeSets ? 'CHANGE_SET_REPLACE' : 'CREATE_UPDATE');
+      expect(action.InputArtifacts).toEqual([{ Name: 'StripAssets_Output' }]);
+      expect(action.Configuration.TemplatePath).toMatch(/^StripAssets_Output::assembly-PipelineStack-App\/.*\.template\.json$/);
+      expect(action.Configuration.TemplateConfiguration).toMatch(/^StripAssets_Output::assembly-PipelineStack-App\/.*\.template\.json\.config\.json$/);
+    }
+  });
+
+  test('asset publishing and self-mutation keep reading the full cloud assembly', () => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      templateOnlyDeployArtifact: true,
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'App'));
+
+    // THEN
+    const actions = pipelineActions(pipelineStack);
+    const selfMutate = actions.filter(a => a.StageName === 'UpdatePipeline');
+    const assetPublishers = actions.filter(a => a.StageName === 'Assets' && a.Name !== 'StripAssets');
+    expect(selfMutate).toHaveLength(1);
+    expect(assetPublishers).toHaveLength(1);
+    for (const action of [...selfMutate, ...assetPublishers]) {
+      expect(action.InputArtifacts).toEqual([{ Name: 'Synth_Output' }]);
+    }
+  });
+
+  test('runs after the synth step when self-mutation is disabled', () => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      templateOnlyDeployArtifact: true,
+      selfMutation: false,
+    });
+    pipeline.addStage(new OneStackApp(pipelineStack, 'App'));
+
+    // THEN
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: [
+        Match.objectLike({ Name: 'Source' }),
+        Match.objectLike({ Name: 'Build' }),
+        Match.objectLike({
+          Name: 'Assets',
+          Actions: [Match.objectLike({ Name: 'StripAssets' })],
+        }),
+        Match.objectLike({
+          Name: 'App',
+          Actions: Match.arrayWith([
+            Match.objectLike({
+              Name: 'Prepare',
+              InputArtifacts: [{ Name: 'StripAssets_Output' }],
+            }),
+          ]),
+        }),
+      ],
+    });
+  });
+
+  test('stacks in other regions deploy from the template-only artifact', () => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      templateOnlyDeployArtifact: true,
+      crossAccountKeys: true,
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {
+      env: { account: PIPELINE_ENV.account, region: 'eu-west-1' },
+    }));
+
+    // THEN
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      ArtifactStores: Match.arrayWith([
+        Match.objectLike({ Region: 'eu-west-1' }),
+      ]),
+      Stages: Match.arrayWith([
+        Match.objectLike({
+          Name: 'App',
+          Actions: Match.arrayWith([
+            Match.objectLike({
+              Name: 'Prepare',
+              Region: 'eu-west-1',
+              InputArtifacts: [{ Name: 'StripAssets_Output' }],
+            }),
+          ]),
+        }),
+      ]),
+    });
+  });
+
+  test('uses PowerShell on Windows build images', () => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      templateOnlyDeployArtifact: true,
+      codeBuildDefaults: {
+        buildEnvironment: {
+          buildImage: cb.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+          computeType: cb.ComputeType.MEDIUM,
+        },
+      },
+    });
+    pipeline.addStage(new FileAssetApp(pipelineStack, 'App'));
+
+    // THEN
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Description: stringLike('*/Assets/StripAssets'),
+      Source: {
+        BuildSpec: Match.serializedJson(Match.objectLike({
+          phases: {
+            build: {
+              commands: ['Get-ChildItem -Path . -Filter "asset.*" | Remove-Item -Recurse -Force'],
+            },
+          },
+        })),
+      },
+    });
+  });
+
+  test('keeps the construct path of the CodeBuild project when the Assets stage is split', () => {
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+      templateOnlyDeployArtifact: true,
+    });
+    pipeline.addStage(new MegaAssetsApp(pipelineStack, 'App', { numAssets: 50 }));
+
+    // THEN
+    const template = Template.fromStack(pipelineStack);
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
+        Match.objectLike({ Name: 'Assets.1' }),
+        Match.objectLike({ Name: 'Assets.2' }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::CodeBuild::Project', {
+      Description: stringLike('*/Assets.*/StripAssets'),
+    });
+    expect(pipeline.node.findChild('Assets').node.tryFindChild('StripAssets')).toBeDefined();
+  });
+
+  /**
+   * All pipeline actions, with the name of their stage
+   */
+  function pipelineActions(stack: cdk.Stack): any[] {
+    const pipelines = Template.fromStack(stack).findResources('AWS::CodePipeline::Pipeline');
+    const stages: any[] = Object.values(pipelines)[0].Properties.Stages;
+    return stages.flatMap(stage => stage.Actions.map((action: any) => ({ ...action, StageName: stage.Name })));
+  }
 });
 
 test('display name can contain illegal characters which are sanitized for the pipeline', () => {
