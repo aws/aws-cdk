@@ -2113,9 +2113,8 @@ describe('vpc', () => {
         });
         const template = Template.fromStack(stack);
         if (requireImdsv2) {
-          template.hasResourceProperties('AWS::EC2::LaunchTemplate', {
-            LaunchTemplateData: { MetadataOptions: { HttpTokens: 'required' } },
-          });
+          template.hasResourceProperties('AWS::EC2::Instance', { MetadataOptions: { HttpTokens: 'required' } });
+          template.resourceCountIs('AWS::EC2::LaunchTemplate', 0);
         } else {
           template.resourceCountIs('AWS::EC2::LaunchTemplate', 0);
         }
