@@ -4,6 +4,7 @@ import { Match } from './match';
 import { Matcher } from './matcher';
 import { findConditions, hasCondition } from './private/conditions';
 import { checkTemplateForCyclicDependencies } from './private/cyclic';
+import { AssertionError } from './private/error';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
 import { findParameters, hasParameter } from './private/parameters';
@@ -11,7 +12,6 @@ import { allResources, allResourcesProperties, countResources, countResourcesPro
 import type { Template as TemplateType } from './private/template';
 import type { Stack } from '../../core';
 import { Stage } from '../../core';
-import { AssertionError } from './private/error';
 
 /**
  * Suite of assertions that can be run on a CDK stack.

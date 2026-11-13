@@ -39,6 +39,10 @@ abstract class KinesisEventSourceBase extends StreamEventSource {
     super(props);
     this.startingPositionTimestamp = props.startingPositionTimestamp;
 
+    if (props.startingPosition === undefined) {
+      throw new UnscopedValidationError(lit`StartingPositionRequired`, `startingPosition must be set for ${source.eventSourceName}`);
+    }
+
     this.props.batchSize !== undefined && cdk.withResolved(this.props.batchSize, batchSize => {
       if (batchSize < 1 || batchSize > 10000) {
         throw new UnscopedValidationError(lit`MustBeMaximumBatchSize`, `Maximum batch size must be between 1 and 10000 inclusive (given ${this.props.batchSize})`);
