@@ -8,11 +8,7 @@
   "/aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "versioned": true,
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -24,62 +20,25 @@
   "/aws-cdk-codepipeline-with-pipeline-variables/DeployBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "artifactBucket": "*",
-        "pipelineType": "V2",
-        "variables": "*",
-        "stages": [
-          {
-            "stageName": "*",
-            "actions": [
-              {}
-            ]
-          },
-          {
-            "stageName": "*",
-            "actions": [
-              {}
-            ]
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStage": [
-          {
-            "stageName": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStage": [
-          {
-            "stageName": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addVariable": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/BootstrapVersion": [
@@ -102,16 +61,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/AutoDeleteObjectsCustomResource": [
@@ -140,16 +97,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/AutoDeleteObjectsCustomResource": [
@@ -161,53 +116,27 @@
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "roleName": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Resource": [
@@ -242,7 +171,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -260,7 +189,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -283,43 +212,23 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Role/DefaultPolicy/Resource": [
@@ -331,103 +240,53 @@
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source/CodePipelineActionRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "grantAssumeRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy/DeployAction/CodePipelineActionRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "grantAssumeRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source/CodePipelineActionRole/Resource": [
@@ -443,35 +302,19 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy/DeployAction/CodePipelineActionRole/Resource": [
@@ -487,35 +330,19 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource": [

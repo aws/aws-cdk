@@ -8,11 +8,7 @@
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/BootstrapVersion": [
@@ -30,17 +26,7 @@
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Resource": [
@@ -52,35 +38,25 @@
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/CurrentVersion": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "lambda": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Parameter": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "parameterName": "*",
-        "stringValue": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/Aliaslive": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "aliasName": "*",
-        "version": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-c8363f8375cbe20a55dbe2aafe5dcee3889b0631e6/Lambda/ServiceRole/Resource": [

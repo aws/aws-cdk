@@ -8,10 +8,7 @@
   "/CrossRegionRefConsumerInteg/SomeParameterMirrored": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "parameterName": "*",
-        "stringValue": "*"
-      }
+      "data": "*"
     }
   ],
   "/CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider": [

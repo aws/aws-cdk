@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "codepipeline-source-code-scan-action/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/DefaultPolicy/Resource",
-              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "codepipeline-source-code-scan-action.template.json",
                 "logicalId": "PipelineSourceCodeStarConnectionsSourceActionCodePipelineActionRoleDefaultPolicyF5116984",

@@ -6,11 +6,11 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
-        "    at Stack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
-        "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:57:13)",
+        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:106:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1383:47)",
+        "    at get availabilityZones (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:756:18)",
+        "    at new Vpc (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:788:48)",
+        "    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:57:13)",
         "    ...node internals..."
       ]
     },
@@ -22,11 +22,7 @@
   "/aws-ecs-integ/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "blockPublicAccess": "*",
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -38,40 +34,21 @@
   "/aws-ecs-integ/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "maxAzs": "*",
-        "restrictDefaultSecurityGroup": false
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addCapacity": [
-          "*",
-          {
-            "instanceType": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addAutoScalingGroup": [
-          "*",
-          {
-            "machineImageType": 0
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -83,13 +60,7 @@
   "/aws-ecs-integ/ExecutionRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "inlinePolicies": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/TaskDefinition": [
@@ -105,42 +76,15 @@
   "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -156,19 +100,19 @@
       "type": "aws:cdk:warning",
       "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
       "trace": [
-        "Annotations.addMessage (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
-        "Annotations.addWarningV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
-        "new BaseService (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:520:47)",
-        "new BaseService (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Ec2Service (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:212:13)",
-        "new Ec2Service (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:98:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
-        "Object..js (node:internal/modules/cjs/loader:1943:10)",
-        "Module.load (node:internal/modules/cjs/loader:1533:32)",
-        "Module._load (node:internal/modules/cjs/loader:1335:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
-        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:259:29)",
+        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:125:18)",
+        "new BaseService (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:465:45)",
+        "new BaseService (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Ec2Service (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:170:13)",
+        "new Ec2Service (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:98:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1968:14)",
+        "Object..js (node:internal/modules/cjs/loader:2108:10)",
+        "Module.load (node:internal/modules/cjs/loader:1690:32)",
+        "Module._load (node:internal/modules/cjs/loader:1480:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
         "node:internal/main/run_main_module:33:47"
       ]
     },
@@ -176,19 +120,19 @@
       "type": "aws:cdk:warning",
       "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
       "trace": [
-        "Annotations.addMessage (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
-        "Annotations.addWarningV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
-        "new BaseService (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:545:47)",
-        "new BaseService (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Ec2Service (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:212:13)",
-        "new Ec2Service (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:98:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
-        "Object..js (node:internal/modules/cjs/loader:1943:10)",
-        "Module.load (node:internal/modules/cjs/loader:1533:32)",
-        "Module._load (node:internal/modules/cjs/loader:1335:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
-        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:259:29)",
+        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:125:18)",
+        "new BaseService (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:490:45)",
+        "new BaseService (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Ec2Service (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ecs/lib/ec2/ec2-service.js:170:13)",
+        "new Ec2Service (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/ec2/integ.environment-file.js:98:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1968:14)",
+        "Object..js (node:internal/modules/cjs/loader:2108:10)",
+        "Module.load (node:internal/modules/cjs/loader:1690:32)",
+        "Module._load (node:internal/modules/cjs/loader:1480:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
         "node:internal/main/run_main_module:33:47"
       ]
     },
@@ -217,16 +161,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/aws-ecs-integ/Bucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Bucket/AutoDeleteObjectsCustomResource": [
@@ -256,135 +198,65 @@
   "/aws-ecs-integ/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*",
-          {
-            "maxDrainDuration": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*",
-          {
-            "maxDrainDuration": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Vpc/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Vpc/PrivateSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Vpc/IGW": [
@@ -408,44 +280,23 @@
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "machineImage": "*",
-        "updateType": "Replace",
-        "instanceType": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addUserData": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToRolePolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToRolePolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToRolePolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/ExecutionRole/Resource": [
@@ -457,12 +308,7 @@
   "/aws-ecs-integ/TaskDefinition/TaskRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/TaskDefinition/Resource": [
@@ -474,51 +320,21 @@
   "/aws-ecs-integ/EnvFileDeployment/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EnvFileDeployment/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "lambdaPurpose": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EnvFileDeployment/CustomResource": [
@@ -530,49 +346,23 @@
   "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
@@ -590,9 +380,7 @@
   "/aws-ecs-integ/Service/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Bucket/Policy/Resource": [
@@ -603,7 +391,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -736,62 +524,33 @@
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "allowAllOutbound": true
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "roleName": "*",
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/InstanceProfile": [
@@ -803,18 +562,7 @@
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "machineImage": "*",
-        "instanceType": "*",
-        "detailedMonitoring": false,
-        "securityGroup": "*",
-        "userData": "*",
-        "associatePublicIpAddress": "*",
-        "spotOptions": "*",
-        "blockDevices": "*",
-        "instanceProfile": "*",
-        "keyPair": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/ASG": [
@@ -826,13 +574,7 @@
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "autoScalingGroup": "*",
-        "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
-        "defaultResult": "CONTINUE",
-        "notificationTarget": "*",
-        "heartbeatTimeout": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/TaskDefinition/TaskRole/Resource": [
@@ -872,35 +614,19 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
@@ -940,43 +666,23 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
@@ -988,65 +694,35 @@
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*",
-        "timeout": "*",
-        "environment": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "masterKey": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource": [
@@ -1076,73 +752,35 @@
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
@@ -1160,15 +798,7 @@
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "topic": "*",
-        "endpoint": "*",
-        "protocol": "lambda",
-        "filterPolicy": "*",
-        "filterPolicyWithMessageBody": "*",
-        "region": "*",
-        "deadLetterQueue": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
@@ -1190,27 +820,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
@@ -1226,59 +844,31 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [

@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/Resource",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "aws-cdk-lambda-runtime-inlinecode.template.json",
                 "logicalId": "PYTHON38A180AE47",
@@ -39,8 +39,8 @@
           "violatingConstructs": [
             {
               "constructPath": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/Resource",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "aws-cdk-lambda-runtime-inlinecode.template.json",
                 "logicalId": "PYTHON39143BF976",
@@ -61,8 +61,8 @@
           "violatingConstructs": [
             {
               "constructPath": "aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/Resource",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "aws-cdk-lambda-runtime-inlinecode.template.json",
                 "logicalId": "NODEJS20X70A25ADE",
@@ -83,8 +83,8 @@
           "violatingConstructs": [
             {
               "constructPath": "lambda-runtime-inlinecode/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             }
           ]
         }

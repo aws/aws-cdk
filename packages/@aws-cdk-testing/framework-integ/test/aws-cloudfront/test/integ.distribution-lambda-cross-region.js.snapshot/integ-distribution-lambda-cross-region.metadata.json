@@ -34,22 +34,7 @@
   "/integ-distribution-lambda-cross-region/Dist": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "defaultBehavior": {
-          "origin": "*",
-          "cachePolicy": "*",
-          "edgeLambdas": [
-            {
-              "functionVersion": "*",
-              "eventType": "origin-request"
-            },
-            {
-              "functionVersion": "*",
-              "eventType": "origin-response"
-            }
-          ]
-        }
-      }
+      "data": "*"
     }
   ],
   "/integ-distribution-lambda-cross-region/BootstrapVersion": [

@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "Route53CrossAccountInteg/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             }
           ]
         },
@@ -32,8 +32,8 @@
           "violatingConstructs": [
             {
               "constructPath": "parent-stack",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             }
           ]
         },
@@ -47,8 +47,8 @@
           "violatingConstructs": [
             {
               "constructPath": "child-opt-in-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildoptinstackdelegatecrossaccountzonedelegationhandlerroleD1C6F26D/Resource",
-              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "child-opt-in-stack.template.json",
                 "logicalId": "delegatecrossaccountzonedelegationhandlerrolePolicychildoptinstackdelegatecrossaccountzonedelegationhandlerroleD1C6F26DE28FC01D",
@@ -59,8 +59,8 @@
             },
             {
               "constructPath": "child-opt-in-stack-with-assume-role-region/delegate/cross-account-zone-delegation-handler-role/PolicychildoptinstackwithassumeroleregiondelegatecrossaccountzonedelegationhandlerroleA822DAE1/Resource",
-              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "child-opt-in-stack-with-assume-role-region.template.json",
                 "logicalId": "delegatecrossaccountzonedelegationhandlerrolePolicychildoptinstackwithassumeroleregiondelegatecrossaccountzonedelegationhandlerroleA822DAE1970772B0",
@@ -71,8 +71,8 @@
             },
             {
               "constructPath": "child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E/Resource",
-              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "child-stack.template.json",
                 "logicalId": "delegatecrossaccountzonedelegationhandlerrolePolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E86169197",

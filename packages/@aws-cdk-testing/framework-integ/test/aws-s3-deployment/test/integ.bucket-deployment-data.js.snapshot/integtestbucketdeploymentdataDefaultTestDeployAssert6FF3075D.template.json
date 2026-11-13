@@ -28,7 +28,7 @@
      "Key": "\"deploy/here/my-json/secret-config.json\""
     },
     "flattenResponse": "false",
-    "salt": "1793975530364"
+    "salt": "1794584314173"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -85,15 +85,6 @@
          "Resource": [
           "*"
          ]
-        },
-        {
-         "Action": [
-          "s3:GetObject"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -109,7 +100,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0c27302dd127441f84341af708066b603946169453a79140d9f0031e15377670.zip"
+     "S3Key": "8dac47066bb3b4421cfab3c8ab60e46de6c74437661bffcfd61c04c661f8454e.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -153,7 +144,7 @@
      "Key": "\"deploy/here/my-json/config-with-null.json\""
     },
     "flattenResponse": "false",
-    "salt": "1793975530365"
+    "salt": "1794584314174"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -169,7 +160,7 @@
     },
     "service": "S3",
     "api": "getObject",
-    "expected": "{\"$ObjectLike\":{\"Body\":\"secret_value: \\\"test\\\\\\\"with\\\\\\\"quotes\\\"\\n\"}}",
+    "expected": "{\"$ObjectLike\":{\"Body\":\"secret_value: test\\\"with\\\"quotes\\n\"}}",
     "parameters": {
      "Bucket": {
       "Fn::Join": [
@@ -186,40 +177,7 @@
      "Key": "\"deploy/here/my-yaml/secret-config.yaml\""
     },
     "flattenResponse": "false",
-    "salt": "1793975530365"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallS3getObjecte77ddf58fa89c29d071aa7541a523314": {
-   "Type": "Custom::DeployAssert@SdkCallS3getObject",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "S3",
-    "api": "getObject",
-    "expected": "{\"$ObjectLike\":{\"Body\":\"{\\\"numbersList\\\":[\\\"80\\\", \\\"443\\\"]}\"}}",
-    "parameters": {
-     "Bucket": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "test-bucket-deployment-data:ExportsOutputRefBucket83908E7781C90AC0"
-        },
-        "\""
-       ]
-      ]
-     },
-     "Key": "\"deploy/here/my-json/numbers-list.json\""
-    },
-    "flattenResponse": "false",
-    "salt": "1793975530365"
+    "salt": "1794584314174"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -246,14 +204,6 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallS3getObjectf9e2d3ce58742177bed058632f0fe5f9",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallS3getObjecte77ddf58fa89c29d071aa7541a523314": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallS3getObjecte77ddf58fa89c29d071aa7541a523314",
      "assertion"
     ]
    }

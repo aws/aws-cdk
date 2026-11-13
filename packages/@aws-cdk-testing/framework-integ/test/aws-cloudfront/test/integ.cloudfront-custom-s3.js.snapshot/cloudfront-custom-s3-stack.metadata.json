@@ -8,12 +8,7 @@
   "/cloudfront-custom-s3-stack/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "websiteIndexDocument": "*",
-        "websiteErrorDocument": "*",
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/cloudfront-custom-s3-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -25,23 +20,7 @@
   "/cloudfront-custom-s3-stack/Distribution": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "viewerProtocolPolicy": "redirect-to-https",
-        "priceClass": "PriceClass_200",
-        "originConfigs": [
-          {
-            "behaviors": [
-              {
-                "isDefaultBehavior": true
-              }
-            ],
-            "customOriginSource": {
-              "originProtocolPolicy": "http-only",
-              "domainName": "*"
-            }
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/cloudfront-custom-s3-stack/BootstrapVersion": [
@@ -64,16 +43,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/cloudfront-custom-s3-stack/Bucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/cloudfront-custom-s3-stack/Bucket/AutoDeleteObjectsCustomResource": [
@@ -108,7 +85,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],

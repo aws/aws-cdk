@@ -8,11 +8,7 @@
   "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "runtime": "*",
-        "handler": "*",
-        "code": "*"
-      }
+      "data": "*"
     }
   ],
   "/pipeline-asset-stack/Production/prd-lambda-stack/BootstrapVersion": [
@@ -30,17 +26,7 @@
   "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/Resource": [
@@ -52,9 +38,7 @@
   "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/ServiceRole/Resource": [

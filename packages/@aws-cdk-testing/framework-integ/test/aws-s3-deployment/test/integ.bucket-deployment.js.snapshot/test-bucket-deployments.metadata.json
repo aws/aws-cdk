@@ -8,10 +8,7 @@
   "/test-bucket-deployments/Destination": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -23,42 +20,15 @@
   "/test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -112,19 +82,13 @@
   "/test-bucket-deployments/BucketWithoutExtract": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/BucketWithAddSource": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/customResourceData": [
@@ -136,10 +100,7 @@
   "/test-bucket-deployments/BucketWithoutObjectKeys": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/BootstrapVersion": [
@@ -162,16 +123,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/test-bucket-deployments/Destination/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/Destination/AutoDeleteObjectsCustomResource": [
@@ -195,51 +154,21 @@
   "/test-bucket-deployments/DeployWithBasic/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithBasic/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "lambdaPurpose": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithBasic/CustomResource": [
@@ -251,137 +180,67 @@
   "/test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
@@ -393,51 +252,21 @@
   "/test-bucket-deployments/DeployWithPruneDisabled/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithPruneDisabled/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "lambdaPurpose": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithPruneDisabled/CustomResource": [
@@ -449,51 +278,21 @@
   "/test-bucket-deployments/DeployWithExclude/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithExclude/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "lambdaPurpose": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithExclude/CustomResource": [
@@ -510,16 +309,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/test-bucket-deployments/BucketWithoutExtract/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/BucketWithoutExtract/AutoDeleteObjectsCustomResource": [
@@ -531,51 +328,21 @@
   "/test-bucket-deployments/DeployWithoutExtract/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithoutExtract/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "lambdaPurpose": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithoutExtract/CustomResource": [
@@ -592,16 +359,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/test-bucket-deployments/BucketWithAddSource/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/BucketWithAddSource/AutoDeleteObjectsCustomResource": [
@@ -613,51 +378,21 @@
   "/test-bucket-deployments/DeployWithAddSource/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithAddSource/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "lambdaPurpose": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithAddSource/CustomResource": [
@@ -678,16 +413,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/test-bucket-deployments/BucketWithoutObjectKeys/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/BucketWithoutObjectKeys/AutoDeleteObjectsCustomResource": [
@@ -699,51 +432,21 @@
   "/test-bucket-deployments/DeployWithoutObjectKeys/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithoutObjectKeys/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "lambdaPurpose": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/DeployWithoutObjectKeys/CustomResource": [
@@ -766,7 +469,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -807,123 +510,63 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
@@ -976,7 +619,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -1012,7 +655,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -1054,7 +697,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],

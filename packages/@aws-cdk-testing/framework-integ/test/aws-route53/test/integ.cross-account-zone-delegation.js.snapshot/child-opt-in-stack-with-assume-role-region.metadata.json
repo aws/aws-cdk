@@ -8,15 +8,11 @@
   "/child-opt-in-stack-with-assume-role-region/SubZone": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "zoneName": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "zoneName": "*"
-      }
+      "data": "*"
     }
   ],
   "/child-opt-in-stack-with-assume-role-region/MutableRoleDelegationRole": [
@@ -94,33 +90,19 @@
   "/child-opt-in-stack-with-assume-role-region/delegate/cross-account-zone-delegation-handler-role/PolicychildoptinstackwithassumeroleregiondelegatecrossaccountzonedelegationhandlerroleA822DAE1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "policyName": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/child-opt-in-stack-with-assume-role-region/delegate/CrossAccountZoneDelegationCustomResource/Default": [

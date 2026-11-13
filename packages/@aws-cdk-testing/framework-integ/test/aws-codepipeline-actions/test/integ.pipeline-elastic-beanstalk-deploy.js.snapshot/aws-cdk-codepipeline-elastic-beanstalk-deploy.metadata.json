@@ -8,11 +8,7 @@
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "versioned": true,
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -24,42 +20,15 @@
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addLayers": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -73,39 +42,13 @@
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/service-role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile-role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          },
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/instance-profile": [
@@ -129,48 +72,34 @@
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "artifactBucket": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:warning",
       "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]",
       "trace": [
-        "Annotations.addMessage (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
-        "Annotations.addWarningV2 (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
-        "new Pipeline (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:483:47)",
-        "new Pipeline (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Pipeline (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "Object.<anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/cr-log-redaction/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-elastic-beanstalk-deploy.js:122:18)",
-        "Module._compile (node:internal/modules/cjs/loader:1812:14)",
-        "Object..js (node:internal/modules/cjs/loader:1943:10)",
-        "Module.load (node:internal/modules/cjs/loader:1533:32)",
-        "Module._load (node:internal/modules/cjs/loader:1335:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
-        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:259:29)",
+        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:125:18)",
+        "new Pipeline (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:450:45)",
+        "new Pipeline (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-elastic-beanstalk-deploy.js:122:18)",
+        "Module._compile (node:internal/modules/cjs/loader:1968:14)",
+        "Object..js (node:internal/modules/cjs/loader:2108:10)",
+        "Module.load (node:internal/modules/cjs/loader:1690:32)",
+        "Module._load (node:internal/modules/cjs/loader:1480:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
         "node:internal/main/run_main_module:33:47"
       ]
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStage": [
-          {
-            "stageName": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStage": [
-          {
-            "stageName": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/BootstrapVersion": [
@@ -193,16 +122,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/PipelineBucket/AutoDeleteObjectsCustomResource": [
@@ -226,51 +153,21 @@
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "architecture": "*",
-        "layers": [
-          "*"
-        ],
-        "environment": "*",
-        "lambdaPurpose": "*",
-        "timeout": "*",
-        "role": "*",
-        "memorySize": "*",
-        "ephemeralStorageSize": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "securityGroups": "*",
-        "filesystem": "*",
-        "logGroup": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/CustomResource": [
@@ -286,49 +183,23 @@
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
@@ -352,53 +223,27 @@
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "roleName": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Resource": [
@@ -415,7 +260,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -456,35 +301,19 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
@@ -506,43 +335,23 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/DeployApp/AwsCliLayer/Code/AssetBucket": [
@@ -566,105 +375,53 @@
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Source/Source/CodePipelineActionRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "grantAssumeRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Deploy/Deploy/CodePipelineActionRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "grantAssumeRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Source/Source/CodePipelineActionRole/Resource": [
@@ -680,35 +437,19 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Deploy/Deploy/CodePipelineActionRole/Resource": [
@@ -724,27 +465,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource": [

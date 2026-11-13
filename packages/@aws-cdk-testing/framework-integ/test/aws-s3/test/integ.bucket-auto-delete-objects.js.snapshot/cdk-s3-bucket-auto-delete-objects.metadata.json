@@ -8,10 +8,7 @@
   "/cdk-s3-bucket-auto-delete-objects/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -29,27 +26,13 @@
   "/cdk-s3-bucket-auto-delete-objects/RemovedBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/AWS679f53fac002430cb0da5b7982bd2287": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "memorySize": "*",
-        "timeout": "*",
-        "role": "*",
-        "logGroup": "*",
-        "functionName": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -80,16 +63,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/Bucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/Bucket/AutoDeleteObjectsCustomResource": [
@@ -136,16 +117,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/RemovedBucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/RemovedBucket/AutoDeleteObjectsCustomResource": [
@@ -157,38 +136,15 @@
   "/cdk-s3-bucket-auto-delete-objects/DeleteBucket/Provider": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "lambdaPurpose": "*",
-        "memorySize": "*",
-        "timeout": "*",
-        "role": "*",
-        "logGroup": "*",
-        "functionName": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/DeleteBucket/Resource": [
@@ -200,57 +156,29 @@
   "/cdk-s3-bucket-auto-delete-objects/DeleteBucket/CustomResourcePolicy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/cdk-s3-bucket-auto-delete-objects/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
@@ -267,7 +195,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -285,7 +213,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],

@@ -17,23 +17,11 @@
           "violatingConstructs": [
             {
               "constructPath": "integ-provider-no-echo/my-handler/Resource",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "integ-provider-no-echo.template.json",
                 "logicalId": "myhandler42A6C3AB",
-                "propertyPaths": [
-                  "Properties.Runtime"
-                ]
-              }
-            },
-            {
-              "constructPath": "integ-provider-no-echo/my-is-complete/Resource",
-              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-              "libraryVersion": "0.0.0",
-              "cloudFormationResource": {
-                "templatePath": "integ-provider-no-echo.template.json",
-                "logicalId": "myiscompleteFC70B144",
                 "propertyPaths": [
                   "Properties.Runtime"
                 ]

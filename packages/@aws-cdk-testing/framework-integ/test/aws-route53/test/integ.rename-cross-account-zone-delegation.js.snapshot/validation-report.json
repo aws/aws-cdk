@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "parent-stack",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             }
           ]
         },
@@ -32,8 +32,8 @@
           "violatingConstructs": [
             {
               "constructPath": "child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E/Resource",
-              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-              "libraryVersion": "0.0.0",
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1",
               "cloudFormationResource": {
                 "templatePath": "child-stack.template.json",
                 "logicalId": "delegatecrossaccountzonedelegationhandlerrolePolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E86169197",

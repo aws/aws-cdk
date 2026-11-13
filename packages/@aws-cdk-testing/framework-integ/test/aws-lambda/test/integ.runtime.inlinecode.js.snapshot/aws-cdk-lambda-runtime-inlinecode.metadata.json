@@ -8,11 +8,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8-functionName": [
@@ -24,11 +20,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9-functionName": [
@@ -40,11 +32,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10-functionName": [
@@ -56,11 +44,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12-functionName": [
@@ -72,11 +56,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13-functionName": [
@@ -88,11 +68,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14-functionName": [
@@ -101,30 +77,10 @@
       "data": "PYTHON314functionName"
     }
   ],
-  "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_15": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
-    }
-  ],
-  "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_15-functionName": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "PYTHON315functionName"
-    }
-  ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X-functionName": [
@@ -136,11 +92,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X-functionName": [
@@ -152,33 +104,13 @@
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X-functionName": [
     {
       "type": "aws:cdk:logicalId",
       "data": "NODEJS24XfunctionName"
-    }
-  ],
-  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
-    }
-  ],
-  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X-functionName": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "NODEJS26XfunctionName"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
@@ -196,17 +128,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/Resource": [
@@ -218,17 +140,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_9/Resource": [
@@ -240,17 +152,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10/Resource": [
@@ -262,17 +164,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/Resource": [
@@ -284,17 +176,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_13/Resource": [
@@ -306,17 +188,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_14/Resource": [
@@ -325,42 +197,10 @@
       "data": "PYTHON314C98D0951"
     }
   ],
-  "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_15/ServiceRole": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_15/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "PYTHON315F65C122E"
-    }
-  ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/Resource": [
@@ -372,17 +212,7 @@
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_22_X/Resource": [
@@ -394,45 +224,13 @@
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_24_X/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "NODEJS24X3400670E"
-    }
-  ],
-  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X/ServiceRole": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "NODEJS26XE1AF63D3"
     }
   ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/ServiceRole/Resource": [
@@ -471,12 +269,6 @@
       "data": "PYTHON314ServiceRoleB0324A64"
     }
   ],
-  "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_15/ServiceRole/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "PYTHON315ServiceRole5650A376"
-    }
-  ],
   "/aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -493,12 +285,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "NODEJS24XServiceRoleF97C2B58"
-    }
-  ],
-  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X/ServiceRole/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "NODEJS26XServiceRoleA51FBA13"
     }
   ]
 }

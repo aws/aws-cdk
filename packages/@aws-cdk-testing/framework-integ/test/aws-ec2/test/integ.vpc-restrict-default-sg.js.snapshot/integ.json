@@ -10,6 +10,5 @@
       "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }

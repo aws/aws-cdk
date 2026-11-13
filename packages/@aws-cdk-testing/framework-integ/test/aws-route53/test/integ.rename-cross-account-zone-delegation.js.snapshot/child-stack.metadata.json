@@ -20,15 +20,11 @@
   "/child-stack/NewSubZone": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "zoneName": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "zoneName": "*"
-      }
+      "data": "*"
     }
   ],
   "/child-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider": [
@@ -94,33 +90,19 @@
   "/child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "policyName": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/child-stack/delegate/CrossAccountZoneDelegationCustomResource/Default": [

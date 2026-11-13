@@ -8,20 +8,13 @@
   "/lambda-event-source-s3/F": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "handler": "*",
-        "code": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/lambda-event-source-s3/B": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy",
-        "autoDeleteObjects": true
-      }
+      "data": "*"
     }
   ],
   "/lambda-event-source-s3/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -45,17 +38,7 @@
   "/lambda-event-source-s3/F/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/lambda-event-source-s3/F/Resource": [
@@ -72,16 +55,14 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+        "mixin": "*"
       }
     }
   ],
   "/lambda-event-source-s3/B/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
+      "data": "*"
     }
   ],
   "/lambda-event-source-s3/B/AutoDeleteObjectsCustomResource": [
@@ -111,38 +92,19 @@
   "/lambda-event-source-s3/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addManagedPolicy": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/lambda-event-source-s3/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
@@ -165,7 +127,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+        "mixin": "*"
       }
     }
   ],
@@ -178,33 +140,19 @@
   "/lambda-event-source-s3/B/Notifications/HandlerPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/lambda-event-source-s3/B/Notifications/Resource": [

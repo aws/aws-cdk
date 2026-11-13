@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "iam-test-condition-with-ref/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             }
           ]
         }

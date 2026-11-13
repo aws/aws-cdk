@@ -917,11 +917,14 @@
   "EksAllHandlersInVpcStackNodegroupDefaultCapacityD8DD5ECF": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2023_x86_64_STANDARD",
+    "AmiType": "AL2_x86_64",
     "ClusterName": {
      "Ref": "EksAllHandlersInVpcStack9ED695D7"
     },
     "ForceUpdateEnabled": true,
+    "InstanceTypes": [
+     "m5.large"
+    ],
     "NodeRole": {
      "Fn::GetAtt": [
       "EksAllHandlersInVpcStackNodegroupDefaultCapacityNodeGroupRoleFFBF949C",
@@ -1015,7 +1018,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/44a485a5f3919c6f072a2f410d15306f0c92fb5e36cbd953c82aa306265d99a1.json"
+       "/33ce228a1e3657e4f1ccf8506011e5f8b0065d6b5c27ed49a55057553449bb80.json"
       ]
      ]
     }
@@ -1071,7 +1074,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/a677c4facb0db535dfee291558acfa43d62c8231e4490ffbd43a66b32895ed71.json"
+       "/f02329400a1bcae56501725ba7e44a151d26d590a5c0ba870aab08bc696bd45a.json"
       ]
      ]
     }

@@ -8,9 +8,7 @@
   "/oidc-provider-integ-test/NoClientsNoThumbprint": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "url": "*"
-      }
+      "data": "*"
     }
   ],
   "/oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
@@ -22,19 +20,13 @@
   "/oidc-provider-integ-test/Clients": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "url": "*",
-        "clientIds": "*"
-      }
+      "data": "*"
     }
   ],
   "/oidc-provider-integ-test/Thumbprints": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "url": "*",
-        "thumbprints": "*"
-      }
+      "data": "*"
     }
   ],
   "/oidc-provider-integ-test/NoClientsThumbprints": [

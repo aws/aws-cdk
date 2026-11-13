@@ -17,13 +17,13 @@
           "violatingConstructs": [
             {
               "constructPath": "PipelinesFileSystemLocations/Beta/Stack1",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             },
             {
               "constructPath": "cdk-integ-codepipeline-with-file-system-locations/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             }
           ]
         }

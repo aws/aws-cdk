@@ -8,10 +8,7 @@
   "/CdkPipelineInvestigationStack/Prod/ProdStack/MyQueue": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "queueName": "*",
-        "visibilityTimeout": "*"
-      }
+      "data": "*"
     }
   ],
   "/CdkPipelineInvestigationStack/Prod/ProdStack/BootstrapVersion": [

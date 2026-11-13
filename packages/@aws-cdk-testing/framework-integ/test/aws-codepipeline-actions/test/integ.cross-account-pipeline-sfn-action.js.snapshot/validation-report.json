@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "integ-cross-account-pipeline-sfn-action/DefaultTest/DeployAssert",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             }
           ]
         },
@@ -32,8 +32,8 @@
           "violatingConstructs": [
             {
               "constructPath": "CdkPipelineStepFunctionsActionStack",
-              "constructFqn": "aws-cdk-lib.Stack",
-              "libraryVersion": "0.0.0"
+              "constructFqn": "constructs.Construct",
+              "libraryVersion": "10.8.1"
             }
           ]
         }

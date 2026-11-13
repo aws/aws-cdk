@@ -8,11 +8,7 @@
   "/edge-lambda-stack-eu-west-1-2/Lambda2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-eu-west-1-2/BootstrapVersion": [
@@ -30,17 +26,7 @@
   "/edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-eu-west-1-2/Lambda2/Resource": [
@@ -52,35 +38,25 @@
   "/edge-lambda-stack-eu-west-1-2/Lambda2/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-eu-west-1-2/Lambda2/CurrentVersion": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "lambda": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-eu-west-1-2/Lambda2/Parameter": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "parameterName": "*",
-        "stringValue": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-eu-west-1-2/Lambda2/Aliaslive": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "aliasName": "*",
-        "version": "*"
-      }
+      "data": "*"
     }
   ],
   "/edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole/Resource": [

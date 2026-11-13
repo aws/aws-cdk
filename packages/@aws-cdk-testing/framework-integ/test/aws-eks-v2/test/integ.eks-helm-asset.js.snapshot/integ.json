@@ -11,6 +11,5 @@
       "assertionStackName": "awscdkekshelmDefaultTestDeployAssert044A589A"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1146.1"
+  "enableLookups": true
 }

@@ -8,10 +8,7 @@
   "/CrossRegionRefProducerInteg/SomeParameter": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "parameterName": "*",
-        "stringValue": "*"
-      }
+      "data": "*"
     }
   ],
   "/CrossRegionRefProducerInteg/Custom::CrossRegionExportWriterCustomResourceProvider": [
