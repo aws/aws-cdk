@@ -4,43 +4,41 @@
 #####################################
 # Rule: SNS_NO_WORLD_ACCESSIBLE_INLINE
 # Service: Amazon Simple Notification Service (SNS)
-# Coverage: Inline Topic Policies
+# Coverage: Inline Topic Policies (AWS::SNS::TopicInlinePolicy resources)
 #
-# Note: SNS topics without a TopicPolicy are secure by default - they are private
-# and only accessible to the account that created them. By default, Amazon SNS topics
+# Note: SNS topics without a topic policy (AWS::SNS::TopicPolicy or AWS::SNS::TopicInlinePolicy)
+# are private and only accessible to the account that created them. By default, Amazon SNS topics
 # are created with no permissions. To enable access for other AWS services, accounts,
 # or principals, you must explicitly define and attach an access policy to the topic.
-# This rule only checks topics that have an inline policy defined to ensure they don't
+# This rule checks AWS::SNS::TopicInlinePolicy resources to ensure they don't
 # grant world-accessible permissions.
 # See: https://docs.aws.amazon.com/sns/latest/dg/sns-access-policy-use-cases.html
 # (Section: "Default policies in Amazon SNS")
 
-let sns_topics = Resources.*[
-  Type == 'AWS::SNS::Topic'
+let sns_topic_inline_policies = Resources.*[
+  Type == 'AWS::SNS::TopicInlinePolicy'
   Metadata.guard.SuppressedRules not exists or
   Metadata.guard.SuppressedRules.* != "SNS_NO_WORLD_ACCESSIBLE_INLINE"
 ]
 
-# Check inline topic policies only when they exist
-rule SNS_NO_WORLD_ACCESSIBLE_INLINE when %sns_topics !empty {
-    %sns_topics {
-        # Only check if TopicPolicy is explicitly defined
-        when Properties.TopicPolicy exists {
-            Properties.TopicPolicy.Statement[*] {
-                when Effect == "Allow" {
-                    when Principal exists {
-                        when Principal != "*" {
-                            when Principal.AWS exists {
-                                when Principal.AWS is_string {
-                                    Principal.AWS != "*"
-                                        <<##ERROR:SNS topic inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
-                                }
-                                when Principal.AWS is_list {
-                                    Principal.AWS[*] != "*"
-                                        <<##ERROR:SNS topic inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
-                                }
-                            }
-                        }
+# Check inline topic policies
+rule SNS_NO_WORLD_ACCESSIBLE_INLINE when %sns_topic_inline_policies !empty {
+    %sns_topic_inline_policies {
+        Properties.PolicyDocument.Statement[*] {
+            when Effect == "Allow" {
+                when Principal exists {
+                    when Principal is_string {
+                        Principal != "*"
+                            <<##ERROR:SNS topic inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
+                    }
+                    when Principal.AWS is_string {
+                        Principal.AWS != "*"
+                            <<##ERROR:SNS topic inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
+                    }
+                    # Only string elements are checked - intrinsic functions (maps like Fn::GetAtt) are skipped
+                    when Principal.AWS is_list {
+                        Principal.AWS[*][ this is_string ] != "*"
+                            <<##ERROR:SNS topic inline policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
                     }
                 }
             }
