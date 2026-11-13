@@ -231,7 +231,7 @@ export interface EventSourceMappingOptions {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default - infinite or until the record expires.
+   * @default - infinite or until the record expires; 0 when `kafkaConsumptionMode` is `KafkaConsumptionMode.QUEUE`
    */
   readonly retryAttempts?: number;
 
@@ -280,6 +280,21 @@ export interface EventSourceMappingOptions {
    * @default - none
    */
   readonly kafkaConsumerGroupId?: string;
+
+  /**
+   * How Lambda reads records from the Kafka topic.
+   *
+   * Only supported for self-managed Kafka event sources (`kafkaBootstrapServers`).
+   * **Queue mode requires Kafka 4.2.0 or later.** In queue mode, `startingPosition`,
+   * `startingPositionTimestamp` and `maxBatchingWindow` are not supported, and `retryAttempts` must be between 0 and 10000
+   * and defaults to 0 (and, as in stream mode, requires `provisionedPollerConfig`).
+   * The consumption mode can't be changed after the event source mapping is created.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+   *
+   * @default - Lambda reads the topic in stream mode (`KafkaConsumptionMode.STREAM`)
+   */
+  readonly kafkaConsumptionMode?: KafkaConsumptionMode;
 
   /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
@@ -587,6 +602,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
     }
 
+    if (props.kafkaConsumptionMode !== undefined) {
+      this.validateKafkaConsumptionModeOrThrow(props);
+    }
+
     if (props.filterEncryption !== undefined && props.filters == undefined) {
       throw new ValidationError(lit`FilterCriteriaProvidedEnableSetting`, 'filter criteria must be provided to enable setting filter criteria encryption', this);
     }
@@ -617,10 +636,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     let kafkaConfig: any;
-    if (props.kafkaConsumerGroupId || props.schemaRegistryConfig) {
+    if (props.kafkaConsumerGroupId || props.schemaRegistryConfig || props.kafkaConsumptionMode) {
       kafkaConfig = {};
       if (props.kafkaConsumerGroupId) {
         kafkaConfig.consumerGroupId = props.kafkaConsumerGroupId;
+      }
+      if (props.kafkaConsumptionMode) {
+        kafkaConfig.consumptionMode = props.kafkaConsumptionMode.mode;
       }
       if (props.schemaRegistryConfig) {
         const schemaRegistry = props.schemaRegistryConfig.bind(this, props.target);
@@ -685,6 +707,62 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
       throw new ValidationError(lit`KafkaConsumerGroupIdContains`, 'kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"', this);
     }
+  }
+
+  private validateKafkaConsumptionModeOrThrow(props: EventSourceMappingProps) {
+    // CloudFormation only supports ConsumptionMode on SelfManagedKafkaEventSourceConfig.
+    if (props.kafkaBootstrapServers === undefined) {
+      throw new ValidationError(lit`KafkaConsumptionModeRequiresSelfManagedKafka`, 'kafkaConsumptionMode is only supported for self-managed Kafka event sources (kafkaBootstrapServers)', this);
+    }
+
+    if (props.kafkaConsumptionMode?.mode !== KafkaConsumptionMode.QUEUE.mode) {
+      return;
+    }
+
+    // maxBatchingWindow isn't checked here; Lambda validates it at deploy time.
+    if (props.startingPosition !== undefined || props.startingPositionTimestamp !== undefined) {
+      throw new ValidationError(lit`KafkaQueueModeStartingPosition`, 'startingPosition and startingPositionTimestamp are not supported when kafkaConsumptionMode is QUEUE; remove them', this);
+    }
+
+    if (props.retryAttempts !== undefined && !cdk.Token.isUnresolved(props.retryAttempts) && props.retryAttempts === -1) {
+      throw new ValidationError(lit`KafkaQueueModeInfiniteRetries`, 'retryAttempts must be between 0 and 10000 when kafkaConsumptionMode is QUEUE; -1 (infinite retries) is not supported', this);
+    }
+  }
+}
+
+/**
+ * How Lambda reads records from a Kafka topic.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+ */
+export class KafkaConsumptionMode {
+  /**
+   * Read the topic as a Kafka consumer group. Records in a partition are processed in order.
+   */
+  public static readonly STREAM = new KafkaConsumptionMode('Stream');
+
+  /**
+   * Read the topic as a Kafka share group. Records in a partition can be processed in parallel,
+   * without ordering. Requires Kafka 4.2.0 or later.
+   */
+  public static readonly QUEUE = new KafkaConsumptionMode('Queue');
+
+  /**
+   * A consumption mode that this library doesn't model.
+   *
+   * @param mode The value of the `ConsumptionMode` property
+   */
+  public static of(mode: string): KafkaConsumptionMode {
+    return new KafkaConsumptionMode(mode);
+  }
+
+  /**
+   * The value of the `ConsumptionMode` property
+   */
+  public readonly mode: string;
+
+  private constructor(mode: string) {
+    this.mode = mode;
   }
 }
 
