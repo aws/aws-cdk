@@ -124,6 +124,30 @@ const cluster = new msk.Cluster(this, 'cluster', {
 });
 ```
 
+By default a new KMS key is created to encrypt the SASL/SCRAM secrets. To use your own
+customer-managed KMS key (for example to meet BYOK/compliance requirements), pass it via
+the `key` property. The provided key is then used to encrypt the secrets created by
+`cluster.addUser(...)`:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const key: kms.IKey;
+const cluster = new msk.Cluster(this, 'cluster', {
+  clusterName: 'myCluster',
+  kafkaVersion: msk.KafkaVersion.V4_1_X_KRAFT,
+  vpc,
+  encryptionInTransit: {
+    clientBroker: msk.ClientBrokerEncryption.TLS,
+  },
+  clientAuthentication: msk.ClientAuthentication.sasl({
+    scram: true,
+    key,
+  }),
+});
+
+cluster.addUser('myUser');
+```
+
 ### IAM
 
 Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html):
