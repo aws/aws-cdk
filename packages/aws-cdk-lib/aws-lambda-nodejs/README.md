@@ -208,6 +208,31 @@ When working with `nodeModules` using native dependencies, you might want to for
 Docker container even if `esbuild` is available in your environment. This can be done by setting
 `bundling.forceDockerBundling` to `true`.
 
+The default Docker bundling image installs pnpm 7. pnpm 7 cannot read the `pnpm-lock.yaml` of
+pnpm 9 and later. It ignores the lock file and resolves the dependencies again, so the installed
+versions can be different from the versions in the lock file. Use the `PNPM_VERSION` build arg
+to install a different pnpm version. The lock file of pnpm 11 and later requires pnpm 10.33.0 or later.
+
+pnpm 10 and later do not run the build scripts (for example `postinstall`) of dependencies by default.
+pnpm 10 skips them, pnpm 11 and later fail the install. The settings in your `pnpm-workspace.yaml`
+are not used during bundling. To run all build scripts like pnpm 7 does, set these environment variables:
+
+```ts
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    nodeModules: ['native-module'],
+    forceDockerBundling: true,
+    buildArgs: {
+      PNPM_VERSION: '10.34.9',
+    },
+    environment: {
+      npm_config_dangerously_allow_all_builds: 'true', // read by pnpm 10
+      pnpm_config_dangerously_allow_all_builds: 'true', // read by pnpm 11 and later
+    },
+  },
+});
+```
+
 ## Configuring `esbuild`
 
 The `NodejsFunction` construct exposes [esbuild options](https://esbuild.github.io/api/#build-api)
