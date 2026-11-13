@@ -9,12 +9,13 @@ import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } 
 import { ArnPrincipal } from './principals';
 import { AttachedPolicies, importedDefaultPolicyName } from './private/util';
 import type { IUser } from './user';
-import { Annotations, ArnFormat, Resource, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Resource, Stack, Token } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 
 /**
  * Represents an IAM Group.
@@ -182,8 +183,9 @@ export class Group extends GroupBase {
       public principalAccount = arnComponents.account;
 
       /** @internal */
-      protected _defaultPolicyName(): string {
-        return importedDefaultPolicyName(this, 'DefaultPolicy');
+      protected _defaultPolicyName(): string | undefined {
+        const isStackSafe = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME);
+        return isStackSafe ? importedDefaultPolicyName(this, 'DefaultPolicy') : undefined;
       }
     }
 

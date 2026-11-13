@@ -1,5 +1,6 @@
 import { Annotations, Template } from '../../assertions';
 import { App, CfnResource, Stack } from '../../core';
+import { IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 import type { IGroup } from '../lib';
 import { Group, ManagedPolicy, PolicyStatement, User } from '../lib';
 
@@ -146,14 +147,18 @@ test('throw warning if attached managed policies exceed 10 when calling `addMana
   Annotations.fromStack(stack).hasWarning('/Default/MyGroup', 'You added 12 to IAM Group MyGroup. The maximum number of managed policies attached to an IAM group is 10. [ack: @aws-cdk/aws-iam:groupMaxPoliciesExceeded]');
 });
 
-describe('default policy of a group', () => {
+describe('default policy of a group with @aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName', () => {
+  function stackSafeApp(): App {
+    return new App({ context: { [IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+  }
+
   function grant(group: IGroup): void {
     group.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] }));
   }
 
   test('of a group imported by ARN is named after the stack and keeps its logical ID', () => {
     // GIVEN
-    const stack = new Stack(new App(), 'GroupStack1');
+    const stack = new Stack(stackSafeApp(), 'GroupStack1');
 
     // WHEN
     grant(Group.fromGroupArn(stack, 'ImportedGroup', 'arn:aws:iam::123456789012:group/MyGroup'));
@@ -175,7 +180,7 @@ describe('default policy of a group', () => {
 
   test('of a group imported by name is named after the stack', () => {
     // GIVEN
-    const stack = new Stack(new App(), 'GroupStack1');
+    const stack = new Stack(stackSafeApp(), 'GroupStack1');
 
     // WHEN
     grant(Group.fromGroupName(stack, 'ImportedGroup', 'MyGroup'));
@@ -189,8 +194,8 @@ describe('default policy of a group', () => {
 
   test('of an imported group has a different name in each stack that imports it', () => {
     // GIVEN
-    const stack1 = new Stack(new App(), 'GroupStack1');
-    const stack2 = new Stack(new App(), 'GroupStack2');
+    const stack1 = new Stack(stackSafeApp(), 'GroupStack1');
+    const stack2 = new Stack(stackSafeApp(), 'GroupStack2');
 
     // WHEN
     grant(Group.fromGroupArn(stack1, 'ImportedGroup', 'arn:aws:iam::123456789012:group/MyGroup'));
@@ -203,7 +208,7 @@ describe('default policy of a group', () => {
 
   test('of an owned group is unchanged', () => {
     // GIVEN
-    const stack = new Stack(new App(), 'GroupStack1');
+    const stack = new Stack(stackSafeApp(), 'GroupStack1');
 
     // WHEN
     grant(new Group(stack, 'MyGroup'));
@@ -213,5 +218,23 @@ describe('default policy of a group', () => {
       Properties: { PolicyName: 'MyGroupDefaultPolicy72C41231' },
     });
     expect(Object.keys(policies)).toEqual(['MyGroupDefaultPolicy72C41231']);
+  });
+
+  test('of an imported group keeps the same name in every stack without the feature flag', () => {
+    // GIVEN
+    const stack1 = new Stack(new App(), 'GroupStack1');
+    const stack2 = new Stack(new App(), 'GroupStack2');
+
+    // WHEN
+    grant(Group.fromGroupArn(stack1, 'ImportedGroup', 'arn:aws:iam::123456789012:group/MyGroup'));
+    grant(Group.fromGroupArn(stack2, 'ImportedGroup', 'arn:aws:iam::123456789012:group/MyGroup'));
+
+    // THEN
+    for (const stack of [stack1, stack2]) {
+      const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy', {
+        Properties: { PolicyName: 'ImportedGroupDefaultPolicy5FF6A7A2', Groups: ['MyGroup'] },
+      });
+      expect(Object.keys(policies)).toEqual(['ImportedGroupDefaultPolicy5FF6A7A2']);
+    }
   });
 });

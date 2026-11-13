@@ -1,8 +1,11 @@
 import { App, Stack } from 'aws-cdk-lib';
+import { IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from 'aws-cdk-lib/cx-api';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Group, PolicyStatement, User } from 'aws-cdk-lib/aws-iam';
 
-const app = new App();
+const app = new App({
+  context: { [IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: true },
+});
 
 const principalStack = new Stack(app, 'integ-iam-imported-principal-stack');
 
@@ -10,9 +13,9 @@ const user = new User(principalStack, 'TestUser');
 const group = new Group(principalStack, 'TestGroup');
 
 /**
- * Both stacks below import the same user and group and grant them a permission. Each stack gets an
- * inline policy of its own, so the grants made by the first stack survive the deployment of the
- * second one.
+ * Both stacks below import the same user and group and grant them a permission. With the feature
+ * flag enabled, each stack gets an inline policy of its own, so the grants made by the first stack
+ * survive the deployment of the second one.
  */
 const firstStack = new Stack(app, 'integ-iam-imported-principal-1');
 firstStack.addStackDependency(principalStack);
