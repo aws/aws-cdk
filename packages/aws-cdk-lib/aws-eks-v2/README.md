@@ -24,7 +24,8 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 
 ## Architecture
 
-```text                                             +-----------------+
+```text
+                                                    +-----------------+
                                          kubectl    |                 |
                                       +------------>| Kubectl Handler |
                                       |             |   (Optional)    |
