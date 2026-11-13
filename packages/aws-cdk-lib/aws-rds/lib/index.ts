@@ -12,6 +12,7 @@ export * from './database-secret';
 export * from './endpoint';
 export * from './option-group';
 export * from './instance';
+export * from './instance-metrics';
 export * from './proxy';
 export * from './proxy-endpoint';
 export * from './serverless-cluster';
