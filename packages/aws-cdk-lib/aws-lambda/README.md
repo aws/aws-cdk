@@ -43,7 +43,7 @@ runtime code.
 
   const bucket = new s3.Bucket(this, 'Bucket');
   declare const key: Key;
-  
+
   const options = {
       sourceKMSKey: key,
   };
@@ -62,9 +62,9 @@ runtime code.
  * `lambda.Code.fromDockerBuild(path, options)` - use the result of a Docker
    build as code. The runtime code is expected to be located at `/asset` in the
    image and will be zipped and uploaded to S3 as an asset.
- * `lambda.Code.fromCustomCommand(output, command, customCommandOptions)` - 
+ * `lambda.Code.fromCustomCommand(output, command, customCommandOptions)` -
    supply a command that is invoked during cdk synth. That command is meant to direct
-   the generated code to output (a zip file or a directory), which is then used as the 
+   the generated code to output (a zip file or a directory), which is then used as the
    code for the created AWS Lambda.
 
 ### Self-managed S3 code storage
@@ -164,7 +164,7 @@ configurations as well as choosing a specific tag or digest. See their docs for 
 To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify `Architecture.ARM_64` in `architecture`.
 This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` even if build within an `x86_64` host.
 
-With that being said, if you are bundling `DockerImageFunction` for Lambda `amd64` architecture from a `arm64` machine like a Macbook with `arm64` CPU, you would 
+With that being said, if you are bundling `DockerImageFunction` for Lambda `amd64` architecture from a `arm64` machine like a Macbook with `arm64` CPU, you would
 need to specify `architecture: lambda.Architecture.X86_64` as well. This ensures the `--platform` argument is passed to the image assets
 bundling process so you can bundle up `X86_64` images from the `arm64` machine.
 
@@ -282,7 +282,7 @@ To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFo
 
 *TPA: Tag propagation, Prop Injection, Aspects*
 
-#### Order of precedence 
+#### Order of precedence
 ```text
                        Highest Precedence
                              |
@@ -294,7 +294,7 @@ To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFo
               |                               |
               v                               v
       Create LogGroup via            Use the provided LogGroup
-  Custom Resource (retention       instance (CDK-managed, 
+  Custom Resource (retention       instance (CDK-managed,
   managed, logGroup disallowed)    logRetention disallowed)
               |                               |
               +---------------+---------------+
@@ -306,7 +306,7 @@ To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFo
           +------------------ +---------------------------+
                               |
                               v
-              Create LogGroup at synth time 
+              Create LogGroup at synth time
           (CDK-managed, default settings for logGroup)
                               |
                               v
@@ -320,8 +320,8 @@ To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFo
 ```
 ### Tag Propagation
 
-Refer section `Log Group Creation Methods` to find out which modes support tag propagation. 
-As an example, adding the following line in your cdk app will also propagate to the logGroup. 
+Refer section `Log Group Creation Methods` to find out which modes support tag propagation.
+As an example, adding the following line in your cdk app will also propagate to the logGroup.
 ```
 const fn = new lambda.Function(this, 'MyFunctionWithFFTrue', {
   runtime: lambda.Runtime.NODEJS_20_X,
@@ -372,7 +372,7 @@ You can also restrict permissions given to AWS services by providing
 a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
 
-**Important**: 
+**Important**:
 > By default `fn.grantInvoke()` grants permission to the principal to invoke any version of the function, including all past ones. If you only want the principal to be granted permission to invoke the latest version or the unqualified Lambda ARN, use `grantInvokeLatestVersion(grantee)`.
 
 ```ts
@@ -1191,6 +1191,56 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 }));
 ```
 
+#### Defining event filter criteria
+
+Wrap each event pattern with `FilterCriteria.filter()`. It serializes the pattern
+into the `Pattern` string required by the event source mapping. Use `FilterRule`
+helpers to construct comparisons for the fields in that pattern:
+
+* Fields within one pattern are combined with AND.
+* `FilterRule.or()` matches any of the supplied string values for one field.
+* Separate entries in `filters` are combined with OR.
+
+For example, the following DynamoDB stream filter accepts an `INSERT` or `MODIFY`
+event only when the new item's `status` string begins with `approved`:
+
+```ts
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+
+declare const fn: lambda.Function;
+declare const table: dynamodb.Table;
+
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  filters: [lambda.FilterCriteria.filter({
+    eventName: lambda.FilterRule.or('INSERT', 'MODIFY'),
+    dynamodb: {
+      NewImage: {
+        status: { S: lambda.FilterRule.beginsWith('approved') },
+      },
+    },
+  })],
+}));
+```
+
+This produces the following `FilterCriteria` property:
+
+```json
+{
+  "Filters": [{
+    "Pattern": "{\"eventName\":[\"INSERT\",\"MODIFY\"],\"dynamodb\":{\"NewImage\":{\"status\":{\"S\":[{\"prefix\":\"approved\"}]}}}}"
+  }]
+}
+```
+
+Use field names and data types that match the event source's record format.
+For DynamoDB, the example requires a stream view that includes the new image,
+such as `StreamViewType.NEW_IMAGE`. Other sources use different data fields,
+for example `body` for SQS and `data` for Kinesis. See
+[Lambda event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html)
+for comparison operators and event source behavior.
+
 By default, Lambda will encrypt Filter Criteria using AWS managed keys. But if you want to use a self managed KMS key to encrypt the filters, You can specify the self managed key using the `filterEncryption` property.
 
 ```ts
@@ -1242,7 +1292,7 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 
 Customers can now opt-in to get enhanced metrics for their event source mapping that capture each stage of processing using the `MetricsConfig` property.
 
-The following code shows how to opt in for the enhanced metrics. 
+The following code shows how to opt in for the enhanced metrics.
 
 ```ts
 import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -1534,7 +1584,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
 For the resource replacement to succeed, you cannot explicitly set the `functionName` parameter, or else it will
 result in CloudFormation deployment errors. Modifying the parameters within `durableConfig` will not trigger a resource replacement.
 
-*Further Note:* Deletion for durable functions will wait for all running executions to complete. CloudFormation will wait up to 1 hour, 
+*Further Note:* Deletion for durable functions will wait for all running executions to complete. CloudFormation will wait up to 1 hour,
 after which the stack update or deletion will timeout. If you have functions that are stuck deleting, please check if there
 are any running executions for the function.
 
@@ -1598,11 +1648,11 @@ If you are deploying to another type of region, please check regional availabili
 ## Lambda with Recursive Loop protection
 
 Recursive loop protection is to stop unintended loops. The customers are opted in by default for Lambda to detect and terminate unintended loops between Lambda and other AWS Services.
-The property can be assigned two values here, "Allow" and "Terminate". 
+The property can be assigned two values here, "Allow" and "Terminate".
 
-The default value is set to "Terminate", which lets the Lambda to detect and terminate the recursive loops. 
+The default value is set to "Terminate", which lets the Lambda to detect and terminate the recursive loops.
 
-When the value is set to "Allow", the customers opt out of recursive loop detection and Lambda does not terminate recursive loops if any. 
+When the value is set to "Allow", the customers opt out of recursive loop detection and Lambda does not terminate recursive loops if any.
 
 See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-recursion.html) to learn more about AWS Lambda Recusrive Loop Detection
 
@@ -1726,9 +1776,9 @@ S3 Files uses the same NFS infrastructure as Amazon EFS. To mount the file syste
 
 You can optionally configure `directS3Read` to stream eligible reads directly from the S3 bucket for higher throughput instead of routing them through the file system mount using `DirectS3Read.enabled(bucket)`, `DirectS3Read.enabledWithoutGrant()`, `DirectS3Read.auto()`, or `DirectS3Read.disabled()`.
 
-To use direct reads, the function's execution role needs the `s3:GetObject` and `s3:GetObjectVersion` permissions on the backing bucket for a direct read to succeed (if a direct read fails, Lambda falls back to reading through the file system). `DirectS3Read.enabled(bucket)` grants these permissions to the execution role automatically. Use `DirectS3Read.enabledWithoutGrant()` when the role already has read access through another policy; you are then responsible for the grant (and `kms:Decrypt` if the bucket is encrypted with a customer-managed key). `DirectS3Read.auto()` adds no permissions, so the role must already hold them for a service-initiated direct read to succeed. 
+To use direct reads, the function's execution role needs the `s3:GetObject` and `s3:GetObjectVersion` permissions on the backing bucket for a direct read to succeed (if a direct read fails, Lambda falls back to reading through the file system). `DirectS3Read.enabled(bucket)` grants these permissions to the execution role automatically. Use `DirectS3Read.enabledWithoutGrant()` when the role already has read access through another policy; you are then responsible for the grant (and `kms:Decrypt` if the bucket is encrypted with a customer-managed key). `DirectS3Read.auto()` adds no permissions, so the role must already hold them for a service-initiated direct read to succeed.
 
-Use `DirectS3Read.disabled()` to opt-out from this feature. 
+Use `DirectS3Read.disabled()` to opt-out from this feature.
 
 > Visit [S3FilesConfig](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-lambda-function-s3filesconfig.html) for more details.
 
@@ -1923,7 +1973,7 @@ new lambda.Function(this, 'Function', {
       image: lambda.Runtime.PYTHON_3_9.bundlingImage,
       command: [
         'bash', '-c',
-        'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
+        'pip install -r requirements.txt -t /asset-output && cp -au * /asset-output'
       ],
     },
   }),
