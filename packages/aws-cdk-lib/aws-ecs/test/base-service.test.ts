@@ -220,6 +220,88 @@ describe('When import an ECS Service', () => {
     })).toThrow('accessLogConfiguration requires logDriver to be set. Without logDriver, access logs are not delivered to any destination.');
   });
 
+  describe('proxyLogLevel', () => {
+    function createService() {
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+      taskDefinition.addContainer('Web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        portMappings: [{ name: 'api', containerPort: 80 }],
+      });
+      return { cluster, taskDefinition };
+    }
+
+    test.each([
+      [ecs.ServiceConnectProxyLogLevel.DEBUG, 'debug'],
+      [ecs.ServiceConnectProxyLogLevel.INFO, 'info'],
+    ])('renders proxy log level %p with enableServiceConnect()', (proxyLogLevel, expected) => {
+      // GIVEN
+      const { cluster, taskDefinition } = createService();
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+      // WHEN
+      service.enableServiceConnect({
+        services: [{ portMappingName: 'api' }],
+        namespace: 'test namespace',
+        logDriver: ecs.LogDrivers.awsLogs({ streamPrefix: 'sc' }),
+        proxyLogLevel,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceConnectConfiguration: {
+          Enabled: true,
+          ContainerConfigurations: [{ LogLevel: expected }],
+        },
+      });
+    });
+
+    test('renders proxy log level from the serviceConnectConfiguration prop', () => {
+      // GIVEN
+      const { cluster, taskDefinition } = createService();
+
+      // WHEN
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        serviceConnectConfiguration: {
+          namespace: 'test namespace',
+          proxyLogLevel: ecs.ServiceConnectProxyLogLevel.DEBUG,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceConnectConfiguration: {
+          Enabled: true,
+          Namespace: 'test namespace',
+          ContainerConfigurations: [{ LogLevel: 'debug' }],
+        },
+      });
+    });
+
+    test('does not render container configurations when proxyLogLevel is omitted', () => {
+      // GIVEN
+      const { cluster, taskDefinition } = createService();
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+      // WHEN
+      service.enableServiceConnect({
+        services: [{ portMappingName: 'api' }],
+        namespace: 'test namespace',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceConnectConfiguration: {
+          Enabled: true,
+          ContainerConfigurations: Match.absent(),
+        },
+      });
+    });
+  });
+
   test('throws an error when awsPcaAuthorityArn is not an ARN', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
