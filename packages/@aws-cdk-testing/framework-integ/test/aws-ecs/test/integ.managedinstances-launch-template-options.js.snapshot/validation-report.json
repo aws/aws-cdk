@@ -1,0 +1,56 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "ManagedInstancesLaunchTemplateOptions/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ],
+      "suppressedViolations": [
+        {
+          "ruleName": "F3002",
+          "description": "ManagedInstancesProvider.InstanceLaunchTemplate.NitroEnclavesEnabled: Additional properties are not allowed ('NitroEnclavesEnabled' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-managedinstances-launch-template-options/ManagedInstancesCapacityProvider/ManagedInstancesCapacityProvider",
+              "constructFqn": "aws-cdk-lib.aws_ecs.CfnCapacityProvider",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-managedinstances-launch-template-options.template.json",
+                "logicalId": "ManagedInstancesCapacityProviderC2946447",
+                "propertyPaths": [
+                  "Properties.ManagedInstancesProvider.InstanceLaunchTemplate.NitroEnclavesEnabled"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3002",
+          "reason": "NitroEnclavesEnabled is a newly launched property not yet in the bundled schema",
+          "acknowledgedAt": "integ-managedinstances-launch-template-options",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/Users/vampiremac/workspace/oss/aws-cdk-39705/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at <anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-39705/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/integ.managedinstances-launch-template-options.js:43:27)\n    ...node internals..."
+        }
+      ]
+    }
+  ]
+}

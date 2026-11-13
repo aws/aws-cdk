@@ -1689,6 +1689,49 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default - `ON_DEMAND`
    */
   readonly capacityOptionType?: CapacityOptionType;
+
+  /**
+   * Whether instances launched by this capacity provider use FIPS 140-2 validated cryptographic modules.
+   *
+   * Amazon ECS Managed Instances supports FIPS only in AWS GovCloud (US) Regions. In other Regions,
+   * setting this to `true` fails at deployment.
+   *
+   * Changing this value replaces the capacity provider.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_InstanceLaunchTemplate.html
+   *
+   * @default - not set. Amazon ECS enables FIPS in AWS GovCloud (US) Regions and disables it in other Regions.
+   */
+  readonly fipsEnabled?: boolean;
+
+  /**
+   * Whether the tags of instances launched by this capacity provider are available
+   * through the instance metadata service (IMDS).
+   *
+   * Disable this if your instance tag keys contain characters that IMDS doesn't accept, such as `/`.
+   *
+   * When this property is omitted, nothing is rendered and Amazon ECS uses its default.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html#work-with-tags-in-IMDS
+   *
+   * @default true
+   */
+  readonly instanceMetadataTagsPropagation?: boolean;
+
+  /**
+   * Whether instances launched by this capacity provider have Nitro Sandbox enabled.
+   *
+   * Enable this to run tasks that use the `ISOLATED_SANDBOX` or `CONFIDENTIAL_SANDBOX` isolation mode.
+   * The capacity provider must include at least one instance type that supports Nitro Sandbox,
+   * and this setting can't be combined with local storage.
+   *
+   * When this property is omitted, nothing is rendered and Amazon ECS uses its default.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/isolated-confidential-tasks.html
+   *
+   * @default false
+   */
+  readonly nitroEnclavesEnabled?: boolean;
 }
 
 /**
@@ -1803,6 +1846,9 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
         ...(props.instanceRequirements && {
           instanceRequirements: this.renderInstanceRequirements(props.instanceRequirements),
         }),
+        fipsEnabled: props.fipsEnabled,
+        instanceMetadataTagsPropagation: props.instanceMetadataTagsPropagation,
+        nitroEnclavesEnabled: props.nitroEnclavesEnabled,
       },
       propagateTags: props.propagateTags,
     };
