@@ -1,0 +1,28 @@
+{
+  "/PipelineWithCommandsStep/Beta/Stack/Queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
+    }
+  ],
+  "/PipelineWithCommandsStep/Beta/Stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PipelineWithCommandsStep/Beta/Stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/PipelineWithCommandsStep/Beta/Stack/Queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Queue4A7E3555"
+    }
+  ]
+}
