@@ -127,6 +127,28 @@ capacity.scaleOnMetric('ScaleToCPUWithMultipleDatapoints', {
 });
 ```
 
+### Configuring Missing Data Treatment
+
+You can specify how CloudWatch alarms evaluate missing data points for step scaling
+using the `treatMissingData` property:
+
+```ts
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+
+declare const capacity: ScalableAttribute;
+declare const cpuUtilization: cloudwatch.Metric;
+
+capacity.scaleOnMetric('ScaleToCPUWithMissingData', {
+  metric: cpuUtilization,
+  scalingSteps: [
+    { upper: 10, change: -1 },
+    { lower: 50, change: +1 },
+    { lower: 70, change: +3 },
+  ],
+  treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
+});
+```
+
 ## Target Tracking Scaling
 
 This type of scaling scales in and out in order to keep a metric (typically
