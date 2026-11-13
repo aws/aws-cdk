@@ -63,7 +63,9 @@ export class Bundling implements CdkBundlingOptions {
     return Code.fromAsset(options.entry, {
       assetHash: options.assetHash,
       assetHashType: options.assetHashType,
-      exclude: DEPENDENCY_EXCLUDES,
+      // Without bundling, source files are staged directly instead of being filtered by rsync.
+      // Keep bundled source hashes unchanged by applying these exclusions only when skipping.
+      exclude: options.skip ? [...DEPENDENCY_EXCLUDES, ...options.assetExcludes ?? []] : DEPENDENCY_EXCLUDES,
       bundling: options.skip ? undefined : new Bundling(options),
     });
   }
