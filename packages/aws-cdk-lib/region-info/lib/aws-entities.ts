@@ -73,6 +73,7 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'ap-southeast-6', // Asia Pacific (New Zealand)
   'us-isof-south-1', // US ISOF SOUTH
   'us-isof-east-1', // US ISOF EAST
+  'me-west-1', // Middle East (Saudi Arabia)
 ];
 
 /**
