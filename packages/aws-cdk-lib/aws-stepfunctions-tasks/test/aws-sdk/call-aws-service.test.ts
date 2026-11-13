@@ -495,3 +495,79 @@ test('IAM policy for elasticloadbalancingv2', () => {
     },
   });
 });
+
+test.each([
+  ['sesv2', 'sendEmail', 'ses:sendEmail'],
+  ['emrserverless', 'startJobRun', 'emr-serverless:startJobRun'],
+  ['emrcontainers', 'startJobRun', 'emr-containers:startJobRun'],
+  ['emr', 'addJobFlowSteps', 'elasticmapreduce:addJobFlowSteps'],
+  ['eventbridge', 'putEvents', 'events:putEvents'],
+  ['cognitoidentityprovider', 'adminGetUser', 'cognito-idp:adminGetUser'],
+  ['bedrockruntime', 'invokeModel', 'bedrock:invokeModel'],
+  ['bedrockagentruntime', 'invokeAgent', 'bedrock:invokeAgent'],
+  ['sagemakerruntime', 'invokeEndpoint', 'sagemaker:invokeEndpoint'],
+  ['opensearch', 'describeDomain', 'es:describeDomain'],
+  ['databasemigration', 'startReplicationTask', 'dms:startReplicationTask'],
+  ['costexplorer', 'getCostAndUsage', 'ce:getCostAndUsage'],
+  ['acmpca', 'issueCertificate', 'acm-pca:issueCertificate'],
+  ['lexruntimev2', 'recognizeText', 'lex:recognizeText'],
+  ['ssoadmin', 'listInstances', 'sso:listInstances'],
+  ['kinesisanalyticsv2', 'startApplication', 'kinesisanalytics:startApplication'],
+  // already mapped before
+  ['sfn', 'startExecution', 'states:startExecution'],
+  ['cloudwatchlogs', 'createLogGroup', 'logs:createLogGroup'],
+  // same SDK service name and IAM prefix: unchanged
+  ['s3', 'listBuckets', 's3:listBuckets'],
+  ['dynamodb', 'getItem', 'dynamodb:getItem'],
+])('IAM action for %s:%s is %s', (service, action, expectedAction) => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'Task', {
+    service,
+    action,
+    iamResources: ['*'],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: expectedAction,
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
+test('iamAction overrides the mapped IAM service prefix', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'Task', {
+    service: 'sesv2',
+    action: 'sendEmail',
+    iamAction: 'ses:SendRawEmail',
+    iamResources: ['*'],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'ses:SendRawEmail',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
