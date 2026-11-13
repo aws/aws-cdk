@@ -102,6 +102,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Memory with Built-in Strategies](#memory-with-built-in-strategies)
     - [Memory with custom Strategies](#memory-with-custom-strategies)
       - [Memory with Custom Execution Role](#memory-with-custom-execution-role)
+    - [Long-term memory record expiration](#long-term-memory-record-expiration)
     - [Memory with self-managed Strategies](#memory-with-self-managed-strategies)
     - [Memory Strategy Methods](#memory-strategy-methods)
   - [Policy Engine](#policy-engine)
@@ -2823,6 +2824,44 @@ const memory = new agentcore.Memory(this, "MyMemory", {
   memoryStrategies: [customSemanticStrategy],
 });
 ```
+
+### Long-term memory record expiration
+
+By default, long-term memory records do not expire. To delete them after a retention period, set `recordExpirationDuration`
+on a strategy created with `MemoryStrategy.usingSemantic()`, `usingUserPreference()`, `usingSummarization()` or `usingEpisodic()`.
+The value must be a whole number of days and at least 31 days. This is separate from `expirationDuration` on `Memory`, which only applies to short-term events.
+
+```typescript fixture=default
+const memory = new agentcore.Memory(this, "MyMemory", {
+  memoryName: "my_memory",
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingSemantic({
+      strategyName: "facts",
+      namespaces: ["/facts/{actorId}"],
+      recordExpirationDuration: cdk.Duration.days(90),
+    }),
+    agentcore.MemoryStrategy.usingUserPreference({
+      strategyName: "preferences",
+      namespaces: ["/preferences/{actorId}"],
+      recordExpirationDuration: cdk.Duration.days(90),
+    }),
+    agentcore.MemoryStrategy.usingSummarization({
+      strategyName: "summaries",
+      namespaces: ["/summaries/{actorId}/{sessionId}"],
+      recordExpirationDuration: cdk.Duration.days(180),
+    }),
+  ],
+});
+```
+
+Keep the following in mind:
+
+- The principal that deploys the stack needs the `bedrock-agentcore:UpdateMemoryRecordExpirySpecification` permission, in addition to the permissions for creating and updating the memory. Without it the request is denied with `AccessDeniedException`.
+- If you set the value on more than one strategy in a memory, semantic and user preference strategies must use the same value, and summary and episodic strategies must use the same value. The construct does not check this.
+- The expiration is applied when a record is generated. Changing it only affects records created after the change.
+- Self-managed strategies do not have this property. With a self-managed strategy you set retention per request on the `BatchCreateMemoryRecords` and `BatchUpdateMemoryRecords` APIs.
+
+For more information, see [Set a time-to-live for long-term memory records](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/long-term-record-ttl.html).
 
 ### Memory with self-managed Strategies
 

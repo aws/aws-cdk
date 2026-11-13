@@ -3124,3 +3124,173 @@ describe('Memory with KMS-encrypted Kinesis stream tests', () => {
     });
   });
 });
+
+describe('Memory strategy record expiration tests', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack(new cdk.App(), 'test-stack');
+  });
+
+  const STRATEGIES: Array<[string, typeof MemoryStrategy.usingSemantic, string]> = [
+    ['semantic', MemoryStrategy.usingSemantic, 'SemanticMemoryStrategy'],
+    ['user preference', MemoryStrategy.usingUserPreference, 'UserPreferenceMemoryStrategy'],
+    ['summarization', MemoryStrategy.usingSummarization, 'SummaryMemoryStrategy'],
+    ['episodic', MemoryStrategy.usingEpisodic, 'EpisodicMemoryStrategy'],
+  ];
+
+  test.each(STRATEGIES)('Should render record expiry on a %s strategy without overrides', (_name, factory, cfnKey) => {
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [
+        factory({
+          strategyName: 'strategy',
+          namespaces: ['/records/{actorId}'],
+          recordExpirationDuration: Duration.days(90),
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        [cfnKey]: Match.objectLike({
+          Name: 'strategy',
+          RecordExpirySpecification: { RecordExpiryDurationDays: 90 },
+        }),
+      }],
+    });
+  });
+
+  test('Should render record expiry on an episodic strategy with reflection', () => {
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [
+        MemoryStrategy.usingEpisodic({
+          strategyName: 'episodes',
+          namespaces: ['/episodes/{actorId}'],
+          reflectionConfiguration: { namespaces: ['/reflections/{actorId}'] },
+          recordExpirationDuration: Duration.days(31),
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        EpisodicMemoryStrategy: Match.objectLike({
+          ReflectionConfiguration: { Namespaces: ['/reflections/{actorId}'] },
+          RecordExpirySpecification: { RecordExpiryDurationDays: 31 },
+        }),
+      }],
+    });
+  });
+
+  test('Should render record expiry on the custom strategy when overrides are set', () => {
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [
+        MemoryStrategy.usingSemantic({
+          strategyName: 'facts',
+          namespaces: ['/facts/{actorId}'],
+          customExtraction: { model: TEST_MODEL, appendToPrompt: 'Extract facts' },
+          recordExpirationDuration: Duration.days(365),
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        CustomMemoryStrategy: Match.objectLike({
+          RecordExpirySpecification: { RecordExpiryDurationDays: 365 },
+          Configuration: {
+            SemanticOverride: {
+              Extraction: {
+                ModelId: 'anthropic.claude-sonnet-4-6',
+                AppendToPrompt: 'Extract facts',
+              },
+            },
+          },
+        }),
+      }],
+    });
+  });
+
+  test('Should accept a duration in another unit that is a whole number of days', () => {
+    const strategy = MemoryStrategy.usingSemantic({
+      strategyName: 'facts',
+      namespaces: ['/facts/{actorId}'],
+      recordExpirationDuration: Duration.hours(31 * 24),
+    });
+
+    expect(strategy.render()).toEqual({
+      semanticMemoryStrategy: expect.objectContaining({
+        recordExpirySpecification: { recordExpiryDurationDays: 31 },
+      }),
+    });
+  });
+
+  test.each([
+    ['built-in', {}, 'SemanticMemoryStrategy'],
+    ['custom', { customExtraction: { model: TEST_MODEL, appendToPrompt: 'Extract facts' } }, 'CustomMemoryStrategy'],
+  ])('Should not render record expiry on a %s strategy when omitted', (_name, extraProps, cfnKey) => {
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [
+        MemoryStrategy.usingSemantic({
+          strategyName: 'facts',
+          namespaces: ['/facts/{actorId}'],
+          ...extraProps,
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        [cfnKey]: Match.objectLike({ RecordExpirySpecification: Match.absent() }),
+      }],
+    });
+  });
+
+  test('Should not render record expiry on an episodic strategy with reflection when omitted', () => {
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [MemoryStrategy.usingBuiltInEpisodic()],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        EpisodicMemoryStrategy: Match.objectLike({ RecordExpirySpecification: Match.absent() }),
+      }],
+    });
+  });
+
+  test.each([
+    ['below the minimum', Duration.days(30), 'must be at least 31 days, got 30 days'],
+    ['zero', Duration.days(0), 'must be at least 31 days, got 0 days'],
+    ['below the minimum in another unit', Duration.hours(24), 'must be at least 31 days, got 1 days'],
+    ['a fractional number of days', Duration.days(31.5), 'must be a whole number of days, got 31.5 days'],
+    ['a fractional number of days in another unit', Duration.hours(31 * 24 + 1), 'must be a whole number of days'],
+  ])('Should throw when the duration is %s', (_name, recordExpirationDuration, message) => {
+    expect(() => MemoryStrategy.usingSemantic({
+      strategyName: 'facts',
+      namespaces: ['/facts/{actorId}'],
+      recordExpirationDuration,
+    })).toThrow(message);
+  });
+
+  test('Should skip validation for a token', () => {
+    const days = new cdk.CfnParameter(stack, 'Days', { type: 'Number' });
+
+    new Memory(stack, 'Memory', {
+      memoryStrategies: [
+        MemoryStrategy.usingSemantic({
+          strategyName: 'facts',
+          namespaces: ['/facts/{actorId}'],
+          recordExpirationDuration: Duration.days(days.valueAsNumber),
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: [{
+        SemanticMemoryStrategy: Match.objectLike({
+          RecordExpirySpecification: { RecordExpiryDurationDays: { Ref: 'Days' } },
+        }),
+      }],
+    });
+  });
+});
