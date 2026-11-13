@@ -16,6 +16,7 @@ import type * as s3 from '../../../aws-s3';
 import type { Duration } from '../../../core';
 import { Aws, CfnCapabilities, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError, Annotations } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
+import { posixShellEscapeMinimal } from '../../../core/lib/private/shell-escape';
 import * as cxapi from '../../../cx-api';
 import type { FileSet, IFileSetProducer, StackAsset, StackDeployment, Step } from '../blueprint';
 import { AssetType, ManualApprovalStep, ShellStep } from '../blueprint';
@@ -861,10 +862,10 @@ export class CodePipeline extends PipelineBase {
       projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
       input: this._cloudAssemblyFileSet,
       installCommands: [
-        `npm install -g aws-cdk${installSuffix}`,
+        `npm install -g ${posixShellEscapeMinimal(`aws-cdk${installSuffix}`)}`,
       ],
       commands: [
-        `cdk -a ${toPosixPath(embeddedAsmPath(this.pipeline))} deploy ${pipelineStackIdentifier} --require-approval=never --verbose`,
+        `cdk -a ${posixShellEscapeMinimal(toPosixPath(embeddedAsmPath(this.pipeline)))} deploy ${posixShellEscapeMinimal(pipelineStackIdentifier)} --require-approval=never --verbose`,
       ],
 
       rolePolicyStatements: [
@@ -900,7 +901,7 @@ export class CodePipeline extends PipelineBase {
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
     const commands = assets.map(asset => {
       const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
-      return `cdk-assets --path "${toPosixPath(relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
+      return `cdk-assets --path ${posixShellEscapeMinimal(toPosixPath(relativeAssetManifestPath))} --verbose publish ${posixShellEscapeMinimal(asset.assetSelector)}`;
     });
 
     const assetType = assets[0].assetType;
@@ -919,7 +920,7 @@ export class CodePipeline extends PipelineBase {
     const script = new CodeBuildStep(node.id, {
       commands,
       installCommands: [
-        `npm install -g cdk-assets@${this.cdkAssetsCliVersion}`,
+        `npm install -g ${posixShellEscapeMinimal(`cdk-assets@${this.cdkAssetsCliVersion}`)}`,
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {

@@ -10,6 +10,7 @@ import * as ec2 from '../../../../aws-ec2';
 import * as iam from '../../../../aws-iam';
 import { Stack, Token, UnscopedValidationError } from '../../../../core';
 import { lit } from '../../../../core/lib/private/literal-string';
+import { posixShellEscape } from '../../../../core/lib/private/shell-escape';
 import type { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
@@ -377,16 +378,16 @@ function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileS
   return inputs.map(input => {
     const fragments = [];
 
-    fragments.push(`[ ! -d "${input.directory}" ] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`);
+    fragments.push(`[ ! -d ${posixShellEscape(input.directory)} ] || { echo ${posixShellEscape(`additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.`)}; exit 1; }`);
 
     const parentDirectory = path.dirname(input.directory);
     if (!['.', '..'].includes(parentDirectory)) {
-      fragments.push(`mkdir -p -- "${parentDirectory}"`);
+      fragments.push(`mkdir -p -- ${posixShellEscape(parentDirectory)}`);
     }
 
     const artifact = artifacts.toCodePipeline(input.fileSet);
 
-    fragments.push(`ln -s -- "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
+    fragments.push(`ln -s -- "$CODEBUILD_SRC_DIR_${artifact.artifactName}" ${posixShellEscape(input.directory)}`);
 
     return fragments.join(' && ');
   });
