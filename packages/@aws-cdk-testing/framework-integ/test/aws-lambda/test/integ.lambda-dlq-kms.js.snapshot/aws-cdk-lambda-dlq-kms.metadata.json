@@ -1,0 +1,315 @@
+{
+  "/aws-cdk-lambda-dlq-kms/QueueKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/DeadLetterQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS",
+        "encryptionMasterKey": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/TopicKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/DeadLetterTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "masterKey": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/QueueKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueueKey8E59F72C"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/DeadLetterQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeadLetterQueue9F481546"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedQueue/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionWithEncryptedQueueF8D11631"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedQueue/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/TopicKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicKeyB2E0C9CB"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/DeadLetterTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeadLetterTopicC237650B"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedTopic/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionWithEncryptedTopic68BE61BE"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedTopic/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedQueue/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionWithEncryptedQueueServiceRole34F2FF5A"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedQueue/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedQueue/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionWithEncryptedQueueLogGroup7AFA33EE"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedTopic/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionWithEncryptedTopicServiceRoleDFBC932D"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedTopic/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedTopic/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionWithEncryptedTopicLogGroup5AE595DE"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedQueue/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionWithEncryptedQueueServiceRoleDefaultPolicyF775CC82"
+    }
+  ],
+  "/aws-cdk-lambda-dlq-kms/FunctionWithEncryptedTopic/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionWithEncryptedTopicServiceRoleDefaultPolicyB3AFCD7B"
+    }
+  ]
+}

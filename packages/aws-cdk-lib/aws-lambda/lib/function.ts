@@ -1770,6 +1770,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         actions: ['sns:Publish'],
         resources: [deadLetterQueue.topicArn],
       }));
+      // Publishing to a topic encrypted with a customer managed key also requires access to the key.
+      // https://docs.aws.amazon.com/sns/latest/dg/sns-key-management.html
+      deadLetterQueue.masterKey?.grant(this, 'kms:Decrypt', 'kms:GenerateDataKey*');
     } else {
       deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
         retentionPeriod: Duration.days(14),
@@ -1778,6 +1781,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         actions: ['sqs:SendMessage'],
         resources: [deadLetterQueue.queueArn],
       }));
+      // Sending to a queue encrypted with a customer managed key also requires access to the key.
+      // https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-key-management.html
+      deadLetterQueue.encryptionMasterKey?.grant(this, 'kms:Decrypt', 'kms:GenerateDataKey');
     }
 
     return deadLetterQueue;
