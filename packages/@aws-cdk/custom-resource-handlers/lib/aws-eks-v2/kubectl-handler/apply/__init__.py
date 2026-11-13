@@ -11,6 +11,7 @@ os.environ['PATH'] = '/opt/kubectl:/opt/awscli:' + os.environ['PATH']
 
 outdir = os.environ.get('TEST_OUTDIR', '/tmp')
 kubeconfig = os.path.join(outdir, 'kubeconfig')
+MAX_ERROR_MESSAGE_BYTES = 1024
 
 
 def apply_handler(event, context):
@@ -86,7 +87,10 @@ def kubectl(verb, file, *opts):
                 retry = retry - 1
                 logger.info("kubectl timed out, retries left: %s" % retry)
             else:
-                raise Exception(output)
+                logger.error("kubectl command failed: %s", output.decode('utf-8', errors='replace'))
+                if len(output) > MAX_ERROR_MESSAGE_BYTES:
+                    output = b'kubectl output truncated; see CloudWatch Logs for the full error.\n' + output[-MAX_ERROR_MESSAGE_BYTES:]
+                raise Exception(output.decode('utf-8', errors='replace'))
         else:
             logger.info(output)
             return
