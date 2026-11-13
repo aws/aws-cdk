@@ -6,7 +6,7 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'cloudfront-custom-origin-group');
 const group = new origins.OriginGroup({
-  originId: 'application-failover',
+  originGroupId: 'application-failover',
   primaryOrigin: new origins.HttpOrigin('primary.example.com'),
   fallbackOrigin: new origins.HttpOrigin('fallback.example.com'),
 });

@@ -10,7 +10,7 @@ export interface OriginGroupProps {
    *
    * @default - an origin group ID is generated
    */
-  readonly originId?: string;
+  readonly originGroupId?: string;
 
   /**
    * The primary origin that should serve requests for this group.
@@ -58,8 +58,8 @@ export class OriginGroup implements cloudfront.IOrigin {
 
     return {
       originProperty: primaryOriginConfig.originProperty,
-      originGroupId: this.props.originId,
       failoverConfig: {
+        originGroupId: this.props.originGroupId,
         failoverOrigin: this.props.fallbackOrigin,
         statusCodes: this.props.fallbackStatusCodes,
       },

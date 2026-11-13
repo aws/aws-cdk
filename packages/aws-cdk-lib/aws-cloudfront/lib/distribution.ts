@@ -779,7 +779,7 @@ export class Distribution extends Resource implements IDistribution {
       const duplicateId = this.boundOrigins.find(boundOrigin =>
         boundOrigin.originProperty?.id === originBindConfig.originProperty?.id || boundOrigin.originGroupId === originId);
       if (duplicateId) {
-        throw new ValidationError(lit`OriginIdAlreadyExists`, `Origin with id ${originId} already exists. OriginIds must be unique within a distribution`, this);
+        throw new ValidationError(lit`OriginIdAlreadyExists`, `Origin with id ${originId} already exists. Origin and origin group IDs must be unique within a distribution`, this);
       }
       if (!originBindConfig.failoverConfig) {
         this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig, originGroupId: undefined });
@@ -789,10 +789,10 @@ export class Distribution extends Resource implements IDistribution {
         }
         const groupIndex = this.originGroups.length + 1;
         const generatedGroupId = Names.uniqueId(new Construct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
-        const originGroupId = originBindConfig.originGroupId ?? generatedGroupId;
+        const originGroupId = originBindConfig.failoverConfig.originGroupId ?? generatedGroupId;
         if (this.boundOrigins.some(boundOrigin =>
           boundOrigin.originGroupId === originGroupId || boundOrigin.originId === originGroupId) || originId === originGroupId) {
-          throw new ValidationError(lit`OriginIdAlreadyExists`, `Origin with id ${originGroupId} already exists. OriginIds must be unique within a distribution`, this);
+          throw new ValidationError(lit`OriginIdAlreadyExists`, `Origin with id ${originGroupId} already exists. Origin and origin group IDs must be unique within a distribution`, this);
         }
         this.boundOrigins.push({ origin, originId, distributionId, ...originBindConfig, originGroupId });
 

@@ -793,7 +793,7 @@ const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
     origin: new origins.OriginGroup({
-      originId: 'application-failover',
+      originGroupId: 'application-failover',
       primaryOrigin: origins.S3BucketOrigin.withOriginAccessControl(myBucket),
       fallbackOrigin: new origins.HttpOrigin('www.example.com'),
       // optional, defaults to: 500, 502, 503 and 504
