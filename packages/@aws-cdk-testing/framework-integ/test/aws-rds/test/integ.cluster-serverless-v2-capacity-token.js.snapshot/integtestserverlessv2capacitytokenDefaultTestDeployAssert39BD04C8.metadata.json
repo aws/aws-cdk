@@ -1,4 +1,10 @@
 {
+  "/integ-test-serverless-v2-capacity-token/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestserverlessv2capacitytokenDefaultTestDeployAssert39BD04C8.template.json"
+    }
+  ],
   "/integ-test-serverless-v2-capacity-token/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

@@ -6,13 +6,17 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at IntegTestBaseStack._silenceLiteralAzWarning (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enable-local-write-forwarding.js:44:13)",
+        "    at Validations.acknowledge (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at IntegTestBaseStack._silenceLiteralAzWarning (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/Users/gasolima/work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enable-local-write-forwarding.js:44:13)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EnableLocalWriteForwardingClusterStack.template.json"
     }
   ],
   "/EnableLocalWriteForwardingClusterStack/VPC": [
@@ -53,19 +57,20 @@
       "type": "aws:cdk:warning",
       "data": "Cluster DatabaseCluster only has serverless readers and no reader is in promotion tier 0-1.Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to availability issues if a failover event occurs. It is recommended that at least one reader has `scaleWithWriter` set to true [ack: @aws-cdk/aws-rds:noFailoverServerlessReaders]",
       "trace": [
-        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "PropertyInjectable.validateClusterInstances (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:614:51)",
-        "PropertyInjectable._createInstances (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:556:14)",
-        "new DatabaseCluster (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:1054:62)",
-        "new DatabaseCluster (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enable-local-write-forwarding.js:45:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
-        "Object..js (node:internal/modules/cjs/loader:2002:10)",
-        "Module.load (node:internal/modules/cjs/loader:1594:32)",
-        "Module._load (node:internal/modules/cjs/loader:1396:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
-        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "Annotations.addMessage (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "PropertyInjectable.validateClusterInstances (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:614:51)",
+        "PropertyInjectable._createInstances (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:556:14)",
+        "new DatabaseCluster (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:1054:62)",
+        "new DatabaseCluster (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/gasolima/work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enable-local-write-forwarding.js:45:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1734:14)",
+        "Object..js (node:internal/modules/cjs/loader:1899:10)",
+        "Module.load (node:internal/modules/cjs/loader:1469:32)",
+        "Module._load (node:internal/modules/cjs/loader:1286:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:235:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:152:5)",
         "node:internal/main/run_main_module:33:47"
       ]
     }
@@ -96,19 +101,20 @@
       "type": "aws:cdk:warning",
       "data": "Cluster DatabaseClusterPostgresql only has serverless readers and no reader is in promotion tier 0-1.Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to availability issues if a failover event occurs. It is recommended that at least one reader has `scaleWithWriter` set to true [ack: @aws-cdk/aws-rds:noFailoverServerlessReaders]",
       "trace": [
-        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "PropertyInjectable.validateClusterInstances (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:614:51)",
-        "PropertyInjectable._createInstances (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:556:14)",
-        "new DatabaseCluster (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:1054:62)",
-        "new DatabaseCluster (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/aurora-postgres-18-3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enable-local-write-forwarding.js:54:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
-        "Object..js (node:internal/modules/cjs/loader:2002:10)",
-        "Module.load (node:internal/modules/cjs/loader:1594:32)",
-        "Module._load (node:internal/modules/cjs/loader:1396:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
-        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "Annotations.addMessage (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "PropertyInjectable.validateClusterInstances (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:614:51)",
+        "PropertyInjectable._createInstances (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:556:14)",
+        "new DatabaseCluster (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:1054:62)",
+        "new DatabaseCluster (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/gasolima/work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-enable-local-write-forwarding.js:54:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1734:14)",
+        "Object..js (node:internal/modules/cjs/loader:1899:10)",
+        "Module.load (node:internal/modules/cjs/loader:1469:32)",
+        "Module._load (node:internal/modules/cjs/loader:1286:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:235:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:152:5)",
         "node:internal/main/run_main_module:33:47"
       ]
     }
