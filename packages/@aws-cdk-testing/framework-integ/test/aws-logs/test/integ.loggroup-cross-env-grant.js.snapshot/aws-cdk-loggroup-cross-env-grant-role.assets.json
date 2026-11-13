@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "f2da24259e4aee2257b39a93b3e1793c5d909cc161330905f15dbf2d96678365": {
+      "displayName": "aws-cdk-loggroup-cross-env-grant-role Template",
+      "source": {
+        "path": "aws-cdk-loggroup-cross-env-grant-role.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-west-2-2dd6f1ea": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-west-2",
+          "objectKey": "f2da24259e4aee2257b39a93b3e1793c5d909cc161330905f15dbf2d96678365.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
