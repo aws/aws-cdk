@@ -1091,6 +1091,8 @@ export class Project extends ProjectBase {
   private readonly _encryptionKey: IBox<kms.IKey | undefined> = Box.fromValue<kms.IKey | undefined>(undefined);
   private readonly _fileSystemLocations: IArrayBox<CfnProject.ProjectFileSystemLocationProperty>;
   private readonly _batchServiceRole: IBox<iam.Role | undefined> = Box.fromValue<iam.Role | undefined>(undefined);
+  private readonly _environmentVariables = new Map<string, CfnProject.EnvironmentVariableProperty>();
+  private readonly checkSecretsInPlainTextEnvVariables: boolean;
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -1129,6 +1131,7 @@ export class Project extends ProjectBase {
 
     // Inject download commands for asset if requested
     const environmentVariables = props.environmentVariables || {};
+    this.checkSecretsInPlainTextEnvVariables = props.checkSecretsInPlainTextEnvVariables ?? true;
     const buildSpec = props.buildSpec;
     if (this.source.type === NO_SOURCE_TYPE && (buildSpec === undefined || !buildSpec.isImmediate)) {
       throw new ValidationError(lit`ProjectSSourceNosource`, "If the Project's source is NoSource, you need to provide a concrete buildSpec", this);
@@ -1269,6 +1272,26 @@ export class Project extends ProjectBase {
   }
 
   /**
+   * Adds an environment variable to the Project.
+   *
+   * If an environment variable with the same name already exists, it is replaced.
+   * The Project's role is granted access to the secret or parameter when the variable uses one.
+   *
+   * @param name the name of the environment variable
+   * @param variable the environment variable type and value
+   * @config
+   */
+  @MethodMetadata()
+  public addEnvironmentVariable(name: string, variable: BuildEnvironmentVariable): void {
+    const [environmentVariable] = Project.serializeEnvVariables(
+      { [name]: variable },
+      this.checkSecretsInPlainTextEnvVariables,
+      this,
+    );
+    this._environmentVariables.set(name, environmentVariable);
+  }
+
+  /**
    * Adds a secondary source to the Project.
    *
    * @param secondarySource the source to add as a secondary source
@@ -1390,7 +1413,14 @@ export class Project extends ProjectBase {
       vars[name] = projectVars[name];
     }
 
-    const hasEnvironmentVars = Object.keys(vars).length > 0;
+    const serializedEnvironmentVariables = Project.serializeEnvVariables(
+      vars,
+      props.checkSecretsInPlainTextEnvVariables ?? true,
+      this,
+    );
+    for (const environmentVariable of serializedEnvironmentVariables) {
+      this._environmentVariables.set(environmentVariable.name, environmentVariable);
+    }
 
     const errors = this.buildImage.validate(env);
 
@@ -1438,9 +1468,9 @@ export class Project extends ProjectBase {
       fleet: this.configureFleet(env),
       hostKernel: env.hostKernel,
       computeType: env.computeType || this.buildImage.defaultComputeType,
-      environmentVariables: hasEnvironmentVars
-        ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
-        : undefined,
+      environmentVariables: Lazy.any({
+        produce: () => this._environmentVariables.size > 0 ? Array.from(this._environmentVariables.values()) : undefined,
+      }),
       dockerServer: env.dockerServer ? {
         computeType: env.dockerServer.computeType,
         securityGroupIds: env.dockerServer.securityGroups?.map(e => e.securityGroupId),
