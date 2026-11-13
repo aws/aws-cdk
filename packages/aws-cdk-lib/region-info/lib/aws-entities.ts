@@ -74,6 +74,7 @@ export const AWS_REGIONS_AND_RULES: readonly (string | symbol)[] = [
   'us-isof-south-1', // US ISOF SOUTH
   'us-isof-east-1', // US ISOF EAST
   'me-west-1', // Middle East (Saudi Arabia)
+  'sa-west-1', // South America (Chile)
 ];
 
 /**
