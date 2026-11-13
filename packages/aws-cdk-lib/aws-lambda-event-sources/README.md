@@ -418,6 +418,44 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
+### Consumption mode (Kafka queues)
+
+By default, Lambda reads a Kafka topic as a consumer group: each partition is read by one poller, in order
+(`lambda.KafkaConsumptionMode.STREAM`). If your self-managed cluster runs Kafka 4.2.0 or later, you can instead read
+the topic as a share group (`lambda.KafkaConsumptionMode.QUEUE`). In queue mode, several pollers can read the same
+partition in parallel, which removes head-of-line blocking at the cost of ordering.
+
+```ts
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { SelfManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+declare const myFunction: lambda.Function;
+declare const secret: Secret;
+
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers: ['kafka-broker-1:9092', 'kafka-broker-2:9092'],
+  topic: 'orders',
+  secret,
+  consumerGroupId: 'orders-queue',
+  consumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+}));
+```
+
+Queue mode changes how some options behave:
+
+* `startingPosition` and `startingPositionTimestamp` aren't supported. Leave them unset.
+* `maxBatchingWindow` isn't supported. Leave it unset.
+* `retryAttempts` accepts 0 to 10000, and defaults to 0. `-1` (infinite retries) isn't supported. As in stream mode,
+  `retryAttempts` is only available in provisioned mode (`provisionedPollerConfig`).
+* The consumption mode can't be changed after the event source mapping is created. To switch modes, create a new
+  event source (for example, with a different `consumerGroupId`) and remove the old one.
+* `consumerGroupId` is the name of the share group. Kafka doesn't allow a consumer group and a share group with the
+  same name, so if the ID already exists on the broker as a consumer group, Lambda disables the mapping. Use a new ID,
+  or omit it to let Lambda generate one.
+
+Other options work the same as in stream mode. Queue mode isn't available for `ManagedKafkaEventSource` (Amazon
+MSK).
+
 ### Failure Destinations
 
 You can specify failure destinations for records that fail processing. Kafka event sources support Kafka Topic Destinations, S3 Bucket Destinations, SQS Queue and SNS topic:
