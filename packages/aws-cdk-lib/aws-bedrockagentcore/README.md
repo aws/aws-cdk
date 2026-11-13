@@ -2575,7 +2575,7 @@ To write to long-term memory, you need to configure extraction strategies which 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `memoryName` | `string` | No | The name of the memory. If not provided, a unique name will be auto-generated |
-| `expirationDuration` | `Duration` | No | Short-term memory expiration in days (between 7 and 365). Default: 90 days |
+| `expirationDuration` | `Duration` | No | Short-term memory expiration in days (between 3 and 365). Default: 90 days |
 | `description` | `string` | No | Optional description for the memory. Default: no description. |
 | `kmsKey` | `IKey` | No | Custom KMS key to use for encryption. Default: Your data is encrypted with a key that AWS owns and manages for you |
 | `memoryStrategies` | `MemoryStrategyBase[]` | No | Built-in extraction strategies to use for this memory. Default: No extraction strategies (short term memory only) |
