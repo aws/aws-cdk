@@ -90,5 +90,6 @@
   "@aws-cdk/core:validateAgainstDefaultRules": true,
   "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
   "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true,
-  "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": true
+  "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": true,
+  "@aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy": true
 }

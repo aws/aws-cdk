@@ -794,3 +794,19 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy`
+
+When enabled, the policy grants `job-definition/<name>` and `job-definition/<name>:*` instead of `job-definition/*`. A JsonPath or JSONata job definition keeps `job-definition/*`, and a JsonPath or JSONata queue keeps `*`. A token must resolve to a job definition ARN, as `jobDefinition.jobDefinitionArn` does.
+
+It is not on by default because other states that share the role, and submit a different job definition, would get AccessDenied.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:fixBatchSubmitJobPolicy": true
+  }
+}
+```
