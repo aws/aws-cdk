@@ -1,7 +1,7 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
@@ -35,7 +35,7 @@ class EksClusterStack extends Stack {
     this.cluster.addNodegroupCapacity('LinuxNodegroup', {
       amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
     });
-    this.cluster.addNodegroupCapacity('WindowsNodegroup', {
+    const windowsNodegroup = this.cluster.addNodegroupCapacity('WindowsNodegroup', {
       amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
       taints: [
         {
@@ -45,6 +45,20 @@ class EksClusterStack extends Stack {
         },
       ],
     });
+
+    // Read back the deployed aws-auth role mappings: kube-proxy on Windows nodes
+    // needs the node role mapped to the eks:kube-proxy-windows group.
+    const mapRoles = new eks.KubernetesObjectValue(this, 'AwsAuthMapRolesValue', {
+      cluster: this.cluster,
+      objectType: 'configmap',
+      objectName: 'aws-auth',
+      objectNamespace: 'kube-system',
+      jsonPath: '.data.mapRoles',
+    });
+    mapRoles.node.addDependency(windowsNodegroup);
+    mapRoles.node.addDependency(this.cluster.awsAuth);
+
+    new CfnOutput(this, 'AwsAuthMapRoles', { value: mapRoles.value });
   }
 }
 
@@ -56,9 +70,25 @@ const app = new App({
 });
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-windows-ng-test');
-new integ.IntegTest(app, 'aws-cdk-eks-cluster-windows-ng', {
+const test = new integ.IntegTest(app, 'aws-cdk-eks-cluster-windows-ng', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
+
+// Fails the run unless the deployed aws-auth ConfigMap maps a node role to eks:kube-proxy-windows.
+test.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+  StackName: stack.stackName,
+}).expect(integ.ExpectedResult.objectLike({
+  Stacks: integ.Match.arrayWith([
+    integ.Match.objectLike({
+      Outputs: integ.Match.arrayWith([
+        integ.Match.objectLike({
+          OutputKey: 'AwsAuthMapRoles',
+          OutputValue: integ.Match.stringLikeRegexp('eks:kube-proxy-windows'),
+        }),
+      ]),
+    }),
+  ]),
+}));
 app.synth();
