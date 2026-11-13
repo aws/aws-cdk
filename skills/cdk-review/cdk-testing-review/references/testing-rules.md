@@ -21,7 +21,9 @@ for the patch bar.
 - **Detection method (doc-absent detail):** ask **if I broke the behavior this test covers, would this
   test turn red?** If not, it is a non-asserting test — it raised the Codecov number without proving anything.
   Close it by asserting the specific property/value with `Match.objectLike` (or `objectEquals` /
-  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts.
+  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts. Before calling
+  an assertion vacuous, read what it actually compares against: for example, `addWarningV2` appends
+  `[ack: <id>]` to the message, so matching on the id is a real assertion.
 
   ```ts
   // NON-ASSERTING: runs the new prop path, asserts nothing that would catch a wrong value
@@ -40,18 +42,6 @@ for the patch bar.
   });
   ```
 
-**[TEST-UNIT-MISSING-REGRESSION] (BLOCKING)** — A new behavior or branch this PR adds ships with no test
-that would fail if it regressed: the path exists but nothing locks it in. Applied at branch granularity —
-every new `if`/`else` arm, default value, or computed property owes a test whose assertion depends on that
-outcome. See
-[`CONTRIBUTING.md § Step 3: Work your Magic`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-3-work-your-magic).
-- **Detection method (doc-absent detail):** enumerate the branches and observable outcomes the diff
-  introduces; for each, find the test whose assertion depends on that outcome — a branch with no such test
-  is the gap. For a subtle branch (which policy a `grant*` writes for a same-stack role vs an imported
-  cross-stack principal — an **identity/IAM policy** for the same-stack principal but an
-  **imported/resource policy** for the imported or cross-stack one, scoping the ARN differently), consult
-  the source of the method under test and a neighboring test covering the analogous branch, and compare.
-
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
 optional prop that changes a default with no backward-compat test locking the old default in. Both
 reachable states need a test: a regression in the state existing apps rely on (flag off / old default)
@@ -60,8 +50,7 @@ ships with the suite still green. See
 flag mechanics and
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for the backward-compat-validation rule: input that previously deployed successfully MUST gate behind a
-flag — both states then owe coverage; synth-accepted-but-always-deploy-failing input owes fail-fast
-synth-time validation and a negative-case test.
+flag — both states then owe coverage.
 - **Conditional (doc-absent detail):** down-tier RECOMMENDED when only the new state is untested and the
   preserved old default IS covered.
 - **Detection method (doc-absent detail):** if the diff touches `FeatureFlags.of(this).isEnabled(...)` or
@@ -69,38 +58,17 @@ synth-time validation and a negative-case test.
   when the untested state is the one existing apps depend on — a regression there breaks deployed stacks
   with the suite green.
 
-**[TEST-UNIT-EDGE-NEGATIVE] (RECOMMENDED)** — The happy path is tested but the boundary value, invalid
-input, failure/error path, or token input the code handles is not — where regressions hide. A branch that
-emits a diagnostic (`addWarningV2` / `addError` / `addInfo`) instead of throwing is also a reject arm: it
-owes a `hasWarning`/`hasError` assertion, because a "does not throw" test passes while the warning silently
-regresses. See
-[`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the
-`test.each` / `"fails"`-prefix / specific-message convention,
-[`assertions/README.md § Asserting Annotations`](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/assertions/README.md#asserting-annotations)
-for the `hasWarning`/`hasNoWarning`/`hasError` API, and
-[`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Mixin Testing`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#mixin-testing),
-which lists rejection and validation-failure as required coverage.
-- **Conditional (doc-absent detail):** up-tier BLOCKING when the diagnostic / reject arm is a security- or
-  correctness-critical guardrail the change adds.
-- **Detection method (doc-absent detail):** for each new validation / bound / failure path, look for the
-  negative case (`test.each([0, -1, 256])(...)`, an error test asserting the **specific** message). Token
-  inputs matter where the production code guards with `Token.isUnresolved` — that guard needs a test
-  passing an unresolved token. The warning branch is the reject arm most often missed:
+**[TEST-UNIT-MISSING-REGRESSION] (RECOMMENDED)** — A behavior this PR adds for its users ships with no
+test that would fail if it regressed: the feature's main effect on the synthesized template (the property
+it renders, the grant it adds, the resource it creates), or a non-obvious computation it performs. Judge
+at the level of the feature, not of each `if` arm. See
+[`CONTRIBUTING.md § Step 3: Work your Magic`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-3-work-your-magic).
+The testing skill's "What NOT to flag" lists what does not owe a test; it overrides this rule.
 
-  ```ts
-  // GAP: the open-CIDR branch calls addWarningV2, but the test only asserts not.toThrow()
-  test('accepts a CIDR', () => { expect(() => makeThing({ cidr: '0.0.0.0/0' })).not.toThrow(); });
-  // CLOSE IT: assert the warning actually fires for the discouraged input
-  test('warns on an open CIDR', () => {
-    makeThing(stack, { cidr: '0.0.0.0/0' });
-    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('.*0\\.0\\.0\\.0/0.*'));
-  });
-  ```
-
-**[TEST-UNIT-DOC-NAME] (OPTIONAL)** — A test name that describes nothing (`'works'`, `'test 2'`), so the
-suite fails as a specification; a merely awkward-but-descriptive title is a cosmetic, out of scope. See
-[`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the
-test-naming convention.
+**[TEST-UNIT-TOKEN-GUARD] (RECOMMENDED)** — The PR adds a `Token.isUnresolved()` guard (skipping a
+validation or a string manipulation for deploy-time values), and no test passes an unresolved token through
+it. Without the test, a later edit that drops the guard breaks every user passing a `Ref` or `Fn::` value.
+See [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety).
 
 ## Integration tests
 
@@ -197,7 +165,7 @@ for the assertion-owed cases and the `awsApiCall` → `ExpectedResult` API. Also
 **negative/failure path**: when the PR adds behavior that should DENY or reject, assert the denial (a
 `403`/error `ExpectedResult`), not only the success path.
 - **Calibration (doc-absent detail):** a single-property that just renders into the template does NOT owe
-  a deploy-time assertion — a successful deploy validates it, and demanding one there is the noise-cannon.
+  a deploy-time assertion — a successful deploy validates it.
 
 **[TEST-INTEG-REDUNDANT] (OPTIONAL)** — N resources created to exercise N enum values when one reconfigured
 resource, or the enum threaded through, gives the same synthesized-template coverage. One resource usually
