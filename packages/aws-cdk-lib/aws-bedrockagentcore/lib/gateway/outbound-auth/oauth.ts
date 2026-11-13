@@ -1,5 +1,6 @@
 import type { ICredentialProviderConfig } from './credential-provider';
 import { CredentialProviderType } from './credential-provider';
+import { workloadIdentityNamePrefix } from './workload-identity';
 import { Grant } from '../../../../aws-iam';
 import { Annotations, ArnFormat, Stack, Token } from '../../../../core';
 import type { IGateway } from '../gateway-base';
@@ -105,7 +106,7 @@ export class OAuthCredentialProviderConfiguration implements ICredentialProvider
       resourceName: 'default',
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-    const identityWildcardArn = `${directoryArn}/workload-identity/${gateway.gatewayName}-*`;
+    const identityWildcardArn = `${directoryArn}/workload-identity/${workloadIdentityNamePrefix(gateway, gateway.gatewayName)}-*`;
     const tokenVaultArn = stack.formatArn({
       service: 'bedrock-agentcore',
       resource: 'token-vault',

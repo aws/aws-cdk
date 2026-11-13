@@ -1239,3 +1239,83 @@ describe('Gateway target convenience methods tests', () => {
     });
   });
 });
+
+describe('Gateway outbound auth workload identity grants', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+  });
+
+  const providers = {
+    'OAuth': () => GatewayCredentialProvider.fromOauthIdentityArn({
+      providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/default/oauth2credentialprovider/example',
+      secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:example-abcdef',
+      scopes: ['read'],
+    }),
+    'API key': () => GatewayCredentialProvider.fromApiKeyIdentityArn({
+      providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/default/apikeycredentialprovider/example',
+      secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:example-abcdef',
+    }),
+  };
+
+  function grantedWorkloadIdentityPrefixes(template: Template): string[] {
+    const policies = JSON.stringify(template.findResources('AWS::IAM::Policy'));
+    return Array.from(new Set(Array.from(policies.matchAll(/\/workload-identity\/([^"*]+)-\*/g), (m) => m[1])));
+  }
+
+  test.each(Object.entries(providers))('%s grant uses the lowercased workload identity name for a mixed-case gateway name', (_, provider) => {
+    const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'OrdersGateway' });
+    gateway.addMcpServerTarget('Orders', {
+      gatewayTargetName: 'orders',
+      endpoint: 'https://example.com/mcp',
+      credentialProviderConfigurations: [provider()],
+    });
+
+    const template = Template.fromStack(stack);
+    expect(grantedWorkloadIdentityPrefixes(template)).toEqual(['ordersgateway']);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', { Name: 'OrdersGateway' });
+  });
+
+  test.each(Object.entries(providers))('%s grant uses the lowercased workload identity name for an auto-generated gateway name', (_, provider) => {
+    const gateway = new Gateway(stack, 'Gateway');
+    gateway.addMcpServerTarget('Orders', {
+      gatewayTargetName: 'orders',
+      endpoint: 'https://example.com/mcp',
+      credentialProviderConfigurations: [provider()],
+    });
+
+    const template = Template.fromStack(stack);
+    const gatewayName: string = Object.values(template.findResources('AWS::BedrockAgentCore::Gateway'))[0].Properties.Name;
+    expect(gatewayName).toMatch(/[A-Z]/);
+    expect(grantedWorkloadIdentityPrefixes(template)).toEqual([gatewayName.toLowerCase()]);
+  });
+
+  test.each(Object.entries(providers))('%s grant passes a deploy-time gateway name through unchanged', (_, provider) => {
+    const gateway = new Gateway(stack, 'Gateway', { gatewayName: cdk.Fn.importValue('SharedGatewayName') });
+    gateway.addMcpServerTarget('Orders', {
+      gatewayTargetName: 'orders',
+      endpoint: 'https://example.com/mcp',
+      credentialProviderConfigurations: [provider()],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Resource: Match.arrayWith([
+              {
+                'Fn::Join': ['', Match.arrayWith([
+                  ':workload-identity-directory/default/workload-identity/',
+                  { 'Fn::ImportValue': 'SharedGatewayName' },
+                  '-*',
+                ])],
+              },
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
+});
