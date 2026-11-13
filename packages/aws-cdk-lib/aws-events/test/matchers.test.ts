@@ -104,6 +104,27 @@ describe(Match, () => {
     expect(() => stack.resolve(Match.cidr('a.b.c/31'))).toThrow(/Invalid IP address range/);
   });
 
+  test('cidr accepts IPv6 addresses with an embedded IPv4 address', () => {
+    for (const range of [
+      '::ffff:192.168.0.1',
+      '::ffff:192.168.0.1/128',
+      '2001:db8::192.168.0.1',
+      '64:ff9b::192.0.2.33/96',
+    ]) {
+      expect(stack.resolve(Match.cidr(range))).toEqual([{ cidr: range }]);
+    }
+  });
+
+  test('cidr rejects IPv6 addresses with a malformed embedded IPv4 address', () => {
+    for (const range of [
+      '::ffff:1dd.1dd.1dd.1dd',
+      '::ffff:256.0.0.1',
+      '::ffff:999.999.999.999',
+    ]) {
+      expect(() => stack.resolve(Match.cidr(range))).toThrow(/Invalid IP address range/);
+    }
+  });
+
   test('anyOf', () => {
     expect(stack.resolve(Match.anyOf(Match.equal(0), Match.equal(1)))).toEqual([
       { numeric: ['=', 0] },
