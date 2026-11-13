@@ -1,0 +1,260 @@
+{
+  "/integ-security-group-allow-all-self/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-security-group-allow-all-self/EfaSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-security-group-allow-all-self/RestrictedEfaSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-security-group-allow-all-self/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-security-group-allow-all-self/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IsolatedSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IsolatedSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/integ-security-group-allow-all-self/EfaSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EfaSecurityGroup7CA28382"
+    }
+  ],
+  "/integ-security-group-allow-all-self/EfaSecurityGroup/from integsecuritygroupallowallselfEfaSecurityGroup9DA3D8DB:ALL TRAFFIC": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EfaSecurityGroupfromintegsecuritygroupallowallselfEfaSecurityGroup9DA3D8DBALLTRAFFIC0E95C9F7"
+    }
+  ],
+  "/integ-security-group-allow-all-self/EfaSecurityGroup/to integsecuritygroupallowallselfEfaSecurityGroup9DA3D8DB:ALL TRAFFIC": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EfaSecurityGrouptointegsecuritygroupallowallselfEfaSecurityGroup9DA3D8DBALLTRAFFICA7FC84FB"
+    }
+  ],
+  "/integ-security-group-allow-all-self/RestrictedEfaSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestrictedEfaSecurityGroupDBF54CC7"
+    }
+  ],
+  "/integ-security-group-allow-all-self/RestrictedEfaSecurityGroup/from integsecuritygroupallowallselfRestrictedEfaSecurityGroup1E6929B9:ALL TRAFFIC": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestrictedEfaSecurityGroupfromintegsecuritygroupallowallselfRestrictedEfaSecurityGroup1E6929B9ALLTRAFFIC5CBA3918"
+    }
+  ],
+  "/integ-security-group-allow-all-self/RestrictedEfaSecurityGroup/to integsecuritygroupallowallselfRestrictedEfaSecurityGroup1E6929B9:ALL TRAFFIC": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestrictedEfaSecurityGrouptointegsecuritygroupallowallselfRestrictedEfaSecurityGroup1E6929B9ALLTRAFFIC2A25EA78"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IsolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1SubnetE48C5737"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IsolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IsolatedSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2Subnet16364B91"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IsolatedSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+    }
+  ],
+  "/integ-security-group-allow-all-self/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    }
+  ]
+}
