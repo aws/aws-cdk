@@ -38,6 +38,12 @@ describe('network utils', () => {
         expect(false).toEqual(NetworkUtils.validIp(ip));
       }
     });
+    test('validIp returns false if an octet contains trailing non-numeric characters', () => {
+      const invalidIps = ['1.2.3.4abc', '10.0.0.1 extra', '12abc.1.1.1', '1.2.3.4x'];
+      for (const ip of invalidIps) {
+        expect(false).toEqual(NetworkUtils.validIp(ip));
+      }
+    });
   });
   describe('CidrBlock', () => {
     test('should return the next valid subnet from offset IP', () => {
