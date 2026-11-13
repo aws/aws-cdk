@@ -125,6 +125,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       cpu: props.cpu,
       gpuCount: props.gpuCount,
       command: props.command,
+      stopTimeout: props.stopTimeout,
       environment: this.environment,
       secrets: this.secrets,
       logging: this.logDriver,
