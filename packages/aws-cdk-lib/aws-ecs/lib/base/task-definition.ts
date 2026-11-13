@@ -888,6 +888,20 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     }
 
+    // GPU sharing (NVIDIA MPS) rules.
+    const sharedGpuContainers = this.containers.filter(c => c._gpuMode === 'shared');
+    if (sharedGpuContainers.length > 0) {
+      const sharedNames = sharedGpuContainers.map(c => c.containerName).join(', ');
+      if (this.isExternalCompatible || this.isFargateCompatible) {
+        ret.push(`gpuSharing is not supported for task definitions that are compatible with ${this.isExternalCompatible ? 'EXTERNAL' : 'FARGATE'}; found gpuSharing on containers: ${sharedNames}`);
+      }
+      const exclusiveGpuContainers = this.containers.filter(c => c._gpuMode === 'exclusive');
+      if (exclusiveGpuContainers.length > 0) {
+        const exclusiveNames = exclusiveGpuContainers.map(c => c.containerName).join(', ');
+        ret.push(`all containers that request GPUs must either all use gpuSharing or all use gpuCount; found gpuSharing on [${sharedNames}] and gpuCount on [${exclusiveNames}]`);
+      }
+    }
+
     // Validate that there are no named port mapping conflicts for Service Connect.
     const portMappingNames = new Map<string, string>(); // Map from port mapping name to most recent container it appears in.
     for (const container of this.containers) {
