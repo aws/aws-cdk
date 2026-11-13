@@ -28,6 +28,7 @@ import { throwIfInvalidPolicyEngineName, throwIfInvalidDescription, throwIfInval
 
 /**
  * Properties for creating a PolicyEngine resource
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface PolicyEngineProps {
   /**
@@ -72,6 +73,7 @@ export interface PolicyEngineProps {
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-engine.html
  * @resource AWS::BedrockAgentCore::PolicyEngine
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 @propertyInjectable
 export class PolicyEngine extends PolicyEngineBase {
