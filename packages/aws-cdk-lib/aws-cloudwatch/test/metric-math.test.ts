@@ -892,6 +892,40 @@ describe('Metric Math', () => {
       ]);
     });
 
+    test('MathExpression with INSIGHT_RULE_METRIC and inner metrics emits its own period', () => {
+      // WHEN
+      new Alarm(stack, 'Alarm', {
+        threshold: 1,
+        evaluationPeriods: 1,
+        metric: new MathExpression({
+          period: Duration.minutes(1),
+          expression: 'INSIGHT_RULE_METRIC("SomeId", "MaxContributorValue") / a',
+          usingMetrics: { a },
+        }),
+      });
+
+      // THEN
+      alarmMetricsAre([
+        {
+          Expression: 'INSIGHT_RULE_METRIC("SomeId", "MaxContributorValue") / a',
+          Id: 'expr_1',
+          Period: 60,
+        },
+        {
+          Id: 'a',
+          MetricStat: {
+            Metric: {
+              MetricName: 'ACount',
+              Namespace: 'Test',
+            },
+            Period: 60,
+            Stat: 'Average',
+          },
+          ReturnData: false,
+        },
+      ]);
+    });
+
     test('annotation for a mathexpression alarm is calculated based upon constituent metrics', () => {
       // GIVEN
       const alarm = new Alarm(stack, 'Alarm', {
