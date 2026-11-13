@@ -137,9 +137,12 @@ export interface InstanceProps {
   readonly vpcSubnets?: SubnetSelection;
 
   /**
-   * In which AZ to place the instance within the VPC
+   * In which AZ to place the instance within the VPC.
    *
-   * @default - Random zone.
+   * The instance is placed in a subnet selected by `vpcSubnets`. If an
+   * Availability Zone is specified, exactly one selected subnet must match it.
+   *
+   * @default - The Availability Zone of the first subnet selected by `vpcSubnets`.
    */
   readonly availabilityZone?: string;
 
