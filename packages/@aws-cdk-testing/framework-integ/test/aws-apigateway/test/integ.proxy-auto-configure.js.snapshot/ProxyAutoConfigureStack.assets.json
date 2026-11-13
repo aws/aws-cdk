@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "728577a246fbf11a835a7af11092a8fb16f66b26b1c6268b415987f46ef4de74": {
+      "displayName": "ProxyAutoConfigureStack Template",
+      "source": {
+        "path": "ProxyAutoConfigureStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-04cdbdae": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "728577a246fbf11a835a7af11092a8fb16f66b26b1c6268b415987f46ef4de74.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

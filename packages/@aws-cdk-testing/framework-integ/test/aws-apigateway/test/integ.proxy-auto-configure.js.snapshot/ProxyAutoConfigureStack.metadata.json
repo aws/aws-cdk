@@ -1,0 +1,553 @@
+{
+  "/ProxyAutoConfigureStack/EchoHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultIntegration": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "handler": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ProxyAutoConfigureStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ProxyAutoConfigureStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoHandlerB75BC5D4"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoHandler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApi8D2F2FF3"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiEndpoint2E8C05E7"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyApi0DF2D7AE"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyApiEndpoint2177970D"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RootProxyApi2E1670E9"
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RootProxyApiEndpoint3F5FBEC7"
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/ProxyAutoConfigureStack/Exports/Output{\"Ref\":\"ProxyApi0DF2D7AE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefProxyApi0DF2D7AE021446AD"
+    }
+  ],
+  "/ProxyAutoConfigureStack/Exports/Output{\"Ref\":\"ProxyApiDeploymentStageprod9EF20FCC\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefProxyApiDeploymentStageprod9EF20FCCE2363757"
+    }
+  ],
+  "/ProxyAutoConfigureStack/Exports/Output{\"Ref\":\"RootProxyApi2E1670E9\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefRootProxyApi2E1670E91042FE69"
+    }
+  ],
+  "/ProxyAutoConfigureStack/Exports/Output{\"Ref\":\"RootProxyApiDeploymentStageprod31FE8219\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefRootProxyApiDeploymentStageprod31FE8219461AF5CA"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoHandlerServiceRole659EA5BA"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoHandler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoHandlerLogGroup2ACA3184"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiDeploymentB8040D68fd0683b8c4183ce04ce2d812d4537ae8"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiDeploymentStageprod74C7DC01"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/{proxy+}": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "defaultIntegration": "*",
+        "defaultMethodOptions": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethod": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/ANY": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyApiDeployment6107D4F3cf63abc3f624f0f53c85e718bf468b3c"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyApiDeploymentStageprod9EF20FCC"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Default/api": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "pathPart": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RootProxyApiDeployment2AC1439Cb9298e21c607f91385009b0ed9e16289"
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RootProxyApiDeploymentStageprod31FE8219"
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Default/{proxy+}": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "defaultIntegration": "*",
+        "defaultMethodOptions": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "defaultIntegration": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethod": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Default/ANY": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/{proxy+}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiproxyF2F1122A"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/{proxy+}/ANY": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/ANY/ApiPermission.ProxyAutoConfigureStackEchoApi249555C0.ANY..": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiANYApiPermissionProxyAutoConfigureStackEchoApi249555C0ANY382E4D25"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/ANY/ApiPermission.Test.ProxyAutoConfigureStackEchoApi249555C0.ANY..": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiANYApiPermissionTestProxyAutoConfigureStackEchoApi249555C0ANY9F843F4B"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/ANY/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiANY5EDAA043"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Default/api/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyApiapiF51BF759"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Default/api/{proxy+}": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "defaultIntegration": "*",
+        "defaultMethodOptions": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "defaultIntegration": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethod": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Default/{proxy+}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RootProxyApiproxy8FFA9F33"
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Default/{proxy+}/ANY": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "requestParameters": "*"
+        }
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Default/ANY/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RootProxyApiANYAAEDBCED"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/{proxy+}/ANY/ApiPermission.ProxyAutoConfigureStackEchoApi249555C0.ANY..{proxy+}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiproxyANYApiPermissionProxyAutoConfigureStackEchoApi249555C0ANYproxy76DD7002"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/{proxy+}/ANY/ApiPermission.Test.ProxyAutoConfigureStackEchoApi249555C0.ANY..{proxy+}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiproxyANYApiPermissionTestProxyAutoConfigureStackEchoApi249555C0ANYproxy5095C935"
+    }
+  ],
+  "/ProxyAutoConfigureStack/EchoApi/Default/{proxy+}/ANY/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EchoApiproxyANY5F890123"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Default/api/{proxy+}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyApiapiproxy29D5AD0B"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Default/api/{proxy+}/ANY": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "requestParameters": "*"
+        }
+      }
+    }
+  ],
+  "/ProxyAutoConfigureStack/RootProxyApi/Default/{proxy+}/ANY/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RootProxyApiproxyANY332653E0"
+    }
+  ],
+  "/ProxyAutoConfigureStack/ProxyApi/Default/api/{proxy+}/ANY/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProxyApiapiproxyANY2023283D"
+    }
+  ]
+}
