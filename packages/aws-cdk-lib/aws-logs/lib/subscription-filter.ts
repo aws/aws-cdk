@@ -1,6 +1,8 @@
 import type { Construct } from 'constructs';
 import type { SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
+import { validateFieldSelectionCriteria, validateSystemFields } from './private/system-fields';
+import { SystemField } from './system-field';
 import type * as iam from '../../aws-iam';
 import { KinesisDestination } from '../../aws-logs-destinations';
 import { Resource, Token, ValidationError } from '../../core';
@@ -77,6 +79,9 @@ export class SubscriptionFilter extends Resource {
       throw new ValidationError(lit`DistributionPropertyKinesisDestination`, 'distribution property can only be used with KinesisDestination.', this);
     }
 
+    validateFieldSelectionCriteria(this, props.fieldSelectionCriteria);
+    validateSystemFields(this, 'emitSystemFields', props.emitSystemFields, [SystemField.AWS_ACCOUNT, SystemField.AWS_REGION, SystemField.SOURCE_LOG]);
+
     const destProps = props.destination.bind(this, props.logGroup);
 
     new CfnSubscriptionFilter(this, 'Resource', {
@@ -86,6 +91,8 @@ export class SubscriptionFilter extends Resource {
       filterPattern: props.filterPattern.logPatternString,
       filterName: this.physicalName,
       distribution: props.distribution,
+      fieldSelectionCriteria: props.fieldSelectionCriteria,
+      emitSystemFields: props.emitSystemFields,
     });
   }
 }

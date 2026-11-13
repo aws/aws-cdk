@@ -1,0 +1,191 @@
+{
+  "/aws-cdk-logs-filters-system-fields-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-logs-filters-system-fields-integ.template.json"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/MetricFilter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*",
+        "metricNamespace": "*",
+        "metricName": "*",
+        "filterPattern": {},
+        "dimensions": "*"
+      }
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/Stream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/SubscriptionFilter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*",
+        "destination": "*",
+        "filterPattern": {
+          "logPatternString": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/MetricFilter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MetricFilter1B93B6E5"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/Stream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Stream790BDEE4"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/SubscriptionFilter/CloudWatchLogsCanPutRecords": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantPassRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/SubscriptionFilter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubscriptionFilter0F100A80"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/SubscriptionFilter/CloudWatchLogsCanPutRecords/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubscriptionFilterCloudWatchLogsCanPutRecords31E66768"
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/SubscriptionFilter/CloudWatchLogsCanPutRecords/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-logs-filters-system-fields-integ/SubscriptionFilter/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubscriptionFilterCloudWatchLogsCanPutRecordsDefaultPolicy841B1D66"
+    }
+  ]
+}

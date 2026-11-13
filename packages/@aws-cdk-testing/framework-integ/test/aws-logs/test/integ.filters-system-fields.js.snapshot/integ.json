@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "logs-filters-system-fields/DefaultTest": {
+      "stacks": [
+        "aws-cdk-logs-filters-system-fields-integ"
+      ],
+      "assertionStack": "logs-filters-system-fields/DefaultTest/DeployAssert",
+      "assertionStackName": "logsfilterssystemfieldsDefaultTestDeployAssert0D41D22F"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
