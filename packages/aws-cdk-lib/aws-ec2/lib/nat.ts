@@ -1,7 +1,7 @@
 import type { IConnectable } from './connections';
 import { Connections } from './connections';
 import { CfnNatGateway } from './ec2.generated';
-import { Instance } from './instance';
+import { HttpTokens, Instance } from './instance';
 import type { InstanceType } from './instance-types';
 import { InstanceArchitecture } from './instance-types';
 import type { IKeyPair } from './key-pair';
@@ -277,6 +277,15 @@ export interface RegionalNatGatewayProviderProps {
  * Properties for a NAT instance
  */
 export interface NatInstanceProps {
+  /**
+   * Whether NAT instances require IMDSv2 for instance metadata requests.
+   *
+   * Ensure a custom machine image supports IMDSv2 before enabling this option.
+   *
+   * @default false
+   */
+  readonly requireImdsv2?: boolean;
+
   /**
    * The machine image (AMI) to use
    *
@@ -655,6 +664,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
         // presence of the key alone triggers the InstanceProps#keyName deprecation warning (#30806)
         ...(this.props.keyName !== undefined ? { keyName: this.props.keyName } : {}),
         creditSpecification: this.props.creditSpecification,
+        httpTokens: this.props.requireImdsv2 ? HttpTokens.REQUIRED : undefined,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);
@@ -816,6 +826,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
         // presence of the key alone triggers the InstanceProps#keyName deprecation warning (#30806)
         ...(this.props.keyName !== undefined ? { keyName: this.props.keyName } : {}),
         creditSpecification: this.props.creditSpecification,
+        httpTokens: this.props.requireImdsv2 ? HttpTokens.REQUIRED : undefined,
         userData,
       });
       // NAT instance routes all traffic, both ways

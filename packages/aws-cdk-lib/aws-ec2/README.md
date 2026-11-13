@@ -285,6 +285,19 @@ are managed by AWS. If you would prefer to use your own managed NAT
 *instances* instead, specify a different value for the `natGatewayProvider`
 property, as follows:
 
+To require IMDSv2 for instance metadata requests, set `requireImdsv2: true` on
+`NatProvider.instanceV2` (or the legacy `NatProvider.instance`). When omitted, the instance metadata settings follow the account and AMI defaults. Custom NAT machine images must
+support IMDSv2.
+
+```ts
+const natProvider = ec2.NatProvider.instanceV2({
+  instanceType: new ec2.InstanceType('t3.micro'),
+  requireImdsv2: true,
+});
+new ec2.Vpc(this, 'VpcWithImdsv2Nat', { natGatewayProvider: natProvider });
+```
+
+
 The construct will automatically selects the latest version of Amazon Linux 2023.
 If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
