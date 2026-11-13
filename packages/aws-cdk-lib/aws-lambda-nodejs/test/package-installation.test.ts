@@ -9,11 +9,12 @@ test('detects local version', () => {
   expect(PackageInstallation.detect('esbuild')).toEqual({
     isWorkspacePackage: true,
     version,
+    binPath: expect.stringMatching(/esbuild/),
   });
 });
 
 test('checks global version if local detection fails', () => {
-  const getModuleVersionMock = jest.spyOn(util, 'tryGetModuleVersionFromRequire').mockReturnValue(undefined);
+  const getModuleDetailsMock = jest.spyOn(util, 'tryGetModuleDetailsFromRequire').mockReturnValue(undefined);
   const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
@@ -29,11 +30,11 @@ test('checks global version if local detection fails', () => {
   });
 
   spawnSyncMock.mockRestore();
-  getModuleVersionMock.mockRestore();
+  getModuleDetailsMock.mockRestore();
 });
 
 test('returns undefined on error', () => {
-  const getModuleVersionMock = jest.spyOn(util, 'tryGetModuleVersionFromRequire').mockReturnValue(undefined);
+  const getModuleDetailsMock = jest.spyOn(util, 'tryGetModuleDetailsFromRequire').mockReturnValue(undefined);
   const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     error: new Error('bad error'),
     status: 0,
@@ -47,6 +48,6 @@ test('returns undefined on error', () => {
   expect(PackageInstallation.detect('esbuild')).toBeUndefined();
 
   spawnSyncMock.mockRestore();
-  getModuleVersionMock.mockRestore();
+  getModuleDetailsMock.mockRestore();
 });
 
