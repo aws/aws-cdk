@@ -846,6 +846,17 @@ export interface StreamProps {
   readonly streamMode?: StreamMode;
 
   /**
+   * How Kinesis Data Streams distributes records across shards.
+   *
+   * Can only be set when `streamMode` is `StreamMode.ON_DEMAND`.
+   *
+   * @see https://docs.aws.amazon.com/streams/latest/dev/service-managed-record-distribution.html
+   *
+   * @default - records are placed using the partition key that producers supply
+   */
+  readonly recordDistributionStrategy?: RecordDistributionStrategy;
+
+  /**
    * Policy to apply when the stream is removed from the stack.
    *
    * @default RemovalPolicy.RETAIN
@@ -941,6 +952,10 @@ export class Stream extends StreamBase {
       shardCount = 1;
     }
 
+    if (props.recordDistributionStrategy !== undefined && streamMode !== StreamMode.ON_DEMAND) {
+      throw new ValidationError(lit`RecordDistributionStrategyRequiresOnDemand`, `recordDistributionStrategy can only be set when streamMode is ${StreamMode.ON_DEMAND}, got ${streamMode ?? StreamMode.PROVISIONED}`, this);
+    }
+
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
       if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
@@ -967,6 +982,7 @@ export class Stream extends StreamBase {
       shardCount,
       streamEncryption,
       desiredShardLevelMetrics: props.shardLevelMetrics,
+      recordDistributionStrategy: props.recordDistributionStrategy,
       ...(props.streamMode !== undefined
         ? {
           streamModeDetails: { streamMode: props.streamMode },
@@ -1078,4 +1094,20 @@ export enum StreamMode {
    * volume of data ingested and retrieved.
    */
   ON_DEMAND = 'ON_DEMAND',
+}
+
+/**
+ * How Kinesis Data Streams distributes records across shards.
+ */
+export enum RecordDistributionStrategy {
+  /**
+   * Distribute records evenly across shards, ignoring any partition key and explicit hash key
+   * that producers supply. Suited to stateless workloads that do not need partition-key ordering.
+   */
+  AUTO = 'AUTO',
+
+  /**
+   * Place records on shards using the partition key that producers supply.
+   */
+  USER_PARTITION_KEY = 'USER_PARTITION_KEY',
 }
