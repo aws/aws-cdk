@@ -166,6 +166,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
       supportedRegions: this.allowedRegions,
     });
 
+    this.node.defaultChild = this.endpointService;
+
     this.vpcEndpointServiceId = this.endpointService.ref;
 
     const { region } = Stack.of(this);
