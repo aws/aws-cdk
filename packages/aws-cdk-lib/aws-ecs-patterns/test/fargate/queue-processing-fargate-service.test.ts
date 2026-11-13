@@ -5,6 +5,7 @@ import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
+import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import * as cdk from '../../../core';
@@ -1047,4 +1048,42 @@ test('test Fargate queue worker service construct - with healthCheckGracePeriod'
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     HealthCheckGracePeriodSeconds: 120,
   });
+});
+
+test('uses the supplied task role and grants queue access', () => {
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const taskRole = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+  const service = new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+    memoryLimitMiB: 512,
+    taskRole,
+  });
+  expect(service.taskDefinition.taskRole).toBe(taskRole);
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    TaskRoleArn: stack.resolve(taskRole.roleArn),
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Roles: [stack.resolve(taskRole.roleName)],
+    PolicyDocument: {
+      Statement: Match.arrayWith([Match.objectLike({
+        Effect: 'Allow',
+        Action: ['sqs:ReceiveMessage', 'sqs:ChangeMessageVisibility', 'sqs:GetQueueUrl', 'sqs:DeleteMessage', 'sqs:GetQueueAttributes'],
+        Resource: stack.resolve(service.sqsQueue.queueArn),
+      })]),
+    },
+  });
+});
+
+test('fails when taskRole and taskDefinition are both supplied', () => {
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'Task');
+  taskDefinition.addContainer('Container', { image: ecs.ContainerImage.fromRegistry('test') });
+  expect(() => new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    taskDefinition,
+    taskRole: taskDefinition.taskRole,
+  })).toThrow('taskRole cannot be specified with taskDefinition');
 });
