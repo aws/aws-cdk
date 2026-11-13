@@ -131,9 +131,18 @@ export class LambdaIntegration extends AwsIntegration {
       functionName = this.handler.functionName;
     }
 
-    let deploymentToken;
+    let deploymentToken: string | undefined;
     if (!Token.isUnresolved(functionName)) {
       deploymentToken = JSON.stringify({ functionName });
+    } else if (this.handler instanceof lambda.Function) {
+      deploymentToken = Lazy.string({
+        produce: () => {
+          const resolved = method.stack.resolve(functionName);
+          return typeof resolved === 'string' && resolved !== ''
+            ? JSON.stringify({ functionName: resolved })
+            : undefined;
+        },
+      });
     }
     return {
       ...bindResult,
