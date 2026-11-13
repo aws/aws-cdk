@@ -2089,7 +2089,7 @@ function subnetTypeTagValue(type: SubnetType) {
 /**
  * Allocation of a subnet's IPv4 CIDR block from an Amazon VPC IP Address Manager (IPAM) pool
  */
-export interface SubnetIpamAllocation {
+export interface SubnetIpv4IpamAllocation {
   /**
    * The IPAM pool from which the CIDR block is allocated at deploy time
    *
@@ -2143,7 +2143,7 @@ export interface SubnetProps {
    *
    * @default - the subnet uses the concrete `cidrBlock`
    */
-  readonly ipv4IpamAllocation?: SubnetIpamAllocation;
+  readonly ipv4IpamAllocation?: SubnetIpv4IpamAllocation;
 
   /**
    * Controls if a public IP is associated to an instance at launch
