@@ -15,6 +15,13 @@ export interface ScalableTaskCountProps extends appscaling.BaseScalableAttribute
  */
 export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
   /**
+   * Called whenever a scaling policy or a scheduled action is added to this task count.
+   *
+   * @internal
+   */
+  public _onScalingConfigured?: () => void;
+
+  /**
    * Constructs a new instance of the ScalableTaskCount class.
    */
   constructor(scope: Construct, id: string, props: ScalableTaskCountProps) {
@@ -25,6 +32,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scales in or out based on a specified scheduled time.
    */
   public scaleOnSchedule(id: string, props: appscaling.ScalingSchedule) {
+    this._onScalingConfigured?.();
     return super.doScaleOnSchedule(id, props);
   }
 
@@ -32,6 +40,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scales in or out based on a specified metric value.
    */
   public scaleOnMetric(id: string, props: appscaling.BasicStepScalingPolicyProps) {
+    this._onScalingConfigured?.();
     return super.doScaleOnMetric(id, props);
   }
 
@@ -39,6 +48,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scales in or out to achieve a target CPU utilization.
    */
   public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps) {
+    this._onScalingConfigured?.();
     return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_CPU_UTILIZATION,
       policyName: props.policyName,
@@ -53,6 +63,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scales in or out to achieve a target memory utilization.
    */
   public scaleOnMemoryUtilization(id: string, props: MemoryUtilizationScalingProps) {
+    this._onScalingConfigured?.();
     return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION,
       targetValue: props.targetUtilizationPercent,
@@ -70,6 +81,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
     const resourceLabel = props.targetGroup.firstLoadBalancerFullName +
        '/' + props.targetGroup.targetGroupFullName;
 
+    this._onScalingConfigured?.();
     return super.doScaleToTrackMetric(id, {
       predefinedMetric: appscaling.PredefinedMetric.ALB_REQUEST_COUNT_PER_TARGET,
       resourceLabel,
@@ -85,6 +97,7 @@ export class ScalableTaskCount extends appscaling.BaseScalableAttribute {
    * Scales in or out to achieve a target on a custom metric.
    */
   public scaleToTrackCustomMetric(id: string, props: TrackCustomMetricProps) {
+    this._onScalingConfigured?.();
     return super.doScaleToTrackMetric(id, {
       customMetric: props.metric,
       targetValue: props.targetValue,
