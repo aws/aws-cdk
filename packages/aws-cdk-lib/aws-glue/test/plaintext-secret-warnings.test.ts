@@ -25,7 +25,7 @@ describe('Connection plaintext secret warnings', () => {
 
     Annotations.fromStack(stack).hasWarning(
       '/Default/Connection',
-      Match.stringLikeRegexp('.*plaintext secret.*PASSWORD.*plaintextConnectionSecret.*'),
+      Match.stringLikeRegexp('.*plaintext secret.*PASSWORD.*\\[ack: @aws-cdk/aws-glue:plaintextConnectionSecret\\]'),
     );
   });
 
@@ -68,7 +68,7 @@ describe('Connection plaintext secret warnings', () => {
 
     Annotations.fromStack(stack).hasWarning(
       '/Default/Connection',
-      Match.stringLikeRegexp('.*plaintext secret.*SECRET_TOKEN.*plaintextConnectionSecret.*'),
+      Match.stringLikeRegexp('.*plaintext secret.*SECRET_TOKEN.*\\[ack: @aws-cdk/aws-glue:plaintextConnectionSecret\\]'),
     );
   });
 });
@@ -86,7 +86,7 @@ describe('Job defaultArguments plaintext secret warnings', () => {
 
     Annotations.fromStack(stack).hasWarning(
       '/Default/Job',
-      Match.stringLikeRegexp('.*plaintext secret.*api_key.*plaintextJobArgumentSecret.*'),
+      Match.stringLikeRegexp('.*plaintext secret.*api_key.*\\[ack: @aws-cdk/aws-glue:plaintextJobArgumentSecret\\]'),
     );
   });
 

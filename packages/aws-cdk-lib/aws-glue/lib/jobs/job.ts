@@ -559,7 +559,7 @@ export abstract class Job extends JobBase {
     if (defaultArguments) {
       if (Object.keys(defaultArguments).some((arg) => cdk.Token.isUnresolved(arg))) {
         cdk.Annotations.of(this).addWarningV2(
-          '@aws-cdk/aws-glue-alpha:tokenJobArgumentKey',
+          '@aws-cdk/aws-glue:tokenJobArgumentKey',
           'defaultArguments contains an unresolved token as an argument key, so it cannot be checked for conflicts with construct-managed arguments. If it resolves to a managed argument at deploy time, the construct-managed value will take precedence. Configure managed arguments through their dedicated props (e.g. continuousLogging, enableMetrics, enableObservabilityMetrics, sparkUI).',
         );
       }
@@ -579,7 +579,7 @@ export abstract class Job extends JobBase {
     warnOnPlaintextSecrets(
       this,
       defaultArguments,
-      '@aws-cdk/aws-glue-alpha:plaintextJobArgumentSecret',
+      '@aws-cdk/aws-glue:plaintextJobArgumentSecret',
       'Pass secrets to the job at runtime through AWS Secrets Manager instead of embedding them in `defaultArguments`.',
     );
     return { ...defaultArguments, ...this._managedArguments };
@@ -607,7 +607,7 @@ export abstract class Job extends JobBase {
     // false positives.
     if (enabled && !securityConfiguration) {
       cdk.Annotations.of(this).addWarningV2(
-        '@aws-cdk/aws-glue-alpha:unencryptedContinuousLogging',
+        '@aws-cdk/aws-glue:unencryptedContinuousLogging',
         'Continuous CloudWatch logging is enabled but no SecurityConfiguration with cloudWatchEncryption is attached. Job stdout and stderr will be written to an unencrypted CloudWatch log group. See https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html',
       );
     }
