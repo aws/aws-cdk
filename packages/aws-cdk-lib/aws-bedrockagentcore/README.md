@@ -1679,6 +1679,8 @@ credential provider attached enabling you to securely access targets whether the
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
 | `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, Smithy, or API Gateway). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`, `GatewayTarget.forMcpServer()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()`, `addApiGatewayTarget()`, `addMcpServerTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
 | `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. With Token Vault L2 constructs, prefer `GatewayCredentialProvider.fromApiKeyIdentity()` / `fromOauthIdentity()`; otherwise use `fromApiKeyIdentityArn()` / `fromOauthIdentityArn()`, or `fromIamRole()` |
+| `certificateConfigurations` | `CertificateConfiguration[]` | No | (MCP Server and OpenAPI targets only) Private CA certificates that the gateway trusts when it connects to the target endpoint over TLS. At most one can be specified, and `privateEndpoint` is required. See [Private CA certificates](#private-ca-certificates) |
+| `privateEndpoint` | `PrivateEndpoint` | No | (MCP Server and OpenAPI targets) The private endpoint that the gateway uses to reach the target in your VPC through Amazon VPC Lattice. See [Private endpoints](#private-endpoints) |
 | `validateOpenApiSchema` | `boolean` | No | (OpenAPI targets only) Whether to validate the OpenAPI schema at synthesis time. Defaults to `true`. Only applies to inline and local asset schemas. For more information refer here <https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html> |
 
 This approach gives you full control over the configuration but is typically not necessary for most use cases.
@@ -1979,6 +1981,107 @@ new agentcore.WorkloadIdentity(this, "MyWorkloadIdentity", {
   tags: { team: "agents", env: "prod" },
 });
 ```
+
+### Private endpoints
+
+To reach a target that runs inside your VPC without exposing it to the internet, specify a
+`privateEndpoint`. The gateway connects to the target through Amazon VPC Lattice.
+Private endpoints are supported for MCP server and OpenAPI targets.
+
+- `PrivateEndpoint.fromVpc()`: the gateway creates and manages the VPC Lattice resource gateway
+  and resource configuration in the subnets you select, using the
+  `AWSServiceRoleForBedrockAgentCoreGatewayNetwork` service-linked role.
+  Use `securityGroups` to control which resources the resource gateway can reach
+  (the VPC's default security group is used otherwise), and `routingDomain` to route traffic
+  through an intermediate domain such as an internal load balancer.
+- `PrivateEndpoint.fromResourceConfiguration()`: use a VPC Lattice resource configuration that you manage.
+  This is required to reach a target in another account, where the resource configuration is shared
+  with the gateway's account through AWS RAM.
+
+```typescript fixture=default
+declare const gateway: agentcore.Gateway;
+declare const vpc: ec2.IVpc;
+declare const resourceGatewaySecurityGroup: ec2.ISecurityGroup;
+
+gateway.addMcpServerTarget("PrivateMcpServer", {
+  endpoint: "https://mcp.internal.example.com/mcp",
+  credentialProviderConfigurations: [agentcore.GatewayCredentialProvider.fromIamRole()],
+  privateEndpoint: agentcore.PrivateEndpoint.fromVpc({
+    vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    securityGroups: [resourceGatewaySecurityGroup],
+  }),
+});
+```
+
+Keep the following in mind:
+
+- The security groups of the resource gateway must be allowed to reach the target on its port
+  (typically 443).
+- With `fromVpc()`, at least one of the selected subnets must be in an Availability Zone that
+  AgentCore Gateway supports for managed VPC resources, otherwise the target fails to create.
+  The principal that deploys the stack needs `iam:CreateServiceLinkedRole` (the first time) and
+  `ec2:CreateNetworkInterface`, `ec2:DescribeVpcs`, `ec2:DescribeSecurityGroups` and `ec2:DescribeSubnets`.
+- With `fromResourceConfiguration()`, AgentCore associates the resource configuration with its service network
+  using the credentials of the principal that deploys the stack, which needs
+  `vpc-lattice:GetResourceConfiguration`, `vpc-lattice:CreateServiceNetworkResourceAssociation`,
+  `vpc-lattice:GetServiceNetworkResourceAssociation`, `vpc-lattice:ListServiceNetworkResourceAssociations` and
+  `vpc-lattice:AssociateViaAWSService`.
+- A gateway whose inbound authorizer is `GatewayAuthorizer.withNoAuth()` can only have targets with
+  a private endpoint if it also has an interceptor.
+
+The gateway's execution role needs no additional permissions for private endpoints.
+For more information, see [Connect to private resources in your VPC using VPC Lattice](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/vpc-egress-private-endpoints.html).
+
+### Private CA certificates
+
+If the target endpoint presents a TLS certificate issued by a private certificate authority (CA),
+the gateway does not trust it by default. Use `certificateConfigurations` to point the gateway at the
+PEM-encoded CA certificate, stored either as an S3 object (`CertificateConfiguration.fromBucket()`)
+or in a Secrets Manager secret (`CertificateConfiguration.fromSecret()`).
+
+Certificate configurations are supported for MCP server and OpenAPI targets that have a
+[private endpoint](#private-endpoints), so `privateEndpoint` must also be specified.
+Otherwise synthesis fails, because the service would fail the target with
+"Certificate configuration is only supported for targets with a private endpoint".
+
+The gateway's execution role is automatically granted read access to the certificate
+(`s3:GetObject` on the object, or read access to the secret), including `kms:Decrypt`
+when the bucket or secret is encrypted with a customer managed key.
+Currently at most one certificate can be specified per target.
+
+```typescript fixture=default
+declare const gateway: agentcore.Gateway;
+declare const vpc: ec2.IVpc;
+declare const caBucket: s3.IBucket;
+
+gateway.addMcpServerTarget("InternalMcpServer", {
+  endpoint: "https://mcp.internal.example.com/mcp",
+  credentialProviderConfigurations: [agentcore.GatewayCredentialProvider.fromIamRole()],
+  privateEndpoint: agentcore.PrivateEndpoint.fromVpc({ vpc }),
+  certificateConfigurations: [
+    agentcore.CertificateConfiguration.fromBucket(caBucket, "certs/internal-root-ca.pem"),
+  ],
+});
+```
+
+The certificate must meet the following requirements, which the service checks after the target is created:
+
+- It is a PEM-encoded X.509 CA certificate with the basic constraints extension set to `CA:TRUE`.
+  A leaf (end-entity) certificate is rejected.
+- It is within its validity window, and the PEM file, including the full chain, is no larger than 16 KB.
+- An S3 object is in the same Region as the gateway. A secret is a string secret, not a binary one.
+
+The server certificate of the target must chain to the CA and have a subject alternative name (SAN)
+that matches the target host.
+
+The gateway reads the certificate only when the target is created or updated. Changing the content of
+the S3 object or the secret does not affect an existing target; to rotate the certificate, reference
+a new object or secret so that the target is updated. The gateway emits the CloudWatch metric
+`EarliestCertificateDaysToExpiry` for targets with a private CA certificate, which you can alarm on
+before the certificate expires.
+
+For more information, see [Connect to targets that use a private certificate authority](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-vpc-egress.html).
 
 ### Basic Gateway Target Creation
 

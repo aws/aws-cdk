@@ -1,0 +1,59 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3002",
+          "description": "CertificateConfigurations: Additional properties are not allowed ('CertificateConfigurations' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "cdk-agentcore-gateway-target-certificate/Gateway/S3CaTarget/Resource",
+              "constructFqn": "aws-cdk-lib.aws_bedrockagentcore.CfnGatewayTarget",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "cdk-agentcore-gateway-target-certificate.template.json",
+                "logicalId": "GatewayS3CaTarget9851B7E9",
+                "propertyPaths": [
+                  "Properties.CertificateConfigurations"
+                ]
+              }
+            },
+            {
+              "constructPath": "cdk-agentcore-gateway-target-certificate/Gateway/SecretCaTarget/Resource",
+              "constructFqn": "aws-cdk-lib.aws_bedrockagentcore.CfnGatewayTarget",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "cdk-agentcore-gateway-target-certificate.template.json",
+                "logicalId": "GatewaySecretCaTarget85C8978E",
+                "propertyPaths": [
+                  "Properties.CertificateConfigurations"
+                ]
+              }
+            },
+            {
+              "constructPath": "cdk-agentcore-gateway-target-certificate/Gateway/SelfManagedLatticeTarget/Resource",
+              "constructFqn": "aws-cdk-lib.aws_bedrockagentcore.CfnGatewayTarget",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "cdk-agentcore-gateway-target-certificate.template.json",
+                "logicalId": "GatewaySelfManagedLatticeTarget847E4851",
+                "propertyPaths": [
+                  "Properties.CertificateConfigurations"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
