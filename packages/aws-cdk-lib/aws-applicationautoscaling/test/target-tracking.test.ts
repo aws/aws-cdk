@@ -264,4 +264,201 @@ describe('target tracking', () => {
     });
     Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('crossAccountMetricIgnored'));
   });
+
+  test('test setup target tracking on a math expression', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+    const utilization = new cloudwatch.Metric({
+      namespace: 'AWS/Lambda',
+      metricName: 'ProvisionedConcurrencyUtilization',
+      dimensionsMap: { FunctionName: 'my-function', Resource: 'my-function:live' },
+      statistic: cloudwatch.Stats.MAXIMUM,
+    });
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.MathExpression({
+        expression: 'FILL(utilization, 0)',
+        usingMetrics: { utilization },
+        label: 'Utilization, idle as 0',
+      }),
+      targetValue: 0.7,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Metrics: [
+            {
+              Id: 'expr_1',
+              Expression: 'FILL(utilization, 0)',
+              Label: 'Utilization, idle as 0',
+              ReturnData: true,
+            },
+            {
+              Id: 'utilization',
+              MetricStat: {
+                Metric: {
+                  Namespace: 'AWS/Lambda',
+                  MetricName: 'ProvisionedConcurrencyUtilization',
+                  Dimensions: [
+                    { Name: 'FunctionName', Value: 'my-function' },
+                    { Name: 'Resource', Value: 'my-function:live' },
+                  ],
+                },
+                Stat: 'Maximum',
+              },
+              ReturnData: false,
+            },
+          ],
+        },
+        TargetValue: 0.7,
+      },
+    });
+  });
+
+  test('flattens nested math expressions and renders a shared metric once', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+    const messages = new cloudwatch.Metric({ namespace: 'AWS/SQS', metricName: 'ApproximateNumberOfMessagesVisible', statistic: 'Sum' });
+    const tasks = new cloudwatch.Metric({ namespace: 'ECS/ContainerInsights', metricName: 'RunningTaskCount' });
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.MathExpression({
+        expression: 'backlog / tasks',
+        usingMetrics: {
+          backlog: new cloudwatch.MathExpression({ expression: 'FILL(messages, 0)', usingMetrics: { messages } }),
+          tasks,
+        },
+      }),
+      targetValue: 100,
+    });
+
+    // THEN
+    const policy = Template.fromStack(stack).findResources('AWS::ApplicationAutoScaling::ScalingPolicy');
+    const metrics = Object.values(policy)[0].Properties.TargetTrackingScalingPolicyConfiguration.CustomizedMetricSpecification.Metrics;
+    expect(metrics.map((m: any) => [m.Id, m.Expression ?? m.MetricStat.Metric.MetricName, m.ReturnData])).toEqual([
+      ['expr_1', 'backlog / tasks', true],
+      ['backlog', 'FILL(messages, 0)', false],
+      ['messages', 'ApproximateNumberOfMessagesVisible', false],
+      ['tasks', 'RunningTaskCount', false],
+    ]);
+  });
+
+  test('allows a percentile statistic inside a math expression', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.MathExpression({
+        expression: 'latency / 1000',
+        usingMetrics: { latency: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Latency', statistic: 'p99' }) },
+      }),
+      targetValue: 1,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Metrics: Match.arrayWith([Match.objectLike({ Id: 'latency', MetricStat: Match.objectLike({ Stat: 'p99' }) })]),
+        },
+      },
+    });
+  });
+
+  test('gives the top-level expression an id that usingMetrics does not use', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.MathExpression({
+        expression: 'expr_1 * 2',
+        usingMetrics: { expr_1: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }) },
+      }),
+      targetValue: 1,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Metrics: [
+            Match.objectLike({ Id: 'expr_2', Expression: 'expr_1 * 2', ReturnData: true }),
+            Match.objectLike({ Id: 'expr_1', ReturnData: false }),
+          ],
+        },
+      },
+    });
+  });
+
+  test('throws for a search expression', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // THEN
+    expect(() => target.scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.SearchExpression({ expression: "SEARCH('{AWS/Lambda,FunctionName} Invocations', 'Sum')" }),
+      targetValue: 1,
+    })).toThrow(/Only metrics and math expressions are supported for Target Tracking/);
+  });
+
+  test('throws for a search expression used inside a math expression', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // THEN
+    expect(() => target.scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.MathExpression({
+        expression: 'SUM(invocations)',
+        usingMetrics: { invocations: new cloudwatch.SearchExpression({ expression: "SEARCH('{AWS/Lambda,FunctionName} Invocations', 'Sum')" }) },
+      }),
+      targetValue: 1,
+    })).toThrow(/Search expressions are not supported for Target Tracking/);
+  });
+
+  test('warns when a metric inside a math expression is from another account', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
+
+    // WHEN
+    createScalableTarget(stack).scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.MathExpression({
+        expression: 'm * 2',
+        usingMetrics: { m: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', account: '222222222222' }) },
+      }),
+      targetValue: 30,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('crossAccountMetricIgnored'));
+  });
+
+  test('warns about identifiers missing from usingMetrics', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    createScalableTarget(stack).scaleToTrackMetric('Tracking', {
+      customMetric: new cloudwatch.MathExpression({
+        expression: 'm + missing',
+        usingMetrics: { m: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric' }) },
+      }),
+      targetValue: 30,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('references unknown identifiers: missing'));
+  });
 });
