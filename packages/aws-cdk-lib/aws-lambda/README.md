@@ -2093,6 +2093,19 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
+
+### Imported alias metric dimensions
+
+Enable `@aws-cdk/aws-lambda:importedAliasMetrics` to make metrics on aliases imported
+with `Alias.fromAliasAttributes` use the same dimensions as created aliases:
+`FunctionName` is the unqualified function name and `Resource` is
+`function-name:alias-name`. Without the flag, existing applications retain the
+legacy `FunctionName` dimension. Review alarms and dashboards when enabling the
+flag because they will query a different metric. Explicit `dimensionsMap` options
+continue to override these defaults. As with created aliases, supplying only the
+deprecated `dimensions` option leaves the default alias dimensions in place;
+use `dimensionsMap` to override them.
+
 ## WebFunction
 
 `WebFunction` is a serverless compute resource that lets you build and deploy low-latency web applications on AWS infrastructure. Each WebFunction gets its own HTTPS endpoint, in one Region by default or across several.
