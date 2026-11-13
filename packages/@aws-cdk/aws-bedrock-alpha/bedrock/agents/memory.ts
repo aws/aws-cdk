@@ -1,5 +1,5 @@
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
-import { Duration } from 'aws-cdk-lib/core';
+import { Duration, Token } from 'aws-cdk-lib/core';
 import * as validation from './validation-helpers';
 
 /**
@@ -72,13 +72,13 @@ export class Memory {
       let errors: string[] = [];
 
       // Validate memory duration is between 1 and 365 days
-      if (config.memoryDuration !== undefined) {
+      if (config.memoryDuration !== undefined && !config.memoryDuration.isUnresolved()) {
         const days = config.memoryDuration.toDays();
         if (days < 1 || days > 365) {
           errors.push('memoryDuration must be between 1 and 365 days');
         }
       }
-      if (config.maxRecentSessions !== undefined) {
+      if (config.maxRecentSessions !== undefined && !Token.isUnresolved(config.maxRecentSessions)) {
         if (config.maxRecentSessions < 1) {
           errors.push('maxRecentSessions must be greater than 0');
         }

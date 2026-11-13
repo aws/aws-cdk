@@ -2,7 +2,7 @@ import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { IResource } from 'aws-cdk-lib/core';
-import { Arn, ArnFormat, Lazy, Resource, ValidationError } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Lazy, Resource, Token, ValidationError } from 'aws-cdk-lib/core';
 import { md5hash, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -397,7 +397,7 @@ export class Prompt extends PromptBase implements IPrompt {
   private validateDescription(): string[] {
     const errors: string[] = [];
 
-    if (this.description && this.description.length > 200) {
+    if (this.description && !Token.isUnresolved(this.description) && this.description.length > 200) {
       errors.push(
         `Description must be 200 characters or less, got ${this.description.length} characters.`,
       );
