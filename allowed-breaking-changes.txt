@@ -4189,3 +4189,9 @@ removed:aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2.obtainResourceDependen
 removed:aws-cdk-lib.aws_dms.CfnMigrationProject.migrationProjectCreationTime
 removed:aws-cdk-lib.aws_dms.CfnMigrationProjectProps.migrationProjectCreationTime
 removed:@aws-cdk/cfn-property-mixins.aws_dms.CfnMigrationProjectMixinProps.migrationProjectCreationTime
+
+# Making startingPosition optional so self-managed Kafka event sources in queue consumption mode
+# (KafkaConsumptionMode.QUEUE) can omit it. Callers that pass a startingPosition are unaffected, and
+# Kinesis, DynamoDB, MSK and stream-mode Kafka sources still require it at synth. Only subclasses of
+# StreamEventSource that read this.props.startingPosition must now handle undefined.
+weakened:aws-cdk-lib.aws_lambda_event_sources.StreamEventSourceProps

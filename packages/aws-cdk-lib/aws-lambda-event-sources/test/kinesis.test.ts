@@ -437,3 +437,10 @@ describe('KinesisEventSource', () => {
     });
   });
 });
+
+test('fails for KinesisEventSource without startingPosition', () => {
+  const stack = new cdk.Stack();
+  const stream = new kinesis.Stream(stack, 'S');
+
+  expect(() => new sources.KinesisEventSource(stream, {})).toThrow(/startingPosition must be set for KinesisEventSource/);
+});
