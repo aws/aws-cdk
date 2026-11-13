@@ -1,5 +1,10 @@
+import type { Construct } from 'constructs';
 import type * as cdk from '../../../core';
+import { Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { TreatMissingData } from '../alarm';
+import type { AlarmWarmupConfiguration } from '../alarm-base';
+import type { CfnAlarm } from '../cloudwatch.generated';
 
 /**
  * Base options for creating CloudWatch alarms
@@ -72,6 +77,16 @@ export interface CreateAlarmOptionsBase {
   readonly treatMissingData?: TreatMissingData;
 
   /**
+   * The warm-up configuration for the alarm.
+   *
+   * This is supported for alarms that evaluate a single time series, including metric math and anomaly detection.
+   * It cannot be used with a multi-time-series Metrics Insights query.
+   *
+   * @default - No warm-up period
+   */
+  readonly warmupConfiguration?: AlarmWarmupConfiguration;
+
+  /**
    * Whether the actions for this alarm are enabled
    *
    * @default true
@@ -88,4 +103,32 @@ export interface CreateAlarmOptionsBase {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/AlarmThatSendsEmail.html#alarm-evaluation
    */
   readonly datapointsToAlarm?: number;
+}
+
+/**
+ * Render and validate an alarm warm-up configuration.
+ *
+ * @internal
+ */
+export function renderAlarmWarmupConfiguration(
+  scope: Construct,
+  configuration?: AlarmWarmupConfiguration,
+): CfnAlarm.WarmUpConfigurationProperty | undefined {
+  const warmupPeriodInMinutes = configuration?.warmupPeriod.toMinutes();
+  if (
+    warmupPeriodInMinutes !== undefined
+    && !Token.isUnresolved(warmupPeriodInMinutes)
+    && (warmupPeriodInMinutes < 1 || warmupPeriodInMinutes > 2880)
+  ) {
+    throw new ValidationError(
+      lit`AlarmWarmupPeriodOutOfRange`,
+      `warmupPeriod must be between 1 and 2880 minutes, got ${warmupPeriodInMinutes}`,
+      scope,
+    );
+  }
+
+  return configuration ? {
+    onlyStartEvaluatingAfterWarmUpPeriodEnds: configuration.onlyStartEvaluatingAfterWarmupPeriodEnds,
+    warmUpPeriodDurationInMinutes: warmupPeriodInMinutes,
+  } : undefined;
 }
