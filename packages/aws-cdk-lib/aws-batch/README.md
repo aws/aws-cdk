@@ -676,6 +676,39 @@ jobDefn.container.addVolume(batch.EksVolume.secret({
 }));
 ```
 
+#### Security context
+
+You can add or drop Linux capabilities and set a seccomp profile on the container, and set a
+security context for the whole pod on the job definition. For example, clusters that enforce the
+Kubernetes "restricted" Pod Security Standard require containers to drop `ALL` capabilities and to use
+the `RuntimeDefault` or a `Localhost` seccomp profile. That standard has other requirements too, such as
+not using the host network, so check it against your cluster's policy.
+
+```ts
+new batch.EksJobDefinition(this, 'RestrictedJob', {
+  container: new batch.EksContainerDefinition(this, 'RestrictedContainer', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:2023'),
+    runAsUser: 1000,
+    // Capability names go without the CAP_ prefix
+    linuxCapabilitiesToDrop: ['ALL'],
+    linuxCapabilitiesToAdd: ['NET_BIND_SERVICE'],
+    seccompProfile: batch.EksSeccompProfile.runtimeDefault(),
+  }),
+  podSecurityContext: {
+    fsGroup: 2000,
+    runAsGroup: 3000,
+    seccompProfile: batch.EksSeccompProfile.runtimeDefault(),
+  },
+});
+```
+
+`EksSeccompProfile.localhost('profiles/audit.json')` uses a custom profile stored on the node. The profile
+has to exist on every worker node that can run the job, for example by adding it with a launch template.
+
+A container-level setting overrides the pod-level one. The container always sets `runAsNonRoot`
+(`true` unless you set `runAsRoot: true` on the container), so `runAsNonRoot` in `podSecurityContext`
+has no effect on it.
+
 ### Running Distributed Workflows
 
 Some workflows benefit from parallellization and are most powerful when run in a distributed environment,

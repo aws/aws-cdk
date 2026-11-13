@@ -1,0 +1,48 @@
+{
+  "/batch-eks-job-definition-security-context": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "batch-eks-job-definition-security-context.template.json"
+    }
+  ],
+  "/batch-eks-job-definition-security-context/RestrictedJobDefn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "container": "*"
+      }
+    }
+  ],
+  "/batch-eks-job-definition-security-context/UnconfinedJobDefn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "container": "*"
+      }
+    }
+  ],
+  "/batch-eks-job-definition-security-context/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/batch-eks-job-definition-security-context/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/batch-eks-job-definition-security-context/RestrictedJobDefn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RestrictedJobDefnD7D3BEAE"
+    }
+  ],
+  "/batch-eks-job-definition-security-context/UnconfinedJobDefn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UnconfinedJobDefn8CE758C1"
+    }
+  ]
+}

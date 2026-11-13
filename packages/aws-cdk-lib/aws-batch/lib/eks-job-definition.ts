@@ -1,10 +1,10 @@
 import type { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
-import type { EksContainerDefinition } from './eks-container-definition';
+import type { EksContainerDefinition, EksSeccompProfile } from './eks-container-definition';
 import { EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
 import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
-import { ArnFormat, Stack, ValidationError } from '../../core';
+import { ArnFormat, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -52,6 +52,19 @@ export interface IEksJobDefinition extends IJobDefinition {
    * @default - the default service account of the container
    */
   readonly serviceAccount?: string;
+
+  /**
+   * The security context of the pod.
+   *
+   * The settings apply to every container in the pod that doesn't set its own value.
+   * Note that the container always sets `runAsNonRoot` (`true` unless `runAsRoot` is `true`
+   * on the container), so the pod-level `runAsNonRoot` has no effect on it.
+   *
+   * @see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+   *
+   * @default - no pod-level security context
+   */
+  readonly podSecurityContext?: EksPodSecurityContext;
 }
 
 /**
@@ -96,6 +109,73 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    * @default - the default service account of the container
    */
   readonly serviceAccount?: string;
+
+  /**
+   * The security context of the pod.
+   *
+   * The settings apply to every container in the pod that doesn't set its own value.
+   * Note that the container always sets `runAsNonRoot` (`true` unless `runAsRoot` is `true`
+   * on the container), so the pod-level `runAsNonRoot` has no effect on it.
+   *
+   * @see https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+   *
+   * @default - no pod-level security context
+   */
+  readonly podSecurityContext?: EksPodSecurityContext;
+}
+
+/**
+ * The security context of the pod used by an EKS Job Definition.
+ *
+ * @see https://docs.aws.amazon.com/batch/latest/APIReference/API_EksPodSecurityContext.html
+ */
+export interface EksPodSecurityContext {
+  /**
+   * A supplemental group that is applied to all containers in the pod.
+   * Some volume types let Kubernetes change the ownership of the volume contents to this group.
+   *
+   * Between 0 and 2147483647.
+   *
+   * @default - no supplemental group
+   */
+  readonly fsGroup?: number;
+
+  /**
+   * The user ID that runs the containers in the pod when a container doesn't set its own.
+   *
+   * Between 0 and 2147483647.
+   *
+   * @default - the user that is specified in the image metadata
+   */
+  readonly runAsUser?: number;
+
+  /**
+   * The primary group ID that runs the containers in the pod when a container doesn't set its own.
+   *
+   * Between 0 and 2147483647.
+   *
+   * @default - the group that is specified in the image metadata
+   */
+  readonly runAsGroup?: number;
+
+  /**
+   * Whether Kubernetes checks that the containers in the pod don't run as the root user,
+   * unless a container sets its own value.
+   *
+   * `EksContainerDefinition` always sets this on the container, so this value has no
+   * effect on it. Use `runAsRoot` on the container instead.
+   *
+   * @default - not set at the pod level
+   */
+  readonly runAsNonRoot?: boolean;
+
+  /**
+   * The default seccomp profile of the containers in the pod.
+   * A container-level profile overrides it.
+   *
+   * @default - the container runtime's default behavior
+   */
+  readonly seccompProfile?: EksSeccompProfile;
 }
 
 /**
@@ -154,6 +234,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
   public readonly dnsPolicy?: DnsPolicy;
   public readonly useHostNetwork?: boolean;
   public readonly serviceAccount?: string;
+  public readonly podSecurityContext?: EksPodSecurityContext;
 
   private readonly resource: CfnJobDefinition;
 
@@ -180,6 +261,8 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     this.dnsPolicy = props.dnsPolicy;
     this.useHostNetwork = props.useHostNetwork;
     this.serviceAccount = props.serviceAccount;
+    this.podSecurityContext = props.podSecurityContext;
+    this.validatePodSecurityContext(this.podSecurityContext);
 
     this.resource = new CfnJobDefinition(this, 'Resource', {
       ...baseJobDefinitionProperties(this),
@@ -193,6 +276,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
           dnsPolicy: this.dnsPolicy,
           hostNetwork: this.useHostNetwork,
           serviceAccountName: this.serviceAccount,
+          securityContext: this.renderPodSecurityContext(),
           volumes: this.container._mapVolumes((volume) => {
             if (EmptyDirVolume.isEmptyDirVolume(volume)) {
               return {
@@ -226,5 +310,33 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
         },
       },
     });
+  }
+
+  private validatePodSecurityContext(context?: EksPodSecurityContext) {
+    if (!context) {
+      return;
+    }
+    for (const [name, value] of [['fsGroup', context.fsGroup], ['runAsUser', context.runAsUser], ['runAsGroup', context.runAsGroup]] as const) {
+      if (value === undefined || Token.isUnresolved(value)) {
+        continue;
+      }
+      if (!Number.isInteger(value) || value < 0 || value > 2147483647) {
+        throw new ValidationError(lit`InvalidPodSecurityContextId`, `'podSecurityContext.${name}' must be an integer between 0 and 2147483647, got ${value}`, this);
+      }
+    }
+  }
+
+  private renderPodSecurityContext(): CfnJobDefinition.EksPodSecurityContextProperty | undefined {
+    const context = this.podSecurityContext;
+    if (!context || Object.values(context).every(value => value === undefined)) {
+      return undefined;
+    }
+    return {
+      fsGroup: context.fsGroup,
+      runAsUser: context.runAsUser,
+      runAsGroup: context.runAsGroup,
+      runAsNonRoot: context.runAsNonRoot,
+      seccompProfile: context.seccompProfile?._render(),
+    };
   }
 }

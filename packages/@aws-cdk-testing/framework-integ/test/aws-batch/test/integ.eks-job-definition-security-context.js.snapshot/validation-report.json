@@ -1,0 +1,106 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "BatchEksJobDefinitionSecurityContextTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "F3002",
+          "description": "EksProperties.PodProperties.Containers.0.SecurityContext.Capabilities: Additional properties are not allowed ('Capabilities' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "batch-eks-job-definition-security-context/RestrictedJobDefn/Resource",
+              "constructFqn": "aws-cdk-lib.aws_batch.CfnJobDefinition",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "batch-eks-job-definition-security-context.template.json",
+                "logicalId": "RestrictedJobDefnD7D3BEAE",
+                "propertyPaths": [
+                  "Properties.EksProperties.PodProperties.Containers.0.SecurityContext.Capabilities"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F3002",
+          "description": "EksProperties.PodProperties.Containers.0.SecurityContext.SeccompProfile: Additional properties are not allowed ('SeccompProfile' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "batch-eks-job-definition-security-context/RestrictedJobDefn/Resource",
+              "constructFqn": "aws-cdk-lib.aws_batch.CfnJobDefinition",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "batch-eks-job-definition-security-context.template.json",
+                "logicalId": "RestrictedJobDefnD7D3BEAE",
+                "propertyPaths": [
+                  "Properties.EksProperties.PodProperties.Containers.0.SecurityContext.SeccompProfile"
+                ]
+              }
+            },
+            {
+              "constructPath": "batch-eks-job-definition-security-context/UnconfinedJobDefn/Resource",
+              "constructFqn": "aws-cdk-lib.aws_batch.CfnJobDefinition",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "batch-eks-job-definition-security-context.template.json",
+                "logicalId": "UnconfinedJobDefn8CE758C1",
+                "propertyPaths": [
+                  "Properties.EksProperties.PodProperties.Containers.0.SecurityContext.SeccompProfile"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F3002",
+          "description": "EksProperties.PodProperties.SecurityContext: Additional properties are not allowed ('SecurityContext' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "batch-eks-job-definition-security-context/RestrictedJobDefn/Resource",
+              "constructFqn": "aws-cdk-lib.aws_batch.CfnJobDefinition",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "batch-eks-job-definition-security-context.template.json",
+                "logicalId": "RestrictedJobDefnD7D3BEAE",
+                "propertyPaths": [
+                  "Properties.EksProperties.PodProperties.SecurityContext"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

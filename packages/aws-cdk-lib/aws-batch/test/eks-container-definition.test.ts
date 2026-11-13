@@ -1,9 +1,9 @@
 import { capitalizePropertyNames } from './utils';
 import { Template } from '../../assertions';
 import * as ecs from '../../aws-ecs';
-import { Size, Stack } from '../../core';
+import { CfnParameter, Size, Stack, Validations } from '../../core';
 import type { CfnJobDefinitionProps, EksContainerDefinitionProps } from '../lib';
-import { EksContainerDefinition, EksJobDefinition, ImagePullPolicy, EksVolume, EmptyDirMediumType } from '../lib';
+import { EksContainerDefinition, EksJobDefinition, ImagePullPolicy, EksSeccompProfile, EksVolume, EmptyDirMediumType } from '../lib';
 
 // GIVEN
 const defaultContainerProps: EksContainerDefinitionProps = {
@@ -761,5 +761,123 @@ describe('eks container', () => {
         },
       },
     });
+  });
+});
+
+describe('eks container security context', () => {
+  let secStack: Stack;
+
+  beforeEach(() => {
+    secStack = new Stack();
+    // TODO: Remove this acknowledge once the bundled CFN validation schema includes the EKS security context properties
+    Validations.of(secStack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'Capabilities, SeccompProfile and the pod SecurityContext are newly launched properties not yet in the bundled schema' });
+  });
+
+  function containerSecurityContext(): any {
+    const resources = Template.fromStack(secStack).findResources('AWS::Batch::JobDefinition');
+    return Object.values(resources)[0].Properties.EksProperties.PodProperties.Containers[0].SecurityContext;
+  }
+
+  function jobWith(props: Partial<EksContainerDefinitionProps>) {
+    return new EksJobDefinition(secStack, 'EksJobDefn', {
+      container: new EksContainerDefinition(secStack, 'EksContainer', {
+        ...defaultContainerProps,
+        ...props,
+      }),
+    });
+  }
+
+  test('renders linux capabilities to add and drop', () => {
+    jobWith({
+      linuxCapabilitiesToAdd: ['NET_BIND_SERVICE'],
+      linuxCapabilitiesToDrop: ['ALL'],
+    });
+
+    expect(containerSecurityContext()).toEqual({
+      RunAsNonRoot: true,
+      Capabilities: { Add: ['NET_BIND_SERVICE'], Drop: ['ALL'] },
+    });
+  });
+
+  test('omits empty capability lists', () => {
+    jobWith({ linuxCapabilitiesToAdd: [], linuxCapabilitiesToDrop: [] });
+
+    expect(containerSecurityContext()).toEqual({ RunAsNonRoot: true });
+  });
+
+  test('renders only the capability list that is set', () => {
+    jobWith({ linuxCapabilitiesToDrop: ['ALL'] });
+
+    expect(containerSecurityContext().Capabilities).toEqual({ Drop: ['ALL'] });
+  });
+
+  test.each([
+    [EksSeccompProfile.runtimeDefault(), { Type: 'RuntimeDefault' }],
+    [EksSeccompProfile.unconfined(), { Type: 'Unconfined' }],
+    [EksSeccompProfile.localhost('profiles/audit.json'), { Type: 'Localhost', LocalhostProfile: 'profiles/audit.json' }],
+  ])('renders seccomp profile %#', (seccompProfile, expected) => {
+    jobWith({ seccompProfile });
+
+    expect(containerSecurityContext().SeccompProfile).toEqual(expected);
+  });
+
+  test('exposes the new props on the container', () => {
+    const profile = EksSeccompProfile.localhost('profiles/audit.json');
+    const job = jobWith({
+      linuxCapabilitiesToAdd: ['NET_ADMIN'],
+      linuxCapabilitiesToDrop: ['ALL'],
+      seccompProfile: profile,
+    });
+
+    expect(job.container.linuxCapabilitiesToAdd).toEqual(['NET_ADMIN']);
+    expect(job.container.linuxCapabilitiesToDrop).toEqual(['ALL']);
+    expect(job.container.seccompProfile).toBe(profile);
+    expect(profile.type).toEqual('Localhost');
+    expect(profile.localhostProfile).toEqual('profiles/audit.json');
+  });
+
+  test('leaves the security context unchanged when the new props are omitted', () => {
+    jobWith({});
+
+    expect(containerSecurityContext()).toEqual({ RunAsNonRoot: true });
+  });
+
+  test('rejects more than 64 capabilities', () => {
+    const capabilities = Array.from({ length: 65 }, (_, i) => `CAPABILITY${i}`);
+    expect(() => jobWith({ linuxCapabilitiesToAdd: capabilities }))
+      .toThrow("'linuxCapabilitiesToAdd' can contain at most 64 capabilities, got 65");
+  });
+
+  test('accepts 64 capabilities', () => {
+    const capabilities = Array.from({ length: 64 }, (_, i) => `CAPABILITY${i}`);
+    expect(() => jobWith({ linuxCapabilitiesToDrop: capabilities })).not.toThrow();
+  });
+
+  test.each(['CAP_NET_ADMIN', 'cap_sys_time'])('rejects the CAP_ prefix in %p', (capability) => {
+    expect(() => jobWith({ linuxCapabilitiesToDrop: [capability] }))
+      .toThrow(/'linuxCapabilitiesToDrop' must not include the 'CAP_' prefix/);
+  });
+
+  test.each(['', 'X'.repeat(129)])('rejects a capability name of invalid length %#', (capability) => {
+    expect(() => jobWith({ linuxCapabilitiesToAdd: [capability] }))
+      .toThrow(/must be between 1 and 128 characters/);
+  });
+
+  test('skips capability validation for tokens', () => {
+    const list = new CfnParameter(secStack, 'Caps', { type: 'CommaDelimitedList' }).valueAsList;
+    const single = new CfnParameter(secStack, 'Cap').valueAsString;
+
+    jobWith({ linuxCapabilitiesToAdd: list, linuxCapabilitiesToDrop: [single] });
+
+    expect(containerSecurityContext().Capabilities).toEqual({ Add: { Ref: 'Caps' }, Drop: [{ Ref: 'Cap' }] });
+  });
+
+  test.each(['', 'p'.repeat(4096)])('rejects a localhost profile path of invalid length %#', (path) => {
+    expect(() => EksSeccompProfile.localhost(path)).toThrow(/must be between 1 and 4095 characters/);
+  });
+
+  test('accepts a localhost profile path of 4095 characters and a token', () => {
+    expect(() => EksSeccompProfile.localhost('p'.repeat(4095))).not.toThrow();
+    expect(() => EksSeccompProfile.localhost(new CfnParameter(secStack, 'Path').valueAsString)).not.toThrow();
   });
 });

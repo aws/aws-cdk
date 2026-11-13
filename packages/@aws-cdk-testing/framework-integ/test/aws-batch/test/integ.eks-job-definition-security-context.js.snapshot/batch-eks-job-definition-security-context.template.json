@@ -1,0 +1,113 @@
+{
+ "Resources": {
+  "RestrictedJobDefnD7D3BEAE": {
+   "Type": "AWS::Batch::JobDefinition",
+   "Properties": {
+    "EksProperties": {
+     "PodProperties": {
+      "Containers": [
+       {
+        "Env": [],
+        "Image": "public.ecr.aws/amazonlinux/amazonlinux:2023",
+        "Resources": {
+         "Limits": {},
+         "Requests": {}
+        },
+        "SecurityContext": {
+         "Capabilities": {
+          "Add": [
+           "NET_BIND_SERVICE"
+          ],
+          "Drop": [
+           "ALL"
+          ]
+         },
+         "RunAsNonRoot": true,
+         "RunAsUser": 1000,
+         "SeccompProfile": {
+          "Type": "RuntimeDefault"
+         }
+        }
+       }
+      ],
+      "SecurityContext": {
+       "FsGroup": 2000,
+       "RunAsGroup": 3000,
+       "RunAsNonRoot": true,
+       "RunAsUser": 1000,
+       "SeccompProfile": {
+        "LocalhostProfile": "profiles/audit.json",
+        "Type": "Localhost"
+       }
+      }
+     }
+    },
+    "RetryStrategy": {},
+    "Timeout": {},
+    "Type": "container"
+   }
+  },
+  "UnconfinedJobDefn8CE758C1": {
+   "Type": "AWS::Batch::JobDefinition",
+   "Properties": {
+    "EksProperties": {
+     "PodProperties": {
+      "Containers": [
+       {
+        "Env": [],
+        "Image": "public.ecr.aws/amazonlinux/amazonlinux:2023",
+        "Resources": {
+         "Limits": {},
+         "Requests": {}
+        },
+        "SecurityContext": {
+         "RunAsNonRoot": true,
+         "SeccompProfile": {
+          "Type": "Unconfined"
+         }
+        }
+       }
+      ]
+     }
+    },
+    "RetryStrategy": {},
+    "Timeout": {},
+    "Type": "container"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
