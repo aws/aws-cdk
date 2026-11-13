@@ -183,23 +183,54 @@ referenced version.
 By default, the contents of the destination bucket will **not** be deleted when the
 `BucketDeployment` resource is removed from the stack or when the destination is
 changed. You can use the option `retainOnDelete: false` to disable this behavior,
-in which case the contents will be deleted.
+in which case all objects under the destination (the `destinationKeyPrefix`, or the
+whole bucket if no prefix is set) will be deleted. However, for buckets defined in your CDK
+app, the objects are **not** deleted in two cases:
 
-Configuring this has a few implications you should be aware of:
+- The destination bucket is deleted at the same time as its `BucketDeployment` (for example
+  on stack deletion).
+- Another `BucketDeployment` still deploys to the same bucket with the same prefix or a prefix
+  nested inside it. For example, removing a deployment to `assets/` does not delete its
+  objects while a deployment to `assets/images/` remains.
+
+This is because each `BucketDeployment` (even with `retainOnDelete: true`) adds its own tag
+starting with `aws-cdk:cr-owned:<prefix>` to its destination bucket. When a deployment is
+later removed, it does not delete the objects under its prefix if any tag on the bucket still
+**starts with** the same `aws-cdk:cr-owned:<prefix>`. In the example above, the
+`assets/images/` deployment's tag, `aws-cdk:cr-owned:assets/images/`, starts with
+`aws-cdk:cr-owned:assets/`, so the objects under `assets/` are kept.
+
+`BucketDeployment` does not tag imported buckets (for example `s3.Bucket.fromBucketName()`),
+so removing a deployment deletes their objects, even if another deployment in your app still
+deploys to the same prefix.
+
+### Implications
+
+Configuring `retainOnDelete: false` has a few implications you should be aware of:
+
+- **Stack Deletion**
+
+  Since the objects are not deleted upon stack deletion (see above), a destination bucket with
+  `RemovalPolicy.DESTROY` fails to delete because it is not empty. To empty the bucket when
+  it is deleted, see [Dedicated Bucket](#dedicated-bucket).
 
 - **Logical ID Changes**
 
-  Changing the logical ID of the `BucketDeployment` construct, without changing the destination
-  (for example due to refactoring, or intentional ID change) **will result in the deletion of the objects**.
-  This is because CloudFormation will first create the new resource, which will have no affect,
-  followed by a deletion of the old resource, which will cause a deletion of the objects,
-  since the destination hasn't changed, and `retainOnDelete` is `false`.
+  Changing the logical ID of the `BucketDeployment` construct, without changing the destination,
+  makes CloudFormation create a new deployment resource and then delete the old one. This happens
+  when you rename or move the construct, or change the `memoryLimit`, `ephemeralStorageSize` or
+  `vpc` property.
+
+  If the destination bucket is defined in your CDK app, the objects are **retained**. If the
+  destination bucket is imported, the deletion of the old resource **will delete all objects
+  under the destination**, including the ones the new resource has just deployed.
 
 - **Destination Changes**
 
   When the destination bucket or prefix is changed, all files in the previous destination will **first** be
   deleted and then uploaded to the new destination location. This could have availability implications
-  on your users.
+  on your users. Bucket tags are not checked here, so this **always** occurs, regardless of
+  other deployments.
 
 ### General Recommendations
 
@@ -213,8 +244,9 @@ accidentally deleting data that wasn't uploaded by it.
 
 If the destination bucket **is** dedicated, it might be reasonable to skip the prefix configuration,
 in which case, we recommend to remove `retainOnDelete: false`, and instead, configure the
-[`autoDeleteObjects`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-s3-readme.html#bucket-deletion)
-property on the destination bucket. This will avoid the logical ID problem mentioned above.
+[`autoDeleteObjects`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3-readme.html#bucket-deletion)
+property on the destination bucket. Unlike `retainOnDelete: false`, `autoDeleteObjects` empties
+the bucket when the bucket itself is deleted, such as on stack deletion.
 
 ## Prune
 
@@ -232,7 +264,7 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination',
 ```
 
 This option also enables you to
-multiple bucket deployments for the same destination bucket & prefix,
+use multiple bucket deployments for the same destination bucket & prefix,
 each with its own characteristics. For example, you can set different cache-control headers
 based on file extensions:
 
