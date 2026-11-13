@@ -40,8 +40,13 @@ const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
   enableManagedTerminationProtection: false,
 });
 
-cluster.addAsgCapacityProvider(cp);
+cluster.addAsgCapacityProvider(cp, {
+  enableTaskIamRole: true,
+});
 
+// The task definition gets a task role by default, so the service can only
+// place tasks on hosts that registered with the task-iam-role capability,
+// which Windows hosts do only when enableTaskIamRole is set.
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {});
 
 taskDefinition.addContainer('main', {
@@ -54,8 +59,19 @@ new ecs.Ec2Service(stack, 'EC2Service', {
   taskDefinition,
 });
 
-new integ.IntegTest(app, 'ClusterWindowsServer', {
+const integTest = new integ.IntegTest(app, 'ClusterWindowsServer', {
   testCases: [stack],
 });
+
+// The Windows host must register with the task-iam-role capability.
+integTest.assertions.awsApiCall('ECS', 'listContainerInstances', {
+  cluster: cluster.clusterName,
+  filter: 'attribute:com.amazonaws.ecs.capability.task-iam-role exists',
+})
+  .assertAtPath('containerInstanceArns.0', integ.ExpectedResult.stringLikeRegexp('container-instance'))
+  .waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(15),
+    interval: cdk.Duration.seconds(30),
+  });
 
 app.synth();
