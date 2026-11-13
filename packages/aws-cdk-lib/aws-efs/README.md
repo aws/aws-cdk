@@ -299,3 +299,14 @@ const fileSystem =  new efs.FileSystem(this, 'EfsFileSystem', {
   removalPolicy: RemovalPolicy.DESTROY,
 });
 ```
+
+## Automatic backups
+
+Set `enableAutomaticBackups: true` to enable automatic backups for a file system.
+With the `@aws-cdk/aws-efs:explicitBackupPolicy` feature flag enabled, setting this
+property to `false` or omitting it explicitly disables automatic backups.
+
+When the flag is disabled or unset, `false` and omitted values leave the backup
+policy unconfigured. The service may therefore keep automatic backups enabled.
+Before enabling this flag for an existing stack, set `enableAutomaticBackups: true`
+for any file systems whose automatic backups must remain enabled.
