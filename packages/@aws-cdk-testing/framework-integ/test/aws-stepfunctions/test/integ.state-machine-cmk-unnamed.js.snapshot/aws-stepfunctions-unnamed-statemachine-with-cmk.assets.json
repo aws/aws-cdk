@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "ca6a3818db3e7fa82a7b7e12b3d4d24421e9bcb31f10369830391b2636000ae7": {
+      "displayName": "aws-stepfunctions-unnamed-statemachine-with-cmk Template",
+      "source": {
+        "path": "aws-stepfunctions-unnamed-statemachine-with-cmk.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-cbb4871d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ca6a3818db3e7fa82a7b7e12b3d4d24421e9bcb31f10369830391b2636000ae7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
