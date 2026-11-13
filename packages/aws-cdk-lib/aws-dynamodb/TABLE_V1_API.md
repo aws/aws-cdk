@@ -261,6 +261,81 @@ table.addGlobalSecondaryIndex({
 });
 ```
 
+## Vector Indexes
+
+Vector indexes enable similarity search over an embedding attribute stored on a
+DynamoDB table. A vector index defines the embedding attribute to search
+(`vectorAttribute`), the number of `dimensions` of each vector, the
+`distanceFunction` used to compare vectors, and an optional `searchSchema` that
+partitions the index (`HASH`) and declares additional inline filters
+(`INLINE_FILTER`).
+
+Vector indexes can only be used with tables in `PAY_PER_REQUEST` (on-demand)
+billing mode, and are added with the `addVectorIndex` method:
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+});
+
+table.addVectorIndex({
+  indexName: 'SimilarItems',
+  vectorAttribute: 'embedding',
+  dimensions: 128,
+  distanceFunction: dynamodb.VectorDistanceFunction.COSINE,
+  searchSchema: [
+    { attribute: { name: 'category', type: dynamodb.AttributeType.STRING }, type: dynamodb.SearchSchemaElementType.HASH },
+    { attribute: { name: 'year', type: dynamodb.AttributeType.NUMBER }, type: dynamodb.SearchSchemaElementType.INLINE_FILTER },
+  ],
+  projectionType: dynamodb.ProjectionType.ALL,
+});
+```
+
+The attribute referenced by `vectorAttribute` has an implicit type of List and
+does not need to be declared in the table's attribute definitions. Attributes
+referenced by the `searchSchema` are added to the table's attribute definitions
+automatically. Index names must be unique across all global secondary indexes,
+local secondary indexes, and vector indexes on the table.
+
+A `searchSchema` may contain at most one `HASH` element. When a `HASH` element
+is declared, queries against the vector index must provide a search condition
+expression targeting it.
+
+Searching a vector index requires the `dynamodb:SearchVectors` permission on
+the index resource. It is not included in `grantReadData` because fine-grained
+access control condition keys (such as `dynamodb:LeadingKeys`) have no effect
+on `SearchVectors`. Grant it explicitly with `grants.vectorSearch()`:
+
+```ts
+declare const table: dynamodb.Table;
+declare const grantee: iam.IGrantable;
+
+table.grants.vectorSearch(grantee);
+```
+
+A table imported with `Table.fromTableName()` or another `from*` method has the
+type `ITable`, which has no `grants` property. Use `TableGrants.fromTable()` for
+such a table:
+
+```ts
+declare const grantee: iam.IGrantable;
+
+const importedTable = dynamodb.Table.fromTableName(this, 'ImportedTable', 'my-table');
+dynamodb.TableGrants.fromTable(importedTable).vectorSearch(grantee);
+```
+
+Without a `regions` argument, `TableGrants.fromTable()` grants in the table's
+own region only. For a replicated table that you hold as `ITable`, pass the
+replication regions:
+
+```ts
+declare const table: dynamodb.ITable;
+declare const grantee: iam.IGrantable;
+
+dynamodb.TableGrants.fromTable(table, ['us-west-2']).vectorSearch(grantee);
+```
+
 ## Kinesis Stream
 
 A Kinesis Data Stream can be configured on the DynamoDB table to capture item-level changes.
