@@ -1,8 +1,8 @@
 import { Stack, Size, Validations } from 'aws-cdk-lib';
-import { Template, Match } from 'aws-cdk-lib/assertions';
+import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { AccessControl, CacheEngine, NoPasswordUser, ServerlessCache, UserEngine, UserGroup } from '../lib';
+import { AccessControl, CacheEngine, ConnectionType, IamUser, NoPasswordUser, ServerlessCache, UserEngine, UserGroup } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -474,6 +474,179 @@ describe('serverless cache', () => {
         engine: CacheEngine.VALKEY_9,
         userGroup,
       })).not.toThrow();
+    });
+  });
+
+  describe('connection type', () => {
+    beforeEach(() => {
+      Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3002',
+        reason: 'ConnectionType is a newly launched property not yet in the bundled schema',
+      });
+    });
+
+    test('omits ConnectionType when connectionType is not set', () => {
+      new ServerlessCache(stack, 'Cache', {
+        vpc: new Vpc(stack, 'VPC'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        ConnectionType: Match.absent(),
+        SubnetIds: Match.arrayWith([{ Ref: Match.stringLikeRegexp('VPCPrivateSubnet1') }]),
+        SecurityGroupIds: [{ 'Fn::GetAtt': [Match.stringLikeRegexp('CacheSecurityGroup'), 'GroupId'] }],
+      });
+    });
+
+    test('renders ConnectionType vpc with ConnectionType.VPC', () => {
+      new ServerlessCache(stack, 'Cache', {
+        vpc: new Vpc(stack, 'VPC'),
+        connectionType: ConnectionType.VPC,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        ConnectionType: 'vpc',
+        SecurityGroupIds: [{ 'Fn::GetAtt': [Match.stringLikeRegexp('CacheSecurityGroup'), 'GroupId'] }],
+      });
+    });
+
+    test('creates a public cache without a VPC', () => {
+      const cache = new ServerlessCache(stack, 'Cache', {
+        engine: CacheEngine.VALKEY_9,
+        connectionType: ConnectionType.PUBLIC,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        Engine: 'valkey',
+        MajorEngineVersion: '9',
+        ConnectionType: 'public',
+        UserGroupId: 'default.iam-user-group',
+        SubnetIds: Match.absent(),
+        SecurityGroupIds: Match.absent(),
+      });
+      template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
+      expect(cache.vpc).toBeUndefined();
+      expect(cache.subnets).toBeUndefined();
+      expect(cache.securityGroups).toBeUndefined();
+    });
+
+    test('creates a public cache with the default engine', () => {
+      new ServerlessCache(stack, 'Cache', {
+        connectionType: ConnectionType.PUBLIC,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        Engine: 'valkey',
+        MajorEngineVersion: Match.absent(),
+        ConnectionType: 'public',
+      });
+    });
+
+    test('public cache uses the given user group', () => {
+      const userGroup = new UserGroup(stack, 'UserGroup', {
+        userGroupName: 'my-iam-group',
+        users: [new IamUser(stack, 'User', {
+          userId: 'iam-user',
+          accessControl: AccessControl.fromAccessString('on ~* +@all'),
+        })],
+      });
+
+      new ServerlessCache(stack, 'Cache', {
+        engine: CacheEngine.VALKEY_9,
+        connectionType: ConnectionType.PUBLIC,
+        userGroup,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        UserGroupId: 'my-iam-group',
+      });
+    });
+
+    test('public cache emits a public access warning', () => {
+      new ServerlessCache(stack, 'Cache', {
+        engine: CacheEngine.VALKEY_9,
+        connectionType: ConnectionType.PUBLIC,
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/Cache',
+        Match.stringLikeRegexp('This serverless cache uses a public endpoint and is reachable from the internet'));
+    });
+
+    test('vpc cache does not emit a public access warning', () => {
+      new ServerlessCache(stack, 'Cache', {
+        vpc: new Vpc(stack, 'VPC'),
+      });
+
+      Annotations.fromStack(stack).hasNoWarning('/Default/Cache', Match.stringLikeRegexp('public endpoint'));
+    });
+
+    test('ConnectionType.of() renders an arbitrary value', () => {
+      new ServerlessCache(stack, 'Cache', {
+        vpc: new Vpc(stack, 'VPC'),
+        connectionType: ConnectionType.of('vpc'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        ConnectionType: 'vpc',
+      });
+    });
+
+    test('fails when vpc is not set for a vpc cache', () => {
+      expect(() => new ServerlessCache(stack, 'Cache', {}))
+        .toThrow('vpc is required when connectionType is not ConnectionType.PUBLIC');
+    });
+
+    test('fails when vpc is not set with ConnectionType.VPC', () => {
+      expect(() => new ServerlessCache(stack, 'Cache', { connectionType: ConnectionType.VPC }))
+        .toThrow('vpc is required when connectionType is not ConnectionType.PUBLIC');
+    });
+
+    test.each([
+      ['vpc', (vpc: Vpc) => ({ vpc })],
+      ['vpcSubnets', (_vpc: Vpc) => ({ vpcSubnets: { subnetType: SubnetType.PUBLIC } })],
+      ['securityGroups', (vpc: Vpc) => ({ securityGroups: [new SecurityGroup(stack, 'SG', { vpc })] })],
+    ])('fails when %s is set for a public cache', (_name, networkProps) => {
+      const vpc = new Vpc(stack, 'VPC');
+      expect(() => new ServerlessCache(stack, 'Cache', {
+        engine: CacheEngine.VALKEY_9,
+        connectionType: ConnectionType.PUBLIC,
+        ...networkProps(vpc),
+      })).toThrow('vpc, vpcSubnets and securityGroups must not be set when connectionType is ConnectionType.PUBLIC');
+    });
+
+    test.each([
+      [CacheEngine.REDIS_LATEST, '"redis"'],
+      [CacheEngine.REDIS_7, '"redis"'],
+      [CacheEngine.MEMCACHED_LATEST, '"memcached"'],
+      [CacheEngine.MEMCACHED_1_6, '"memcached"'],
+    ])('fails for a public cache with engine %s', (engine, engineType) => {
+      expect(() => new ServerlessCache(stack, 'Cache', {
+        engine,
+        connectionType: ConnectionType.PUBLIC,
+      })).toThrow(`ConnectionType.PUBLIC requires the valkey engine, got ${engineType}`);
+    });
+
+    test.each([
+      [CacheEngine.VALKEY_7, '"7"'],
+      [CacheEngine.VALKEY_8, '"8"'],
+    ])('fails for a public cache with engine %s', (engine, version) => {
+      expect(() => new ServerlessCache(stack, 'Cache', {
+        engine,
+        connectionType: ConnectionType.PUBLIC,
+      })).toThrow(`ConnectionType.PUBLIC requires valkey 9 or later, got ${version}`);
+    });
+
+    test('allows a public cache with a newer valkey version', () => {
+      expect(() => new ServerlessCache(stack, 'Cache', {
+        engine: CacheEngine.of('valkey', '10'),
+        connectionType: ConnectionType.PUBLIC,
+      })).not.toThrow();
+    });
+
+    test('ConnectionType named members expose the expected value', () => {
+      expect(ConnectionType.VPC.value).toEqual('vpc');
+      expect(ConnectionType.PUBLIC.value).toEqual('public');
+      expect(ConnectionType.PUBLIC.toString()).toEqual('public');
     });
   });
 });
