@@ -378,7 +378,7 @@ You can configure high-throughput mode for your FIFO topics by setting the `fifo
 ```ts
 const topic = new sns.Topic(this, 'MyTopic', {
   fifo: true,
-  fifoThroughputScope: sns.FifoThroughputScope.TOPIC,
+  fifoThroughputScope: sns.FifoThroughputScope.MESSAGE_GROUP,
 });
 ```
 
