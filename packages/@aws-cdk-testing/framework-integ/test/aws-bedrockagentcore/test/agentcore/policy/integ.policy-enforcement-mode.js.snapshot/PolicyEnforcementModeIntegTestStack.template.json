@@ -1,0 +1,124 @@
+{
+ "Resources": {
+  "TestPolicyEngineEDA3E3DC": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Name": "PolicyEnforcementModtackTestPolicyEngineE21047BD"
+   }
+  },
+  "TestPolicyEngineLogOnlyPolicyB8E578AB": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal == AgentCore::IamEntity::\"arn:aws:iam::123456789012:role/TestAgentRole\",\n  action,\n  resource is AgentCore::Gateway\n);"
+     }
+    },
+    "EnforcementMode": "LOG_ONLY",
+    "Name": "PolicyEnforcementModyEngineLogOnlyPolicy9469FAE9",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "TestPolicyEngineEDA3E3DC",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "TestPolicyEngineEDA3E3DC"
+   ]
+  },
+  "TestPolicyEnginePolicyMemberPolicy2EE94578": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Policy": {
+      "Statement": "forbid(\n  principal == AgentCore::IamEntity::\"arn:aws:iam::123456789012:role/TestAgentRole\",\n  action,\n  resource is AgentCore::Gateway\n);"
+     }
+    },
+    "EnforcementMode": "LOG_ONLY",
+    "Name": "PolicyEnforcementModnePolicyMemberPolicy317EC73D",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "TestPolicyEngineEDA3E3DC",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "TestPolicyEngineLogOnlyPolicyB8E578AB",
+    "TestPolicyEngineEDA3E3DC"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttTestPolicyEngineEDA3E3DCPolicyEngineId42B95A24": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TestPolicyEngineEDA3E3DC",
+     "PolicyEngineId"
+    ]
+   },
+   "Export": {
+    "Name": "PolicyEnforcementModeIntegTestStack:ExportsOutputFnGetAttTestPolicyEngineEDA3E3DCPolicyEngineId42B95A24"
+   }
+  },
+  "ExportsOutputFnGetAttTestPolicyEngineLogOnlyPolicyB8E578ABPolicyId125123D4": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TestPolicyEngineLogOnlyPolicyB8E578AB",
+     "PolicyId"
+    ]
+   },
+   "Export": {
+    "Name": "PolicyEnforcementModeIntegTestStack:ExportsOutputFnGetAttTestPolicyEngineLogOnlyPolicyB8E578ABPolicyId125123D4"
+   }
+  },
+  "ExportsOutputFnGetAttTestPolicyEnginePolicyMemberPolicy2EE94578PolicyId5C22BC2A": {
+   "Value": {
+    "Fn::GetAtt": [
+     "TestPolicyEnginePolicyMemberPolicy2EE94578",
+     "PolicyId"
+    ]
+   },
+   "Export": {
+    "Name": "PolicyEnforcementModeIntegTestStack:ExportsOutputFnGetAttTestPolicyEnginePolicyMemberPolicy2EE94578PolicyId5C22BC2A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
