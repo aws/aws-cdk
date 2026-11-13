@@ -713,7 +713,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
               + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.\n'
               + 'If the function is imported from a different account and already has the correct permissions use `fromFunctionAttributes()` API with the `skipPermissions` flag.', this);
           }
-          return { statementAdded: true, policyDependable: permissionNode };
+          return { statementAdded: permissionNode !== undefined, policyDependable: permissionNode };
         },
         env: this.env,
       },
