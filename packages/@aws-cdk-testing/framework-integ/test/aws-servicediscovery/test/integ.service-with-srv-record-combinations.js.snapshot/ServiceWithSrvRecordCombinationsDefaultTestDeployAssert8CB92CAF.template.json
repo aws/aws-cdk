@@ -1,0 +1,270 @@
+{
+ "Resources": {
+  "AwsApiCallServiceDiscoverygetServicedb1a8ac6a14ec1f0645ab0c5c393c1a7": {
+   "Type": "Custom::DeployAssert@SdkCallServiceDiscoverygetService",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ServiceDiscovery",
+    "api": "getService",
+    "expected": "{\"$ObjectLike\":{\"Service\":{\"$ObjectLike\":{\"DnsConfig\":{\"$ObjectLike\":{\"DnsRecords\":[{\"$ObjectLike\":{\"Type\":\"A\",\"TTL\":30}},{\"$ObjectLike\":{\"Type\":\"SRV\",\"TTL\":30}}]}}}}}}",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-servicediscovery-srv-record-combinations:ExportsOutputFnGetAttNamespaceASrvService3CDD312DIdE78D7A34"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1787705251434"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "servicediscovery:GetService"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "servicediscovery:GetService"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "servicediscovery:GetService"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "servicediscovery:GetService"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "servicediscovery:GetService"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "servicediscovery:GetService"
+         ],
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallServiceDiscoverygetServicea93fb184c62374be550b3d5d767d6d99": {
+   "Type": "Custom::DeployAssert@SdkCallServiceDiscoverygetService",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ServiceDiscovery",
+    "api": "getService",
+    "expected": "{\"$ObjectLike\":{\"Service\":{\"$ObjectLike\":{\"DnsConfig\":{\"$ObjectLike\":{\"DnsRecords\":[{\"$ObjectLike\":{\"Type\":\"AAAA\",\"TTL\":30}},{\"$ObjectLike\":{\"Type\":\"SRV\",\"TTL\":30}}]}}}}}}",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-servicediscovery-srv-record-combinations:ExportsOutputFnGetAttNamespaceAaaaSrvService47BDCB32IdC9154211"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1787705251435"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallServiceDiscoverygetService8de4ae6dd96d5636e882be181506d437": {
+   "Type": "Custom::DeployAssert@SdkCallServiceDiscoverygetService",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ServiceDiscovery",
+    "api": "getService",
+    "expected": "{\"$ObjectLike\":{\"Service\":{\"$ObjectLike\":{\"DnsConfig\":{\"$ObjectLike\":{\"DnsRecords\":[{\"$ObjectLike\":{\"Type\":\"A\",\"TTL\":30}},{\"$ObjectLike\":{\"Type\":\"AAAA\",\"TTL\":30}},{\"$ObjectLike\":{\"Type\":\"SRV\",\"TTL\":30}}]}}}}}}",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-servicediscovery-srv-record-combinations:ExportsOutputFnGetAttNamespaceAAaaaSrvServiceBC1E7207IdCB43661A"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1787705251435"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallServiceDiscoverygetServicedb1a8ac6a14ec1f0645ab0c5c393c1a7": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallServiceDiscoverygetServicedb1a8ac6a14ec1f0645ab0c5c393c1a7",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallServiceDiscoverygetServicea93fb184c62374be550b3d5d767d6d99": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallServiceDiscoverygetServicea93fb184c62374be550b3d5d767d6d99",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallServiceDiscoverygetService8de4ae6dd96d5636e882be181506d437": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallServiceDiscoverygetService8de4ae6dd96d5636e882be181506d437",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
