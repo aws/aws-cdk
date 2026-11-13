@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
-import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack } from '../../lib';
+import { App, Aws, CfnParameter, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack } from '../../lib';
 import type { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 import { getAssetManifest, isAssetManifest, readAssetManifest } from './_helpers';
@@ -15,6 +15,60 @@ const CFN_CONTEXT = {
 };
 
 describe('new style synthesis', () => {
+  test('file asset bucket key is exposed to asset consumers', () => {
+    const props = {
+      fileAssetsBucketName: 'encrypted-assets',
+      fileAssetsBucketKmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/11111111-2222-3333-4444-555555555555',
+    };
+    const testStack = new Stack(new App(), 'Encrypted', {
+      synthesizer: new DefaultStackSynthesizer(props),
+    });
+    const location = testStack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'encrypted-file',
+    });
+    expect(location.kmsKeyArn).toEqual(props.fileAssetsBucketKmsKeyArn);
+  });
+
+  test('file asset bucket key is absent by default', () => {
+    const testStack = new Stack(new App(), 'Default');
+    const location = testStack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'default-file',
+    });
+    expect(location).not.toHaveProperty('kmsKeyArn');
+  });
+
+  test('fails when file asset bucket key contains an unresolved token', () => {
+    const keyStack = new Stack(new App(), 'KeyStack');
+    const keyArn = new CfnParameter(keyStack, 'KeyArn').valueAsString;
+    expect(() => new DefaultStackSynthesizer({ fileAssetsBucketKmsKeyArn: keyArn }))
+      .toThrow("DefaultStackSynthesizer property 'fileAssetsBucketKmsKeyArn' cannot contain tokens");
+  });
+
+  test.each([undefined, { account: '123456789012', region: 'us-east-1' }])('file asset bucket key supports environment placeholders (%p)', (env) => {
+    const testStack = new Stack(new App(), 'Placeholders', {
+      env,
+      synthesizer: new DefaultStackSynthesizer({
+        qualifier: 'keytest',
+        fileAssetsBucketKmsKeyArn: 'arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${Qualifier}',
+      }),
+    });
+    const location = testStack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'token-file',
+    });
+    const value = testStack.resolve(location.kmsKeyArn);
+    expect(value).toEqual({
+      'Fn::Join': ['', env
+        ? ['arn:', { Ref: 'AWS::Partition' }, ':kms:us-east-1:123456789012:key/keytest']
+        : ['arn:', { Ref: 'AWS::Partition' }, ':kms:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':key/keytest']],
+    });
+  });
+
   let app: App;
   let stack: Stack;
   let nestedStack: NestedStack;

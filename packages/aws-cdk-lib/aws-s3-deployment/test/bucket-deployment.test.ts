@@ -17,6 +17,30 @@ import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
 
+test('file asset bucket key grants decrypt to the deployment handler', () => {
+  const props = {
+    fileAssetsBucketName: 'encrypted-assets',
+    fileAssetsBucketKmsKeyArn: 'arn:aws:kms:us-east-1:123456789012:key/11111111-2222-3333-4444-555555555555',
+  };
+  const stack = new cdk.Stack(new cdk.App(), 'Encrypted', {
+    synthesizer: new cdk.DefaultStackSynthesizer(props),
+  });
+  const deployment = new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: new s3.Bucket(stack, 'Destination'),
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    Roles: [stack.resolve(deployment.handlerRole.roleName)],
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['kms:Decrypt', 'kms:DescribeKey'],
+        Effect: 'Allow',
+        Resource: props.fileAssetsBucketKmsKeyArn,
+      }]),
+    },
+  });
+});
+
 test('deploy from local directory asset', () => {
   // GIVEN
   const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });

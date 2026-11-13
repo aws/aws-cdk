@@ -82,8 +82,16 @@ User: *** is not authorized to perform: kms:Decrypt on the resource associated w
 because no identity-based policy allows the kms:Decrypt action
 ```
 
-When this happens, users can use the public `handlerRole` property of `BucketDeployment` to manually
-add the KMS permissions:
+For local assets in a customer-managed-key bootstrap bucket, configure
+`DefaultStackSynthesizer.fileAssetsBucketKmsKeyArn` on the stack with the ARN
+of that existing key. `Source.asset()` then uses the existing asset read grant
+to give the handler `kms:Decrypt` and `kms:DescribeKey` on that specific key.
+The synthesizer does not discover the key, change bucket encryption, or edit
+the key policy. This setting is not Lambda's `sourceKMSKey`, which configures
+Lambda code encryption rather than S3 asset bucket encryption.
+
+Alternatively, users can use the public `handlerRole` property of
+`BucketDeployment` to manually add the KMS permissions:
 
 ```ts
 declare const destinationBucket: s3.Bucket;
