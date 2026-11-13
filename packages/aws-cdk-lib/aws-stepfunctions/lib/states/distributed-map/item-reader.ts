@@ -54,14 +54,18 @@ export interface ItemReaderProps {
   /**
    * S3 Bucket containing objects to iterate over or a file with a list to iterate over
    *
-   * @default - S3 bucket will be determined from @see bucketNamePath
+   * @default - The bucket name is supplied by `bucketNamePath`.
    */
   readonly bucket?: IBucket;
 
   /**
    * S3 bucket name containing objects to iterate over or a file with a list to iterate over, as JsonPath
    *
-   * @default - S3 bucket will be determined from @see bucket
+   * Use `JsonPath.stringAt('$.bucketName')` to read the bucket name from the state input
+   * in a JSONPath workflow. A plain string such as `'$.bucketName'` is treated as a literal
+   * bucket name. Specify either `bucket` or `bucketNamePath`, but not both.
+   *
+   * @default - The bucket name is taken from `bucket`.
    */
   readonly bucketNamePath?: string;
 
@@ -197,6 +201,10 @@ export class S3ObjectsItemReader implements IItemReader {
 export interface S3FileItemReaderProps extends ItemReaderProps {
   /**
    * Key of file stored in S3 bucket containing an array to iterate over
+   *
+   * For a JSONPath workflow, use `JsonPath.stringAt('$.key')` to read the key from the
+   * state input. A plain string such as `'$.key'` is treated as a literal S3 object key.
+   * For a JSONata workflow, use an expression such as `'{% $states.input.key %}'`.
    */
   readonly key: string;
 }
@@ -224,6 +232,10 @@ abstract class S3FileItemReader implements IItemReader {
 
   /**
    * S3 key of a file with a list to iterate over
+   *
+   * In a JSONPath workflow, this can be a literal key or a path encoded with
+   * `JsonPath.stringAt()`. In a JSONata workflow, this can be a literal key or a
+   * JSONata expression.
    */
   readonly key: string;
 
