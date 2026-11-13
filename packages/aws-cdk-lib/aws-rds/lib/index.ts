@@ -16,6 +16,7 @@ export * from './instance-metrics';
 export * from './proxy';
 export * from './proxy-endpoint';
 export * from './serverless-cluster';
+export * from './express-cluster';
 export * from './subnet-group';
 export * from './aurora-cluster-instance';
 
