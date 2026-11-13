@@ -13,7 +13,7 @@ export const handler = makeHandler(autoDeleteHandler);
 export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   switch (event.RequestType) {
     case 'Create':
-      return { PhyscialResourceId: event.ResourceProperties?.CanaryName };
+      return { PhysicalResourceId: event.ResourceProperties?.CanaryName };
     case 'Update':
       const response = await onUpdate(event);
       return { PhysicalResourceId: response.PhysicalResourceId };
