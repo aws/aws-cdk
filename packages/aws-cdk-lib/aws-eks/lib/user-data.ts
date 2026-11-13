@@ -1,6 +1,7 @@
 import type { BootstrapOptions, ICluster } from './cluster';
 import type * as autoscaling from '../../aws-autoscaling';
-import { Stack } from '../../core';
+import { Stack, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 // eslint-disable-next-line max-len
 export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
@@ -63,6 +64,67 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
     `/etc/eks/bootstrap.sh ${cluster.clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
     `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`,
   ];
+}
+
+/**
+ * Render the nodeadm `NodeConfig` for an Amazon Linux 2023 node.
+ *
+ * nodeadm requires the cluster name, API server endpoint, certificate authority and service CIDR.
+ * The node lifecycle label and spot taint match the Amazon Linux 2 bootstrap.
+ *
+ * @see https://awslabs.github.io/amazon-eks-ami/nodeadm/doc/api/
+ */
+// eslint-disable-next-line max-len
+export function renderAmazonLinux2023UserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, serviceCidr: string, options: BootstrapOptions = {}): string {
+  const unsupported = new Array<string>();
+  if (options.useMaxPods === false) { unsupported.push('useMaxPods'); }
+  if (options.enableDockerBridge !== undefined) { unsupported.push('enableDockerBridge'); }
+  if (options.awsApiRetryAttempts !== undefined) { unsupported.push('awsApiRetryAttempts'); }
+  if (options.dockerConfigJson !== undefined) { unsupported.push('dockerConfigJson'); }
+  if (options.additionalArgs !== undefined) { unsupported.push('additionalArgs'); }
+  if (unsupported.length > 0) {
+    throw new ValidationError(lit`UnsupportedAl2023BootstrapOptions`,
+      `bootstrapOptions ${unsupported.join(', ')} are not supported for Amazon Linux 2023 nodes (nodeadm). ` +
+      'Use kubeletExtraArgs, dnsClusterIp or serviceCidr instead.', autoScalingGroup);
+  }
+
+  let apiServerEndpoint: string;
+  let certificateAuthority: string;
+  try {
+    apiServerEndpoint = cluster.clusterEndpoint;
+    certificateAuthority = cluster.clusterCertificateAuthorityData;
+  } catch (e) {
+    throw new ValidationError(lit`Al2023RequiresEndpointAndCa`,
+      'Amazon Linux 2023 nodes need the cluster endpoint and certificate authority data. ' +
+      'When importing the cluster, set clusterEndpoint and clusterCertificateAuthorityData.', autoScalingGroup);
+  }
+
+  const lifecycleLabel = autoScalingGroup.spotPrice ? LifecycleLabel.SPOT : LifecycleLabel.ON_DEMAND;
+  const flags = [`--node-labels=lifecycle=${lifecycleLabel}`];
+  if (autoScalingGroup.spotPrice) {
+    flags.push('--register-with-taints=spotInstance=true:PreferNoSchedule');
+  }
+  if (options.kubeletExtraArgs) {
+    flags.push(...options.kubeletExtraArgs.trim().split(/\s+/));
+  }
+
+  const lines = [
+    '---',
+    'apiVersion: node.eks.aws/v1alpha1',
+    'kind: NodeConfig',
+    'spec:',
+    '  cluster:',
+    `    name: ${cluster.clusterName}`,
+    `    apiServerEndpoint: ${apiServerEndpoint}`,
+    `    certificateAuthority: ${certificateAuthority}`,
+    `    cidr: ${serviceCidr}`,
+    '  kubelet:',
+  ];
+  if (options.dnsClusterIp) {
+    lines.push('    config:', '      clusterDNS:', `      - ${options.dnsClusterIp}`);
+  }
+  lines.push('    flags:', ...flags.map(flag => `    - ${JSON.stringify(flag)}`));
+  return lines.join('\n') + '\n';
 }
 
 export function renderBottlerocketUserData(cluster: ICluster): string[] {
