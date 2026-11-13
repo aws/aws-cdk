@@ -545,6 +545,16 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     });
     this.grantPrincipal = provider.grantPrincipal;
 
+    // The provider function is shared by all instances in the stack, so a role
+    // passed to a later instance cannot replace the one it was created with.
+    if (props.role && provider.role && props.role.roleArn !== provider.role.roleArn) {
+      Annotations.of(this).addWarningV2('@aws-cdk/custom-resources:roleIgnored', [
+        'The `role` property is ignored because this stack already has an AwsCustomResource provider function with a different role.',
+        'All AwsCustomResource instances in a stack share a single provider function, which uses the role of the first instance.',
+        'Pass the same role to every AwsCustomResource in the stack, or omit `role` and use `policy` or grant permissions to this construct instead.',
+      ].join(' '));
+    }
+
     const installLatestAwsSdk = (props.installLatestAwsSdk
       ?? this.node.tryGetContext(cxapi.AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT)
       ?? true);
