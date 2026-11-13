@@ -618,3 +618,76 @@ describe('event source mapping', () => {
     })).not.toThrow();
   });
 });
+
+describe('kafkaConsumptionMode', () => {
+  test('renders ConsumptionMode for self-managed Kafka', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      kafkaBootstrapServers: ['kafka-broker:9092'],
+      kafkaTopic: 'some-topic',
+      kafkaConsumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      SelfManagedKafkaEventSourceConfig: { ConsumptionMode: 'Queue' },
+      AmazonManagedKafkaEventSourceConfig: Match.absent(),
+    });
+  });
+
+  test.each([
+    ['an MSK event source', { eventSourceArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/my-cluster/abcd1234' }],
+    ['a non-Kafka event source', { eventSourceArn: 'arn:aws:sqs:us-east-1:123456789012:MyQueue' }],
+  ])('fails for %s', (_name, sourceProps) => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      kafkaConsumptionMode: lambda.KafkaConsumptionMode.STREAM,
+      ...sourceProps,
+    })).toThrow(/kafkaConsumptionMode is only supported for self-managed Kafka event sources/);
+  });
+
+  test('fails in queue mode with startingPosition', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      kafkaBootstrapServers: ['kafka-broker:9092'],
+      kafkaConsumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      startingPosition: StartingPosition.LATEST,
+    })).toThrow(/startingPosition and startingPositionTimestamp are not supported when kafkaConsumptionMode is QUEUE/);
+  });
+
+  test('fails in queue mode with infinite retries', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      kafkaBootstrapServers: ['kafka-broker:9092'],
+      kafkaConsumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      retryAttempts: -1,
+      provisionedPollerConfig: { minimumPollers: 1, maximumPollers: 3 },
+    })).toThrow(/retryAttempts must be between 0 and 10000 when kafkaConsumptionMode is QUEUE/);
+  });
+
+  test('allows a tokenized retryAttempts in queue mode', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      kafkaBootstrapServers: ['kafka-broker:9092'],
+      kafkaConsumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+      retryAttempts: cdk.Lazy.number({ produce: () => 3 }),
+      provisionedPollerConfig: { minimumPollers: 1, maximumPollers: 3 },
+    })).not.toThrow();
+  });
+
+  test('stream mode keeps startingPosition', () => {
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      kafkaBootstrapServers: ['kafka-broker:9092'],
+      kafkaConsumptionMode: lambda.KafkaConsumptionMode.STREAM,
+      startingPosition: StartingPosition.TRIM_HORIZON,
+      retryAttempts: -1,
+      provisionedPollerConfig: { minimumPollers: 1, maximumPollers: 3 },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      SelfManagedKafkaEventSourceConfig: { ConsumptionMode: 'Stream' },
+      StartingPosition: 'TRIM_HORIZON',
+      MaximumRetryAttempts: -1,
+    });
+  });
+});

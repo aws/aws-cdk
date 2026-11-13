@@ -17,12 +17,13 @@ import type { AgentRuntimeArtifact } from './runtime-artifact';
 import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import type { LifecycleConfiguration, PlatformVersion, RequestHeaderConfiguration } from './types';
+import type { BuildLifecycleHooks, LifecycleConfiguration, PlatformVersion, RequestHeaderConfiguration } from './types';
 import { ProtocolType } from './types';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names } from '../../../core';
+import type { Size } from '../../../core';
+import { Duration, SizeRoundingBehavior, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
@@ -138,6 +139,22 @@ export interface RuntimeProps {
    * @default - No lifecycle configuration
    */
   readonly lifecycleConfiguration?: LifecycleConfiguration;
+
+  /**
+   * Hooks the AgentCore service calls on the agent's container while it builds the runtime.
+   *
+   * @default - no build hooks
+   */
+  readonly buildHooks?: BuildLifecycleHooks;
+
+  /**
+   * The minimum memory for each runtime session.
+   *
+   * Must be a whole number of MiB. The service validates which values are allowed.
+   *
+   * @default - the service default
+   */
+  readonly minimumMemory?: Size;
 
   /**
    * Whether to enable X-Ray tracing for this runtime.
@@ -399,6 +416,8 @@ export class Runtime extends RuntimeBase {
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables(props.environmentVariables) }),
       tags: props.tags ?? {},
       lifecycleConfiguration: this.renderLifecycleConfiguration(),
+      hooksConfiguration: this.renderHooksConfiguration(props.buildHooks),
+      resourceConfigurations: this.renderResourceConfigurations(props.minimumMemory),
     };
     if (props.requestHeaderConfiguration) {
       cfnProps.requestHeaderConfiguration = this.renderRequestHeaderConfiguration(props.requestHeaderConfiguration);
@@ -557,6 +576,28 @@ export class Runtime extends RuntimeBase {
       idleRuntimeSessionTimeout: this.lifecycleConfiguration?.idleRuntimeSessionTimeout?.toSeconds(),
       maxLifetime: this.lifecycleConfiguration?.maxLifetime?.toSeconds(),
     };
+  }
+
+  /**
+   * Renders the build hooks for CloudFormation
+   * @internal
+   */
+  private renderHooksConfiguration(buildHooks?: BuildLifecycleHooks): bedrockagentcore.CfnRuntime.RuntimeHooksConfigurationProperty | undefined {
+    if (!buildHooks?.warmup) {
+      return undefined;
+    }
+    return { buildProperty: { warmup: buildHooks.warmup._render() } };
+  }
+
+  /**
+   * Renders the minimum memory for CloudFormation
+   * @internal
+   */
+  private renderResourceConfigurations(minimumMemory?: Size): bedrockagentcore.CfnRuntime.ResourceConfigurationProperty[] | undefined {
+    if (!minimumMemory) {
+      return undefined;
+    }
+    return [{ minimumMemoryInMiB: minimumMemory.toMebibytes({ rounding: SizeRoundingBehavior.FAIL }) }];
   }
 
   /**
