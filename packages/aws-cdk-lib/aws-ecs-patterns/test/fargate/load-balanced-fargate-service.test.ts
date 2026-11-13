@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../../assertions';
 import { AutoScalingGroup } from '../../../aws-autoscaling';
 import { Certificate, CertificateValidation } from '../../../aws-certificatemanager';
@@ -1820,6 +1821,59 @@ describe('ApplicationLoadBalancedFargateService', () => {
         ToPort: 80,
       })],
     });
+  });
+
+  test('sets DesiredCount to 0 when desiredCount is 0', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      desiredCount: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: 0,
+    });
+  });
+
+  testDeprecated('exposes a desiredCount of 0 on the service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+
+    // WHEN
+    const service = new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      desiredCount: 0,
+    });
+
+    // THEN
+    expect(service.desiredCount).toEqual(0);
+    expect(service.internalDesiredCount).toEqual(0);
+  });
+
+  test.each([-1, -1024])('fails if desiredCount is %d', (desiredCount: number) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+
+    // THEN
+    expect(() =>
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        desiredCount,
+      }),
+    ).toThrow(`desiredCount must be greater than or equal to 0, got ${desiredCount}`);
   });
 });
 
