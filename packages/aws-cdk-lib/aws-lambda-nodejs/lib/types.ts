@@ -1,9 +1,20 @@
-import type { BundlingFileAccess, DockerImage, DockerRunOptions } from '../../core';
+import type { BundlingFileAccess, DockerImage, DockerRunOptions, SymlinkFollowMode } from '../../core';
 
 /**
  * Bundling options
  */
 export interface BundlingOptions extends DockerRunOptions {
+  /**
+   * How to handle symbolic links when staging the function's asset.
+   *
+   * Passed to `Code.fromAsset`. Use `SymlinkFollowMode.NEVER` to preserve
+   * symbolic links, including links created by bundling command hooks.
+   * Only follow links to files you intend to include in the asset.
+   *
+   * @default - uses the default symlink behavior of Code.fromAsset
+   */
+  readonly followSymlinks?: SymlinkFollowMode;
+
   /**
    * Whether to minify files when bundling.
    *
