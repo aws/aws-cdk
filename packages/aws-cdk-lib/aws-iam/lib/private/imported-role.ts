@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { MAX_POLICY_NAME_LEN } from './util';
+import { warnIfSelfAssume } from './warn-self-assume';
 import { Annotations, FeatureFlags, Names, Resource, Token, TokenComparison } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -125,6 +126,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
 
   @MethodMetadata()
   public grantAssumeRole(identity: IPrincipal): Grant {
+    warnIfSelfAssume(this, identity);
     return this.grant(identity, 'sts:AssumeRole');
   }
 
