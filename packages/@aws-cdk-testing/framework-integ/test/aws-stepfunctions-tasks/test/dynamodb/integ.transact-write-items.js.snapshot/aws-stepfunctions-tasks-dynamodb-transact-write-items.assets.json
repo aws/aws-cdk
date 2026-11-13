@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "0a17e6396e2ef44b593f350186cf1dfc8a8cea0e49cd491862004f2b0f876797": {
+      "displayName": "aws-stepfunctions-tasks-dynamodb-transact-write-items Template",
+      "source": {
+        "path": "aws-stepfunctions-tasks-dynamodb-transact-write-items.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-35e19b24": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0a17e6396e2ef44b593f350186cf1dfc8a8cea0e49cd491862004f2b0f876797.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
