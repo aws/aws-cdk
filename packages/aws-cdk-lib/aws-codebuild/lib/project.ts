@@ -23,7 +23,8 @@ import { renderReportGroupArn } from './report-group-utils';
 import type { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
 import * as cloudwatch from '../../aws-cloudwatch';
-import * as notifications from '../../aws-codestarnotifications';
+import type * as notifications from '../../aws-codestarnotifications';
+import { notifyOn } from '../../aws-codestarnotifications/lib/private/notify-on';
 import * as ec2 from '../../aws-ec2';
 import type * as ecr from '../../aws-ecr';
 import type { DockerImageAssetProps } from '../../aws-ecr-assets';
@@ -497,7 +498,7 @@ abstract class ProjectBase extends Resource implements IProject {
     target: notifications.INotificationRuleTarget,
     options: ProjectNotifyOnOptions,
   ): notifications.INotificationRule {
-    return new notifications.NotificationRule(this, id, {
+    return notifyOn(this, id, {
       ...options,
       source: this,
       targets: [target],
