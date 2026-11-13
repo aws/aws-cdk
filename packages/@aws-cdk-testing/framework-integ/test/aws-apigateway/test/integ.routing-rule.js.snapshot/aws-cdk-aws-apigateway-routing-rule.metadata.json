@@ -1,0 +1,435 @@
+{
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "endpointTypes": [
+          "REGIONAL"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "endpointTypes": [
+          "REGIONAL"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "endpointTypes": [
+          "REGIONAL"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "certificate": "*",
+        "endpointType": "REGIONAL"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/StandaloneRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Certificate/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Custom::ACMImportRoutingRuleCertificateCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomACMImportRoutingRuleCertificateCustomResourceProviderRole3C9B8831"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Custom::ACMImportRoutingRuleCertificateCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomACMImportRoutingRuleCertificateCustomResourceProviderHandler3019B04B"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UsersApi5B3C63A8"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UsersApiEndpointB5FC4B1D"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OrdersApi48294D44"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OrdersApiEndpointAC1CCDAC"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultApiB4AF0C9B"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultApiEndpointB0E75779"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Domain66AC69E0"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/UsersRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/HeaderV2Rule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/V2OrdersRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/CatchAllRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/StandaloneRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StandaloneRule78BD8A42"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Certificate/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Certificate4E7ABB08"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UsersApiDeploymentC510219C9db7c7ac93a7c6d632390243d18792a5"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UsersApiDeploymentStageprodD8448B80"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OrdersApiDeployment7E959249c48fd4d0a0784c0e8b97680ca59932d4"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OrdersApiDeploymentStageprod80C33D00"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultApiDeployment6D827C6A59e9bc11012fc30eeec911674b79b0dd"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultApiDeploymentStageprod0360157D"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/UsersRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainUsersRule95956427"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/HeaderV2Rule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainHeaderV2Rule314E58C7"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/V2OrdersRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainV2OrdersRule5095D45B"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/Domain/CatchAllRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainCatchAllRuleD6BC3D71"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/UsersApi/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UsersApiGET6E021DF2"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/OrdersApi/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OrdersApiGET330FA4BD"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-routing-rule/DefaultApi/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultApiGETF9A03454"
+    }
+  ]
+}
