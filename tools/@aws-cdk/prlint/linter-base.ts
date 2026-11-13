@@ -46,7 +46,7 @@ export class PullRequestLinterBase {
    */
   public static async getPRFromCommit(client: Octokit, owner: string, repo: string, sha: string): Promise<GitHubPr | undefined> {
     const prs = await client.search.issuesAndPullRequests({
-      q: sha,
+      q: `repo:${owner}/${repo} is:pull-request is:open ${sha}`,
     });
     console.log('Found PRs: ', prs);
     const foundPr = prs.data.items.find(pr => pr.state === 'open');
