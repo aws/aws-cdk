@@ -1102,6 +1102,39 @@ const api = new appsync.EventApi(this, 'api', {
 api.addChannelNamespace('default');
 ```
 
+#### Adding an auth provider after the API is defined
+
+The resources an auth provider needs are not always available when the Event API is defined - a
+Cognito user pool or a Lambda authorizer is often created by a different construct. Use
+`addAuthProvider()` to attach the provider afterwards.
+
+```ts
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+declare const userPool: cognito.UserPool;
+
+const api = new appsync.EventApi(this, 'api', {
+  apiName: 'api',
+  authorizationConfig: {
+    authProviders: [
+      { authorizationType: appsync.AppSyncAuthorizationType.API_KEY },
+    ],
+  },
+});
+
+api.addAuthProvider({
+  authorizationType: appsync.AppSyncAuthorizationType.USER_POOL,
+  cognitoConfig: { userPool },
+});
+
+api.addChannelNamespace('default');
+```
+
+The API above is rendered exactly as if the Cognito provider had been passed in
+`authorizationConfig.authProviders`, and the same validations apply. `connectionAuthModeTypes`,
+`defaultPublishAuthModeTypes` and `defaultSubscribeAuthModeTypes` follow the auth providers unless
+they were set explicitly, so the added provider can be used to connect, publish and subscribe as
+well. Add the provider before any channel namespace that refers to its authorization type.
+
 ### Data Sources
 
 With AWS AppSync Events, you can configure data source integrations with Amazon DynamoDB, Amazon Aurora Serverless, Amazon EventBridge, Amazon Bedrock Runtime, AWS Lambda, Amazon OpenSearch Service, and HTTP endpoints. The Event API can be associated with the data source and you can use the data source as an integration in your channel namespace event handlers for `onPublish` and `onSubscribe` operations.
