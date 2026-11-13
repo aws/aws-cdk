@@ -702,3 +702,22 @@ Tags.fromStack(stack).hasNone();
 // don't use absent() at the top level, it won't work
 expect(() => { Tags.fromStack(stack).hasValues(Match.absent()); }).toThrow(/will never match/i);
 ```
+
+
+### Numeric comparisons
+
+`Match.greaterThan`, `Match.greaterThanOrEqual`, `Match.lessThan`, and
+`Match.lessThanOrEqual` compare finite numbers. They also accept decimal numeric
+strings, including signs, surrounding whitespace, decimal points, and exponents.
+Empty strings, hexadecimal strings, non-finite values, and other types do not match.
+The comparison threshold must be finite.
+
+```ts
+template.hasResourceProperties('AWS::RDS::DBCluster', {
+  BacktrackWindow: Match.greaterThanOrEqual(10),
+});
+template.resourceCountMatches('AWS::S3::Bucket', Match.greaterThan(0));
+```
+
+Use `resourceCountMatches` for matcher-based counts. The existing `resourceCountIs`
+continues to accept an exact numeric count.
