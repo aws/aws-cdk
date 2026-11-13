@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -717,6 +718,119 @@ describe('Infrastructure Configuration', () => {
     expect(() => {
       new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
         httpPutResponseHopLimit: 65,
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('with a parent instance from an Auto Scaling group', () => {
+    const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'Pool', 'build-pool');
+
+    new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+      parentInstance: {
+        autoScalingGroup: autoScalingGroup,
+        capacityWaitTimeout: cdk.Duration.minutes(10),
+      },
+      terminateInstanceOnCompletion: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ImageBuilder::InfrastructureConfiguration', {
+      ParentInstance: {
+        AutoScalingGroup: {
+          Name: 'build-pool',
+          CapacityWaitTimeoutSeconds: 600,
+        },
+      },
+      TerminateInstanceOnCompletion: false,
+    });
+  });
+
+  test('with a parent instance from an L1 Auto Scaling group', () => {
+    const autoScalingGroup = new autoscaling.CfnAutoScalingGroup(stack, 'Pool', {
+      maxSize: '1',
+      minSize: '0',
+      vpcZoneIdentifier: ['subnet-12345678'],
+      launchTemplate: { launchTemplateId: 'lt-1234567890abcdef0', version: '1' },
+    });
+
+    new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+      parentInstance: { autoScalingGroup: autoScalingGroup },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ImageBuilder::InfrastructureConfiguration', {
+      ParentInstance: {
+        AutoScalingGroup: { Name: { Ref: 'Pool' } },
+      },
+    });
+  });
+
+  test('with a parent instance and no capacity wait timeout', () => {
+    const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'Pool', 'build-pool');
+
+    new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+      parentInstance: { autoScalingGroup: autoScalingGroup },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ImageBuilder::InfrastructureConfiguration', {
+      ParentInstance: {
+        AutoScalingGroup: {
+          Name: 'build-pool',
+          CapacityWaitTimeoutSeconds: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('omits parent instance and terminate on completion by default', () => {
+    new InfrastructureConfiguration(stack, 'InfrastructureConfiguration');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ImageBuilder::InfrastructureConfiguration', {
+      ParentInstance: Match.absent(),
+      TerminateInstanceOnCompletion: Match.absent(),
+    });
+  });
+
+  test('allows a capacity wait timeout token', () => {
+    const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'Pool', 'build-pool');
+    const timeout = new cdk.CfnParameter(stack, 'Timeout', { type: 'Number' });
+
+    new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+      parentInstance: {
+        autoScalingGroup: autoScalingGroup,
+        capacityWaitTimeout: cdk.Duration.seconds(timeout.valueAsNumber),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ImageBuilder::InfrastructureConfiguration', {
+      ParentInstance: {
+        AutoScalingGroup: {
+          CapacityWaitTimeoutSeconds: { Ref: 'Timeout' },
+        },
+      },
+    });
+  });
+
+  test('throws a validation error when the capacity wait timeout is above the limit', () => {
+    const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'Pool', 'build-pool');
+
+    expect(() => {
+      new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+        parentInstance: {
+          autoScalingGroup: autoScalingGroup,
+          capacityWaitTimeout: cdk.Duration.seconds(3601),
+        },
+      });
+    }).toThrow(cdk.ValidationError);
+  });
+
+  test('throws a validation error when the capacity wait timeout is not a whole number of seconds', () => {
+    const autoScalingGroup = autoscaling.AutoScalingGroup.fromAutoScalingGroupName(stack, 'Pool', 'build-pool');
+
+    expect(() => {
+      new InfrastructureConfiguration(stack, 'InfrastructureConfiguration', {
+        parentInstance: {
+          autoScalingGroup: autoScalingGroup,
+          capacityWaitTimeout: cdk.Duration.millis(1500),
+        },
       });
     }).toThrow(cdk.ValidationError);
   });
