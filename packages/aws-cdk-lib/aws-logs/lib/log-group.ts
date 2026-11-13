@@ -685,6 +685,24 @@ export class LogGroup extends LogGroupBase {
   }
 
   /**
+   * The ARN of this log group with ':*' appended.
+   *
+   * Unlike `logGroupArn`, this value ends with ':*' when it is consumed from a different
+   * account or region as well, because it is rebuilt from the name with the suffix included.
+   *
+   * @internal
+   */
+  @memoizedGetter
+  public get _logStreamArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'logs',
+      resource: 'log-group',
+      resourceName: `${this.physicalName}:*`,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+  }
+
+  /**
    * The name of this log group
    */
   @memoizedGetter
