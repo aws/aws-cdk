@@ -421,6 +421,21 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
 });
 ```
 
+To organize saved queries in folders in the CloudWatch console, include the folder
+name followed by `/` in `queryDefinitionName`:
+
+```ts
+new logs.QueryDefinition(this, 'QueryInFolder', {
+  queryDefinitionName: 'application-logs/errors',
+  queryString: new logs.QueryString({
+    fields: ['@timestamp', '@message'],
+    filterStatements: ['@message like /ERROR/'],
+  }),
+});
+```
+
+This saves the `errors` query in the `application-logs` folder.
+
 ## Data Protection Policy
 
 Creates a data protection policy and assigns it to the log group. A data protection policy can help safeguard sensitive data that's ingested by the log group by auditing and masking the sensitive log data. When a user who does not have permission to view masked data views a log event that includes masked data, the sensitive data is replaced by asterisks.
