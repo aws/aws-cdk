@@ -1,6 +1,6 @@
 import type { Construct } from 'constructs';
 import { CfnQueryDefinition } from '.';
-import { Annotations, Resource, ValidationError } from '../../core';
+import { Annotations, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -100,6 +100,18 @@ export interface QueryStringProps {
  * Define a QueryString
  */
 export class QueryString {
+  /**
+   * Use the given text as the query string.
+   *
+   * Use this for OpenSearch SQL and OpenSearch PPL queries, and for Logs Insights QL
+   * queries that the `QueryString` properties can't express. The text is used as is.
+   *
+   * @param queryString the query text
+   */
+  public static fromString(queryString: string): QueryString {
+    return new LiteralQueryString(queryString);
+  }
+
   private readonly fields?: string[];
   private readonly parse: string[];
   private readonly filter: string[];
@@ -199,6 +211,71 @@ export class QueryString {
 }
 
 /**
+ * A query string that is used as is.
+ */
+class LiteralQueryString extends QueryString {
+  constructor(private readonly queryString: string) {
+    super();
+  }
+
+  public toString(): string {
+    return this.queryString;
+  }
+}
+
+/**
+ * The query language of a query definition.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_AnalyzeLogData_Languages.html
+ */
+export enum QueryLanguage {
+  /**
+   * CloudWatch Logs Insights query language (Logs Insights QL).
+   */
+  CWLI = 'CWLI',
+
+  /**
+   * OpenSearch Service SQL.
+   */
+  SQL = 'SQL',
+
+  /**
+   * OpenSearch Service Piped Processing Language (PPL).
+   */
+  PPL = 'PPL',
+}
+
+/**
+ * A parameter of a query definition.
+ *
+ * The query string refers to the parameter as `{{name}}`, and the value is supplied
+ * when the query runs.
+ */
+export interface QueryParameter {
+  /**
+   * The name of the parameter.
+   *
+   * Must start with a letter or underscore and contain only letters, digits and underscores,
+   * up to 128 characters.
+   */
+  readonly name: string;
+
+  /**
+   * The value to use when no value is supplied when the query runs.
+   *
+   * @default - no default value
+   */
+  readonly defaultValue?: string;
+
+  /**
+   * A description of the parameter.
+   *
+   * @default - no description
+   */
+  readonly description?: string;
+}
+
+/**
  * Properties for a QueryDefinition
  */
 export interface QueryDefinitionProps {
@@ -215,9 +292,31 @@ export interface QueryDefinitionProps {
   /**
    * Specify certain log groups for the query definition.
    *
+   * For OpenSearch SQL queries, CloudWatch Logs reads the log groups from the query string
+   * instead.
+   *
    * @default - no specified log groups
    */
   readonly logGroups?: ILogGroupRef[];
+
+  /**
+   * The query language of the query string.
+   *
+   * `QueryString` built from properties produces a Logs Insights QL query. For OpenSearch
+   * SQL and PPL, pass the query with `QueryString.fromString()`.
+   *
+   * @default - not set in the template; CloudWatch Logs uses Logs Insights QL (`CWLI`)
+   */
+  readonly queryLanguage?: QueryLanguage;
+
+  /**
+   * Parameters that the query string refers to as `{{name}}`.
+   *
+   * Only supported for Logs Insights QL queries. Up to 20 parameters.
+   *
+   * @default - no parameters
+   */
+  readonly parameters?: QueryParameter[];
 }
 
 /**
@@ -250,12 +349,52 @@ export class QueryDefinition extends Resource {
         'Both stats and statsStatements properties are provided. The stats property is deprecated and will be ignored in favor of statsStatements.');
     }
 
+    this.validateParameters(props.parameters, props.queryLanguage);
+
     const queryDefinition = new CfnQueryDefinition(this, 'Resource', {
       name: props.queryDefinitionName,
       queryString: props.queryString.toString(),
       logGroupNames: typeof props.logGroups === 'undefined' ? [] : props.logGroups.flatMap(logGroup => logGroup.logGroupRef.logGroupName),
+      queryLanguage: props.queryLanguage,
+      // `QueryParameter` has the same shape as the L1 property, so the list is passed as is.
+      // This also keeps an unresolved list intact.
+      parameters: props.parameters,
     });
 
     this.queryDefinitionId = queryDefinition.attrQueryDefinitionId;
+  }
+
+  private validateParameters(parameters: QueryParameter[] | undefined, queryLanguage: QueryLanguage | undefined): void {
+    if (parameters === undefined || Token.isUnresolved(parameters)) {
+      return;
+    }
+
+    if (parameters.length > 0 && queryLanguage !== undefined && !Token.isUnresolved(queryLanguage) && queryLanguage !== QueryLanguage.CWLI) {
+      throw new ValidationError(lit`QueryParametersRequireLogsInsights`, `query parameters are only supported for Logs Insights QL queries, got queryLanguage ${JSON.stringify(queryLanguage)}; remove parameters or use QueryLanguage.CWLI`, this);
+    }
+
+    if (parameters.length > 20) {
+      throw new ValidationError(lit`QueryParametersMaximum`, `a query definition supports at most 20 parameters, got ${parameters.length}`, this);
+    }
+
+    const names = new Set<string>();
+    for (const parameter of parameters) {
+      const name = parameter.name;
+      if (!Token.isUnresolved(name)) {
+        if (name.length > 128 || !/^[A-Za-z_][0-9A-Za-z_]*$/.test(name)) {
+          throw new ValidationError(lit`QueryParameterNameInvalid`, `invalid query parameter name ${JSON.stringify(name)}: it must start with a letter or underscore, contain only letters, digits and underscores, and be at most 128 characters long`, this);
+        }
+        if (names.has(name)) {
+          throw new ValidationError(lit`QueryParameterNameDuplicate`, `query parameter name ${JSON.stringify(name)} is used more than once`, this);
+        }
+        names.add(name);
+      }
+      if (parameter.defaultValue !== undefined && !Token.isUnresolved(parameter.defaultValue) && parameter.defaultValue.length > 1024) {
+        throw new ValidationError(lit`QueryParameterDefaultValueLength`, `the default value of query parameter ${JSON.stringify(name)} must be at most 1024 characters long, got ${parameter.defaultValue.length}`, this);
+      }
+      if (parameter.description !== undefined && !Token.isUnresolved(parameter.description) && parameter.description.length > 512) {
+        throw new ValidationError(lit`QueryParameterDescriptionLength`, `the description of query parameter ${JSON.stringify(name)} must be at most 512 characters long, got ${parameter.description.length}`, this);
+      }
+    }
   }
 }
