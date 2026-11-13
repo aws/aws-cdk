@@ -94,7 +94,7 @@ export class LogRetention extends Construct {
 
     // if removalPolicy is DESTROY, add action for DeleteLogGroup
     if (props.removalPolicy === cdk.RemovalPolicy.DESTROY) {
-      provider.grantDeleteLogGroup(props.logGroupName);
+      provider.grantDeleteLogGroup(props.logGroupName, props.logGroupRegion);
     }
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
@@ -204,11 +204,14 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
   /**
    * @internal
    */
-  public grantDeleteLogGroup(logGroupName: string) {
+  public grantDeleteLogGroup(logGroupName: string, logGroupRegion?: string) {
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:DeleteLogGroup'],
-      // Only allow deleting the specific log group.
+      // Only allow deleting the specific log group. The log group may live in a
+      // different region than the stack (see `logGroupRegion`), so the ARN must
+      // point at that region for the handler's DeleteLogGroup call to be authorized.
       resources: [cdk.Stack.of(this).formatArn({
+        region: logGroupRegion,
         service: 'logs',
         resource: 'log-group',
         resourceName: `${logGroupName}:*`,
