@@ -705,7 +705,7 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
 
   public registerListener(_listener: elbv2.IListenerRef, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
-    Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterListener', 'Cannot register listener on imported target group -- security groups might need to be updated manually');
+    Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterListener', 'Cannot automatically update target security groups for a listener on an imported target group -- security groups might need to be updated manually');
   }
 
   public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
