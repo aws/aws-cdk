@@ -4,7 +4,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import type * as logs from 'aws-cdk-lib/aws-logs';
-import { CfnCluster } from 'aws-cdk-lib/aws-msk';
+import { CfnCluster, CfnClusterPolicy } from 'aws-cdk-lib/aws-msk';
 import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as core from 'aws-cdk-lib/core';
@@ -166,6 +166,25 @@ export interface ClusterProps {
    * @default - disabled
    */
   readonly clientAuthentication?: ClientAuthentication;
+
+  /**
+   * Configures multi-VPC private connectivity (cross-account access) for the cluster by
+   * enabling `VpcConnectivity` client authentication on the broker nodes.
+   *
+   * The authentication scheme enabled here must also be enabled on the cluster's
+   * `clientAuthentication`. Multi-VPC private connectivity additionally requires
+   * TLS-encrypted client-broker traffic and Apache Kafka 2.7.1 or higher, and is not
+   * supported on unauthenticated clusters or the `kafka.t3.small` instance type.
+   *
+   * Note: Amazon MSK does not allow enabling VPC connectivity auth schemes during the
+   * initial cluster creation (it returns an `InvalidRequest` error). Deploy the cluster
+   * first without `vpcConnectivity`, then add this property and deploy again to enable it.
+   * See the module README for details.
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/aws-access-mult-vpc.html
+   * @default - multi-VPC private connectivity is not enabled
+   */
+  readonly vpcConnectivity?: VpcConnectivity;
 
   /**
    * What to do when this resource is deleted from a stack.
@@ -462,6 +481,63 @@ export class ClientAuthentication {
 }
 
 /**
+ * SASL authentication properties for multi-VPC private connectivity.
+ */
+export interface VpcConnectivitySaslProps {
+  /**
+   * Enable SASL/SCRAM authentication for VPC connectivity.
+   *
+   * @default false
+   */
+  readonly scram?: boolean;
+
+  /**
+   * Enable SASL/IAM authentication for VPC connectivity.
+   *
+   * @default false
+   */
+  readonly iam?: boolean;
+}
+
+/**
+ * Configuration properties for the client authentication used by multi-VPC private
+ * connectivity (cross-account access).
+ *
+ * @see https://docs.aws.amazon.com/msk/latest/developerguide/aws-access-mult-vpc.html
+ */
+export class VpcConnectivity {
+  /**
+   * SASL authentication for VPC connectivity
+   */
+  public static sasl(props: VpcConnectivitySaslProps): VpcConnectivity {
+    return new VpcConnectivity(props, false);
+  }
+
+  /**
+   * TLS authentication for VPC connectivity
+   */
+  public static tls(): VpcConnectivity {
+    return new VpcConnectivity(undefined, true);
+  }
+
+  /**
+   * SASL + TLS authentication for VPC connectivity
+   */
+  public static saslTls(saslProps: VpcConnectivitySaslProps): VpcConnectivity {
+    return new VpcConnectivity(saslProps, true);
+  }
+
+  /**
+   * @param saslProps - properties for SASL authentication
+   * @param tlsEnabled - whether TLS authentication is enabled
+   */
+  private constructor(
+    public readonly saslProps?: VpcConnectivitySaslProps,
+    public readonly tlsEnabled: boolean = false,
+  ) { }
+}
+
+/**
  * Create a MSK Cluster.
  *
  * @resource AWS::MSK::Cluster
@@ -486,6 +562,7 @@ export class Cluster extends ClusterBase {
   /** Key used to encrypt SASL/SCRAM users */
   public readonly saslScramAuthenticationKey?: kms.IKey;
   private resource: CfnCluster;
+  private _clusterPolicy?: CfnClusterPolicy;
   private _clusterDescription?: cr.AwsCustomResource;
   private _clusterBootstrapBrokers?: cr.AwsCustomResource;
 
@@ -518,6 +595,26 @@ export class Cluster extends ClusterBase {
         props.clientAuthentication?.saslProps?.iam)
     ) {
       throw new core.ValidationError(lit`SaslAuthRequiresTlsOnly`, 'To enable SASL/SCRAM or IAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.', this);
+    }
+
+    if (props.vpcConnectivity) {
+      if (!props.clientAuthentication) {
+        throw new core.ValidationError(lit`VpcConnectivityRequiresClientAuth`, 'To enable multi-VPC private connectivity (`vpcConnectivity`), the cluster must have `clientAuthentication` enabled. Unauthenticated clusters cannot use multi-VPC private connectivity.', this);
+      }
+
+      const vpcSasl = props.vpcConnectivity.saslProps;
+      const clusterSasl = props.clientAuthentication.saslProps;
+      const clusterTls = props.clientAuthentication.tlsProps;
+
+      if (vpcSasl?.iam && !clusterSasl?.iam) {
+        throw new core.ValidationError(lit`VpcConnectivityIamRequiresClusterIam`, 'To enable SASL/IAM for `vpcConnectivity`, SASL/IAM authentication must also be enabled on the cluster `clientAuthentication`.', this);
+      }
+      if (vpcSasl?.scram && !clusterSasl?.scram) {
+        throw new core.ValidationError(lit`VpcConnectivityScramRequiresClusterScram`, 'To enable SASL/SCRAM for `vpcConnectivity`, SASL/SCRAM authentication must also be enabled on the cluster `clientAuthentication`.', this);
+      }
+      if (props.vpcConnectivity.tlsEnabled && !clusterTls) {
+        throw new core.ValidationError(lit`VpcConnectivityTlsRequiresClusterTls`, 'To enable TLS for `vpcConnectivity`, TLS authentication must also be enabled on the cluster `clientAuthentication`.', this);
+      }
     }
 
     const volumeSize = props.ebsStorageInfo?.volumeSize ?? 1000;
@@ -719,6 +816,22 @@ export class Cluster extends ClusterBase {
       };
     }
 
+    let connectivityInfo: CfnCluster.ConnectivityInfoProperty | undefined;
+    if (props.vpcConnectivity) {
+      const { saslProps, tlsEnabled } = props.vpcConnectivity;
+      connectivityInfo = {
+        vpcConnectivity: {
+          clientAuthentication: {
+            sasl: saslProps ? {
+              iam: { enabled: saslProps.iam ?? false },
+              scram: { enabled: saslProps.scram ?? false },
+            } : undefined,
+            tls: tlsEnabled ? { enabled: true } : undefined,
+          },
+        },
+      };
+    }
+
     const resource = new CfnCluster(this, 'Resource', {
       clusterName: props.clusterName,
       kafkaVersion: props.kafkaVersion.version,
@@ -736,6 +849,7 @@ export class Cluster extends ClusterBase {
             volumeSize: volumeSize,
           },
         },
+        connectivityInfo,
       },
       encryptionInfo: {
         encryptionAtRest,
@@ -951,6 +1065,33 @@ export class Cluster extends ClusterBase {
     } else {
       throw new core.ValidationError(lit`MissingAuthenticationKmsKey`, 'Cannot create users if an authentication KMS key has not been created/provided.', this);
     }
+  }
+
+  /**
+   * Adds a resource-based policy (`AWS::MSK::ClusterPolicy`) to the cluster.
+   *
+   * A cluster policy is required to grant cross-account access for multi-VPC private
+   * connectivity, for example to allow principals in another AWS account to create an
+   * `AWS::MSK::VpcConnection` targeting this cluster.
+   *
+   * A cluster can only have a single cluster policy.
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/mvpc-cross-account.html
+   * @param policy - the resource-based policy document to attach to the cluster
+   * @returns the created `AWS::MSK::ClusterPolicy` resource
+   */
+  @MethodMetadata()
+  public addClusterPolicy(policy: iam.PolicyDocument): CfnClusterPolicy {
+    if (this._clusterPolicy) {
+      throw new core.ValidationError(lit`ClusterPolicyAlreadyExists`, 'A cluster policy has already been added to this cluster. A cluster can only have a single cluster policy.', this);
+    }
+
+    this._clusterPolicy = new CfnClusterPolicy(this, 'ClusterPolicy', {
+      clusterArn: this.clusterArn,
+      policy,
+    });
+
+    return this._clusterPolicy;
   }
 }
 
