@@ -447,6 +447,74 @@ const testAction = new codepipeline_actions.CodeBuildAction({
 });
 ```
 
+#### Overriding the CodeBuild service role
+
+Pass `serviceRoleOverride` to override the CodeBuild project's default service role for
+builds triggered by this action — useful when a project is shared across pipelines and you
+want to grant each one custom permissions without making the shared service role overly
+permissive. CDK grants the pipeline role `iam:PassRole` on it automatically.
+
+CDK adds no other permissions to the override role. The permissions CDK grants to the
+project's role, such as the pipeline artifact bucket, CloudWatch Logs, source connections,
+VPC access and anything added with `project.addToRolePolicy()`, do not apply to builds that
+use the override, so grant the role everything the build needs. The role must be in the same
+account as the project. For example, to scope a shared project's builds to one repository:
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+declare const project: codebuild.PipelineProject; // shared with other pipelines
+declare const sourceOutput: codepipeline.Artifact;
+const connectionArn = 'arn:aws:codeconnections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh';
+
+const buildRole = new iam.Role(this, 'BuildRole', {
+  assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+});
+
+// Read the input artifacts (use grantReadWrite if the action has outputs)
+pipeline.artifactBucket.grantRead(buildRole);
+
+// Write the build logs
+const logGroupArn = `arn:${this.partition}:logs:${this.region}:${this.account}:log-group:/aws/codebuild/${project.projectName}`;
+buildRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+  resources: [logGroupArn, `${logGroupArn}:*`],
+}));
+
+// Publish test and coverage reports
+buildRole.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'codebuild:CreateReportGroup',
+    'codebuild:CreateReport',
+    'codebuild:UpdateReport',
+    'codebuild:BatchPutTestCases',
+    'codebuild:BatchPutCodeCoverages',
+  ],
+  resources: [`arn:${this.partition}:codebuild:${this.region}:${this.account}:report-group/${project.projectName}-*`],
+}));
+
+// Clone only the repository this pipeline builds. Use the service prefix of your
+// connection ARN: `codeconnections` here, `codestar-connections` for older connections.
+buildRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['codeconnections:UseConnection'],
+  resources: [connectionArn],
+  conditions: { StringEquals: { 'codeconnections:FullRepositoryId': 'my-org/my-repo' } },
+}));
+
+pipeline.addStage({
+  stageName: 'Build',
+  actions: [new codepipeline_actions.CodeBuildAction({
+    actionName: 'CodeBuild',
+    project,
+    input: sourceOutput,
+    serviceRoleOverride: buildRole,
+  })],
+});
+```
+
+For more on scoping a build role to one repository, see
+[Add CodeBuild GitClone permissions for connections](https://docs.aws.amazon.com/codepipeline/latest/userguide/troubleshooting.html#codebuild-role-connections)
+in the CodePipeline User Guide.
+
 #### Multiple inputs and outputs
 
 When you want to have multiple inputs and/or outputs for a Project used in a
