@@ -1,0 +1,17 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-runtime-build-hooks"
+      ],
+      "regions": [
+        "us-east-2"
+      ],
+      "assertionStack": "BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreRuntimeBuildHooksTestDefaultTestDeployAssert3CADF67F"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

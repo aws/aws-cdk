@@ -62,7 +62,7 @@ exports.handler = async () => {
 
 The canary will automatically produce a CloudWatch Dashboard:
 
-![UI Screenshot](images/ui-screenshot.png)
+![UI Screenshot](https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/aws-synthetics/images/ui-screenshot.png)
 
 The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core) (for nodejs based one) and Chromium.
 
@@ -438,6 +438,31 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   ],
   artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
   artifactS3KmsKey: key,
+});
+```
+
+### Encrypting environment variables
+
+Canary environment variables are encrypted at rest using an AWS-managed key by default.
+
+To use a customer-managed KMS key instead, specify the `environmentEncryption` property. This mirrors `lambda.Function.environmentEncryption`, since a canary runs as a managed Lambda function.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const key = new kms.Key(this, 'myKey');
+
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_13_0,
+  environmentVariables: {
+    stage: 'prod',
+  },
+  environmentEncryption: key,
 });
 ```
 

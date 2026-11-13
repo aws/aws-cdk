@@ -15,6 +15,8 @@ import * as util from '../lib/util';
 const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
 const STANDARD_TARGET = 'node20';
 const STANDARD_EXTERNAL = '@aws-sdk/*';
+// Docker bundling adds --ignoreConfig at run time when the image has TypeScript 6 or later
+const DOCKER_TSC_IGNORE_CONFIG = '$(TSC_VERSION=$(\'tsc\' --version); TSC_VERSION=${TSC_VERSION##* }; [ "${TSC_VERSION%%.*}" -ge 6 ] 2>/dev/null && echo --ignoreConfig)';
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 const app = new App();
@@ -957,7 +959,7 @@ test('esbuild bundling with pre compilations', () => {
       command: [
         'bash', '-c',
         [
-          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} &&`,
+          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} ${DOCKER_TSC_IGNORE_CONFIG} &&`,
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.js' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:${STANDARD_EXTERNAL}'`,
         ].join(' '),
       ],
@@ -1293,7 +1295,7 @@ test('Docker bundling with preCompilation uses getTsconfigCompilerOptionsArray f
       command: [
         'bash', '-c',
         [
-          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} &&`,
+          `'tsc' '/asset-input/test/bundling.test.ts' ${quotedCompilerOptions} ${DOCKER_TSC_IGNORE_CONFIG} &&`,
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.js' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:${STANDARD_EXTERNAL}'`,
         ].join(' '),
       ],
@@ -1543,6 +1545,40 @@ test('Local bundling with preCompilation spawns tsc directly', () => {
   expect(esbuildArgs).toEqual(expect.arrayContaining([
     expect.stringMatching(/\.js$/),
   ]));
+
+  spawnSyncMock.mockRestore();
+});
+
+test.each([
+  ['0.8.8', true, false],
+  ['5.9.3', true, false],
+  ['6.0.3', true, true],
+  ['Version 7.0.2', false, true],
+])('Local bundling with preCompilation and TypeScript %s (workspace package: %s) passes --ignoreConfig: %s', (tscVersion, isWorkspacePackage, expectIgnoreConfig) => {
+  detectPackageInstallationMock.mockImplementation((module: string) => module === 'typescript'
+    ? { isWorkspacePackage, version: tscVersion }
+    : { isWorkspacePackage: true, version: '0.8.8' });
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename.replace('.js', '.ts'),
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    preCompilation: true,
+    architecture: Architecture.X86_64,
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const tscCall = spawnSyncMock.mock.calls.find(c => (c[1] as string[])?.some(a => a.endsWith('.ts')));
+  expect(tscCall).toBeDefined();
+  if (expectIgnoreConfig) {
+    expect(tscCall![1]).toContain('--ignoreConfig');
+  } else {
+    expect(tscCall![1]).not.toContain('--ignoreConfig');
+  }
 
   spawnSyncMock.mockRestore();
 });
@@ -1814,3 +1850,67 @@ function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 
 
   throw new Error(`No \`package.json\` file found within ${depth} parent directories`);
 }
+
+test('repeated esbuild arguments use separate shell-escaped Docker arguments', () => {
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    esbuildArgs: {
+      '--alias': ['first=./path with spaces', "second=./it's second"],
+      '--pure': ['console.log', 'console.debug'],
+      '--supported': ['bigint=true', 'top-level-await=false'],
+      '--conditions': 'first,second',
+      '--drop': [],
+      '--minify': true,
+      '--splitting': false,
+    },
+  });
+
+  const command = bundler.command[2];
+  expect(command).toContain("'--alias:first=./path with spaces'");
+  expect(command).toContain("'--alias:second=./it'\\''s second'");
+  expect(command).toContain("'--pure:console.log' '--pure:console.debug'");
+  expect(command).toContain("'--supported:bigint=true' '--supported:top-level-await=false'");
+  expect(command).toContain("'--conditions=first,second'");
+  expect(command).not.toContain('--drop');
+  expect(command).toContain("'--minify'");
+  expect(command).not.toContain('--splitting');
+});
+
+test('repeated esbuild arguments are individual values in local spawn', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    esbuildArgs: {
+      '--alias': ['first=./path with spaces', "second=./it's second"],
+      '--pure': ['console.log', 'console.debug'],
+      '--supported': ['bigint=true', 'top-level-await=false'],
+      '--conditions': 'first,second',
+      '--drop': [],
+    },
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const esbuildCall = spawnSyncMock.mock.calls.find(c => c[1]?.includes('--bundle'));
+  const args = esbuildCall![1] as string[];
+  expect(args).toEqual(expect.arrayContaining([
+    '--alias:first=./path with spaces',
+    "--alias:second=./it's second",
+    '--pure:console.log',
+    '--pure:console.debug',
+    '--supported:bigint=true',
+    '--supported:top-level-await=false',
+    '--conditions=first,second',
+  ]));
+  expect(args.some(arg => arg.startsWith('--drop'))).toBe(false);
+});

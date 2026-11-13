@@ -1,0 +1,378 @@
+{
+  "/integ-stepfunctions-sagemaker/EncryptionKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainingData": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachineAnother": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/stateMachineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "stateMachineArn"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/stateMachineArn2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "stateMachineArn2"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/EncryptionKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptionKey1B843E66"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainingData/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainingData3FDB6D34"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainTask/SagemakerRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainTaskAnother/SagemakerRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachineAnother/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachineAnother/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineAnother9B75AA58"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainTask/SagemakerRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainTaskSagemakerRole0A9B1CDD"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainTask/SagemakerRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainTaskAnother/SagemakerRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainTaskAnotherSagemakerRoleBD8363A2"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainTaskAnother/SagemakerRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachineAnother/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineAnotherRoleB3F4936A"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachineAnother/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainTask/SagemakerRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainTaskSagemakerRoleDefaultPolicyA28F72FA"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/TrainTaskAnother/SagemakerRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrainTaskAnotherSagemakerRoleDefaultPolicy67E5C282"
+    }
+  ],
+  "/integ-stepfunctions-sagemaker/StateMachineAnother/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineAnotherRoleDefaultPolicy5D4FD497"
+    }
+  ]
+}

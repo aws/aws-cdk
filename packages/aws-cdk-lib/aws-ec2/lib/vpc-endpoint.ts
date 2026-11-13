@@ -557,6 +557,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ECS_TELEMETRY = new InterfaceVpcEndpointAwsService('ecs-telemetry');
   public static readonly EKS = new InterfaceVpcEndpointAwsService('eks');
   public static readonly EKS_AUTH = new InterfaceVpcEndpointAwsService('eks-auth');
+  public static readonly EKS_PROXY = new InterfaceVpcEndpointAwsService('eks-proxy');
   public static readonly ELASTIC_BEANSTALK = new InterfaceVpcEndpointAwsService('elasticbeanstalk');
   public static readonly ELASTIC_BEANSTALK_HEALTH = new InterfaceVpcEndpointAwsService('elasticbeanstalk-health');
   public static readonly ELASTIC_DISASTER_RECOVERY = new InterfaceVpcEndpointAwsService('drs');
@@ -608,6 +609,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly HEALTHLAKE = new InterfaceVpcEndpointAwsService('healthlake');
   public static readonly IAM = new InterfaceVpcEndpointAwsService('iam', 'com.amazonaws', undefined, { global: true });
   public static readonly IAM_IDENTITY_CENTER = new InterfaceVpcEndpointAwsService('identitystore');
+  public static readonly IAM_IDENTITY_CENTER_SSO = new InterfaceVpcEndpointAwsService('sso');
+  public static readonly IAM_IDENTITY_CENTER_SSO_OAUTH = new InterfaceVpcEndpointAwsService('sso-oauth');
   public static readonly IAM_ROLES_ANYWHERE = new InterfaceVpcEndpointAwsService('rolesanywhere');
   public static readonly IMAGE_BUILDER = new InterfaceVpcEndpointAwsService('imagebuilder');
   public static readonly INSPECTOR = new InterfaceVpcEndpointAwsService('inspector2');

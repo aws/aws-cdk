@@ -27,8 +27,14 @@ export interface BaseStreamEventSourceProps {
 
   /**
    * Where to begin consuming the stream.
+   *
+   * Required for DynamoDB, Kinesis and Amazon MSK event sources, and for self-managed Kafka
+   * event sources unless `consumptionMode` is `KafkaConsumptionMode.QUEUE`. Not supported in
+   * queue mode.
+   *
+   * @default - no starting position; synthesis fails if the event source requires one
    */
-  readonly startingPosition: lambda.StartingPosition;
+  readonly startingPosition?: lambda.StartingPosition;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
