@@ -1,0 +1,169 @@
+{
+  "/integ-acme-endpoint/AcmeEndpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-acme-endpoint/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-acme-endpoint/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AcmeEndpoint78A75014"
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/DomainValidation": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/ExternalAccountBinding": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-acme-endpoint/Exports/Output{\"Fn::GetAtt\":[\"AcmeEndpoint78A75014\",\"AcmeEndpointArn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAcmeEndpoint78A75014AcmeEndpointArn599AA168"
+    }
+  ],
+  "/integ-acme-endpoint/Exports/Output{\"Fn::GetAtt\":[\"AcmeEndpointDomainValidationB4B5D601\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAcmeEndpointDomainValidationB4B5D601Arn40FBD77A"
+    }
+  ],
+  "/integ-acme-endpoint/Exports/Output{\"Fn::GetAtt\":[\"AcmeEndpointExternalAccountBinding05A661BF\",\"AcmeExternalAccountBindingArn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAcmeEndpointExternalAccountBinding05A661BFAcmeExternalAccountBindingArnDCC110F1"
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/DomainValidation/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AcmeEndpointDomainValidationB4B5D601"
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/ExternalAccountBinding/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/ExternalAccountBinding/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AcmeEndpointExternalAccountBinding05A661BF"
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/ExternalAccountBinding/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AcmeEndpointExternalAccountBindingRole0260ADC0"
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/ExternalAccountBinding/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-acme-endpoint/AcmeEndpoint/ExternalAccountBinding/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AcmeEndpointExternalAccountBindingRoleDefaultPolicy7F64D84C"
+    }
+  ]
+}
