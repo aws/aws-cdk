@@ -122,6 +122,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
+| [@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile](#aws-cdkaws-ecr-assetsdockerfilespecificignorefile) | Honor Dockerfile-specific .dockerignore files when staging DockerImageAsset | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -159,6 +160,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
     "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
+    "@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile": true,
     "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
     "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
@@ -2661,6 +2663,29 @@ running executions finish first.
 | 2.275.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
+### @aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile
+
+*Honor Dockerfile-specific .dockerignore files when staging DockerImageAsset*
+
+Flag type: New default behavior
+
+When enabled, DockerImageAsset looks for `<dockerfile>.dockerignore` next to the
+Dockerfile (including the default name `Dockerfile.dockerignore`) and uses it in
+preference to the context-root `.dockerignore`, matching Docker's Filename and
+location rule. The two files are not merged.
+
+When disabled, only the context-root `.dockerignore` is read, which is the
+historic CDK behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Leave `@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile` unset or set it to `false`. CDK will keep reading only `.dockerignore`.
 
 
 <!-- END details -->

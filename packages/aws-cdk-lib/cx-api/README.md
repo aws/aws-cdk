@@ -794,3 +794,25 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile`
+
+When enabled, `DockerImageAsset` looks for `<dockerfile>.dockerignore` next to
+the Dockerfile (including the default name `Dockerfile.dockerignore`) and uses it
+in preference to the context-root `.dockerignore`, matching Docker's Filename
+and location rule. The two files are not merged.
+
+When disabled, only the context-root `.dockerignore` is read, which is the
+historic CDK behavior. Existing applications remain on the old behavior until
+this flag is set to `true`. If the sibling ignore file is missing, the
+context-root `.dockerignore` is still used.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile": true
+  }
+}
+```

@@ -88,6 +88,7 @@
   "@aws-cdk/core:annotationsInValidationReport": true,
   "@aws-cdk/core:defaultCrossStackReferences": "weak",
   "@aws-cdk/core:validateAgainstDefaultRules": true,
+  "@aws-cdk/aws-ecr-assets:dockerfileSpecificIgnoreFile": true,
   "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
   "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true,
   "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": true
