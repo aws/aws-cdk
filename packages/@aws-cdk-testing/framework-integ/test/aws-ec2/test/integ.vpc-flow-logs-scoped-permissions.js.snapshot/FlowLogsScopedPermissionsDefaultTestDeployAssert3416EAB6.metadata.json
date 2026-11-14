@@ -1,0 +1,20 @@
+{
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FlowLogsScopedPermissionsDefaultTestDeployAssert3416EAB6.template.json"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
