@@ -1052,6 +1052,26 @@ new s3.Bucket(this, 'Bucket2', {
 });
 ```
 
+To start retention after a business event, configure a default event hold. New object
+versions remain protected until the hold is released, then S3 retains them for the
+specified duration. The event hold duration must be between 1 and 36500 days. When
+combined with fixed retention, it cannot exceed the fixed retention duration.
+
+```ts
+// Combine fixed retention with an event hold
+new s3.Bucket(this, 'RetentionAndEventHold', {
+  objectLockDefaultRetention: s3.ObjectLockRetention.compliance(Duration.days(730), {
+    defaultEventHold: Duration.days(365),
+  }),
+});
+
+// Configure an event hold without a fixed retention period
+new s3.Bucket(this, 'EventHoldOnly', {
+  objectLockDefaultRetention: s3.ObjectLockRetention.eventHold(
+    s3.ObjectLockMode.GOVERNANCE, Duration.days(365)),
+});
+```
+
 ## Replicating Objects
 
 You can use [replicating objects](https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication.html) to enable automatic, asynchronous copying of objects across Amazon S3 buckets.

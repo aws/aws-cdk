@@ -1099,6 +1099,98 @@ describe('bucket', () => {
     });
   });
 
+  test('object lock supports existing retention object literals', () => {
+    const stack = new cdk.Stack();
+    const retention: s3.ObjectLockRetention = {
+      duration: cdk.Duration.days(7),
+      mode: s3.ObjectLockMode.GOVERNANCE,
+    };
+    new s3.Bucket(stack, 'Bucket', { objectLockDefaultRetention: retention });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: { DefaultRetention: { Mode: 'GOVERNANCE', Days: 7, DefaultEventHold: Match.absent() } },
+      },
+    });
+  });
+
+  test.each(['governance', 'compliance'] as const)('object lock %s with a default event hold', (mode) => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockDefaultRetention: s3.ObjectLockRetention[mode](cdk.Duration.days(730), {
+        defaultEventHold: cdk.Duration.days(365),
+      }),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: { DefaultRetention: { Mode: mode.toUpperCase(), Days: 730, DefaultEventHold: { Days: 365 } } },
+      },
+    });
+  });
+
+  test.each([s3.ObjectLockMode.GOVERNANCE, s3.ObjectLockMode.COMPLIANCE])('event hold only in %s mode', (mode) => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockDefaultRetention: s3.ObjectLockRetention.eventHold(mode, cdk.Duration.days(365)),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockEnabled: true,
+      ObjectLockConfiguration: {
+        ObjectLockEnabled: 'Enabled',
+        Rule: {
+          DefaultRetention: {
+            Mode: mode,
+            Days: Match.absent(),
+            Years: Match.absent(),
+            DefaultEventHold: { Days: 365 },
+          },
+        },
+      },
+    });
+  });
+
+  test.each([1, 36500])('event hold accepts boundary duration %d', (days) => {
+    expect(s3.ObjectLockRetention.eventHold(s3.ObjectLockMode.COMPLIANCE, cdk.Duration.days(days)).duration.toDays()).toBe(days);
+    const retention = s3.ObjectLockRetention.governance(cdk.Duration.days(days), { defaultEventHold: cdk.Duration.days(days) });
+    expect(retention.defaultEventHold?.toDays()).toBe(days);
+  });
+
+  test.each([0, 36501])('fails for invalid event hold duration %d', (days) => {
+    expect(() => s3.ObjectLockRetention.eventHold(s3.ObjectLockMode.GOVERNANCE, cdk.Duration.days(days)))
+      .toThrow('default event hold duration must be between 1 and 36500 days');
+    expect(() => s3.ObjectLockRetention.compliance(cdk.Duration.days(36500), { defaultEventHold: cdk.Duration.days(days) }))
+      .toThrow('default event hold duration must be between 1 and 36500 days');
+  });
+
+  test('fails when event hold exceeds fixed retention', () => {
+    expect(() => s3.ObjectLockRetention.governance(cdk.Duration.days(1), { defaultEventHold: cdk.Duration.days(2) }))
+      .toThrow('default event hold duration (2 days) cannot exceed the fixed retention duration (1 days)');
+  });
+
+  test('event hold supports tokenized durations', () => {
+    const stack = new cdk.Stack();
+    const days = new cdk.CfnParameter(stack, 'Days', { type: 'Number' });
+    new s3.Bucket(stack, 'Bucket', {
+      objectLockDefaultRetention: s3.ObjectLockRetention.compliance(cdk.Duration.days(730), {
+        defaultEventHold: cdk.Duration.days(days.valueAsNumber),
+      }),
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      ObjectLockConfiguration: { Rule: { DefaultRetention: { Days: 730, DefaultEventHold: { Days: { Ref: 'Days' } } } } },
+    });
+  });
+
+  test('fails when object lock is disabled with an event hold', () => {
+    const stack = new cdk.Stack();
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      objectLockEnabled: false,
+      objectLockDefaultRetention: s3.ObjectLockRetention.eventHold(s3.ObjectLockMode.GOVERNANCE, cdk.Duration.days(1)),
+    })).toThrow('Object Lock must be enabled to configure default retention settings');
+  });
+
   test('bucket with object lock disabled throws error with retention set', () => {
     const stack = new cdk.Stack();
     expect(() => new s3.Bucket(stack, 'Bucket', {

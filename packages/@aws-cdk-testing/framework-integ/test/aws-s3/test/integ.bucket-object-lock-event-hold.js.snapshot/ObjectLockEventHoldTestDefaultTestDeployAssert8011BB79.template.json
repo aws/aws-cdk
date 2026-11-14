@@ -1,0 +1,358 @@
+{
+ "Resources": {
+  "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f575847": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":[{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"CombinedObjectLockEnabled\",\"OutputValue\":\"Enabled\"}}]}}]}}",
+    "parameters": {
+     "StackName": "\"S3ObjectLockEventHold\""
+    },
+    "flattenResponse": "false",
+    "salt": "1794636255024"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:DescribeStacks"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758471": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":[{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"CombinedRuleDefaultRetentionMode\",\"OutputValue\":\"GOVERNANCE\"}}]}}]}}",
+    "parameters": {
+     "StackName": "\"S3ObjectLockEventHold\""
+    },
+    "flattenResponse": "false",
+    "salt": "1794636255025"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758472": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":[{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"CombinedRuleDefaultRetentionDefaultEventHoldDays\",\"OutputValue\":\"1\"}}]}}]}}",
+    "parameters": {
+     "StackName": "\"S3ObjectLockEventHold\""
+    },
+    "flattenResponse": "false",
+    "salt": "1794636255025"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758473": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":[{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"CombinedRuleDefaultRetentionDays\",\"OutputValue\":\"2\"}}]}}]}}",
+    "parameters": {
+     "StackName": "\"S3ObjectLockEventHold\""
+    },
+    "flattenResponse": "false",
+    "salt": "1794636255025"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758474": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":[{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"EventHoldOnlyObjectLockEnabled\",\"OutputValue\":\"Enabled\"}}]}}]}}",
+    "parameters": {
+     "StackName": "\"S3ObjectLockEventHold\""
+    },
+    "flattenResponse": "false",
+    "salt": "1794636255025"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758475": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":[{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"EventHoldOnlyRuleDefaultRetentionMode\",\"OutputValue\":\"COMPLIANCE\"}}]}}]}}",
+    "parameters": {
+     "StackName": "\"S3ObjectLockEventHold\""
+    },
+    "flattenResponse": "false",
+    "salt": "1794636255025"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758476": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStacks",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStacks",
+    "expected": "{\"$ObjectLike\":{\"Stacks\":[{\"Outputs\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"OutputKey\":\"EventHoldOnlyRuleDefaultRetentionDefaultEventHoldDays\",\"OutputValue\":\"1\"}}]}}]}}",
+    "parameters": {
+     "StackName": "\"S3ObjectLockEventHold\""
+    },
+    "flattenResponse": "false",
+    "salt": "1794636255025"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f575847": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f575847",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758471": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758471",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758472": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758472",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758473": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758473",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758474": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758474",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758475": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758475",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758476": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStacks77bd76cf81f2a79c317a9fa96f5758476",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
