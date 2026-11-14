@@ -149,6 +149,10 @@ The tests run the rules with [cfn-guard](https://github.com/aws-cloudformation/c
 yarn test
 ```
 
+Every rule in `rules/` needs two fixtures in `test/rule-fixtures/<rule path without .guard>/`: `non-compliant.json`, which the rule must fail, and `compliant.json`, which the rule must evaluate and pass. The tests fail for a rule that has no fixtures.
+
+A rule can also have `compliant-<name>.json` and `non-compliant-<name>.json` fixtures, checked like the base pair, where `<name>` is lowercase letters, digits and hyphens, with no leading, trailing or doubled hyphen. Any other file under `test/rule-fixtures/`, except hidden files, fails the tests, as does a fixture outside a rule's directory.
+
 ---
 
 ## Output

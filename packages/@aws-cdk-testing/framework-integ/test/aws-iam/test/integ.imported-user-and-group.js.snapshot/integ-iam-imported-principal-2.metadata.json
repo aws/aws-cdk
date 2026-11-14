@@ -1,0 +1,68 @@
+{
+  "/integ-iam-imported-principal-2": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-iam-imported-principal-2.template.json"
+    }
+  ],
+  "/integ-iam-imported-principal-2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-iam-imported-principal-2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-iam-imported-principal-2/User/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-iam-imported-principal-2/Group/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-iam-imported-principal-2/User/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPolicy7D689AB7"
+    }
+  ],
+  "/integ-iam-imported-principal-2/Group/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupDefaultPolicy402C318A"
+    }
+  ]
+}

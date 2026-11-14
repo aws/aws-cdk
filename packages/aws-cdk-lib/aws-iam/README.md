@@ -906,6 +906,15 @@ const user = iam.User.fromUserAttributes(this, 'MyImportedUserByAttributes', {
 });
 ```
 
+Granting a permission to an imported user, with `addToPrincipalPolicy()` or with a `grant*()`
+method, puts it in an inline policy attached to that user. By default, the name of
+that policy only depends on the construct path inside the stack, so stacks that import the same
+user under the same construct id use the same policy name and conflict with each other. Enable the
+`@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName` feature flag to include the stack
+name in the policy name, so that each stack gets an inline policy of its own. This flag also applies
+to imported groups and is enabled for new projects. After enabling it, deploy all the stacks that
+import the same user or group.
+
 ### Access Keys
 
 The ability for a user to make API calls via the CLI or an SDK is enabled by the user having an
@@ -946,6 +955,10 @@ To import an existing group by name [with path](https://docs.aws.amazon.com/IAM/
 ```ts
 const group = iam.Group.fromGroupName(this, 'MyImportedGroupByName', 'group-name');
 ```
+
+Imported groups put granted permissions in an inline policy the same way imported users do, and the
+`@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName` feature flag gives that policy a
+name that includes the stack name.
 
 To add a user to a group (both for a new and imported user/group):
 
