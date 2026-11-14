@@ -1521,6 +1521,14 @@ export class Vpc extends VpcBase {
   public readonly internetConnectivityEstablished: IDependable;
 
   /**
+   * Dependable that can be depended upon to have the IPv6 CIDR block associated with this VPC.
+   *
+   * `vpcIpv6CidrBlocks` is empty until the IPv6 CIDR block is associated, so resources that
+   * reference it should depend on this. Contains nothing if the VPC is not dual stack.
+   */
+  public readonly ipv6CidrBlockCreated: IDependable;
+
+  /**
    * Indicates if instances launched in this VPC will have public DNS hostnames.
    */
   public readonly dnsHostnamesEnabled: boolean;
@@ -1727,6 +1735,7 @@ export class Vpc extends VpcBase {
 
       this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
     }
+    this.ipv6CidrBlockCreated = new DependencyGroup(...(this.ipv6CidrBlock ? [this.ipv6CidrBlock] : []));
 
     // subnetConfiguration must be set before calling createSubnets
     this.createSubnets();

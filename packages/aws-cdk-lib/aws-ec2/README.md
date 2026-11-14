@@ -454,6 +454,20 @@ Disabling the auto-assigning of a public IPv4 address by default can avoid the c
 
 See [Advanced Subnet Configuration](#advanced-subnet-configuration) for all IPv6 specific properties.
 
+The IPv6 CIDR block is associated with the VPC by a separate `AWS::EC2::VPCCidrBlock` resource, so `vpcIpv6CidrBlocks`
+is empty until that resource has been created. Resources that reference `vpcIpv6CidrBlocks` should depend on
+`ipv6CidrBlockCreated`:
+
+```ts
+const vpc = new ec2.Vpc(this, 'DualStackVpc', {
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+});
+
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+securityGroup.addIngressRule(ec2.Peer.ipv6(Fn.select(0, vpc.vpcIpv6CidrBlocks)), ec2.Port.tcp(443));
+securityGroup.node.addDependency(vpc.ipv6CidrBlockCreated);
+```
+
 ### Reserving availability zones
 
 There are situations where the IP space for availability zones will
