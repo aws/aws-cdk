@@ -1,5 +1,7 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
 
@@ -403,6 +405,199 @@ describe('TableBucket', () => {
       const resources = template.findResources(TABLE_BUCKET_CFN_RESOURCE);
       const resourceKey = Object.keys(resources)[0];
       expect(resources[resourceKey].Properties.StorageClassConfiguration).toBeUndefined();
+    });
+  });
+
+  describe('created with a logging configuration', () => {
+    let logBucket: s3.Bucket;
+
+    beforeEach(() => {
+      logBucket = new s3.Bucket(stack, 'LogBucket');
+      new s3tables.TableBucket(stack, 'LoggedBucket', {
+        tableBucketName: 'logged-bucket',
+        loggingConfiguration: {
+          targetBucket: logBucket,
+          targetPrefix: 'logs/',
+        },
+      });
+    });
+
+    test('has LoggingConfiguration with the target bucket, prefix and the default EventTime key format', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'LoggingConfiguration': {
+          'TargetBucket': { 'Ref': Match.stringLikeRegexp('LogBucket') },
+          'TargetPrefix': 'logs/',
+          'TargetObjectKeyFormat': {
+            'PartitionedPrefix': {
+              'PartitionDateSource': 'EventTime',
+            },
+          },
+        },
+      });
+    });
+
+    test('allows logging.s3.amazonaws.com to deliver logs to the target bucket from this table bucket', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        'PolicyDocument': {
+          'Statement': Match.arrayWith([Match.objectLike({
+            'Effect': 'Allow',
+            'Principal': { 'Service': 'logging.s3.amazonaws.com' },
+            'Action': 's3:PutObject',
+            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': [Match.stringLikeRegexp('LogBucket'), 'Arn'] }, '/logs/*']] },
+            'Condition': {
+              'ArnLike': { 'aws:SourceArn': { 'Fn::GetAtt': [Match.stringLikeRegexp('LoggedBucket'), 'TableBucketARN'] } },
+              'StringEquals': { 'aws:SourceAccount': { 'Ref': 'AWS::AccountId' } },
+            },
+          })]),
+        },
+      });
+    });
+  });
+
+  describe('created with a DeliveryTime key format', () => {
+    test('has LoggingConfiguration with DeliveryTime', () => {
+      new s3tables.TableBucket(stack, 'LoggedBucket', {
+        tableBucketName: 'logged-bucket',
+        loggingConfiguration: {
+          targetBucket: new s3.Bucket(stack, 'LogBucket'),
+          targetPrefix: 'logs/',
+          targetObjectKeyFormat: s3tables.TargetObjectKeyFormat.partitionedPrefix(s3tables.PartitionDateSource.DELIVERY_TIME),
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'LoggingConfiguration': Match.objectLike({
+          'TargetObjectKeyFormat': { 'PartitionedPrefix': { 'PartitionDateSource': 'DeliveryTime' } },
+        }),
+      });
+    });
+  });
+
+  describe('created with an imported logging target bucket', () => {
+    beforeEach(() => {
+      new s3tables.TableBucket(stack, 'LoggedBucket', {
+        tableBucketName: 'logged-bucket',
+        loggingConfiguration: {
+          targetBucket: s3.Bucket.fromBucketName(stack, 'LogBucket', 'my-log-bucket'),
+          targetPrefix: 'logs/',
+        },
+      });
+    });
+
+    test('has LoggingConfiguration with the imported bucket name', () => {
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'LoggingConfiguration': Match.objectLike({ 'TargetBucket': 'my-log-bucket' }),
+      });
+    });
+
+    test('adds no bucket policy and warns that permissions must be granted manually', () => {
+      Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
+      Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('Unable to add log delivery permissions to the logging target bucket'));
+    });
+  });
+
+  describe('created with an L1 logging target bucket', () => {
+    test('adds the log delivery statement to a bucket policy for the CfnBucket', () => {
+      const cfnBucket = new s3.CfnBucket(stack, 'L1LogBucket');
+      new s3tables.TableBucket(stack, 'LoggedBucket', {
+        tableBucketName: 'logged-bucket',
+        loggingConfiguration: { targetBucket: cfnBucket, targetPrefix: 'logs/' },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+        'PolicyDocument': {
+          'Statement': Match.arrayWith([Match.objectLike({
+            'Principal': { 'Service': 'logging.s3.amazonaws.com' },
+            'Action': 's3:PutObject',
+          })]),
+        },
+      });
+    });
+
+    test('throws when the CfnBucket uses SSE-KMS default encryption', () => {
+      const cfnBucket = new s3.CfnBucket(stack, 'L1LogBucket', {
+        bucketEncryption: {
+          serverSideEncryptionConfiguration: [{ serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms' } }],
+        },
+      });
+      expect(() => new s3tables.TableBucket(stack, 'LoggedBucket', {
+        loggingConfiguration: { targetBucket: cfnBucket, targetPrefix: 'logs/' },
+      })).toThrow(/must not use SSE-KMS or DSSE-KMS default encryption/);
+    });
+  });
+
+  describe('created without a logging configuration', () => {
+    test('does not have LoggingConfiguration property', () => {
+      new s3tables.TableBucket(stack, 'NoLoggingBucket', { tableBucketName: 'no-logging-bucket' });
+      const resources = Template.fromStack(stack).findResources(TABLE_BUCKET_CFN_RESOURCE);
+      const resourceKey = Object.keys(resources)[0];
+      expect(resources[resourceKey].Properties.LoggingConfiguration).toBeUndefined();
+    });
+  });
+
+  describe('validateLoggingConfiguration', () => {
+    const imported = (name: string) => s3.Bucket.fromBucketName(stack, 'LogBucket', name);
+
+    test('throws when the target bucket uses KMS encryption', () => {
+      const kmsBucket = new s3.Bucket(stack, 'KmsLogBucket', { encryptionKey: new kms.Key(stack, 'LogKey') });
+      expect(() => new s3tables.TableBucket(stack, 'LoggedBucket', {
+        loggingConfiguration: { targetBucket: kmsBucket, targetPrefix: 'logs/' },
+      })).toThrow(/must not use SSE-KMS or DSSE-KMS default encryption/);
+    });
+
+    test.each(['my-bucket--table-s3', 'my-bucket-s3alias', 'my-bucket--x-s3'])(
+      'throws for target bucket name %s', (name) => {
+        expect(() => new s3tables.TableBucket(stack, 'LoggedBucket', {
+          loggingConfiguration: { targetBucket: imported(name), targetPrefix: 'logs/' },
+        })).toThrow(/must be a general purpose bucket/);
+      });
+
+    test('throws when the target bucket uses KMS-managed encryption without a customer key', () => {
+      const bucket = new s3.Bucket(stack, 'KmsManagedLogBucket', { encryption: s3.BucketEncryption.KMS_MANAGED });
+      expect(() => new s3tables.TableBucket(stack, 'LoggedBucket', {
+        loggingConfiguration: { targetBucket: bucket, targetPrefix: 'logs/' },
+      })).toThrow(/must not use SSE-KMS or DSSE-KMS default encryption/);
+    });
+
+    test('throws when the target bucket uses DSSE-KMS encryption', () => {
+      const bucket = new s3.Bucket(stack, 'DsseLogBucket', { encryption: s3.BucketEncryption.DSSE_MANAGED });
+      expect(() => new s3tables.TableBucket(stack, 'LoggedBucket', {
+        loggingConfiguration: { targetBucket: bucket, targetPrefix: 'logs/' },
+      })).toThrow(/must not use SSE-KMS or DSSE-KMS default encryption/);
+    });
+
+    test('throws when the target bucket has Object Lock enabled', () => {
+      const bucket = new s3.Bucket(stack, 'LockedLogBucket', { objectLockEnabled: true });
+      expect(() => new s3tables.TableBucket(stack, 'LoggedBucket', {
+        loggingConfiguration: { targetBucket: bucket, targetPrefix: 'logs/' },
+      })).toThrow(/must not have S3 Object Lock enabled/);
+    });
+
+    test('throws when the target prefix is longer than 1024 bytes in UTF-8', () => {
+      expect(() => new s3tables.TableBucket(stack, 'LoggedBucket', {
+        loggingConfiguration: { targetBucket: imported('my-log-bucket'), targetPrefix: 'é'.repeat(513) },
+      })).toThrow(/at most 1024 bytes/);
+    });
+
+    test('accepts a 1024-byte prefix and an unresolved prefix', () => {
+      new s3tables.TableBucket(stack, 'A', {
+        loggingConfiguration: { targetBucket: imported('my-log-bucket'), targetPrefix: 'a'.repeat(1024) },
+      });
+      const prefix = new core.CfnParameter(stack, 'Prefix').valueAsString;
+      expect(() => new s3tables.TableBucket(stack, 'B', {
+        loggingConfiguration: { targetBucket: s3.Bucket.fromBucketName(stack, 'LogBucket2', 'my-log-bucket'), targetPrefix: prefix },
+      })).not.toThrow();
+    });
+
+    test('throws when the target bucket is in another Region or account', () => {
+      const app = new core.App();
+      const tableStack = new core.Stack(app, 'TableStack', { env: { account: '111111111111', region: 'us-east-1' } });
+      const otherRegion = new core.Stack(app, 'OtherRegion', { env: { account: '111111111111', region: 'us-west-2' } });
+      const otherAccount = new core.Stack(app, 'OtherAccount', { env: { account: '222222222222', region: 'us-east-1' } });
+      expect(() => new s3tables.TableBucket(tableStack, 'A', {
+        loggingConfiguration: { targetBucket: new s3.Bucket(otherRegion, 'LogBucket'), targetPrefix: 'logs/' },
+      })).toThrow(/same Region/);
+      expect(() => new s3tables.TableBucket(tableStack, 'B', {
+        loggingConfiguration: { targetBucket: new s3.Bucket(otherAccount, 'LogBucket'), targetPrefix: 'logs/' },
+      })).toThrow(/same account/);
     });
   });
 

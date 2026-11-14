@@ -256,6 +256,31 @@ const tableBucketWithMetrics = new TableBucket(scope, 'TableBucketWithMetrics', 
 });
 ```
 
+### Configuring Server Access Logging
+
+You can deliver server access logs for requests made to a table bucket to a general purpose bucket.
+The target bucket must be in the same Region and account as the table bucket, and must not use
+SSE-KMS or DSSE-KMS default encryption, S3 Object Lock or Requester Pays. For more information, see
+[Server access logging for table buckets](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-server-logs.html).
+
+When the target bucket's policy can be modified in your CDK app, a bucket policy statement is added
+that allows the `logging.s3.amazonaws.com` service principal to deliver logs to it. For an imported
+bucket, you must grant this permission yourself.
+
+```ts
+const logBucket = new s3.Bucket(scope, 'LogBucket');
+
+const loggedTableBucket = new TableBucket(scope, 'LoggedTableBucket', {
+    tableBucketName: 'logged-table-bucket',
+    loggingConfiguration: {
+        targetBucket: logBucket,
+        targetPrefix: 'logs/',
+        // Optional, defaults to partitioning by event time
+        targetObjectKeyFormat: TargetObjectKeyFormat.partitionedPrefix(PartitionDateSource.DELIVERY_TIME),
+    },
+});
+```
+
 ### Configuring Storage Class
 
 You can configure the storage class for your table bucket and tables. Storage class determines how data is stored and billed, allowing you to optimize for different access patterns.

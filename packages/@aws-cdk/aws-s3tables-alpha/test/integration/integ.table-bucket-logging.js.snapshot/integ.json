@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "TableBucketLoggingIntegTest/DefaultTest": {
+      "stacks": [
+        "TableBucketLoggingTestStack"
+      ],
+      "assertionStack": "TableBucketLoggingIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableBucketLoggingIntegTestDefaultTestDeployAssert205BE1FD"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
