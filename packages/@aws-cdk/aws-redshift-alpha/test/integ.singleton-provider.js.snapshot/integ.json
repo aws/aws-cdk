@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "SingletonProviderTest/DefaultTest": {
+      "stacks": [
+        "redshift-singleton-provider"
+      ],
+      "assertionStack": "SingletonProviderTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SingletonProviderTestDefaultTestDeployAssertF936C173"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

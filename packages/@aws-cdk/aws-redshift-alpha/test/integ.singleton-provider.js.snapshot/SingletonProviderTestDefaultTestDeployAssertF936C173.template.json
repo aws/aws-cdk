@@ -1,0 +1,518 @@
+{
+ "Resources": {
+  "AwsApiCallRedshiftDataexecuteStatementcaf2ca1ba15afa688e09901b81ccff56": {
+   "Type": "Custom::DeployAssert@SdkCallRedshiftDataexecuteStatement",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "RedshiftData",
+    "api": "executeStatement",
+    "parameters": {
+     "ClusterIdentifier": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "redshift-singleton-provider:ExportsOutputRefClusterEB0386A796A0E3FE"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Database": "\"integ\"",
+     "SecretArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "redshift-singleton-provider:ExportsOutputRefClusterSecretAttachment769E62587134F379"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Sql": "\"SELECT has_table_privilege('integ_user', 'integ_table', 'select') AS granted\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Id",
+     "Id"
+    ],
+    "salt": "1792736689187"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "redshift-data:ExecuteStatement"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "redshift-data:DescribeStatement"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "redshift-data:GetStatementResult"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "80025d9ab46e31adf8f2a02779ca391783428f56416971ea3e9534d30202c6dc.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968": {
+   "Type": "Custom::DeployAssert@SdkCallRedshiftDatadescribeStatement",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "RedshiftData",
+    "api": "describeStatement",
+    "expected": "{\"$ObjectLike\":{\"Status\":\"FINISHED\"}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitFor75A81B18"
+    },
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallRedshiftDataexecuteStatementcaf2ca1ba15afa688e09901b81ccff56",
+          "apiCallResponse.Id"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1792736689187"
+   },
+   "DependsOn": [
+    "AwsApiCallRedshiftDataexecuteStatementcaf2ca1ba15afa688e09901b81ccff56"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForIsCompleteProviderInvokeB3EF6710": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForRole24BA0B64",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallRedshiftDataexecuteStatementcaf2ca1ba15afa688e09901b81ccff56"
+   ]
+  },
+  "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForTimeoutProviderInvokeB49F0B7C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForRole24BA0B64",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallRedshiftDataexecuteStatementcaf2ca1ba15afa688e09901b81ccff56"
+   ]
+  },
+  "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForRole24BA0B64": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "AwsApiCallRedshiftDataexecuteStatementcaf2ca1ba15afa688e09901b81ccff56"
+   ]
+  },
+  "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitFor75A81B18": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":24,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForRole24BA0B64",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForRole24BA0B64",
+    "AwsApiCallRedshiftDataexecuteStatementcaf2ca1ba15afa688e09901b81ccff56"
+   ]
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "redshift-data:DescribeStatement"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "80025d9ab46e31adf8f2a02779ca391783428f56416971ea3e9534d30202c6dc.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "80025d9ab46e31adf8f2a02779ca391783428f56416971ea3e9534d30202c6dc.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallRedshiftDatagetStatementResulteed54f2668b9f95b4913eee82aaed968": {
+   "Type": "Custom::DeployAssert@SdkCallRedshiftDatagetStatementResult",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "RedshiftData",
+    "api": "getStatementResult",
+    "expected": "{\"$ObjectLike\":{\"Records\":[[{\"booleanValue\":true}]]}}",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::GetAtt": [
+          "AwsApiCallRedshiftDataexecuteStatementcaf2ca1ba15afa688e09901b81ccff56",
+          "apiCallResponse.Id"
+         ]
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1792736689188"
+   },
+   "DependsOn": [
+    "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968",
+    "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForIsCompleteProviderInvokeB3EF6710",
+    "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitFor75A81B18",
+    "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForRole24BA0B64",
+    "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968WaitForTimeoutProviderInvokeB49F0B7C"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRedshiftDatadescribeStatementeed54f2668b9f95b4913eee82aaed968",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRedshiftDatagetStatementResulteed54f2668b9f95b4913eee82aaed968": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRedshiftDatagetStatementResulteed54f2668b9f95b4913eee82aaed968",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

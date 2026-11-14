@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "80025d9ab46e31adf8f2a02779ca391783428f56416971ea3e9534d30202c6dc": {
+      "source": {
+        "path": "asset.80025d9ab46e31adf8f2a02779ca391783428f56416971ea3e9534d30202c6dc.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-0a04bf63": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "80025d9ab46e31adf8f2a02779ca391783428f56416971ea3e9534d30202c6dc.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "3890f2c9f45212d4c921affbf38bd827f65a5fb33b3287936d3021b8f2393f3a": {
+      "displayName": "SingletonProviderTestDefaultTestDeployAssertF936C173 Template",
+      "source": {
+        "path": "SingletonProviderTestDefaultTestDeployAssertF936C173.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5fddebe1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3890f2c9f45212d4c921affbf38bd827f65a5fb33b3287936d3021b8f2393f3a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
