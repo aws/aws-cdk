@@ -1039,6 +1039,54 @@ describe('cluster', () => {
       Annotations.fromStack(stack).hasNoWarning('/Default/EcsCluster', Match.stringLikeRegexp('enableTaskIamRole only applies to Windows'));
     });
 
+    test('provider props feed addAsgCapacityProvider when the options omit enableTaskIamRole', () => {
+      const { stack, userData } = (() => {
+        const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const asg = new autoscaling.AutoScalingGroup(stack, 'WindowsAsg', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
+        });
+        // The provider carries enableTaskIamRole; the options argument omits it.
+        cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', {
+          autoScalingGroup: asg,
+          enableTaskIamRole: true,
+        }));
+        return { stack, userData: asg.userData.render() };
+      })();
+
+      expect(userData).toContain('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")
+Initialize-ECSAgent -Cluster ');
+      expect(userData).toMatch(/Initialize-ECSAgent -Cluster '\$\{Token\[TOKEN\.\d+\]\}' -EnableTaskIAMRole<\/powershell>$/);
+      Annotations.fromStack(stack).hasNoWarning('/Default/EcsCluster', Match.stringLikeRegexp('enableTaskIamRole only applies to Windows'));
+    });
+
+    test('options argument overrides the provider props', () => {
+      const { userData } = (() => {
+        const stack = new cdk.Stack();
+        acknowledgeTestValidationRules(stack);
+        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+        const asg = new autoscaling.AutoScalingGroup(stack, 'WindowsAsg', {
+          vpc,
+          instanceType: new ec2.InstanceType('t2.micro'),
+          machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
+        });
+        // Provider enables it; the options argument explicitly opts back out.
+        cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', {
+          autoScalingGroup: asg,
+          enableTaskIamRole: true,
+        }), { enableTaskIamRole: false });
+        return { stack, userData: asg.userData.render() };
+      })();
+
+      expect(userData).not.toContain('ECS_ENABLE_TASK_IAM_ROLE');
+      expect(userData).not.toContain('-EnableTaskIAMRole');
+    });
+
     test('does not change Linux or Bottlerocket user data when true, and warns', () => {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);

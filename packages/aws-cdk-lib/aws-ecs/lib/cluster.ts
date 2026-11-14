@@ -661,6 +661,8 @@ export class Cluster extends Resource implements ICluster {
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection or managed draining is enabled
       taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining) ? Duration.seconds(0) : options.taskDrainTime,
+      // The provider's enableTaskIamRole applies unless overridden in the options argument.
+      enableTaskIamRole: options.enableTaskIamRole ?? provider.enableTaskIamRole,
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
@@ -2075,6 +2077,7 @@ export class AsgCapacityProvider extends Construct {
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
     this.enableManagedTerminationProtection = props.enableManagedTerminationProtection ?? true;
     this.enableManagedDraining = props.enableManagedDraining;
+    this.enableTaskIamRole = props.enableTaskIamRole;
 
     let managedDraining = undefined;
     if (this.enableManagedDraining != undefined) {
