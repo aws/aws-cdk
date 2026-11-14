@@ -3180,8 +3180,11 @@ export class Bucket extends BucketBase {
       objectLockEnabled: 'Enabled',
       rule: {
         defaultRetention: {
-          days: objectLockDefaultRetention.duration.toDays(),
+          days: objectLockDefaultRetention._eventHoldOnly ? undefined : objectLockDefaultRetention.duration.toDays(),
           mode: objectLockDefaultRetention.mode,
+          defaultEventHold: objectLockDefaultRetention.defaultEventHold === undefined
+            ? undefined
+            : { days: objectLockDefaultRetention.defaultEventHold.toDays() },
         },
       },
     };
@@ -3945,6 +3948,21 @@ export enum ObjectLockMode {
 }
 
 /**
+ * Options for default Object Lock retention.
+ */
+export interface ObjectLockRetentionOptions {
+  /**
+   * The retention duration measured from the release of the event hold.
+   *
+   * New object versions are placed under an event hold. This duration must be
+   * between 1 and 36500 days and cannot exceed the fixed retention duration.
+   *
+   * @default - no default event hold
+   */
+  readonly defaultEventHold?: Duration;
+}
+
+/**
  * The default retention settings for an S3 Object Lock configuration.
  *
  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-overview.html
@@ -3959,10 +3977,11 @@ export class ObjectLockRetention {
    * creating a compliance-mode retention period.
    *
    * @param duration the length of time for which objects should retained
+   * @param options additional default retention settings
    * @returns the ObjectLockRetention configuration
    */
-  public static governance(duration: Duration): ObjectLockRetention {
-    return new ObjectLockRetention(ObjectLockMode.GOVERNANCE, duration);
+  public static governance(duration: Duration, options: ObjectLockRetentionOptions = {}): ObjectLockRetention {
+    return new ObjectLockRetention(ObjectLockMode.GOVERNANCE, duration, options.defaultEventHold);
   }
 
   /**
@@ -3973,16 +3992,40 @@ export class ObjectLockRetention {
    * version can't be overwritten or deleted for the duration of the retention period.
    *
    * @param duration the length of time for which objects should be retained
+   * @param options additional default retention settings
    * @returns the ObjectLockRetention configuration
    */
-  public static compliance(duration: Duration): ObjectLockRetention {
-    return new ObjectLockRetention(ObjectLockMode.COMPLIANCE, duration);
+  public static compliance(duration: Duration, options: ObjectLockRetentionOptions = {}): ObjectLockRetention {
+    return new ObjectLockRetention(ObjectLockMode.COMPLIANCE, duration, options.defaultEventHold);
+  }
+
+  /**
+   * Configure an event hold without a fixed retention period.
+   *
+   * New object versions remain protected while the hold is active. When the
+   * hold is released, the retention period starts.
+   *
+   * @param mode the retention mode
+   * @param duration the retention duration measured from release of the hold, between 1 and 36500 days
+   * @returns the ObjectLockRetention configuration
+   */
+  public static eventHold(mode: ObjectLockMode, duration: Duration): ObjectLockRetention {
+    return new ObjectLockRetention(mode, duration, duration, true);
   }
 
   /**
    * The default period for which objects should be retained.
+   *
+   * For an event hold without fixed retention, this period starts when the hold is released.
    */
   public readonly duration: Duration;
+
+  /**
+   * The retention duration measured from release of the default event hold.
+   *
+   * @default - no default event hold
+   */
+  public readonly defaultEventHold?: Duration;
 
   /**
    * The retention mode to use for the object lock configuration.
@@ -3991,17 +4034,38 @@ export class ObjectLockRetention {
    */
   public readonly mode: ObjectLockMode;
 
-  private constructor(mode: ObjectLockMode, duration: Duration) {
+  /**
+   * Whether retention starts only when the event hold is released.
+   *
+   * Optional to preserve compatibility with existing retention object literals.
+   * @internal
+   */
+  public readonly _eventHoldOnly?: boolean;
+
+  private constructor(mode: ObjectLockMode, duration: Duration, defaultEventHold?: Duration, eventHoldOnly: boolean = false) {
     // https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock-managing.html#object-lock-managing-retention-limits
-    if (duration.toDays() > 365 * 100) {
+    if (!eventHoldOnly && duration.toDays() > 365 * 100) {
       throw new UnscopedValidationError(lit`MustBeObjectLockRetention`, 'Object Lock retention duration must be less than 100 years');
     }
-    if (duration.toDays() < 1) {
+    if (!eventHoldOnly && duration.toDays() < 1) {
       throw new UnscopedValidationError(lit`MustBeObjectLockRetention`, 'Object Lock retention duration must be at least 1 day');
+    }
+
+    if (defaultEventHold !== undefined) {
+      const holdDays = defaultEventHold.toDays();
+      if (!Token.isUnresolved(holdDays) && (holdDays < 1 || holdDays > 36500)) {
+        throw new UnscopedValidationError(lit`InvalidDefaultEventHoldDuration`, `default event hold duration must be between 1 and 36500 days, got ${holdDays}`);
+      }
+      const retentionDays = duration.toDays();
+      if (!Token.isUnresolved(holdDays) && !Token.isUnresolved(retentionDays) && holdDays > retentionDays) {
+        throw new UnscopedValidationError(lit`DefaultEventHoldExceedsRetention`, `default event hold duration (${holdDays} days) cannot exceed the fixed retention duration (${retentionDays} days)`);
+      }
     }
 
     this.mode = mode;
     this.duration = duration;
+    this.defaultEventHold = defaultEventHold;
+    this._eventHoldOnly = eventHoldOnly;
   }
 }
 

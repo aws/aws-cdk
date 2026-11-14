@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c": {
+      "source": {
+        "path": "asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-601aff7a": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "45393ce451feb06ad6f9b1068bffca283e19b761e5a654e1a0ec877f5c38ad21": {
+      "displayName": "ObjectLockEventHoldTestDefaultTestDeployAssert8011BB79 Template",
+      "source": {
+        "path": "ObjectLockEventHoldTestDefaultTestDeployAssert8011BB79.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-48e557e6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "45393ce451feb06ad6f9b1068bffca283e19b761e5a654e1a0ec877f5c38ad21.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

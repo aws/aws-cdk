@@ -1,0 +1,419 @@
+{
+  "/S3ObjectLockEventHold": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "S3ObjectLockEventHold.template.json"
+    }
+  ],
+  "/S3ObjectLockEventHold/Combined": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "objectLockDefaultRetention": "*"
+      }
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnly": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "objectLockDefaultRetention": "*"
+      }
+    }
+  ],
+  "/S3ObjectLockEventHold/AWS679f53fac002430cb0da5b7982bd2287": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedObjectLockEnabled": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CombinedObjectLockEnabled"
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedRuleDefaultRetentionMode": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CombinedRuleDefaultRetentionMode"
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedRuleDefaultRetentionDefaultEventHoldDays": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CombinedRuleDefaultRetentionDefaultEventHoldDays"
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedRuleDefaultRetentionDays": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CombinedRuleDefaultRetentionDays"
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnlyObjectLockEnabled": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventHoldOnlyObjectLockEnabled"
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnlyRuleDefaultRetentionMode": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventHoldOnlyRuleDefaultRetentionMode"
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnlyRuleDefaultRetentionDefaultEventHoldDays": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventHoldOnlyRuleDefaultRetentionDefaultEventHoldDays"
+    }
+  ],
+  "/S3ObjectLockEventHold/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/S3ObjectLockEventHold/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/S3ObjectLockEventHold/Combined/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CombinedCD0B0008"
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnly/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventHoldOnly12205AC1"
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedConfiguration/Provider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedConfiguration/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedConfiguration/CustomResourcePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/S3ObjectLockEventHold/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/S3ObjectLockEventHold/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+    }
+  ],
+  "/S3ObjectLockEventHold/AWS679f53fac002430cb0da5b7982bd2287/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnlyConfiguration/Provider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "memorySize": "*",
+        "timeout": "*",
+        "role": "*",
+        "logGroup": "*",
+        "functionName": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnlyConfiguration/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnlyConfiguration/CustomResourcePolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedConfiguration/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CombinedConfiguration9B70FD41"
+    }
+  ],
+  "/S3ObjectLockEventHold/CombinedConfiguration/CustomResourcePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CombinedConfigurationCustomResourcePolicyEC575859"
+    }
+  ],
+  "/S3ObjectLockEventHold/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+    }
+  ],
+  "/S3ObjectLockEventHold/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/S3ObjectLockEventHold/AWS679f53fac002430cb0da5b7982bd2287/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWS679f53fac002430cb0da5b7982bd2287LogGroup449FB7C2"
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnlyConfiguration/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventHoldOnlyConfiguration2FBF7B15"
+    }
+  ],
+  "/S3ObjectLockEventHold/EventHoldOnlyConfiguration/CustomResourcePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventHoldOnlyConfigurationCustomResourcePolicy60190359"
+    }
+  ]
+}
