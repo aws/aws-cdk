@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "PolicyDocumentFromJsonIdTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-iam-policy-document-from-json-id"
+      ],
+      "assertionStack": "PolicyDocumentFromJsonIdTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PolicyDocumentFromJsonIdTestDefaultTestDeployAssertAF77702F"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

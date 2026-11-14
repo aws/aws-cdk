@@ -627,7 +627,7 @@ export class Role extends Resource implements IRole {
       const result = new Array<CfnRole.PolicyProperty>();
       for (const policyName of Object.keys(policies)) {
         const policyDocument = policies[policyName];
-        result.push({ policyName, policyDocument });
+        result.push({ policyName, policyDocument: policyDocument._asIdentityPolicy() });
       }
       return result;
     }

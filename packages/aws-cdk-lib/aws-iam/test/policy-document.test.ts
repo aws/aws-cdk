@@ -1,9 +1,12 @@
 import { Template } from '../../assertions';
-import { Lazy, Stack, Token } from '../../core';
+import type { IResolveContext } from '../../core';
+import { App, CfnResource, Lazy, Stack, Token } from '../../core';
+import * as cxapi from '../../cx-api';
 import type { IPrincipal } from '../lib';
 import {
   AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
-  Effect, FederatedPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal, Role,
+  Effect, FederatedPrincipal, Group, ManagedPolicy, Policy, PolicyDocument, PolicyStatement, PrincipalPolicyFragment,
+  ServicePrincipal, Role, User,
 } from '../lib';
 
 describe('IAM policy document', () => {
@@ -827,6 +830,295 @@ describe('IAM policy document', () => {
           Statement: 'asdf',
         });
       }).toThrow(/Statement must be an array/);
+    });
+
+    describe('Id element', () => {
+      const jsonWithId = {
+        Version: '2012-10-17',
+        Id: 'MyPolicyId',
+        Statement: [
+          { Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*', Principal: { Service: 'sns.amazonaws.com' } },
+        ],
+      };
+
+      function stackWithFlag(enabled?: boolean) {
+        const app = new App({
+          context: enabled === undefined ? {} : { [cxapi.IAM_POLICY_DOCUMENT_FROM_JSON_KEEPS_ID]: enabled },
+        });
+        return new Stack(app, 'Stack');
+      }
+
+      test('is dropped when the feature flag is not set', () => {
+        const stack = stackWithFlag();
+        const doc = PolicyDocument.fromJson(jsonWithId);
+
+        expect(stack.resolve(doc)).toEqual({
+          Version: '2012-10-17',
+          Statement: jsonWithId.Statement,
+        });
+      });
+
+      test('is dropped when the feature flag is disabled', () => {
+        const stack = stackWithFlag(false);
+        const doc = PolicyDocument.fromJson(jsonWithId);
+
+        expect(stack.resolve(doc)).not.toHaveProperty('Id');
+      });
+
+      test('is kept when the feature flag is enabled', () => {
+        const stack = stackWithFlag(true);
+        const doc = PolicyDocument.fromJson(jsonWithId);
+
+        expect(stack.resolve(doc)).toEqual(jsonWithId);
+      });
+
+      test('is not rendered when the input has none and the feature flag is enabled', () => {
+        const stack = stackWithFlag(true);
+        const doc = PolicyDocument.fromJson({
+          Statement: [{ Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*' }],
+        });
+
+        expect(stack.resolve(doc)).toEqual({
+          Version: '2012-10-17',
+          Statement: [{ Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*' }],
+        });
+      });
+
+      test.each([
+        [true, { Id: 'key-policy-1' }],
+        [false, {}],
+      ])('in the synthesized template when the feature flag is %s', (enabled, expectedId) => {
+        const stack = stackWithFlag(enabled);
+        new CfnResource(stack, 'Key', {
+          type: 'AWS::KMS::Key',
+          properties: {
+            KeyPolicy: PolicyDocument.fromJson({
+              Id: 'key-policy-1',
+              Statement: [{ Effect: 'Allow', Action: 'kms:*', Resource: '*', Principal: { AWS: 'arn:aws:iam::123456789012:root' } }],
+            }),
+          },
+        });
+
+        expect(Template.fromStack(stack).toJSON().Resources.Key.Properties.KeyPolicy).toEqual({
+          ...expectedId,
+          Statement: [{ Effect: 'Allow', Action: 'kms:*', Resource: '*', Principal: { AWS: 'arn:aws:iam::123456789012:root' } }],
+          Version: '2012-10-17',
+        });
+      });
+
+      test('is kept after more statements are added', () => {
+        const stack = stackWithFlag(true);
+        const doc = PolicyDocument.fromJson(jsonWithId);
+        doc.addStatements(new PolicyStatement({ actions: ['sqs:ReceiveMessage'], resources: ['*'] }));
+
+        const resolved = stack.resolve(doc);
+        expect(resolved.Id).toEqual('MyPolicyId');
+        expect(resolved.Statement).toHaveLength(2);
+      });
+
+      test('is not rendered by toJSON()', () => {
+        const doc = PolicyDocument.fromJson(jsonWithId);
+
+        expect(doc.toJSON()).toEqual({
+          Version: '2012-10-17',
+          Statement: jsonWithId.Statement,
+        });
+      });
+
+      describe('in identity-based policies', () => {
+        const identityJsonWithId = {
+          Version: '2012-10-17',
+          Id: 'MyPolicyId',
+          Statement: [{ Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*' }],
+        };
+        const expectedIdentityDocument = {
+          Version: '2012-10-17',
+          Statement: identityJsonWithId.Statement,
+        };
+
+        test('is not rendered in a Policy attached to a Role, User and Group', () => {
+          const stack = stackWithFlag(true);
+          const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+          const user = new User(stack, 'User');
+          const group = new Group(stack, 'Group');
+          new Policy(stack, 'RolePolicy', { document: PolicyDocument.fromJson(identityJsonWithId), roles: [role] });
+          new Policy(stack, 'UserPolicy', { document: PolicyDocument.fromJson(identityJsonWithId), users: [user] });
+          new Policy(stack, 'GroupPolicy', { document: PolicyDocument.fromJson(identityJsonWithId), groups: [group] });
+
+          const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+          expect(Object.keys(policies)).toHaveLength(3);
+          for (const policy of Object.values(policies)) {
+            expect(policy.Properties.PolicyDocument).toEqual(expectedIdentityDocument);
+          }
+        });
+
+        test('is not rendered in a ManagedPolicy', () => {
+          const stack = stackWithFlag(true);
+          new ManagedPolicy(stack, 'ManagedPolicy', { document: PolicyDocument.fromJson(identityJsonWithId) });
+
+          Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+            PolicyDocument: expectedIdentityDocument,
+          });
+        });
+
+        test('is not rendered in the inline policies of a Role', () => {
+          const stack = stackWithFlag(true);
+          new Role(stack, 'Role', {
+            assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+            inlinePolicies: { Inline: PolicyDocument.fromJson(identityJsonWithId) },
+          });
+
+          Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+            Policies: [{ PolicyName: 'Inline', PolicyDocument: expectedIdentityDocument }],
+          });
+        });
+
+        describe('with a subclass that overrides resolve()', () => {
+          const overriddenStatement = [{ Effect: 'Allow', Action: 'sqs:SendMessage', Resource: '*' }];
+
+          class CustomDocument extends PolicyDocument {
+            public resolve(context: IResolveContext): any {
+              return { ...super.resolve(context), Statement: overriddenStatement };
+            }
+          }
+
+          class CustomDocumentWithId extends CustomDocument {
+            public resolve(context: IResolveContext): any {
+              return { ...super.resolve(context), Id: 'CustomId' };
+            }
+          }
+
+          function customDocument(withId = false) {
+            const DocumentClass = withId ? CustomDocumentWithId : CustomDocument;
+            return new DocumentClass({
+              statements: [new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] })],
+            });
+          }
+
+          function identityDocuments(stack: Stack, withId = false) {
+            const role = new Role(stack, 'Role', {
+              assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+              inlinePolicies: { Inline: customDocument(withId) },
+            });
+            new Policy(stack, 'Policy', { document: customDocument(withId), roles: [role] });
+            new ManagedPolicy(stack, 'ManagedPolicy', { document: customDocument(withId) });
+
+            const template = Template.fromStack(stack);
+            const policies = Object.values(template.findResources('AWS::IAM::Policy'));
+            const managedPolicies = Object.values(template.findResources('AWS::IAM::ManagedPolicy'));
+            const roles = Object.values(template.findResources('AWS::IAM::Role'));
+            expect(policies).toHaveLength(1);
+            expect(managedPolicies).toHaveLength(1);
+            expect(roles).toHaveLength(1);
+            return [
+              policies[0].Properties.PolicyDocument,
+              managedPolicies[0].Properties.PolicyDocument,
+              roles[0].Properties.Policies[0].PolicyDocument,
+            ];
+          }
+
+          test.each([undefined, false])('is used by Policy, ManagedPolicy and Role inline policies when the feature flag is %s', (enabled) => {
+            const stack = stackWithFlag(enabled);
+
+            for (const doc of identityDocuments(stack)) {
+              expect(doc).toEqual({ Version: '2012-10-17', Statement: overriddenStatement });
+            }
+          });
+
+          test('is used by Policy, ManagedPolicy and Role inline policies, without an Id, when the feature flag is enabled', () => {
+            const stack = stackWithFlag(true);
+
+            for (const rendered of identityDocuments(stack, true)) {
+              expect(rendered).toEqual({ Version: '2012-10-17', Statement: overriddenStatement });
+            }
+            // The document itself still renders its own output, including the Id
+            expect(stack.resolve(customDocument(true))).toEqual({ Version: '2012-10-17', Statement: overriddenStatement, Id: 'CustomId' });
+          });
+
+          test('the Id is removed when resolve() returns a token and the feature flag is enabled', () => {
+            class LazyDocument extends PolicyDocument {
+              public resolve(context: IResolveContext): any {
+                return Lazy.any({ produce: () => ({ ...super.resolve(context), Id: 'LazyId' }) });
+              }
+            }
+            const stack = stackWithFlag(true);
+            new ManagedPolicy(stack, 'ManagedPolicy', {
+              document: new LazyDocument({
+                statements: [new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] })],
+              }),
+            });
+
+            Template.fromStack(stack).hasResourceProperties('AWS::IAM::ManagedPolicy', {
+              PolicyDocument: {
+                Version: '2012-10-17',
+                Statement: [{ Effect: 'Allow', Action: 's3:GetObject', Resource: '*' }],
+              },
+            });
+            const managedPolicy = Object.values(Template.fromStack(stack).findResources('AWS::IAM::ManagedPolicy'))[0];
+            expect(managedPolicy.Properties.PolicyDocument).not.toHaveProperty('Id');
+          });
+        });
+
+        test('is kept in a resource policy that uses the same document', () => {
+          const stack = stackWithFlag(true);
+          // A Principal is not allowed in an identity policy, so the shared document has none
+          const doc = PolicyDocument.fromJson(identityJsonWithId);
+          new ManagedPolicy(stack, 'ManagedPolicy', { document: doc });
+          new CfnResource(stack, 'QueuePolicy', {
+            type: 'AWS::SQS::QueuePolicy',
+            properties: { Queues: ['https://sqs.us-east-1.amazonaws.com/123456789012/q'], PolicyDocument: doc },
+          });
+
+          const template = Template.fromStack(stack);
+          const managedPolicies = Object.values(template.findResources('AWS::IAM::ManagedPolicy'));
+          expect(managedPolicies).toHaveLength(1);
+          expect(managedPolicies[0].Properties.PolicyDocument).toEqual(expectedIdentityDocument);
+          expect(template.toJSON().Resources.QueuePolicy.Properties.PolicyDocument).toEqual(identityJsonWithId);
+          // Rendering it as an identity policy does not change the document
+          expect(stack.resolve(doc)).toEqual(identityJsonWithId);
+        });
+
+        test('is not copied to documents split off by _splitDocument()', () => {
+          const stack = stackWithFlag(true);
+          const doc = PolicyDocument.fromJson({
+            Id: 'MyPolicyId',
+            Statement: Array.from({ length: 10 }, (_, i) => ({
+              Effect: 'Allow',
+              Action: `service:Action${i}`,
+              Resource: `arn:aws:service:us-east-1:123456789012:resource/${'x'.repeat(100)}${i}`,
+            })),
+          });
+
+          const docs = doc._splitDocument(stack, 500, 500);
+          expect(docs.size).toBeGreaterThan(1);
+          for (const splitDoc of docs.keys()) {
+            if (splitDoc === doc) { continue; }
+            expect(stack.resolve(splitDoc)).not.toHaveProperty('Id');
+          }
+          expect(stack.resolve(doc).Id).toEqual('MyPolicyId');
+        });
+
+        test('is not rendered in a Role whose default policy is split into overflow policies', () => {
+          const stack = stackWithFlag(true);
+          const role = new Role(stack, 'Role', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
+          for (let i = 0; i < 200; i++) {
+            role.addToPrincipalPolicy(new PolicyStatement({
+              actions: [`service:Action${i}`],
+              resources: [`arn:aws:service:us-east-1:123456789012:resource/${'x'.repeat(50)}${i}`],
+            }));
+          }
+
+          const template = Template.fromStack(stack);
+          const managedPolicies = template.findResources('AWS::IAM::ManagedPolicy');
+          expect(Object.keys(managedPolicies).length).toBeGreaterThan(0);
+          for (const mp of Object.values(managedPolicies)) {
+            expect(mp.Properties.PolicyDocument).not.toHaveProperty('Id');
+          }
+          for (const policy of Object.values(template.findResources('AWS::IAM::Policy'))) {
+            expect(policy.Properties.PolicyDocument).not.toHaveProperty('Id');
+          }
+        });
+      });
     });
   });
 

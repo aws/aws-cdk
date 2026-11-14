@@ -1,0 +1,44 @@
+{
+  "/aws-cdk-iam-policy-document-from-json-id": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-iam-policy-document-from-json-id.template.json"
+    }
+  ],
+  "/aws-cdk-iam-policy-document-from-json-id/Queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-iam-policy-document-from-json-id/QueuePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueuePolicy"
+    }
+  ],
+  "/aws-cdk-iam-policy-document-from-json-id/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-iam-policy-document-from-json-id/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-iam-policy-document-from-json-id/Queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Queue4A7E3555"
+    }
+  ],
+  "/aws-cdk-iam-policy-document-from-json-id/Exports/Output{\"Ref\":\"Queue4A7E3555\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefQueue4A7E3555425E8BD3"
+    }
+  ]
+}
