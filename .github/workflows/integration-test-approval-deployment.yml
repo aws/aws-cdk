@@ -179,7 +179,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: "lts/*"
+          node-version: "24"
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile

@@ -113,7 +113,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip"
+     "S3Key": "c56ac0efa74faf3860a6ae520c7c77aafc5252480c00537377a48f430c4084b2.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
