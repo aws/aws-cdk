@@ -147,6 +147,26 @@ set `bundling.forceDockerBundling` to `true`. This is useful if your function re
 modules that should be installed (`nodeModules` prop, see [below](#install-modules)) in a Lambda
 compatible environment. This is usually the case with modules using native dependencies.
 
+### Disabling bundling for tests
+
+If a unit test only needs to synthesize a stack and assert its resources, you can
+skip the `NodejsFunction` bundling step by passing the `code` property. When
+`code` is supplied, the construct ignores bundling-related properties and uses
+the supplied Lambda code directly.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
+
+new nodejs.NodejsFunction(this, 'my-handler', {
+  code: lambda.Code.fromInline('exports.handler = async () => {};'),
+  handler: 'index.handler',
+});
+```
+
+This is useful for tests that validate the CDK construct shape and do not need
+to validate the Lambda asset build output.
+
 ## Working with modules
 
 ### Externals
