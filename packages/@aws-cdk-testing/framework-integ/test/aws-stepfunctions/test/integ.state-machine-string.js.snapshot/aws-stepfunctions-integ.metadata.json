@@ -1,8 +1,25 @@
 {
+  "/aws-stepfunctions-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-stepfunctions-integ.template.json"
+    }
+  ],
   "/aws-stepfunctions-integ/StateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "definitionBody": "*"
+      }
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithTimeout": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/aws-stepfunctions-integ/BootstrapVersion": [
@@ -20,7 +37,12 @@
   "/aws-stepfunctions-integ/StateMachine/Role": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/aws-stepfunctions-integ/StateMachine/Resource": [
@@ -29,10 +51,39 @@
       "data": "StateMachine2E01A3A5"
     }
   ],
+  "/aws-stepfunctions-integ/StateMachineWithTimeout/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithTimeout/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithTimeout0E1B00DE"
+    }
+  ],
+  "/aws-stepfunctions-integ/Exports/Output{\"Ref\":\"StateMachineWithTimeout0E1B00DE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStateMachineWithTimeout0E1B00DE8F396A89"
+    }
+  ],
   "/aws-stepfunctions-integ/StateMachine/Role/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-stepfunctions-integ/StateMachineWithTimeout/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithTimeoutRole35083C77"
     }
   ]
 }
