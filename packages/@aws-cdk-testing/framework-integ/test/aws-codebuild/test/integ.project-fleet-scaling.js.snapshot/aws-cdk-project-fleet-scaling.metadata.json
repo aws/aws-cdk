@@ -1,0 +1,161 @@
+{
+  "/aws-cdk-project-fleet-scaling/MyFleet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "baseCapacity": "*",
+        "computeType": "BUILD_GENERAL1_SMALL",
+        "environmentType": "LINUX_CONTAINER"
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/MyProject": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environment": {
+          "fleet": "*",
+          "buildImage": {
+            "type": "*",
+            "defaultComputeType": "BUILD_GENERAL1_SMALL",
+            "imageId": "*",
+            "imagePullPrincipalType": "CODEBUILD",
+            "secretsManagerCredentials": "*",
+            "repository": "*"
+          }
+        }
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/MyFleet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFleet1E628396"
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/MyProject/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/MyProject/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProject39F7B0AE"
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/Exports/Output{\"Fn::GetAtt\":[\"MyFleet1E628396\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMyFleet1E628396Arn64216BDA"
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/MyProject/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProjectRole9BBE5233"
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/MyProject/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-project-fleet-scaling/MyProject/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProjectRoleDefaultPolicyB19B7C29"
+    }
+  ]
+}
