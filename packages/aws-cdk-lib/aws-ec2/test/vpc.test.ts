@@ -2030,6 +2030,31 @@ describe('vpc', () => {
         DependsOn: ['TheVPCipv6cidrF3E84E30'],
       });
     });
+
+    test('resources can depend on the IPv6 CIDR block via ipv6CidrBlockCreated', () => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', { ipProtocol: IpProtocol.DUAL_STACK });
+      const resource = new CfnResource(stack, 'Resource', {
+        type: 'AWS::Test::Resource',
+        properties: { Cidr: Fn.select(0, vpc.vpcIpv6CidrBlocks) },
+      });
+      resource.node.addDependency(vpc.ipv6CidrBlockCreated);
+
+      Template.fromStack(stack).hasResource('AWS::Test::Resource', {
+        DependsOn: ['TheVPCipv6cidrF3E84E30'],
+      });
+    });
+
+    test('ipv6CidrBlockCreated adds no dependency for an IPv4 only VPC', () => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC');
+      const resource = new CfnResource(stack, 'Resource', { type: 'AWS::Test::Resource' });
+      resource.node.addDependency(vpc.ipv6CidrBlockCreated);
+
+      Template.fromStack(stack).hasResource('AWS::Test::Resource', {
+        DependsOn: Match.absent(),
+      });
+    });
   });
 
   describe('fromVpcAttributes', () => {
