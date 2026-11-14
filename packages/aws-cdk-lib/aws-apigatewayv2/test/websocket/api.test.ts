@@ -324,6 +324,21 @@ describe('WebSocketApi', () => {
       DisableSchemaValidation: value,
     });
   });
+
+  test.each([true, false, undefined])('disableExecuteApiEndpoint is set to %s', (disableExecuteApiEndpoint) => {
+    const stack = new Stack();
+    new WebSocketApi(stack, 'api', {
+      disableExecuteApiEndpoint,
+    });
+
+    const value = disableExecuteApiEndpoint !== undefined ? disableExecuteApiEndpoint : Match.absent();
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'WEBSOCKET',
+      DisableExecuteApiEndpoint: value,
+    });
+  });
 });
 
 class DummyIntegration extends WebSocketRouteIntegration {
