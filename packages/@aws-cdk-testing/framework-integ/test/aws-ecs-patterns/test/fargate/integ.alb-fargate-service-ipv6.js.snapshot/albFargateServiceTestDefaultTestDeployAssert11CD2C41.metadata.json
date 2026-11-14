@@ -1,0 +1,105 @@
+{
+  "/albFargateServiceTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:165:54)",
+        "resolveReferences (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:163:51)",
+        "Object.onceWrapper (node:events:639:26)",
+        "process.emit (node:events:524:28)"
+      ]
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/HttpApiCalla6a71180dbc50162b9dc35142e5e629f/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/HttpApiCalla6a71180dbc50162b9dc35142e5e629f/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCalla6a71180dbc50162b9dc35142e5e629f"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/HttpApiCalla6a71180dbc50162b9dc35142e5e629f/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCalla6a71180dbc50162b9dc35142e5e629fWaitForRole34A3306F"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/HttpApiCalla6a71180dbc50162b9dc35142e5e629f/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCalla6a71180dbc50162b9dc35142e5e629fWaitForC6489EE1"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/HttpApiCalla6a71180dbc50162b9dc35142e5e629f/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCalla6a71180dbc50162b9dc35142e5e629fWaitForIsCompleteProviderInvokeC2633154"
+    }
+  ],
+  "/albFargateServiceTest/DefaultTest/DeployAssert/HttpApiCalla6a71180dbc50162b9dc35142e5e629f/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCalla6a71180dbc50162b9dc35142e5e629fWaitForTimeoutProviderInvokeADBCAA6D"
+    }
+  ]
+}
