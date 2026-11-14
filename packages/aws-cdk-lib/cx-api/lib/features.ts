@@ -163,6 +163,7 @@ export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoad
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
 export const EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED = '@aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped';
+export const IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1183,7 +1184,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When enabled, the default volume type of the EBS volume will be GP3',
     detailsMd: `
-      When this featuer flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
+      When this feature flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
     `,
     introducedIn: { v2: '2.140.0' },
     recommendedValue: true,
@@ -2036,6 +2037,27 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Disable this feature flag to keep the previous combined permission statement.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default policy of an imported user or group gets a name that includes the stack name',
+    detailsMd: `
+      An imported user or group puts the permissions granted to it in a default inline policy. Without this flag, the
+      name of that policy only depends on the construct path inside the stack, so stacks that import the same user or
+      group under the same construct id use the same inline policy name on the same principal, and their deployments
+      conflict.
+
+      When this flag is enabled, the policy name also includes the stack name, so each stack gets an inline policy of
+      its own. The logical ID of the policy does not change, so CloudFormation renames the existing policy in place.
+
+      Deploy all stacks that import the same user or group after enabling this flag. The first of them to rename its
+      policy removes the inline policy under the old shared name, which may hold the permissions of another stack until
+      that stack is deployed too.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
