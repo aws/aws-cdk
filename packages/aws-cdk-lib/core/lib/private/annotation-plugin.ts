@@ -119,7 +119,16 @@ export function collectAnnotationReport(root: IConstruct): IPolicyValidationPlug
 function splitDescriptionAndId(message: string): { message: string; ruleName?: string } {
   const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
   if (ackMatch) {
-    return { message: message.replace(ackMatch[0], '').trim(), ruleName: ackMatch[1] };
+    // The annotation warning ID might contain `::` which is special in validation IDs. Escape it.
+    // The `Validations.of().addWarning()` API already added an `Annotation::` prefix, that we need
+    // to maintain.
+    const annotationPrefix = ackMatch[1].startsWith('Annotation::') ? 'Annotation::' : '';
+    const ruleName = ackMatch[1].slice(annotationPrefix.length).replace(/::/g, '_');
+
+    return {
+      message: message.replace(ackMatch[0], '').trim(),
+      ruleName: `${annotationPrefix}${ruleName}`,
+    };
   }
 
   const idMatch = message.match(/\(([^()]+::[^()]+)\)$/);

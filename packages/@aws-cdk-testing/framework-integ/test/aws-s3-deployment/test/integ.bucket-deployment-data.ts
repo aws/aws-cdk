@@ -1,11 +1,10 @@
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import type { StackProps } from 'aws-cdk-lib';
-import { App, CfnOutput, RemovalPolicy, Stack, Token } from 'aws-cdk-lib';
+import { App, CfnOutput, CfnParameter, RemovalPolicy, Stack, Token } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as path from 'path';
 import type { Construct } from 'constructs';
 
 /**
@@ -83,6 +82,14 @@ class TestBucketDeploymentData extends Stack {
     deployment.addSource(file8);
     deployment.addSource(file9);
 
+    // Test "numbers list" (no such thing as numbers in CFN, but an LLM told me to test this)
+    deployment.addSource(Source.jsonData('my-json/numbers-list.json', {
+      numbersList: new CfnParameter(this, 'NumbersParam', {
+        type: 'List<Number>',
+        default: '80,443',
+      }),
+    }));
+
     new CfnOutput(this, 'BucketName', { value: this.bucket.bucketName });
   }
 }
@@ -98,39 +105,30 @@ const integTest = new IntegTest(app, 'integ-test-bucket-deployment-data', {
   testCases: [testCase],
 });
 
-// Assert that addSource() successfully adds the data source alongside the asset source
-const assertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: testCase.bucket.bucketName,
-  Key: path.join('deploy/here', 'my-json/secret-config.json'),
-});
+function assertGetObject(relativeKey: string) {
+  return integTest.assertions.awsApiCall('S3', 'getObject', {
+    Bucket: testCase.bucket.bucketName,
+    Key: `deploy/here/${relativeKey}`,
+  });
+}
+
+function assertFileContents(relativeKey: string, expectedBody: string) {
+  return assertGetObject(relativeKey).expect(ExpectedResult.objectLike({
+    Body: expectedBody,
+  }));
+}
 
 // Verify the content is valid JSON and properly escaped
-assertionProvider.expect(ExpectedResult.objectLike({
-  // Properly escaped JSON.
-  Body: '{"secret_value":"test\\"with\\"quotes"}',
-}));
-
-// Assert that JSON data with a null value is represented properly
-const jsonNullAssertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: testCase.bucket.bucketName,
-  Key: path.join('deploy/here', 'my-json/config-with-null.json'),
-});
+assertFileContents('my-json/secret-config.json', '{"secret_value":"test\\"with\\"quotes"}');
 
 // Verify the content is valid JSON and both null and non-null fields are present
-jsonNullAssertionProvider.expect(ExpectedResult.objectLike({
-  Body: '{"hello":"there","goodbye":null}',
-}));
-
-// Add assertions to verify the YAML file
-const yamlAssertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: testCase.bucket.bucketName,
-  Key: path.join('deploy/here', 'my-yaml/secret-config.yaml'),
-});
+assertFileContents('my-json/config-with-null.json', '{"hello":"there","goodbye":null}');
 
 // Verify the content is valid YAML with properly escaped quotes
-yamlAssertionProvider.expect(ExpectedResult.objectLike({
-  // YAML format with proper escaping
-  Body: 'secret_value: test"with"quotes\n',
-}));
+assertFileContents('my-yaml/secret-config.yaml', 'secret_value: "test\\"with\\"quotes"\n');
+
+// Show that our numbers list is stringified (this is not behavior that we perform, this
+// is just demonstrating existing CloudFormation behavior).
+assertFileContents('my-json/numbers-list.json', '{"numbersList":["80", "443"]}');
 
 app.synth();
