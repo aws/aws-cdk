@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "cdk-integ-medialive-mediapackage-sidecar-captions/DefaultTest": {
+      "stacks": [
+        "aws-cdk-medialive-mediapackage-sidecar-captions"
+      ],
+      "assertionStack": "cdk-integ-medialive-mediapackage-sidecar-captions/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmedialivemediapackagesidecarcaptionsDefaultTestDeployAssert77CE0A96"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

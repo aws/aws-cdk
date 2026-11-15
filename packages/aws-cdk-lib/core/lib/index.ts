@@ -1,5 +1,6 @@
 export * from './aspect';
 export * from './tag-aspect';
+export * from './metadata-context';
 
 export * from './mixins';
 
@@ -39,7 +40,6 @@ export * from './duration';
 export * from './bitrate';
 export * from './expiration';
 export * from './size';
-export type { Element } from './deps';
 export * from './errors';
 
 export * from './app';

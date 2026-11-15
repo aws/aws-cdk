@@ -157,4 +157,111 @@ describe('SearchExpression', () => {
       });
     }).toThrow("Metric object must not produce more than one of 'metricStat', 'mathExpression', or 'searchExpression'");
   });
+
+  test('SearchExpression stores visible property and includes it in toMetricConfig', () => {
+    const withVisibleFalse = new SearchExpression({
+      expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
+      visible: false,
+    });
+
+    expect(withVisibleFalse.visible).toBe(false);
+    expect(withVisibleFalse.toMetricConfig().renderingProperties!.visible).toBe(false);
+
+    const withVisibleTrue = new SearchExpression({
+      expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
+      visible: true,
+    });
+
+    expect(withVisibleTrue.visible).toBe(true);
+    expect(withVisibleTrue.toMetricConfig().renderingProperties!.visible).toBe(true);
+  });
+
+  test('SearchExpression visible defaults to undefined when not set (backwards compat)', () => {
+    expect(searchExpr.visible).toBeUndefined();
+    expect(searchExpr.toMetricConfig().renderingProperties!.visible).toBeUndefined();
+  });
+
+  test('optimization: "with" the same visible returns the same object', () => {
+    const hidden = new SearchExpression({
+      expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
+      visible: false,
+    });
+
+    // Note: object equality, NOT deep equality on purpose
+    expect(hidden.with({})).toBe(hidden);
+    expect(hidden.with({ visible: false })).toBe(hidden);
+
+    // A different visible value produces a new object
+    expect(hidden.with({ visible: true })).not.toBe(hidden);
+    expect(hidden.with({ visible: true }).visible).toBe(true);
+  });
+
+  test('optimization: "with" visible on an expression without one produces a new object', () => {
+    expect(searchExpr.with({})).toBe(searchExpr);
+    expect(searchExpr.with({ visible: false })).not.toBe(searchExpr);
+    expect(searchExpr.with({ visible: false }).visible).toBe(false);
+  });
+
+  test('visible is passed through to the graph JSON', () => {
+    // GIVEN
+    stack = new Stack();
+    const graph = new GraphWidget({
+      left: [searchExpr.with({ visible: false })],
+    });
+
+    // THEN
+    expect(stack.resolve(graph.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          [{
+            accountId: '123456789012',
+            color: '#ff0000',
+            expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
+            label: 'CPU Usage',
+            region: 'us-west-2',
+            visible: false,
+          }],
+        ],
+        yAxis: {},
+      },
+    }]);
+  });
+
+  test('a hidden expression without a label does not get an auto-generated label', () => {
+    // GIVEN
+    stack = new Stack();
+    const graph = new GraphWidget({
+      left: [
+        new SearchExpression({
+          expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
+          visible: false,
+        }),
+      ],
+    });
+
+    // THEN
+    // Matching the rendering behavior for hidden metrics and math expressions,
+    // the fallback label (the expression itself) is only rendered for visible entries.
+    expect(stack.resolve(graph.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          [{
+            expression: "SEARCH('{AWS/EC2,InstanceId} CPUUtilization', 'Average', 300)",
+            visible: false,
+          }],
+        ],
+        yAxis: {},
+      },
+    }]);
+  });
 });

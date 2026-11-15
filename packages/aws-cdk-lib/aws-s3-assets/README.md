@@ -96,7 +96,7 @@ class MyBundle implements cdk.ILocalBundling {
       // perform local bundling here
       return true;
     }
-    return false; 
+    return false;
   }
 }
 
@@ -140,7 +140,7 @@ you don't want it to be zipped.
 
 ### Docker options
 
-Depending on your build environment, you may need to pass certain docker options to the `docker run` command that bundles assets. 
+Depending on your build environment, you may need to pass certain docker options to the `docker run` command that bundles assets.
 This can be done using [BundlingOptions](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.BundlingOptions.html) properties.
 
 Some optional properties to pass to the docker bundling
@@ -154,7 +154,7 @@ const asset = new Asset(this, 'BundledAsset', {
     image: lambda.Runtime.PYTHON_3_9.bundlingImage,
     command: [
       'bash', '-c',
-      'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
+      'pip install -r requirements.txt -t /asset-output && cp -au * /asset-output'
     ],
     securityOpt: 'no-new-privileges:true', // https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt
     network: 'host', //https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network

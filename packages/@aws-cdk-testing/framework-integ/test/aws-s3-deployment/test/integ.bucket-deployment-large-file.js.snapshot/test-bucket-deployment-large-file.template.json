@@ -146,35 +146,6 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "TestSecret16AF87B1": {
-   "Type": "AWS::SecretsManager::Secret",
-   "Properties": {
-    "GenerateSecretString": {
-     "GenerateStringKey": "password",
-     "SecretStringTemplate": "{\"value\":\"test\\\"with\\\"quotes\"}"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "SecretParam0C31D215": {
-   "Type": "AWS::SSM::Parameter",
-   "Properties": {
-    "Type": "String",
-    "Value": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "TestSecret16AF87B1"
-       },
-       ":SecretString:value::}}"
-      ]
-     ]
-    }
-   }
-  },
   "DeployWithLargeFilesAwsCliLayer2B9E5351": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
@@ -182,7 +153,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
+     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -202,65 +173,11 @@
      },
      {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      }
     ],
     "SourceObjectKeys": [
-     "5fafef40d71df227043af704c42aa861306f2ed62dbc77b0aaebac3bc184fa02.zip",
-     "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip",
-     "4458891c23c9754723db261b607985ee4fce5a087343fca93e9608fb49e083ba.zip",
-     "28993f893d6ff78d86a5b8265321158c6da4719974a8aa757202f429679cc7e6.zip"
-    ],
-    "SourceMarkers": [
-     {},
-     {},
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "SecretParam0C31D215",
-           "Value"
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     },
-     {
-      "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Fn::GetAtt": [
-           "SecretParam0C31D215",
-           "Value"
-          ]
-         },
-         "\""
-        ]
-       ]
-      }
-     }
-    ],
-    "SourceMarkersConfig": [
-     {},
-     {},
-     {
-      "jsonEscape": true
-     },
-     {}
+     "3e4eb503ce9a1d02a5a02e24d87bdc056708d4c3fae52f10c85a08a292b82ff1.zip",
+     "cbc7dae5477d6aa98463e36140d5833273cc3caca06c731d848799f30237fefe.zip"
     ],
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
@@ -401,11 +318,14 @@
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "9a429549ac40e3ec3e6335de0a56794665ab2c4602d6e60ec7b31ea303b149a4.zip"
     },
     "Environment": {
      "Variables": {
@@ -418,6 +338,7 @@
       "Ref": "DeployWithLargeFilesAwsCliLayer2B9E5351"
      }
     ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",

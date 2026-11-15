@@ -1,0 +1,174 @@
+{
+  "/lambda-event-source-kafka-queue": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "lambda-event-source-kafka-queue.template.json"
+    }
+  ],
+  "/lambda-event-source-kafka-queue/ClientCertSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "secretObjectValue": "*"
+      }
+    }
+  ],
+  "/lambda-event-source-kafka-queue/F": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "handler": "*",
+        "code": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/lambda-event-source-kafka-queue/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-event-source-kafka-queue/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/lambda-event-source-kafka-queue/ClientCertSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClientCertSecret84224011"
+    }
+  ],
+  "/lambda-event-source-kafka-queue/F/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/lambda-event-source-kafka-queue/F/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FC4345940"
+    }
+  ],
+  "/lambda-event-source-kafka-queue/F/KafkaEventSource:7d34701f646e2bdd4e96f7fda0d3b758:my-queue-topic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "target": "*",
+        "filters": "*",
+        "filterEncryption": "*",
+        "kafkaBootstrapServers": "*",
+        "kafkaTopic": "*",
+        "kafkaConsumerGroupId": "*",
+        "startingPosition": "*",
+        "startingPositionTimestamp": "*",
+        "sourceAccessConfigurations": [
+          {
+            "type": "*",
+            "uri": "*"
+          }
+        ],
+        "onFailure": "*",
+        "supportS3OnFailureDestination": true,
+        "provisionedPollerConfig": "*",
+        "schemaRegistryConfig": "*",
+        "logLevel": "*",
+        "metricsConfig": "*",
+        "bisectBatchOnError": "*",
+        "retryAttempts": "*",
+        "reportBatchItemFailures": "*",
+        "maxRecordAge": "*",
+        "batchSize": "*",
+        "maxBatchingWindow": "*",
+        "parallelizationFactor": "*",
+        "tumblingWindow": "*",
+        "enabled": "*"
+      }
+    }
+  ],
+  "/lambda-event-source-kafka-queue/F/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FServiceRole3AC82EE1"
+    }
+  ],
+  "/lambda-event-source-kafka-queue/F/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/lambda-event-source-kafka-queue/F/KafkaEventSource:7d34701f646e2bdd4e96f7fda0d3b758:my-queue-topic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FKafkaEventSource7d34701f646e2bdd4e96f7fda0d3b758myqueuetopic675D1BE6"
+    }
+  ],
+  "/lambda-event-source-kafka-queue/F/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FServiceRoleDefaultPolicy17A19BFA"
+    }
+  ]
+}

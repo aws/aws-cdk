@@ -6,6 +6,7 @@ import { stackOf, stageOf } from './core-construct-finders';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { CfnResource } from '../cfn-resource';
 import type { NamedValidationPluginReport } from '../validation/private/report';
+import { namespaceFromPluginName } from '../validation/private/validation-id';
 import type { PolicyValidationPluginReport, PolicyViolation, PolicyViolatingResource } from '../validation/report';
 
 /**
@@ -22,7 +23,6 @@ import type { PolicyValidationPluginReport, PolicyViolation, PolicyViolatingReso
  * has a prefix in which case the prefix is preserved.
  */
 export class AnnotationPlugin implements IPolicyValidationPlugin {
-  public static RULE_PREFIX = 'Annotation';
   public static NAME = 'Construct Annotations';
   public readonly name = AnnotationPlugin.NAME;
 
@@ -39,6 +39,8 @@ export class AnnotationPlugin implements IPolicyValidationPlugin {
  * into the same report pipeline as plugin violations.
  */
 export function collectAnnotationReport(root: IConstruct): IPolicyValidationPlugin | undefined {
+  const myNamespace = namespaceFromPluginName(AnnotationPlugin.NAME);
+
   const violationMap = new Map<string, PolicyViolation & { violatingResources: PolicyViolatingResource[] }>();
 
   for (const construct of iterateDfsPreorder(root)) {
@@ -51,7 +53,7 @@ export function collectAnnotationReport(root: IConstruct): IPolicyValidationPlug
       let { message, ruleName } = splitDescriptionAndId(String(entry.data));
 
       if (ruleName && !ruleName.includes('::')) {
-        ruleName = `${AnnotationPlugin.RULE_PREFIX}::${ruleName}`;
+        ruleName = `${myNamespace}::${ruleName}`;
       }
 
       let templatePath: string | undefined;
@@ -78,7 +80,7 @@ export function collectAnnotationReport(root: IConstruct): IPolicyValidationPlug
         existing.violatingResources.push(violatingResource);
       } else {
         violationMap.set(key, {
-          ruleName: ruleName ?? `${AnnotationPlugin.RULE_PREFIX}::${severity}-annotation`,
+          ruleName: ruleName ?? `${myNamespace}::${severity}-annotation`,
           description: message,
           severity,
           violatingResources: [violatingResource],
@@ -117,7 +119,16 @@ export function collectAnnotationReport(root: IConstruct): IPolicyValidationPlug
 function splitDescriptionAndId(message: string): { message: string; ruleName?: string } {
   const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
   if (ackMatch) {
-    return { message: message.replace(ackMatch[0], '').trim(), ruleName: ackMatch[1] };
+    // The annotation warning ID might contain `::` which is special in validation IDs. Escape it.
+    // The `Validations.of().addWarning()` API already added an `Annotation::` prefix, that we need
+    // to maintain.
+    const annotationPrefix = ackMatch[1].startsWith('Annotation::') ? 'Annotation::' : '';
+    const ruleName = ackMatch[1].slice(annotationPrefix.length).replace(/::/g, '_');
+
+    return {
+      message: message.replace(ackMatch[0], '').trim(),
+      ruleName: `${annotationPrefix}${ruleName}`,
+    };
   }
 
   const idMatch = message.match(/\(([^()]+::[^()]+)\)$/);
