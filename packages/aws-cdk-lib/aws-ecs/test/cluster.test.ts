@@ -1058,8 +1058,7 @@ describe('cluster', () => {
         return { stack, userData: asg.userData.render() };
       })();
 
-      expect(userData).toContain('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")
-Initialize-ECSAgent -Cluster ');
+      expect(userData).toContain('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")\nInitialize-ECSAgent -Cluster ');
       expect(userData).toMatch(/Initialize-ECSAgent -Cluster '\$\{Token\[TOKEN\.\d+\]\}' -EnableTaskIAMRole<\/powershell>$/);
       Annotations.fromStack(stack).hasNoWarning('/Default/EcsCluster', Match.stringLikeRegexp('enableTaskIamRole only applies to Windows'));
     });
@@ -1080,7 +1079,7 @@ Initialize-ECSAgent -Cluster ');
           autoScalingGroup: asg,
           enableTaskIamRole: true,
         }), { enableTaskIamRole: false });
-        return { stack, userData: asg.userData.render() };
+        return { userData: asg.userData.render() };
       })();
 
       expect(userData).not.toContain('ECS_ENABLE_TASK_IAM_ROLE');

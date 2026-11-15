@@ -2070,6 +2070,11 @@ export class AsgCapacityProvider extends Construct {
    */
   readonly enableManagedDraining?: boolean;
 
+  /**
+   * Whether IAM roles for tasks are enabled on Windows container instances.
+   */
+  readonly enableTaskIamRole?: boolean;
+
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);
     let capacityProviderName = props.capacityProviderName;
