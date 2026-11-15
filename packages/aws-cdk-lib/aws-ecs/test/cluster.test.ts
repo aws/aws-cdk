@@ -1006,7 +1006,10 @@ describe('cluster', () => {
   });
 
   describe('enableTaskIamRole on Windows container instances', () => {
-    function windowsUserData(options: Partial<ecs.AddCapacityOptions>): { stack: cdk.Stack; userData: string } {
+    function windowsUserData(
+      options: Partial<ecs.AddCapacityOptions>,
+      providerProps: Partial<ecs.AsgCapacityProviderProps> = {},
+    ): { stack: cdk.Stack; userData: string } {
       const stack = new cdk.Stack();
       acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1016,7 +1019,7 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
       });
-      cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', { autoScalingGroup: asg }), options);
+      cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', { autoScalingGroup: asg, ...providerProps }), options);
       return { stack, userData: asg.userData.render() };
     }
 
@@ -1040,23 +1043,8 @@ describe('cluster', () => {
     });
 
     test('provider props feed addAsgCapacityProvider when the options omit enableTaskIamRole', () => {
-      const { stack, userData } = (() => {
-        const stack = new cdk.Stack();
-        acknowledgeTestValidationRules(stack);
-        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-        const asg = new autoscaling.AutoScalingGroup(stack, 'WindowsAsg', {
-          vpc,
-          instanceType: new ec2.InstanceType('t2.micro'),
-          machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
-        });
-        // The provider carries enableTaskIamRole; the options argument omits it.
-        cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', {
-          autoScalingGroup: asg,
-          enableTaskIamRole: true,
-        }));
-        return { stack, userData: asg.userData.render() };
-      })();
+      // The provider carries enableTaskIamRole; the options argument omits it.
+      const { stack, userData } = windowsUserData({}, { enableTaskIamRole: true });
 
       expect(userData).toContain('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")\nInitialize-ECSAgent -Cluster ');
       expect(userData).toMatch(/Initialize-ECSAgent -Cluster '\$\{Token\[TOKEN\.\d+\]\}' -EnableTaskIAMRole<\/powershell>$/);
@@ -1064,23 +1052,8 @@ describe('cluster', () => {
     });
 
     test('options argument overrides the provider props', () => {
-      const { userData } = (() => {
-        const stack = new cdk.Stack();
-        acknowledgeTestValidationRules(stack);
-        const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-        const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-        const asg = new autoscaling.AutoScalingGroup(stack, 'WindowsAsg', {
-          vpc,
-          instanceType: new ec2.InstanceType('t2.micro'),
-          machineImage: ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019),
-        });
-        // Provider enables it; the options argument explicitly opts back out.
-        cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', {
-          autoScalingGroup: asg,
-          enableTaskIamRole: true,
-        }), { enableTaskIamRole: false });
-        return { userData: asg.userData.render() };
-      })();
+      // Provider enables it; the options argument explicitly opts back out.
+      const { userData } = windowsUserData({ enableTaskIamRole: false }, { enableTaskIamRole: true });
 
       expect(userData).not.toContain('ECS_ENABLE_TASK_IAM_ROLE');
       expect(userData).not.toContain('-EnableTaskIAMRole');
