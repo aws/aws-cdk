@@ -6,11 +6,8 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/vidit/Documents/cdk-redshift-singleton-provider/packages/aws-cdk-lib/core/lib/validation/validations.js:105:18)",
-        "    at Stack._silenceLiteralAzWarning (/Users/vidit/Documents/cdk-redshift-singleton-provider/packages/aws-cdk-lib/core/lib/stack.js:1383:47)",
-        "    at get availabilityZones (/Users/vidit/Documents/cdk-redshift-singleton-provider/packages/aws-cdk-lib/core/lib/stack.js:756:18)",
-        "    at new Vpc (/Users/vidit/Documents/cdk-redshift-singleton-provider/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:788:48)",
-        "    at <anonymous> (/Users/vidit/Documents/cdk-redshift-singleton-provider/packages/@aws-cdk/aws-redshift-alpha/test/integ.singleton-provider.js:43:13)",
+        "    ...new Vpc in aws-cdk-lib...",
+        "    at <anonymous> (/Users/vidit/Documents/ChatGPT/AWS HERO/cdk-pr-39448-work/packages/@aws-cdk/aws-redshift-alpha/test/integ.singleton-provider.js:45:13)",
         "    ...node internals..."
       ]
     },
@@ -22,7 +19,10 @@
   "/redshift-singleton-provider/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
@@ -40,29 +40,71 @@
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5f": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "code": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/redshift-singleton-provider/VerifyPrivilege": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "code": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/BootstrapVersion": [
@@ -86,49 +128,105 @@
   "/redshift-singleton-provider/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {}
     }
   ],
   "/redshift-singleton-provider/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {}
     }
   ],
   "/redshift-singleton-provider/Vpc/IsolatedSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Vpc/IsolatedSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Vpc/IGW": [
@@ -170,17 +268,30 @@
   "/redshift-singleton-provider/Cluster/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Cluster/Secret": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryptionKey": "*",
+        "generateSecretString": {
+          "passwordLength": "*",
+          "secretStringTemplate": "*",
+          "generateStringKey": "*",
+          "excludeCharacters": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryptionKey": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Cluster/Resource": [
@@ -192,53 +303,109 @@
   "/redshift-singleton-provider/User/Secret": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryptionKey": "*",
+        "generateSecretString": {
+          "passwordLength": "*",
+          "secretStringTemplate": "*",
+          "generateStringKey": "*",
+          "excludeCharacters": "*"
+        }
+      }
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryptionKey": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5f/Resource": [
@@ -250,7 +417,9 @@
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5f/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5fInvokerRole/Resource": [
@@ -266,29 +435,141 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5fProvider/framework-onEvent": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/redshift-singleton-provider/VerifyPrivilege/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/redshift-singleton-provider/VerifyPrivilege/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerifyPrivilege7973161A"
+    }
+  ],
+  "/redshift-singleton-provider/VerifyPrivilege/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/redshift-singleton-provider/Exports/Output{\"Ref\":\"VerifyPrivilege7973161A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefVerifyPrivilege7973161AC717593B"
     }
   ],
   "/redshift-singleton-provider/Exports/Output{\"Ref\":\"ClusterEB0386A7\"}": [
@@ -414,7 +695,10 @@
   "/redshift-singleton-provider/Cluster/Secret/Attachment": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "secret": "*",
+        "target": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/User/Secret/Resource": [
@@ -426,13 +710,23 @@
   "/redshift-singleton-provider/User/Secret/Attachment": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "secret": "*",
+        "target": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/User/Resource/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "code": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "uuid": "*",
+        "lambdaPurpose": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/User/Resource/Resource": [
@@ -462,39 +756,75 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5f/Code/AssetBucket": [
@@ -524,19 +854,86 @@
   "/redshift-singleton-provider/Query Redshift Database3de5bea727da479686625efb56431b5fProvider/framework-onEvent/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Table/Resource/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "code": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "uuid": "*",
+        "lambdaPurpose": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/Table/Resource/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    }
+  ],
+  "/redshift-singleton-provider/VerifyPrivilege/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerifyPrivilegeServiceRole19CF3EFF"
+    }
+  ],
+  "/redshift-singleton-provider/VerifyPrivilege/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/redshift-singleton-provider/VerifyPrivilege/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerifyPrivilegeLogGroupE893F0DD"
     }
   ],
   "/redshift-singleton-provider/Cluster/Secret/Attachment/Resource": [
@@ -560,7 +957,14 @@
   "/redshift-singleton-provider/User/TablePrivileges/Resource/Handler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "code": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "uuid": "*",
+        "lambdaPurpose": "*"
+      }
     }
   ],
   "/redshift-singleton-provider/User/TablePrivileges/Resource/Resource": [
@@ -591,6 +995,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Table7ABB320E"
+    }
+  ],
+  "/redshift-singleton-provider/VerifyPrivilege/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerifyPrivilegeServiceRoleDefaultPolicyC27A878F"
     }
   ],
   "/redshift-singleton-provider/User/TablePrivileges/Resource/Resource/Default": [

@@ -1,6 +1,8 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { REDSHIFT_SINGLETON_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as redshift from '../lib';
 
@@ -26,19 +28,56 @@ const table = new redshift.Table(stack, 'Table', {
 });
 table.grant(user, redshift.TableAction.SELECT);
 
-const test = new integ.IntegTest(app, 'SingletonProviderTest', { testCases: [stack] });
-const statement = test.assertions.awsApiCall('RedshiftData', 'executeStatement', {
-  ClusterIdentifier: cluster.clusterName,
-  Database: databaseName,
-  SecretArn: cluster.secret!.secretArn,
-  Sql: "SELECT has_table_privilege('integ_user', 'integ_table', 'select') AS granted",
+// Redshift statement polling must use the same IAM role that executed the query.
+const verifier = new lambda.Function(stack, 'VerifyPrivilege', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'index.handler',
+  timeout: cdk.Duration.minutes(2),
+  code: lambda.Code.fromInline(`
+    const { RedshiftDataClient, ExecuteStatementCommand, DescribeStatementCommand,
+      GetStatementResultCommand } = require('@aws-sdk/client-redshift-data');
+    const client = new RedshiftDataClient({});
+    exports.handler = async (parameters, context) => {
+      const { Id } = await client.send(new ExecuteStatementCommand(parameters));
+      while (context.getRemainingTimeInMillis() > 5000) {
+        const statement = await client.send(new DescribeStatementCommand({ Id }));
+        if (statement.Status === 'FINISHED') {
+          const result = await client.send(new GetStatementResultCommand({ Id }));
+          return { Records: result.Records };
+        }
+        if (statement.Status === 'FAILED' || statement.Status === 'ABORTED') {
+          throw new Error(statement.Error || statement.Status);
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+      throw new Error('Timed out waiting for the privilege query');
+    };
+  `),
 });
-const finished = test.assertions.awsApiCall('RedshiftData', 'describeStatement', {
-  Id: statement.getAttString('Id'),
-}).expect(integ.ExpectedResult.objectLike({ Status: 'FINISHED' }))
-  .waitForAssertions({ totalTimeout: cdk.Duration.minutes(2) });
-statement.next(finished);
-const result = test.assertions.awsApiCall('RedshiftData', 'getStatementResult', {
-  Id: statement.getAttString('Id'),
-}).expect(integ.ExpectedResult.objectLike({ Records: [[{ booleanValue: true }]] }));
-finished.next(result);
+cluster.secret!.grantRead(verifier);
+verifier.addToRolePolicy(new iam.PolicyStatement({
+  actions: ['redshift-data:ExecuteStatement'],
+  resources: [stack.formatArn({
+    service: 'redshift',
+    resource: 'cluster',
+    resourceName: cluster.clusterName,
+    arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+  })],
+}));
+verifier.addToRolePolicy(new iam.PolicyStatement({
+  actions: ['redshift-data:DescribeStatement', 'redshift-data:GetStatementResult'],
+  resources: ['*'],
+}));
+
+const test = new integ.IntegTest(app, 'SingletonProviderTest', { testCases: [stack] });
+test.assertions.invokeFunction({
+  functionName: verifier.functionName,
+  payload: JSON.stringify({
+    ClusterIdentifier: cluster.clusterName,
+    Database: databaseName,
+    SecretArn: cluster.secret!.secretArn,
+    Sql: "SELECT has_table_privilege('integ_user', 'integ_table', 'select') AS granted",
+  }),
+}).expect(integ.ExpectedResult.objectLike({
+  Payload: JSON.stringify({ Records: [[{ booleanValue: true }]] }),
+}));
