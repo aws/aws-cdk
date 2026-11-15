@@ -10,9 +10,17 @@ class EksAllHandlersInVpcStack extends Stack {
     super(scope, id);
 
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
-    new eks.Cluster(this, 'EksAllHandlersInVpcStack', {
+    // create the cluster with no default capacity — nodegroup added separately with AL2023 AMI
+    // (AL2 is not supported for Kubernetes 1.33+)
+    const cluster = new eks.Cluster(this, 'EksAllHandlersInVpcStack', {
       ...getClusterVersionConfig(this),
+      defaultCapacity: 0,
       placeClusterHandlerInVpc: true,
+    });
+
+    cluster.addNodegroupCapacity('DefaultCapacity', {
+      minSize: 2,
+      amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
     });
   }
 }

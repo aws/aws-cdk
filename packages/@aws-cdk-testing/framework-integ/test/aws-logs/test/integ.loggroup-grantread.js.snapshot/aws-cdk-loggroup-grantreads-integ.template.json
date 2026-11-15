@@ -15,14 +15,30 @@
      "Fn::Join": [
       "",
       [
-       "{\"Statement\":[{\"Action\":[\"logs:FilterLogEvents\",\"logs:GetLogEvents\",\"logs:GetLogGroupFields\",\"logs:DescribeLogGroups\",\"logs:DescribeLogStreams\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":\"",
+       "{\"Statement\":[{\"Action\":[\"logs:FilterLogEvents\",\"logs:GetLogEvents\",\"logs:GetLogGroupFields\",\"logs:DescribeLogGroups\",\"logs:DescribeLogStreams\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":logs:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":log-group:",
+       {
+        "Ref": "LogGroupF5B46931"
+       },
+       "\",\"",
        {
         "Fn::GetAtt": [
          "LogGroupF5B46931",
          "Arn"
         ]
        },
-       "\"}],\"Version\":\"2012-10-17\"}"
+       "\"]}],\"Version\":\"2012-10-17\"}"
       ]
      ]
     },
