@@ -641,6 +641,567 @@ describe('vpc', () => {
   });
 });
 
+describe('imageId', () => {
+  test('imageId is passed to CloudFormation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.LARGE,
+      environmentType: codebuild.EnvironmentType.MAC_ARM,
+      imageId: 'aws/codebuild/macos-arm-base:26',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_LARGE',
+      EnvironmentType: 'MAC_ARM',
+      ImageId: 'aws/codebuild/macos-arm-base:26',
+    });
+  });
+
+  test('imageId is absent when not specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      ImageId: Match.absent(),
+    });
+  });
+
+  test.each([
+    codebuild.EnvironmentType.LINUX_EC2,
+    codebuild.EnvironmentType.ARM_EC2,
+    codebuild.EnvironmentType.WINDOWS_EC2,
+    codebuild.EnvironmentType.MAC_ARM,
+  ])('accepts imageId with EC2-based environment type: %s', (environmentType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType,
+      imageId: 'ami-12345678',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      ImageId: 'ami-12345678',
+    });
+  });
+
+  test.each([
+    codebuild.EnvironmentType.LINUX_CONTAINER,
+    codebuild.EnvironmentType.ARM_CONTAINER,
+    codebuild.EnvironmentType.LINUX_GPU_CONTAINER,
+    codebuild.EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
+    codebuild.EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
+  ])('throws if imageId is specified with container-based environment type: %s', (environmentType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.MEDIUM,
+        environmentType,
+        imageId: 'ami-12345678',
+      });
+    }).toThrow(/imageId is only supported for EC2-based environment types/);
+  });
+});
+
+describe('scalingConfiguration', () => {
+  test('scalingConfiguration is passed to CloudFormation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      scalingConfiguration: {
+        maxCapacity: 5,
+        scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+        targetTrackingScalingConfigs: [{
+          metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+          targetValue: 80,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ScalingConfiguration: {
+        MaxCapacity: 5,
+        ScalingType: 'TARGET_TRACKING_SCALING',
+        TargetTrackingScalingConfigs: [{
+          MetricType: 'FLEET_UTILIZATION_RATE',
+          TargetValue: 80,
+        }],
+      },
+    });
+  });
+
+  test('scalingConfiguration is absent when not specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      ScalingConfiguration: Match.absent(),
+    });
+  });
+
+  test('throws if maxCapacity is less than 1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: 0,
+          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+          targetTrackingScalingConfigs: [{
+            metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+            targetValue: 80,
+          }],
+        },
+      });
+    }).toThrow(/scalingConfiguration.maxCapacity must be greater than or equal to 1/);
+  });
+
+  test('throws if maxCapacity is less than baseCapacity', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 5,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: 3,
+          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+          targetTrackingScalingConfigs: [{
+            metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+            targetValue: 80,
+          }],
+        },
+      });
+    }).toThrow(/scalingConfiguration.maxCapacity must be greater than or equal to baseCapacity/);
+  });
+
+  test('throws if targetTrackingScalingConfigs is empty with TARGET_TRACKING_SCALING', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: 5,
+          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+          targetTrackingScalingConfigs: [],
+        },
+      });
+    }).toThrow(/At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING/);
+  });
+
+  test('throws if targetTrackingScalingConfigs is omitted with TARGET_TRACKING_SCALING', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: 5,
+          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+        },
+      });
+    }).toThrow(/At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING/);
+  });
+
+  test.each([-1, -0.1, 101, 150])('throws if targetValue is out of range: %s', (targetValue) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: 5,
+          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+          targetTrackingScalingConfigs: [{
+            metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+            targetValue,
+          }],
+        },
+      });
+    }).toThrow(/targetValue must be between 0 and 100 \(inclusive\)/);
+  });
+
+  test.each([0, 50, 100])('accepts valid targetValue boundary: %s', (targetValue) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      scalingConfiguration: {
+        maxCapacity: 5,
+        scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+        targetTrackingScalingConfigs: [{
+          metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+          targetValue,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      ScalingConfiguration: {
+        TargetTrackingScalingConfigs: [{
+          MetricType: 'FLEET_UTILIZATION_RATE',
+          TargetValue: targetValue,
+        }],
+      },
+    });
+  });
+
+  test('accepts maxCapacity equal to baseCapacity', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 5,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      scalingConfiguration: {
+        maxCapacity: 5,
+        scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+        targetTrackingScalingConfigs: [{
+          metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+          targetValue: 70,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 5,
+      ScalingConfiguration: {
+        MaxCapacity: 5,
+      },
+    });
+  });
+});
+
+describe('proxyConfiguration', () => {
+  test('proxyConfiguration is passed to CloudFormation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      proxyConfiguration: {
+        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+        orderedProxyRules: [{
+          effect: codebuild.FleetProxyRuleEffect.ALLOW,
+          entities: ['*.amazonaws.com'],
+          type: codebuild.FleetProxyRuleType.DOMAIN,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetProxyConfiguration: {
+        DefaultBehavior: 'DENY_ALL',
+        OrderedProxyRules: [{
+          Effect: 'ALLOW',
+          Entities: ['*.amazonaws.com'],
+          Type: 'DOMAIN',
+        }],
+      },
+    });
+  });
+
+  test('proxyConfiguration with VPC is passed to CloudFormation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      proxyConfiguration: {
+        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+        orderedProxyRules: [{
+          effect: codebuild.FleetProxyRuleEffect.ALLOW,
+          entities: ['*.amazonaws.com'],
+          type: codebuild.FleetProxyRuleType.DOMAIN,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetProxyConfiguration: {
+        DefaultBehavior: 'DENY_ALL',
+        OrderedProxyRules: [{
+          Effect: 'ALLOW',
+          Entities: ['*.amazonaws.com'],
+          Type: 'DOMAIN',
+        }],
+      },
+      FleetVpcConfig: Match.objectLike({
+        VpcId: Match.anyValue(),
+      }),
+    });
+  });
+
+  test('proxyConfiguration is absent when not specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetProxyConfiguration: Match.absent(),
+    });
+  });
+
+  test.each([
+    codebuild.EnvironmentType.LINUX_EC2,
+    codebuild.EnvironmentType.ARM_EC2,
+    codebuild.EnvironmentType.WINDOWS_EC2,
+    codebuild.EnvironmentType.MAC_ARM,
+  ])('throws if proxyConfiguration is specified with EC2-based environment type: %s', (environmentType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.MEDIUM,
+        environmentType,
+        proxyConfiguration: {
+          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+        },
+      });
+    }).toThrow(/proxyConfiguration is only supported for container-based environment types/);
+  });
+
+  test.each([
+    codebuild.EnvironmentType.LINUX_CONTAINER,
+    codebuild.EnvironmentType.ARM_CONTAINER,
+    codebuild.EnvironmentType.LINUX_GPU_CONTAINER,
+    codebuild.EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
+    codebuild.EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
+  ])('accepts proxyConfiguration with container-based environment type: %s', (environmentType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType,
+      proxyConfiguration: {
+        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetProxyConfiguration: {
+        DefaultBehavior: 'DENY_ALL',
+      },
+    });
+  });
+
+  test('throws if proxy rule has empty entities', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        proxyConfiguration: {
+          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+          orderedProxyRules: [{
+            effect: codebuild.FleetProxyRuleEffect.ALLOW,
+            entities: [],
+            type: codebuild.FleetProxyRuleType.DOMAIN,
+          }],
+        },
+      });
+    }).toThrow(/Each proxy rule must have at least one entity/);
+  });
+});
+
+describe('combined properties', () => {
+  test('imageId and scalingConfiguration together (EC2 environment)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
+      imageId: 'ami-12345678',
+      scalingConfiguration: {
+        maxCapacity: 3,
+        scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+        targetTrackingScalingConfigs: [{
+          metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+          targetValue: 70,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_MEDIUM',
+      EnvironmentType: 'LINUX_EC2',
+      ImageId: 'ami-12345678',
+      ScalingConfiguration: {
+        MaxCapacity: 3,
+        ScalingType: 'TARGET_TRACKING_SCALING',
+        TargetTrackingScalingConfigs: [{
+          MetricType: 'FLEET_UTILIZATION_RATE',
+          TargetValue: 70,
+        }],
+      },
+    });
+  });
+
+  test('proxyConfiguration and scalingConfiguration together (container environment)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      scalingConfiguration: {
+        maxCapacity: 3,
+        scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+        targetTrackingScalingConfigs: [{
+          metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+          targetValue: 70,
+        }],
+      },
+      proxyConfiguration: {
+        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+        orderedProxyRules: [
+          {
+            effect: codebuild.FleetProxyRuleEffect.ALLOW,
+            entities: ['*.amazonaws.com'],
+            type: codebuild.FleetProxyRuleType.DOMAIN,
+          },
+          {
+            effect: codebuild.FleetProxyRuleEffect.ALLOW,
+            entities: ['10.0.0.0/8'],
+            type: codebuild.FleetProxyRuleType.IP,
+          },
+        ],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ComputeType: 'BUILD_GENERAL1_MEDIUM',
+      EnvironmentType: 'LINUX_CONTAINER',
+      ScalingConfiguration: {
+        MaxCapacity: 3,
+        ScalingType: 'TARGET_TRACKING_SCALING',
+        TargetTrackingScalingConfigs: [{
+          MetricType: 'FLEET_UTILIZATION_RATE',
+          TargetValue: 70,
+        }],
+      },
+      FleetProxyConfiguration: {
+        DefaultBehavior: 'DENY_ALL',
+        OrderedProxyRules: [
+          {
+            Effect: 'ALLOW',
+            Entities: ['*.amazonaws.com'],
+            Type: 'DOMAIN',
+          },
+          {
+            Effect: 'ALLOW',
+            Entities: ['10.0.0.0/8'],
+            Type: 'IP',
+          },
+        ],
+      },
+    });
+  });
+});
+
 describe('overflowBehavior', () => {
   test('can set overflow behavior to QUEUE', () => {
     // GIVEN
