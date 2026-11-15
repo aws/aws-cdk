@@ -38,7 +38,7 @@ export interface IServerDeploymentGroup extends cdk.IResource, IDeploymentGroupR
    */
   readonly deploymentGroupArn: string;
   readonly deploymentConfig: IServerDeploymentConfig;
-  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[];
+  readonly autoScalingGroups?: autoscaling.IAutoScalingGroup[] | undefined;
 }
 
 /**

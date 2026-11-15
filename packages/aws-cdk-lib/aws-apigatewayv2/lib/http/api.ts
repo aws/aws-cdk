@@ -60,7 +60,7 @@ export interface IHttpApi extends IApi, IHttpApiRef {
    * @attribute
    * @default - a stage will be created
    */
-  readonly defaultStage?: IHttpStage;
+  readonly defaultStage?: IHttpStage | undefined;
 
   /**
    * Metric for the number of client-side errors captured in a given period.

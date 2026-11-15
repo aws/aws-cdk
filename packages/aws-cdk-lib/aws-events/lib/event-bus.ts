@@ -103,7 +103,7 @@ export interface IEventBus extends IResource, IEventBusRef {
    *
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-eventsourcename
    */
-  readonly eventSourceName?: string;
+  readonly eventSourceName?: string | undefined;
 
   /**
    * Create an EventBridge archive to send events to.
@@ -234,7 +234,7 @@ abstract class EventBusBase extends Resource implements IEventBus, iam.IResource
   /**
    * The name of the partner event source
    */
-  public abstract readonly eventSourceName?: string;
+  public abstract readonly eventSourceName?: string | undefined;
 
   /**
    * Collection of grant methods for an EventBus

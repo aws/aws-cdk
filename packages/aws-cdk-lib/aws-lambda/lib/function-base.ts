@@ -44,7 +44,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, 
   /**
    * The IAM role associated with this function.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRole | undefined;
 
   /**
    * Whether or not this Lambda function was bound to a VPC
@@ -73,7 +73,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, 
   /**
    * The tenancy configuration for this function.
    */
-  readonly tenancyConfig?: TenancyConfig;
+  readonly tenancyConfig?: TenancyConfig | undefined;
 
   /**
    * The system architectures compatible with this lambda function.
@@ -280,7 +280,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    *
    * Undefined if the function was imported without a role.
    */
-  public abstract readonly role?: iam.IRole;
+  public abstract readonly role?: iam.IRole | undefined;
 
   /**
    * The construct node where permissions are attached.
@@ -295,7 +295,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * The tenancy configuration for this function.
    */
-  public abstract readonly tenancyConfig?: TenancyConfig;
+  public abstract readonly tenancyConfig?: TenancyConfig | undefined;
 
   /**
    * Whether the addPermission() call adds any permissions

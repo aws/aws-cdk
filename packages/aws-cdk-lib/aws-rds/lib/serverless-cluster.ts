@@ -365,7 +365,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
    */
   public abstract readonly secret?: secretsmanager.ISecret;
 
-  protected abstract enableDataApi?: boolean;
+  protected abstract enableDataApi?: boolean | undefined;
 
   /**
    * The ARN of the cluster

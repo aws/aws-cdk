@@ -7,3 +7,4 @@ dist
 !eslint.config.mjs
 !config/*.js
 junit.xml
+!jest.config.js

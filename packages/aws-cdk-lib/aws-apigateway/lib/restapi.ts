@@ -65,7 +65,7 @@ export interface IRestApi extends IResourceBase, IRestApiRef {
    * This resource will be automatically updated every time the REST API model changes.
    * `undefined` when no deployment is configured.
    */
-  readonly latestDeployment?: Deployment;
+  readonly latestDeployment?: Deployment | undefined;
 
   /**
    * API Gateway stage that points to the latest deployment (if defined).

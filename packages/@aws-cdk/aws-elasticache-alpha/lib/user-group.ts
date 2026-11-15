@@ -52,7 +52,7 @@ export interface IUserGroup extends IResource {
   /**
    * List of users in the user group
    */
-  readonly users?: IUser[];
+  readonly users?: IUser[] | undefined;
   /**
    * The ARN of the user group
    *
@@ -84,7 +84,7 @@ export abstract class UserGroupBase extends Resource implements IUserGroup {
   /**
    * List of users in the user group
    */
-  public abstract readonly users?: IUser[];
+  public abstract readonly users?: IUser[] | undefined;
   /**
    * The ARN of the user group
    * @attribute

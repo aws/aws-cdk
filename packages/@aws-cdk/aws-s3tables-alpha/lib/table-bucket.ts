@@ -43,7 +43,7 @@ export interface ITableBucket extends IResource {
   /**
    * Optional KMS encryption key associated with this table bucket.
    */
-  readonly encryptionKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey | undefined;
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.

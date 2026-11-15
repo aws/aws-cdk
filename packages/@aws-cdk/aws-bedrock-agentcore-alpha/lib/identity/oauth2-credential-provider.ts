@@ -128,7 +128,7 @@ export interface IOAuth2CredentialProvider extends IResource, iam.IGrantable, IO
    *
    * @attribute
    */
-  readonly clientSecretArn?: string;
+  readonly clientSecretArn?: string | undefined;
 
   /**
    * Timestamp when the credential provider was created.
@@ -619,7 +619,7 @@ abstract class OAuth2CredentialProviderBase extends Resource implements IOAuth2C
   public abstract readonly credentialProviderArn: string;
   public abstract readonly credentialProviderVendor: string;
   public abstract readonly callbackUrl?: string;
-  public abstract readonly clientSecretArn?: string;
+  public abstract readonly clientSecretArn?: string | undefined;
   public abstract readonly createdTime?: string;
   public abstract readonly lastUpdatedTime?: string;
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });

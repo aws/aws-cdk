@@ -55,7 +55,7 @@ export interface IApiKeyCredentialProvider extends IResource, iam.IGrantable, IA
    *
    * @attribute
    */
-  readonly apiKeySecretArn?: string;
+  readonly apiKeySecretArn?: string | undefined;
 
   /**
    * Timestamp when the credential provider was created.
@@ -190,7 +190,7 @@ export interface ApiKeyCredentialProviderAttributes {
 
 abstract class ApiKeyCredentialProviderBase extends Resource implements IApiKeyCredentialProvider {
   public abstract readonly credentialProviderArn: string;
-  public abstract readonly apiKeySecretArn?: string;
+  public abstract readonly apiKeySecretArn?: string | undefined;
   public abstract readonly createdTime?: string;
   public abstract readonly lastUpdatedTime?: string;
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });

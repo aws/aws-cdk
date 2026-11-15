@@ -90,7 +90,7 @@ export interface IBucket extends IResource, IBucketRef {
   /**
    * If this bucket has been configured for static website hosting.
    */
-  readonly isWebsite?: boolean;
+  readonly isWebsite?: boolean | undefined;
 
   /**
    * The default server-side encryption mode that S3 applies to new objects in this bucket.
@@ -106,7 +106,7 @@ export interface IBucket extends IResource, IBucketRef {
    *
    * @default - undefined when the mode cannot be determined at synthesis time, or for an imported bucket that does not specify it
    */
-  readonly encryption?: BucketEncryption;
+  readonly encryption?: BucketEncryption | undefined;
 
   /**
    * Optional KMS encryption key associated with this bucket.
@@ -632,7 +632,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   /**
    * If this bucket has been configured for static website hosting.
    */
-  public abstract readonly isWebsite?: boolean;
+  public abstract readonly isWebsite?: boolean | undefined;
 
   /**
    * The resource policy associated with this bucket.
@@ -656,7 +656,7 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   /**
    * Whether to disallow public access
    */
-  public abstract disallowPublicAccess?: boolean;
+  public abstract disallowPublicAccess?: boolean | undefined;
 
   private notifications?: BucketNotifications;
 

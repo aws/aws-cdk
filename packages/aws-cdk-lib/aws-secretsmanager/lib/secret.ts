@@ -39,7 +39,7 @@ export interface ISecret extends IResource, ISecretRef {
    * The full ARN of the secret in AWS Secrets Manager, which is the ARN including the Secrets Manager-supplied 6-character suffix.
    * This is equal to `secretArn` in most cases, but is undefined when a full ARN is not available (e.g., secrets imported by name).
    */
-  readonly secretFullArn?: string;
+  readonly secretFullArn?: string | undefined;
 
   /**
    * The name of the secret.

@@ -380,7 +380,7 @@ export interface ITable extends IResource, ITableRef {
    *
    * @attribute
    */
-  readonly tableStreamArn?: string;
+  readonly tableStreamArn?: string | undefined;
 
   /**
    *

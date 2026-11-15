@@ -110,7 +110,7 @@ export interface IConfiguration extends IConstruct {
   /**
    * The deployment strategy for the configuration.
    */
-  readonly deploymentStrategy?: IDeploymentStrategy;
+  readonly deploymentStrategy?: IDeploymentStrategy | undefined;
 
   /**
    * The configuration version number.

@@ -28,7 +28,7 @@ export interface IComputeEnvironment extends IResource, IComputeEnvironmentRef {
    *
    * @default - a serviceRole will be created for managed CEs, none for unmanaged CEs
    */
-  readonly serviceRole?: iam.IRole;
+  readonly serviceRole?: iam.IRole | undefined;
 
   /**
    * Whether or not this ComputeEnvironment can accept jobs from a Queue.

@@ -620,7 +620,7 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
   /**
    * Security groups associated with this load balancer
    */
-  readonly securityGroups?: string[];
+  readonly securityGroups?: string[] | undefined;
 
   /**
    * The type of IP addresses to use
@@ -634,7 +634,7 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
    *
    * @default on
    */
-  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string;
+  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string | undefined;
 
   /**
    * Add a listener to this load balancer

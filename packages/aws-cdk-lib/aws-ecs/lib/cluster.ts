@@ -989,17 +989,17 @@ export interface ICluster extends IResource, IClusterRef {
   /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
-  readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+  readonly defaultCloudMapNamespace?: cloudmap.INamespace | undefined;
 
   /**
    * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
-  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup | undefined;
 
   /**
    * The execute command configuration for the cluster
    */
-  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration | undefined;
 }
 
 /**

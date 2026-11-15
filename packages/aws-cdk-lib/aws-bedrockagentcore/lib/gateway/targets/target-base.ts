@@ -63,7 +63,7 @@ export interface IGatewayTarget extends IResource, IGatewayTargetRef {
   /**
    * The description of the gateway target
    */
-  readonly description?: string;
+  readonly description?: string | undefined;
 
   /**
    * The gateway that this target belongs to
@@ -84,7 +84,7 @@ export interface IGatewayTarget extends IResource, IGatewayTargetRef {
    * The status of the gateway target
    * @attribute
    */
-  readonly status?: string;
+  readonly status?: string | undefined;
 
   /**
    * The status reasons for the gateway target
@@ -96,13 +96,13 @@ export interface IGatewayTarget extends IResource, IGatewayTargetRef {
    * Timestamp when the gateway target was created
    * @attribute
    */
-  readonly createdAt?: string;
+  readonly createdAt?: string | undefined;
 
   /**
    * Timestamp when the gateway target was last updated
    * @attribute
    */
-  readonly updatedAt?: string;
+  readonly updatedAt?: string | undefined;
 
   /**
    * Grants IAM actions to the IAM Principal
@@ -146,13 +146,13 @@ export abstract class GatewayTargetBase extends Resource implements IGatewayTarg
   public abstract readonly targetArn: string;
   public abstract readonly targetId: string;
   public abstract readonly gatewayTargetName: string;
-  public abstract readonly description?: string;
+  public abstract readonly description?: string | undefined;
   public abstract readonly gateway: IGateway;
   public abstract readonly credentialProviderConfigurations: ICredentialProviderConfig[] | undefined;
-  public abstract readonly status?: string;
+  public abstract readonly status?: string | undefined;
   public abstract readonly statusReasons?: string[];
-  public abstract readonly createdAt?: string;
-  public abstract readonly updatedAt?: string;
+  public abstract readonly createdAt?: string | undefined;
+  public abstract readonly updatedAt?: string | undefined;
   public abstract readonly targetProtocolType: GatewayTargetProtocolType;
 
   /**

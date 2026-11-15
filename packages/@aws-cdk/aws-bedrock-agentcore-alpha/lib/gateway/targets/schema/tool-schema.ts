@@ -178,7 +178,7 @@ export abstract class ToolSchema extends TargetSchema {
   /**
    * The account ID of the S3 bucket owner for cross-account access
    */
-  public readonly bucketOwnerAccountId?: string;
+  public readonly bucketOwnerAccountId?: string | undefined;
 
   protected constructor(s3File?: Location, bucketOwnerAccountId?: string, inlineSchema?: ToolDefinition[]) {
     super();

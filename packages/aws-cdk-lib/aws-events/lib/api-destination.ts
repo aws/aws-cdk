@@ -76,7 +76,7 @@ export interface IApiDestination extends IResource, IApiDestinationRef {
    * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoneventbridge.html#amazoneventbridge-resources-for-iam-policies
    * @attribute
    */
-  readonly apiDestinationArnForPolicy?: string;
+  readonly apiDestinationArnForPolicy?: string | undefined;
 }
 
 /**

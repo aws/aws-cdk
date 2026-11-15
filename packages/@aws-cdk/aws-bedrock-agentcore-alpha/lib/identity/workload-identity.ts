@@ -59,13 +59,13 @@ export interface IWorkloadIdentity extends IResource, iam.IGrantable, IWorkloadI
    * Timestamp when the workload identity was created.
    * @attribute
    */
-  readonly createdTime?: string;
+  readonly createdTime?: string | undefined;
 
   /**
    * Timestamp when the workload identity was last updated.
    * @attribute
    */
-  readonly lastUpdatedTime?: string;
+  readonly lastUpdatedTime?: string | undefined;
 
   /**
    * Grants IAM actions on this workload identity, scoped to its ARN and the parent resources
@@ -160,8 +160,8 @@ export interface WorkloadIdentityAttributes {
 abstract class WorkloadIdentityBase extends Resource implements IWorkloadIdentity {
   public abstract readonly workloadIdentityArn: string;
   public abstract readonly workloadIdentityName: string;
-  public abstract readonly createdTime?: string;
-  public abstract readonly lastUpdatedTime?: string;
+  public abstract readonly createdTime?: string | undefined;
+  public abstract readonly lastUpdatedTime?: string | undefined;
   public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
 
   public get workloadIdentityRef(): WorkloadIdentityReference {

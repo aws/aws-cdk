@@ -700,7 +700,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
   /**
    * @attribute
    */
-  public abstract readonly tableStreamArn?: string;
+  public abstract readonly tableStreamArn?: string | undefined;
 
   /**
    * KMS encryption key, if this table uses a customer-managed encryption key.
@@ -717,7 +717,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
    * Additional regions other than the main one that this table is replicated to
    *
    */
-  public abstract readonly regions?: string[];
+  public abstract readonly regions?: string[] | undefined;
 
   /**
    * @deprecated This member is still filled but it is not read
