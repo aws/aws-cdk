@@ -197,10 +197,24 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    */
   public readonly deploymentKey?: kms.IKey;
 
+  private readonly _deploymentStrategy?: IDeploymentStrategyRef;
+
   /**
    * The deployment strategy for the configuration.
    */
-  public readonly deploymentStrategy?: IDeploymentStrategy;
+  declare public readonly deploymentStrategy?: IDeploymentStrategy;
+
+  // A `declare`d field satisfies `IConfiguration.deploymentStrategy` under
+  // `exactOptionalPropertyTypes` without emitting an instance property; this
+  // prototype getter keeps it resolved on read, as before.
+  static {
+    Object.defineProperty(this.prototype, 'deploymentStrategy', {
+      get(this: ConfigurationBase) {
+        return this._deploymentStrategy ? toIDeploymentStrategy(this._deploymentStrategy) : undefined;
+      },
+      configurable: true,
+    });
+  }
 
   protected applicationId: string;
   protected extensible!: ExtensibleBase;
@@ -221,9 +235,9 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.deployTo = props.deployTo;
     this.deploymentKey = props.deploymentKey;
     this.deletionProtectionCheck = props.deletionProtectionCheck;
-    this.deploymentStrategy = toIDeploymentStrategy(props.deploymentStrategy ?? new DeploymentStrategy(this, 'DeploymentStrategy', {
+    this._deploymentStrategy = props.deploymentStrategy || new DeploymentStrategy(this, 'DeploymentStrategy', {
       rolloutStrategy: RolloutStrategy.CANARY_10_PERCENT_20_MINUTES,
-    }));
+    });
   }
 
   /**
