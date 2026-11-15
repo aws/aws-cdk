@@ -119,7 +119,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-234567890123-test-region",
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -172,9 +172,6 @@
     ],
     "SourceObjectKeys": [
      "fbee18a86723a24ee3c75971c14b5bbff255873d741f6bbdde2218433a37a74d.zip"
-    ],
-    "SourceMarkers": [
-     {}
     ],
     "DestinationBucketName": {
      "Ref": "SourceBucketDDD2130A"
@@ -312,7 +309,7 @@
     ],
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-234567890123-test-region",
-     "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
+     "S3Key": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip"
     },
     "Environment": {
      "Variables": {
@@ -325,6 +322,7 @@
       "Ref": "DeploySourceAwsCliLayer55AA2312"
      }
     ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
@@ -332,8 +330,7 @@
      ]
     },
     "Runtime": "python3.13",
-    "Timeout": 900,
-    "MemorySize": 1024
+    "Timeout": 900
    },
    "DependsOn": [
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",

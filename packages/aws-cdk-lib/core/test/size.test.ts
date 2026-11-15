@@ -94,6 +94,7 @@ describe('size', () => {
 
   test('rounding behavior', () => {
     const size = Size.mebibytes(5_200);
+    const fractionalSize = Size.mebibytes(42.66);
 
     expect(() => size.toGibibytes()).toThrow(/cannot be converted into a whole number/);
     expect(() => size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL })).toThrow(/cannot be converted into a whole number/);
@@ -105,6 +106,11 @@ describe('size', () => {
     expect(size.toGibibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5.078125);
     expect(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5200 / (1024 * 1024));
     expect(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5_324_800);
+
+    expect(fractionalSize.toMebibytes()).toEqual(42.66);
+    expect(fractionalSize.toMebibytes({ rounding: SizeRoundingBehavior.FLOOR })).toEqual(42);
+    expect(fractionalSize.toMebibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(42.66);
+    expect(() => fractionalSize.toMebibytes({ rounding: SizeRoundingBehavior.FAIL })).toThrow(/cannot be converted into a whole number/);
   });
 
   test('size is unresolved', () => {

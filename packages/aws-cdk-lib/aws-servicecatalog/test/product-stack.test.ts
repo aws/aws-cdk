@@ -236,7 +236,29 @@ describe('ProductStack', () => {
       new s3_assets.Asset(productStack, 'testAsset', {
         path: path.join(__dirname, 'assets'),
       });
-    }).toThrow('A bucketName must be provided to use Assets');
+    }).toThrow('A ProductStack\'s assetBucket must have a physical name');
+  });
+
+  // The synthesizer resolves the L1 `bucketName` of an owned asset bucket. If that name
+  // contains a token (e.g. account/region to make it unique), resolve() returns a
+  // CloudFormation intrinsic object ({ 'Fn::Join.. }) instead of a string.
+  test('addFileAsset requires the asset bucket name to not contain tokens', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: `test-asset-bucket-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.REGION}`,
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+    });
+
+    // THEN
+    expect(() => {
+      new s3_assets.Asset(productStack, 'testAsset', {
+        path: path.join(__dirname, 'assets'),
+      });
+    }).toThrow('may not have Tokens in its physical name');
   });
 
   test('fails if Asset bucket is not defined in product stack with assets', () => {

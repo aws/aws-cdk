@@ -1,41 +1,32 @@
 {
+  "/aws-cdk-s3-bucket-encryption": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-s3-bucket-encryption.template.json"
+    }
+  ],
   "/aws-cdk-s3-bucket-encryption/MyDSSEBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryption": "DSSE_MANAGED",
-        "removalPolicy": "destroy"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-s3-bucket-encryption/MySSES3Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryption": "S3_MANAGED",
-        "bucketKeyEnabled": true,
-        "removalPolicy": "destroy"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-s3-bucket-encryption/MyKMSBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryption": "KMS",
-        "blockedEncryptionTypes": "*",
-        "removalPolicy": "destroy"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-s3-bucket-encryption/MySSECBlockedBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryption": "S3_MANAGED",
-        "blockedEncryptionTypes": "*",
-        "removalPolicy": "destroy"
-      }
+      "data": "*"
     }
   ],
   "/aws-cdk-s3-bucket-encryption/BootstrapVersion": [
@@ -81,6 +72,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "MySSECBlockedBucket184125AB"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/Exports/Output{\"Ref\":\"MyDSSEBucket8A2A1D0C\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyDSSEBucket8A2A1D0CB378E195"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/Exports/Output{\"Ref\":\"MySSES3Bucket6973690D\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMySSES3Bucket6973690D99FA943B"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/Exports/Output{\"Ref\":\"MyKMSBucketDF8715AC\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyKMSBucketDF8715AC0EE8E2A4"
     }
   ],
   "/aws-cdk-s3-bucket-encryption/MyKMSBucket/Key/Resource": [

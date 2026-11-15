@@ -2,6 +2,75 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.277.0](https://github.com/aws/aws-cdk/compare/v2.276.0...v2.277.0) (2026-11-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-lambda: AWS::Lambda::NetworkConnector: ElasticIpConfiguration property removed from VpcEgressConfiguration type.  
+aws-paymentcryptography: AWS::PaymentCryptography::Key: KmsKeyArn property removed from ReplicationStatusType type.  
+aws-paymentcryptography: AWS::PaymentCryptography::Key: KmsKeyId property removed from ReplicationStatusType type.
+
+### Features
+
+* **bedrockagentcore:** support runtime build hooks and minimum memory ([#39695](https://github.com/aws/aws-cdk/issues/39695)) ([9170700](https://github.com/aws/aws-cdk/commit/9170700b57a7d14ce616a5c9b5325313918f9dd2)), closes [#39696](https://github.com/aws/aws-cdk/issues/39696) [#39701](https://github.com/aws/aws-cdk/issues/39701)
+* update L1 CloudFormation resource definitions ([#39701](https://github.com/aws/aws-cdk/issues/39701)) ([4327f91](https://github.com/aws/aws-cdk/commit/4327f9100814cd559474632d674fc63ce63c2211)), closes [#37BFF5](https://github.com/aws/aws-cdk/issues/37BFF5) [#37BFF5](https://github.com/aws/aws-cdk/issues/37BFF5)
+* **lambda:** add nodejs 26.x runtime ([#39683](https://github.com/aws/aws-cdk/issues/39683)) ([829d438](https://github.com/aws/aws-cdk/commit/829d43823a5a9d2004588d165ba3fb09c80b76ec))
+* **s3:** expose bucket encryption mode ([#38312](https://github.com/aws/aws-cdk/issues/38312)) ([b952c6d](https://github.com/aws/aws-cdk/commit/b952c6da256c52a603fc21d884ab8d2b9bcda51d)), closes [#38289](https://github.com/aws/aws-cdk/issues/38289)
+
+
+### Bug Fixes
+
+* **core:** bundling 'user' argument is not escaped ([#39685](https://github.com/aws/aws-cdk/issues/39685)) ([9e584ac](https://github.com/aws/aws-cdk/commit/9e584ac702b31ba2f76519ae5f1ec25c407de836))
+* invalid validation rule ID ([#39684](https://github.com/aws/aws-cdk/issues/39684)) ([8ec077c](https://github.com/aws/aws-cdk/commit/8ec077c277a478d6043b4c74a113b46e10fa74b6))
+
+## [2.276.0](https://github.com/aws/aws-cdk/compare/v2.275.0...v2.276.0) (2026-11-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-codebuild: AWS::CodeBuild::Project: Id attribute removed.  
+aws-dax: AWS::DAX::Cluster: Id attribute removed.  
+aws-ec2: AWS::EC2::ClientVpnTargetNetworkAssociation: Id attribute removed.
+
+### Features
+
+* **custom-resources:** redact sensitive properties from custom resource handler logs ([#39541](https://github.com/aws/aws-cdk/issues/39541)) ([939134e](https://github.com/aws/aws-cdk/commit/939134e53ceeb12fc7acab3f237eddeca8ab9bd8)), closes [#39210](https://github.com/aws/aws-cdk/issues/39210) [#39210](https://github.com/aws/aws-cdk/issues/39210)
+* update L1 CloudFormation resource definitions ([#39669](https://github.com/aws/aws-cdk/issues/39669)) ([229df6c](https://github.com/aws/aws-cdk/commit/229df6c27432565bd304e4653fd4b61c7281b945))
+* **cloudwatch:** support live data for `SingleValueWidget` in cloudwatch dashboards ([#36919](https://github.com/aws/aws-cdk/issues/36919)) ([926e0a7](https://github.com/aws/aws-cdk/commit/926e0a7d6eede20eb6aa33217f3c66535df5bab4)), closes [#36915](https://github.com/aws/aws-cdk/issues/36915)
+* **cloudwatch:** support the visible property on MathExpression and SearchExpression ([#38774](https://github.com/aws/aws-cdk/issues/38774)) ([ba3b363](https://github.com/aws/aws-cdk/commit/ba3b363b9b09fdab314686cda9510fe2401d24e8)), closes [#38773](https://github.com/aws/aws-cdk/issues/38773) [#19876](https://github.com/aws/aws-cdk/issues/19876) [#19876](https://github.com/aws/aws-cdk/issues/19876)
+* **core:** context-scoped warning suppression via Validations.acknowledge ([#38842](https://github.com/aws/aws-cdk/issues/38842)) ([4652456](https://github.com/aws/aws-cdk/commit/4652456244bfb06dd22e7001efa0ac684fb5c268)), closes [#38812](https://github.com/aws/aws-cdk/issues/38812) [#38836](https://github.com/aws/aws-cdk/issues/38836) [#39621](https://github.com/aws/aws-cdk/issues/39621) [#38836](https://github.com/aws/aws-cdk/issues/38836) [#38836](https://github.com/aws/aws-cdk/issues/38836)
+* **eks:** add support for Kubernetes version 1.37 ([#39501](https://github.com/aws/aws-cdk/issues/39501)) ([5aecf9d](https://github.com/aws/aws-cdk/commit/5aecf9d170ee542cdcfc232e5255cb0d6bc3d886)), closes [#39425](https://github.com/aws/aws-cdk/issues/39425) [#38441](https://github.com/aws/aws-cdk/issues/38441) [#37065](https://github.com/aws/aws-cdk/issues/37065)
+* **lambda:** add authType to WebFunction endpoints ([#39620](https://github.com/aws/aws-cdk/issues/39620)) ([616ccc9](https://github.com/aws/aws-cdk/commit/616ccc937c78464ef291f44129958910a13f3881)), closes [#39434](https://github.com/aws/aws-cdk/issues/39434) [#39434](https://github.com/aws/aws-cdk/issues/39434) [#39210](https://github.com/aws/aws-cdk/issues/39210)
+* **lambda:** add Python 3.15 runtime ([#39652](https://github.com/aws/aws-cdk/issues/39652)) ([f7c84a9](https://github.com/aws/aws-cdk/commit/f7c84a9a89af2a95380b02e4aafb88d58c1805cb))
+* **lambda:** add WebFunction and NetworkConnector L2 constructs ([#39210](https://github.com/aws/aws-cdk/issues/39210)) ([2674cec](https://github.com/aws/aws-cdk/commit/2674cecfc76fb3b678bef4a72b80a7bba60998a8))
+* update L1 CloudFormation resource definitions ([#39491](https://github.com/aws/aws-cdk/issues/39491)) ([05fb8ae](https://github.com/aws/aws-cdk/commit/05fb8aef118a4fedca716fa6b7b2b1ea8c3a60f0))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** bucketName.match is not a function ([#39655](https://github.com/aws/aws-cdk/issues/39655)) ([42913b7](https://github.com/aws/aws-cdk/commit/42913b764e1def800957e85736521119fd116496))
+* **awslint:** crashes with 'Maximum call stack size exceeded' on very large modules ([#39499](https://github.com/aws/aws-cdk/issues/39499)) ([a7ea3ae](https://github.com/aws/aws-cdk/commit/a7ea3ae610ee2d5210890e9357133be51cce8886)), closes [cdklabs/awscdk-service-spec#2637](https://github.com/cdklabs/awscdk-service-spec/issues/2637) [awscdk-service-spec#2637](https://github.com/aws/awscdk-service-spec/issues/2637) [#2637](https://github.com/aws/aws-cdk/issues/2637)
+* **bedrockagentcore:** runtime metricTotalErrors to resolve to a proper metric ([#39616](https://github.com/aws/aws-cdk/issues/39616)) ([bfe1e82](https://github.com/aws/aws-cdk/commit/bfe1e82394949336e53835998aced43e4d394ae6))
+* **bedrockagentcore:** scope the gateway default service role trust policy to its gateway ([#39543](https://github.com/aws/aws-cdk/issues/39543)) ([a0c4200](https://github.com/aws/aws-cdk/commit/a0c4200ad03a0206565794c96d2d9b814ecdac77)), closes [#38780](https://github.com/aws/aws-cdk/issues/38780) [#38781](https://github.com/aws/aws-cdk/issues/38781)
+* **cloudwatch:** default text widget backgrounds to transparent ([#39566](https://github.com/aws/aws-cdk/issues/39566)) ([dc15709](https://github.com/aws/aws-cdk/commit/dc157092da70fac17ca12bcb5118143e84c6a34b))
+* **core:** custom rego rules make all validation slower ([#39454](https://github.com/aws/aws-cdk/issues/39454)) ([d17ba0f](https://github.com/aws/aws-cdk/commit/d17ba0f06cb5a0c16400846425a096ba22ec36ee))
+* **core:** honor rounding for same-unit Size conversions ([#39601](https://github.com/aws/aws-cdk/issues/39601)) ([479168e](https://github.com/aws/aws-cdk/commit/479168eebf99c432b61dc088f7855c865fc3b583)), closes [#39600](https://github.com/aws/aws-cdk/issues/39600)
+* **core:** non-top level Stages are not validated ([#39494](https://github.com/aws/aws-cdk/issues/39494)) ([e94b8a4](https://github.com/aws/aws-cdk/commit/e94b8a43bf9978c9b07fef6f0c9920717a30ec07))
+* **core:** save some duplicate synthesis work ([#39437](https://github.com/aws/aws-cdk/issues/39437)) ([5b92435](https://github.com/aws/aws-cdk/commit/5b92435f55d193d315a081c0403b2cd8199fc47a))
+* **core:** upgrade CloudFormation validation to latest version ([#39441](https://github.com/aws/aws-cdk/issues/39441)) ([e7429db](https://github.com/aws/aws-cdk/commit/e7429db970d0c181a9eef32a58496535d697432b))
+* **ec2:** warn when a VPC has no availability zones ([#39338](https://github.com/aws/aws-cdk/issues/39338)) ([604817f](https://github.com/aws/aws-cdk/commit/604817f25b375e24b0672db1ebdc6c71419da124)), closes [#32451](https://github.com/aws/aws-cdk/issues/32451)
+* **eks:** self-managed nodes on newer graviton instance types get an x86_64 ami ([#39428](https://github.com/aws/aws-cdk/issues/39428)) ([8a8b12f](https://github.com/aws/aws-cdk/commit/8a8b12fc32c71cf04142eb20c446fc5471543d5a)), closes [#39427](https://github.com/aws/aws-cdk/issues/39427)
+* **eks:** use AL2023 nodegroup in eks-cluster-handlers-vpc integ test ([#39558](https://github.com/aws/aws-cdk/issues/39558)) ([94ce648](https://github.com/aws/aws-cdk/commit/94ce6488ca01369f04ebe78a9bd96b9c3fa48f97))
+* **iam:** inconsistent resource policy statements generated by Grant methods ([#39498](https://github.com/aws/aws-cdk/issues/39498)) ([78efcfa](https://github.com/aws/aws-cdk/commit/78efcfaec6a93b379f31c4e2e299682406fe697a))
+* **logs:** include the log group ARN in grant and grantRead ([#39559](https://github.com/aws/aws-cdk/issues/39559)) ([935c7c6](https://github.com/aws/aws-cdk/commit/935c7c63de5d4dad580d611e9f25d728787ad986)), closes [#39561](https://github.com/aws/aws-cdk/issues/39561)
+* **s3-deployment:** substitution string quoting is incorrect ([#39542](https://github.com/aws/aws-cdk/issues/39542)) ([ded1025](https://github.com/aws/aws-cdk/commit/ded10252df824093e888811afe4a79ee43a64df5))
+* **security-guardian:** stop flagging scoped intrinsic ARN lists in PassRole guard ([#39513](https://github.com/aws/aws-cdk/issues/39513)) ([8e1aaf9](https://github.com/aws/aws-cdk/commit/8e1aaf90f23e29cf3331f8ab1a9280520b059fc7))
+
 ## [2.275.0](https://github.com/aws/aws-cdk/compare/v2.274.0...v2.275.0) (2026-10-26)
 
 

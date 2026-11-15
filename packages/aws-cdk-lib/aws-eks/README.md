@@ -23,6 +23,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
       - [Bottlerocket](#bottlerocket)
     - [Endpoint Access](#endpoint-access)
     - [Alb Controller](#alb-controller)
+      - [OIDC authentication on Ingresses](#oidc-authentication-on-ingresses)
     - [VPC Support](#vpc-support)
       - [Kubectl Handler](#kubectl-handler)
       - [Cluster Handler](#cluster-handler)
@@ -852,6 +853,67 @@ if (cluster.albController) {
   manifest.node.addDependency(cluster.albController);
 }
 ```
+
+#### OIDC authentication on Ingresses
+
+Ingresses can authenticate users against an OIDC identity provider with the
+`alb.ingress.kubernetes.io/auth-type: oidc` and `alb.ingress.kubernetes.io/auth-idp-oidc` annotations.
+The OIDC client ID and client secret live in a Kubernetes Secret in the Ingress's namespace (the
+`secretName` in `auth-idp-oidc`), and the controller reads it with its own service account,
+`aws-load-balancer-controller` in `kube-system`. The controller's Helm chart does not grant access to
+secrets by default, so without additional RBAC the Ingress fails to reconcile with an error like
+`secrets "my-oidc-secret" is forbidden: User "system:serviceaccount:kube-system:aws-load-balancer-controller" cannot get resource "secrets"`.
+
+The Secret must be in the Ingress's namespace and contain `clientID` and `clientSecret` keys
+(see [`auth-idp-oidc`](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/guide/ingress/annotations/#auth-idp-oidc)).
+Create it outside CDK, for example with `kubectl`, not with `cluster.addManifest`, which would store the
+client secret in plain text in the CloudFormation template. Anything that can create an Ingress in that
+namespace can use the secret for OIDC authentication, so limit who can create Ingresses there.
+
+Grant the controller read access to that one secret with a Role and RoleBinding in the Ingress's namespace:
+
+```ts
+declare const cluster: eks.Cluster;
+
+const namespace = 'my-app'; // namespace of the Ingress and its OIDC secret
+const oidcSecretName = 'my-oidc-secret'; // the `secretName` in `auth-idp-oidc`
+
+cluster.addManifest('AlbControllerOidcSecretAccess', {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'Role',
+  metadata: { name: 'aws-load-balancer-controller-oidc', namespace },
+  rules: [{
+    apiGroups: [''],
+    resources: ['secrets'],
+    resourceNames: [oidcSecretName],
+    verbs: ['get', 'list', 'watch'],
+  }],
+}, {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'RoleBinding',
+  metadata: { name: 'aws-load-balancer-controller-oidc', namespace },
+  roleRef: {
+    apiGroup: 'rbac.authorization.k8s.io',
+    kind: 'Role',
+    name: 'aws-load-balancer-controller-oidc',
+  },
+  subjects: [{
+    kind: 'ServiceAccount',
+    name: 'aws-load-balancer-controller',
+    namespace: 'kube-system',
+  }],
+});
+```
+
+For several OIDC Ingresses, list every `secretName` in `resourceNames`, with one Role and RoleBinding
+per namespace.
+
+Restricting `list` and `watch` with `resourceNames` works because the controller first does a `get` of the
+secret, then watches it with a `metadata.name` field selector (see
+[Referring to resources](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#referring-to-resources)
+in the Kubernetes RBAC documentation). The chart's `clusterSecretsPermissions.allowAllSecrets` value
+grants access to every secret in the cluster instead; the chart recommends a namespaced Role and
+RoleBinding like the one above.
 
 ### VPC Support
 

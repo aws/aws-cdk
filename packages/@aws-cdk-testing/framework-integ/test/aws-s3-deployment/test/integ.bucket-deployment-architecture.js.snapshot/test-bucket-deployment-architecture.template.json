@@ -341,7 +341,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
+     "S3Key": "815da5705747b4685c56b7d9a7eae6a81e75f489fb8fa7020032ef255f6923be.zip"
     },
     "Environment": {
      "Variables": {
@@ -503,26 +503,19 @@
      }
     ],
     "SourceObjectKeys": [
-     "47fd14adacf130a135d379490375d42650808b06d3141ef24e9fac38fda289ae.zip"
+     "4f4bb1a35fbb68f56c7cb41bbcac20fd018c70e32ee6c292d902e05035da2de2.zip"
     ],
     "SourceMarkers": [
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::Join": [
-        "",
-        [
-         "\"",
-         {
-          "Ref": "Destination920A3C57"
-         },
-         "\""
-        ]
-       ]
+       "Ref": "Destination920A3C57"
       }
      }
     ],
     "SourceMarkersConfig": [
-     {}
+     {
+      "jsonEscape": true
+     }
     ],
     "DestinationBucketName": {
      "Ref": "Substituted5E3D1ADD"

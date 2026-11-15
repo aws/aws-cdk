@@ -347,6 +347,12 @@ export const config: HandlerFrameworkConfig = {
         minifyAndBundle: false,
       },
     ],
+    's3-object-copy-provider': [
+      {
+        type: ComponentType.SINGLETON_FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 's3-object-copy-handler', 'index.ts'),
+      },
+    ],
   },
   'aws-ses': {
     'drop-spam-provider': [

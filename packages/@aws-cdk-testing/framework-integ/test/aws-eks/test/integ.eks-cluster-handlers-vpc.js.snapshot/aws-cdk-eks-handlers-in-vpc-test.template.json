@@ -917,14 +917,11 @@
   "EksAllHandlersInVpcStackNodegroupDefaultCapacityD8DD5ECF": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
-    "AmiType": "AL2_x86_64",
+    "AmiType": "AL2023_x86_64_STANDARD",
     "ClusterName": {
      "Ref": "EksAllHandlersInVpcStack9ED695D7"
     },
     "ForceUpdateEnabled": true,
-    "InstanceTypes": [
-     "m5.large"
-    ],
     "NodeRole": {
      "Fn::GetAtt": [
       "EksAllHandlersInVpcStackNodegroupDefaultCapacityNodeGroupRoleFFBF949C",
