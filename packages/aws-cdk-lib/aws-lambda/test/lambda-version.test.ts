@@ -450,6 +450,20 @@ describe('version role and tenancyConfig', () => {
     expect(version.tenancyConfig).toBe(fn.tenancyConfig);
   });
 
+  test('Version.fromVersionAttributes inherits tenancyConfig from the function', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    const version = lambda.Version.fromVersionAttributes(stack, 'Version', { lambda: fn, version: '1' });
+
+    expect(version.tenancyConfig).toBe(fn.tenancyConfig);
+  });
+
   test.each([
     ['new Version', (stack: cdk.Stack, fn: lambda.IFunction) =>
       new lambda.Version(stack, 'Version', { lambda: fn })],

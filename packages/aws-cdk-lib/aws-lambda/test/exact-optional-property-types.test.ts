@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { exactOptionalAssignabilityDiagnosticsForPackage } from '@aws-cdk/cdk-build-tools';
 
 /**
@@ -21,5 +22,14 @@ describe('exactOptionalPropertyTypes assignability (issue #37996)', () => {
   // than a normal unit test; give it room under the suite's 60s ceiling.
   test('aws-lambda concrete classes are assignable to their interfaces under the flag', () => {
     expect(exactOptionalAssignabilityDiagnosticsForPackage(__dirname)).toEqual([]);
+  }, 45_000);
+
+  // Without this, a harness bug that silently reports nothing would leave the
+  // guard above passing vacuously.
+  test('the guard reports classes that are not assignable under the flag', () => {
+    expect(exactOptionalAssignabilityDiagnosticsForPackage(path.join(__dirname, 'exact-optional-fixture'))).toEqual([
+      'Widget -> IWidget: TS2375 [label]',
+      'DerivedWidget -> IWidget: TS2375 [label]',
+    ]);
   }, 45_000);
 });

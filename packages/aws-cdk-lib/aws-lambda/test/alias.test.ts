@@ -755,6 +755,20 @@ describe('alias role and tenancyConfig', () => {
     expect(alias.role).toBe(versionRole);
   });
 
+  test('Alias.fromAliasAttributes inherits tenancyConfig from the function', () => {
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    const alias = lambda.Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'prod', aliasVersion: fn.currentVersion });
+
+    expect(alias.tenancyConfig).toBe(fn.tenancyConfig);
+  });
+
   test.each([
     ['new Alias', (stack: Stack, version: lambda.IVersion) =>
       new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version })],
