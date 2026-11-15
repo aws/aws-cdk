@@ -21,6 +21,7 @@ export * as aws_deadline from './aws-deadline';
 export * as aws_devopsagent from './aws-devopsagent';
 export * as aws_devopsguru from './aws-devopsguru';
 export * as aws_dlm from './aws-dlm';
+export * as aws_dsql from './aws-dsql';
 export * as aws_ec2 from './aws-ec2';
 export * as aws_ecr from './aws-ecr';
 export * as aws_ecs from './aws-ecs';
