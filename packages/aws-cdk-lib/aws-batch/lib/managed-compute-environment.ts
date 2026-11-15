@@ -782,8 +782,22 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
 
-  public readonly placementGroup?: ec2.IPlacementGroup;
+  private readonly _placementGroup?: ec2.IPlacementGroupRef;
   private readonly instanceProfile: iam.CfnInstanceProfile;
+
+  declare public readonly placementGroup?: ec2.IPlacementGroup;
+
+  // A `declare`d field satisfies `IManagedEc2EcsComputeEnvironment.placementGroup`
+  // under `exactOptionalPropertyTypes` without emitting an instance property;
+  // this prototype getter keeps it resolved on read, as before.
+  static {
+    Object.defineProperty(this.prototype, 'placementGroup', {
+      get(this: ManagedEc2EcsComputeEnvironment) {
+        return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
+      },
+      configurable: true,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: ManagedEc2EcsComputeEnvironmentProps) {
     super(scope, id, props);
@@ -832,7 +846,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
-    this.placementGroup = props.placementGroup ? asPlacementGroup(props.placementGroup, this) : undefined;
+    this._placementGroup = props.placementGroup;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage, this.spotFleetRole);
@@ -1130,8 +1144,22 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
 
-  public readonly placementGroup?: ec2.IPlacementGroup;
+  private readonly _placementGroup?: ec2.IPlacementGroupRef;
   private readonly instanceProfile: iam.CfnInstanceProfile;
+
+  declare public readonly placementGroup?: ec2.IPlacementGroup;
+
+  // A `declare`d field satisfies `IManagedEc2EksComputeEnvironment.placementGroup`
+  // under `exactOptionalPropertyTypes` without emitting an instance property;
+  // this prototype getter keeps it resolved on read, as before.
+  static {
+    Object.defineProperty(this.prototype, 'placementGroup', {
+      get(this: ManagedEc2EksComputeEnvironment) {
+        return this._placementGroup ? asPlacementGroup(this._placementGroup, this) : undefined;
+      },
+      configurable: true,
+    });
+  }
 
   constructor(scope: Construct, id: string, props: ManagedEc2EksComputeEnvironmentProps) {
     super(scope, id, props);
@@ -1158,7 +1186,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
 
     this.launchTemplate = props.launchTemplate;
     this.minvCpus = props.minvCpus ?? DEFAULT_MIN_VCPUS;
-    this.placementGroup = props.placementGroup ? asPlacementGroup(props.placementGroup, this) : undefined;
+    this._placementGroup = props.placementGroup;
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage);

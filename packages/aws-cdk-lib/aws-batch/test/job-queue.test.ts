@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { DefaultTokenResolver, Duration, Stack, StringConcat, Tokenization } from '../../core';
-import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment, JobStateTimeLimitActionsAction, JobStateTimeLimitActionsReason, JobStateTimeLimitActionsState } from '../lib';
+import { CfnSchedulingPolicy, FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment, JobStateTimeLimitActionsAction, JobStateTimeLimitActionsReason, JobStateTimeLimitActionsState, UnmanagedComputeEnvironment } from '../lib';
 
 test('JobQueue respects computeEnvironments', () => {
   // GIVEN
@@ -177,6 +177,27 @@ test('JobQueue.schedulingPolicy exposes the configured policy and is undefined o
   // THEN
   expect(withPolicy.schedulingPolicy).toBe(policy);
   expect(withoutPolicy.schedulingPolicy).toBeUndefined();
+});
+
+test('JobQueue accepts an L1 scheduling policy until schedulingPolicy is read', () => {
+  // GIVEN
+  const stack = new Stack();
+  const policy = new CfnSchedulingPolicy(stack, 'CfnPolicy');
+
+  // WHEN
+  const queue = new JobQueue(stack, 'JobQueue', {
+    computeEnvironments: [{
+      computeEnvironment: new UnmanagedComputeEnvironment(stack, 'CE'),
+      order: 1,
+    }],
+    schedulingPolicy: policy,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
+    SchedulingPolicyArn: stack.resolve(policy.ref),
+  });
+  expect(() => queue.schedulingPolicy).toThrow(/should implement ISchedulingPolicy/);
 });
 
 test('JobQueue respects addComputeEnvironment', () => {

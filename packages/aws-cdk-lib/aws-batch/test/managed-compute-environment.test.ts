@@ -521,6 +521,18 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     expect(withoutGroup.placementGroup).toBeUndefined();
   });
 
+  test('accepts an L1 placement group until placementGroup is read', () => {
+    // WHEN
+    const group = new ec2.CfnPlacementGroup(stack, 'myCfnPlacementGroup', { strategy: 'cluster' });
+    const ce = new ComputeEnvironment(stack, 'MyCE', { ...defaultProps, vpc, placementGroup: group });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ComputeResources: Match.objectLike({ PlacementGroup: stack.resolve(group.ref) }),
+    });
+    expect(() => ce.placementGroup).toThrow(/is not an instance of IPlacementGroup/);
+  });
+
   test('respects replaceComputeEnvironment', () => {
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
