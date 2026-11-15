@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { Template, Annotations, Match } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
-import { Pipeline, PipelineType } from '../../../aws-codepipeline';
+import { ExecutionMode, Pipeline, PipelineType } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
@@ -62,18 +62,18 @@ describe('CodePipeline support stack reuse', () => {
 
     const supportStackATemplate = Template.fromJSON(supportStackAArtifact.template);
     supportStackATemplate.hasResourceProperties('AWS::S3::Bucket', {
-      BucketName: 'pipelinestacka-support-useplicationbucket80db3753a0ebbf052279',
+      BucketName: 'pipelinestacka-support-useplicationbucket80db37539447715cac4f',
     });
     supportStackATemplate.hasResourceProperties('AWS::KMS::Alias', {
-      AliasName: 'alias/pport-ustencryptionalias5cad45754e1ff088476b',
+      AliasName: 'alias/pport-ustencryptionalias5cad4575e12193eb33f2',
     });
 
     const supportStackBTemplate = Template.fromJSON(supportStackBArtifact.template);
     supportStackBTemplate.hasResourceProperties('AWS::S3::Bucket', {
-      BucketName: 'pipelinestackb-support-useplicationbucket1d556ec7f959b336abf8',
+      BucketName: 'pipelinestackb-support-useplicationbucket1d556ec771e60c10c683',
     });
     supportStackBTemplate.hasResourceProperties('AWS::KMS::Alias', {
-      AliasName: 'alias/pport-ustencryptionalias668c7ffd0de17c9867b0',
+      AliasName: 'alias/pport-ustencryptionalias668c7ffd2deea6ebc8a4',
     });
   });
 });
@@ -108,6 +108,11 @@ describe('Providing codePipeline parameter and prop(s) of codePipeline parameter
       }),
     }).create()).toThrow('Cannot set \'role\' if an existing CodePipeline is given using \'codePipeline\'');
   });
+  test('Providing codePipeline parameter and executionMode parameter should throw error', () => {
+    expect(() => new CodePipelinePropsCheckTest(app, 'CodePipeline', {
+      executionMode: ExecutionMode.QUEUED,
+    }).create()).toThrow('Cannot set \'executionMode\' if an existing CodePipeline is given using \'codePipeline\'');
+  });
 });
 
 test('Policy sizes do not exceed the maximum size', () => {
@@ -122,7 +127,7 @@ test('Policy sizes do not exceed the maximum size', () => {
   for (let i = 0; i < 70; i++) {
     pipeline.addStage(new FileAssetApp(pipelineStack, `App${i}`, {
       env: {
-        account: `account${i}`,
+        account: `${i}`.padStart(12, '0'),
         region: regions[i % regions.length],
       },
     }), {
@@ -208,6 +213,91 @@ test.each([
   Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
     PipelineType: expected,
   });
+});
+
+test.each([
+  [PipelineType.V2, undefined, Match.absent()],
+  [PipelineType.V1, ExecutionMode.SUPERSEDED, 'SUPERSEDED'],
+  [PipelineType.V2, ExecutionMode.QUEUED, 'QUEUED'],
+  [PipelineType.V2, ExecutionMode.PARALLEL, 'PARALLEL'],
+])('pipeline type %s with execution mode %s', (pipelineType, executionMode, expected) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', { pipelineType, executionMode });
+
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    ExecutionMode: expected,
+  });
+});
+
+test('warns when execution mode is PARALLEL', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    pipelineType: PipelineType.V2,
+    executionMode: ExecutionMode.PARALLEL,
+  });
+
+  Annotations.fromStack(pipelineStack).hasWarning('*', Match.stringLikeRegexp('PARALLEL execution mode'));
+});
+
+test.each([undefined, ExecutionMode.SUPERSEDED, ExecutionMode.QUEUED])('does not warn when execution mode is %s', (executionMode) => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', { pipelineType: PipelineType.V2, executionMode });
+
+  Annotations.fromStack(pipelineStack).hasNoWarning('*', Match.stringLikeRegexp('PARALLEL execution mode'));
+});
+
+test('throws if executionMode is QUEUED but pipeline type is not V2', () => {
+  const stack = new cdk.Stack();
+  const repo = new ccommit.Repository(stack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  expect(() =>
+    new CodePipeline(stack, 'Pipeline', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkInput,
+        installCommands: ['npm ci'],
+        commands: [
+          'npm run build',
+          'npx cdk synth',
+        ],
+      }),
+      pipelineType: PipelineType.V1,
+      executionMode: ExecutionMode.QUEUED,
+    }).buildPipeline(),
+  ).toThrow('QUEUED execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+});
+
+test('throws if executionMode is PARALLEL but pipeline type is not V2', () => {
+  const stack = new cdk.Stack();
+  const repo = new ccommit.Repository(stack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  expect(() =>
+    new CodePipeline(stack, 'Pipeline', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkInput,
+        installCommands: ['npm ci'],
+        commands: [
+          'npm run build',
+          'npx cdk synth',
+        ],
+      }),
+      pipelineType: PipelineType.V1,
+      executionMode: ExecutionMode.PARALLEL,
+    }).buildPipeline(),
+  ).toThrow('PARALLEL execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
 });
 
 test.each([
@@ -923,6 +1013,7 @@ interface CodePipelineStackProps extends cdk.StackProps {
   enableKeyRotation?: boolean;
   reuseCrossRegionSupportStacks?: boolean;
   role?: iam.IRole;
+  executionMode?: ExecutionMode;
 }
 
 class CodePipelinePropsCheckTest extends cdk.Stack {
@@ -964,6 +1055,13 @@ class CodePipelinePropsCheckTest extends cdk.Stack {
       new cdkp.CodePipeline(this, 'CodePipeline5', {
         role: this.cProps.role,
         codePipeline: new Pipeline(this, 'Pipeline5'),
+        synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
+      }).buildPipeline();
+    }
+    if (this.cProps.executionMode !== undefined) {
+      new cdkp.CodePipeline(this, 'CodePipeline6', {
+        executionMode: this.cProps.executionMode,
+        codePipeline: new Pipeline(this, 'Pipeline6'),
         synth: new cdkp.ShellStep('Synth', { commands: ['ls'] }),
       }).buildPipeline();
     }

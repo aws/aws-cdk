@@ -100,7 +100,7 @@ must be set to `true`. By default, this flag is `false` and grant calls on an im
 
 If you can't use a KMS key imported by alias (e.g. because you need access to the key id), you can lookup the key with `Key.fromLookup()`.
 
-In general, the preferred method would be to use `Alias.fromAliasName()` which returns an `IAlias` object which extends `IKey`. However, some services need to have access to the underlying key id. In this case, `Key.fromLookup()` allows to lookup the key id.
+In general, the preferred method would be to use `Alias.fromAliasName()` which returns an `IAlias` object which extends `IKey`. However, some services need to have access to the underlying key id. In this case, `Key.fromLookup()` allows you to look up the key id.
 
 The result of the `Key.fromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
@@ -293,20 +293,31 @@ for the `AWS::KMS::Key` CloudFormation type:
 
 ```ts nofixture
 import { CfnResource } from 'aws-cdk-lib';
-import { IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
-import { Construct, IConstruct } from 'constructs';
+import { AddToResourcePolicyResult, IResourcePolicyFactory, IResourceWithPolicyV2, PolicyStatement, ResourceWithPolicies } from 'aws-cdk-lib/aws-iam';
+import { ResourceEnvironment } from 'aws-cdk-lib/interfaces';
+import { Construct } from 'constructs';
 
 
 declare const scope: Construct;
+
+class MyResourceWithPolicy implements IResourceWithPolicyV2 {
+  public readonly env: ResourceEnvironment;
+  private readonly resource: CfnResource;
+
+  constructor(resource: CfnResource) {
+    this.resource = resource;
+    this.env = resource.env;
+  }
+
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    // custom implementation to add the statement to the resource policy
+    return { statementAdded: true, policyDependable: this.resource };
+  }
+}
+
 class MyFactory implements IResourcePolicyFactory {
-  forResource(resource: CfnResource): IResourceWithPolicyV2 {
-    return {
-      env: resource.env,
-      addToResourcePolicy(statement: PolicyStatement) {
-        // custom implementation to add the statement to the resource policy
-        return { statementAdded: true, policyDependable: resource };
-      }
-    }
+  public forResource(resource: CfnResource): IResourceWithPolicyV2 {
+    return new MyResourceWithPolicy(resource);
   }
 }
 

@@ -18,6 +18,10 @@ export class DynamoEventSource extends StreamEventSource {
   constructor(private readonly table: dynamodb.ITable, props: DynamoEventSourceProps) {
     super(props);
 
+    if (props.startingPosition === undefined) {
+      throw new ValidationError(lit`StartingPositionRequired`, 'startingPosition must be set for DynamoEventSource', table);
+    }
+
     if (this.props.batchSize !== undefined
       && !Token.isUnresolved(this.props.batchSize)
       && (this.props.batchSize < 1 || this.props.batchSize > 10000)) {

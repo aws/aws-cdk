@@ -5,6 +5,7 @@ import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
 import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
 import type { ICluster } from './cluster';
+import { Cluster } from './cluster';
 import type { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
 import { HandlerName } from './private/database-query-provider/handler-name';
@@ -115,6 +116,8 @@ export interface TableProps extends DatabaseOptions {
   /**
    * The name of the table.
    *
+   * May be schema-qualified.
+   *
    * @default - a name is generated
    */
   readonly tableName?: string;
@@ -198,6 +201,8 @@ export interface ITable extends IConstruct {
 export interface TableAttributes {
   /**
    * Name of the table.
+   *
+   * May be schema-qualified.
    */
   readonly tableName: string;
 
@@ -253,6 +258,10 @@ export class Table extends TableBase {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
+    if (props.tableName !== undefined && !cdk.Token.isUnresolved(props.tableName) && props.tableName.split('.').includes('')) {
+      throw new cdk.ValidationError(lit`EmptyTableNameComponent`, `table name ${JSON.stringify(props.tableName)} must not contain empty components`, this);
+    }
+
     this.validateDistKeyColumns(props.tableColumns);
     if (props.distStyle) {
       this.validateDistStyle(props.distStyle, props.tableColumns);
@@ -281,6 +290,10 @@ export class Table extends TableBase {
         sortStyle: props.sortStyle ?? this.getDefaultSortStyle(props.tableColumns),
         tableComment: props.tableComment,
         useColumnIds,
+        caseSensitiveIdentifier: cdk.Lazy.string({
+          // Cluster has no isCluster(); as in DatabaseQuery's admin-user lookup, any other ICluster counts as imported.
+          produce: () => props.cluster instanceof Cluster && props.cluster._isCaseSensitiveIdentifierEnabled() ? 'true' : undefined,
+        }),
       },
     });
 

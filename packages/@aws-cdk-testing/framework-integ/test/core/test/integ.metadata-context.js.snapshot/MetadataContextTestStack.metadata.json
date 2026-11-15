@@ -1,0 +1,40 @@
+{
+  "/MetadataContextTestStack/OrderQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
+    }
+  ],
+  "/MetadataContextTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MetadataContextTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MetadataContextTestStack/OrderQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OrderQueue39B99167"
+    }
+  ],
+  "/MetadataContextTestStack/Notifications/AlertsTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MetadataContextTestStack/Notifications/AlertsTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NotificationsAlertsTopicDFE3487E"
+    }
+  ]
+}
