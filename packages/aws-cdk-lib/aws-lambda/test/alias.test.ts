@@ -721,12 +721,8 @@ describe('alias', () => {
   });
 });
 
-describe('role / tenancyConfig / IAlias assignability (issue #37996)', () => {
-  // Regression coverage: under `exactOptionalPropertyTypes`, Alias must stay
-  // assignable to the optional `IFunction.role` / `IFunction.tenancyConfig`. The
-  // IAlias annotation is the type-level guard; the runtime expectations confirm
-  // the getter -> readonly-field refactor preserves the delegated values.
-  test('a concrete Alias is assignable to IAlias and inherits role + tenancyConfig from the function', () => {
+describe('alias role and tenancyConfig', () => {
+  test('inherits role and tenancyConfig from the function', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'Fn', {
       code: new lambda.InlineCode('hello()'),
@@ -734,12 +730,31 @@ describe('role / tenancyConfig / IAlias assignability (issue #37996)', () => {
       runtime: lambda.Runtime.NODEJS_LATEST,
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
     });
-    const alias: lambda.IAlias = new lambda.Alias(stack, 'Alias', {
+    const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
       version: fn.currentVersion,
     });
 
     expect(alias.role).toBe(fn.role);
     expect(alias.tenancyConfig).toBe(fn.tenancyConfig);
+  });
+
+  test.each([
+    ['new Alias', (stack: Stack, version: lambda.IVersion) =>
+      new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version })],
+    ['Alias.fromAliasAttributes', (stack: Stack, aliasVersion: lambda.IVersion) =>
+      lambda.Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'prod', aliasVersion })],
+  ])('%s has no role or tenancyConfig when the function has neither', (_, makeAlias) => {
+    const stack = new Stack();
+    const fn = lambda.Function.fromFunctionAttributes(stack, 'Fn', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+      sameEnvironment: true,
+    });
+    const version = new lambda.Version(stack, 'Version', { lambda: fn });
+
+    const alias = makeAlias(stack, version);
+
+    expect(alias.role).toBeUndefined();
+    expect(alias.tenancyConfig).toBeUndefined();
   });
 });

@@ -435,12 +435,8 @@ describe('lambda version', () => {
   });
 });
 
-describe('role / tenancyConfig / IVersion assignability (issue #37996)', () => {
-  // Regression coverage: under `exactOptionalPropertyTypes`, Version must stay
-  // assignable to the optional `IFunction.role` / `IFunction.tenancyConfig`. The
-  // IVersion annotation is the type-level guard; the runtime expectations confirm
-  // the getter -> readonly-field refactor preserves the delegated values.
-  test('a concrete Version is assignable to IVersion and inherits role + tenancyConfig from the function', () => {
+describe('version role and tenancyConfig', () => {
+  test('inherits role and tenancyConfig from the function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
       code: new lambda.InlineCode('hello()'),
@@ -448,9 +444,29 @@ describe('role / tenancyConfig / IVersion assignability (issue #37996)', () => {
       runtime: lambda.Runtime.NODEJS_LATEST,
       tenancyConfig: lambda.TenancyConfig.PER_TENANT,
     });
-    const version: lambda.IVersion = new lambda.Version(stack, 'Version', { lambda: fn });
+    const version = new lambda.Version(stack, 'Version', { lambda: fn });
 
     expect(version.role).toBe(fn.role);
     expect(version.tenancyConfig).toBe(fn.tenancyConfig);
+  });
+
+  test.each([
+    ['new Version', (stack: cdk.Stack, fn: lambda.IFunction) =>
+      new lambda.Version(stack, 'Version', { lambda: fn })],
+    ['Version.fromVersionAttributes', (stack: cdk.Stack, fn: lambda.IFunction) =>
+      lambda.Version.fromVersionAttributes(stack, 'Version', { lambda: fn, version: '1' })],
+    ['Version.fromVersionArn', (stack: cdk.Stack) =>
+      lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn:1')],
+  ])('%s has no role or tenancyConfig when the function has neither', (_, makeVersion) => {
+    const stack = new cdk.Stack();
+    const fn = lambda.Function.fromFunctionAttributes(stack, 'Fn', {
+      functionArn: 'arn:aws:lambda:us-east-1:123456789012:function:MyFn',
+      sameEnvironment: true,
+    });
+
+    const version = makeVersion(stack, fn);
+
+    expect(version.role).toBeUndefined();
+    expect(version.tenancyConfig).toBeUndefined();
   });
 });

@@ -7,9 +7,9 @@ import type { IVersion } from './lambda-version';
 import { extractQualifierFromArn } from './lambda-version';
 import type { AliasReference, IAliasRef } from './lambda.generated';
 import { CfnAlias } from './lambda.generated';
-import { copyOptionalFunctionAttributes } from './private/copy-function-attributes';
 import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
 import type { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
+import type { TenancyConfig } from './tenancy-config';
 import * as appscaling from '../../aws-applicationautoscaling';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
@@ -110,15 +110,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly functionArn = `${attrs.aliasVersion.lambda.functionArn}:${attrs.aliasName}`;
       public readonly functionName = `${attrs.aliasVersion.lambda.functionName}:${attrs.aliasName}`;
       public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
+      public readonly role = attrs.aliasVersion.role;
+      public readonly tenancyConfig = attrs.aliasVersion.lambda.tenancyConfig;
       public readonly architecture = attrs.aliasVersion.lambda.architecture;
 
       protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
-
-      constructor(s: Construct, i: string) {
-        super(s, i);
-        copyOptionalFunctionAttributes(this);
-      }
 
       public get aliasRef(): AliasReference {
         return {
@@ -141,6 +138,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   public readonly lambda: IFunction;
 
   public readonly architecture: Architecture;
+
+  public readonly role?: iam.IRole;
 
   public readonly version: IVersion;
 
@@ -192,7 +191,8 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.aliasName = this.physicalName;
     this.version = props.version;
     this.architecture = this.lambda.architecture;
-    copyOptionalFunctionAttributes(this);
+    this.role = this.lambda.role;
+    (this as { tenancyConfig?: TenancyConfig }).tenancyConfig = this.lambda.tenancyConfig;
 
     if (props.provisionedConcurrentExecutions && this.version.lambda.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
       throw new ValidationError(lit`ProvisionedConcurrencySupportedFunctionsTenant`, 'Provisioned Concurrency is not supported for functions with tenant isolation mode', this);

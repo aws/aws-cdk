@@ -898,14 +898,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
   }
 
   /**
-   * The IAM role associated with this function, inherited from the underlying
-   * function. Resolved at construction via `copyOptionalFunctionAttributes`.
-   */
-  public readonly role?: iam.IRole;
-
-  /**
-   * The tenancy config of this function, inherited from the underlying function.
-   * Resolved at construction via `copyOptionalFunctionAttributes`.
+   * The tenancy config of the underlying function.
    */
   public readonly tenancyConfig?: TenancyConfig;
 
