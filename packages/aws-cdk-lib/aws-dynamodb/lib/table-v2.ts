@@ -727,10 +727,6 @@ export class TableV2 extends TableBaseV2 {
 
   public readonly encryptionKey?: IKey;
 
-  public readonly tableStreamArn?: string;
-
-  public readonly tableId?: string;
-
   /**
    * @attribute
    */
@@ -790,6 +786,38 @@ export class TableV2 extends TableBaseV2 {
   @memoizedGetter
   public get tableName(): string {
     return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  declare public readonly tableStreamArn?: string;
+
+  declare public readonly tableId?: string;
+
+  // `declare`d fields satisfy `ITableV2.tableStreamArn` and `ITableV2.tableId` under
+  // `exactOptionalPropertyTypes` without emitting instance properties; these
+  // prototype getters delegate to the memoized getters below, as before.
+  static {
+    Object.defineProperty(this.prototype, 'tableStreamArn', {
+      get(this: TableV2) {
+        return this._tableStreamArn;
+      },
+      configurable: true,
+    });
+    Object.defineProperty(this.prototype, 'tableId', {
+      get(this: TableV2) {
+        return this._tableId;
+      },
+      configurable: true,
+    });
+  }
+
+  @memoizedGetter
+  private get _tableStreamArn(): string | undefined {
+    return this.resource.attrStreamArn;
+  }
+
+  @memoizedGetter
+  private get _tableId(): string | undefined {
+    return this.resource.attrTableId;
   }
 
   public constructor(scope: Construct, id: string, props: TablePropsV2) {
@@ -864,8 +892,6 @@ export class TableV2 extends TableBaseV2 {
         : undefined,
       warmThroughput: props.warmThroughput ?? undefined,
     });
-    this.tableStreamArn = this.resource.attrStreamArn;
-    this.tableId = this.resource.attrTableId;
     this.resource.applyRemovalPolicy(props.removalPolicy);
 
     props.replicas?.forEach(replica => this.addReplica(replica));

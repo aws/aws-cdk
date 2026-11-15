@@ -123,10 +123,24 @@ describe('default properties', () => {
       stream: StreamViewType.NEW_AND_OLD_IMAGES,
     });
 
-    expect(typeof table.tableStreamArn).toBe('string');
-    const resolved = stack.resolve(table.tableStreamArn);
-    expect(resolved['Fn::GetAtt'][0]).toMatch(new RegExp(`^${CONSTRUCT_NAME}`));
-    expect(resolved['Fn::GetAtt'][1]).toEqual('StreamArn');
+    expect(stack.resolve(table.tableStreamArn)).toEqual({ 'Fn::GetAtt': [expect.stringMatching(`^${CONSTRUCT_NAME}`), 'StreamArn'] });
+  });
+
+  test('tableStreamArn reflects a stream enabled through the L1 escape hatch', () => {
+    const table = new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
+
+    (table.node.defaultChild as CfnTable).streamSpecification = { streamViewType: StreamViewType.NEW_IMAGE };
+
+    expect(stack.resolve(table.tableStreamArn)).toEqual({ 'Fn::GetAtt': [expect.stringMatching(`^${CONSTRUCT_NAME}`), 'StreamArn'] });
+  });
+
+  test('tableStreamArn can be overridden by a subclass getter', () => {
+    class MyTable extends Table {}
+    Object.defineProperty(MyTable.prototype, 'tableStreamArn', { get: () => 'my-stream-arn' });
+
+    const table = new MyTable(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
+
+    expect(table.tableStreamArn).toEqual('my-stream-arn');
   });
 
   test('hash key only', () => {

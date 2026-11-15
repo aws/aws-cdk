@@ -1284,8 +1284,6 @@ export class Table extends TableBase {
 
   public readonly regions? = new Array<string>();
 
-  public readonly tableStreamArn?: string;
-
   @memoizedGetter
   public get tableArn(): string {
     return this.getResourceArnAttribute(this.table.attrArn, {
@@ -1298,6 +1296,25 @@ export class Table extends TableBase {
   @memoizedGetter
   public get tableName(): string {
     return this.getResourceNameAttribute(this.table.ref);
+  }
+
+  declare public readonly tableStreamArn?: string;
+
+  // A `declare`d field satisfies `ITable.tableStreamArn` under
+  // `exactOptionalPropertyTypes` without emitting an instance property; this
+  // prototype getter delegates to the memoized getter below, as before.
+  static {
+    Object.defineProperty(this.prototype, 'tableStreamArn', {
+      get(this: Table) {
+        return this._tableStreamArn;
+      },
+      configurable: true,
+    });
+  }
+
+  @memoizedGetter
+  private get _tableStreamArn(): string | undefined {
+    return this.table.streamSpecification ? this.table.attrStreamArn : undefined;
   }
 
   constructor(scope: Construct, id: string, props: TableProps) {
@@ -1385,9 +1402,6 @@ export class Table extends TableBase {
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
       warmThroughput: props.warmThroughput ?? undefined,
     });
-    if (this.table.streamSpecification) {
-      this.tableStreamArn = this.table.attrStreamArn;
-    }
     this.table.applyRemovalPolicy(props.removalPolicy);
 
     // Set up dynamic resourcePolicy that can be modified by addToResourcePolicy

@@ -31,10 +31,22 @@ describe('table', () => {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
     });
 
-    expect(typeof table.tableId).toBe('string');
-    expect(stack.resolve(table.tableId)['Fn::GetAtt'][1]).toEqual('TableId');
-    expect(typeof table.tableStreamArn).toBe('string');
-    expect(stack.resolve(table.tableStreamArn)['Fn::GetAtt'][1]).toEqual('StreamArn');
+    expect(stack.resolve(table.tableId)).toEqual({ 'Fn::GetAtt': [expect.stringMatching(/^Table/), 'TableId'] });
+    expect(stack.resolve(table.tableStreamArn)).toEqual({ 'Fn::GetAtt': [expect.stringMatching(/^Table/), 'StreamArn'] });
+  });
+
+  test('tableId and tableStreamArn can be overridden by subclass getters', () => {
+    const stack = new Stack(undefined, 'Stack');
+    class MyTable extends TableV2 {}
+    Object.defineProperty(MyTable.prototype, 'tableId', { get: () => 'my-table-id' });
+    Object.defineProperty(MyTable.prototype, 'tableStreamArn', { get: () => 'my-stream-arn' });
+
+    const table = new MyTable(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+
+    expect(table.tableId).toEqual('my-table-id');
+    expect(table.tableStreamArn).toEqual('my-stream-arn');
   });
 
   test('with default properties', () => {
