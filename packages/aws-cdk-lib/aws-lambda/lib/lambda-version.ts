@@ -8,7 +8,6 @@ import type { IFunction } from './function-base';
 import { QualifiedFunctionBase } from './function-base';
 import type { IVersionRef, VersionReference } from './lambda.generated';
 import { CfnVersion } from './lambda.generated';
-import type { TenancyConfig } from './tenancy-config';
 import { addAlias } from './util';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import type * as iam from '../../aws-iam';
@@ -166,7 +165,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = versionArn;
       public readonly grantPrincipal = lambda.grantPrincipal;
       public readonly role = lambda.role;
-      public readonly tenancyConfig = lambda.tenancyConfig;
       public readonly architecture = lambda.architecture;
 
       protected readonly qualifier = version;
@@ -200,7 +198,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
       public readonly functionArn = `${attrs.lambda.functionArn}:${attrs.version}`;
       public readonly grantPrincipal = attrs.lambda.grantPrincipal;
       public readonly role = attrs.lambda.role;
-      public readonly tenancyConfig = attrs.lambda.tenancyConfig;
       public readonly architecture = attrs.lambda.architecture;
 
       protected readonly qualifier = attrs.version;
@@ -246,7 +243,6 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;
     this.role = this.lambda.role;
-    (this as { tenancyConfig?: TenancyConfig }).tenancyConfig = this.lambda.tenancyConfig;
 
     if (props.provisionedConcurrentExecutions && this.lambda.tenancyConfig) {
       throw new ValidationError(lit`ProvisionedConcurrencySupportedFunctionsTenant`, 'Provisioned Concurrency is not supported for functions with tenant isolation mode', this);

@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as appscaling from '../../aws-applicationautoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
+import * as iam from '../../aws-iam';
 import { CfnParameter, Lazy, Stack } from '../../core';
 import * as lambda from '../lib';
 
@@ -737,6 +738,21 @@ describe('alias role and tenancyConfig', () => {
 
     expect(alias.role).toBe(fn.role);
     expect(alias.tenancyConfig).toBe(fn.tenancyConfig);
+  });
+
+  test('takes its role from the version, not the underlying function', () => {
+    const stack = new Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+    const versionRole = iam.Role.fromRoleArn(stack, 'VersionRole', 'arn:aws:iam::123456789012:role/VersionRole');
+    const version: lambda.IVersion = Object.create(fn.currentVersion, { role: { value: versionRole } });
+
+    const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
+
+    expect(alias.role).toBe(versionRole);
   });
 
   test.each([

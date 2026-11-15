@@ -470,3 +470,29 @@ describe('version role and tenancyConfig', () => {
     expect(version.tenancyConfig).toBeUndefined();
   });
 });
+
+describe('QualifiedFunctionBase', () => {
+  test('a third-party subclass inherits tenancyConfig from its function', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+    class CustomQualifiedFunction extends lambda.QualifiedFunctionBase {
+      public readonly lambda = fn;
+      public readonly functionName = `${fn.functionName}:custom`;
+      public readonly functionArn = `${fn.functionArn}:custom`;
+      public readonly grantPrincipal = fn.grantPrincipal;
+      public readonly role = fn.role;
+      public readonly architecture = fn.architecture;
+      protected readonly qualifier = 'custom';
+      protected readonly canCreatePermissions = true;
+    }
+
+    const custom = new CustomQualifiedFunction(stack, 'Custom');
+
+    expect(custom.tenancyConfig).toBe(fn.tenancyConfig);
+  });
+});

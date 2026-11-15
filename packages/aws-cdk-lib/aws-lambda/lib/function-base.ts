@@ -900,7 +900,7 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
   /**
    * The tenancy config of the underlying function.
    */
-  public readonly tenancyConfig?: TenancyConfig;
+  declare public readonly tenancyConfig?: TenancyConfig;
 
   public get resourceArnsForGrantInvoke() {
     return [this.functionArn];
@@ -923,6 +923,17 @@ export abstract class QualifiedFunctionBase extends FunctionBase {
     return;
   }
 }
+
+// `tenancyConfig` is a `declare`d field so it satisfies `IFunction.tenancyConfig` under
+// `exactOptionalPropertyTypes` without emitting an instance property; this prototype getter
+// keeps the delegation to `lambda` that subclasses inherit. (`role` needs no equivalent: it
+// is abstract, so every subclass already supplies its own.)
+Object.defineProperty(QualifiedFunctionBase.prototype, 'tenancyConfig', {
+  get(this: QualifiedFunctionBase) {
+    return this.lambda.tenancyConfig;
+  },
+  configurable: true,
+});
 
 /**
  * The $LATEST version of a function, useful when attempting to create aliases.
