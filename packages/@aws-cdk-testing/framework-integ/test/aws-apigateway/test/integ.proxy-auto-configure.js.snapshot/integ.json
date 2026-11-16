@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "ProxyAutoConfigureTest/DefaultTest": {
+      "stacks": [
+        "ProxyAutoConfigureStack"
+      ],
+      "assertionStack": "ProxyAutoConfigureTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ProxyAutoConfigureTestDefaultTestDeployAssertACE28D60"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
