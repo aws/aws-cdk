@@ -1,4 +1,10 @@
 {
+  "/InstanceGp3Test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "InstanceGp3TestDefaultTestDeployAssert21C147A7.template.json"
+    }
+  ],
   "/InstanceGp3Test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

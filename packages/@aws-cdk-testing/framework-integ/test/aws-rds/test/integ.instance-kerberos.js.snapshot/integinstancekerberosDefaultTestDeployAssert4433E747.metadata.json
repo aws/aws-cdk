@@ -1,4 +1,10 @@
 {
+  "/integ-instance-kerberos/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integinstancekerberosDefaultTestDeployAssert4433E747.template.json"
+    }
+  ],
   "/integ-instance-kerberos/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

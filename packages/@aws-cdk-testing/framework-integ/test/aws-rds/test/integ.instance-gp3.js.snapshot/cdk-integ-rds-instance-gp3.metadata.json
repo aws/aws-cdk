@@ -1,4 +1,25 @@
 {
+  "/cdk-integ-rds-instance-gp3": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at TestStack._silenceLiteralAzWarning (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new TestStack (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-gp3.js:45:21)",
+        "    at <anonymous> (/Users/hunhsieh/repos/aws-cdk/.worktrees/pr-38735/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-gp3.js:57:17)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-integ-rds-instance-gp3.template.json"
+    }
+  ],
   "/cdk-integ-rds-instance-gp3/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -80,7 +101,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }

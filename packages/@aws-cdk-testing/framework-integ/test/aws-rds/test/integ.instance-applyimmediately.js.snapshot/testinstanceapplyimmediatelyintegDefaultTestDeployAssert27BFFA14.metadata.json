@@ -1,4 +1,10 @@
 {
+  "/test-instance-applyimmediately-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "testinstanceapplyimmediatelyintegDefaultTestDeployAssert27BFFA14.template.json"
+    }
+  ],
   "/test-instance-applyimmediately-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

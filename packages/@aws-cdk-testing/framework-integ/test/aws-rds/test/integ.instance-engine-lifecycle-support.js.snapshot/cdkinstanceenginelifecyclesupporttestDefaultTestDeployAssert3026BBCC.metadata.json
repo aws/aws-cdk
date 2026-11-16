@@ -1,4 +1,10 @@
 {
+  "/cdk-instance-engine-lifecycle-support-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkinstanceenginelifecyclesupporttestDefaultTestDeployAssert3026BBCC.template.json"
+    }
+  ],
   "/cdk-instance-engine-lifecycle-support-test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

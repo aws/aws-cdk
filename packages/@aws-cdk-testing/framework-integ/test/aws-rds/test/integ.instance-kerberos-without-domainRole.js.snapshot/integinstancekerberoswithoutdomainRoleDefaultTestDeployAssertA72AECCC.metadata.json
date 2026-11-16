@@ -1,4 +1,10 @@
 {
+  "/integ-instance-kerberos-without-domainRole/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integinstancekerberoswithoutdomainRoleDefaultTestDeployAssertA72AECCC.template.json"
+    }
+  ],
   "/integ-instance-kerberos-without-domainRole/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
