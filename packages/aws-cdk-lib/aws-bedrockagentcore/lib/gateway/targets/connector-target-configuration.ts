@@ -304,6 +304,10 @@ export interface KnowledgeBaseRetriever {
  *
  * Agentic retrieval plans a retrieval strategy, runs multiple retrieval steps across the
  * knowledge bases, and returns the supporting results with a synthesized, citation-backed answer.
+ *
+ * It runs with the service-managed foundation model, and the reranking model follows the service
+ * default for each knowledge base. To attach a guardrail or use your own foundation or reranking
+ * model, configure the tool with `ConnectorTargetConfiguration` instead.
  */
 export interface KnowledgeBaseAgenticRetrieveOptions {
   /**
@@ -312,7 +316,7 @@ export interface KnowledgeBaseAgenticRetrieveOptions {
   readonly retrievers: KnowledgeBaseRetriever[];
 
   /**
-   * The maximum number of planning and retrieval iterations.
+   * The maximum number of planning and retrieval iterations. Must be between 2 and 5.
    *
    * @default - the service default
    */
@@ -403,14 +407,14 @@ export interface KnowledgeBasesTargetConfigurationProps {
   /**
    * Configures the `AgenticRetrieveStream` tool.
    *
-   * @default - the tool is not configured
+   * @default - the tool is not configured, and the target does not expose it
    */
   readonly agenticRetrieve?: KnowledgeBaseAgenticRetrieveOptions;
 
   /**
    * Configures the `Retrieve` tool.
    *
-   * @default - the tool is not configured
+   * @default - the tool is not configured, and the target does not expose it
    */
   readonly retrieve?: KnowledgeBaseRetrieveOptions;
 }
@@ -466,6 +470,8 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
     this.connectorConfiguration = ConnectorTargetConfiguration.create({
       connector: GatewayConnector.BEDROCK_KNOWLEDGE_BASES,
       toolConfigurations,
+      // Only the configured tools are usable, so only they are enabled
+      enabledTools: toolConfigurations.map(tool => tool.name),
     });
   }
 
@@ -534,11 +540,11 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
   }
 
   private renderAgenticRetrieve(options: KnowledgeBaseAgenticRetrieveOptions): ConnectorToolConfiguration {
-    // The gateway rejects tool calls when this object is empty, so the service-managed models,
-    // which are the defaults, are always spelled out
+    // The gateway rejects tool calls when this object is empty, so the service-managed foundation
+    // model, which is the default, is always spelled out. The reranking model is left to the
+    // service, whose default depends on the embedding model of the knowledge base.
     const agenticRetrieveConfiguration: { [key: string]: any } = {
       foundationModelType: 'MANAGED',
-      rerankingModelType: 'MANAGED',
     };
     if (options.maxAgentIterations !== undefined) {
       agenticRetrieveConfiguration.maxAgentIteration = options.maxAgentIterations;
@@ -605,6 +611,15 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
       throw new UnscopedValidationError(
         lit`KnowledgeBasesRetrieversRequired`,
         'agenticRetrieve.retrievers must contain at least one knowledge base',
+      );
+    }
+
+    const maxAgentIterations = this.agenticRetrieve?.maxAgentIterations;
+    if (maxAgentIterations !== undefined && !Token.isUnresolved(maxAgentIterations)
+      && (!Number.isInteger(maxAgentIterations) || maxAgentIterations < 2 || maxAgentIterations > 5)) {
+      throw new UnscopedValidationError(
+        lit`KnowledgeBasesMaxAgentIterationsInvalid`,
+        `agenticRetrieve.maxAgentIterations must be an integer between 2 and 5, got ${JSON.stringify(maxAgentIterations)}`,
       );
     }
 

@@ -306,12 +306,13 @@ describe('Connector gateway targets', () => {
           Mcp: {
             Connector: {
               Source: { ConnectorId: 'bedrock-knowledge-bases' },
-              Enabled: Match.absent(),
+              Enabled: ['AgenticRetrieveStream'],
               Configurations: [{
                 Name: 'AgenticRetrieveStream',
                 Description: Match.absent(),
                 ParameterOverrides: Match.absent(),
-                ParameterValues: {
+                // objectEquals: no generateResponse, no maxAgentIteration and no reranking model by default
+                ParameterValues: Match.objectEquals({
                   retrievers: [
                     {
                       description: 'Product documentation',
@@ -320,8 +321,8 @@ describe('Connector gateway targets', () => {
                     { configuration: { knowledgeBase: { knowledgeBaseId: 'KB22222222' } } },
                   ],
                   // The gateway rejects tool calls when agenticRetrieveConfiguration is empty
-                  agenticRetrieveConfiguration: { foundationModelType: 'MANAGED', rerankingModelType: 'MANAGED' },
-                },
+                  agenticRetrieveConfiguration: { foundationModelType: 'MANAGED' },
+                }),
               }],
             },
           },
@@ -348,15 +349,11 @@ describe('Connector gateway targets', () => {
                 Name: 'AgenticRetrieveStream',
                 Description: 'Answer questions about the product',
                 ParameterOverrides: [{ Path: '$.userContext', Description: 'End-user identity', Visible: true }],
-                ParameterValues: {
+                ParameterValues: Match.objectEquals({
                   retrievers: [{ configuration: { knowledgeBase: { knowledgeBaseId: 'KB11111111' } } }],
-                  agenticRetrieveConfiguration: {
-                    foundationModelType: 'MANAGED',
-                    rerankingModelType: 'MANAGED',
-                    maxAgentIteration: 3,
-                  },
+                  agenticRetrieveConfiguration: { foundationModelType: 'MANAGED', maxAgentIteration: 3 },
                   generateResponse: false,
-                },
+                }),
               }],
             },
           },
@@ -374,6 +371,8 @@ describe('Connector gateway targets', () => {
           Mcp: {
             Connector: {
               Source: { ConnectorId: 'bedrock-knowledge-bases' },
+              // Only the configured tool is enabled
+              Enabled: ['Retrieve'],
               Configurations: [{
                 Name: 'Retrieve',
                 ParameterValues: Match.objectEquals({ knowledgeBaseId: 'KB11111111' }),
@@ -426,6 +425,7 @@ describe('Connector gateway targets', () => {
         TargetConfiguration: {
           Mcp: {
             Connector: {
+              Enabled: ['AgenticRetrieveStream', 'Retrieve'],
               Configurations: [
                 Match.objectLike({ Name: 'AgenticRetrieveStream' }),
                 Match.objectLike({
@@ -665,6 +665,40 @@ describe('Connector gateway targets', () => {
       test('fails for an empty list of retrievers', () => {
         expect(() => gateway.addKnowledgeBasesTarget('Target', { agenticRetrieve: { retrievers: [] } }))
           .toThrow('agenticRetrieve.retrievers must contain at least one knowledge base');
+      });
+
+      test.each([1, 6, 2.5, 0, -1])('fails for maxAgentIterations %d', (maxAgentIterations) => {
+        expect(() => gateway.addKnowledgeBasesTarget('Target', {
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIterations },
+        })).toThrow(`agenticRetrieve.maxAgentIterations must be an integer between 2 and 5, got ${maxAgentIterations}`);
+      });
+
+      test.each([2, 5])('accepts maxAgentIterations %d', (maxAgentIterations) => {
+        expect(() => gateway.addKnowledgeBasesTarget('Target', {
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIterations },
+        })).not.toThrow();
+      });
+
+      test('accepts an unresolved maxAgentIterations', () => {
+        const param = new cdk.CfnParameter(stack, 'Iterations', { type: 'Number' });
+
+        gateway.addKnowledgeBasesTarget('Target', {
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIterations: param.valueAsNumber },
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+          TargetConfiguration: {
+            Mcp: {
+              Connector: {
+                Configurations: [{
+                  ParameterValues: {
+                    agenticRetrieveConfiguration: { foundationModelType: 'MANAGED', maxAgentIteration: { Ref: 'Iterations' } },
+                  },
+                }],
+              },
+            },
+          },
+        });
       });
 
       test.each([0, 101, 1.5, -1])('fails for numberOfResults %d', (numberOfResults) => {

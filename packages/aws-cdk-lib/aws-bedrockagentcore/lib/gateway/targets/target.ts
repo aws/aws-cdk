@@ -230,14 +230,14 @@ export interface AddKnowledgeBasesTargetOptions extends GatewayTargetCommonProps
    * Configures the `AgenticRetrieveStream` tool, which plans and runs multiple retrieval
    * steps across the knowledge bases and returns a synthesized answer.
    *
-   * @default - the tool is not configured
+   * @default - the tool is not configured, and the target does not expose it
    */
   readonly agenticRetrieve?: KnowledgeBaseAgenticRetrieveOptions;
 
   /**
    * Configures the `Retrieve` tool, which performs a single search on a knowledge base.
    *
-   * @default - the tool is not configured
+   * @default - the tool is not configured, and the target does not expose it
    */
   readonly retrieve?: KnowledgeBaseRetrieveOptions;
 }
