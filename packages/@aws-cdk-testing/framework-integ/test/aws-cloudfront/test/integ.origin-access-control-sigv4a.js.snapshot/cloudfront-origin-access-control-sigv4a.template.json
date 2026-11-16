@@ -1,0 +1,62 @@
+{
+ "Resources": {
+  "OriginAccessControlDC2011A2": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "cloudfrontoriginaccesscontrolsigv4aOriginAccessControl37240DEA",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4a"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttOriginAccessControlDC2011A2Id1E1884FF": {
+   "Value": {
+    "Fn::GetAtt": [
+     "OriginAccessControlDC2011A2",
+     "Id"
+    ]
+   },
+   "Export": {
+    "Name": "cloudfront-origin-access-control-sigv4a:ExportsOutputFnGetAttOriginAccessControlDC2011A2Id1E1884FF"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

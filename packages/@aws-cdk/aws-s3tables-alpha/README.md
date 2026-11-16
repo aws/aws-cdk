@@ -29,8 +29,8 @@ Amazon S3 Tables deliver the first cloud object store with built-in Apache Icebe
 ```ts
 // Build a Table bucket
 const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
-    tableBucketName: 'example-bucket-1',
     // optional fields:
+    tableBucketName: 'example-bucket-1', // if omitted, CDK generates a unique name that satisfies the S3 Tables naming rules
     unreferencedFileRemoval: {
         status: UnreferencedFileRemovalStatus.ENABLED,
         noncurrentDays: 20,
@@ -38,6 +38,13 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
     }
 });
 ```
+
+When `tableBucketName` is omitted, CDK derives the name from the stack name and the
+construct path. Because the path is part of the input, the generated name is **not
+stable across stack or construct renames** — renaming or moving the construct will
+produce a different name and replace the bucket. If you need a fixed, predictable
+name (for example, to reference the bucket from outside CDK or across separate
+deployments), pass `tableBucketName` explicitly.
 
 ### Define an S3 Tables Namespace
 
@@ -248,6 +255,38 @@ const tableBucketWithMetrics = new TableBucket(scope, 'TableBucketWithMetrics', 
     requestMetricsStatus: RequestMetricsStatus.ENABLED,
 });
 ```
+
+### Configuring Storage Class
+
+You can configure the storage class for your table bucket and tables. Storage class determines how data is stored and billed, allowing you to optimize for different access patterns.
+
+```ts
+// Create a table bucket with INTELLIGENT_TIERING storage class
+const tableBucketWithStorageClass = new TableBucket(scope, 'TableBucketWithStorageClass', {
+    tableBucketName: 'storage-class-bucket',
+    storageClass: StorageClass.INTELLIGENT_TIERING,
+});
+```
+
+Tables inherit the storage class from their parent bucket by default. You can also override the storage class at the table level:
+
+```ts
+// Create a table with explicit storage class (overrides bucket default)
+const tableWithStorageClass = new Table(scope, 'TableWithStorageClass', {
+    tableName: 'storage_class_table',
+    namespace: namespace,
+    openTableFormat: OpenTableFormat.ICEBERG,
+    withoutMetadata: true,
+    storageClass: StorageClass.STANDARD,
+});
+```
+
+Available storage classes:
+
+- `StorageClass.STANDARD` - For frequently accessed data
+- `StorageClass.INTELLIGENT_TIERING` - Automatically moves data between access tiers based on usage patterns
+
+Note: Table storage class is a create-only property and cannot be changed after the table is created.
 
 ### Controlling Table Permissions
 

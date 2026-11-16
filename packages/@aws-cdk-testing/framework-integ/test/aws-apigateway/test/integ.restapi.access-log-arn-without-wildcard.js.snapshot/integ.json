@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "AccessLogArnWithoutWildcard/DefaultTest": {
+      "stacks": [
+        "ApiGatewayAccessLogArnWithoutWildcard"
+      ],
+      "assertionStack": "AccessLogArnWithoutWildcard/DefaultTest/DeployAssert",
+      "assertionStackName": "AccessLogArnWithoutWildcardDefaultTestDeployAssertE824054E"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

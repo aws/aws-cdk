@@ -1,7 +1,6 @@
 import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
-import type { AccessEntryReference, IAccessEntryRef } from '../../aws-eks';
-import { CfnAccessEntry } from '../../aws-eks';
+import { CfnAccessEntry } from './eks.generated';
 import type { IResource, RemovalPolicy } from '../../core';
 import { Resource, Aws, ValidationError, Token } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
@@ -10,6 +9,7 @@ import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-re
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { AccessEntryReference, IAccessEntryRef } from '../../interfaces/generated/aws-eks-interfaces.generated';
 
 /**
  * Represents an access entry in an Amazon EKS cluster.
@@ -269,7 +269,8 @@ export enum AccessEntryType {
   /**
    * Represents an EC2 access entry for EKS Auto Mode.
    * Use this type for node roles in EKS Auto Mode clusters where AWS automatically manages
-   * the compute infrastructure. This type cannot have access policies attached.
+   * the compute infrastructure. Access policies such as `AmazonEKSAutoNodePolicy` can be
+   * attached to this type.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-auto-mode.html
    */
@@ -456,7 +457,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
    * @private
    */
   private validateAccessPoliciesForRestrictedTypes(accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType): void {
-    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+    const restrictedTypes = [AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
     if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
         !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
       throw new ValidationError(lit`AccessEntryTypeCannot`, `Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);

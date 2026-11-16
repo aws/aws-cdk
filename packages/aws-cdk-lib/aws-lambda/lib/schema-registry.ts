@@ -2,20 +2,28 @@ import type { IEventSourceMapping } from './event-source-mapping';
 import type { IFunction } from './function-base';
 
 /**
- * The format target function should receive record in.
+ * How Lambda passes schema-validated records to your function.
  */
 export class EventRecordFormat {
   /**
-   * The target function will receive records as json objects.
+   * Your function receives the validated parts of each record as JSON.
+   *
+   * A good fit for languages such as Python and Node.js.
    */
   public static readonly JSON = new EventRecordFormat('JSON');
 
   /**
-   * The target function will receive records in same format as the schema source.
+   * Your function receives the validated parts of each record in their original format.
+   *
+   * A good fit when you use Avro or Protobuf generated classes.
    */
   public static readonly SOURCE = new EventRecordFormat('SOURCE');
 
-  /** A custom event record format */
+  /**
+   * A custom event record format.
+   *
+   * @param name the name of the record format
+   */
   public static of(name: string): EventRecordFormat {
     return new EventRecordFormat(name);
   }
@@ -32,6 +40,9 @@ export class EventRecordFormat {
 
 /**
  * The type of authentication protocol for your schema registry.
+ *
+ * Used with Confluent schema registries. For an AWS Glue schema registry, Lambda uses the
+ * function's execution role instead.
  */
 export class KafkaSchemaRegistryAccessConfigType {
   /**
@@ -109,12 +120,12 @@ export interface KafkaSchemaRegistryAccessConfig {
  */
 export class KafkaSchemaValidationAttribute {
   /**
-   * De-serialize the key field of the parload to target function.
+   * Validate the key of each record.
    */
   public static readonly KEY = new KafkaSchemaValidationAttribute('KEY');
 
   /**
-   * De-serialize the value field of the parload to target function.
+   * Validate the value of each record.
    */
   public static readonly VALUE = new KafkaSchemaValidationAttribute('VALUE');
 

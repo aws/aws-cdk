@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "113de4228a09594a9f22084e5b8d7ca00f5e1d32d6280410342ab5097ab45781": {
       "displayName": "cdk-integ-lambda-bucket-s3-notifications Template",

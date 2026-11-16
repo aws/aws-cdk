@@ -4,6 +4,7 @@ import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
 import { lit } from './private/literal-string';
 import type { IResolvable } from './resolvable';
+import { isResolvableObject } from './token';
 
 const TAG_MANAGER_SYM = Symbol.for('@aws-cdk/core.TagManager');
 
@@ -394,6 +395,17 @@ export class TagManager {
     this.parseExternalTags(combineWithTags);
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
 
+    if (isResolvableObject(this.dynamicTags)) {
+      if (this.tags.size > 0) {
+        throw new UnscopedValidationError(
+          lit`CombineTagsIntrinsicWithLiteral`,
+          'Cannot combine literal tags with a Tags property that is a single unresolved intrinsic (e.g. Fn::If). ' +
+          'Remove the literal tags or resolve the intrinsic at the property level.',
+        );
+      }
+      return this.dynamicTags;
+    }
+
     if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
       const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
       return ret.length > 0 ? ret : undefined;
@@ -459,6 +471,10 @@ export class TagManager {
    */
   private parseExternalTags(initialTags: any) {
     if (initialTags !== undefined) {
+      if (isResolvableObject(initialTags)) {
+        this.dynamicTags = initialTags;
+        return;
+      }
       const parseTagsResult = this.tagFormatter.parseTags(initialTags, this.externalTagPriority);
       this.dynamicTags = parseTagsResult.dynamicTags;
       this._setTag(...parseTagsResult.tags);

@@ -25,7 +25,7 @@ import type { ResourceEnvironment } from './environment';
 import { lit } from './private/literal-string';
 import { captureStackTrace } from './private/stack-trace';
 import { Stack } from './stack';
-import { STACK_TYPE } from './private/core-construct-finders';
+import { isCfnResource, STACK_TYPE } from './private/core-construct-finders';
 
 export interface CfnResourceProps {
   /**
@@ -49,7 +49,7 @@ export class CfnResource extends CfnRefElement {
    * Check whether the given object is a CfnResource
    */
   public static isCfnResource(this: void, x: any): x is CfnResource {
-    return x !== null && typeof (x) === 'object' && x.cfnResourceType !== undefined;
+    return isCfnResource(x);
   }
 
   // MAINTAINERS NOTE: this class serves as the base class for the generated L1
@@ -776,6 +776,6 @@ export function traceProperty(node: Node, propertyName: string) {
     node.addMetadata(cxschema.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT, {
       propertyName,
       stackTrace: captureStackTrace(traceProperty),
-    });
+    } satisfies cxschema.PropertyMutationMetadataEntry);
   }
 }
