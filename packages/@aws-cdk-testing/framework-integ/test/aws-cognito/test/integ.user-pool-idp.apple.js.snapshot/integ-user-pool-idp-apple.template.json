@@ -81,7 +81,7 @@
      "client_id": "com.amzn.cdk",
      "team_id": "CDKTEAMCDK",
      "key_id": "CDKKEYCDK1",
-     "private_key": "PRIV_KEY_CDK",
+     "private_key": "",
      "authorize_scopes": "email name"
     },
     "ProviderName": "SignInWithApple",

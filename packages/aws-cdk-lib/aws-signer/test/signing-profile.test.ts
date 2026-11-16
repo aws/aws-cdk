@@ -94,7 +94,7 @@ describe('signing profile', () => {
 
     cdk.Tags.of(signing).add('tag1', 'value1');
     cdk.Tags.of(signing).add('tag2', 'value2');
-    cdk.Tags.of(signing).add('tag3', '');
+    cdk.Tags.of(signing).add('tag3', 'z');
 
     Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
       PlatformId: platform.platformId,
@@ -113,7 +113,7 @@ describe('signing profile', () => {
         },
         {
           Key: 'tag3',
-          Value: '',
+          Value: 'z',
         },
       ],
     });

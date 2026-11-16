@@ -3,9 +3,11 @@ import { Token } from 'aws-cdk-lib';
 import type { IRestApi } from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { IGateway } from '../gateway-base';
-import { validateOpenApiSchema, validateFieldPattern, validateStringField, ValidationError } from '../validation-helpers';
+import { validateOpenApiSchema, validateFieldPattern, validateStringField } from '../validation-helpers';
 import type { ApiSchema } from './schema/api-schema';
 import { AssetApiSchema } from './schema/api-schema';
 import type { ToolSchema } from './schema/tool-schema';
@@ -17,6 +19,7 @@ import { McpTargetType } from './target-base';
 
 /**
  * Configuration returned by binding a target configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface TargetConfigurationConfig {
   /**
@@ -27,6 +30,7 @@ export interface TargetConfigurationConfig {
 
 /**
  * Base interface for target configurations
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ITargetConfiguration {
   /**
@@ -54,6 +58,7 @@ export interface ITargetConfiguration {
 /**
  * Abstract base class for MCP target configurations
  * Provides common functionality for all MCP target types
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class McpTargetConfiguration implements ITargetConfiguration {
   /**
@@ -92,6 +97,7 @@ export abstract class McpTargetConfiguration implements ITargetConfiguration {
  *
  * This configuration wraps a Lambda function as MCP tools,
  * allowing the gateway to invoke the function to provide tool capabilities.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class LambdaTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -165,6 +171,7 @@ export class LambdaTargetConfiguration extends McpTargetConfiguration {
  *
  * This configuration exposes an OpenAPI/REST API as MCP tools,
  * allowing the gateway to transform API operations into tool calls.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class OpenApiTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -212,7 +219,7 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
           schemaName: 'OpenAPI schema for target',
         });
         if (errors.length > 0) {
-          throw new ValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+          throw new UnscopedValidationError(lit`OpenApiSchemaValidationFailed`, `OpenAPI schema validation failed:\n${errors.join('\n')}`);
         }
       } else if (this.apiSchema instanceof AssetApiSchema) {
         // For asset schemas (local files)
@@ -223,13 +230,14 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
             schemaName: `OpenAPI schema from file ${this.apiSchema._getFilePath()}`,
           });
           if (errors.length > 0) {
-            throw new ValidationError(`OpenAPI schema validation failed:\n${errors.join('\n')}`);
+            throw new UnscopedValidationError(lit`OpenApiSchemaValidationFailed`, `OpenAPI schema validation failed:\n${errors.join('\n')}`);
           }
         } catch (e) {
           if (e instanceof ValidationError) {
             throw e;
           }
-          throw new ValidationError(
+          throw new UnscopedValidationError(
+            lit`OpenApiSchemaFileReadFailed`,
             `Failed to read OpenAPI schema from ${this.apiSchema._getFilePath()}: ${e instanceof Error ? e.message : String(e)}`,
           );
         }
@@ -264,6 +272,7 @@ export class OpenApiTargetConfiguration extends McpTargetConfiguration {
  *
  * This configuration exposes a Smithy-modeled API as MCP tools,
  * allowing the gateway to transform Smithy operations into tool calls.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class SmithyTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -325,6 +334,7 @@ export class SmithyTargetConfiguration extends McpTargetConfiguration {
  * functions for AI agents. When you configure an MCP server as a gateway target,
  * the gateway automatically discovers and indexes available tools through
  * synchronization.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class McpServerTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -396,12 +406,13 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
     );
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'));
+      throw new UnscopedValidationError(lit`McpServerEndpointInvalid`, errors.join('\n'));
     }
 
     // Additional helpful validation for common URL encoding issues
     if (endpoint.includes(' ') || endpoint.includes('<') || endpoint.includes('>')) {
-      throw new ValidationError(
+      throw new UnscopedValidationError(
+        lit`McpServerEndpointEncodingInvalid`,
         'MCP server endpoint contains characters that should be URL-encoded. ' +
         'Please ensure the URL is properly encoded before passing to the construct.',
       );
@@ -415,6 +426,7 @@ export class McpServerTargetConfiguration extends McpTargetConfiguration {
 
 /**
  * HTTP methods supported by API Gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum ApiGatewayHttpMethod {
   /** GET method */
@@ -440,6 +452,7 @@ export enum ApiGatewayHttpMethod {
  * Each filter supports two path matching strategies:
  * - **Explicit paths**: Matches a single specific path, such as `/pets/{petId}`
  * - **Wildcard paths**: Matches all paths starting with the specified prefix, such as `/pets/*`
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiGatewayToolFilter {
   /**
@@ -464,6 +477,7 @@ export interface ApiGatewayToolFilter {
  * after filtering. Each override must specify an explicit path and a single HTTP method.
  * The override must match an operation that exists in your API and must correspond to one
  * of the operations resolved by your filters.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiGatewayToolOverride {
   /**
@@ -493,6 +507,7 @@ export interface ApiGatewayToolOverride {
 
 /**
  * Configuration for passing metadata (headers and query parameters) to the API Gateway target
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface MetadataConfiguration {
   /**
@@ -538,6 +553,7 @@ export interface MetadataConfiguration {
  * The API Gateway tool configuration defines which operations from your REST API
  * are exposed as tools. It requires a list of tool filters to select operations
  * to expose, and optionally accepts tool overrides to customize tool metadata.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiGatewayToolConfiguration {
   /**
@@ -556,6 +572,7 @@ export interface ApiGatewayToolConfiguration {
 
 /**
  * Properties for creating an API Gateway target configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface ApiGatewayTargetConfigurationProps {
   /**
@@ -596,6 +613,7 @@ export interface ApiGatewayTargetConfigurationProps {
  * - API must use a public endpoint type
  * - Methods with both AWS_IAM authorization and API key requirements are not supported
  * - Proxy resources (e.g., `/pets/{proxy+}`) are not supported
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
   /**
@@ -725,7 +743,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       });
 
       if (restApiIdErrors.length > 0) {
-        throw new ValidationError(restApiIdErrors.join('\n'));
+        throw new UnscopedValidationError(lit`RestApiIdInvalid`, restApiIdErrors.join('\n'));
       }
     }
 
@@ -739,13 +757,13 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       });
 
       if (stageErrors.length > 0) {
-        throw new ValidationError(stageErrors.join('\n'));
+        throw new UnscopedValidationError(lit`StageNameInvalid`, stageErrors.join('\n'));
       }
     }
 
     // Validate tool filters
     if (!this.apiGatewayToolConfiguration.toolFilters || this.apiGatewayToolConfiguration.toolFilters.length === 0) {
-      throw new ValidationError('At least one tool filter is required for API Gateway target configuration');
+      throw new UnscopedValidationError(lit`ToolFiltersRequired`, 'At least one tool filter is required for API Gateway target configuration');
     }
 
     // Validate each tool filter
@@ -833,20 +851,23 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
 
     // Check if array is empty
     if (array.length === 0) {
-      throw new ValidationError(
+      throw new UnscopedValidationError(
+        lit`MetadataArrayEmpty`,
         `${fieldName} cannot be an empty array. It must contain at least ${minItems} item(s)`,
       );
     }
 
     // Check array size constraints
     if (array.length < minItems) {
-      throw new ValidationError(
+      throw new UnscopedValidationError(
+        lit`MetadataArrayTooFew`,
         `${fieldName} must contain at least ${minItems} item(s). Found ${array.length} item(s)`,
       );
     }
 
     if (array.length > maxItems) {
-      throw new ValidationError(
+      throw new UnscopedValidationError(
+        lit`MetadataArrayTooMany`,
         `${fieldName} cannot exceed ${maxItems} items. Found ${array.length} items`,
       );
     }
@@ -865,7 +886,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       });
 
       if (errors.length > 0) {
-        throw new ValidationError(errors.join('\n'));
+        throw new UnscopedValidationError(lit`MetadataArrayItemInvalid`, errors.join('\n'));
       }
     });
   }
@@ -888,12 +909,12 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     );
 
     if (pathErrors.length > 0) {
-      throw new ValidationError(pathErrors.join('\n'));
+      throw new UnscopedValidationError(lit`ToolFilterPathInvalid`, pathErrors.join('\n'));
     }
 
     // Validate methods
     if (!filter.methods || filter.methods.length === 0) {
-      throw new ValidationError(`At least one HTTP method is required for filter path: ${filter.filterPath}`);
+      throw new UnscopedValidationError(lit`ToolFilterMethodsRequired`, `At least one HTTP method is required for filter path: ${filter.filterPath}`);
     }
   }
 
@@ -908,7 +929,8 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
 
     // Validate that override path is explicit (no wildcards)
     if (override.path.includes('*')) {
-      throw new ValidationError(
+      throw new UnscopedValidationError(
+        lit`ToolOverridePathWildcardNotAllowed`,
         `Tool override path cannot contain wildcards. Path: ${override.path}. ` +
         'Tool overrides must specify an explicit path that matches an existing operation in your API.',
       );
@@ -923,7 +945,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     );
 
     if (pathErrors.length > 0) {
-      throw new ValidationError(pathErrors.join('\n'));
+      throw new UnscopedValidationError(lit`ToolOverridePathInvalid`, pathErrors.join('\n'));
     }
 
     // Validate override name
@@ -939,7 +961,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     });
 
     if (nameErrors.length > 0) {
-      throw new ValidationError(nameErrors.join('\n'));
+      throw new UnscopedValidationError(lit`ToolOverrideNameInvalid`, nameErrors.join('\n'));
     }
 
     // Validate override description if provided
@@ -952,7 +974,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
       });
 
       if (descErrors.length > 0) {
-        throw new ValidationError(descErrors.join('\n'));
+        throw new UnscopedValidationError(lit`ToolOverrideDescriptionInvalid`, descErrors.join('\n'));
       }
     }
   }

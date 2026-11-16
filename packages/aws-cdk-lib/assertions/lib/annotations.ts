@@ -61,7 +61,7 @@ export class Annotations {
   }
 
   /**
-   * Assert that an warning with the given message exists in the synthesized CDK `Stack`.
+   * Assert that a warning with the given message exists in the synthesized CDK `Stack`.
    *
    * @param constructPath the construct path to the warning, provide `'*'` to match all warnings in the template.
    * @param message the warning message as should be expected. This should be a string or Matcher object.
@@ -74,7 +74,7 @@ export class Annotations {
   }
 
   /**
-   * Assert that an warning with the given message does not exist in the synthesized CDK `Stack`.
+   * Assert that a warning with the given message does not exist in the synthesized CDK `Stack`.
    *
    * @param constructPath the construct path to the warning, provide `'*'` to match all warnings in the template.
    * @param message the warning message as should be expected. This should be a string or Matcher object.

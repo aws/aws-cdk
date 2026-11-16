@@ -1,28 +1,20 @@
-import * as cdk from 'aws-cdk-lib';
+import type { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { testStack } from './test-stack';
 import * as subnet from '../lib/subnet-v2';
 import { TransitGateway } from '../lib/transit-gateway';
 import * as vpc from '../lib/vpc-v2';
 
+let stack: Stack;
+
 describe('Transit Gateway with default settings', () => {
-  let stack: cdk.Stack;
   let tgw: TransitGateway;
   let myVpc: vpc.VpcV2;
   let mySubnet: subnet.SubnetV2;
 
   beforeEach(() => {
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core:newStyleStackSynthesis': false,
-      },
-    });
-
-    stack = new cdk.Stack(app, 'TransitGatewayStack', {
-      env: {
-        region: 'us-east-1',
-      },
-    });
+    stack = testStack();
 
     myVpc = new vpc.VpcV2(stack, 'VpcA', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),
@@ -167,23 +159,12 @@ describe('Transit Gateway with default settings', () => {
 });
 
 describe('Transit Gateway with default route table association and propagation disabled', () => {
-  let stack: cdk.Stack;
   let tgw: TransitGateway;
   let myVpc: vpc.VpcV2;
   let mySubnet: subnet.SubnetV2;
 
   beforeEach(() => {
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core:newStyleStackSynthesis': false,
-      },
-    });
-
-    stack = new cdk.Stack(app, 'TransitGatewayStack', {
-      env: {
-        region: 'us-east-1',
-      },
-    });
+    stack = testStack();
 
     myVpc = new vpc.VpcV2(stack, 'VpcA', {
       primaryAddressBlock: vpc.IpAddresses.ipv4('10.0.0.0/16'),

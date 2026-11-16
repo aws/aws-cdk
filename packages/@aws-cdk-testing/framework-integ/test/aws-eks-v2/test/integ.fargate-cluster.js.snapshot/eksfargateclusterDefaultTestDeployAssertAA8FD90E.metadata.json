@@ -1,0 +1,20 @@
+{
+  "/eks-fargate-cluster/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "eksfargateclusterDefaultTestDeployAssertAA8FD90E.template.json"
+    }
+  ],
+  "/eks-fargate-cluster/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/eks-fargate-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { Annotations, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Schedule for scheduled scaling actions
@@ -9,7 +10,7 @@ export abstract class Schedule {
    * Construct a schedule from a literal schedule expression
    *
    * @param expression The expression to use. Must be in a format that AutoScaling will recognize
-   * @see http://crontab.org/
+   * @see https://crontab.org/
    */
   public static expression(expression: string): Schedule {
     return new LiteralSchedule(expression);
@@ -20,7 +21,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new UnscopedValidationError('Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new UnscopedValidationError(lit`CannotSupplyBothDayAndWeekDay`, 'Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');
@@ -60,7 +61,7 @@ export abstract class Schedule {
  * All fields are strings so you can use complex expressions. Absence of
  * a field implies '*' or '?', whichever one is appropriate.
  *
- * @see http://crontab.org/
+ * @see https://crontab.org/
  */
 export interface CronOptions {
   /**

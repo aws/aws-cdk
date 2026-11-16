@@ -1,0 +1,22 @@
+{
+  "Description": "IAM_NO_OVERLY_PERMISSIVE_PASSROLE fires: the policy allows iam:PassRole on every role",
+  "Resources": {
+    "PassAnyRolePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "PassAnyRole",
+        "Roles": ["ExampleRole"],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "iam:PassRole",
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

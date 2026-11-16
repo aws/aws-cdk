@@ -1,15 +1,13 @@
 {
-  "version": "49.0.0",
+  "version": "48.0.0",
   "testCases": {
-    "integ.nlb-awsvpc-nw": {
+    "NlbAwsvpcNwTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "NlbAwsvpcNwTest/DefaultTest/DeployAssert",
+      "assertionStackName": "NlbAwsvpcNwTestDefaultTestDeployAssert2A7A34FA"
     }
   },
-  "synthContext": {},
-  "enableLookups": false,
-  "minimumCliVersion": "2.1100.3"
+  "minimumCliVersion": "2.1033.0"
 }

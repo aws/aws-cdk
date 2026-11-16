@@ -1,0 +1,34 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "c3f237981e8bcc3fdc75c6f7402efab5fdd7b3f9136ca3ab6430daeb27a43853": {
+      "displayName": "WriteGlobal/EvalFunction/Code",
+      "source": {
+        "path": "asset.c3f237981e8bcc3fdc75c6f7402efab5fdd7b3f9136ca3ab6430daeb27a43853",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-0f9cbd33": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c3f237981e8bcc3fdc75c6f7402efab5fdd7b3f9136ca3ab6430daeb27a43853.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "94a9a9801630cc393f28310ad6c7fb4dc28186ee4a612d4b629ed01ace7ac033": {
+      "displayName": "aws-cdk-sfn-evaluate-expression-isolation-integ Template",
+      "source": {
+        "path": "aws-cdk-sfn-evaluate-expression-isolation-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-512f60c6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "94a9a9801630cc393f28310ad6c7fb4dc28186ee4a612d4b629ed01ace7ac033.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

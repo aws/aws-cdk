@@ -12,7 +12,7 @@ const originAccessIdentity = new cloudfront.OriginAccessIdentity(stack, 'OriginA
   comment: 'Identity for bucket provided by test',
 });
 new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: { origin: new origins.S3Origin(bucket, { originAccessIdentity }) },
+  defaultBehavior: { origin: origins.S3BucketOrigin.withOriginAccessIdentity(bucket, { originAccessIdentity }) },
 });
 
 app.synth();

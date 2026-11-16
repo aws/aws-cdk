@@ -4,6 +4,7 @@ import { Match, Template } from '../../../assertions';
 import * as acm from '../../../aws-certificatemanager';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
@@ -637,6 +638,151 @@ describe('tests', () => {
         tcpIdleTimeout: cdk.Duration.seconds(tcpIdleTimeoutSeconds),
       });
     }).toThrow(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`);
+  });
+
+  describe('Post-quantum TLS policy feature flag', () => {
+    test('Does not set explicit SSL policy when feature flag is disabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY]: false,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+      const cert = new acm.Certificate(stack, 'Certificate', {
+        domainName: 'example.com',
+      });
+
+      // WHEN
+      lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.TLS,
+        certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      });
+
+      // THEN - no explicit SslPolicy should be set
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: Match.absent(),
+      });
+    });
+
+    test('Uses post-quantum TLS policy when feature flag is enabled', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+      const cert = new acm.Certificate(stack, 'Certificate', {
+        domainName: 'example.com',
+      });
+
+      // WHEN
+      lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.TLS,
+        certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
+      });
+    });
+
+    test('Explicit SSL policy overrides feature flag', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+      const cert = new acm.Certificate(stack, 'Certificate', {
+        domainName: 'example.com',
+      });
+
+      // WHEN
+      lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.TLS,
+        certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
+        sslPolicy: elbv2.SslPolicy.TLS12,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01',
+      });
+    });
+
+    test('TCP listeners are not affected by feature flag', () => {
+      // GIVEN
+      const app = new cdk.App({
+        context: {
+          [cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        port: 80,
+        protocol: elbv2.Protocol.TCP,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: Match.absent(),
+      });
+    });
+  });
+
+  describe('RFC 9151 (CNSA 1.0) SSL policies', () => {
+    test.each([
+      [elbv2.SslPolicy.RFC9151_TLS13_13, 'ELBSecurityPolicy-TLS13-1-3-RFC9151-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_EXT0, 'ELBSecurityPolicy-TLS13-1-2-Ext0-RFC9151-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_INTEROP1, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP1-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_INTEROP2, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP2-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_INTEROP3, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP3-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_INTEROP4, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP4-FIPS-2023-07'],
+    ])('sets SslPolicy %s on a TLS listener', (sslPolicy, expected) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+      const cert = new acm.Certificate(stack, 'Certificate', {
+        domainName: 'example.com',
+      });
+
+      // WHEN
+      lb.addListener('Listener', {
+        port: 443,
+        protocol: elbv2.Protocol.TLS,
+        certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
+        sslPolicy,
+        defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: expected,
+      });
+    });
   });
 });
 

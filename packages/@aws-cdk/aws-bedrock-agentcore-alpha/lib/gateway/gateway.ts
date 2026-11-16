@@ -5,6 +5,9 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Annotations } from 'aws-cdk-lib/core';
+import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -12,18 +15,72 @@ import type { Construct } from 'constructs';
 import type { GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayBase } from './gateway-base';
 import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
-import { GatewayAuthorizer } from './inbound-auth/authorizer';
+import { GatewayAuthorizer, GatewayAuthorizerType } from './inbound-auth/authorizer';
 import type { IInterceptor, InterceptorBindConfig } from './interceptor';
 import { InterceptionPoint } from './interceptor';
 import type { ICredentialProviderConfig } from './outbound-auth/credential-provider';
 import { GATEWAY_ASSUME_ROLE, GATEWAY_KMS_KEY_PERMS } from './perms';
 import type { IGatewayProtocolConfig } from './protocol';
 import { McpGatewaySearchType, McpProtocolConfiguration, MCPProtocolVersion } from './protocol';
+import type { IPolicyEngine } from '../policy/policy-engine-base';
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
 import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
-import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
+import { validateStringField, validateFieldPattern } from './validation-helpers';
+
+/**
+ * The enforcement mode for a policy engine associated with a gateway.
+ *
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
+export class PolicyEngineMode {
+  /**
+   * Evaluates actions and adds traces but does not enforce decisions.
+   * Use this mode for testing and validation before enabling enforcement.
+   */
+  public static readonly LOG_ONLY = new PolicyEngineMode('LOG_ONLY');
+
+  /**
+   * Enforces decisions by allowing or denying agent operations based on Cedar policies.
+   */
+  public static readonly ENFORCE = new PolicyEngineMode('ENFORCE');
+
+  /**
+   * The string value of the policy engine mode.
+   */
+  public readonly value: string;
+
+  public constructor(value: string) {
+    this.value = value;
+  }
+}
+
+/**
+ * Configuration for associating a policy engine with a gateway.
+ *
+ * When configured, the policy engine intercepts all agent requests through this
+ * gateway and evaluates them against the defined Cedar policies.
+ * [disable-awslint:prefer-ref-interface]
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
+export interface GatewayPolicyEngineConfig {
+  /**
+   * The policy engine to associate with this gateway.
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly policyEngine: IPolicyEngine;
+
+  /**
+   * The enforcement mode for the policy engine.
+   *
+   * - `LOG_ONLY`: Evaluates and logs decisions without enforcing them. Use for testing.
+   * - `ENFORCE`: Actively allows or denies requests based on Cedar policy evaluation.
+   *
+   * @default PolicyEngineMode.LOG_ONLY
+   */
+  readonly mode?: PolicyEngineMode;
+}
 
 /******************************************************************************
  *                                Props
@@ -31,6 +88,7 @@ import { validateStringField, validateFieldPattern, ValidationError } from './va
 
 /**
  * Options for adding a Lambda target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddLambdaTargetOptions {
   /**
@@ -65,6 +123,7 @@ export interface AddLambdaTargetOptions {
 
 /**
  * Options for adding an OpenAPI target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddOpenApiTargetOptions {
   /**
@@ -94,14 +153,16 @@ export interface AddOpenApiTargetOptions {
   readonly validateOpenApiSchema?: boolean;
 
   /**
-   * Credential providers for authentication
-   * @default - [GatewayCredentialProvider.iamRole()]
+   * Credential providers for outbound authentication (OpenAPI targets use API Key or OAuth, not IAM).
+   *
+   * @default - none (no credential configuration on the target; supply providers for secured backends)
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
 }
 
 /**
  * Options for adding a Smithy target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddSmithyTargetOptions {
   /**
@@ -131,6 +192,7 @@ export interface AddSmithyTargetOptions {
 
 /**
  * Options for adding an MCP Server target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddMcpServerTargetOptions {
   /**
@@ -167,6 +229,7 @@ export interface AddMcpServerTargetOptions {
 
 /**
  * Options for adding an API Gateway target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddApiGatewayTargetOptions {
   /**
@@ -217,6 +280,7 @@ export interface AddApiGatewayTargetOptions {
 
 /**
  * Properties for defining a Gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayProps {
   /**
@@ -289,10 +353,22 @@ export interface GatewayProps {
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-interceptors.html
    */
   readonly interceptorConfigurations?: IInterceptor[];
+
+  /**
+   * The policy engine configuration for this gateway.
+   *
+   * When provided, the specified policy engine will be associated with this gateway.
+   * All agent requests through this gateway will be evaluated against the Cedar policies
+   * defined in the policy engine.
+   *
+   * @default - No policy engine (requests are not subject to Cedar policy authorization)
+   */
+  readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
 }
 
 /**
  * Attributes for importing an existing Gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayAttributes {
   /**
@@ -327,6 +403,10 @@ export interface GatewayAttributes {
  * @see https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_CreateGateway.html
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class Gateway extends GatewayBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.Gateway';
@@ -478,6 +558,11 @@ export class Gateway extends GatewayBase {
   private responseInterceptorConfig?: InterceptorBindConfig;
 
   /**
+   * The policy engine configuration associated with this gateway.
+   */
+  public readonly policyEngineConfiguration?: GatewayPolicyEngineConfig;
+
+  /**
    * The Cognito User Pool Domain created for the gateway (if using default Cognito authorizer)
    */
   public userPoolDomain?: cognito.IUserPoolDomain;
@@ -540,6 +625,12 @@ export class Gateway extends GatewayBase {
       this.tokenEndpointUrl = defaultCognitoAuth.tokenEndpointUrl;
       this.oauthScopes = defaultCognitoAuth.oauthScopes;
     }
+    if (this.authorizerConfiguration.authorizerType === GatewayAuthorizerType.NONE) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-bedrock-agentcore-alpha:noAuthGateway',
+        'This gateway has no inbound authorization. The endpoint will be publicly accessible without credentials. Ensure you have implemented compensating security controls such as Gateway Interceptors. See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none',
+      );
+    }
     this.exceptionLevel = props.exceptionLevel;
 
     this.tags = props.tags ?? {};
@@ -548,6 +639,8 @@ export class Gateway extends GatewayBase {
     if (props.interceptorConfigurations) {
       this.validateAndInitializeInterceptors(props.interceptorConfigurations);
     }
+
+    this.policyEngineConfiguration = props.policyEngineConfiguration;
 
     // ------------------------------------------------------
     // L1 Instantiation
@@ -562,6 +655,12 @@ export class Gateway extends GatewayBase {
       }),
       kmsKeyArn: this.kmsKey?.keyArn,
       name: this.name,
+      policyEngineConfiguration: this.policyEngineConfiguration
+        ? {
+          arn: this.policyEngineConfiguration.policyEngine.policyEngineArn,
+          mode: (this.policyEngineConfiguration.mode ?? PolicyEngineMode.LOG_ONLY).value,
+        }
+        : undefined,
       protocolConfiguration: this.protocolConfiguration._render(),
       protocolType: this.protocolConfiguration.protocolType,
       roleArn: this.role?.roleArn,
@@ -575,6 +674,11 @@ export class Gateway extends GatewayBase {
     this.createdAt = _resource.attrCreatedAt;
     this.updatedAt = _resource.attrUpdatedAt;
     this.statusReason = _resource.attrStatusReasons;
+
+    if (this.policyEngineConfiguration) {
+      this.policyEngineConfiguration.policyEngine.grantEvaluateForGateway(this.role, this);
+      _resource.node.addDependency(this.role);
+    }
   }
 
   /**
@@ -792,7 +896,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (lengthErrors.length > 0) {
-      throw new ValidationError(lengthErrors.join('\n'));
+      throw new ValidationError(lit`GatewayNameLengthInvalid`, lengthErrors.join('\n'), this);
     }
 
     const patternErrors = validateFieldPattern(
@@ -803,7 +907,7 @@ export class Gateway extends GatewayBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new ValidationError(lit`GatewayNamePatternInvalid`, patternErrors.join('\n'), this);
     }
   }
 
@@ -827,7 +931,7 @@ export class Gateway extends GatewayBase {
     });
 
     if (errors.length > 0) {
-      throw new ValidationError(errors.join('\n'));
+      throw new ValidationError(lit`GatewayDescriptionInvalid`, errors.join('\n'), this);
     }
   }
 
@@ -941,14 +1045,18 @@ export class Gateway extends GatewayBase {
     if (interceptionPoint === InterceptionPoint.REQUEST) {
       if (this.requestInterceptorConfig) {
         throw new ValidationError(
+          lit`RequestInterceptorAlreadyExists`,
           'Gateway already has a REQUEST interceptor configured. A gateway can have at most one REQUEST interceptor.',
+          this,
         );
       }
       this.requestInterceptorConfig = interceptor.bind(this, this);
     } else if (interceptionPoint === InterceptionPoint.RESPONSE) {
       if (this.responseInterceptorConfig) {
         throw new ValidationError(
+          lit`ResponseInterceptorAlreadyExists`,
           'Gateway already has a RESPONSE interceptor configured. A gateway can have at most one RESPONSE interceptor.',
+          this,
         );
       }
       this.responseInterceptorConfig = interceptor.bind(this, this);
@@ -965,13 +1073,17 @@ export class Gateway extends GatewayBase {
 
     if (requestCount > 1) {
       throw new ValidationError(
+        lit`TooManyRequestInterceptors`,
         `Gateway can have at most one REQUEST interceptor. Found ${requestCount} REQUEST interceptors.`,
+        this,
       );
     }
 
     if (responseCount > 1) {
       throw new ValidationError(
+        lit`TooManyResponseInterceptors`,
         `Gateway can have at most one RESPONSE interceptor. Found ${responseCount} RESPONSE interceptors.`,
+        this,
       );
     }
 

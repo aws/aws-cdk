@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSageMakerRuntimeinvokeEndpoint": {
+  "AwsApiCallSageMakerRuntimeinvokeEndpointc073ce32e33d7f2b404ea1e0d8ef183e": {
    "Type": "Custom::DeployAssert@SdkCallSageMakerRuntimeinvokeEndpoint",
    "Properties": {
     "ServiceToken": {
@@ -15,13 +15,25 @@
     "actualPath": "Body",
     "parameters": {
      "EndpointName": {
-      "Fn::ImportValue": "aws-cdk-sagemaker-endpoint:ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-sagemaker-endpoint:ExportsOutputFnGetAttEndpoint8024A810EndpointNameC77E4EFF"
+        },
+        "\""
+       ]
+      ]
      },
-     "TargetVariant": "firstVariant",
-     "Body": "any string"
+     "TargetVariant": "\"firstVariant\"",
+     "Body": "\"any string\""
     },
     "flattenResponse": "true",
-    "salt": "1669239283795"
+    "outputPaths": [
+     "Body"
+    ],
+    "salt": "1779368495879"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -54,7 +66,7 @@
        "Statement": [
         {
          "Action": [
-          "runtime.sagemaker:InvokeEndpoint"
+          "sagemaker:InvokeEndpoint"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -75,12 +87,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -94,10 +106,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSageMakerRuntimeinvokeEndpoint": {
+  "AssertionResultsAwsApiCallSageMakerRuntimeinvokeEndpointc073ce32e33d7f2b404ea1e0d8ef183e": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSageMakerRuntimeinvokeEndpoint",
+     "AwsApiCallSageMakerRuntimeinvokeEndpointc073ce32e33d7f2b404ea1e0d8ef183e",
      "assertion"
     ]
    }

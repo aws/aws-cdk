@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "EventApiOpenSearchStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/542ab1dd9e89ccf0d8daeb0a3724286f31fff0b736b968171cc69bb00fea8106.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c2b373a62f3855e0aa7ab14805c0e0670479e4a9aa3bdda90e10baf9518911cc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,551 +33,7 @@
       "dependencies": [
         "EventApiOpenSearchStack.assets"
       ],
-      "metadata": {
-        "/EventApiOpenSearchStack/Domain": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "version": "*",
-              "removalPolicy": "destroy",
-              "encryptionAtRest": {
-                "enabled": true
-              },
-              "nodeToNodeEncryption": true,
-              "enforceHttps": true,
-              "capacity": {
-                "multiAzWithStandbyEnabled": false
-              },
-              "ebs": {
-                "enabled": true,
-                "volumeSize": "*"
-              }
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/Domain/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Domain66AC69E0"
-          }
-        ],
-        "/EventApiOpenSearchStack/createIndexFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "entry": "*",
-              "handler": "*",
-              "environment": "*",
-              "bundling": {
-                "bundleAwsSDK": true
-              },
-              "timeout": "*",
-              "code": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "entry": "*",
-              "handler": "*",
-              "environment": "*",
-              "bundling": {
-                "bundleAwsSDK": true
-              },
-              "timeout": "*"
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/createIndexFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/createIndexFunction/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EventApiOpenSearchStack/createIndexFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "createIndexFunctionServiceRoleDD0596FB"
-          }
-        ],
-        "/EventApiOpenSearchStack/createIndexFunction/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/createIndexFunction/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "createIndexFunctionServiceRoleDefaultPolicy6B562DDE"
-          }
-        ],
-        "/EventApiOpenSearchStack/createIndexFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "createIndexFunction1E9F2BC6"
-          }
-        ],
-        "/EventApiOpenSearchStack/provider/framework-onEvent": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "description": "*",
-              "runtime": "*",
-              "handler": "*",
-              "timeout": "*",
-              "loggingFormat": "JSON",
-              "applicationLogLevelV2": "FATAL",
-              "logGroup": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "securityGroups": "*",
-              "role": "*",
-              "functionName": "*",
-              "environmentEncryption": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/provider/framework-onEvent/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/provider/framework-onEvent/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EventApiOpenSearchStack/provider/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "providerframeworkonEventServiceRole72DDF894"
-          }
-        ],
-        "/EventApiOpenSearchStack/provider/framework-onEvent/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "providerframeworkonEventServiceRoleDefaultPolicyE786389D"
-          }
-        ],
-        "/EventApiOpenSearchStack/provider/framework-onEvent/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "providerframeworkonEvent40A4D59F"
-          }
-        ],
-        "/EventApiOpenSearchStack/OpenSearchIndexResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EventApiOpenSearchStack/OpenSearchIndexResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OpenSearchIndexResource"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "apiName": "*"
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiOpenSearchB2553740"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/DefaultApiKey": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiOpenSearchDefaultApiKey6156BB91"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/opensearchds/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/opensearchds/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/opensearchds/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiOpenSearchopensearchdsServiceRoleCA3D8222"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/opensearchds/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/opensearchds/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiOpenSearchopensearchdsServiceRoleDefaultPolicy379E38E2"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/opensearchds/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiOpenSearchopensearchdsD0C83ECF"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/search": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "api": "*",
-              "channelNamespaceName": "*",
-              "code": "*",
-              "publishHandlerConfig": {
-                "dataSource": "*"
-              }
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearch/search/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiOpenSearchsearch936F5F00"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearchTestFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "environment": "*",
-              "bundling": {
-                "bundleAwsSDK": true
-              },
-              "entry": "*",
-              "handler": "*",
-              "timeout": "*",
-              "code": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "environment": "*",
-              "bundling": {
-                "bundleAwsSDK": true
-              },
-              "entry": "*",
-              "handler": "*",
-              "timeout": "*"
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearchTestFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearchTestFunction/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearchTestFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiOpenSearchTestFunctionServiceRole46D123E8"
-          }
-        ],
-        "/EventApiOpenSearchStack/EventApiOpenSearchTestFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiOpenSearchTestFunctionEC947C65"
-          }
-        ],
-        "/EventApiOpenSearchStack/Exports/Output{\"Ref\":\"EventApiOpenSearchTestFunctionEC947C65\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefEventApiOpenSearchTestFunctionEC947C65EC040EA7"
-          }
-        ],
-        "/EventApiOpenSearchStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/EventApiOpenSearchStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "EventApiOpenSearchStack.metadata.json",
       "displayName": "EventApiOpenSearchStack"
     },
     "appsynceventapiopensearchtestDefaultTestDeployAssert2641AA09.assets": {
@@ -597,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bd4121f115c450d1eb55b40fe08f5aed86f5746616d5a26e33088cb6a99af361.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4b73e377752c00c1e4f135773421514f43e501c19ff34f7fec2668f1782bef2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -613,64 +69,7 @@
         "EventApiOpenSearchStack",
         "appsynceventapiopensearchtestDefaultTestDeployAssert2641AA09.assets"
       ],
-      "metadata": {
-        "/appsync-eventapi-opensearch-test/DefaultTest/DeployAssert/LambdaInvoke34b714a76f3251951e25ad3ff4eb6268/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/appsync-eventapi-opensearch-test/DefaultTest/DeployAssert/LambdaInvoke34b714a76f3251951e25ad3ff4eb6268/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke34b714a76f3251951e25ad3ff4eb6268"
-          }
-        ],
-        "/appsync-eventapi-opensearch-test/DefaultTest/DeployAssert/LambdaInvoke34b714a76f3251951e25ad3ff4eb6268/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke34b714a76f3251951e25ad3ff4eb6268InvokeB9348096"
-          }
-        ],
-        "/appsync-eventapi-opensearch-test/DefaultTest/DeployAssert/LambdaInvoke34b714a76f3251951e25ad3ff4eb6268/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke34b714a76f3251951e25ad3ff4eb6268"
-          }
-        ],
-        "/appsync-eventapi-opensearch-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/appsync-eventapi-opensearch-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/appsync-eventapi-opensearch-test/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/appsync-eventapi-opensearch-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "appsynceventapiopensearchtestDefaultTestDeployAssert2641AA09.metadata.json",
       "displayName": "appsync-eventapi-opensearch-test/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -685,6 +84,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -703,6 +103,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -814,7 +215,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -968,6 +369,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -999,16 +405,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1153,10 +549,62 @@
             "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1108.0"
 }

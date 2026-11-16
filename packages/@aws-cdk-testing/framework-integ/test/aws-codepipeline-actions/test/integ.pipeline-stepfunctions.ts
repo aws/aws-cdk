@@ -17,7 +17,7 @@ const sourceOutput = new codepipeline.Artifact();
 
 const startState = new stepfunctions.Pass(stack, 'StartState');
 const simpleStateMachine = new stepfunctions.StateMachine(stack, 'SimpleStateMachine', {
-  definition: startState,
+  definitionBody: stepfunctions.DefinitionBody.fromChainable(startState),
 });
 
 const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {

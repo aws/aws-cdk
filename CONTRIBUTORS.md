@@ -6,18 +6,19 @@ Shout out to our top contributors!
 - [skinny85](https://github.com/skinny85)
 - [RomainMuller](https://github.com/RomainMuller)
 - [njlynch](https://github.com/njlynch)
+- [mrgrain](https://github.com/mrgrain)
 - [jogold](https://github.com/jogold)
 - [iliapolo](https://github.com/iliapolo)
-- [mrgrain](https://github.com/mrgrain)
-- [corymhall](https://github.com/corymhall)
-- [shivlaks](https://github.com/shivlaks)
 - [otaviomacedo](https://github.com/otaviomacedo)
+- [corymhall](https://github.com/corymhall)
 - [mazyu36](https://github.com/mazyu36)
-- [pahud](https://github.com/pahud)
+- [shivlaks](https://github.com/shivlaks)
 - [badmintoncryer](https://github.com/badmintoncryer)
+- [pahud](https://github.com/pahud)
 - [go-to-k](https://github.com/go-to-k)
 - [comcalvi](https://github.com/comcalvi)
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
+- [aemada-aws](https://github.com/aemada-aws)
 - [madeline-k](https://github.com/madeline-k)
 - [NetaNir](https://github.com/NetaNir)
 - [robertd](https://github.com/robertd)
@@ -25,8 +26,7 @@ Shout out to our top contributors!
 - [lpizzinidev](https://github.com/lpizzinidev)
 - [phuhung273](https://github.com/phuhung273)
 - [msambol](https://github.com/msambol)
-- [peterwoodworth](https://github.com/peterwoodworth)
 - [GavinZZ](https://github.com/GavinZZ)
 
 
-_Last updated: Sun, 01 Mar 26 00:19:35 +0000_
+_Last updated: Sun, 01 Nov 26 00:14:23 +0000_

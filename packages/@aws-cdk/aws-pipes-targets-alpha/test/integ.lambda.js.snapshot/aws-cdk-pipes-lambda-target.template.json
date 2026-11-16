@@ -54,7 +54,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "TargetLambdaFunctionServiceRole2FBA8508"
@@ -183,7 +183,11 @@
       "InvocationType": "REQUEST_RESPONSE"
      }
     }
-   }
+   },
+   "DependsOn": [
+    "PipeRoleDefaultPolicy56E6A74D",
+    "PipeRole7D4AFC73"
+   ]
   }
  },
  "Outputs": {

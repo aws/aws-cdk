@@ -1,6 +1,7 @@
 /// !cdk-integ pragma:disable-update-workflow
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
@@ -127,7 +128,11 @@ class EksClusterRemovalPolicyStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
+  },
+});
 
 const stack = new EksClusterRemovalPolicyStack(app, 'EksClusterRemovalPolicyStack');
 

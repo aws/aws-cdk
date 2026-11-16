@@ -1,0 +1,20 @@
+{
+  "Description": "IAM_ROLE_NO_BROAD_PRINCIPALS passes: only one named role in one account can assume the role",
+  "Resources": {
+    "OneAccountTrustRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::123456789012:role/Deployer" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

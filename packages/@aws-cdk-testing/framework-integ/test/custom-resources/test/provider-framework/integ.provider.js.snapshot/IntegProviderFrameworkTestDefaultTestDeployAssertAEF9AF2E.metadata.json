@@ -1,0 +1,20 @@
+{
+  "/IntegProviderFrameworkTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "IntegProviderFrameworkTestDefaultTestDeployAssertAEF9AF2E.template.json"
+    }
+  ],
+  "/IntegProviderFrameworkTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/IntegProviderFrameworkTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -46,7 +46,7 @@ export class TestStack extends cdk.Stack {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
-      healthCheck: autoscaling.HealthCheck.ec2(),
+      healthChecks: autoscaling.HealthChecks.ec2(),
     });
 
     // no role or notificationTarget

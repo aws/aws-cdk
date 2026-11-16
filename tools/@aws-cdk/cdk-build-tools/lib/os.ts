@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as util from 'util';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { Timers } from './timer';
 
 interface ShellOptions {

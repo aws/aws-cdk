@@ -22,9 +22,11 @@ rule SQS_NO_WORLD_ACCESSIBLE when %sqs_queue_policies !empty {
                         when Principal.AWS exists {
                             when Principal.AWS is_string {
                                 Principal.AWS != "*"
+                                    <<##ERROR:SQS queue policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
                             }
                             when Principal.AWS is_list {
                                 Principal.AWS[*] != "*"
+                                    <<##ERROR:SQS queue policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts or roles.##>>
                             }
                         }
                     }

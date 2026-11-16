@@ -1,0 +1,8 @@
+{
+  "/synthesize-default-encryption": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "synthesize-default-encryption.template.json"
+    }
+  ]
+}

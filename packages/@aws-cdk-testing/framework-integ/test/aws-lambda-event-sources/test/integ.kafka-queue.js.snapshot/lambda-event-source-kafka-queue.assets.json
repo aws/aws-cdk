@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "df4dd4523fed14e688f8ee5201599c26c453ca61710d97bb06aea30ca4b8b045": {
+      "displayName": "lambda-event-source-kafka-queue Template",
+      "source": {
+        "path": "lambda-event-source-kafka-queue.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7b0f5485": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "df4dd4523fed14e688f8ee5201599c26c453ca61710d97bb06aea30ca4b8b045.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

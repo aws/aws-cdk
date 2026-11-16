@@ -107,6 +107,15 @@ export interface HandlerFrameworkClassProps {
    * @default MemberVisibility.Public
    */
   readonly constructorVisibility?: MemberVisibility;
+
+  /**
+   * Deterministic content hash of the bundled handler code. When supplied,
+   * the generated class emits this hash as the asset hash so the S3 object
+   * key for the Lambda code remains stable unless the code actually changes.
+   *
+   * @default - asset hash is computed at synth time from the bundled directory
+   */
+  readonly sourceHash?: string;
 }
 
 interface BuildRuntimePropertyOptions {
@@ -134,21 +143,40 @@ export abstract class HandlerFrameworkClass extends ClassType {
           scope.registerImport(LAMBDA_MODULE);
         }
 
+        const fromAssetArgs: Expression[] = [
+          PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+        ];
+        if (props.sourceHash) {
+          fromAssetArgs.push(expr.object({ assetHash: expr.lit(props.sourceHash) }));
+        }
+        // eval nodejs provider is a one off scenario where the provider makes its runtime property configurable - to maintain this
+        // functionality we need to expose it as well
+        const isEvalNodejsProvider = this.fqn.includes('eval-nodejs-provider');
+        const constructorPropsType = isEvalNodejsProvider
+          ? this.getOrCreateInterface(scope, {
+            name: `${this.name}Props`,
+            export: true,
+            extends: [LAMBDA_MODULE.FunctionOptions],
+            properties: [evalNodejsRuntimeProperty()],
+            docs: {
+              summary: `Initialization properties for ${this.name}`,
+            },
+          }).type
+          : LAMBDA_MODULE.FunctionOptions;
+
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(...fromAssetArgs)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
+          ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
         const metadataStatements: Statement[] = [
           stmt.directCode(`this.node.addMetadata('${CUSTOM_RESOURCE_RUNTIME_FAMILY}', this.runtime.family)`),
         ];
         this.buildConstructor({
-          constructorPropsType: LAMBDA_MODULE.FunctionOptions,
+          constructorPropsType,
           superProps,
-          optionalConstructorProps: true,
+          optionalConstructorProps: !isEvalNodejsProvider,
           constructorVisibility: MemberVisibility.Public,
           statements: metadataStatements,
         });
@@ -202,19 +230,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         // eval nodejs provider is a one off scenario where the provider makes its runtime property configurable - to maintain this
         // functionality we need to expose it as well
         if (isEvalNodejsProvider) {
-          const runtime: PropertySpec = {
-            name: 'runtime',
-            type: LAMBDA_MODULE.Runtime,
-            immutable: true,
-            optional: true,
-            docs: {
-              summary: 'The runtime that this Lambda will use.',
-              docTags: {
-                default: '- the latest Lambda node runtime available in your region.',
-              },
-            },
-          };
-          properties.push(runtime);
+          properties.push(evalNodejsRuntimeProperty());
         }
         const _interface = this.getOrCreateInterface(scope, {
           name: `${this.name}Props`,
@@ -226,11 +242,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
           },
         });
 
+        const singletonFromAssetArgs: Expression[] = [
+          PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+        ];
+        if (props.sourceHash) {
+          singletonFromAssetArgs.push(expr.object({ assetHash: expr.lit(props.sourceHash) }));
+        }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(...singletonFromAssetArgs)],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
@@ -429,4 +449,23 @@ export abstract class HandlerFrameworkClass extends ClassType {
       ? expr.cond(expr.directCode('props.runtime'), expr.directCode('props.runtime'), call)
       : call;
   }
+}
+
+/**
+ * The `runtime` property that the eval nodejs provider exposes, so the
+ * `EvaluateExpression` task can choose the runtime of its function.
+ */
+function evalNodejsRuntimeProperty(): PropertySpec {
+  return {
+    name: 'runtime',
+    type: LAMBDA_MODULE.Runtime,
+    immutable: true,
+    optional: true,
+    docs: {
+      summary: 'The runtime that this Lambda will use.',
+      docTags: {
+        default: '- the latest Lambda node runtime available in your region.',
+      },
+    },
+  };
 }

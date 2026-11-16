@@ -1,0 +1,78 @@
+{
+  "/pipeline-asset-stack/Production/prd-lambda-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "pipelineassetstackProductionprdlambdastack4E5ABBC0.template.json"
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaFNC3761C8C"
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaFNServiceRole1CCEDDD9"
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaFNLogGroup6B0836D2"
+    }
+  ]
+}

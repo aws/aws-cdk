@@ -28,7 +28,7 @@ const gateway = new agentcore.Gateway(stack, 'TestGateway', {
 // This simulates a real REST API that the Gateway will call
 const backendFunction = new lambda.Function(stack, 'BackendFunction', {
   functionName: 'integ-test-apigateway-backend',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

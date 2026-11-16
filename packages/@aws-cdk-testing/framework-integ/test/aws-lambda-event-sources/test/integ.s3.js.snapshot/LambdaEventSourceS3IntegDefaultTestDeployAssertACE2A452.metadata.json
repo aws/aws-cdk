@@ -1,0 +1,20 @@
+{
+  "/LambdaEventSourceS3Integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "LambdaEventSourceS3IntegDefaultTestDeployAssertACE2A452.template.json"
+    }
+  ],
+  "/LambdaEventSourceS3Integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/LambdaEventSourceS3Integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

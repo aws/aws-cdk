@@ -68,4 +68,21 @@ describe('Mixin Metadata', () => {
     expect(metadata).toBeDefined();
     expect(metadata?.data).toEqual({ mixin: '*' });
   });
+
+  test('Stack.with() records mixin metadata', () => {
+    stack.with(new TestMixin());
+
+    const metadata = stack.node.metadata.find(m => m.type === MIXIN_METADATA_KEY);
+    expect(metadata).toBeDefined();
+    expect(metadata?.data).toEqual({ mixin: '@aws-cdk/mixins-preview.TestMixin' });
+  });
+
+  test('Stack.with() records metadata for child constructs', () => {
+    const child = new Construct(stack, 'Child');
+    stack.with(new TestMixin());
+
+    const childMetadata = child.node.metadata.find(m => m.type === MIXIN_METADATA_KEY);
+    expect(childMetadata).toBeDefined();
+    expect(childMetadata?.data).toEqual({ mixin: '@aws-cdk/mixins-preview.TestMixin' });
+  });
 });

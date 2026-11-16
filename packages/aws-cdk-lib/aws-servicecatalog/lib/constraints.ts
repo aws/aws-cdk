@@ -47,7 +47,7 @@ export interface StackSetsConstraintOptions extends CommonConstraintOptions {
   readonly executionRoleName: string;
 
   /**
-   * Wether to allow end users to create, update, and delete stacks.
+   * Whether to allow end users to create, update, and delete stacks.
    *
    * @default false
    */

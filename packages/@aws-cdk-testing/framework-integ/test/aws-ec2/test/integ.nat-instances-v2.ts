@@ -1,5 +1,5 @@
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import * as assert from 'assert';
+import assert from 'assert';
 import * as cdk from 'aws-cdk-lib';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';

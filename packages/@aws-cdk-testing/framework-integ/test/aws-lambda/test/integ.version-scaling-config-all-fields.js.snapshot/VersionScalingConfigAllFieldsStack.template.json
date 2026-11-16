@@ -500,7 +500,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -639,13 +639,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"
    ]
   },
-  "FunctionCurrentVersion4E2B2261e1bf7b68d638a60aed4afc940f32d651": {
+  "FunctionCurrentVersion4E2B2261279f7b5c73d34be1cf02d46ba58a083b": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {

@@ -21,9 +21,11 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
 
     new appsync.GraphqlApi(this, 'api1', {
       name: 'api1',
-      schema: appsync.SchemaFile.fromAsset(
-        path.join(__dirname, 'appsync.test.graphql'),
-      ),
+      definition: {
+        schema: appsync.SchemaFile.fromAsset(
+          path.join(__dirname, 'appsync.test.graphql'),
+        ),
+      },
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,
@@ -36,9 +38,11 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
 
     new appsync.GraphqlApi(this, 'api2', {
       name: 'api2',
-      schema: appsync.SchemaFile.fromAsset(
-        path.join(__dirname, 'appsync.test.graphql'),
-      ),
+      definition: {
+        schema: appsync.SchemaFile.fromAsset(
+          path.join(__dirname, 'appsync.test.graphql'),
+        ),
+      },
       authorizationConfig: {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,

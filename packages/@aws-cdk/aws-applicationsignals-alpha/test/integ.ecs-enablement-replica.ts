@@ -178,7 +178,7 @@ const pythonStack = new PythonStack(app, 'ApplicationSignalsPythonApp-Replica', 
   dnsNamespace: infraStack.dnsNamespace,
   securityGroup: infraStack.securityGroup,
 });
-pythonStack.addDependency(cwaStack);
+pythonStack.addStackDependency(cwaStack);
 
 new integ.IntegTest(app, 'ApplicationSignalsIntegrationECSReplicaTest', {
   testCases: [infraStack, cwaStack, pythonStack],

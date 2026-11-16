@@ -50,7 +50,9 @@ describe('image asset', () => {
         executable: [
           'sh',
           '-c',
-          `docker load -i asset.${asset.assetHash}.tar | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+          `docker load -i "$1" | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+          'cdk-tarball-image-asset',
+          `asset.${asset.assetHash}.tar`,
         ],
       },
     );
@@ -221,7 +223,9 @@ describe('image asset', () => {
       expect(manifest.dockerImages?.[asset.assetHash]?.source?.executable).toEqual([
         'sh',
         '-c',
-        `custom-docker load -i asset.${asset.assetHash}.tar | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        `custom-docker load -i "$1" | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        'cdk-tarball-image-asset',
+        `asset.${asset.assetHash}.tar`,
       ]);
     } finally {
       // Cleanup

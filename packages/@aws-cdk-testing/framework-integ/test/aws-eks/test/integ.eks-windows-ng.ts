@@ -33,7 +33,7 @@ class EksClusterStack extends Stack {
     });
 
     this.cluster.addNodegroupCapacity('LinuxNodegroup', {
-      amiType: NodegroupAmiType.AL2_X86_64,
+      amiType: NodegroupAmiType.AL2023_X86_64_STANDARD,
     });
     this.cluster.addNodegroupCapacity('WindowsNodegroup', {
       amiType: NodegroupAmiType.WINDOWS_FULL_2022_X86_64,

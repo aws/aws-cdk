@@ -107,8 +107,21 @@ export enum SslPolicy {
    * This is the default policy for listeners created using the AWS Management Console
    *
    * This policy includes TLS 1.3, and is backwards compatible with TLS 1.2
+   *
+   * When feature flag @aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy is enabled,
+   * listeners automatically use the post-quantum policy instead.
    */
   RECOMMENDED_TLS = 'ELBSecurityPolicy-TLS13-1-2-2021-06',
+
+  /**
+   * TLS 1.3 and 1.2 with post-quantum hybrid key exchange using ML-KEM.
+   *
+   * This uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+   * for TLS 1.2 clients, ensuring backward compatibility.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html
+   */
+  TLS13_12_PQ = 'ELBSecurityPolicy-TLS13-1-2-PQ-2025-09',
 
   /**
    * The recommended policy for http listeners.
@@ -145,6 +158,48 @@ export enum SslPolicy {
    * TLS1.3 only
    */
   TLS13_13 = 'ELBSecurityPolicy-TLS13-1-3-2021-06',
+
+  /**
+   * TLS 1.3 only with post-quantum hybrid key exchange using ML-KEM
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html
+   */
+  TLS13_13_PQ = 'ELBSecurityPolicy-TLS13-1-3-PQ-2025-09',
+
+  /**
+   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * Restricted cipher suite for enhanced security with quantum resistance.
+   * Removes AES-CBC algorithms. AWS Console default policy for post-quantum cryptography.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html
+   */
+  TLS13_12_RES_PQ = 'ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09',
+
+  /**
+   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * Extended cipher suite 1 with quantum resistance.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html
+   */
+  TLS13_12_EXT1_PQ = 'ELBSecurityPolicy-TLS13-1-2-Ext1-PQ-2025-09',
+
+  /**
+   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * Extended cipher suite 2 with quantum resistance.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html
+   */
+  TLS13_12_EXT2_PQ = 'ELBSecurityPolicy-TLS13-1-2-Ext2-PQ-2025-09',
+
+  /**
+   * TLS 1.0 through 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html
+   */
+  TLS13_10_PQ = 'ELBSecurityPolicy-TLS13-1-0-PQ-2025-09',
 
   /**
    * TLS 1.3 only with AES 128 and 256 GCM SHA ciphers
@@ -185,6 +240,144 @@ export enum SslPolicy {
    *  TLS1.0 through 1.3 with all ciphers
    */
   FIPS_TLS13_10 = 'ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04',
+
+  /**
+   * TLS 1.3 only with post-quantum hybrid key exchange using ML-KEM
+   *
+   * FIPS-compliant with quantum resistance.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#fips-security-policies
+   */
+  FIPS_TLS13_13_PQ = 'ELBSecurityPolicy-TLS13-1-3-FIPS-PQ-2025-09',
+
+  /**
+   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * FIPS-compliant with quantum resistance.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#fips-security-policies
+   */
+  FIPS_TLS13_12_PQ = 'ELBSecurityPolicy-TLS13-1-2-FIPS-PQ-2025-09',
+
+  /**
+   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * Restricted cipher suite for enhanced security with quantum resistance.
+   * FIPS-compliant. AWS recommended policy for post-quantum cryptography with FIPS.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#fips-security-policies
+   */
+  FIPS_TLS13_12_RES_PQ = 'ELBSecurityPolicy-TLS13-1-2-Res-FIPS-PQ-2025-09',
+
+  /**
+   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * Extended cipher suite 0 with quantum resistance. FIPS-compliant.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#fips-security-policies
+   */
+  FIPS_TLS13_12_EXT0_PQ = 'ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-PQ-2025-09',
+
+  /**
+   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * Extended cipher suite 1 with quantum resistance. FIPS-compliant.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#fips-security-policies
+   */
+  FIPS_TLS13_12_EXT1_PQ = 'ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-PQ-2025-09',
+
+  /**
+   * TLS 1.2 and 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * Extended cipher suite 2 with quantum resistance. FIPS-compliant.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#fips-security-policies
+   */
+  FIPS_TLS13_12_EXT2_PQ = 'ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-PQ-2025-09',
+
+  /**
+   * TLS 1.0 through 1.3 with post-quantum hybrid key exchange using ML-KEM
+   *
+   * FIPS-compliant with quantum resistance.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#fips-security-policies
+   */
+  FIPS_TLS13_10_PQ = 'ELBSecurityPolicy-TLS13-1-0-FIPS-PQ-2025-09',
+
+  /**
+   * TLS 1.3 only, RFC 9151 (CNSA 1.0) strict policy. FIPS-compliant.
+   *
+   * Supports the single cipher TLS_AES_256_GCM_SHA384. Use a strict policy only when all
+   * clients can negotiate RFC 9151 algorithms.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#rfc9151-security-policies
+   */
+  RFC9151_TLS13_13 = 'ELBSecurityPolicy-TLS13-1-3-RFC9151-FIPS-2023-07',
+
+  /**
+   * TLS 1.2 and 1.3, RFC 9151 (CNSA 1.0) strict policy. FIPS-compliant.
+   *
+   * Adds the ECDHE-ECDSA and ECDHE-RSA AES256-GCM-SHA384 ciphers on top of
+   * {@link RFC9151_TLS13_13} for TLS 1.2 clients. Use a strict policy only when all clients
+   * can negotiate RFC 9151 algorithms.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#rfc9151-security-policies
+   */
+  RFC9151_TLS13_12 = 'ELBSecurityPolicy-TLS13-1-2-RFC9151-FIPS-2023-07',
+
+  /**
+   * TLS 1.2 and 1.3, RFC 9151 (CNSA 1.0) strict policy. FIPS-compliant.
+   *
+   * Same as {@link RFC9151_TLS13_12} plus the non-ECDHE AES256-GCM-SHA384 cipher (extended
+   * cipher suite 0). Use a strict policy only when all clients can negotiate RFC 9151 algorithms.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#rfc9151-security-policies
+   */
+  RFC9151_TLS13_12_EXT0 = 'ELBSecurityPolicy-TLS13-1-2-Ext0-RFC9151-FIPS-2023-07',
+
+  /**
+   * TLS 1.2 and 1.3, RFC 9151 (CNSA 1.0) interoperability policy. FIPS-compliant.
+   *
+   * Interop policies mix RFC 9151 and non-RFC 9151 ciphers so clients can transition gradually.
+   * This variant adds the AES128-GCM-SHA256 ciphers (TLS_AES_128_GCM_SHA256,
+   * ECDHE-ECDSA-AES128-GCM-SHA256, ECDHE-RSA-AES128-GCM-SHA256) to the RFC 9151 GCM ciphers.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#rfc9151-security-policies
+   */
+  RFC9151_TLS13_12_INTEROP1 = 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP1-FIPS-2023-07',
+
+  /**
+   * TLS 1.2 and 1.3, RFC 9151 (CNSA 1.0) interoperability policy. FIPS-compliant.
+   *
+   * Extends {@link RFC9151_TLS13_12_INTEROP1} with the AES-SHA256 CBC ciphers
+   * (ECDHE-ECDSA/RSA-AES256-SHA384 and ECDHE-ECDSA/RSA-AES128-SHA256).
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#rfc9151-security-policies
+   */
+  RFC9151_TLS13_12_INTEROP2 = 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP2-FIPS-2023-07',
+
+  /**
+   * TLS 1.2 and 1.3, RFC 9151 (CNSA 1.0) interoperability policy. FIPS-compliant.
+   *
+   * Adds the AES-SHA1 CBC ciphers (ECDHE-ECDSA/RSA-AES256-SHA and ECDHE-ECDSA/RSA-AES128-SHA)
+   * on top of the GCM and SHA256 ciphers, for the widest client compatibility of the interop
+   * policies.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#rfc9151-security-policies
+   */
+  RFC9151_TLS13_12_INTEROP3 = 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP3-FIPS-2023-07',
+
+  /**
+   * TLS 1.2 and 1.3, RFC 9151 (CNSA 1.0) interoperability policy. FIPS-compliant.
+   *
+   * AWS recommends starting with this policy: it supports clients that negotiate classical
+   * TLS 1.3, TLS 1.2, or strict RFC 9151 algorithms, then move to a stricter policy as clients
+   * gain RFC 9151 support. Also used for backend connections when any listener uses an RFC 9151 policy.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/describe-ssl-policies.html#rfc9151-security-policies
+   */
+  RFC9151_TLS13_12_INTEROP4 = 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP4-FIPS-2023-07',
 
   /**
    * Strong foward secrecy ciphers and TLV1.2 only (2020 edition).

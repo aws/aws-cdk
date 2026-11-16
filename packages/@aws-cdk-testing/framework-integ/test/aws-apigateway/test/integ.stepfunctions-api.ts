@@ -20,7 +20,7 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
     });
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: passTask,
+      definitionBody: sfn.DefinitionBody.fromChainable(passTask),
       stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 

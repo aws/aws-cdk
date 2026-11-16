@@ -1,0 +1,420 @@
+{
+  "/integ-bucket-deployment-cross-stack-ssm": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-bucket-deployment-cross-stack-ssm.template.json"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/SsmStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integbucketdeploymentcrossstackssmSsmStack4B7729C6.nested.template.json"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integbucketdeploymentcrossstackssmS3StackDF7B2ACF.nested.template.json"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/BucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketName"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/ParameterName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParameterName"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/ExpectedValues": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExpectedValues"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/VerificationCommand": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VerificationCommand"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/SsmStack/TestParam": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringListValue": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/SsmStack/integbucketdeploymentcrossstackssmSsmStackTestParamF628A831Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "integbucketdeploymentcrossstackssmSsmStackTestParamF628A831Ref"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/SsmStack.NestedStack/SsmStack.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SsmStackNestedStackSsmStackNestedStackResource32C2C36D"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "architecture": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/integbucketdeploymentcrossstackssmS3StackReproBucket6C842AADRef": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "integbucketdeploymentcrossstackssmS3StackReproBucket6C842AADRef"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack.NestedStack/S3Stack.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3StackNestedStackS3StackNestedStackResource909DC03C"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/SsmStack/TestParam/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestParam211A9454"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReproBucketB02973C7"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "architecture": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/CustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReproBucketPolicy78CFA59E"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/ReproBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReproBucketAutoDeleteObjectsCustomResource3655A94E"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployWithSsmParameterAwsCliLayer695E077A"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/Asset1/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/CustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployWithSsmParameterCustomResource3AF3E6E3"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/DeployWithSsmParameter/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-bucket-deployment-cross-stack-ssm/S3Stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+    }
+  ]
+}

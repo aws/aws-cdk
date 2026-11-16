@@ -93,6 +93,9 @@
       ]
      }
     },
+    "ResourceRetentionPolicy": {
+     "SkipDeregisterOnUpdate": true
+    },
     "RetryStrategy": {},
     "Timeout": {},
     "Type": "container"

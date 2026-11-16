@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-endpoint-policy/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-endpoint-policy/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackageendpointpolicyDefaultTestDeployAssert3CEB68CE"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

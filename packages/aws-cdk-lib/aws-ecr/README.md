@@ -39,7 +39,7 @@ repository.onImageScanCompleted('ImageScanComplete')
 Besides the Amazon ECR APIs, ECR also allows the Docker CLI or a language-specific Docker library to push and pull
 images from an ECR repository. However, the Docker CLI does not support native IAM authentication methods and
 additional steps must be taken so that Amazon ECR can authenticate and authorize Docker push and pull requests.
-More information can be found at at [Registry Authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth).
+More information can be found at [Registry Authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth).
 
 A Docker authorization token can be obtained using the `GetAuthorizationToken` ECR API. The following code snippets
 grants an IAM user access to call this API.
@@ -286,4 +286,17 @@ const lambdaHandler = new lambda.Function(this, 'LambdaFunction', {
 repo.onEvent('OnEventTargetLambda', {
   target: new LambdaFunction(lambdaHandler),
 });
+```
+
+## Mixins
+
+ECR provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### RepositoryAutoDeleteImages
+
+Automatically deletes all images from a repository when it is removed from the stack or when the stack is deleted. Requires the repository's removal policy to be set to `DESTROY`:
+
+```ts
+new ecr.CfnRepository(this, 'Repo')
+  .with(new ecr.mixins.RepositoryAutoDeleteImages());
 ```

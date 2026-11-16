@@ -397,13 +397,13 @@
   "myServicelb1FA8CBE12": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
-    "Name": "lb1",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",
       "Value": "false"
      }
     ],
+    "Name": "lb1",
     "Scheme": "internet-facing",
     "SecurityGroups": [
      {
@@ -515,13 +515,13 @@
   "myServicelb2C84C7BCB": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
-    "Name": "lb2",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",
       "Value": "false"
      }
     ],
+    "Name": "lb2",
     "Scheme": "internet-facing",
     "SecurityGroups": [
      {
@@ -566,7 +566,7 @@
     }
    }
   },
-  "myServicelb2SecurityGrouptoawsecsintegfargatemultialbhealthmyServiceSecurityGroup340BCAFA90B8ACADCA": {
+  "myServicelb2SecurityGrouptoawsecsintegfargatemultialbhealthmyServiceSecurityGroup340BCAFA80D287C523": {
    "Type": "AWS::EC2::SecurityGroupEgress",
    "Properties": {
     "Description": "Load balancer to target",
@@ -576,7 +576,7 @@
       "GroupId"
      ]
     },
-    "FromPort": 90,
+    "FromPort": 80,
     "GroupId": {
      "Fn::GetAtt": [
       "myServicelb2SecurityGroupEB00B5B9",
@@ -584,7 +584,7 @@
      ]
     },
     "IpProtocol": "tcp",
-    "ToPort": 90
+    "ToPort": 80
    }
   },
   "myServicelb2listener2AA6970EB": {
@@ -593,7 +593,7 @@
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+       "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
       },
       "Type": "forward"
      }
@@ -605,7 +605,7 @@
     "Protocol": "HTTP"
    }
   },
-  "myServicelb2listener2ECSTargetGroupweb90Group6841F924": {
+  "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "HealthCheckIntervalSeconds": 30,
@@ -670,10 +670,6 @@
       "PortMappings": [
        {
         "ContainerPort": 80,
-        "Protocol": "tcp"
-       },
-       {
-        "ContainerPort": 90,
         "Protocol": "tcp"
        }
       ]
@@ -774,9 +770,9 @@
      },
      {
       "ContainerName": "web",
-      "ContainerPort": 90,
+      "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+       "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
       }
      }
     ],
@@ -808,7 +804,7 @@
    "DependsOn": [
     "myServicelb1listener1ECSTargetGroupweb80GroupC3F9339A",
     "myServicelb1listener15ED0E805",
-    "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
+    "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6",
     "myServicelb2listener2AA6970EB",
     "myServiceTaskDefTaskRole1C1DE6CC"
    ]
@@ -856,11 +852,11 @@
     "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   },
-  "myServiceSecurityGroupfromawsecsintegfargatemultialbhealthmyServicelb2SecurityGroup271B292A9014BC1AF0": {
+  "myServiceSecurityGroupfromawsecsintegfargatemultialbhealthmyServicelb2SecurityGroup271B292A80C258F11C": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "Description": "Load balancer to target",
-    "FromPort": 90,
+    "FromPort": 80,
     "GroupId": {
      "Fn::GetAtt": [
       "myServiceSecurityGroupC3B9D4E0",
@@ -874,7 +870,7 @@
       "GroupId"
      ]
     },
-    "ToPort": 90
+    "ToPort": 80
    },
    "DependsOn": [
     "myServiceTaskDefTaskRole1C1DE6CC"

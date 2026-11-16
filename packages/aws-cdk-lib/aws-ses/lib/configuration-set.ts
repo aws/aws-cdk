@@ -6,6 +6,7 @@ import { CfnConfigurationSet } from './ses.generated';
 import type { IResource } from '../../core';
 import { Duration, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IDedicatedIpPoolRef, IConfigurationSetRef, ConfigurationSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
@@ -77,6 +78,34 @@ export interface ConfigurationSetProps {
    * @default false
    */
   readonly disableSuppressionList?: boolean;
+
+  /**
+   * The Auto Validation threshold for this configuration set.
+   *
+   * When set, Auto Validation is enabled for this configuration set with the specified
+   * confidence threshold. Cannot be combined with `disableAutoValidation: true`.
+   *
+   * @see https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html
+   *
+   * @default - inherit the account-level Auto Validation settings
+   */
+  readonly autoValidationThreshold?: AutoValidationThreshold;
+
+  /**
+   * Override the account-level Auto Validation setting for this configuration set.
+   *
+   * - `true`: explicitly disable Auto Validation for this configuration set.
+   *   Cannot be combined with `autoValidationThreshold`.
+   * - `false`: explicitly enable Auto Validation for this configuration set even if
+   *   it is disabled at the account level. The threshold falls back to the SES default
+   *   unless `autoValidationThreshold` is also specified.
+   * - `undefined`: inherit the account-level setting when `autoValidationThreshold` is also not specified.
+   *
+   * @see https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html
+   *
+   * @default - inherit the account-level Auto Validation settings when autoValidationThreshold is also unspecified
+   */
+  readonly disableAutoValidation?: boolean;
 
   /**
    * The custom subdomain that is used to redirect email recipients to the
@@ -188,6 +217,29 @@ export enum SuppressionReasons {
 }
 
 /**
+ * Confidence threshold used by SES Auto Validation to decide whether an outbound
+ * recipient address should be delivered to.
+ *
+ * @see https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html
+ */
+export enum AutoValidationThreshold {
+  /**
+   * Medium confidence threshold. Allow addresses with medium or higher delivery likelihood.
+   */
+  MEDIUM = 'MEDIUM',
+
+  /**
+   * High confidence threshold. Only allow addresses with high delivery likelihood.
+   */
+  HIGH = 'HIGH',
+
+  /**
+   * Amazon SES manages the threshold automatically based on sending patterns and reputation.
+   */
+  MANAGED = 'MANAGED',
+}
+
+/**
  * A configuration set
  */
 @propertyInjectable
@@ -229,18 +281,21 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     addConstructMetadata(this, props);
 
     if (props.disableSuppressionList && props.suppressionReasons) {
-      throw new ValidationError('When disableSuppressionList is true, suppressionReasons must not be specified.', this);
+      throw new ValidationError(lit`DisableSuppressionListTrueSuppression`, 'When disableSuppressionList is true, suppressionReasons must not be specified.', this);
+    }
+    if (props.disableAutoValidation === true && props.autoValidationThreshold !== undefined) {
+      throw new ValidationError(lit`DisableAutoValidationWithThreshold`, 'When disableAutoValidation is true, autoValidationThreshold must not be specified.', this);
     }
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
-        throw new ValidationError(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
+        throw new ValidationError(lit`MaximumDeliveryDurationGreaterEqual`, `The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
       }
       if (props.maxDeliveryDuration.toSeconds() > Duration.hours(14).toSeconds()) {
-        throw new ValidationError(`The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
+        throw new ValidationError(lit`MaximumDeliveryDurationLessEqual`, `The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
       }
     }
     if (props.customTrackingHttpsPolicy && !props.customTrackingRedirectDomain) {
-      throw new ValidationError('customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
+      throw new ValidationError(lit`CustomTrackingHttpsPolicySet`, 'customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
     }
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
@@ -258,6 +313,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       }),
       suppressionOptions: undefinedIfNoKeys({
         suppressedReasons: props.disableSuppressionList ? [] : renderSuppressedReasons(props.suppressionReasons),
+        validationOptions: renderValidationOptions(props.autoValidationThreshold, props.disableAutoValidation),
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
@@ -307,4 +363,22 @@ function booleanToEnabledDisabled(value: boolean): 'ENABLED' | 'DISABLED' {
   return value === true
     ? 'ENABLED'
     : 'DISABLED';
+}
+
+function renderValidationOptions(
+  threshold?: AutoValidationThreshold,
+  disabled?: boolean,
+): CfnConfigurationSet.ValidationOptionsProperty | undefined {
+  if (disabled === undefined && threshold === undefined) {
+    return undefined;
+  }
+
+  return {
+    conditionThreshold: {
+      conditionThresholdEnabled: disabled === true ? 'DISABLED' : 'ENABLED',
+      overallConfidenceThreshold: threshold !== undefined ? {
+        confidenceVerdictThreshold: threshold,
+      } : undefined,
+    },
+  };
 }

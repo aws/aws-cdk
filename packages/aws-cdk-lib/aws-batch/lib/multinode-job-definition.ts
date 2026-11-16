@@ -5,8 +5,9 @@ import { Compatibility } from './ecs-job-definition';
 import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
 import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
 import * as ec2 from '../../aws-ec2';
-import { ArnFormat, Lazy, Stack } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { ArnFormat, Stack, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -147,11 +148,15 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     return new Import(scope, id);
   }
 
-  public readonly containers: MultiNodeContainer[];
   public readonly mainNode?: number;
   public readonly propagateTags?: boolean;
 
   private readonly resource: CfnJobDefinition;
+  private _containers: IArrayBox<MultiNodeContainer>;
+
+  public get containers(): MultiNodeContainer[] {
+    return this._containers.getMutable();
+  }
 
   @memoizedGetter
   public get jobDefinitionArn(): string {
@@ -174,7 +179,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.containers = props?.containers ?? [];
+    this._containers = Box.fromArray(props?.containers ?? []);
     this.mainNode = props?.mainNode;
     this._instanceType = props?.instanceType;
     this.propagateTags = props?.propagateTags;
@@ -186,23 +191,20 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       propagateTags: this.propagateTags,
       nodeProperties: {
         mainNode: this.mainNode ?? 0,
-        nodeRangeProperties: Lazy.any({
-          produce: () => this.containers.map((container) => ({
+        nodeRangeProperties: this._containers.derive(containers =>
+          containers.map((container) => ({
             targetNodes: container.startNode + ':' + container.endNode,
             container: {
               ...container.container._renderContainerDefinition(),
               instanceType: this._instanceType?.toString(),
             },
-          })),
-        }),
-        numNodes: Lazy.number({
-          produce: () => computeNumNodes(this.containers),
-        }),
+          }))),
+        numNodes: Token.asNumber(this._containers.derive(computeNumNodes)),
       },
       platformCapabilities: [Compatibility.EC2],
     });
 
-    this.node.addValidation({ validate: () => validateContainers(this.containers) });
+    this.node.addValidation({ validate: () => validateContainers(this._containers.get()) });
   }
 
   /**
@@ -219,11 +221,11 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
 
   @MethodMetadata()
   public addContainer(container: MultiNodeContainer) {
-    this.containers.push(container);
+    this._containers.push(container);
   }
 }
 
-function computeNumNodes(containers: MultiNodeContainer[]) {
+function computeNumNodes(containers: readonly MultiNodeContainer[]) {
   let result = 0;
 
   for (const container of containers) {
@@ -233,6 +235,6 @@ function computeNumNodes(containers: MultiNodeContainer[]) {
   return result;
 }
 
-function validateContainers(containers: MultiNodeContainer[]): string[] {
+function validateContainers(containers: readonly MultiNodeContainer[]): string[] {
   return containers.length === 0 ? ['multinode job has no containers!'] : [];
 }

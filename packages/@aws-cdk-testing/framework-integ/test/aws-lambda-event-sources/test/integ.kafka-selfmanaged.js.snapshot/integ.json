@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "52.0.0",
   "testCases": {
     "LambdaEventSourceKafkaSelfManagedTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "LambdaEventSourceKafkaSelfManagedTest/DefaultTest/DeployAssert",
       "assertionStackName": "LambdaEventSourceKafkaSelfManagedTestDefaultTestDeployAssertAF78BD0F"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

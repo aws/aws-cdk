@@ -1,9 +1,26 @@
 import type { IConstruct } from 'constructs';
-import { ConstructOrder, Dependable } from 'constructs';
-import { resolveReferences } from './refs';
+import { resolveReferences, resolveReferencesInElements } from './refs';
 import { CfnResource } from '../cfn-resource';
-import { Stack } from '../stack';
-import { Stage } from '../stage';
+import { debugModeEnabled } from '../debug';
+import type { Stack } from '../stack';
+import { iterateDfsPostorderStopAtStage, iterateDfsPreorder } from './construct-iteration';
+import { STACK_TYPE, STAGE_TYPE, stageOf } from './core-construct-finders';
+import { reifyConstructDependencies } from './deps';
+import { writePropertyAssignmentMetadataForConstruct } from './resolve';
+
+function writePropertyAssignmentMetadata(root: IConstruct) {
+  if (!debugModeEnabled()) return;
+
+  const lookupTableFor = (c: CfnResource) => ({
+    cfnPropertyName: (cdkPropertyName: string) => c.cfnPropertyName(cdkPropertyName),
+  });
+
+  for (const consumer of iterateDfsPreorder(root)) {
+    if (CfnResource.isCfnResource(consumer)) {
+      writePropertyAssignmentMetadataForConstruct(consumer, () => consumer._toCloudFormation(), lookupTableFor(consumer));
+    }
+  }
+}
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`
@@ -16,30 +33,18 @@ import { Stage } from '../stage';
  * @param root The root of the construct tree.
  */
 export function prepareApp(root: IConstruct) {
-  // apply dependencies between resources in depending subtrees
-  for (const dependency of findTransitiveDeps(root)) {
-    const targetCfnResources = findCfnResources(dependency.target);
-    const sourceCfnResources = findCfnResources(dependency.source);
-
-    for (const target of targetCfnResources) {
-      for (const source of sourceCfnResources) {
-        source.addDependency(target);
-      }
-    }
-  }
+  reifyConstructDependencies(root);
 
   resolveReferences(root);
+  writePropertyAssignmentMetadata(root);
 
-  // depth-first (children first) queue of nested stacks. We will pop a stack
-  // from the head of this queue to prepare its template asset.
-  //
-  // Depth-first since the a nested stack's template hash will be reflected in
-  // its parent's template, which then changes the parent's hash, etc.
-  const queue = findAllNestedStacks(root);
+  // Depth-first (children first) list of nested stacks, since a nested stack's
+  // template hash will be reflected in its parent's template, which then
+  // changes the parent's hash, etc.
+  const nestedStacks = findAllNestedStacks(root);
 
-  if (queue.length > 0) {
-    while (queue.length > 0) {
-      const nested = queue.shift()!;
+  if (nestedStacks.length > 0) {
+    for (const nested of nestedStacks) {
       defineNestedStackAsset(nested);
     }
 
@@ -48,12 +53,17 @@ export function prepareApp(root: IConstruct) {
     // Adding nested stack assets may have added CfnParameters to the top-level
     // stack which are referenced in a deeper-level stack. The values of these
     // parameters need to be carried through to the right location via Nested
-    // Stack parameters, which `resolveReferences()` will do.
+    // Stack parameters, which reference resolution will do.
+    //
+    // Everything a nested stack asset introduces (the template URL, the stack
+    // parameters and the copied tags) is consumed by that nested stack's own
+    // `AWS::CloudFormation::Stack` resource, so only those resources need to be
+    // revisited.
     //
     // Yes, this may add `Parameter` elements to a template whose hash has
     // already been calculated, but the invariant that if the functional part
     // of the template changes its hash will change is still upheld.
-    resolveReferences(root);
+    resolveReferencesInElements(nestedStacks.map(s => s.nestedStackResource!));
   }
 }
 
@@ -72,63 +82,26 @@ function defineNestedStackAsset(nestedStack: Stack) {
 function findAllNestedStacks(root: IConstruct) {
   const result = new Array<Stack>();
 
+  // Preserve legacy behavior: when synthesizing a bare Stack that lives inside a
+  // Stage/App, the Stage owns nested stack assets, not us.
+  if (!STAGE_TYPE.isMarked(root) && stageOf(root)) { return result; }
+
   const includeStack = (stack: IConstruct): stack is Stack => {
-    if (!Stack.isStack(stack)) { return false; }
-    if (!stack.nested) { return false; }
-
-    // test: if we are not within a stage, then include it.
-    if (!Stage.of(stack)) { return true; }
-
-    return Stage.of(stack) === root;
+    if (!STACK_TYPE.isMarked(stack)) { return false; }
+    return stack.nested;
   };
 
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
-  for (const stack of root.node.findAll(ConstructOrder.POSTORDER /* <== important */)) {
-    if (includeStack(stack)) {
-      result.push(stack);
+  for (const node of iterateDfsPostorderStopAtStage(root)) { /* <== important to use postorder */
+    if (includeStack(node)) {
+      result.push(node);
     }
   }
 
   return result;
 }
 
-/**
- * Find all resources in a set of constructs
- */
-function findCfnResources(root: IConstruct): CfnResource[] {
-  return root.node.findAll().filter(CfnResource.isCfnResource);
-}
-
 interface INestedStackPrivateApi {
   _prepareTemplateAsset(): boolean;
-}
-
-/**
- * Return all dependencies registered on this node or any of its children
- */
-function findTransitiveDeps(root: IConstruct): Dependency[] {
-  const found = new Map<IConstruct, Set<IConstruct>>(); // Deduplication map
-  const ret = new Array<Dependency>();
-
-  for (const source of root.node.findAll()) {
-    for (const dependable of source.node.dependencies) {
-      for (const target of Dependable.of(dependable).dependencyRoots) {
-        let foundTargets = found.get(source);
-        if (!foundTargets) { found.set(source, foundTargets = new Set()); }
-
-        if (!foundTargets.has(target)) {
-          ret.push({ source, target });
-          foundTargets.add(target);
-        }
-      }
-    }
-  }
-
-  return ret;
-}
-
-interface Dependency {
-  readonly source: IConstruct;
-  readonly target: IConstruct;
 }

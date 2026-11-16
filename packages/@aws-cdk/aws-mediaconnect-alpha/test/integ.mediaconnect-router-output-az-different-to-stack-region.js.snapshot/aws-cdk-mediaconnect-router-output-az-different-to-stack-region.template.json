@@ -1,0 +1,86 @@
+{
+ "Resources": {
+  "RouterOutput170DDDF13": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "AvailabilityZone": "eu-west-1a",
+    "Configuration": {
+     "MediaLiveInput": {
+      "DestinationTransitEncryption": {
+       "EncryptionKeyConfiguration": {
+        "Automatic": {}
+       },
+       "EncryptionKeyType": "AUTOMATIC"
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 12000000,
+    "Name": "test-medialive-no-input",
+    "RegionName": "eu-west-1",
+    "RoutingScope": "REGIONAL",
+    "Tier": "OUTPUT_50"
+   }
+  },
+  "RouterOutput2A789A788": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "AvailabilityZone": "eu-west-1a",
+    "Configuration": {
+     "MediaLiveInput": {
+      "DestinationTransitEncryption": {
+       "EncryptionKeyConfiguration": {
+        "Automatic": {}
+       },
+       "EncryptionKeyType": "AUTOMATIC"
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 12000000,
+    "Name": "test-medialive-no-input",
+    "RegionName": "eu-west-1",
+    "RoutingScope": "REGIONAL",
+    "Tier": "OUTPUT_50"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -3,6 +3,7 @@ import { Bucket } from '../../../aws-s3';
 import { BucketDeployment, ServerSideEncryption, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Product stack synthesizer props.
@@ -75,7 +76,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
 
   public addFileAsset(asset: cdk.FileAssetSource): cdk.FileAssetLocation {
     if (!this.assetBucket) {
-      throw new UnscopedValidationError('An Asset Bucket must be provided to use Assets');
+      throw new UnscopedValidationError(lit`AssetBucketRequired`, 'An Asset Bucket must be provided to use Assets');
     }
 
     // This assumes all assets added to the parent stack's synthesizer go into the same bucket.
@@ -87,10 +88,10 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     const source = Source.bucket(this.parentAssetBucket, location.objectKey);
 
     if (this.serverSideEncryption === ServerSideEncryption.AWS_KMS && !this.serverSideEncryptionAwsKmsKeyId) {
-      throw new UnscopedValidationError('A KMS Key must be provided to use SSE_KMS');
+      throw new UnscopedValidationError(lit`KmsKeyRequiredForSseKms`, 'A KMS Key must be provided to use SSE_KMS');
     }
     if (this.serverSideEncryption !== ServerSideEncryption.AWS_KMS && this.serverSideEncryptionAwsKmsKeyId) {
-      throw new UnscopedValidationError('A SSE_KMS encryption must be enabled if you provide KMS Key');
+      throw new UnscopedValidationError(lit`SseKmsRequiredForKmsKey`, 'A SSE_KMS encryption must be enabled if you provide KMS Key');
     }
 
     // Multiple Products deploying into the same bucket will use the same 'BucketDeployment' construct.
@@ -112,7 +113,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
 
     const bucketName = this.physicalNameOfBucket(this.assetBucket);
     if (!asset.fileName) {
-      throw new UnscopedValidationError('Asset file name is undefined');
+      throw new UnscopedValidationError(lit`AssetFileNameRequired`, 'Asset file name is undefined');
     }
     const s3ObjectUrl = `s3://${bucketName}/${objectKey}`;
     const httpUrl = `https://s3.${bucketName}/${objectKey}`;
@@ -120,21 +121,42 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
     return { bucketName, objectKey, httpUrl, s3ObjectUrl, s3Url: httpUrl };
   }
 
+  /**
+   * Return the configured physical name of the bucket.
+   *
+   * We do this to simplify referencing the assets from INSIDE the ProductStack when
+   * that eventually gets deployed; we don't know what account it will be deployed into,
+   * so publishing a generated name will become tricky: Exports? SSM? Only in the same
+   * account. And we don't really have another mechanism.
+   *
+   * Solution: we force the user to have specified a known physical name for the bucket and use that.
+   * This is not allowed to have any tokens in it (technically speaking we could
+   * allow specifically `${AWS::Partition}` and `${AWS::Region}`, but we just don't for the moment).
+   */
   private physicalNameOfBucket(bucket: IBucket) {
-    let resolvedName;
-    if (cdk.Resource.isOwnedResource(bucket)) {
-      resolvedName = cdk.Stack.of(bucket).resolve((bucket.node.defaultChild as CfnBucket).bucketName);
-    } else {
-      resolvedName = bucket.bucketName;
-    }
+    const candidateName = cdk.Resource.isOwnedResource(bucket)
+      // This is an `s3.Bucket`, grab the configured name of the underlying CfnBucket resource.
+      ? (bucket.node.defaultChild as CfnBucket).bucketName
+      : bucket.bucketName;
+
+    // For `s3.Bucket`, `cfnBucket.bucketName` attribute starts out as a Token that may eventually
+    // turn into a concrete physical name or remain `undefined`. To be able to
+    // tell the difference, we need to resolve it first.
+    const resolvedName = cdk.Stack.of(bucket).resolve(candidateName);
     if (resolvedName === undefined) {
-      throw new UnscopedValidationError('A bucketName must be provided to use Assets');
+      throw new cdk.ValidationError(lit`BucketNameRequiredForAssets`, 'A ProductStack\'s assetBucket must have a physical name', bucket);
     }
+    // `resolve()` will produce a non-string expression if there were tokens in the original string
+    // This is the simplest way to disallow this for now.
+    if (typeof resolvedName !== 'string') {
+      throw new cdk.ValidationError(lit`ProductStackBucketNameError`, `The ProductStack\'s assetBucket may not have Tokens in its physical name (got '${candidateName}')`, bucket);
+    }
+
     return resolvedName;
   }
 
   public addDockerImageAsset(_asset: cdk.DockerImageAssetSource): cdk.DockerImageAssetLocation {
-    throw new UnscopedValidationError('Service Catalog Product Stacks cannot use Assets');
+    throw new UnscopedValidationError(lit`DockerAssetsNotSupported`, 'Service Catalog Product Stacks cannot use Assets');
   }
 
   public synthesize(session: cdk.ISynthesisSession): void {
