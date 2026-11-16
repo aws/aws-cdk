@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { FargateTaskDefinition } from '../../../aws-ecs';
+import type { IRole } from '../../../aws-iam';
 import { EcsTask } from '../../../aws-events-targets';
 import { Annotations, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -26,6 +27,13 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
    * @default none
    */
   readonly scheduledFargateTaskImageOptions?: ScheduledFargateTaskImageOptions;
+
+  /**
+   * Existing IAM role to run the ECS task
+   *
+   * @default A new IAM role is created
+   */
+  readonly role?: IRole;
 }
 
 /**
@@ -118,6 +126,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       securityGroups: props.securityGroups,
       propagateTags: props.propagateTags,
       tags: props.tags,
+      role: props.role,
     });
 
     this.addTaskAsTarget(this.task);
