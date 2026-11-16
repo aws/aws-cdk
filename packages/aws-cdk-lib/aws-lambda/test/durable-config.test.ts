@@ -467,7 +467,7 @@ describe('durable config', () => {
     expectKeyPolicy(keyStack, undefined);
     expect(executionRoleGrants(keyStack)).toEqual([]);
     Annotations.fromStack(fnStack).hasWarning('/FnStack/Lambda',
-      Match.stringLikeRegexp('no literal name and path.*Pass a role with a literal roleName.*durableConfigKmsKeyExecutionRoleNotGranted'));
+      Match.stringLikeRegexp('circular dependency.*Pass a role with a literal roleName.*durableConfigKmsKeyExecutionRoleNotGranted'));
     Template.fromStack(fnStack).resourceCountIs('AWS::IAM::Policy', 0);
     Template.fromStack(cdk.Stack.of(fn.role!)).resourceCountIs('AWS::IAM::Policy', 0);
   });
@@ -511,7 +511,7 @@ describe('durable config', () => {
       expect.objectContaining({ Principal: functionAccountRoot, Action: ['kms:Decrypt', 'kms:GenerateDataKey'] }),
     ]));
     Annotations.fromStack(fnStack).hasWarning('/FnStack/Lambda',
-      Match.stringLikeRegexp('account 222222222222 but the function is in account 111111111111.*IAM policies.*durableConfigKmsKeyCrossAccount'));
+      Match.stringLikeRegexp('account 222222222222, so the function.s account also needs IAM permissions.*durableConfigKmsKeyCrossAccount'));
   });
 
   test('DurableConfig with an imported kmsKey in another account warns about both the account and the key policy', () => {
@@ -606,7 +606,7 @@ describe('durable config', () => {
 
     expect(JSON.stringify(Template.fromStack(stack).toJSON())).not.toContain('kms:EncryptionContext:aws:lambda:FunctionArn');
     Annotations.fromStack(stack).hasWarning('/stack/Lambda',
-      Match.stringLikeRegexp('cannot add the durable execution statements.*Add the statements to the key policy manually.*durableConfigKmsKeyNotEditable'));
+      Match.stringLikeRegexp('CDK cannot edit the durableConfig.kmsKey key policy.*durableConfigKmsKeyNotEditable'));
   });
 
   test('DurableConfig with a kmsKey and no functionName matches a named role with a wildcard encryption context', () => {
