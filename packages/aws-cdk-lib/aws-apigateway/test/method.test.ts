@@ -1259,6 +1259,46 @@ describe('method', () => {
       Annotations.fromStack(stack).hasWarning('/Default/test-api/Default/{proxy+}/ANY', warning);
     });
 
+    test('suggests autoConfigurePathParameter only for the proxy path parameter', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+      const hint = Match.stringLikeRegexp('autoConfigurePathParameter: true');
+
+      // WHEN
+      api.root.addResource('{proxy+}').addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}', {
+        options: {
+          requestParameters: { 'integration.request.path.proxy': 'method.request.path.proxy' },
+        },
+      }));
+      api.root.addResource('{id}').addMethod('GET', new apigw.HttpIntegration('http://example.com/{id}', {
+        options: {
+          requestParameters: { 'integration.request.path.id': 'method.request.path.id' },
+        },
+      }));
+
+      // THEN
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasWarning('/Default/test-api/Default/{proxy+}/ANY', hint);
+      annotations.hasWarning('/Default/test-api/Default/{id}/GET', Match.stringLikeRegexp('the integration maps "method.request.path.id"'));
+      annotations.hasNoWarning('/Default/test-api/Default/{id}/GET', hint);
+    });
+
+    test('does not warn for a proxy resource with autoConfigurePathParameter', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addResource('items').addProxy({
+        autoConfigurePathParameter: true,
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/items/{proxy}'),
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('does not declare it'));
+    });
+
     test.each([true, false])('does not warn when the method declares the path parameter (required: %s)', (required) => {
       // GIVEN
       const stack = new cdk.Stack();

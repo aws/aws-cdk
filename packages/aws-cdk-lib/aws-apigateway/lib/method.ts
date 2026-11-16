@@ -379,7 +379,10 @@ export class Method extends Resource {
         continue;
       }
       if (methodRequestParameters?.[source] === undefined) {
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:undeclaredPathParameter', `the integration maps ${JSON.stringify(source)}, but the method does not declare it in 'requestParameters'. Deployment will fail with "Invalid mapping expression parameter specified". Add ${JSON.stringify(source)} to the method's 'requestParameters'.`);
+        const proxyHint = source === 'method.request.path.proxy'
+          ? ' For a proxy resource, you can also set \'autoConfigurePathParameter: true\' to configure both sides.'
+          : '';
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:undeclaredPathParameter', `the integration maps ${JSON.stringify(source)}, but the method does not declare it in 'requestParameters'. Deployment will fail with "Invalid mapping expression parameter specified". Add ${JSON.stringify(source)} to the method's 'requestParameters'.${proxyHint}`);
       }
     }
   }
