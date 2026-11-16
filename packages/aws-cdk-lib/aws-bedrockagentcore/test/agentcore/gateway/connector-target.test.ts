@@ -7,6 +7,7 @@ import { Gateway } from '../../../lib';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
 import {
   ConnectorTargetConfiguration,
+  GatewayConnector,
   KnowledgeBaseSearchType,
   KnowledgeBasesTargetConfiguration,
 } from '../../../lib/gateway/targets/connector-target-configuration';
@@ -57,7 +58,7 @@ describe('Connector gateway targets', () => {
         gateway,
         gatewayTargetName: 'web-search',
         targetConfiguration: ConnectorTargetConfiguration.create({
-          connectorId: 'web-search',
+          connector: GatewayConnector.WEB_SEARCH,
           enabledTools: ['WebSearch'],
           toolConfigurations: [{
             name: 'WebSearch',
@@ -98,7 +99,7 @@ describe('Connector gateway targets', () => {
       new GatewayTarget(stack, 'Target', {
         gateway,
         targetConfiguration: ConnectorTargetConfiguration.create({
-          connectorId: 'web-search',
+          connector: GatewayConnector.WEB_SEARCH,
           toolConfigurations: [{ name: 'WebSearch' }],
         }),
       });
@@ -127,7 +128,7 @@ describe('Connector gateway targets', () => {
     ])('omits Configurations for %s', (_, toolConfigurations) => {
       new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connectorId: 'web-search', toolConfigurations }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH, toolConfigurations }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
@@ -140,7 +141,7 @@ describe('Connector gateway targets', () => {
     test('has the CONNECTOR target type and grants the gateway role nothing', () => {
       const target = new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connectorId: 'web-search' }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH }),
       });
 
       expect(target.targetType).toBe(McpTargetType.CONNECTOR);
@@ -150,7 +151,7 @@ describe('Connector gateway targets', () => {
     test('accepts an explicit gateway IAM role credential provider', () => {
       new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connectorId: 'web-search' }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH }),
         credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
       });
 
@@ -172,14 +173,66 @@ describe('Connector gateway targets', () => {
     ])('fails for an %s credential provider', (type, provider) => {
       expect(() => new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connectorId: 'web-search' }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH }),
         credentialProviderConfigurations: [provider()],
       })).toThrow(`connector targets only support the GATEWAY_IAM_ROLE credential provider, got "${type}"`);
     });
 
     test('fails for an empty connectorId', () => {
-      expect(() => ConnectorTargetConfiguration.create({ connectorId: '' }))
+      expect(() => GatewayConnector.of(''))
         .toThrow('connectorId must not be empty');
+    });
+
+    test.each([
+      [GatewayConnector.BEDROCK_KNOWLEDGE_BASES, 'bedrock-knowledge-bases'],
+      [GatewayConnector.WEB_SEARCH, 'web-search'],
+      [GatewayConnector.WEB_ANSWER, 'web-answer'],
+      [GatewayConnector.STEP_FUNCTIONS, 'states'],
+      [GatewayConnector.of('my-connector'), 'my-connector'],
+    ])('renders connector %s as ConnectorId %s', (connector, connectorId) => {
+      new GatewayTarget(stack, 'Target', {
+        gateway,
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector }),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        TargetConfiguration: { Mcp: { Connector: { Source: { ConnectorId: connectorId } } } },
+      });
+    });
+
+    test('GatewayTarget.forConnector and addConnectorTarget render the same target as the configuration', () => {
+      const options = {
+        gatewayTargetName: 'web-search',
+        description: 'Search the public web',
+        connector: GatewayConnector.WEB_SEARCH,
+        enabledTools: ['WebSearch'],
+        toolConfigurations: [{ name: 'WebSearch', parameterValues: { domainFilter: { exclude: ['example.com'] } } }],
+      };
+      const added = gateway.addConnectorTarget('Added', options);
+      const created = GatewayTarget.forConnector(stack, 'Created', { gateway, ...options });
+
+      expect(added.targetType).toBe(McpTargetType.CONNECTOR);
+      const targets = Template.fromStack(stack).findResources('AWS::BedrockAgentCore::GatewayTarget');
+      const properties = (target: GatewayTarget) =>
+        targets[stack.getLogicalId(target.node.defaultChild as cdk.CfnElement)].Properties;
+
+      expect(properties(added)).toEqual({
+        GatewayIdentifier: properties(created).GatewayIdentifier,
+        Name: 'web-search',
+        Description: 'Search the public web',
+        CredentialProviderConfigurations: [{ CredentialProviderType: 'GATEWAY_IAM_ROLE' }],
+        TargetConfiguration: {
+          Mcp: {
+            Connector: {
+              Source: { ConnectorId: 'web-search' },
+              Enabled: ['WebSearch'],
+              Configurations: [{ Name: 'WebSearch', ParameterValues: { domainFilter: { exclude: ['example.com'] } } }],
+            },
+          },
+        },
+      });
+      expect(properties(created)).toEqual(properties(added));
+      expect(bedrockStatements()).toEqual([]);
     });
 
     test.each([
@@ -187,35 +240,35 @@ describe('Connector gateway targets', () => {
       ['a 65 character', 'a'.repeat(65)],
     ])('fails for %s tool name', (_, name) => {
       expect(() => ConnectorTargetConfiguration.create({
-        connectorId: 'web-search',
+        connector: GatewayConnector.WEB_SEARCH,
         toolConfigurations: [{ name }],
       })).toThrow(`connector tool name must be between 1 and 64 characters long, got "${name}" (${name.length} characters)`);
     });
 
     test('accepts a 64 character tool name and a 2000 character description', () => {
       expect(() => ConnectorTargetConfiguration.create({
-        connectorId: 'web-search',
+        connector: GatewayConnector.WEB_SEARCH,
         toolConfigurations: [{ name: 'a'.repeat(64), description: 'd'.repeat(2000) }],
       })).not.toThrow();
     });
 
     test('fails for a tool description longer than 2000 characters', () => {
       expect(() => ConnectorTargetConfiguration.create({
-        connectorId: 'web-search',
+        connector: GatewayConnector.WEB_SEARCH,
         toolConfigurations: [{ name: 'WebSearch', description: 'd'.repeat(2001) }],
       })).toThrow('description of connector tool "WebSearch" must be at most 2000 characters long, got 2001 characters');
     });
 
     test.each([0, 51])('fails for %d enabled tools', (count) => {
       expect(() => ConnectorTargetConfiguration.create({
-        connectorId: 'web-search',
+        connector: GatewayConnector.WEB_SEARCH,
         enabledTools: Array.from({ length: count }, (_, i) => `Tool${i}`),
       })).toThrow(`enabledTools must contain between 1 and 50 tool names, got ${count}`);
     });
 
     test.each([1, 50])('accepts %d enabled tools', (count) => {
       expect(() => ConnectorTargetConfiguration.create({
-        connectorId: 'web-search',
+        connector: GatewayConnector.WEB_SEARCH,
         enabledTools: Array.from({ length: count }, (_, i) => `Tool${i}`),
       })).not.toThrow();
     });
@@ -225,7 +278,7 @@ describe('Connector gateway targets', () => {
       const listParam = new cdk.CfnParameter(stack, 'ListParam', { type: 'CommaDelimitedList' });
 
       expect(() => ConnectorTargetConfiguration.create({
-        connectorId: param.valueAsString,
+        connector: GatewayConnector.of(param.valueAsString),
         enabledTools: listParam.valueAsList,
         toolConfigurations: [{ name: param.valueAsString, description: param.valueAsString }],
       })).not.toThrow();

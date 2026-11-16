@@ -16,6 +16,45 @@ import type { IGateway } from '../gateway-base';
  *****************************************************************************/
 
 /**
+ * A connector that a gateway target can use
+ *
+ * Connectors are pre-built integrations with AWS services and third-party tools.
+ */
+export class GatewayConnector {
+  /** Amazon Bedrock Managed Knowledge Bases */
+  public static readonly BEDROCK_KNOWLEDGE_BASES = new GatewayConnector('bedrock-knowledge-bases');
+  /** Web Search Tool */
+  public static readonly WEB_SEARCH = new GatewayConnector('web-search');
+  /** Web Answer */
+  public static readonly WEB_ANSWER = new GatewayConnector('web-answer');
+  /** AWS Step Functions */
+  public static readonly STEP_FUNCTIONS = new GatewayConnector('states');
+
+  /**
+   * Use a connector that is not yet defined in this class.
+   * @param connectorId The identifier of the connector
+   */
+  public static of(connectorId: string): GatewayConnector {
+    if (!Token.isUnresolved(connectorId) && connectorId.length === 0) {
+      throw new UnscopedValidationError(lit`ConnectorIdInvalid`, 'connectorId must not be empty');
+    }
+    return new GatewayConnector(connectorId);
+  }
+
+  /** The identifier of the connector. */
+  public readonly connectorId: string;
+
+  private constructor(connectorId: string) {
+    this.connectorId = connectorId;
+  }
+
+  /** Returns the identifier of the connector. */
+  public toString(): string {
+    return this.connectorId;
+  }
+}
+
+/**
  * Controls whether the agent can see and set a parameter of a connector tool.
  */
 export interface ConnectorParameterOverride {
@@ -84,9 +123,9 @@ export interface ConnectorToolConfiguration {
  */
 export interface ConnectorTargetConfigurationProps {
   /**
-   * The identifier of the connector to use, for example `bedrock-knowledge-bases` or `web-search`.
+   * The connector to use
    */
-  readonly connectorId: string;
+  readonly connector: GatewayConnector;
 
   /**
    * Per-tool configurations for the connector.
@@ -131,9 +170,9 @@ export class ConnectorTargetConfiguration extends McpTargetConfiguration {
   public readonly targetType = McpTargetType.CONNECTOR;
 
   /**
-   * The identifier of the connector
+   * The connector this configuration uses
    */
-  public readonly connectorId: string;
+  public readonly connector: GatewayConnector;
 
   /**
    * Per-tool configurations for the connector
@@ -147,7 +186,7 @@ export class ConnectorTargetConfiguration extends McpTargetConfiguration {
 
   constructor(props: ConnectorTargetConfigurationProps) {
     super();
-    this.connectorId = props.connectorId;
+    this.connector = props.connector;
     this.toolConfigurations = props.toolConfigurations;
     this.enabledTools = props.enabledTools;
 
@@ -184,7 +223,7 @@ export class ConnectorTargetConfiguration extends McpTargetConfiguration {
 
     return {
       connector: {
-        source: { connectorId: this.connectorId },
+        source: { connectorId: this.connector.connectorId },
         configurations: configurations && configurations.length > 0 ? configurations : undefined,
         enabled: this.enabledTools,
       },
@@ -192,10 +231,6 @@ export class ConnectorTargetConfiguration extends McpTargetConfiguration {
   }
 
   private validateConfiguration(): void {
-    if (!Token.isUnresolved(this.connectorId) && this.connectorId.length === 0) {
-      throw new UnscopedValidationError(lit`ConnectorIdInvalid`, 'connectorId must not be empty');
-    }
-
     for (const tool of this.toolConfigurations ?? []) {
       if (!Token.isUnresolved(tool.name) && (tool.name.length < 1 || tool.name.length > 64)) {
         throw new UnscopedValidationError(
@@ -391,11 +426,6 @@ export interface KnowledgeBasesTargetConfigurationProps {
  */
 export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
   /**
-   * The identifier of the Amazon Bedrock Managed Knowledge Bases connector
-   */
-  public static readonly CONNECTOR_ID = 'bedrock-knowledge-bases';
-
-  /**
    * Create a knowledge bases target configuration
    *
    * @param props The configuration properties
@@ -417,7 +447,7 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
    */
   public readonly retrieve?: KnowledgeBaseRetrieveOptions;
 
-  private readonly connector: ConnectorTargetConfiguration;
+  private readonly connectorConfiguration: ConnectorTargetConfiguration;
 
   constructor(props: KnowledgeBasesTargetConfigurationProps) {
     super();
@@ -433,8 +463,8 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
     if (this.retrieve) {
       toolConfigurations.push(this.renderRetrieve(this.retrieve));
     }
-    this.connector = ConnectorTargetConfiguration.create({
-      connectorId: KnowledgeBasesTargetConfiguration.CONNECTOR_ID,
+    this.connectorConfiguration = ConnectorTargetConfiguration.create({
+      connector: GatewayConnector.BEDROCK_KNOWLEDGE_BASES,
       toolConfigurations,
     });
   }
@@ -500,7 +530,7 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
    * Renders the MCP-specific configuration
    */
   protected renderMcpConfiguration(): any {
-    return this.connector._render().mcp;
+    return this.connectorConfiguration._render().mcp;
   }
 
   private renderAgenticRetrieve(options: KnowledgeBaseAgenticRetrieveOptions): ConnectorToolConfiguration {

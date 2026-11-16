@@ -10,8 +10,8 @@ import { propertyInjectable } from '../../../../core/lib/prop-injectable';
 import { validateStringFieldLength, validateFieldPattern } from '../../common/validation-helpers';
 import type { IGateway } from '../gateway-base';
 import { GATEWAY_SYNC_PERMS } from '../perms';
-import type { KnowledgeBaseAgenticRetrieveOptions, KnowledgeBaseRetrieveOptions } from './connector-target-configuration';
-import { KnowledgeBasesTargetConfiguration } from './connector-target-configuration';
+import type { ConnectorTargetConfigurationProps, KnowledgeBaseAgenticRetrieveOptions, KnowledgeBaseRetrieveOptions } from './connector-target-configuration';
+import { ConnectorTargetConfiguration, KnowledgeBasesTargetConfiguration } from './connector-target-configuration';
 import type { ApiSchema } from './schema/api-schema';
 import type { ToolSchema } from './schema/tool-schema';
 import type { IGatewayTarget, IMcpGatewayTarget } from './target-base';
@@ -221,17 +221,11 @@ export interface GatewayTargetApiGatewayProps extends GatewayTargetCommonProps {
 }
 
 /**
- * Properties for creating a Gateway Target backed by Amazon Bedrock Managed Knowledge Bases
+ * Options for adding a target backed by Amazon Bedrock Managed Knowledge Bases to a gateway
  *
  * At least one of `agenticRetrieve` and `retrieve` is required.
  */
-export interface GatewayTargetKnowledgeBasesProps extends GatewayTargetCommonProps {
-  /**
-   * The gateway this target belongs to
-   * [disable-awslint:prefer-ref-interface]
-   */
-  readonly gateway: IGateway;
-
+export interface AddKnowledgeBasesTargetOptions extends GatewayTargetCommonProps {
   /**
    * Configures the `AgenticRetrieveStream` tool, which plans and runs multiple retrieval
    * steps across the knowledge bases and returns a synthesized answer.
@@ -246,6 +240,36 @@ export interface GatewayTargetKnowledgeBasesProps extends GatewayTargetCommonPro
    * @default - the tool is not configured
    */
   readonly retrieve?: KnowledgeBaseRetrieveOptions;
+}
+
+/**
+ * Properties for creating a Gateway Target backed by Amazon Bedrock Managed Knowledge Bases
+ *
+ * At least one of `agenticRetrieve` and `retrieve` is required.
+ */
+export interface GatewayTargetKnowledgeBasesProps extends AddKnowledgeBasesTargetOptions {
+  /**
+   * The gateway this target belongs to
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly gateway: IGateway;
+}
+
+/**
+ * Options for adding a connector target to a gateway
+ */
+export interface AddConnectorTargetOptions extends GatewayTargetCommonProps, ConnectorTargetConfigurationProps {
+}
+
+/**
+ * Properties for creating a connector-based Gateway Target
+ */
+export interface GatewayTargetConnectorProps extends AddConnectorTargetOptions {
+  /**
+   * The gateway this target belongs to
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly gateway: IGateway;
 }
 
 /**
@@ -465,6 +489,36 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
         stage: props.stage,
         apiGatewayToolConfiguration: props.apiGatewayToolConfiguration,
         metadataConfiguration: props.metadataConfiguration,
+      }),
+    });
+  }
+
+  /**
+   * Create a connector-based target
+   * Convenience method for creating a target that uses a connector, a pre-built integration
+   * with an AWS service or a third-party tool. No permissions are granted to the gateway role:
+   * grant it what the connector needs. For Amazon Bedrock Managed Knowledge Bases, prefer
+   * `forKnowledgeBases()`, which also sets up permissions.
+   *
+   * @param scope The construct scope
+   * @param id The construct id
+   * @param props The properties for the connector target
+   * @returns A new GatewayTarget instance
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-api-target-config.html
+   */
+  public static forConnector(
+    scope: Construct,
+    id: string,
+    props: GatewayTargetConnectorProps,
+  ): GatewayTarget {
+    return new GatewayTarget(scope, id, {
+      gateway: props.gateway,
+      gatewayTargetName: props.gatewayTargetName,
+      description: props.description,
+      targetConfiguration: ConnectorTargetConfiguration.create({
+        connector: props.connector,
+        toolConfigurations: props.toolConfigurations,
+        enabledTools: props.enabledTools,
       }),
     });
   }

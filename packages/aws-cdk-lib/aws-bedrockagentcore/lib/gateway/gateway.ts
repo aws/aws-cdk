@@ -17,9 +17,9 @@ import * as cognito from '../../../aws-cognito';
 import * as iam from '../../../aws-iam';
 import type * as kms from '../../../aws-kms';
 import type { IPolicyEngine } from '../policy/policy-engine-base';
-import type { KnowledgeBaseAgenticRetrieveOptions, KnowledgeBaseRetrieveOptions } from './targets/connector-target-configuration';
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
+import type { AddConnectorTargetOptions, AddKnowledgeBasesTargetOptions } from './targets/target';
 import { GatewayTarget } from './targets/target';
 import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
 import type { IFunction } from '../../../aws-lambda';
@@ -224,41 +224,6 @@ export interface AddApiGatewayTargetOptions {
    * @default - No metadata configuration
    */
   readonly metadataConfiguration?: MetadataConfiguration;
-}
-
-/**
- * Options for adding a target backed by Amazon Bedrock Managed Knowledge Bases to a gateway
- *
- * At least one of `agenticRetrieve` and `retrieve` is required.
- */
-export interface AddKnowledgeBasesTargetOptions {
-  /**
-   * The name of the gateway target
-   * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
-   * @default - auto generate
-   */
-  readonly gatewayTargetName?: string;
-
-  /**
-   * Optional description for the gateway target
-   * @default - No description
-   */
-  readonly description?: string;
-
-  /**
-   * Configures the `AgenticRetrieveStream` tool, which plans and runs multiple retrieval
-   * steps across the knowledge bases and returns a synthesized answer.
-   *
-   * @default - the tool is not configured
-   */
-  readonly agenticRetrieve?: KnowledgeBaseAgenticRetrieveOptions;
-
-  /**
-   * Configures the `Retrieve` tool, which performs a single search on a knowledge base.
-   *
-   * @default - the tool is not configured
-   */
-  readonly retrieve?: KnowledgeBaseRetrieveOptions;
 }
 
 /**
@@ -874,6 +839,31 @@ export class Gateway extends GatewayBase {
     });
 
     return target;
+  }
+
+  /**
+   * Add a connector target to this gateway
+   * This is a convenience method that creates a GatewayTarget associated with this gateway.
+   * No permissions are granted to the gateway role: grant it what the connector needs.
+   *
+   * @param id The construct id for the target
+   * @param props Properties for the connector target
+   * @returns The created GatewayTarget
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-api-target-config.html
+   */
+  @MethodMetadata()
+  public addConnectorTarget(
+    id: string,
+    props: AddConnectorTargetOptions,
+  ): GatewayTarget {
+    return GatewayTarget.forConnector(this, id, {
+      gatewayTargetName: props.gatewayTargetName,
+      description: props.description,
+      gateway: this,
+      connector: props.connector,
+      toolConfigurations: props.toolConfigurations,
+      enabledTools: props.enabledTools,
+    });
   }
 
   /**
