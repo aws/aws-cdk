@@ -14,7 +14,7 @@ import { Lazy } from './lazy';
 import { stackOf } from './private/core-construct-finders';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
-import type { RemovalPolicy } from './removal-policy';
+import type { RemovalPolicy, RemovalPolicyOptions } from './removal-policy';
 import type { IResolveContext } from './resolvable';
 import type { Stack } from './stack';
 import { Token, Tokenization } from './token';
@@ -42,7 +42,7 @@ export interface IResource extends IConstruct, IEnvironmentAware {
    * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
    * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
    */
-  applyRemovalPolicy(policy: RemovalPolicy): void;
+  applyRemovalPolicy(policy: RemovalPolicy, options?: RemovalPolicyOptions): void;
 }
 
 /**
@@ -232,13 +232,17 @@ export abstract class Resource extends Construct implements IResource {
    *
    * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
    * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   *
+   * Use `options.applyToUpdateReplacePolicy` to control whether the policy is
+   * also applied to the resource's "UpdateReplacePolicy" attribute (the
+   * default is `true`).
    */
-  public applyRemovalPolicy(policy: RemovalPolicy) {
+  public applyRemovalPolicy(policy: RemovalPolicy, options: RemovalPolicyOptions = {}) {
     const child = this.node.defaultChild;
     if (!child || !CfnResource.isCfnResource(child)) {
       throw new ValidationError(lit`CannotApplyRemovalPolicy`, 'Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.', this);
     }
-    child.applyRemovalPolicy(policy);
+    child.applyRemovalPolicy(policy, options);
   }
 
   /**
