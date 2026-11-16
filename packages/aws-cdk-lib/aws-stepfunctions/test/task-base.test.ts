@@ -74,6 +74,42 @@ describe('Task base', () => {
     });
   });
 
+  test('inherits JSONata queryLanguage and preserves Catch Output', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task');
+    task.addCatch(new sfn.Pass(stack, 'Handled'), {
+      outputs: {
+        error: '{% $states.errorOutput.Error %}',
+      },
+    });
+
+    // THEN
+    expect(renderGraph(task, sfn.QueryLanguage.JSONATA)).toEqual({
+      StartAt: 'my-exciting-task',
+      States: {
+        'my-exciting-task': {
+          End: true,
+          Type: 'Task',
+          Resource: 'my-resource',
+          Parameters: { MyParameter: 'myParameter' },
+          Catch: [
+            {
+              ErrorEquals: ['States.ALL'],
+              Next: 'Handled',
+              Output: {
+                error: '{% $states.errorOutput.Error %}',
+              },
+            },
+          ],
+        },
+        Handled: {
+          Type: 'Pass',
+          End: true,
+        },
+      },
+    });
+  });
+
   test('instantiate a concrete implementation with credentials of a specified role', () => {
     // WHEN
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/example-role');

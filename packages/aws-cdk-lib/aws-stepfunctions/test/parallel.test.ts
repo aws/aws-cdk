@@ -127,8 +127,99 @@ describe('Parallel State', () => {
       },
     });
   });
+
+  test('Parallel inherits JSONata queryLanguage and preserves Catch Output', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const wrapped = stepfunctions.Chain.start(new stepfunctions.Fail(stack, 'Failure'))
+      .toSingleState('Wrapped');
+
+    wrapped.addCatch(new stepfunctions.Succeed(stack, 'Handled'), {
+      outputs: { error: '{% $states.errorOutput.Error %}' },
+    });
+
+    // THEN
+    expect(render(wrapped, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
+      StartAt: 'Wrapped',
+      States: {
+        Wrapped: {
+          Type: 'Parallel',
+          End: true,
+          Catch: [
+            {
+              ErrorEquals: ['States.ALL'],
+              Next: 'Handled',
+              Output: {
+                error: '{% $states.errorOutput.Error %}',
+              },
+            },
+          ],
+          Branches: [
+            {
+              StartAt: 'Failure',
+              States: {
+                Failure: {
+                  Type: 'Fail',
+                },
+              },
+            },
+          ],
+        },
+        Handled: {
+          Type: 'Succeed',
+        },
+      },
+    });
+  });
+
+  test('Parallel branches forward inherited JSONata to child states preserving Choice outputs', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const parallel = new stepfunctions.Parallel(stack, 'Parallel State');
+
+    const choice = new stepfunctions.Choice(stack, 'Inner Choice')
+      .when(stepfunctions.Condition.jsonata('{% $x > 1 %}'), new stepfunctions.Pass(stack, 'Inner Pass'), {
+        outputs: { result: '{% $states.input.value %}' },
+      });
+
+    parallel.branch(choice);
+
+    // THEN
+    expect(render(parallel, stepfunctions.QueryLanguage.JSONATA)).toStrictEqual({
+      StartAt: 'Parallel State',
+      States: {
+        'Parallel State': {
+          Type: 'Parallel',
+          End: true,
+          Branches: [
+            {
+              StartAt: 'Inner Choice',
+              States: {
+                'Inner Choice': {
+                  Type: 'Choice',
+                  Choices: [
+                    {
+                      Condition: '{% $x > 1 %}',
+                      Next: 'Inner Pass',
+                      Output: {
+                        result: '{% $states.input.value %}',
+                      },
+                    },
+                  ],
+                },
+                'Inner Pass': {
+                  Type: 'Pass',
+                  End: true,
+                },
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
 });
 
-function render(sm: stepfunctions.IChainable) {
-  return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson());
+function render(sm: stepfunctions.IChainable, queryLanguage?: stepfunctions.QueryLanguage) {
+  return new cdk.Stack().resolve(new stepfunctions.StateGraph(sm.startState, 'Test Graph').toGraphJson(queryLanguage));
 }

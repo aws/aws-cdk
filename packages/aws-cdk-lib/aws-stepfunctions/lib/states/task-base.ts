@@ -190,7 +190,7 @@ export abstract class TaskStateBase extends State implements INextable {
     return {
       ...this.renderQueryLanguage(topLevelQueryLanguage),
       ...this.renderNextEnd(),
-      ...this.renderRetryCatch(),
+      ...this.renderRetryCatch(topLevelQueryLanguage),
       ...this.renderTaskBase(),
       ...this._renderTask(topLevelQueryLanguage),
     };

@@ -102,7 +102,7 @@ export class Choice extends State {
       ...this.renderQueryLanguage(topLevelQueryLanguage),
       Comment: this.comment,
       ...this.renderInputOutput(),
-      ...this.renderChoices(),
+      ...this.renderChoices(topLevelQueryLanguage),
       ...this.renderAssign(topLevelQueryLanguage),
     };
   }

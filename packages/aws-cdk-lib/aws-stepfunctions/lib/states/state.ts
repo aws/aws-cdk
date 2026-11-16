@@ -514,19 +514,21 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render parallel branches in ASL JSON format
    */
-  protected renderBranches(): any {
+  protected renderBranches(topLevelQueryLanguage?: QueryLanguage): any {
+    const queryLanguage = this.queryLanguage ?? topLevelQueryLanguage;
     return {
-      Branches: this.branches.map(b => b.toGraphJson()),
+      Branches: this.branches.map(b => b.toGraphJson(queryLanguage)),
     };
   }
 
   /**
    * Render map iterator in ASL JSON format
    */
-  protected renderIterator(): any {
+  protected renderIterator(topLevelQueryLanguage?: QueryLanguage): any {
     if (!this.iteration) return undefined;
+    const queryLanguage = this.queryLanguage ?? topLevelQueryLanguage;
     return {
-      Iterator: this.iteration.toGraphJson(),
+      Iterator: this.iteration.toGraphJson(queryLanguage),
     };
   }
 
@@ -553,12 +555,13 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render ItemProcessor in ASL JSON format
    */
-  protected renderItemProcessor(): any {
+  protected renderItemProcessor(topLevelQueryLanguage?: QueryLanguage): any {
     if (!this.processor) return undefined;
+    const queryLanguage = this.queryLanguage ?? topLevelQueryLanguage;
     return {
       ItemProcessor: {
         ...this.renderProcessorConfig(),
-        ...this.processor.toGraphJson(),
+        ...this.processor.toGraphJson(queryLanguage),
       },
     };
   }

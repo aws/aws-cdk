@@ -73,7 +73,7 @@ export class CustomState extends State implements IChainable, INextable {
       ...this.renderQueryLanguage(queryLanguage),
       ...this.renderNextEnd(),
       ...this.stateJson,
-      ...this.renderRetryCatch(),
+      ...this.renderRetryCatch(queryLanguage),
     };
 
     if (this.hasMultipleRetrySources(state)) {
