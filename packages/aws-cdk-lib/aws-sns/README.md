@@ -233,6 +233,23 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
 });
 ```
 
+A simpler and more general way of achieving the same result is to use the
+`TopicGrants` class:
+
+```ts 
+const topic = new sns.Topic(this, 'Topic');
+
+// This would work the same way if topic was a CfnTopic (L1)
+sns.TopicGrants.fromTopic(topic).subscribe(new iam.AnyPrincipal()); 
+```
+
+For convenience, if you are using an L2, you can also call `grants` on the topic: 
+
+```ts 
+const topic = new sns.Topic(this, 'Topic'); 
+topic.grants.subscribe(new iam.AnyPrincipal());
+```
+
 ### Enforce encryption of data in transit when publishing to a topic
 
 You can enforce SSL when creating a topic policy by setting the `enforceSSL` flag:

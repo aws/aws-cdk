@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.uxc"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.UXC"
+    },
+    "python": {
+      "module": "aws_cdk.aws_uxc"
+    }
+  }
+}

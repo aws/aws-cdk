@@ -1,0 +1,27 @@
+{
+  "version": "54.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "Construct Annotations",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "@aws-cdk/aws-codepipeline:unspecifiedPipelineType",
+          "description": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]",
+          "severity": "warning",
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-pipeline-consumer-stack/Pipeline",
+              "constructFqn": "aws-cdk-lib.aws_codepipeline.Pipeline",
+              "libraryVersion": "0.0.0",
+              "stackTraces": [
+                "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.pipeline-with-replication.js:23:16)\nRun with '--debug' to include location info"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

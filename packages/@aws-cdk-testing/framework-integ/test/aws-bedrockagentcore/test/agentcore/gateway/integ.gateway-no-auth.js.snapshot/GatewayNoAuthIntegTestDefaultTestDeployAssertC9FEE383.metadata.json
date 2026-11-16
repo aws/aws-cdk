@@ -1,0 +1,20 @@
+{
+  "/GatewayNoAuthIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "GatewayNoAuthIntegTestDefaultTestDeployAssertC9FEE383.template.json"
+    }
+  ],
+  "/GatewayNoAuthIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/GatewayNoAuthIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

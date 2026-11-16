@@ -219,7 +219,7 @@ new AwsApiCall(myAppStack, 'GetObject', {
 
 ### DeployAssert
 
-Assertions are created by using the `DeployAssert` construct. This construct creates it's own `Stack` separate from
+Assertions are created by using the `DeployAssert` construct. This construct creates its own `Stack` separate from
 any stacks that you create as part of your integration tests. This `Stack` is treated differently from other stacks
 by the `integ-runner` tool. For example, this stack will not be diffed by the `integ-runner`.
 
@@ -475,6 +475,22 @@ const integ = new IntegTest(app, 'IntegTest', {
 const invoke = integ.assertions.invokeFunction({
   functionName: lambdaFunction.functionName,
   logRetention: logs.RetentionDays.ONE_WEEK,
+});
+```
+
+#### Provider Log Level
+
+By default, the assertion provider lambda function has its log level set to `FATAL`.
+If you need to debug assertion failures, you can increase the log level by setting
+`providerLogLevel` on the `IntegTest` construct:
+
+```ts
+declare const app: App;
+declare const stack: Stack;
+
+const integ = new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
+  providerLogLevel: lambda.ApplicationLogLevel.INFO,
 });
 ```
 

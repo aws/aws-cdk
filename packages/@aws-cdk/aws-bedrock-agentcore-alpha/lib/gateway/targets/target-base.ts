@@ -10,6 +10,7 @@ import type { ICredentialProviderConfig } from '../outbound-auth/credential-prov
  *****************************************************************************/
 /**
  * Protocol types supported by gateway targets
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum GatewayTargetProtocolType {
   /** Model Context Protocol type */
@@ -18,6 +19,7 @@ export enum GatewayTargetProtocolType {
 
 /**
  * MCP target types
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum McpTargetType {
   /** OpenAPI schema target type */
@@ -28,6 +30,8 @@ export enum McpTargetType {
   LAMBDA = 'LAMBDA',
   /** MCP server target type */
   MCP_SERVER = 'MCP_SERVER',
+  /** API Gateway target type */
+  API_GATEWAY = 'API_GATEWAY',
 }
 
 /******************************************************************************
@@ -39,6 +43,7 @@ export enum McpTargetType {
  *
  * Represents a target that hosts tools for the gateway.
  * Targets can be Lambda functions, OpenAPI schemas, or Smithy models.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IGatewayTarget extends IResource, IGatewayTargetRef {
   /**
@@ -123,6 +128,7 @@ export interface IGatewayTarget extends IResource, IGatewayTargetRef {
  *
  * Extends the base gateway target interface with MCP-specific properties.
  * MCP targets expose tools using the Model Context Protocol.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IMcpGatewayTarget extends IGatewayTarget {
   /**
@@ -139,6 +145,7 @@ export interface IMcpGatewayTarget extends IGatewayTarget {
  *
  * Provides common functionality for all gateway target types including
  * permission management and property definitions.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class GatewayTargetBase extends Resource implements IGatewayTarget {
   public abstract readonly targetArn: string;

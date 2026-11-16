@@ -1,7 +1,8 @@
-import { App, Stack, cx_api } from 'aws-cdk-lib';
+import { App, cx_api } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { IpCidr, SubnetV2 } from '../lib';
+import { testStack } from './test-stack';
 import { InternetGateway, NatConnectivityType, NatGateway, RouteTable } from '../lib/route';
 import { VpcV2, IpAddresses } from '../lib/vpc-v2';
 
@@ -14,7 +15,7 @@ describe('InternetGateway', () => {
           [cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: true,
         },
       });
-      const stack = new Stack(app, 'TestStack');
+      const stack = testStack(app, 'TestStack');
       const vpc = new VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
       });
@@ -41,7 +42,7 @@ describe('InternetGateway', () => {
           [cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
         },
       });
-      const stack = new Stack(app, 'TestStack');
+      const stack = testStack(app, 'TestStack');
       const vpc = new VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
       });
@@ -72,7 +73,7 @@ describe('NatGateway', () => {
           [cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: true,
         },
       });
-      const stack = new Stack(app, 'TestStack');
+      const stack = testStack(app, 'TestStack');
       const vpc = new VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
       });
@@ -110,7 +111,7 @@ describe('NatGateway', () => {
           [cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
         },
       });
-      const stack = new Stack(app, 'TestStack');
+      const stack = testStack(app, 'TestStack');
       const vpc = new VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
       });
@@ -152,7 +153,7 @@ describe('RouteTable', () => {
           [cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: true,
         },
       });
-      const stack = new Stack(app, 'TestStack');
+      const stack = testStack(app, 'TestStack');
       const vpc = new VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
       });
@@ -178,7 +179,7 @@ describe('RouteTable', () => {
           [cx_api.USE_RESOURCEID_FOR_VPCV2_MIGRATION]: false,
         },
       });
-      const stack = new Stack(app, 'TestStack');
+      const stack = testStack(app, 'TestStack');
       const vpc = new VpcV2(stack, 'TestVpc', {
         primaryAddressBlock: IpAddresses.ipv4('10.0.0.0/16'),
       });

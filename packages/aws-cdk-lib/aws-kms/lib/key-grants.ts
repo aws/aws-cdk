@@ -1,6 +1,7 @@
+import { CfnKey } from './kms.generated';
 import * as perms from './private/perms';
-import * as iam from '../../aws-iam';
 import type { IGrantable } from '../../aws-iam';
+import * as iam from '../../aws-iam';
 import { FeatureFlags, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { IKeyRef } from '../../interfaces/generated/aws-kms-interfaces.generated';
@@ -28,7 +29,7 @@ export class KeyGrants {
   private constructor(props: KeyGrantsProps) {
     this.resource = props.resource;
     this.trustAccountIdentities = props.trustAccountIdentities ?? FeatureFlags.of(this.resource).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
-    this.policyResource = (iam.GrantableResources.isResourceWithPolicy(this.resource) ? this.resource : undefined);
+    this.policyResource = iam.ResourceWithPolicies.of(this.resource);
   }
 
   /**
@@ -64,7 +65,11 @@ export class KeyGrants {
         resourceSelfArns: crossEnvironment ? undefined : ['*'],
       };
 
-      if (this.trustAccountIdentities && !crossEnvironment) {
+      // For L1s, we always add the statement to the resource policy because we cannot automatically
+      // detect whether the key already has a policy for trusting account identities. And we can't
+      // expect users to pass the correct value for `trustAccountIdentities` prop when creating the
+      // KeyGrants instance for an L1.
+      if (!CfnKey.isCfnKey(this.resource) && this.trustAccountIdentities && !crossEnvironment) {
         return iam.Grant.addToPrincipalOrResource(grantOptions);
       } else {
         return iam.Grant.addToPrincipalAndResource({
@@ -74,6 +79,16 @@ export class KeyGrants {
         });
       }
     }
+  }
+
+  /**
+   * Grant admins permissions using this key to the given principal
+   *
+   * Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions
+   * to use the key in cryptographic operations (e.g., encrypt, decrypt).
+   */
+  public admin(grantee: IGrantable): iam.Grant {
+    return this.actions(grantee, ...perms.ADMIN_ACTIONS);
   }
 
   /**

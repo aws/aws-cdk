@@ -6,6 +6,7 @@ import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as rds from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
@@ -15,6 +16,7 @@ let importedDbProxy: rds.IDatabaseProxy;
 describe('proxy', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'VPC');
   });
 
@@ -1003,6 +1005,7 @@ describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => 
   test('create a DB proxy from an instance with a unique resource name', () => {
     // GIVEN
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     stack.node.setContext(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME, true);
     vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
@@ -1053,6 +1056,7 @@ describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => 
   test('create a DB proxy from an instance with a proxy name in the constructor', () => {
     // GIVEN
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     stack.node.setContext(cxapi.DATABASE_PROXY_UNIQUE_RESOURCE_NAME, true);
     vpc = new ec2.Vpc(stack, 'VPC');
     const instance = new rds.DatabaseInstance(stack, 'Instance', {

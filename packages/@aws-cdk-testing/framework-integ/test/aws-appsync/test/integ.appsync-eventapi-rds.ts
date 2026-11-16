@@ -7,6 +7,7 @@ import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as secretmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { INTEG_TEST_LATEST_AURORA_POSTGRES } from '../../aws-rds/test/db-versions';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
@@ -25,7 +26,7 @@ class EventApiRdsStack extends cdk.Stack {
 
     const databaseName = 'integdb';
     const cluster = new rds.DatabaseCluster(this, 'Integ-Cluster', {
-      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_16_6 }),
+      engine: rds.DatabaseClusterEngine.auroraPostgres({ version: INTEG_TEST_LATEST_AURORA_POSTGRES }),
       writer: rds.ClusterInstance.serverlessV2('writer'),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       vpc,

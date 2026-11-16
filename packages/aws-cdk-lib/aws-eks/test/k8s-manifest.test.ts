@@ -1,6 +1,6 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
-import { App, CfnResource, Stack } from '../../core';
+import { App, CfnResource, RemovalPolicy, Stack } from '../../core';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
 
 describe('k8s manifest', () => {
@@ -84,7 +84,7 @@ describe('k8s manifest', () => {
     // GIVEN
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
-      kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+      kubectlRoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
     });
 
     // WHEN
@@ -95,12 +95,12 @@ describe('k8s manifest', () => {
     Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
       Manifest: '[{"bar":2334}]',
       ClusterName: 'my-cluster-name',
-      RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+      RoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
     });
 
     Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
       ClusterName: 'my-cluster-name',
-      RoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+      RoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
       Release: 'stackmyclustercharthelmb653160c',
       Chart: 'hello-world',
       Namespace: 'default',
@@ -111,7 +111,7 @@ describe('k8s manifest', () => {
   test('default child is a CfnResource', () => {
     const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
       clusterName: 'my-cluster-name',
-      kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+      kubectlRoleArn: 'arn:aws:iam::111111111111:role/iam-role-that-has-masters-access',
     });
 
     const manifest = cluster.addManifest('foo', { bar: 2334 });
@@ -368,6 +368,26 @@ describe('k8s manifest', () => {
       expect(m1.PruneLabel).toBeFalsy();
       expect(m2.PruneLabel).toBeFalsy();
       expect(m3.PruneLabel).toEqual('aws.cdk.eks/prune-c8971972440c5bb3661e468e4cb8069f7ee549414c');
+    });
+  });
+
+  test('supports custom removal policy', () => {
+    // GIVEN
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: KubernetesVersion.V1_30,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    new KubernetesManifest(stack, 'manifest', {
+      cluster,
+      manifest: [{ apiVersion: 'v1', kind: 'Pod' }],
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource(KubernetesManifest.RESOURCE_TYPE, {
+      DeletionPolicy: 'Retain',
     });
   });
 });

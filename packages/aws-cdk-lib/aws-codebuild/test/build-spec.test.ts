@@ -1,4 +1,5 @@
 // import * as cdk from '@aws-cdk/core';
+import { assertNoPrototypePollution } from '../../core/test/prototype-pollution';
 import * as codebuild from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -403,6 +404,20 @@ describe('Test BuildSpec merge', () => {
           'file-format': 'CUCUMBERJSON',
         },
       },
+    });
+  });
+
+  test('mergeDeep does not pollute prototype', () => {
+    assertNoPrototypePollution(() => {
+      const lhs = codebuild.BuildSpec.fromObject({
+        version: '0.2',
+        env: { variables: { A: '1' } },
+      });
+      const rhs = codebuild.BuildSpec.fromObject({
+        version: '0.2',
+        env: { constructor: { prototype: { B: '2' } } },
+      });
+      codebuild.mergeBuildSpecs(lhs, rhs);
     });
   });
 });

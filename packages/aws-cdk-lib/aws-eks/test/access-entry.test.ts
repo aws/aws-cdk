@@ -1,6 +1,6 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { Template } from '../../assertions';
-import { App, Stack } from '../../core';
+import { App, RemovalPolicy, Stack } from '../../core';
 import type { AccessEntryProps, IAccessPolicy } from '../lib';
 import {
   AccessEntry, AccessEntryType,
@@ -68,7 +68,7 @@ describe('AccessEntry', () => {
     'creates a new AccessEntry for AccessEntryType %s',
     (accessEntryType) => {
       // Determine if this type should have access policies
-      const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+      const restrictedTypes = [AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
       const accessPolicies = restrictedTypes.includes(accessEntryType) ? [] : mockAccessPolicies;
 
       // WHEN
@@ -142,8 +142,23 @@ describe('AccessEntry', () => {
     Template.fromStack(stack).resourceCountIs('AWS::EKS::AccessEntry', 0);
   });
 
+  test('supports custom removal policy', () => {
+    // WHEN
+    new AccessEntry(stack, 'AccessEntry', {
+      cluster,
+      accessPolicies: mockAccessPolicies,
+      principal: 'mock-principal-arn',
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::EKS::AccessEntry', {
+      DeletionPolicy: 'Retain',
+    });
+  });
+
   describe('validation', () => {
-    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+    test.each([AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
       'throws error when %s type has access policies',
       (accessEntryType) => {
         // WHEN & THEN
@@ -179,7 +194,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
       'allows %s type with access policies',
       (accessEntryType) => {
         // WHEN
@@ -199,7 +214,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+    test.each([AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
       'throws error when adding policies to %s type via addAccessPolicies()',
       (accessEntryType) => {
         // GIVEN
@@ -221,7 +236,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
       'allows adding policies to %s type via addAccessPolicies()',
       (accessEntryType) => {
         // GIVEN

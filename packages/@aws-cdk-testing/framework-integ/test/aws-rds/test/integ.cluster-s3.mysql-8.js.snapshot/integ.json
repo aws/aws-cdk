@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "52.0.0",
   "testCases": {
     "aws-cdk-rds-s3-mysql-8-integ-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-rds-s3-mysql-8-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkrdss3mysql8integtestDefaultTestDeployAssertB8B2E4D8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

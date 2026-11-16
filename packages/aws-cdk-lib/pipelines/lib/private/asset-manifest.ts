@@ -4,6 +4,7 @@ import * as path from 'path';
 import type { AssetManifest, AwsDestination, DockerImageDestination, DockerImageSource, FileDestination, FileSource } from '../../../cloud-assembly-schema';
 import { Manifest } from '../../../cloud-assembly-schema';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * A manifest of assets
@@ -17,27 +18,27 @@ export class AssetManifestReader {
   /**
    * Load an asset manifest from the given file
    */
-  public static fromFile(fileName: string) {
+  public static fromFile(fileName: string): AssetManifestReader {
     try {
       const obj = Manifest.loadAssetManifest(fileName);
 
       return new AssetManifestReader(path.dirname(fileName), obj);
     } catch (e: any) {
-      throw new UnscopedValidationError(`Cannot read asset manifest '${fileName}': ${e.message}`);
+      throw new UnscopedValidationError(lit`CannotReadAssetManifest`, `Cannot read asset manifest '${fileName}': ${e.message}`);
     }
   }
 
   /**
    * Load an asset manifest from the given file or directory
-   *
-   * If the argument given is a directoy, the default asset file name will be used.
+   * If the argument given is a directory, the default asset file name will be used.
+   * @param filePath Path to load an asset manifest from.
    */
-  public static fromPath(filePath: string) {
+  public static fromPath(filePath: string): AssetManifestReader {
     let st;
     try {
       st = fs.statSync(filePath);
     } catch (e: any) {
-      throw new UnscopedValidationError(`Cannot read asset manifest at '${filePath}': ${e.message}`);
+      throw new UnscopedValidationError(lit`CannotReadAssetManifest`, `Cannot read asset manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
       return AssetManifestReader.fromFile(path.join(filePath, AssetManifestReader.DEFAULT_FILENAME));
@@ -88,13 +89,13 @@ export class AssetManifestReader {
   /**
    * Describe the asset manifest as a list of strings
    */
-  public list() {
+  public list(): string[] {
     return [
       ...describeAssets('file', this.manifest.files || {}),
       ...describeAssets('docker-image', this.manifest.dockerImages || {}),
     ];
 
-    function describeAssets(type: string, assets: Record<string, { source: any; destinations: Record<string, any> }>) {
+    function describeAssets(type: string, assets: Record<string, { source: any; destinations: Record<string, any> }>): string[] {
       const ret = new Array<string>();
       for (const [assetId, asset] of Object.entries(assets || {})) {
         ret.push(`${assetId} ${type} ${JSON.stringify(asset.source)}`);
@@ -236,7 +237,7 @@ export class DestinationIdentifier {
   /**
    * Return a string representation for this asset identifier
    */
-  public toString() {
+  public toString(): string {
     return this.destinationId ? `${this.assetId}:${this.destinationId}` : this.assetId;
   }
 }
@@ -252,18 +253,19 @@ function filterDict<A>(xs: Record<string, A>, pred: (x: A, key: string) => boole
 }
 
 /**
- * A filter pattern for an destination identifier
+ * A filter pattern for a destination identifier
  */
 export class DestinationPattern {
   /**
    * Parse a ':'-separated string into an asset/destination identifier
+   * @param s The ':'-separated string that is to be parsed.
    */
-  public static parse(s: string) {
-    if (!s) { throw new UnscopedValidationError('Empty string is not a valid destination identifier'); }
+  public static parse(s: string): DestinationPattern {
+    if (!s) { throw new UnscopedValidationError(lit`EmptyStringValidDestination`, 'Empty string is not a valid destination identifier'); }
     const parts = s.split(':').map(x => x !== '*' ? x : undefined);
     if (parts.length === 1) { return new DestinationPattern(parts[0]); }
     if (parts.length === 2) { return new DestinationPattern(parts[0] || undefined, parts[1] || undefined); }
-    throw new UnscopedValidationError(`Asset identifier must contain at most 2 ':'-separated parts, got '${s}'`);
+    throw new UnscopedValidationError(lit`AssetIdentifierContainMost`, `Asset identifier must contain at most 2 ':'-separated parts, got '${s}'`);
   }
 
   /**
@@ -284,7 +286,7 @@ export class DestinationPattern {
   /**
    * Whether or not this pattern matches the given identifier
    */
-  public matches(id: DestinationIdentifier) {
+  public matches(id: DestinationIdentifier): boolean {
     return (this.assetId === undefined || this.assetId === id.assetId)
       && (this.destinationId === undefined || this.destinationId === id.destinationId);
   }
@@ -292,7 +294,7 @@ export class DestinationPattern {
   /**
    * Return a string representation for this asset identifier
    */
-  public toString() {
+  public toString(): string {
     return `${this.assetId ?? '*'}:${this.destinationId ?? '*'}`;
   }
 }
@@ -300,7 +302,7 @@ export class DestinationPattern {
 /**
  * Prefix box-drawing characters to make lines look like a hanging tree
  */
-function prefixTreeChars(xs: string[], prefix = '') {
+function prefixTreeChars(xs: string[], prefix = ''): string[] {
   const ret = new Array<string>();
   for (let i = 0; i < xs.length; i++) {
     const isLast = i === xs.length - 1;

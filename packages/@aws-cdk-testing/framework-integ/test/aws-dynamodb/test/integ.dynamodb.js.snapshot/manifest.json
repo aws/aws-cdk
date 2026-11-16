@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "aws-cdk-dynamodb.assets": {
       "type": "cdk:asset-manifest",
@@ -33,541 +33,7 @@
       "dependencies": [
         "aws-cdk-dynamodb.assets"
       ],
-      "metadata": {
-        "/aws-cdk-dynamodb/Table": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "removalPolicy": "destroy"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToResourcePolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/Table/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableCD117FA1"
-          }
-        ],
-        "/aws-cdk-dynamodb/Table/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "pointInTimeRecovery": true,
-              "encryption": "AWS_MANAGED",
-              "stream": "KEYS_ONLY",
-              "timeToLiveAttribute": "*",
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "sortKey": {
-                "name": "*",
-                "type": "N"
-              },
-              "removalPolicy": "destroy"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "readCapacity": "*",
-                  "writeCapacity": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "projectionType": "KEYS_ONLY"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "projectionType": "INCLUDE",
-                  "nonKeyAttributes": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  }
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  },
-                  "projectionType": "KEYS_ONLY"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  },
-                  "projectionType": "INCLUDE",
-                  "nonKeyAttributes": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableWithGlobalAndLocalSecondaryIndexBC540710"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "removalPolicy": "destroy"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addGlobalSecondaryIndex": [
-                {
-                  "indexName": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableWithGlobalSecondaryIndexCC8E841E"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "sortKey": {
-                "name": "*",
-                "type": "N"
-              },
-              "removalPolicy": "destroy"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLocalSecondaryIndex": [
-                {
-                  "indexName": "*",
-                  "sortKey": {
-                    "name": "*",
-                    "type": "N"
-                  }
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableWithLocalSecondaryIndex4DA3D08F"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithLocalSecondaryIndex/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/Key": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "enableKeyRotation": true
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/Key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Key961B73FD"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithCustomerManagedKey": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "partitionKey": {
-                "name": "*",
-                "type": "S"
-              },
-              "removalPolicy": "destroy",
-              "stream": "NEW_AND_OLD_IMAGES",
-              "encryptionKey": "*"
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithCustomerManagedKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TableWithCustomerManagedKeyD5C58807"
-          }
-        ],
-        "/aws-cdk-dynamodb/TableWithCustomerManagedKey/ScalingRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-dynamodb/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0"
-          }
-        ],
-        "/aws-cdk-dynamodb/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RoleDefaultPolicy5FFB7DAB"
-          }
-        ],
-        "/aws-cdk-dynamodb/User": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/User/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "User00B015A1"
-          }
-        ],
-        "/aws-cdk-dynamodb/User/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToUser": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-dynamodb/User/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserDefaultPolicy1F97781E"
-          }
-        ],
-        "/aws-cdk-dynamodb/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-dynamodb/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-dynamodb.metadata.json",
       "displayName": "aws-cdk-dynamodb"
     },
     "Tree": {
@@ -867,6 +333,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -898,16 +368,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1054,6 +514,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1065,12 +526,25 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1106.1"
 }

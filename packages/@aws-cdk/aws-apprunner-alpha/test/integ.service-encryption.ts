@@ -1,6 +1,7 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import { APPRUNNER_SUPPORTED_REGIONS } from './apprunner-supported-regions';
 import { Service, Source } from '../lib';
 
 const app = new cdk.App();
@@ -25,6 +26,7 @@ new cdk.CfnOutput(stack, 'URL', { value: `https://${service.serviceUrl}` });
 
 new integ.IntegTest(app, 'AppRunnerEncryption', {
   testCases: [stack],
+  regions: APPRUNNER_SUPPORTED_REGIONS,
 });
 
 app.synth();

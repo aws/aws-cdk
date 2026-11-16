@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "MinimumCapacityUnitNlbStack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "7c2265a4c5042f4dfcec9386ce854eb34e45d38070ddf41597b38d2b3997c203": {
+    "f0edde001dac88a98a459b500cc6e674a2fc72d73cb38fc9bebd4000f04477d6": {
       "displayName": "MinimumCapacityUnitNlbStack Template",
       "source": {
         "path": "MinimumCapacityUnitNlbStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d94d9ed6": {
+        "current_account-current_region-9dda5eea": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7c2265a4c5042f4dfcec9386ce854eb34e45d38070ddf41597b38d2b3997c203.json",
+          "objectKey": "f0edde001dac88a98a459b500cc6e674a2fc72d73cb38fc9bebd4000f04477d6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

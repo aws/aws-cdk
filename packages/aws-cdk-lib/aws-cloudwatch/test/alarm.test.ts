@@ -91,6 +91,25 @@ describe('Alarm', () => {
     });
   });
 
+  test('alarm without actions omits action properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      AlarmActions: Match.absent(),
+      InsufficientDataActions: Match.absent(),
+      OKActions: Match.absent(),
+    });
+  });
+
   test('override metric period in Alarm', () => {
     // GIVEN
     const stack = new Stack();
@@ -347,6 +366,25 @@ describe('Alarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Statistic: Match.absent(),
       ExtendedStatistic: 'TM(10%:90%)',
+    });
+  });
+
+  test('IQM renders as ExtendedStatistic, not Statistic (issue #28812)', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    testMetric.with({
+      statistic: Stats.IQM,
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Statistic: Match.absent(),
+      ExtendedStatistic: 'IQM',
     });
   });
 

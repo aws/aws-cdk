@@ -94,6 +94,7 @@ describe('size', () => {
 
   test('rounding behavior', () => {
     const size = Size.mebibytes(5_200);
+    const fractionalSize = Size.mebibytes(42.66);
 
     expect(() => size.toGibibytes()).toThrow(/cannot be converted into a whole number/);
     expect(() => size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL })).toThrow(/cannot be converted into a whole number/);
@@ -105,12 +106,31 @@ describe('size', () => {
     expect(size.toGibibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5.078125);
     expect(size.toTebibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5200 / (1024 * 1024));
     expect(size.toKibibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(5_324_800);
+
+    expect(fractionalSize.toMebibytes()).toEqual(42.66);
+    expect(fractionalSize.toMebibytes({ rounding: SizeRoundingBehavior.FLOOR })).toEqual(42);
+    expect(fractionalSize.toMebibytes({ rounding: SizeRoundingBehavior.NONE })).toEqual(42.66);
+    expect(() => fractionalSize.toMebibytes({ rounding: SizeRoundingBehavior.FAIL })).toThrow(/cannot be converted into a whole number/);
   });
 
   test('size is unresolved', () => {
     const lazySize = Size.pebibytes(Lazy.number({ produce: () => 10 }));
     expect(lazySize.isUnresolved()).toEqual(true);
     expect(Size.mebibytes(10).isUnresolved()).toEqual(false);
+  });
+
+  test('stringification of Size objects', () => {
+    expect(Size.bytes(123).toHumanString()).toEqual('123 bytes');
+    expect(Size.bytes(1000000).toHumanString()).toEqual('976.56 KiB');
+    expect(Size.bytes(1024 * 1024 * 1024).toHumanString()).toEqual('1 GiB');
+    expect(Size.gibibytes(1).toHumanString()).toEqual('1 GiB');
+  });
+
+  test('stringification of Size objects', () => {
+    expect(String(Size.bytes(123))).toEqual('Size.bytes(123)');
+    expect(String(Size.bytes(1000000))).toEqual('Size.bytes(1000000)');
+    expect(String(Size.bytes(1024 * 1024 * 1024))).toEqual('Size.bytes(1073741824)');
+    expect(String(Size.gibibytes(1))).toEqual('Size.gibibytes(1)');
   });
 });
 

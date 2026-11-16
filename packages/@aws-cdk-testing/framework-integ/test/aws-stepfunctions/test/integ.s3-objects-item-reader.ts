@@ -4,7 +4,7 @@ import type { StackProps } from 'aws-cdk-lib';
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { DistributedMap, JsonPath, Pass, S3ObjectsItemReader, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+import { DefinitionBody, DistributedMap, JsonPath, Pass, S3ObjectsItemReader, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 
 const TEST_NAME = 'S3ObjectsItemReaderTest';
 
@@ -60,7 +60,7 @@ class S3ObjectsItemReaderTestStack extends Stack {
   private createStateMachine(distributedMap: DistributedMap, mapType: string): StateMachine {
     const stateMachineName = `${TEST_NAME}StateMachine${mapType}`;
     const stateMachine = new StateMachine(this, stateMachineName, {
-      definition: distributedMap,
+      definitionBody: DefinitionBody.fromChainable(distributedMap),
       stateMachineName,
     });
     stateMachine.addToRolePolicy(this.buildGetS3ObjectPolicyStatement());

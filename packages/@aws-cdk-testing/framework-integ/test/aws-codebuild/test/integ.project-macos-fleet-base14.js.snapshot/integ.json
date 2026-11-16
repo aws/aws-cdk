@@ -5,9 +5,21 @@
       "stacks": [
         "aws-cdk-project-macos-base14"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "MacOsProjectIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "MacOsProjectIntegTestDefaultTestDeployAssertB425ECC4"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1033.0"
 }

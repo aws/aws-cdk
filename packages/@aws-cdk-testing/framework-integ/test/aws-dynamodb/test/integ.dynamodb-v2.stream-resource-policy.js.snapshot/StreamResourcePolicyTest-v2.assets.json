@@ -1,0 +1,21 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "d5b156b8ec61a748cb7441bed569810cdf3504c9dbcb37f5a73ca6f7cd7f267f": {
+      "displayName": "StreamResourcePolicyTest-v2 Template",
+      "source": {
+        "path": "StreamResourcePolicyTest-v2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-78c88da6": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "d5b156b8ec61a748cb7441bed569810cdf3504c9dbcb37f5a73ca6f7cd7f267f.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

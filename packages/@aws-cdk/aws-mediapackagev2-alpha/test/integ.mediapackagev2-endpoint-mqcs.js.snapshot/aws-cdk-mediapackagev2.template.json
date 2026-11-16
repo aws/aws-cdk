@@ -1,0 +1,91 @@
+{
+ "Resources": {
+  "GroupC77FDACD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2Group105FAF5C"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2Group105FAF5C",
+    "ChannelName": "awscdkmediapackagev2Channel79224CFF",
+    "Description": "Input type is CMAF",
+    "InputSwitchConfiguration": {
+     "MQCSInputSwitching": true
+    },
+    "InputType": "CMAF",
+    "OutputHeaderConfiguration": {
+     "PublishMQCS": true
+    }
+   },
+   "DependsOn": [
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "OriginEndpoint895959AD": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2Group105FAF5C",
+    "ChannelName": "awscdkmediapackagev2Channel79224CFF",
+    "ContainerType": "CMAF",
+    "HlsManifests": [
+     {
+      "ManifestName": "index"
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2OriginEndpointF9301481",
+    "Segment": {
+     "SegmentDurationSeconds": 6,
+     "SegmentName": "segment"
+    },
+    "StartoverWindowSeconds": 900
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

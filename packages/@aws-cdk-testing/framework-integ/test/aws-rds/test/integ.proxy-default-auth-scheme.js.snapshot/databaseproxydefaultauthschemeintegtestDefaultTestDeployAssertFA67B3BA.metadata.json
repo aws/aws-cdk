@@ -1,0 +1,62 @@
+{
+  "/database-proxy-default-auth-scheme-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy-default-auth-scheme.js:31:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/database-proxy-default-auth-scheme-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/database-proxy-default-auth-scheme-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

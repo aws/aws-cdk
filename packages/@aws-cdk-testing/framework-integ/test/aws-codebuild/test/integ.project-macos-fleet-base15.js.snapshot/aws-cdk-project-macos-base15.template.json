@@ -5,8 +5,7 @@
    "Properties": {
     "BaseCapacity": 1,
     "ComputeType": "BUILD_GENERAL1_MEDIUM",
-    "EnvironmentType": "MAC_ARM",
-    "Name": "MacOsFleet15"
+    "EnvironmentType": "MAC_ARM"
    }
   },
   "MacOsProjectRole1708711E": {
@@ -181,14 +180,6 @@
    },
    "Export": {
     "Name": "aws-cdk-project-macos-base15:ExportsOutputFnGetAttMacOsFleet804A3B5DArn01D9C584"
-   }
-  },
-  "ExportsOutputRefMacOsProjectCFCE4F6BC768DECD": {
-   "Value": {
-    "Ref": "MacOsProjectCFCE4F6B"
-   },
-   "Export": {
-    "Name": "aws-cdk-project-macos-base15:ExportsOutputRefMacOsProjectCFCE4F6BC768DECD"
    }
   }
  },

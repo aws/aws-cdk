@@ -17,17 +17,9 @@ const app = new cdk.App({
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
 });
 
-const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  },
-});
+const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
 
 interface RedshiftDistKeyStackProps extends cdk.StackProps {
   hasDistKey: boolean;
@@ -84,7 +76,7 @@ const updateStack = new RedshiftDistKeyStack(stack, 'aws-cdk-redshift-distkey-up
   hasDistKey: true,
 });
 
-updateStack.addDependency(createStack);
+updateStack.addStackDependency(createStack);
 const stacks = [createStack, updateStack];
 stacks.forEach(s => {
   cdk.Aspects.of(s).add({
@@ -97,7 +89,5 @@ stacks.forEach(s => {
 });
 
 new integ.IntegTest(app, 'aws-cdk-redshift-distkey-test', {
-  testCases: [stack],
+  testCases: stacks,
 });
-
-app.synth();

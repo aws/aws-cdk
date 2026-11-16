@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "52.0.0",
   "testCases": {
     "database-proxy-mariadb-integ-test/DefaultTest": {
       "stacks": [
@@ -16,5 +16,6 @@
       "assertionStack": "database-proxy-mariadb-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "databaseproxymariadbintegtestDefaultTestDeployAssert9D9B7FF3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

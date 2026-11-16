@@ -13,13 +13,15 @@
 
 import { Token } from 'aws-cdk-lib';
 import type { CfnGateway } from 'aws-cdk-lib/aws-bedrockagentcore';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { CustomClaimOperator, CustomClaimValueType } from '../../common/types';
-import { ValidationError } from '../validation-helpers';
 
 /**
  * Represents a custom claim validation configuration for Gateway JWT authorizers.
  * Custom claims allow you to validate additional fields in JWT tokens beyond
  * the standard audience, client, and scope validations.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class GatewayCustomClaim {
   /**
@@ -50,7 +52,8 @@ export class GatewayCustomClaim {
   ): GatewayCustomClaim {
     // Validate operator is valid for STRING_ARRAY type
     if (operator !== CustomClaimOperator.CONTAINS && operator !== CustomClaimOperator.CONTAINS_ANY) {
-      throw new ValidationError(
+      throw new UnscopedValidationError(
+        lit`CustomClaimOperatorInvalid`,
         `Custom claim '${name}': STRING_ARRAY type only supports CONTAINS or CONTAINS_ANY operators, got ${operator}`,
       );
     }
@@ -68,10 +71,10 @@ export class GatewayCustomClaim {
     }
     // Validate that value matches the valueType
     if (valueType === CustomClaimValueType.STRING && typeof value !== 'string') {
-      throw new ValidationError(`Custom claim '${name}': STRING type requires a string value, got ${typeof value}`);
+      throw new UnscopedValidationError(lit`CustomClaimStringTypeInvalid`, `Custom claim '${name}': STRING type requires a string value, got ${typeof value}`);
     }
     if (valueType === CustomClaimValueType.STRING_ARRAY && !Array.isArray(value)) {
-      throw new ValidationError(`Custom claim '${name}': STRING_ARRAY type requires an array value, got ${typeof value}`);
+      throw new UnscopedValidationError(lit`CustomClaimStringArrayTypeInvalid`, `Custom claim '${name}': STRING_ARRAY type requires an array value, got ${typeof value}`);
     }
   }
 
@@ -93,7 +96,8 @@ export class GatewayCustomClaim {
         // CONTAINS requires a single string value (check if claim array contains this string)
         const values = this.value as string[];
         if (!Token.isUnresolved(values[0]) && values.length !== 1) {
-          throw new ValidationError(
+          throw new UnscopedValidationError(
+            lit`CustomClaimContainsOperatorInvalid`,
             `Custom claim '${this.name}': CONTAINS operator requires exactly one value, got ${values.length} values`,
           );
         }

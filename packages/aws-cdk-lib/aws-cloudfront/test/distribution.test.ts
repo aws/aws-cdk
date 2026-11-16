@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { App, Aws, Duration, Stack, Token } from '../../core';
+import { App, Aws, Duration, Stack, Token, Validations } from '../../core';
 import type {
   CfnDistribution,
   IOrigin,
@@ -25,6 +25,7 @@ import {
   RealtimeLogConfig,
   SecurityPolicyProtocol,
   SSLMethod,
+  ViewerProtocolPolicy,
 } from '../lib';
 import { DistributionGrants } from '../lib/cloudfront-grants.generated';
 
@@ -64,6 +65,18 @@ test('minimal example renders correctly', () => {
   });
 
   expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/${dist.distributionId}`);
+});
+
+test('distribution without additional behaviors or origin groups omits those properties', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      CacheBehaviors: Match.absent(),
+      OriginGroups: Match.absent(),
+    },
+  });
 });
 
 test('existing distributions can be imported', () => {
@@ -534,6 +547,37 @@ describe('certificates', () => {
       },
     });
   });
+
+  test('warns when minimumProtocolVersion is set without a certificate', () => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/Dist', Match.stringLikeRegexp('.*minimumProtocolVersion.*without.*certificate.*'));
+  });
+
+  test('warns when sslSupportMethod is set without a certificate', () => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      sslSupportMethod: SSLMethod.SNI,
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/Dist', Match.stringLikeRegexp('.*sslSupportMethod.*without.*certificate.*'));
+  });
+
+  test('does not warn about minimumProtocolVersion when certificate is provided', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['example.com'],
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
+      certificate,
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Stack/Dist', Match.stringLikeRegexp('.*minimumProtocolVersion.*'));
+  });
 });
 
 describe('custom error responses', () => {
@@ -951,8 +995,12 @@ test('price class is included if provided', () => {
 });
 
 test('escape hatches are supported', () => {
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::F3003',
+    reason: 'Missing required property in escape hatch',
+  });
   const dist = new Distribution(stack, 'Dist', {
-    defaultBehavior: { origin: defaultOrigin },
+    defaultBehavior: { origin: defaultOrigin() },
   });
   const cfnDist = dist.node.defaultChild as CfnDistribution;
   cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
@@ -1700,5 +1748,120 @@ describe('gRPC', () => {
         },
       });
     }).toThrow(msg);
+  });
+});
+
+describe('feature flag: CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS', () => {
+  const flag = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+
+  function stackWithFlag(enabled: boolean): Stack {
+    const flagApp = new App({ context: { [flag]: enabled } });
+    return new Stack(flagApp, 'FlagStack', { env: { account: '1234', region: 'testregion' } });
+  }
+
+  test('default behavior defaults to redirect-to-https when the flag is enabled', () => {
+    const flagStack = stackWithFlag(true);
+    new Distribution(flagStack, 'MyDist', { defaultBehavior: { origin: defaultOrigin() } });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        DefaultCacheBehavior: Match.objectLike({
+          ViewerProtocolPolicy: 'redirect-to-https',
+        }),
+      }),
+    });
+  });
+
+  test('additionalBehaviors default to redirect-to-https when the flag is enabled', () => {
+    const flagStack = stackWithFlag(true);
+    const origin = defaultOrigin();
+    new Distribution(flagStack, 'MyDist', {
+      defaultBehavior: { origin },
+      additionalBehaviors: {
+        '/api': { origin },
+        '/images/*': { origin },
+      },
+    });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        DefaultCacheBehavior: Match.objectLike({ ViewerProtocolPolicy: 'redirect-to-https' }),
+        CacheBehaviors: [
+          Match.objectLike({ PathPattern: '/api', ViewerProtocolPolicy: 'redirect-to-https' }),
+          Match.objectLike({ PathPattern: '/images/*', ViewerProtocolPolicy: 'redirect-to-https' }),
+        ],
+      }),
+    });
+  });
+
+  test('behaviors added via addBehavior() default to redirect-to-https when the flag is enabled', () => {
+    const flagStack = stackWithFlag(true);
+    const origin = defaultOrigin();
+    const distribution = new Distribution(flagStack, 'MyDist', { defaultBehavior: { origin } });
+    distribution.addBehavior('/added', origin);
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        CacheBehaviors: [
+          Match.objectLike({ PathPattern: '/added', ViewerProtocolPolicy: 'redirect-to-https' }),
+        ],
+      }),
+    });
+  });
+
+  test('an explicit ALLOW_ALL wins over the flag on every behavior path', () => {
+    const flagStack = stackWithFlag(true);
+    const origin = defaultOrigin();
+    const distribution = new Distribution(flagStack, 'MyDist', {
+      defaultBehavior: { origin, viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL },
+      additionalBehaviors: {
+        '/api': { origin, viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL },
+      },
+    });
+    distribution.addBehavior('/added', origin, { viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        DefaultCacheBehavior: Match.objectLike({ ViewerProtocolPolicy: 'allow-all' }),
+        CacheBehaviors: [
+          Match.objectLike({ PathPattern: '/api', ViewerProtocolPolicy: 'allow-all' }),
+          Match.objectLike({ PathPattern: '/added', ViewerProtocolPolicy: 'allow-all' }),
+        ],
+      }),
+    });
+  });
+
+  test('an explicit HTTPS_ONLY wins over the flag', () => {
+    const flagStack = stackWithFlag(true);
+    new Distribution(flagStack, 'MyDist', {
+      defaultBehavior: { origin: defaultOrigin(), viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY },
+    });
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        DefaultCacheBehavior: Match.objectLike({ ViewerProtocolPolicy: 'https-only' }),
+      }),
+    });
+  });
+
+  test.each([false, undefined])('all behaviors keep defaulting to allow-all when the flag is %p', (flagValue) => {
+    const flagApp = new App({ context: flagValue === undefined ? {} : { [flag]: flagValue } });
+    const flagStack = new Stack(flagApp, 'FlagStack', { env: { account: '1234', region: 'testregion' } });
+    const origin = defaultOrigin();
+    const distribution = new Distribution(flagStack, 'MyDist', {
+      defaultBehavior: { origin },
+      additionalBehaviors: { '/api': { origin } },
+    });
+    distribution.addBehavior('/added', origin);
+
+    Template.fromStack(flagStack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        DefaultCacheBehavior: Match.objectLike({ ViewerProtocolPolicy: 'allow-all' }),
+        CacheBehaviors: [
+          Match.objectLike({ PathPattern: '/api', ViewerProtocolPolicy: 'allow-all' }),
+          Match.objectLike({ PathPattern: '/added', ViewerProtocolPolicy: 'allow-all' }),
+        ],
+      }),
+    });
   });
 });

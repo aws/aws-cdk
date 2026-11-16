@@ -308,7 +308,7 @@ export interface FleetProps {
    * The GameLift-supported Amazon EC2 instance type to use for all fleet instances.
    * Instance type determines the computing resources that will be used to host your game servers, including CPU, memory, storage, and networking capacity.
    *
-   * @see http://aws.amazon.com/ec2/instance-types/ for detailed descriptions of Amazon EC2 instance types.
+   * @see https://aws.amazon.com/ec2/instance-types/ for detailed descriptions of Amazon EC2 instance types.
    */
   readonly instanceType: ec2.InstanceType;
 

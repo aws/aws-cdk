@@ -1,0 +1,20 @@
+{
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48.template.json"
+    }
+  ],
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

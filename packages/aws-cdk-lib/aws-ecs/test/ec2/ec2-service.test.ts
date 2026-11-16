@@ -11,6 +11,7 @@ import * as s3 from '../../../aws-s3';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
 import { App } from '../../../core';
+import { flattenMeta } from '../../../core/test/util';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import * as ecs from '../../lib';
 import {
@@ -20,7 +21,7 @@ import {
   PropagatedTagSource,
 } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
-import { addDefaultCapacityProvider } from '../util';
+import { acknowledgeTestValidationRules, addDefaultCapacityProvider } from '../util';
 
 describe('ec2 service', () => {
   describe('When creating an EC2 Service', () => {
@@ -61,6 +62,36 @@ describe('ec2 service', () => {
       });
 
       expect(service.node.defaultChild).toBeDefined();
+    });
+
+    test.each([false, true])('suggests using circuitBreaker if %p set', (circuitBreakerSet) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        circuitBreaker: circuitBreakerSet ? { } : undefined,
+      });
+
+      // THEN
+      const warnings = flattenMeta(app.synth().getStackByName('Stack').metadata)['/Stack/Ec2Service']['aws:cdk:warning'];
+
+      if (circuitBreakerSet) {
+        expect(warnings).not.toContainEqual(expect.stringContaining('Enable the \'circuitBreaker\' property'));
+      } else {
+        expect(warnings).toContainEqual(expect.stringContaining('Enable the \'circuitBreaker\' property'));
+      }
     });
 
     [false, undefined].forEach((value) => {
@@ -971,6 +1002,10 @@ describe('ec2 service', () => {
         vpc,
       });
 
+      cdk.Validations.of(stack).acknowledge(
+        { id: 'CloudFormation-Validate::F3034', reason: 'failureThreshold intentionally exceeds the CloudFormation maximum of 10; the test asserts it is passed through to HealthCheckCustomConfig unmodified' },
+      );
+
       new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
@@ -1039,6 +1074,10 @@ describe('ec2 service', () => {
       });
 
       // WHEN
+      cdk.Validations.of(stack).acknowledge(
+        { id: 'CloudFormation-Validate::F3034', reason: 'failureThreshold intentionally exceeds the CloudFormation maximum of 10; this test exercises every property, not valid value ranges' },
+      );
+
       const service = new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
@@ -1148,6 +1187,7 @@ describe('ec2 service', () => {
         instanceType: new ec2.InstanceType('bogus'),
         machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
       });
+      acknowledgeTestValidationRules(stack);
 
       // WHEN
       const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
@@ -2609,7 +2649,7 @@ describe('ec2 service', () => {
       });
 
       test('minimum configuration', () => {
-        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
 
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
@@ -2631,7 +2671,7 @@ describe('ec2 service', () => {
       });
 
       test('and explicitly set behavior to ROLLBACK_ON_ALARM', () => {
-        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
 
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
@@ -2654,7 +2694,7 @@ describe('ec2 service', () => {
       });
 
       test('and explicitly set behavior to FAIL_ON_ALARM', () => {
-        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
         new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
@@ -2676,7 +2716,7 @@ describe('ec2 service', () => {
       });
 
       test('use enableDeploymentAlarms()', () => {
-        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
 
         const service = new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
@@ -2696,7 +2736,7 @@ describe('ec2 service', () => {
       });
 
       test('use enableDeploymentAlarms() and explicitly set behavior to ROLLBACK_ON_ALARM', () => {
-        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
 
         const service = new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
@@ -2718,7 +2758,7 @@ describe('ec2 service', () => {
       });
 
       test('use enableDeploymentAlarms() and explicitly set behavior to FAIL_ON_ALARM', () => {
-        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
         const service = new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
@@ -2739,7 +2779,7 @@ describe('ec2 service', () => {
       });
 
       test('throw error if deploymentAlarms is specified with a non-ECS DeploymentControllerType', () => {
-        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
         expect(() => {
           new ecs.Ec2Service(stack, 'Ec2Service', {
             cluster,
@@ -2755,7 +2795,7 @@ describe('ec2 service', () => {
       });
 
       test('mixing alarm behaviors throws errors', () => {
-        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+        const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:alarm1');
         const service = new ecs.Ec2Service(stack, 'Ec2Service', {
           cluster,
           taskDefinition,
@@ -3235,6 +3275,7 @@ describe('ec2 service', () => {
         [ecs.NetworkMode.BRIDGE, ecs.NetworkMode.NAT].forEach((networkMode: ecs.NetworkMode) => {
           // GIVEN
           const stack = new cdk.Stack();
+          acknowledgeTestValidationRules(stack);
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
           const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
           addDefaultCapacityProvider(cluster, stack, vpc);

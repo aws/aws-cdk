@@ -7,6 +7,11 @@ describe('destination', () => {
   test('simple destination', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::F3033',
+      reason: 'A destination without policies does not make sense (but this tests something else)',
+    });
+
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('logs.us-east-2.amazonaws.com'),
     });

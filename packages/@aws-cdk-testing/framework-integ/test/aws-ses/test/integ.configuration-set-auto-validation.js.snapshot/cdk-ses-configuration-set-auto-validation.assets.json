@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "03740eecae5300f89ac95343d24d739c9d971f02b5ec7d6a6c1cd2863c6e977f": {
+      "displayName": "cdk-ses-configuration-set-auto-validation Template",
+      "source": {
+        "path": "cdk-ses-configuration-set-auto-validation.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-27dabc55": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "03740eecae5300f89ac95343d24d739c9d971f02b5ec7d6a6c1cd2863c6e977f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

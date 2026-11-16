@@ -4,7 +4,7 @@ import { CloudWatchLogsClient, CreateLogGroupCommand, DeleteLogGroupCommand, Del
 import type { AwsStub } from 'aws-sdk-client-mock';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
-import * as nock from 'nock';
+import nock from 'nock';
 import * as provider from '../../lib/aws-logs/log-retention-handler/index';
 
 provider.disableSleepForTesting();

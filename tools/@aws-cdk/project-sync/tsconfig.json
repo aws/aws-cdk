@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
-    "lib": ["es2022", "dom"],
+    "module": "Node20",
+    "lib": [
+      "es2022",
+      "dom"
+    ],
     "strict": true,
     "alwaysStrict": true,
     "declaration": true,
@@ -16,9 +19,17 @@
     "composite": true,
     "isolatedModules": true,
     "incremental": true,
-    "moduleResolution": "node",
-    "types": ["node", "jest"]
+    "types": [
+      "jest",
+      "node"
+    ],
+    "esModuleInterop": true,
+    "noUncheckedSideEffectImports": true
   },
-  "include": ["**/*.ts"],
-  "exclude": ["**/*.d.ts"]
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "**/*.d.ts"
+  ]
 }

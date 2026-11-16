@@ -96,6 +96,28 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 }));
 ```
 
+### Customizing target input
+
+By default a target receives the whole matched event. Use `RuleTargetInput` to send
+something else: `fromEventPath()` sends one part of the event, and `fromObject()`,
+`fromText()` and `fromMultilineText()` send a value you build. Use `EventField`
+inside that value to insert fields from the matched event.
+
+```ts
+declare const rule: events.Rule;
+declare const fn: lambda.Function;
+
+rule.addTarget(new targets.LambdaFunction(fn, {
+  event: events.RuleTargetInput.fromObject({
+    instance: events.EventField.fromPath('$.detail.instance-id'),
+    account: events.EventField.account,
+  }),
+}));
+```
+
+The prop that takes a `RuleTargetInput` depends on the target: `event` on
+`LambdaFunction`, `message` on `SnsTopic` and `SqsQueue`.
+
 ### Role
 You can specify an IAM Role:
 
@@ -360,12 +382,13 @@ const archive = new Archive(stack, 'Archive', {
 });
 ```
 
-To enable archives or schema discovery on an event bus, customers has the choice of using either an AWS owned key or a customer managed key.
-For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html).
+To enable archives on an event bus, customers have the choice of using either an AWS owned key or a customer managed key.
+Note that schema discovery is not supported for event buses encrypted using a customer managed key. To enable schema discovery on an event bus, choose to use an AWS owned key.
+For more information, see [KMS key options for event bus encryption](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-at-rest-key-options.html) and [Encrypting event buses with customer managed keys](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-encryption-event-bus-cmkey.html).
 
 ## Configuring logging
 
-To configure logging for an Event Bus, leverage the LogConfig property. It allows different level of logging (NONE, INFO, TRACE, ERROR) and wether to include details or not.
+To configure logging for an Event Bus, leverage the LogConfig property. It allows different level of logging (NONE, INFO, TRACE, ERROR) and whether to include details or not.
 
 ```ts
 import { EventBus, IncludeDetail, Level } from 'aws-cdk-lib/aws-events';
@@ -377,5 +400,7 @@ const bus =  new EventBus(this, 'Bus', {
       },
     });
 ```
+
+**Note**: Configuring logging on the event bus is required when using [vended logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-and-resource-policy.html). Vended logs require that the event bus has logging enabled with the appropriate log configuration before logs can be delivered to the destination.
 
 See more [Specifying event bus log level](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus-logs.html#eb-event-bus-logs-level)

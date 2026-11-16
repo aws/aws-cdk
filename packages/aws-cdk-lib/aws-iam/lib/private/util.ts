@@ -1,19 +1,31 @@
 import type { IConstruct } from 'constructs';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
-import { captureStackTrace, DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
+import {
+  DefaultTokenResolver,
+  Names,
+  StringConcat,
+  Token,
+  Tokenization,
+  UnscopedValidationError,
+  ValidationError,
+} from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IPolicy } from '../policy';
 
 export const MAX_POLICY_NAME_LEN = 128;
 
 export const LITERAL_STRING_KEY = 'LiteralString';
 
-export function undefinedIfEmpty(f: () => string[]): string[] {
-  return Lazy.list({
-    produce: () => {
-      const array = f();
-      return (array && array.length > 0) ? array : undefined;
-    },
-  });
+/**
+ * The physical name of the default policy of an imported user or group.
+ *
+ * An inline policy is identified by the principal it is attached to and its name. The name is
+ * derived from the principal's path including the stack name, so importing the same user or group
+ * into several stacks gives each stack an inline policy of its own, instead of letting the stack
+ * that deploys last replace the grants made by the others.
+ */
+export function importedDefaultPolicyName(principal: IConstruct, prefix: string): string {
+  return prefix + Names.uniqueResourceName(principal, { maxLength: MAX_POLICY_NAME_LEN - prefix.length });
 }
 
 /**
@@ -61,7 +73,7 @@ export class AttachedPolicies {
     }
 
     if (this.policies.find(p => p.policyName === policy.policyName)) {
-      throw new ValidationError(`A policy named "${policy.policyName}" is already attached`, policy);
+      throw new ValidationError(lit`PolicyNamedAlreadyAttached`, `A policy named "${policy.policyName}" is already attached`, policy);
     }
 
     this.policies.push(policy);
@@ -80,7 +92,7 @@ export function mergePrincipal(target: { [key: string]: string[] }, source: { [k
 
   if ((LITERAL_STRING_KEY in source && targetKeys.some(k => k !== LITERAL_STRING_KEY)) ||
     (LITERAL_STRING_KEY in target && sourceKeys.some(k => k !== LITERAL_STRING_KEY))) {
-    throw new UnscopedValidationError(`Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
+    throw new UnscopedValidationError(lit`CannotMustBeCannotMerge`, `Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
   }
 
   for (const key of sourceKeys) {
@@ -112,10 +124,9 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
     return Token.asList(new UniqueStringSet(fn));
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   private constructor(private readonly fn: () => string[]) {
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext) {

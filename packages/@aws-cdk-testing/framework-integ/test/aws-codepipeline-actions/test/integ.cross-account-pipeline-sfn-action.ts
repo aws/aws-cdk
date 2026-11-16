@@ -25,9 +25,9 @@ class StepFunctionStack extends Stack {
 
     // Create a simple Step Function
     this.stateMachine = new sfn.StateMachine(this, 'CrossAccountStateMachine', {
-      definition: new sfn.Pass(this, 'PassState', {
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(this, 'PassState', {
         result: sfn.Result.fromObject({ message: 'Hello from cross-account Step Function!' }),
-      }),
+      })),
       stateMachineName: 'CrossAccountStateMachine',
     });
 
@@ -163,7 +163,7 @@ const pipelineStack = new PipelineStack(app, 'CdkPipelineStepFunctionsActionStac
   },
 );
 
-pipelineStack.addDependency(stepFunctionStack);
+pipelineStack.addStackDependency(stepFunctionStack);
 
 new integ.IntegTest(app, 'integ-cross-account-pipeline-sfn-action', {
   testCases: [stepFunctionStack, pipelineStack],

@@ -1,5 +1,6 @@
 import { CfnObservabilityConfiguration } from 'aws-cdk-lib/aws-apprunner';
 import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -109,7 +110,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     const resourceParts = cdk.Fn.split('/', observabilityConfigurationArn);
 
     if (!resourceParts || resourceParts.length < 3) {
-      throw new cdk.UnscopedValidationError(`Unexpected ARN format: ${observabilityConfigurationArn}.`);
+      throw new cdk.UnscopedValidationError(lit`UnexpectedArnFormat`, `Unexpected ARN format: ${observabilityConfigurationArn}.`);
     }
 
     const observabilityConfigurationName = cdk.Fn.select(0, resourceParts);
@@ -152,12 +153,14 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     if (props.observabilityConfigurationName !== undefined && !cdk.Token.isUnresolved(props.observabilityConfigurationName)) {
       if (props.observabilityConfigurationName.length < 4 || props.observabilityConfigurationName.length > 32) {
         throw new cdk.ValidationError(
+          lit`InvalidObservabilityConfigurationNameLength`,
           `\`observabilityConfigurationName\` must be between 4 and 32 characters, got: ${props.observabilityConfigurationName.length} characters.`, this,
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.observabilityConfigurationName)) {
         throw new cdk.ValidationError(
+          lit`InvalidObservabilityConfigurationNameFormat`,
           `\`observabilityConfigurationName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.observabilityConfigurationName}.`, this,
         );
       }

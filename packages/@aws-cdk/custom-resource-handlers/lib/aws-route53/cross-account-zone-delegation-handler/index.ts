@@ -106,7 +106,7 @@ async function getHostedZoneIdByName(name: string, route53: Route53): Promise<st
  * By default, STS AssumeRole will call the STS endpoint for the same region
  * as the Lambda runs in. Normally, this is all good. However, when the AssumeRole
  * is used to assume a role in a different account A, the AssumeRole will fail if the
- * Lambda is executing in an an opt-in region R to which account A has not been opted in.
+ * Lambda is executing in an opt-in region R to which account A has not been opted in.
  *
  * To solve this, we will always AssumeRole in the same region as the Route53 call will
  * resolve to.

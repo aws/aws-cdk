@@ -214,6 +214,8 @@ export class Script extends ScriptBase {
         roleArn: this.role.roleArn,
       },
     });
+
+    this.resource.node.addDependency(this.role);
   }
 
   @memoizedGetter

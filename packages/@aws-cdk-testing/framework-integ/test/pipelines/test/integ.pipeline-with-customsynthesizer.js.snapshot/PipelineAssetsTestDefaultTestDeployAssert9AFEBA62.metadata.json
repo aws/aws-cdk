@@ -1,0 +1,20 @@
+{
+  "/PipelineAssetsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PipelineAssetsTestDefaultTestDeployAssert9AFEBA62.template.json"
+    }
+  ],
+  "/PipelineAssetsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PipelineAssetsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

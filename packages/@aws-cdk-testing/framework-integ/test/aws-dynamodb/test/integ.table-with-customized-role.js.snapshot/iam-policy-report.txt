@@ -36,13 +36,22 @@ Identity Policy Statements:
   {
     "Action": [
       "dynamodb:BatchGetItem",
-      "dynamodb:GetRecords",
-      "dynamodb:GetShardIterator",
       "dynamodb:Query",
       "dynamodb:GetItem",
       "dynamodb:Scan",
       "dynamodb:ConditionCheckItem",
       "dynamodb:DescribeTable"
+    ],
+    "Effect": "Allow",
+    "Resource": [
+      "(cdk-table-with-customized-role/Table/Resource.Arn)",
+      "(cdk-table-with-customized-role/Table/Resource.Arn)/index/*"
+    ]
+  },
+  {
+    "Action": [
+      "dynamodb:GetRecords",
+      "dynamodb:GetShardIterator"
     ],
     "Effect": "Allow",
     "Resource": [
@@ -90,8 +99,6 @@ Identity Policy Statements:
   {
     "Action": [
       "dynamodb:BatchGetItem",
-      "dynamodb:GetRecords",
-      "dynamodb:GetShardIterator",
       "dynamodb:Query",
       "dynamodb:GetItem",
       "dynamodb:Scan",
@@ -99,9 +106,14 @@ Identity Policy Statements:
       "dynamodb:DescribeTable"
     ],
     "Effect": "Allow",
-    "Resource": [
-      "(cdk-table-with-customized-role2/Table/Resource.Arn)",
-      "(NOVALUE)"
-    ]
+    "Resource": "(cdk-table-with-customized-role2/Table/Resource.Arn)"
+  },
+  {
+    "Action": [
+      "dynamodb:GetRecords",
+      "dynamodb:GetShardIterator"
+    ],
+    "Effect": "Allow",
+    "Resource": "(cdk-table-with-customized-role2/Table/Resource.Arn)"
   }
 ]

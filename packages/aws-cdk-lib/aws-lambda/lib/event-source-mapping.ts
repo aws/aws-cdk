@@ -9,6 +9,7 @@ import type { IKey } from '../../aws-kms';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -97,13 +98,21 @@ export interface ProvisionedPollerConfig {
   /**
    * The minimum number of pollers that should be provisioned.
    *
-   * @default - 1
+   * Valid Range:
+   * * For Amazon SQS: Minimum value of 2. Maximum value of 200. Default: 2.
+   * * For Amazon MSK, self-managed Apache Kafka, and Amazon MQ: Minimum value of 1. Maximum value of 200. Default: 1.
+   *
+   * @default - 2 for SQS, 1 for MSK/Kafka/MQ
    */
   readonly minimumPollers?: number;
   /**
    * The maximum number of pollers that can be provisioned.
    *
-   * @default - 200
+   * Valid Range:
+   * * For Amazon SQS: Minimum value of 2. Maximum value of 2000. Default: 200.
+   * * For Amazon MSK, self-managed Apache Kafka, and Amazon MQ: Minimum value of 1. Maximum value of 2000. Default: 200.
+   *
+   * @default 200
    */
   readonly maximumPollers?: number;
   /**
@@ -222,7 +231,7 @@ export interface EventSourceMappingOptions {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default - infinite or until the record expires.
+   * @default - infinite or until the record expires; 0 when `kafkaConsumptionMode` is `KafkaConsumptionMode.QUEUE`
    */
   readonly retryAttempts?: number;
 
@@ -271,6 +280,21 @@ export interface EventSourceMappingOptions {
    * @default - none
    */
   readonly kafkaConsumerGroupId?: string;
+
+  /**
+   * How Lambda reads records from the Kafka topic.
+   *
+   * Only supported for self-managed Kafka event sources (`kafkaBootstrapServers`).
+   * **Queue mode requires Kafka 4.2.0 or later.** In queue mode, `startingPosition`,
+   * `startingPositionTimestamp` and `maxBatchingWindow` are not supported, and `retryAttempts` must be between 0 and 10000
+   * and defaults to 0 (and, as in stream mode, requires `provisionedPollerConfig`).
+   * The consumption mode can't be changed after the event source mapping is created.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+   *
+   * @default - Lambda reads the topic in stream mode (`KafkaConsumptionMode.STREAM`)
+   */
+  readonly kafkaConsumptionMode?: KafkaConsumptionMode;
 
   /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
@@ -505,79 +529,85 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     addConstructMetadata(this, props);
 
     if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
-      throw new ValidationError('Either eventSourceArn or kafkaBootstrapServers must be set', this);
+      throw new ValidationError(lit`EventSourceArnKafkaBootstrap`, 'Either eventSourceArn or kafkaBootstrapServers must be set', this);
     }
 
     if (props.eventSourceArn !== undefined && props.kafkaBootstrapServers !== undefined) {
-      throw new ValidationError('eventSourceArn and kafkaBootstrapServers are mutually exclusive', this);
+      throw new ValidationError(lit`EventSourceArnKafkaBootstrap`, 'eventSourceArn and kafkaBootstrapServers are mutually exclusive', this);
     }
 
     if (props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
-      if (minimumPollers != undefined) {
+      const isMinimumPollersDefinedAndResolved = minimumPollers != undefined && !cdk.Token.isUnresolved(minimumPollers);
+      const isMaximumPollersDefinedAndResolved = maximumPollers != undefined && !cdk.Token.isUnresolved(maximumPollers);
+      if (isMinimumPollersDefinedAndResolved) {
         if (minimumPollers < 1 || minimumPollers > 200) {
-          throw new ValidationError('Minimum provisioned pollers must be between 1 and 200 inclusive', this);
+          throw new ValidationError(lit`MinimumProvisionedPollersInclusive`, 'Minimum provisioned pollers must be between 1 and 200 inclusive', this);
         }
       }
-      if (maximumPollers != undefined) {
+      if (isMaximumPollersDefinedAndResolved) {
         if (maximumPollers < 1 || maximumPollers > 2000) {
-          throw new ValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive', this);
+          throw new ValidationError(lit`MaximumProvisionedPollersInclusive`, 'Maximum provisioned pollers must be between 1 and 2000 inclusive', this);
         }
       }
-      if (minimumPollers != undefined && maximumPollers != undefined) {
+      if (isMinimumPollersDefinedAndResolved && isMaximumPollersDefinedAndResolved) {
         if (minimumPollers > maximumPollers) {
-          throw new ValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', this);
+          throw new ValidationError(lit`MinimumProvisionedPollersLessEqual`, 'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', this);
         }
       }
     }
 
     if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
-      throw new ValidationError('kafkaBootStrapServers must not be empty if set', this);
+      throw new ValidationError(lit`KafkaBootStrapServersEmpty`, 'kafkaBootStrapServers must not be empty if set', this);
     }
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
-      throw new ValidationError(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`, this);
+      throw new ValidationError(lit`MaxBatchingWindowCannotSeconds`, `maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`, this);
     }
 
     if (props.maxConcurrency && !cdk.Token.isUnresolved(props.maxConcurrency) && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
-      throw new ValidationError('maxConcurrency must be between 2 and 1000 concurrent instances', this);
+      throw new ValidationError(lit`MaxConcurrencyConcurrentInstances`, 'maxConcurrency must be between 2 and 1000 concurrent instances', this);
     }
 
     if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
-      throw new ValidationError('maxRecordAge must be between 60 seconds and 7 days inclusive', this);
+      throw new ValidationError(lit`MaxRecordAgeSecondsDays`, 'maxRecordAge must be between 60 seconds and 7 days inclusive', this);
     }
 
     props.retryAttempts !== undefined && cdk.withResolved(props.retryAttempts, (attempts) => {
       // Allow -1 for infinite retries, otherwise validate the 0-10000 range
       if (!(attempts === -1 || (attempts >= 0 && attempts <= 10000))) {
-        throw new ValidationError(`retryAttempts must be -1 (for infinite) or between 0 and 10000 inclusive, got ${attempts}`, this);
+        throw new ValidationError(lit`RetryAttemptsInfiniteInclusive`, `retryAttempts must be -1 (for infinite) or between 0 and 10000 inclusive, got ${attempts}`, this);
       }
     });
 
     props.parallelizationFactor !== undefined && cdk.withResolved(props.parallelizationFactor, (factor) => {
       if (factor < 1 || factor > 10) {
-        throw new ValidationError(`parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`, this);
+        throw new ValidationError(lit`ParallelizationFactorInclusive`, `parallelizationFactor must be between 1 and 10 inclusive, got ${factor}`, this);
       }
     });
 
     if (props.tumblingWindow && !cdk.Token.isUnresolved(props.tumblingWindow) && props.tumblingWindow.toSeconds() > 900) {
-      throw new ValidationError(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`, this);
+      throw new ValidationError(lit`TumblingWindowCannotSeconds`, `tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`, this);
     }
 
     if (props.startingPosition === StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new ValidationError('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP', this);
+      throw new ValidationError(lit`StartingPositionTimestampProvidedStarting`, 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP', this);
     }
 
     if (props.startingPosition !== StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new ValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP', this);
+      throw new ValidationError(lit`StartingPositionTimestampStartingPosition`, 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP', this);
     }
 
     if (props.kafkaConsumerGroupId) {
       this.validateKafkaConsumerGroupIdOrThrow(props.kafkaConsumerGroupId);
     }
 
+    if (props.kafkaConsumptionMode !== undefined) {
+      this.validateKafkaConsumptionModeOrThrow(props);
+    }
+
     if (props.filterEncryption !== undefined && props.filters == undefined) {
-      throw new ValidationError('filter criteria must be provided to enable setting filter criteria encryption', this);
+      throw new ValidationError(lit`FilterCriteriaProvidedEnableSetting`, 'filter criteria must be provided to enable setting filter criteria encryption', this);
     }
 
     /**
@@ -606,10 +636,13 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     let kafkaConfig: any;
-    if (props.kafkaConsumerGroupId || props.schemaRegistryConfig) {
+    if (props.kafkaConsumerGroupId || props.schemaRegistryConfig || props.kafkaConsumptionMode) {
       kafkaConfig = {};
       if (props.kafkaConsumerGroupId) {
         kafkaConfig.consumerGroupId = props.kafkaConsumerGroupId;
+      }
+      if (props.kafkaConsumptionMode) {
+        kafkaConfig.consumptionMode = props.kafkaConsumptionMode.mode;
       }
       if (props.schemaRegistryConfig) {
         const schemaRegistry = props.schemaRegistryConfig.bind(this, props.target);
@@ -666,14 +699,70 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
     }
 
     if (kafkaConsumerGroupId.length > 200 || kafkaConsumerGroupId.length < 1) {
-      throw new ValidationError('kafkaConsumerGroupId must be a valid string between 1 and 200 characters', this);
+      throw new ValidationError(lit`KafkaConsumerGroupIdValid`, 'kafkaConsumerGroupId must be a valid string between 1 and 200 characters', this);
     }
 
     const regex = new RegExp(/[a-zA-Z0-9-\/*:_+=.@-]*/);
     const patternMatch = regex.exec(kafkaConsumerGroupId);
     if (patternMatch === null || patternMatch[0] !== kafkaConsumerGroupId) {
-      throw new ValidationError('kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"', this);
+      throw new ValidationError(lit`KafkaConsumerGroupIdContains`, 'kafkaConsumerGroupId contains invalid characters. Allowed values are "[a-zA-Z0-9-\/*:_+=.@-]"', this);
     }
+  }
+
+  private validateKafkaConsumptionModeOrThrow(props: EventSourceMappingProps) {
+    // CloudFormation only supports ConsumptionMode on SelfManagedKafkaEventSourceConfig.
+    if (props.kafkaBootstrapServers === undefined) {
+      throw new ValidationError(lit`KafkaConsumptionModeRequiresSelfManagedKafka`, 'kafkaConsumptionMode is only supported for self-managed Kafka event sources (kafkaBootstrapServers)', this);
+    }
+
+    if (props.kafkaConsumptionMode?.mode !== KafkaConsumptionMode.QUEUE.mode) {
+      return;
+    }
+
+    // maxBatchingWindow isn't checked here; Lambda validates it at deploy time.
+    if (props.startingPosition !== undefined || props.startingPositionTimestamp !== undefined) {
+      throw new ValidationError(lit`KafkaQueueModeStartingPosition`, 'startingPosition and startingPositionTimestamp are not supported when kafkaConsumptionMode is QUEUE; remove them', this);
+    }
+
+    if (props.retryAttempts !== undefined && !cdk.Token.isUnresolved(props.retryAttempts) && props.retryAttempts === -1) {
+      throw new ValidationError(lit`KafkaQueueModeInfiniteRetries`, 'retryAttempts must be between 0 and 10000 when kafkaConsumptionMode is QUEUE; -1 (infinite retries) is not supported', this);
+    }
+  }
+}
+
+/**
+ * How Lambda reads records from a Kafka topic.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+ */
+export class KafkaConsumptionMode {
+  /**
+   * Read the topic as a Kafka consumer group. Records in a partition are processed in order.
+   */
+  public static readonly STREAM = new KafkaConsumptionMode('Stream');
+
+  /**
+   * Read the topic as a Kafka share group. Records in a partition can be processed in parallel,
+   * without ordering. Requires Kafka 4.2.0 or later.
+   */
+  public static readonly QUEUE = new KafkaConsumptionMode('Queue');
+
+  /**
+   * A consumption mode that this library doesn't model.
+   *
+   * @param mode The value of the `ConsumptionMode` property
+   */
+  public static of(mode: string): KafkaConsumptionMode {
+    return new KafkaConsumptionMode(mode);
+  }
+
+  /**
+   * The value of the `ConsumptionMode` property
+   */
+  public readonly mode: string;
+
+  private constructor(mode: string) {
+    this.mode = mode;
   }
 }
 

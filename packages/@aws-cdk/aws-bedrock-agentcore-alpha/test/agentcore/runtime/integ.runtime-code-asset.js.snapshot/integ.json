@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "BedrockAgentCoreRuntimeCodeAssetTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-runtime-code-asset"
+      ],
+      "assertionStack": "BedrockAgentCoreRuntimeCodeAssetTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreRuntimeCodeAssetTestDefaultTestDeployAssert3FEAB2B1"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -147,7 +147,7 @@ Provider Request]:
 | `RequestType`           | String | The type of lifecycle event: `Create`, `Update` or `Delete`.                                                                                        |
 | `LogicalResourceId`     | String | The template developer-chosen name (logical ID) of the custom resource in the AWS CloudFormation template.                                          |
 | `PhysicalResourceId`    | String | This field will only be present for `Update` and `Delete` events and includes the value returned in `PhysicalResourceId` of the previous operation. |
-| `ResourceProperties`    | JSON   | This field contains the properties defined in the template for this custom resource.                                                                |
+| `ResourceProperties`    | JSON   | This field contains the properties defined in the template for this custom resource. All scalar values are stringified by CloudFormation.           |
 | `OldResourceProperties` | JSON   | This field will only be present for `Update` events and contains the resource properties that were declared previous to the update request.         |
 | `ResourceType`          | String | The resource type defined for this custom resource in the template. A provider may handle any number of custom resource types.                      |
 | `RequestId`             | String | A unique ID for the request.                                                                                                                        |
@@ -184,7 +184,7 @@ CloudFormation.
 
 The input event to `isComplete` includes all request fields, combined with all
 fields returned from `onEvent`. If `PhysicalResourceId` has not been explicitly
-returned from `onEvent`, it's value will be calculated based on the heuristics
+returned from `onEvent`, its value will be calculated based on the heuristics
 described above.
 
 The return value must be a JSON object with the following fields:
@@ -273,7 +273,7 @@ resource operation fails even though the operation technically succeeded (i.e.
 isComplete throws an error).
 
 When AWS CloudFormation receives a "FAILED" response, it will attempt to roll
-back the stack to it's last state. This has different meanings for different
+back the stack to its last state. This has different meanings for different
 lifecycle events:
 
 * If a `Create` event fails, the resource provider framework will automatically
@@ -282,7 +282,10 @@ lifecycle events:
   https://github.com/aws/aws-cdk/issues/5524).
 * If an `Update` event fails, CloudFormation will issue an additional `Update`
   with the previous properties.
-* If a `Delete` event fails, CloudFormation will abandon this resource.
+* If a `Delete` event fails during a `Stack Update`, CloudFormation will
+  report the error but succeed the `Update`, and abandon the resource.
+* If a `Delete` event fails during any other stack operation, CloudFormation
+  will fail and block the stack operation, requiring human intervention.
 
 ### Important cases to handle
 
@@ -300,8 +303,19 @@ make sure your custom resource behaves correctly in all cases:
     to roll back to the previous state (with `ResourceProperties` and
     `OldResourceProperties` reversed).
   * If you return a different `PhysicalResourceId`, you will subsequently
-    receive a `Delete` event to clean up the previous state of the resource.
+    receive a `Delete` event to clean up the previous instance of the resource.
 * During `Delete`:
+  * If your `Create` takes a long time to complete, it is possible **that
+    another resource may fail during this time**. If that happens, CloudFormation
+    will stop waiting for the Create call to complete and send you a `Delete`
+    event. Because the original Create event never finished, it doesn't know
+    about the resource's physical ID, and will invent one. The `PhysicalId` it
+    will send you in this call looks like `<stackname>-<logicalId>-<suffix>`.
+    The best you can do is ignore this event; since you cannot know the physical
+    ID of the resource in the `Create` call, there is no way to delete it. The
+    *provider framework* cannot help you with this, you have no choice but to
+    leak this resource.
+    ([CloudFormation roadmap issue](https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/1814)).
   * If the behavior of your custom resource is tied to another AWS resource
     (for example, it exists to clean the contents of a stateful resource), keep
     in mind that your custom resource may be deleted independently of the other
@@ -316,6 +330,9 @@ make sure your custom resource behaves correctly in all cases:
   rollback `Updates`) or in `OldResourceProperties` (during rollforward
   `Update`). You must continue to handle all possible sets of properties
   your custom resource could have ever been created with in the past.
+* Keep in mind that all scalars in the `ResourceProperties` are stringified.
+  That means that numbers arrive as `"42"`, booleans arrive as `"true"`, and
+  lists of numbers arrive as `["80", "443"]`.
 
 ### Provider Framework Execution Policy
 
@@ -891,9 +908,9 @@ For more information on external IDs and preventing confused deputy attacks, see
 
 **This feature is currently experimental**
 
-You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`. 
+You can configure every CDK-vended custom resource in a given scope with `CustomResourceConfig`.
 
-Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:  
+Note that `CustomResourceConfig` uses Aspects to modify your constructs. There is no guarantee in the order in which Aspects modify the construct tree, which means that adding the same Aspect more than once to a given scope produces undefined behavior. This example guarantees that every affected resource will have a log retention of ten years or one day, but you cannot know which:
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.TEN_YEARS);
 CustomResourceConfig.of(App).addLogRetentionLifetime(logs.RetentionDays.ONE_DAY);
 
@@ -986,7 +1003,7 @@ CustomResourceConfig.of(app).addRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
 new ses.ReceiptRuleSet(app, 'RuleSet', {
   dropSpam: true,
-});    
+});
 ```
 
 ### Setting Lambda Runtimes

@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import type { CfnImage, CfnImagePipeline } from 'aws-cdk-lib/aws-imagebuilder';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { ImageProps } from '../image';
 import type { ImagePipelineProps } from '../image-pipeline';
@@ -38,11 +39,11 @@ export const buildImageScanningConfiguration = <
   props: PropsT,
 ): OutputT | undefined => {
   if (!props.recipe._isContainerRecipe() && props.imageScanningEcrRepository !== undefined) {
-    throw new cdk.ValidationError('imageScanningEcrRepository is only supported for container recipe builds', scope);
+    throw new cdk.ValidationError(lit`EcrRepositoryOnlySupportedForContainerRecipe`, 'imageScanningEcrRepository is only supported for container recipe builds', scope);
   }
 
   if (!props.recipe._isContainerRecipe() && props.imageScanningEcrTags !== undefined) {
-    throw new cdk.ValidationError('imageScanningEcrTags is only supported for container recipe builds', scope);
+    throw new cdk.ValidationError(lit`EcrTagsOnlySupportedForContainerRecipe`, 'imageScanningEcrTags is only supported for container recipe builds', scope);
   }
 
   const ecrConfiguration: CfnImagePipeline.EcrConfigurationProperty = {

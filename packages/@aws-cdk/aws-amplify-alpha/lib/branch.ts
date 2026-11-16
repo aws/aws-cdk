@@ -12,6 +12,7 @@ import {
   Stack,
   ValidationError,
 } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import { Provider } from 'aws-cdk-lib/custom-resources';
@@ -200,7 +201,7 @@ export class Branch extends Resource implements IBranch {
       const isSSR = isServerSideRendered(platform);
 
       if (props.computeRole && !isSSR) {
-        throw new ValidationError('`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
+        throw new ValidationError(lit`InvalidBranchComputeRolePlatform`, '`computeRole` can only be specified for branches of apps with `Platform.WEB_COMPUTE` or `Platform.WEB_DYNAMIC`.', this);
       }
     }
 

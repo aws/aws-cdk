@@ -1,0 +1,21 @@
+{
+  "resources": {
+    "ConsumableResource": {
+      "grants": {
+        "read": {
+          "actions": [
+            "batch:DescribeConsumableResource",
+            "batch:ListJobsByConsumableResource"
+          ],
+          "docSummary": "Grant permission to describe this consumable resource and list the jobs that use it.\n\nThis will grant the following permissions:\n\n - batch:DescribeConsumableResource\n - batch:ListJobsByConsumableResource"
+        },
+        "update": {
+          "actions": [
+            "batch:UpdateConsumableResource"
+          ],
+          "docSummary": "Grant permission to change the total quantity of this consumable resource.\n\nThis will grant the following permissions:\n\n - batch:UpdateConsumableResource"
+        }
+      }
+    }
+  }
+}

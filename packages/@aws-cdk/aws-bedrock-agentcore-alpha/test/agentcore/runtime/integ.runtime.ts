@@ -8,6 +8,7 @@
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from '../../../lib';
 
@@ -18,9 +19,9 @@ const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-runtime');
 // This uses a minimal test application with no external dependencies
 const runtimeArtifact = agentcore.AgentRuntimeArtifact.fromAsset(
   path.join(__dirname, 'testArtifact'),
+  { platform: assets.Platform.LINUX_ARM64 },
 );
 
-// Create a single runtime (similar to the working strands example)
 const runtime = new agentcore.Runtime(stack, 'TestRuntime', {
   runtimeName: 'integ_test_runtime',
   description: 'Integration test runtime for BedrockAgentCore',
@@ -60,14 +61,6 @@ const taggedEndpoint = new agentcore.RuntimeEndpoint(stack, 'TaggedEndpoint', {
   },
 });
 
-// Create version 2 endpoint
-const v2Endpoint = new agentcore.RuntimeEndpoint(stack, 'V2Endpoint', {
-  endpointName: 'v2_endpoint',
-  agentRuntimeId: runtime.agentRuntimeId,
-  agentRuntimeVersion: '2',
-  description: 'Version 2 endpoint',
-});
-
 // Test grant methods to verify sub-resource permissions
 const testFunction = new lambda.Function(stack, 'TestInvokerFunction', {
   runtime: lambda.Runtime.PYTHON_3_12,
@@ -100,11 +93,7 @@ new cdk.CfnOutput(stack, 'TaggedEndpointId', {
   description: 'Tagged endpoint ID',
 });
 
-new cdk.CfnOutput(stack, 'V2EndpointId', {
-  value: v2Endpoint.endpointId,
-  description: 'Version 2 endpoint ID',
-});
-
 new integ.IntegTest(app, 'BedrockAgentCoreRuntimeTest', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
 });
