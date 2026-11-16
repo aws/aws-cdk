@@ -134,6 +134,19 @@
        "Action": "bedrock:AgenticRetrieveStream",
        "Effect": "Allow",
        "Resource": "*"
+      },
+      {
+       "Action": [
+        "bedrock:GetKnowledgeBase",
+        "bedrock:Retrieve"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "RetrieveOnlyKnowledgeBase",
+         "KnowledgeBaseArn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -333,7 +346,6 @@
           ],
           "agenticRetrieveConfiguration": {
            "foundationModelType": "MANAGED",
-           "rerankingModelType": "MANAGED",
            "maxAgentIteration": 3
           }
          }
@@ -353,6 +365,10 @@
          }
         }
        ],
+       "Enabled": [
+        "AgenticRetrieveStream",
+        "Retrieve"
+       ],
        "Source": {
         "ConnectorId": "bedrock-knowledge-bases"
        }
@@ -363,6 +379,66 @@
    "DependsOn": [
     "GatewayServiceRoleDefaultPolicy5A851A93"
    ]
+  },
+  "GatewayRetrieveOnlyF6191441": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "managed-kb-retrieve",
+    "TargetConfiguration": {
+     "Mcp": {
+      "Connector": {
+       "Configurations": [
+        {
+         "Name": "Retrieve",
+         "ParameterValues": {
+          "knowledgeBaseId": {
+           "Ref": "RetrieveOnlyKnowledgeBase"
+          }
+         }
+        }
+       ],
+       "Enabled": [
+        "Retrieve"
+       ],
+       "Source": {
+        "ConnectorId": "bedrock-knowledge-bases"
+       }
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "GatewayServiceRoleDefaultPolicy5A851A93"
+   ]
+  },
+  "RetrieveOnlyKnowledgeBase": {
+   "Type": "AWS::Bedrock::KnowledgeBase",
+   "Properties": {
+    "KnowledgeBaseConfiguration": {
+     "ManagedKnowledgeBaseConfiguration": {
+      "EmbeddingModelType": "MANAGED"
+     },
+     "Type": "MANAGED"
+    },
+    "Name": "integ-gateway-kb-target-retrieve",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "KnowledgeBaseRoleA2B317B9",
+      "Arn"
+     ]
+    }
+   }
   }
  },
  "Outputs": {
@@ -386,6 +462,17 @@
    },
    "Export": {
     "Name": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputFnGetAttGatewayKnowledgeBases9289AC1ATargetId4DBB45D3"
+   }
+  },
+  "ExportsOutputFnGetAttGatewayRetrieveOnlyF6191441TargetId9055F51C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GatewayRetrieveOnlyF6191441",
+     "TargetId"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputFnGetAttGatewayRetrieveOnlyF6191441TargetId9055F51C"
    }
   }
  },

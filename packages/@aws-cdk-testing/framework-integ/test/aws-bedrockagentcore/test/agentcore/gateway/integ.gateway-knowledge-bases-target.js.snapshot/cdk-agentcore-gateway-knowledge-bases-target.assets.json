@@ -1,16 +1,16 @@
 {
   "version": "55.0.0",
   "files": {
-    "40126ad3df184941e9ed62a647e88274a350e91e00a066d3318630635558665a": {
+    "43ace551f3e59938fec0d9c012a64d2d7cd143ab60010ee3910a2b7e578c4f8c": {
       "displayName": "cdk-agentcore-gateway-knowledge-bases-target Template",
       "source": {
         "path": "cdk-agentcore-gateway-knowledge-bases-target.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-50a20416": {
+        "current_account-current_region-ce5d2bfb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "40126ad3df184941e9ed62a647e88274a350e91e00a066d3318630635558665a.json",
+          "objectKey": "43ace551f3e59938fec0d9c012a64d2d7cd143ab60010ee3910a2b7e578c4f8c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

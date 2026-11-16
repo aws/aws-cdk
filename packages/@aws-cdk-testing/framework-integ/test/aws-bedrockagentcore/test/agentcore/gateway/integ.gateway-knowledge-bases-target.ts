@@ -1,6 +1,19 @@
 /**
- * Integration test: Gateway connector target backed by an Amazon Bedrock
+ * Integration test: Gateway connector targets backed by an Amazon Bedrock
  * managed knowledge base.
+ *
+ * The assertions wait for the targets to reach READY, which covers create-time
+ * validation. Tool calls need a token from the gateway's Cognito client, so
+ * they are verified by hand:
+ *
+ * Stack verification steps:
+ * * Deploy with `--no-clean` and obtain a token from the gateway's Cognito client
+ *   (client_credentials flow, scopes `<resource server>/read` and `<resource server>/write`)
+ * * POST `tools/list` to the gateway URL: expect `managed-kb___AgenticRetrieveStream`,
+ *   `managed-kb___Retrieve` and `managed-kb-retrieve___Retrieve`, and no
+ *   `managed-kb-retrieve___AgenticRetrieveStream`
+ * * POST `tools/call` for each tool: expect a successful (possibly empty) result,
+ *   not an access denied error or "Missing required field(s)"
  */
 
 /// !cdk-integ cdk-agentcore-gateway-knowledge-bases-target
@@ -60,38 +73,60 @@ const target = gateway.addKnowledgeBasesTarget('KnowledgeBases', {
   },
 });
 
+// A Retrieve-only target on a knowledge base of its own. The gateway role gets
+// only GetKnowledgeBase and Retrieve on it, without the agentic actions, so READY
+// here shows that this narrower grant passes the create-time validation too.
+// With a shared knowledge base, the statement would be merged into the agentic one.
+const retrieveOnlyKnowledgeBase = new bedrock.CfnKnowledgeBase(stack, 'RetrieveOnlyKnowledgeBase', {
+  name: 'integ-gateway-kb-target-retrieve',
+  roleArn: knowledgeBaseRole.roleArn,
+  knowledgeBaseConfiguration: {
+    type: 'MANAGED',
+    managedKnowledgeBaseConfiguration: {
+      embeddingModelType: 'MANAGED',
+    },
+  },
+});
+
+const retrieveOnlyTarget = gateway.addKnowledgeBasesTarget('RetrieveOnly', {
+  gatewayTargetName: 'managed-kb-retrieve',
+  retrieve: { knowledgeBase: retrieveOnlyKnowledgeBase },
+});
+
 const integTest = new integ.IntegTest(app, 'GatewayKnowledgeBasesTarget', {
   testCases: [stack],
 });
 
-const apiCall = integTest.assertions.awsApiCall('bedrock-agentcore-control', 'getGatewayTarget', {
-  gatewayIdentifier: gateway.gatewayId,
-  targetId: target.targetId,
-});
+for (const [targetName, gatewayTarget] of [['managed-kb', target], ['managed-kb-retrieve', retrieveOnlyTarget]] as const) {
+  const apiCall = integTest.assertions.awsApiCall('bedrock-agentcore-control', 'getGatewayTarget', {
+    gatewayIdentifier: gateway.gatewayId,
+    targetId: gatewayTarget.targetId,
+  });
 
-// `bedrock-agentcore-control` is not in the integ-tests SDK metadata, so the
-// auto-derived IAM action would be `bedrock-agentcore-control:GetGatewayTarget`
-// — wrong; the real prefix is `bedrock-agentcore`. Wire both the onEvent
-// provider and the WaiterStateMachine isComplete provider explicitly.
-apiCall.provider.addToRolePolicy({
-  Effect: 'Allow',
-  Action: ['bedrock-agentcore:GetGatewayTarget'],
-  Resource: ['*'],
-});
+  // `bedrock-agentcore-control` is not in the integ-tests SDK metadata, so the
+  // auto-derived IAM action would be `bedrock-agentcore-control:GetGatewayTarget`
+  // — wrong; the real prefix is `bedrock-agentcore`. Wire both the onEvent
+  // provider and the WaiterStateMachine isComplete provider explicitly.
+  apiCall.provider.addToRolePolicy({
+    Effect: 'Allow',
+    Action: ['bedrock-agentcore:GetGatewayTarget'],
+    Resource: ['*'],
+  });
 
-apiCall.expect(integ.ExpectedResult.objectLike({
-  name: 'managed-kb',
-  status: 'READY',
-  credentialProviderConfigurations: [
-    { credentialProviderType: 'GATEWAY_IAM_ROLE' },
-  ],
-})).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(15),
-  interval: cdk.Duration.seconds(30),
-});
+  apiCall.expect(integ.ExpectedResult.objectLike({
+    name: targetName,
+    status: 'READY',
+    credentialProviderConfigurations: [
+      { credentialProviderType: 'GATEWAY_IAM_ROLE' },
+    ],
+  })).waitForAssertions({
+    totalTimeout: cdk.Duration.minutes(15),
+    interval: cdk.Duration.seconds(30),
+  });
 
-(apiCall as integ.AwsApiCall).waiterProvider?.addToRolePolicy({
-  Effect: 'Allow',
-  Action: ['bedrock-agentcore:GetGatewayTarget'],
-  Resource: ['*'],
-});
+  (apiCall as integ.AwsApiCall).waiterProvider?.addToRolePolicy({
+    Effect: 'Allow',
+    Action: ['bedrock-agentcore:GetGatewayTarget'],
+    Resource: ['*'],
+  });
+}

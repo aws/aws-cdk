@@ -30,6 +30,16 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/RetrieveOnlyKnowledgeBase": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RetrieveOnlyKnowledgeBase"
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/BootstrapVersion": [
@@ -92,6 +102,14 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool": [
@@ -114,6 +132,12 @@
       "data": "*"
     }
   ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/RetrieveOnly": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"Gateway43CB3636\",\"GatewayIdentifier\"]}": [
     {
       "type": "aws:cdk:logicalId",
@@ -124,6 +148,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputFnGetAttGatewayKnowledgeBases9289AC1ATargetId4DBB45D3"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"GatewayRetrieveOnlyF6191441\",\"TargetId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGatewayRetrieveOnlyF6191441TargetId9055F51C"
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole/Resource": [
@@ -150,6 +180,14 @@
       "data": {
         "attachToRole": [
           "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
         ]
       }
     },
@@ -216,6 +254,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GatewayKnowledgeBases9289AC1A"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/RetrieveOnly/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayRetrieveOnlyF6191441"
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole/DefaultPolicy/Resource": [
