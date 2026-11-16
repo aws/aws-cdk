@@ -322,9 +322,11 @@ export class CidrBlock {
   constructor(ipAddress: number, mask: number);
   constructor(ipAddressOrCidr: string | number, mask?: number) {
     if (typeof ipAddressOrCidr === 'string') {
+      // Validate the address before the mask so a bad address keeps reporting
+      // InvalidIpAddress rather than a misleading mask error.
+      const ipNum = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]);
       this.mask = CidrBlock.parseMask(ipAddressOrCidr);
-      this.networkAddress = NetworkUtils.ipToNum(ipAddressOrCidr.split('/')[0]) +
-        CidrBlock.calculateNetsize(this.mask) - 1;
+      this.networkAddress = ipNum + CidrBlock.calculateNetsize(this.mask) - 1;
     } else {
       // The numeric path is intentionally unchecked: it is @internal and its
       // callers (e.g. addSubnets, masks gated to 16-28) already bound the mask.

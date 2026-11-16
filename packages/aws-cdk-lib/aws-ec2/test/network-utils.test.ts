@@ -104,6 +104,15 @@ describe('network utils', () => {
     ])('fails instead of building a nonsensical block for %s (%s)', (cidr: string) => {
       expect(() => new CidrBlock(cidr)).toThrow(/invalid CIDR mask/);
     });
+    test.each([
+      ['2001:db8::/64', 'IPv6 CIDR'],
+      ['${Token[TOKEN.123]}/33', 'unresolved token with a bad mask'],
+      ['300.0.0.0/33', 'out-of-range octet with a bad mask'],
+      ['300.0.0.0', 'out-of-range octet with no mask'],
+    ])('reports the invalid address before the mask for %s (%s)', (cidr: string) => {
+      expect(() => new CidrBlock(cidr)).toThrow(/is not valid/);
+      expect(() => new CidrBlock(cidr)).not.toThrow(/invalid CIDR mask/);
+    });
     test('the error names the offending input', () => {
       expect(() => new CidrBlock('10.0.0.0/33')).toThrow(/"10\.0\.0\.0\/33"/);
     });
