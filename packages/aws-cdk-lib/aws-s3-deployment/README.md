@@ -145,6 +145,39 @@ file you are referencing. Zips from untrusted sources might be able to execute
 arbitrary code in the Lambda Function used by this module, and use its permissions
 to read or write unexpected files in the S3 bucket.
 
+## Referencing deployed object versions
+
+When you deploy a single zip file without extracting it (`extract: false`) to a
+**versioned** destination bucket, you can obtain the S3 `VersionId` of each deployed
+object via `objectVersionIds`. This is useful when a consumer must reference a specific,
+immutable version of a deployed object — for example a Lambda function that references its
+code in S3 by version rather than copying it.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const bucket = new s3.Bucket(this, 'CodeBucket', { versioned: true });
+
+const deployment = new s3deploy.BucketDeployment(this, 'DeployCode', {
+  sources: [s3deploy.Source.asset('/path/to/handler.zip')],
+  destinationBucket: bucket,
+  extract: false,
+});
+
+// `objectVersionIds` positionally matches `objectKeys`
+const objectKey = cdk.Fn.select(0, deployment.objectKeys);
+const versionId = cdk.Fn.select(0, deployment.objectVersionIds);
+```
+
+`objectVersionIds` returns a list of tokenized version IDs that positionally matches
+`objectKeys`. It is only supported with `extract: false` (reading it with `extract: true`
+throws), and requires versioning to be enabled on the destination bucket — otherwise the
+returned version IDs are empty strings. Because the list is defined to align with `objectKeys`,
+it also requires `outputObjectKeys` to remain enabled (its default); reading it with
+`outputObjectKeys: false` throws. A consumer holding a version reference pins that
+specific object version, so it should not rely on `prune` semantics for lifecycle of the
+referenced version.
+
 ## Retain on Delete
 
 By default, the contents of the destination bucket will **not** be deleted when the
@@ -383,30 +416,36 @@ while `arm64` costs less per millisecond of execution.
 
 ## JSON-Aware Source Processing
 
-When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the escaping option. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
+`Source.jsonData()` and `Source.yamlData()` encode each deploy-time value according to the
+type of the tokenized value used in the data structure. So if the value is a tokenized
+string (`Token.asString()`) it will be quoted, if the value is a tokenized number or list, or
+arbitrary object (`Token.asNumber()`, `Token.asList()`, `Token.asAny()`) it will not be quoted.
 
 ```ts
 declare const bucket: s3.Bucket;
 declare const param: ssm.StringParameter;
 
-// Example with a secret value that contains double quotes
+// Works even if the parameter value contains double quotes
 const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
   sources: [
     s3deploy.Source.jsonData('config.json', {
       api_endpoint: 'https://api.example.com',
-      secretValue: param.stringValue, // value with double quotes
+      secretValue: param.stringValue,
       config: {
         enabled: true,
         features: ['feature1', 'feature2']
       }
-    },
-    // Enable escaping at deployment time
-    { escape: true },
-    )
+    }),
   ],
   destinationBucket: bucket,
 });
 ```
+
+CloudFormation passes every scalar to the deployment as a string, so the elements of a
+deploy-time list are always strings: a list of port numbers is deployed as `["80", "443"]`.
+
+Escaping used to require passing `{ escape: true }` to `Source.jsonData()`, and is now the
+default. See `JsonProcessingOptions` for the rare case where you want to turn it off.
 
 ## EFS Support
 
@@ -555,7 +594,7 @@ const bucket = new s3.Bucket(this, 'MyBucket');
 
 new s3deploy.BucketDeployment(this, 'DeployToS3', {
     destinationBucket: bucket,
-    vpc: vpc, 
+    vpc: vpc,
     sources: [s3deploy.Source.asset('./website')],
 });
 ```

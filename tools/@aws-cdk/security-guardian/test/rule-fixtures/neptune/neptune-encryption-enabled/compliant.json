@@ -1,0 +1,11 @@
+{
+  "Description": "NEPTUNE_ENCRYPTION_ENABLED passes: the cluster enables storage encryption",
+  "Resources": {
+    "EncryptedCluster": {
+      "Type": "AWS::Neptune::DBCluster",
+      "Properties": {
+        "StorageEncrypted": true
+      }
+    }
+  }
+}

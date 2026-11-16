@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "59699f3599c12b54666f05dd2d4702da313e1466f561751ee1d588dd5228a950": {
+      "source": {
+        "path": "asset.59699f3599c12b54666f05dd2d4702da313e1466f561751ee1d588dd5228a950.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-b881a5e0": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "59699f3599c12b54666f05dd2d4702da313e1466f561751ee1d588dd5228a950.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "543871a85c8de711628d8aef84e51f1e00921ae3b3716fc710256c26bfa0caf6": {
+      "displayName": "BedrockAgentCoreRuntimeBuildHooksTestDefaultTestDeployAssert3CADF67F Template",
+      "source": {
+        "path": "BedrockAgentCoreRuntimeBuildHooksTestDefaultTestDeployAssert3CADF67F.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-877dd630": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "543871a85c8de711628d8aef84e51f1e00921ae3b3716fc710256c26bfa0caf6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

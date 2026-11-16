@@ -19,6 +19,8 @@ import { LoggingDestination, LogType } from '../../../lib/runtime/observability'
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import {
+  LifecycleHook,
+  PlatformVersion,
   ProtocolType,
 } from '../../../lib/runtime/types';
 
@@ -104,6 +106,38 @@ describe('Runtime default tests', () => {
 
   test('Should have policy for execution role with correct permissions', () => {
     template.hasResourceProperties('AWS::IAM::Policy', expectedExecutionRolePolicy);
+  });
+
+  test('Should have acknowledgeable annotation regarding container URI validation', () => {
+    const appCUri = new cdk.App();
+    const stackCUri = new cdk.Stack(appCUri, 'ack-stack', { env: { account: '123456789012', region: 'us-east-1' } });
+    const repositoryCUri = new ecr.Repository(stackCUri, 'TestRepository');
+    const runtimeCUri = new Runtime(stackCUri, 'test-runtime-container-uri', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repositoryCUri, 'v1.0.0'),
+    });
+
+    cdk.Annotations.of(runtimeCUri).acknowledgeInfo('aws-cdk-lib.aws-bedrockagentcore:containerUriValidationSkipped');
+
+    Annotations.fromStack(stackCUri).hasNoInfo('*', Match.stringLikeRegexp('Container URI validation'));
+  });
+
+  test('Should have acknowledgeable annotation regarding cross-account IAM role usage', () => {
+    const crossAccountRole = iam.Role.fromRoleArn(stack, 'ImportedCrossAccountRole',
+      'arn:aws:iam::111111111111:role/test-cross-account-role');
+
+    new Runtime(stack, 'test-runtime-cross-account', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+      executionRole: crossAccountRole,
+    });
+
+    cdk.Validations.of(stack).acknowledge({
+      id: 'aws-cdk-lib.aws-bedrockagentcore:iamRoleCrossAccount',
+      reason: 'The cross-account role is intended.',
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('IAM role is from a different account'));
   });
 });
 
@@ -1658,12 +1692,12 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('metricTotalErrors() produces TotalErrors with Sum statistic', () => {
+  test('metricTotalErrors() produces Errors with Sum statistic', () => {
     alarmForMetric('TotalErrAlarm', runtime.metricTotalErrors());
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
-      MetricName: 'TotalErrors',
+      MetricName: 'Errors',
       Namespace: 'AWS/Bedrock-AgentCore',
       Statistic: 'Sum',
     });
@@ -2424,7 +2458,7 @@ describe('Runtime role validation tests', () => {
     const annotations = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('.*different account.*cross-account.*'));
     expect(annotations.length).toBe(1);
 
-    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured.');
+    Annotations.fromStack(stack).hasWarning('/test-stack/test-runtime', 'IAM role is from a different account (111111111111) than the stack account (123456789012). Ensure cross-account permissions are properly configured. [ack: aws-cdk-lib.aws-bedrockagentcore:iamRoleCrossAccount]');
   });
 });
 
@@ -3715,3 +3749,219 @@ describe('Runtime applicationLogGroup tests', () => {
   });
 });
 
+describe('Runtime platformVersion tests', () => {
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should set PlatformVersion on the CFN resource when provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      platformVersion: PlatformVersion.V2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      PlatformVersion: 'V2',
+    });
+  });
+
+  test('Should set PlatformVersion when V1 is provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      platformVersion: PlatformVersion.V1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      PlatformVersion: 'V1',
+    });
+  });
+
+  test('Should omit PlatformVersion when not provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    const resources = Template.fromStack(stack).findResources('AWS::BedrockAgentCore::Runtime');
+    const runtimeResource = Object.values(resources)[0] as any;
+    expect(runtimeResource.Properties.PlatformVersion).toBeUndefined();
+  });
+});
+
+describe('Runtime buildHooks tests', () => {
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'HooksConfiguration is a newly launched property not yet in the bundled schema' });
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should render a warmup hook with path and port', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      buildHooks: { warmup: LifecycleHook.httpPost({ path: '/warmup', port: 8080 }) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      HooksConfiguration: {
+        Build: {
+          Warmup: {
+            Action: { HttpPost: { Path: '/warmup', Port: 8080 } },
+          },
+        },
+      },
+    });
+  });
+
+  test('Should omit the hook port when not provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      buildHooks: { warmup: LifecycleHook.httpPost({ path: '/warmup' }) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      HooksConfiguration: {
+        Build: {
+          Warmup: {
+            Action: { HttpPost: Match.objectEquals({ Path: '/warmup' }) },
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    ['buildHooks not provided', undefined],
+    ['no warmup hook', {}],
+  ])('Should omit HooksConfiguration when %s', (_name, buildHooks) => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      buildHooks,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      HooksConfiguration: Match.absent(),
+    });
+  });
+
+  test('Should accept tokens for the hook path and port', () => {
+    const hookPath = new cdk.CfnParameter(stack, 'HookPath').valueAsString;
+    const hookPort = new cdk.CfnParameter(stack, 'HookPort', { type: 'Number' }).valueAsNumber;
+
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      buildHooks: { warmup: LifecycleHook.httpPost({ path: hookPath, port: hookPort }) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      HooksConfiguration: {
+        Build: {
+          Warmup: {
+            Action: { HttpPost: { Path: { Ref: 'HookPath' }, Port: { Ref: 'HookPort' } } },
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    ['empty', ''],
+    ['longer than 32 characters', `/${'a'.repeat(32)}`],
+  ])('fails when the hook path is %s', (_name, hookPath) => {
+    expect(() => LifecycleHook.httpPost({ path: hookPath }))
+      .toThrow(/lifecycle hook path must be between 1 and 32 characters/);
+  });
+
+  test.each(['warmup', '/warm up', '/warmup?x=1'])('fails when the hook path is %j', (hookPath) => {
+    expect(() => LifecycleHook.httpPost({ path: hookPath }))
+      .toThrow(/lifecycle hook path must start with '\/'/);
+  });
+
+  test('Should accept a 32 character hook path', () => {
+    expect(() => LifecycleHook.httpPost({ path: `/${'a'.repeat(31)}` })).not.toThrow();
+  });
+
+  test.each([8000, 12000])('Should accept hook port %d', (port) => {
+    expect(() => LifecycleHook.httpPost({ path: '/warmup', port })).not.toThrow();
+  });
+
+  test.each([7999, 12001, 8080.5])('fails when the hook port is %d', (port) => {
+    expect(() => LifecycleHook.httpPost({ path: '/warmup', port }))
+      .toThrow(/lifecycle hook port must be an integer between 8000 and 12000/);
+  });
+});
+
+describe('Runtime minimumMemory tests', () => {
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'ResourceConfigurations is a newly launched property not yet in the bundled schema' });
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test.each([
+    ['gibibytes', cdk.Size.gibibytes(4)],
+    ['mebibytes', cdk.Size.mebibytes(4096)],
+  ])('Should render MinimumMemoryInMiB from %s', (_unit, minimumMemory) => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      minimumMemory,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      ResourceConfigurations: [{ MinimumMemoryInMiB: 4096 }],
+    });
+  });
+
+  test('Should omit ResourceConfigurations when minimumMemory is not provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      ResourceConfigurations: Match.absent(),
+    });
+  });
+
+  test('fails when minimumMemory is not a whole number of MiB', () => {
+    expect(() => new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      minimumMemory: cdk.Size.kibibytes(1500),
+    })).toThrow(/cannot be converted into a whole number/);
+  });
+});

@@ -1,6 +1,6 @@
 import { Template } from '../../assertions';
 import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
-import { App, RemovalPolicy, Stack } from '../../core';
+import { App, RemovalPolicy, Stack, Validations } from '../../core';
 import * as s3 from '../lib';
 import type { CfnBucketPolicy } from '../lib';
 
@@ -193,6 +193,11 @@ describe('bucket policy', () => {
 
     test('should synthesize without errors and create duplicate cfn resource', () => {
       const testStack = new Stack();
+      Validations.of(testStack).acknowledge({
+        id: 'CloudFormation-Validate::E3019',
+        reason: 'This test is asserting something pointless',
+      });
+
       const cfnBucketPolicy = new s3.CfnBucketPolicy(testStack, 'TestBucketPolicy', {
         policyDocument: {
           'Statement': [

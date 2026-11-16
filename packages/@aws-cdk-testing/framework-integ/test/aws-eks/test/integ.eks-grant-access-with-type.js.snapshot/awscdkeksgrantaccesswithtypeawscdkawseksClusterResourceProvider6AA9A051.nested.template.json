@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "24fbe344d97d22a2818e978b5ecf7bd9ba705ec2706f6a018aeda5b534d2ced3.zip"
+     "S3Key": "9a746caeb230acdc3265185e86b9466a51c3ec22cffc1616d837969aabd69237.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c28f2ed1d4c5d55aa97190fa5736e9befe4e90833c871c7c567784509682cbb6.zip"
+     "S3Key": "559954e400a702575c39c975ce5a4ad1f3cae3196b972930d12bc75ab06358c0.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -76,6 +76,25 @@
    "DependsOn": [
     "OnEventHandlerServiceRole15A26729"
    ]
+  },
+  "OnEventHandlerLogGroup54D03A56": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "OnEventHandler42BEBAE0"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "IsCompleteHandlerServiceRole5810CC58": {
    "Type": "AWS::IAM::Role",
@@ -115,7 +134,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c28f2ed1d4c5d55aa97190fa5736e9befe4e90833c871c7c567784509682cbb6.zip"
+     "S3Key": "559954e400a702575c39c975ce5a4ad1f3cae3196b972930d12bc75ab06358c0.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -141,6 +160,25 @@
    "DependsOn": [
     "IsCompleteHandlerServiceRole5810CC58"
    ]
+  },
+  "IsCompleteHandlerLogGroupC85FFE26": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "IsCompleteHandler7073F4DA"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ProviderframeworkonEventServiceRole9FF04296": {
    "Type": "AWS::IAM::Role",
@@ -225,6 +263,24 @@
        ]
       },
       {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
        "Action": "states:StartExecution",
        "Effect": "Allow",
        "Resource": {
@@ -249,7 +305,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -290,57 +346,24 @@
     "ProviderframeworkonEventServiceRole9FF04296"
    ]
   },
-  "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756": {
-   "Type": "AWS::IAM::Policy",
+  "ProviderframeworkonEventLogGroup683073A3": {
+   "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "OnEventHandler42BEBAE0",
-         "Arn"
-        ]
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ProviderframeworkonEvent83C1D0A7"
        }
-      }
-     ],
-     "Version": "2012-10-17"
+      ]
+     ]
     },
-    "PolicyName": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole0D6E83756",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
-     }
-    ]
-   }
-  },
-  "ProviderframeworkonEventinlinePolicyAddedToExecutionRole17772106B": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "IsCompleteHandler7073F4DA",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkonEventinlinePolicyAddedToExecutionRole17772106B",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
-     }
-    ]
-   }
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ProviderframeworkisCompleteServiceRoleB1087139": {
    "Type": "AWS::IAM::Role",
@@ -423,6 +446,24 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -442,7 +483,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -480,57 +521,24 @@
     "ProviderframeworkisCompleteServiceRoleB1087139"
    ]
   },
-  "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DA398EFB": {
-   "Type": "AWS::IAM::Policy",
+  "ProviderframeworkisCompleteLogGroupEB065F2D": {
+   "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "OnEventHandler42BEBAE0",
-         "Arn"
-        ]
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ProviderframeworkisComplete26D7B0CB"
        }
-      }
-     ],
-     "Version": "2012-10-17"
+      ]
+     ]
     },
-    "PolicyName": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole0DA398EFB",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkisCompleteServiceRoleB1087139"
-     }
-    ]
-   }
-  },
-  "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole11B3461A6": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "IsCompleteHandler7073F4DA",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkisCompleteinlinePolicyAddedToExecutionRole11B3461A6",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkisCompleteServiceRoleB1087139"
-     }
-    ]
-   }
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ProviderframeworkonTimeoutServiceRole28643D26": {
    "Type": "AWS::IAM::Role",
@@ -613,6 +621,24 @@
          ]
         }
        ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsCompleteHandler7073F4DA",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEventHandler42BEBAE0",
+          "Arn"
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
@@ -632,7 +658,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-grant-access-with-type/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -670,57 +696,24 @@
     "ProviderframeworkonTimeoutServiceRole28643D26"
    ]
   },
-  "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole03D28EB24": {
-   "Type": "AWS::IAM::Policy",
+  "ProviderframeworkonTimeoutLogGroupE53BF187": {
+   "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "OnEventHandler42BEBAE0",
-         "Arn"
-        ]
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ProviderframeworkonTimeout0B47CA38"
        }
-      }
-     ],
-     "Version": "2012-10-17"
+      ]
+     ]
     },
-    "PolicyName": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole03D28EB24",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonTimeoutServiceRole28643D26"
-     }
-    ]
-   }
-  },
-  "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole10E895C60": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "lambda:GetFunction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "IsCompleteHandler7073F4DA",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ProviderframeworkonTimeoutinlinePolicyAddedToExecutionRole10E895C60",
-    "Roles": [
-     {
-      "Ref": "ProviderframeworkonTimeoutServiceRole28643D26"
-     }
-    ]
-   }
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "ProviderwaiterstatemachineRole0C7159F9": {
    "Type": "AWS::IAM::Role",

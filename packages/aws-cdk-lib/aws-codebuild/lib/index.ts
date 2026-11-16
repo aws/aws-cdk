@@ -17,6 +17,7 @@ export * from './linux-lambda-build-image';
 export * from './linux-arm-lambda-build-image';
 export * from './compute-type';
 export * from './environment-type';
+export * from './host-kernel';
 export * from './fleet';
 
 // AWS::CodeBuild CloudFormation Resources:

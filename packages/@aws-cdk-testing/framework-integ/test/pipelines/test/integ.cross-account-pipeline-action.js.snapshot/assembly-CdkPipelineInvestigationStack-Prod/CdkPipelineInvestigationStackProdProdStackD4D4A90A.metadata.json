@@ -1,4 +1,10 @@
 {
+  "/CdkPipelineInvestigationStack/Prod/ProdStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CdkPipelineInvestigationStackProdProdStackD4D4A90A.template.json"
+    }
+  ],
   "/CdkPipelineInvestigationStack/Prod/ProdStack/MyQueue": [
     {
       "type": "aws:cdk:analytics:construct",

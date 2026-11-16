@@ -22,6 +22,7 @@ export interface TableHandlerProps {
   readonly sortStyle: TableSortStyle;
   readonly tableComment?: string;
   readonly useColumnIds: boolean;
+  readonly caseSensitiveIdentifier?: string;
 }
 
 export interface TablePrivilege {

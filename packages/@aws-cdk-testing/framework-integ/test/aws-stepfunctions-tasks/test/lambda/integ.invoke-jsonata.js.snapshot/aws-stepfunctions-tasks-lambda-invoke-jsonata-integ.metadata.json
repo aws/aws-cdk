@@ -1,0 +1,150 @@
+{
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/submitJobLambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/checkJobStateLambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/stateMachineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "stateMachineArn"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/submitJobLambda/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/submitJobLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "submitJobLambdaEFB00F3C"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/checkJobStateLambda/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/checkJobStateLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "checkJobStateLambda4618B7B7"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/submitJobLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "submitJobLambdaServiceRole4D897ABD"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/checkJobStateLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "checkJobStateLambdaServiceRoleB8B57B65"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    }
+  ]
+}

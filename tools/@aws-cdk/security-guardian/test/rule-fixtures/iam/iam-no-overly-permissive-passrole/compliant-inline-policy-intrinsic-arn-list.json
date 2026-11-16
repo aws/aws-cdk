@@ -1,0 +1,52 @@
+{
+  "Description": "IAM_NO_OVERLY_PERMISSIVE_PASSROLE must not fire on the INLINE-policy path: an AWS::IAM::Role whose Properties.Policies inline PolicyDocument scopes iam:PassRole to a list of Fn::GetAtt role ARNs. Exercises the Properties.Policies[*].PolicyDocument branch, which cfn-guard evaluates independently of the Properties.PolicyDocument path.",
+  "Resources": {
+    "PassTargetRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "Service": "ec2.amazonaws.com" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        }
+      }
+    },
+    "CreationRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "Service": "eks.amazonaws.com" },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": "InlinePassRole",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Action": "iam:PassRole",
+                  "Effect": "Allow",
+                  "Resource": [
+                    { "Fn::GetAtt": ["PassTargetRole", "Arn"] }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,4 +1,10 @@
 {
+  "/codepipeline-elastic-beanstalk-deploy/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "codepipelineelasticbeanstalkdeployDefaultTestDeployAssert785E452B.template.json"
+    }
+  ],
   "/codepipeline-elastic-beanstalk-deploy/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

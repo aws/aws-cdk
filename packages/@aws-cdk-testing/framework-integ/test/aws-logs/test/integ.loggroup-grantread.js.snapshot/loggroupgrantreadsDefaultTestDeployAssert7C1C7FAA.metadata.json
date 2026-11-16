@@ -1,0 +1,20 @@
+{
+  "/loggroup-grantreads/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "loggroupgrantreadsDefaultTestDeployAssert7C1C7FAA.template.json"
+    }
+  ],
+  "/loggroup-grantreads/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/loggroup-grantreads/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

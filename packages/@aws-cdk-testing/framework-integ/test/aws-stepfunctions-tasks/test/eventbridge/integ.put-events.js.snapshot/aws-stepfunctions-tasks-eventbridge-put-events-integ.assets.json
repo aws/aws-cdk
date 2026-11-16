@@ -1,15 +1,16 @@
 {
-  "version": "30.0.0",
+  "version": "54.0.0",
   "files": {
-    "0d31c0454c086c30f0762434a3d8ef2d8fb36ffbd853701c6048fd837276a593": {
+    "3b29082266bd69ece6566dac2be5c01b51cac3b57431c4eb938296d326b52a8d": {
+      "displayName": "aws-stepfunctions-tasks-eventbridge-put-events-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-eventbridge-put-events-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-b7f1e2b8": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0d31c0454c086c30f0762434a3d8ef2d8fb36ffbd853701c6048fd837276a593.json",
+          "objectKey": "3b29082266bd69ece6566dac2be5c01b51cac3b57431c4eb938296d326b52a8d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
