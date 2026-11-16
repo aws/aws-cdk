@@ -408,13 +408,6 @@ export interface GuardrailAttributes {
   readonly guardrailVersion?: string;
 }
 
-/******************************************************************************
- *                        NEW CONSTRUCT DEFINITION
- *****************************************************************************/
-/**
- * Class to create a Guardrail with CDK.
- * @cloudformationResource AWS::Bedrock::Guardrail
- */
 /**
  * Maximum length of a denied topic definition for each topics tier.
  */
@@ -423,6 +416,13 @@ const MAX_TOPIC_DEFINITION_LENGTH: Record<filters.TierConfig, number> = {
   [filters.TierConfig.STANDARD]: 1000,
 };
 
+/******************************************************************************
+ *                        NEW CONSTRUCT DEFINITION
+ *****************************************************************************/
+/**
+ * Class to create a Guardrail with CDK.
+ * @cloudformationResource AWS::Bedrock::Guardrail
+ */
 @propertyInjectable
 export class Guardrail extends GuardrailBase {
   /** Uniquely identifies this class. */

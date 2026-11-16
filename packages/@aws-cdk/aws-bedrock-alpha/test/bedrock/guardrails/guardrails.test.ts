@@ -2678,6 +2678,34 @@ describe('CDK-Created-Guardrail', () => {
             name: 'late-topic', definition: 'a'.repeat(201), examples: ['example 1'],
           }))).toThrow(/definition for topic "late-topic" is 201 characters long but must be 200 characters or less/);
         });
+
+        test('addDeniedTopicFilter applies the STANDARD tier limit', () => {
+          const standard = new bedrock.Guardrail(stack, 'Standard', {
+            guardrailName: 'Standard',
+            topicsTierConfig: bedrock.TierConfig.STANDARD,
+            crossRegionConfig,
+          });
+          expect(() => standard.addDeniedTopicFilter(bedrock.Topic.custom({
+            name: 'late-topic', definition: 'a'.repeat(1000), examples: ['example 1'],
+          }))).not.toThrow();
+          expect(() => standard.addDeniedTopicFilter(bedrock.Topic.custom({
+            name: 'too-long', definition: 'a'.repeat(1001), examples: ['example 1'],
+          }))).toThrow(/definition for topic "too-long" is 1001 characters long but must be 1000 characters or less for the STANDARD tier/);
+        });
+
+        test.each([
+          ['FINANCIAL_ADVICE', bedrock.Topic.FINANCIAL_ADVICE],
+          ['INAPPROPRIATE_CONTENT', bedrock.Topic.INAPPROPRIATE_CONTENT],
+          ['LEGAL_ADVICE', bedrock.Topic.LEGAL_ADVICE],
+          ['MEDICAL_ADVICE', bedrock.Topic.MEDICAL_ADVICE],
+          ['POLITICAL_ADVICE', bedrock.Topic.POLITICAL_ADVICE],
+        ])('predefined topic %s fits the default CLASSIC 200-character limit', (_name, topic) => {
+          expect(topic.definition.length).toBeLessThanOrEqual(200);
+          expect(() => new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [topic],
+          })).not.toThrow();
+        });
       });
 
       test('throws error for custom topic with too many examples', () => {
