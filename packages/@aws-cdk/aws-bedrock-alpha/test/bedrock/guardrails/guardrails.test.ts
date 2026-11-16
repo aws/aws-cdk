@@ -2620,7 +2620,7 @@ describe('CDK-Created-Guardrail', () => {
         });
 
         test('defaults to the CLASSIC limit: 201 rejected, naming topic and length', () => {
-          expect(create(201)).toThrow(/Invalid Topic at index 0: definition for topic my-topic is 201 characters long but must be 200 characters or less/);
+          expect(create(201)).toThrow(/Invalid Topic at index 0: definition for topic "my-topic" is 201 characters long but must be 200 characters or less/);
         });
 
         test('CLASSIC: 200 accepted', () => {
@@ -2628,7 +2628,7 @@ describe('CDK-Created-Guardrail', () => {
         });
 
         test('CLASSIC: 201 rejected, naming topic and length', () => {
-          expect(create(201, bedrock.TierConfig.CLASSIC)).toThrow(/definition for topic my-topic is 201 characters long but must be 200 characters or less/);
+          expect(create(201, bedrock.TierConfig.CLASSIC)).toThrow(/definition for topic "my-topic" is 201 characters long but must be 200 characters or less/);
         });
 
         test('STANDARD: 1000 accepted', () => {
@@ -2640,14 +2640,29 @@ describe('CDK-Created-Guardrail', () => {
         });
 
         test('STANDARD: 1001 rejected, naming topic and length', () => {
-          expect(create(1001, bedrock.TierConfig.STANDARD)).toThrow(/definition for topic my-topic is 1001 characters long but must be 1000 characters or less/);
+          expect(create(1001, bedrock.TierConfig.STANDARD)).toThrow(/definition for topic "my-topic" is 1001 characters long but must be 1000 characters or less/);
+        });
+
+        test('CLASSIC message names the tier and hints at STANDARD', () => {
+          expect(create(201)).toThrow(/for the CLASSIC tier; shorten the definition or set topicsTierConfig to TierConfig\.STANDARD \(requires crossRegionConfig\) to allow up to 1000 characters/);
+        });
+
+        test('STANDARD message names the tier without the STANDARD hint', () => {
+          let message = '';
+          try {
+            create(1001, bedrock.TierConfig.STANDARD)();
+          } catch (e) {
+            message = (e as Error).message;
+          }
+          expect(message).toMatch(/must be 1000 characters or less for the STANDARD tier/);
+          expect(message).not.toMatch(/TierConfig\.STANDARD/);
         });
 
         test('addDeniedTopicFilter applies the guardrail tier', () => {
           const classic = new bedrock.Guardrail(stack, 'Classic', { guardrailName: 'Classic' });
           expect(() => classic.addDeniedTopicFilter(bedrock.Topic.custom({
             name: 'late-topic', definition: 'a'.repeat(201), examples: ['example 1'],
-          }))).toThrow(/definition for topic late-topic is 201 characters long but must be 200 characters or less/);
+          }))).toThrow(/definition for topic "late-topic" is 201 characters long but must be 200 characters or less/);
         });
       });
 

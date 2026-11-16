@@ -1297,11 +1297,13 @@ export class Guardrail extends GuardrailBase {
       }
 
       // Validate definition length: 200 characters for the CLASSIC tier, 1000 for STANDARD
-      const maxDefinitionLength = this.topicsTierConfig === filters.TierConfig.STANDARD ? 1000 : 200;
+      const isStandard = this.topicsTierConfig === filters.TierConfig.STANDARD;
+      const maxDefinitionLength = isStandard ? 1000 : 200;
       if (!Token.isUnresolved(topic.definition) && topic.definition.length > maxDefinitionLength) {
         throw new ValidationError(
           lit`TopicDefinitionTooLong`,
-          `${prefix}: definition for topic ${topic.name} is ${topic.definition.length} characters long but must be ${maxDefinitionLength} characters or less`,
+          `${prefix}: definition for topic ${JSON.stringify(topic.name)} is ${topic.definition.length} characters long but must be ${maxDefinitionLength} characters or less for the ${this.topicsTierConfig} tier` +
+            (isStandard ? '' : '; shorten the definition or set topicsTierConfig to TierConfig.STANDARD (requires crossRegionConfig) to allow up to 1000 characters'),
           this,
         );
       }
