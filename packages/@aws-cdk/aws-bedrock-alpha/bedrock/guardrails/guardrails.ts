@@ -415,6 +415,14 @@ export interface GuardrailAttributes {
  * Class to create a Guardrail with CDK.
  * @cloudformationResource AWS::Bedrock::Guardrail
  */
+/**
+ * Maximum length of a denied topic definition for each topics tier.
+ */
+const MAX_TOPIC_DEFINITION_LENGTH: Record<filters.TierConfig, number> = {
+  [filters.TierConfig.CLASSIC]: 200,
+  [filters.TierConfig.STANDARD]: 1000,
+};
+
 @propertyInjectable
 export class Guardrail extends GuardrailBase {
   /** Uniquely identifies this class. */
@@ -1297,13 +1305,14 @@ export class Guardrail extends GuardrailBase {
       }
 
       // Validate definition length: 200 characters for the CLASSIC tier, 1000 for STANDARD
-      const isStandard = this.topicsTierConfig === filters.TierConfig.STANDARD;
-      const maxDefinitionLength = isStandard ? 1000 : 200;
+      const maxDefinitionLength = MAX_TOPIC_DEFINITION_LENGTH[this.topicsTierConfig];
       if (!Token.isUnresolved(topic.definition) && topic.definition.length > maxDefinitionLength) {
         throw new ValidationError(
           lit`TopicDefinitionTooLong`,
           `${prefix}: definition for topic ${JSON.stringify(topic.name)} is ${topic.definition.length} characters long but must be ${maxDefinitionLength} characters or less for the ${this.topicsTierConfig} tier` +
-            (isStandard ? '' : '; shorten the definition or set topicsTierConfig to TierConfig.STANDARD (requires crossRegionConfig) to allow up to 1000 characters'),
+            (maxDefinitionLength < MAX_TOPIC_DEFINITION_LENGTH[filters.TierConfig.STANDARD]
+              ? `; shorten the definition or set topicsTierConfig to TierConfig.STANDARD (requires crossRegionConfig) to allow up to ${MAX_TOPIC_DEFINITION_LENGTH[filters.TierConfig.STANDARD]} characters`
+              : ''),
           this,
         );
       }

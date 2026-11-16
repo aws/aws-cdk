@@ -2658,6 +2658,20 @@ describe('CDK-Created-Guardrail', () => {
           expect(message).not.toMatch(/TierConfig\.STANDARD/);
         });
 
+        test.each([
+          ['FINANCIAL_ADVICE', bedrock.Topic.FINANCIAL_ADVICE],
+          ['INAPPROPRIATE_CONTENT', bedrock.Topic.INAPPROPRIATE_CONTENT],
+          ['LEGAL_ADVICE', bedrock.Topic.LEGAL_ADVICE],
+          ['MEDICAL_ADVICE', bedrock.Topic.MEDICAL_ADVICE],
+          ['POLITICAL_ADVICE', bedrock.Topic.POLITICAL_ADVICE],
+        ])('predefined topic %s fits the default CLASSIC 200-character limit', (_name, topic) => {
+          expect(topic.definition.length).toBeLessThanOrEqual(200);
+          expect(() => new bedrock.Guardrail(stack, 'TestGuardrail', {
+            guardrailName: 'TestGuardrail',
+            deniedTopics: [topic],
+          })).not.toThrow();
+        });
+
         test('addDeniedTopicFilter applies the guardrail tier', () => {
           const classic = new bedrock.Guardrail(stack, 'Classic', { guardrailName: 'Classic' });
           expect(() => classic.addDeniedTopicFilter(bedrock.Topic.custom({
