@@ -633,6 +633,16 @@ export class Fleet extends Resource implements IFleet {
           this,
         );
       }
+      // proxyConfiguration is not supported when VPC is configured.
+      // Per AWS docs: "running reserved capacity fleets in a managed proxy server is not supported for VPC"
+      // CFN accepts the combination but builds fail at PROVISIONING with CLIENT_ERROR.
+      if (props.vpc) {
+        throw new ValidationError(
+          lit`ProxyConfigurationNotSupportedWithVpc`,
+          'proxyConfiguration is not supported when vpc is configured. The managed proxy feature requires fleets to run without VPC.',
+          this,
+        );
+      }
       for (const rule of props.proxyConfiguration.orderedProxyRules ?? []) {
         if (rule.entities.length === 0) {
           throw new ValidationError(lit`ProxyRuleEntitiesRequired`, 'Each proxy rule must have at least one entity', this);
@@ -720,7 +730,18 @@ export class Fleet extends Resource implements IFleet {
     // account, so this is a kind of cross-account permissions grant that needs
     // `ec2:CreateNetworkInterfacePermission`.
     // https://docs.aws.amazon.com/codebuild/latest/userguide/auth-and-access-control-iam-identity-based-access-control.html#customer-managed-policies-example-create-vpc-network-interface
-    const { subnetIds } = props.vpc.selectSubnets(props.subnetSelection);
+    const selectedSubnets = props.vpc.selectSubnets(props.subnetSelection);
+    const { subnetIds } = selectedSubnets;
+
+    // Reserved capacity fleets support only one subnet in a single Availability Zone.
+    // https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.reserved-capacity-fleets.html
+    if (subnetIds.length > 1) {
+      throw new ValidationError(
+        lit`FleetVpcSingleSubnetRequired`,
+        `Reserved capacity fleets support only one subnet, but ${subnetIds.length} subnets were selected. Use subnetSelection to specify a single subnet.`,
+        this,
+      );
+    }
     const networkInterfaceArn = Arn.format({ service: 'ec2', resource: 'network-interface', resourceName: '*' }, this.stack);
     const subnetArns = subnetIds.map((subnetId) =>
       Arn.format({ service: 'ec2', resource: 'subnet', resourceName: subnetId }, this.stack),

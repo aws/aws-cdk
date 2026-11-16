@@ -443,7 +443,8 @@ describe('vpc', () => {
   test('specify vpc only', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
+    // Reserved capacity fleets support only one subnet
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
 
     // WHEN
     new codebuild.Fleet(stack, 'Fleet', {
@@ -463,7 +464,6 @@ describe('vpc', () => {
         SecurityGroupIds: [{ 'Fn::GetAtt': ['FleetSecurityGroup97A0FCFD', 'GroupId'] }],
         Subnets: [
           { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
-          { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
         ],
         VpcId: { Ref: 'Vpc8378EB38' },
       },
@@ -497,18 +497,6 @@ describe('vpc', () => {
                     { Ref: 'AWS::AccountId' },
                     ':subnet/',
                     { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
-                  ]],
-                },
-                {
-                  'Fn::Join': ['', [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':ec2:',
-                    { Ref: 'AWS::Region' },
-                    ':',
-                    { Ref: 'AWS::AccountId' },
-                    ':subnet/',
-                    { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
                   ]],
                 },
               ],
@@ -638,6 +626,46 @@ describe('vpc', () => {
         subnetSelection: { subnets: [vpc.privateSubnets[0]] },
       });
     }).toThrow('Cannot configure subnetSelection without configuring a VPC');
+  });
+
+  test('throws error when multiple subnets are selected', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+
+    // THEN
+    // Per AWS docs: "reserved capacity fleets support only one subnet in a single Availability Zone"
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        vpc,
+        // Default subnetSelection selects all private subnets (2 in this case)
+      });
+    }).toThrow(/Reserved capacity fleets support only one subnet, but 2 subnets were selected/);
+  });
+
+  test('accepts single subnet selection', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: { subnets: [vpc.privateSubnets[0]] },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }],
+      }),
+    });
   });
 });
 
@@ -1000,41 +1028,30 @@ describe('proxyConfiguration', () => {
     });
   });
 
-  test('proxyConfiguration with VPC is passed to CloudFormation', () => {
+  test('throws if proxyConfiguration is specified with VPC', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-
-    // WHEN
-    new codebuild.Fleet(stack, 'Fleet', {
-      baseCapacity: 1,
-      computeType: codebuild.FleetComputeType.MEDIUM,
-      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
-      vpc,
-      proxyConfiguration: {
-        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
-        orderedProxyRules: [{
-          effect: codebuild.FleetProxyRuleEffect.ALLOW,
-          entities: ['*.amazonaws.com'],
-          type: codebuild.FleetProxyRuleType.DOMAIN,
-        }],
-      },
-    });
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
-      FleetProxyConfiguration: {
-        DefaultBehavior: 'DENY_ALL',
-        OrderedProxyRules: [{
-          Effect: 'ALLOW',
-          Entities: ['*.amazonaws.com'],
-          Type: 'DOMAIN',
-        }],
-      },
-      FleetVpcConfig: Match.objectLike({
-        VpcId: Match.anyValue(),
-      }),
-    });
+    // Per AWS docs: "running reserved capacity fleets in a managed proxy server is not supported for VPC"
+    // CFN accepts the combination but builds fail at PROVISIONING with CLIENT_ERROR.
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.MEDIUM,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        vpc,
+        proxyConfiguration: {
+          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+          orderedProxyRules: [{
+            effect: codebuild.FleetProxyRuleEffect.ALLOW,
+            entities: ['*.amazonaws.com'],
+            type: codebuild.FleetProxyRuleType.DOMAIN,
+          }],
+        },
+      });
+    }).toThrow(/proxyConfiguration is not supported when vpc is configured/);
   });
 
   test('proxyConfiguration is absent when not specified', () => {
