@@ -763,6 +763,9 @@ CloudFormation creates a new, empty database. The original is then deleted, snap
 The default is `RemovalPolicy.SNAPSHOT`, which keeps a snapshot of the original data.
 With `RemovalPolicy.RETAIN` the original database keeps running, outside of the stack.
 
+If you set `instanceIdentifier` (or `clusterIdentifier`), CloudFormation can't replace the database, so the update fails instead.
+To go ahead, you must also change the identifier.
+
 CDK doesn't know what is deployed when it synthesizes, so it can't warn you about this.
 Run `cdk diff` before you deploy: a change like this shows the database as being replaced.
 
@@ -771,7 +774,7 @@ To add encryption to an existing RDS instance without losing its data, restore i
 1. Take a snapshot of the instance.
 2. Copy the snapshot and specify a KMS key, which encrypts the copy
    (see [Copying a DB snapshot](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_CopySnapshot.html)).
-3. Create the instance from the encrypted copy. Leave `storageEncrypted` unset, because the setting is inherited from the snapshot:
+3. Create the instance from the encrypted copy. `DatabaseInstanceFromSnapshot` doesn't take `storageEncrypted` or `storageEncryptionKey`; the new instance inherits encryption and the KMS key from the snapshot:
 
 ```ts
 declare const vpc: ec2.Vpc;
