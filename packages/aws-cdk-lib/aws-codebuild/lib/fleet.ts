@@ -173,7 +173,7 @@ export enum FleetScalingMetricType {
 /**
  * A target tracking scaling configuration for a fleet.
  */
-export interface TargetTrackingScalingConfig {
+export interface FleetTargetTrackingScalingConfiguration {
   /**
    * The metric type to track.
    */
@@ -198,15 +198,17 @@ export interface FleetScalingConfiguration {
 
   /**
    * The scaling type.
+   *
+   * @default FleetScalingType.TARGET_TRACKING_SCALING
    */
-  readonly scalingType: FleetScalingType;
+  readonly scalingType?: FleetScalingType;
 
   /**
    * A list of target tracking scaling configurations.
    *
-   * @default - no target tracking configurations
+   * Required when scalingType is TARGET_TRACKING_SCALING.
    */
-  readonly targetTrackingScalingConfigs?: TargetTrackingScalingConfig[];
+  readonly targetTrackingScalingConfigs: FleetTargetTrackingScalingConfiguration[];
 }
 
 /**
@@ -604,12 +606,12 @@ export class Fleet extends Resource implements IFleet {
         && props.scalingConfiguration.maxCapacity < props.baseCapacity) {
         throw new ValidationError(lit`ScalingMaxCapacityGreaterEqualBase`, 'scalingConfiguration.maxCapacity must be greater than or equal to baseCapacity', this);
       }
-      if (props.scalingConfiguration.scalingType === FleetScalingType.TARGET_TRACKING_SCALING
-        && (!props.scalingConfiguration.targetTrackingScalingConfigs
-          || props.scalingConfiguration.targetTrackingScalingConfigs.length === 0)) {
+      const effectiveScalingType = props.scalingConfiguration.scalingType ?? FleetScalingType.TARGET_TRACKING_SCALING;
+      if (effectiveScalingType === FleetScalingType.TARGET_TRACKING_SCALING
+        && props.scalingConfiguration.targetTrackingScalingConfigs.length === 0) {
         throw new ValidationError(lit`TargetTrackingScalingConfigsRequired`, 'At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING', this);
       }
-      for (const config of props.scalingConfiguration.targetTrackingScalingConfigs ?? []) {
+      for (const config of props.scalingConfiguration.targetTrackingScalingConfigs) {
         if (!Token.isUnresolved(config.targetValue) && (config.targetValue < 0 || config.targetValue > 100)) {
           throw new ValidationError(lit`TargetValueOutOfRange`, `targetValue must be between 0 and 100 (inclusive), got: ${config.targetValue}`, this);
         }
@@ -652,9 +654,9 @@ export class Fleet extends Resource implements IFleet {
       imageId: props.imageId,
       scalingConfiguration: props.scalingConfiguration ? {
         maxCapacity: props.scalingConfiguration.maxCapacity,
-        scalingType: props.scalingConfiguration.scalingType,
+        scalingType: props.scalingConfiguration.scalingType ?? FleetScalingType.TARGET_TRACKING_SCALING,
         // Explicit mapping to pin the shape against future L1 drift
-        targetTrackingScalingConfigs: props.scalingConfiguration.targetTrackingScalingConfigs?.map(config => ({
+        targetTrackingScalingConfigs: props.scalingConfiguration.targetTrackingScalingConfigs.map(config => ({
           metricType: config.metricType,
           targetValue: config.targetValue,
         })),

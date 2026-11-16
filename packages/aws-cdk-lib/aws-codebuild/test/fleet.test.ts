@@ -726,7 +726,40 @@ describe('imageId', () => {
 });
 
 describe('scalingConfiguration', () => {
-  test('scalingConfiguration is passed to CloudFormation', () => {
+  test('scalingConfiguration defaults scalingType to TARGET_TRACKING_SCALING', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      scalingConfiguration: {
+        maxCapacity: 5,
+        // scalingType defaults to TARGET_TRACKING_SCALING
+        targetTrackingScalingConfigs: [{
+          metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+          targetValue: 80,
+        }],
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: 1,
+      ScalingConfiguration: {
+        MaxCapacity: 5,
+        ScalingType: 'TARGET_TRACKING_SCALING',
+        TargetTrackingScalingConfigs: [{
+          MetricType: 'FLEET_UTILIZATION_RATE',
+          TargetValue: 80,
+        }],
+      },
+    });
+  });
+
+  test('scalingConfiguration with explicit scalingType', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -747,14 +780,8 @@ describe('scalingConfiguration', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
-      BaseCapacity: 1,
       ScalingConfiguration: {
-        MaxCapacity: 5,
         ScalingType: 'TARGET_TRACKING_SCALING',
-        TargetTrackingScalingConfigs: [{
-          MetricType: 'FLEET_UTILIZATION_RATE',
-          TargetValue: 80,
-        }],
       },
     });
   });
@@ -788,7 +815,6 @@ describe('scalingConfiguration', () => {
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         scalingConfiguration: {
           maxCapacity: 0,
-          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
           targetTrackingScalingConfigs: [{
             metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
             targetValue: 80,
@@ -810,7 +836,6 @@ describe('scalingConfiguration', () => {
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         scalingConfiguration: {
           maxCapacity: 3,
-          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
           targetTrackingScalingConfigs: [{
             metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
             targetValue: 80,
@@ -839,23 +864,8 @@ describe('scalingConfiguration', () => {
     }).toThrow(/At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING/);
   });
 
-  test('throws if targetTrackingScalingConfigs is omitted with TARGET_TRACKING_SCALING', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // THEN
-    expect(() => {
-      new codebuild.Fleet(stack, 'Fleet', {
-        baseCapacity: 1,
-        computeType: codebuild.FleetComputeType.SMALL,
-        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
-        scalingConfiguration: {
-          maxCapacity: 5,
-          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
-        },
-      });
-    }).toThrow(/At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING/);
-  });
+  // Note: 'throws if targetTrackingScalingConfigs is omitted' test removed because
+  // targetTrackingScalingConfigs is now required at the type level
 
   test.each([-1, -0.1, 101, 150])('throws if targetValue is out of range: %s', (targetValue) => {
     // GIVEN
@@ -869,7 +879,6 @@ describe('scalingConfiguration', () => {
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         scalingConfiguration: {
           maxCapacity: 5,
-          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
           targetTrackingScalingConfigs: [{
             metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
             targetValue,
@@ -890,7 +899,6 @@ describe('scalingConfiguration', () => {
       environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       scalingConfiguration: {
         maxCapacity: 5,
-        scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
         targetTrackingScalingConfigs: [{
           metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
           targetValue,
@@ -935,6 +943,27 @@ describe('scalingConfiguration', () => {
         MaxCapacity: 5,
       },
     });
+  });
+
+  test('tokenized maxCapacity and targetValue skip numeric validation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN/THEN - should not throw
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: cdk.Token.asNumber({ Ref: 'MaxCapacity' }),
+          targetTrackingScalingConfigs: [{
+            metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+            targetValue: cdk.Token.asNumber({ Ref: 'TargetValue' }),
+          }],
+        },
+      });
+    }).not.toThrow();
   });
 });
 
