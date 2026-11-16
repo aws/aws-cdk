@@ -51,6 +51,8 @@ import {
   Mixin,
   Mixins,
   MissingRemovalPolicies,
+  CfnResourceMetadataContext,
+  CfnTemplateMetadataContext,
   Resource,
   SecretValue,
   Size,
