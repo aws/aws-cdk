@@ -765,6 +765,7 @@ With `RemovalPolicy.RETAIN` the original database keeps running, outside of the 
 
 If you set `instanceIdentifier` (or `clusterIdentifier`), CloudFormation can't replace the database, so the update fails instead.
 To go ahead, you must also change the identifier.
+For a `DatabaseCluster`, its instances are replaced too, so also change any `instanceIdentifier` you set on a `ClusterInstance`, or `instanceIdentifierBase`.
 
 CDK doesn't know what is deployed when it synthesizes, so it can't warn you about this.
 Run `cdk diff` before you deploy: a change like this shows the database as being replaced.
