@@ -1,0 +1,28 @@
+{
+  "resources": {
+    "Repository": {
+      "grants": {
+        "pull": {
+          "actions": [
+            "codecommit:GitPull"
+          ]
+        },
+        "pullPush": {
+          "actions": [
+            "codecommit:GitPull",
+            "codecommit:GitPush"
+          ]
+        },
+        "read": {
+          "actions": [
+            "codecommit:GitPull",
+            "codecommit:EvaluatePullRequestApprovalRules",
+            "codecommit:Get*",
+            "codecommit:Describe*"
+          ]
+        }
+      }
+    }
+  }
+}
+

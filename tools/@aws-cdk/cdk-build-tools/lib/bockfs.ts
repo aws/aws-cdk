@@ -1,4 +1,3 @@
-/* eslint-disable import/order */
 // A not-so-fake filesystem mock similar to mock-fs
 //
 // mock-fs is super convenient but we can't always use it:
@@ -14,10 +13,8 @@ import * as path_ from 'path';
 import * as fs from 'fs-extra';
 
 const bockFsRoot = fs.realpathSync(fs.mkdtempSync(path_.join(os.tmpdir(), 'bockfs')));
-let oldCwd: string | undefined;
 
 function bockfs(files: Record<string, string>) {
-  oldCwd = process.cwd();
   for (const [fileName, contents] of Object.entries(files)) {
     bockfs.write(fileName, contents);
   }
@@ -46,16 +43,22 @@ namespace bockfs {
    *
    * @returns A template literal function to turn a fake path into a real path. Relative paths are assumed to be in the working dir.
    */
-  export function workingDirectory(fakePath: string): (parts: TemplateStringsArray) => string {
+  export function workingDirectory(fakePath: string) {
+    const curDir = process.cwd();
     process.chdir(path(fakePath));
 
-    return function (elements: TemplateStringsArray) {
-      const fullPath = elements.join('');
-      if (!fullPath.startsWith('/')) {
-        return path(path_.join(fakePath, fullPath));
-      }
+    return {
+      translate(elements: TemplateStringsArray) {
+        const fullPath = elements.join('');
+        if (!fullPath.startsWith('/')) {
+          return path(path_.join(fakePath, fullPath));
+        }
 
-      return path(fullPath);
+        return path(fullPath);
+      },
+      [Symbol.dispose]() {
+        process.chdir(curDir);
+      },
     };
   }
 
@@ -69,11 +72,19 @@ namespace bockfs {
    * Remove all files and restore working directory
    */
   export function restore() {
-    if (oldCwd) {
-      process.chdir(oldCwd);
-    }
     fs.removeSync(bockFsRoot);
   }
+}
+
+process.on('exit', () => {
+  bockfs.restore();
+});
+
+// The above doesn't work in jest, so we need to do something else there as well
+if ('afterAll' in global) {
+  afterAll(() => {
+    bockfs.restore();
+  });
 }
 
 export = bockfs;

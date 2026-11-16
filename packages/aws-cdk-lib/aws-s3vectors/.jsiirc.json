@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.s3vectors"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.S3Vectors"
+    },
+    "python": {
+      "module": "aws_cdk.aws_s3vectors"
+    }
+  }
+}

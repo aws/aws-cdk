@@ -1,8 +1,8 @@
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 test('Default cloudwatch logs action', () => {
@@ -63,7 +63,10 @@ test('Default cloudwatch logs action', () => {
         {
           Action: 'logs:DescribeLogStreams',
           Effect: 'Allow',
-          Resource: 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
+          Resource: [
+            'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group',
+            'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
+          ],
         },
       ],
       Version: '2012-10-17',

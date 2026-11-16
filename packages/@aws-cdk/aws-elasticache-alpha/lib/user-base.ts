@@ -1,6 +1,8 @@
-import { Construct } from 'constructs';
-import { UserEngine } from './common';
-import { IResource, Resource, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource, ArnFormat, Stack, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { Construct } from 'constructs';
+import type { UserEngine } from './common';
 
 /**
  * Access control configuration for ElastiCache users.
@@ -44,7 +46,7 @@ export interface UserBaseProps {
    * The engine type for the user.
    * Enum options: UserEngine.VALKEY, UserEngine.REDIS.
    *
-   * @default UserEngine.VALKEY.
+   * @default - UserEngine.REDIS for NoPasswordUser, UserEngine.VALKEY for all other user types.
    */
   readonly engine?: UserEngine;
   /**
@@ -157,14 +159,14 @@ export abstract class UserBase extends Resource implements IUser {
     const stack = Stack.of(scope);
 
     if (attrs.userArn && attrs.userId) {
-      throw new ValidationError('Only one of userArn or userId can be provided.', scope);
+      throw new ValidationError(lit`ConflictingUserIdentifiers`, 'Only one of userArn or userId can be provided.', scope);
     }
 
     if (attrs.userArn) {
       userArn = attrs.userArn;
       const extractedUserId = stack.splitArn(attrs.userArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!extractedUserId) {
-        throw new ValidationError('Unable to extract user id from ARN.', scope);
+        throw new ValidationError(lit`InvalidUserArn`, 'Unable to extract user id from ARN.', scope);
       }
       userId = extractedUserId;
     } else if (attrs.userId) {
@@ -175,7 +177,7 @@ export abstract class UserBase extends Resource implements IUser {
         resourceName: attrs.userId,
       });
     } else {
-      throw new ValidationError('One of userId or userArn is required.', scope);
+      throw new ValidationError(lit`MissingUserIdentifier`, 'One of userId or userArn is required.', scope);
     }
 
     class Import extends Resource implements IUser {

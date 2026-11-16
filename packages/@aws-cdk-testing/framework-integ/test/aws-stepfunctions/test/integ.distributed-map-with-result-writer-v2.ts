@@ -32,7 +32,7 @@ class DistributedMapStack extends cdk.Stack {
     distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition: distributedMap,
+      definitionBody: sfn.DefinitionBody.fromChainable(distributedMap),
     });
   }
 }

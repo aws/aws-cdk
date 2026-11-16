@@ -570,7 +570,7 @@
        "ImageIdOverride": {
         "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
        },
-       "ImageType": "ECS_AL2"
+       "ImageType": "ECS_AL2023"
       }
      ],
      "InstanceRole": {
@@ -716,7 +716,7 @@
        "ImageIdOverride": {
         "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
        },
-       "ImageType": "ECS_AL2"
+       "ImageType": "ECS_AL2023"
       }
      ],
      "InstanceRole": {
@@ -836,7 +836,7 @@
        "ImageIdOverride": {
         "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
        },
-       "ImageType": "ECS_AL2"
+       "ImageType": "ECS_AL2023"
       }
      ],
      "InstanceRole": {
@@ -948,7 +948,7 @@
        "ImageIdOverride": {
         "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
        },
-       "ImageType": "ECS_AL2"
+       "ImageType": "ECS_AL2023"
       }
      ],
      "InstanceRole": {
@@ -1073,7 +1073,7 @@
        "ImageIdOverride": {
         "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
        },
-       "ImageType": "ECS_AL2"
+       "ImageType": "ECS_AL2023"
       }
      ],
      "InstanceRole": {
@@ -1291,7 +1291,7 @@
        "ImageIdOverride": {
         "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
        },
-       "ImageType": "ECS_AL2"
+       "ImageType": "ECS_AL2023"
       }
      ],
      "InstanceRole": {

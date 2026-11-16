@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Resource } from '../../../../core';
+import type { UserPoolIdentityProviderReference } from '../../../../interfaces/generated/aws-cognito-interfaces.generated';
 import { StandardAttributeNames } from '../../private/attr-names';
-import { IUserPoolIdentityProvider } from '../../user-pool-idp';
-import { UserPoolIdentityProviderProps, AttributeMapping } from '../base';
+import type { IUserPoolIdentityProvider } from '../../user-pool-idp';
+import type { UserPoolIdentityProviderProps, AttributeMapping } from '../base';
 
 /**
  * Options to integrate with the various social identity providers.
@@ -12,9 +13,15 @@ import { UserPoolIdentityProviderProps, AttributeMapping } from '../base';
 export abstract class UserPoolIdentityProviderBase extends Resource implements IUserPoolIdentityProvider {
   public abstract readonly providerName: string;
 
+  public get userPoolIdentityProviderRef(): UserPoolIdentityProviderReference {
+    return {
+      userPoolId: this.props.userPool.userPoolRef.userPoolId,
+      providerName: this.providerName,
+    };
+  }
+
   public constructor(scope: Construct, id: string, private readonly props: UserPoolIdentityProviderProps) {
     super(scope, id);
-    props.userPool.registerIdentityProvider(this);
   }
 
   protected configureAttributeMapping(): any {

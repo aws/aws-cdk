@@ -1,13 +1,12 @@
-import { describe } from 'node:test';
 import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { App, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { EmrContainersStartJobRun, VirtualClusterInput, ReleaseLabel, ApplicationConfiguration, Classification, EmrContainersStartJobRunProps } from '../../lib/emrcontainers/start-job-run';
+import type { ApplicationConfiguration, EmrContainersStartJobRunProps } from '../../lib/emrcontainers/start-job-run';
+import { EmrContainersStartJobRun, VirtualClusterInput, ReleaseLabel, Classification } from '../../lib/emrcontainers/start-job-run';
 
 describe('Invoke EMR Containers Start Job Run with ', () => {
   let stack: Stack;
@@ -330,12 +329,37 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             {
               Action: 'logs:DescribeLogStreams',
               Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': [
-                  'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-                  'Arn',
-                ],
-              },
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':logs:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':log-group:',
+                      {
+                        Ref: 'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+                      },
+                    ],
+                  ],
+                },
+                {
+                  'Fn::GetAtt': [
+                    'EMRContainersStartJobRunMonitoringLogGroup882D450C',
+                    'Arn',
+                  ],
+                },
+              ],
             },
             {
               Action: 'logs:DescribeLogGroups',
@@ -493,26 +517,48 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             {
               Action: 'logs:DescribeLogStreams',
               Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':logs:',
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':log-group:providedloggroup:*',
+              Resource: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':logs:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':log-group:providedloggroup',
+                    ],
                   ],
-                ],
-              },
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':logs:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':log-group:providedloggroup:*',
+                    ],
+                  ],
+                },
+              ],
             },
             {
               Action: 'logs:DescribeLogGroups',

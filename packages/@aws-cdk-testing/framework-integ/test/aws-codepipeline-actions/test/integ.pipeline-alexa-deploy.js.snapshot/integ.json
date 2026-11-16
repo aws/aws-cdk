@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "50.0.0",
   "testCases": {
-    "integ.pipeline-alexa-deploy": {
+    "integ.pipeline-alexa-deploy/DefaultTest": {
       "stacks": [
         "aws-cdk-codepipeline-alexa-deploy"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "integ.pipeline-alexa-deploy/DefaultTest/DeployAssert",
+      "assertionStackName": "integpipelinealexadeployDefaultTestDeployAssert72E9C683"
     }
   },
-  "synthContext": {},
-  "enableLookups": false
+  "minimumCliVersion": "2.1105.0"
 }

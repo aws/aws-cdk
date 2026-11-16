@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type { Construct } from 'constructs';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import { Stack } from '../../core';
 
 /**

@@ -1,0 +1,283 @@
+{
+  "/aws-cdk-mediaconnect-flow-zixi-push/StandardFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "ipAddresses": "*",
+        "subnetConfiguration": [
+          {
+            "name": "*",
+            "subnetType": "Isolated",
+            "cidrMask": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Subnet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "cidrBlock": "*",
+        "vpcId": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "cidrBlock": "*",
+        "vpcId": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/VpcInterfaceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Sg": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/VpcFlow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/StandardFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StandardFlow64B79D43"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W9009": "cfn-validate false positive: MediaConnect Flow.Source is required and not deprecated (see cloudformation-validate#144)"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:908:48)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:60:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Object..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Subnet/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Subnet53F41B8F"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Subnet/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetRouteTableB722C9E4"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Subnet/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SubnetRouteTableAssociation3CCBAA31"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/VpcInterfaceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcInterfaceRole252AC56E"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Sg/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SgD4954771"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/VpcFlow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcFlow3E1AA0B8"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W9009": "cfn-validate false positive: MediaConnect Flow.Source is required and not deprecated (see cloudformation-validate#144)"
+      },
+      "trace": [
+        "Validations.recordAcknowledgment (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:129:25)",
+        "Validations.acknowledge (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:122:18)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:908:48)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-flow-zixi-push.js:108:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
+        "Object..js (node:internal/modules/cjs/loader:1893:10)",
+        "Module.load (node:internal/modules/cjs/loader:1481:32)",
+        "Module._load (node:internal/modules/cjs/loader:1300:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpcsubnet1Subnet1Subnet0FFD0C9D"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpcsubnet1Subnet1RouteTableC3B5F609"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpcsubnet1Subnet1RouteTableAssociation92EC655F"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpcsubnet1Subnet2Subnet503C2C36"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpcsubnet1Subnet2RouteTable61C665A9"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/subnet1Subnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpcsubnet1Subnet2RouteTableAssociationBDE9C145"
+    }
+  ],
+  "/aws-cdk-mediaconnect-flow-zixi-push/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    }
+  ]
+}

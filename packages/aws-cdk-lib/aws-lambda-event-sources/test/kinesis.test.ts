@@ -6,7 +6,7 @@ import { Bucket } from '../../aws-s3';
 import * as cdk from '../../core';
 import * as sources from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('KinesisEventSource', () => {
   test('sufficiently complex example', () => {
@@ -436,4 +436,11 @@ describe('KinesisEventSource', () => {
       'StartingPosition': 'TRIM_HORIZON',
     });
   });
+});
+
+test('fails for KinesisEventSource without startingPosition', () => {
+  const stack = new cdk.Stack();
+  const stream = new kinesis.Stream(stack, 'S');
+
+  expect(() => new sources.KinesisEventSource(stream, {})).toThrow(/startingPosition must be set for KinesisEventSource/);
 });

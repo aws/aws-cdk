@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.gameliftstreams"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.GameLiftStreams"
+      "namespace": "Amazon.CDK.AWS.GameLiftStreams"
     },
     "python": {
       "module": "aws_cdk.aws_gameliftstreams"

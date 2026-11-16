@@ -1,10 +1,10 @@
 {
   "targets": {
-    "dotnet": {
-      "namespace": "Amazon.CDK.AWS.FraudDetector"
-    },
     "java": {
       "package": "software.amazon.awscdk.services.frauddetector"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.FraudDetector"
     },
     "python": {
       "module": "aws_cdk.aws_frauddetector"

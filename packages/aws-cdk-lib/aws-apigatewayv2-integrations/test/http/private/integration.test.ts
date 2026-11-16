@@ -1,4 +1,5 @@
-import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, HttpRouteKey } from '../../../../aws-apigatewayv2';
+import type { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../../aws-apigatewayv2';
+import { HttpApi, HttpRoute, HttpRouteKey } from '../../../../aws-apigatewayv2';
 import { Stack } from '../../../../core';
 import { HttpPrivateIntegration } from './../../../lib/http/private/integration';
 

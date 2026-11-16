@@ -1,6 +1,7 @@
-import * as assert from 'assert';
+import assert from 'assert';
 import * as fs from 'fs';
-import * as https from 'https';
+import type { OutgoingHttpHeaders } from 'http';
+import type * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
@@ -88,8 +89,8 @@ describe('nodejs entrypoint', () => {
       }));
 
       // THEN
-      const emptyLength = emptyDataRequest.headers?.['content-length'] as number;
-      const utf8Length = utf8DataRequest.headers?.['content-length'] as number;
+      const emptyLength = (emptyDataRequest.headers as OutgoingHttpHeaders)?.['content-length'] as number;
+      const utf8Length = (utf8DataRequest.headers as OutgoingHttpHeaders)?.['content-length'] as number;
       expect(utf8Length - emptyLength).toEqual(6);
     });
   });
@@ -156,6 +157,70 @@ describe('nodejs entrypoint', () => {
       LogicalResourceId: '<LogicalResourceId>',
     });
   });
+
+  describe('log redaction', () => {
+    const PRESIGNED_URL = 'https://cfn-response.s3.amazonaws.com/path?X-Amz-Signature=PRESIGNED-SECRET';
+
+    test('malformed event log hides the ResponseURL', async () => {
+      // GIVEN - an Update without a PhysicalResourceId, and a failing handler
+      const event = makeEvent({ RequestType: 'Update', ResponseURL: PRESIGNED_URL } as any);
+
+      // WHEN
+      const { logs, response } = await invokeHandler(event, async _ => {
+        throw new Error('boom');
+      });
+
+      // THEN
+      expect(response.Status).toEqual('FAILED');
+      expect(logs.find(l => l.startsWith('ERROR: Malformed event.'))).toBeDefined();
+      expect(logs.join('\n')).not.toContain('PRESIGNED-SECRET');
+    });
+
+    test('response Data is redacted from the log when NoEcho is set, but sent to cloudformation', async () => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create' });
+
+      // WHEN
+      const { logs, response } = await invokeHandler(event, async _ => ({ NoEcho: true, Data: { Attr: 'SECRET-ATTR' } }));
+
+      // THEN
+      expect(response.Data).toEqual({ Attr: 'SECRET-ATTR' });
+      expect(logs.join('\n')).not.toContain('SECRET-ATTR');
+      expect(logs.join('\n')).toContain('"Attr":"*****"');
+    });
+
+    // the user handler is written to a file with `toString()`, so each case is a
+    // separate function with its Data inline rather than a closure over `data`.
+    test.each([
+      ['a string', 'SECRET-STRING', async () => ({ NoEcho: true, Data: 'SECRET-STRING' as any })],
+      ['an array', ['SECRET-1', 'SECRET-2'], async () => ({ NoEcho: true, Data: ['SECRET-1', 'SECRET-2'] as any })],
+      ['a number', 1234567, async () => ({ NoEcho: true, Data: 1234567 as any })],
+    ])('NoEcho response Data that is %s is logged as a single placeholder, but sent to cloudformation', async (_desc, data, userHandler) => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create' });
+
+      // WHEN
+      const { logs, response } = await invokeHandler(event, userHandler);
+
+      // THEN
+      expect(response.Data).toEqual(data);
+      const responseLog = logs.find(l => l.startsWith('submit response to cloudformation'));
+      expect(responseLog).toContain('"Data":"*****"');
+      expect(responseLog).not.toContain('SECRET');
+      expect(responseLog).not.toContain('1234567');
+    });
+
+    test('response Data is logged when NoEcho is not set', async () => {
+      // GIVEN
+      const event = makeEvent({ RequestType: 'Create' });
+
+      // WHEN
+      const { logs } = await invokeHandler(event, async _ => ({ Data: { Attr: 'VISIBLE-ATTR' } }));
+
+      // THEN
+      expect(logs.join('\n')).toContain('VISIBLE-ATTR');
+    });
+  });
 });
 
 function makeEvent(req: Partial<AWSLambda.CloudFormationCustomResourceEvent>): AWSLambda.CloudFormationCustomResourceEvent {
@@ -179,15 +244,19 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
 
   // stage entry point and user handler.
   const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-custom-resource-provider-handler-test-'));
+  process.on('exit', () => {
+    fs.rmSync(workdir, { recursive: true, force: true });
+  });
   entrypoint.external.userHandlerIndex = path.join(workdir, 'index.js');
   fs.writeFileSync(entrypoint.external.userHandlerIndex, `exports.handler = ${userHandler.toString()};`);
 
   // do not include stack traces in failure responses so we can assert against them.
   entrypoint.external.includeStackTraces = false;
 
-  // disable logging
-  entrypoint.external.log = () => {
-    return;
+  // capture logs instead of printing them
+  const logs = new Array<string>();
+  entrypoint.external.log = (fmt: string, ...params: any[]) => {
+    logs.push([fmt, ...params.map(p => typeof p === 'string' ? p : JSON.stringify(p))].join(' '));
   };
 
   let actualResponse;
@@ -208,5 +277,6 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
   return {
     response: JSON.parse(actualResponse) as AWSLambda.CloudFormationCustomResourceResponse,
     request: actualRequest as https.RequestOptions,
+    logs,
   };
 }

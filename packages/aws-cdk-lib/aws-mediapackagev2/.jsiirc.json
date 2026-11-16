@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.mediapackagev2"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.MediaPackageV2"
+      "namespace": "Amazon.CDK.AWS.MediaPackageV2"
     },
     "python": {
       "module": "aws_cdk.aws_mediapackagev2"

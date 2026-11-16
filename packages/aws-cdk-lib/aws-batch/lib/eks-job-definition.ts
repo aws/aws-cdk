@@ -1,9 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
-import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
-import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
-import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
+import type { EksContainerDefinition } from './eks-container-definition';
+import { EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
+import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
+import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
+import { ArnFormat, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -151,8 +155,21 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
   public readonly useHostNetwork?: boolean;
   public readonly serviceAccount?: string;
 
-  public readonly jobDefinitionArn: string;
-  public readonly jobDefinitionName: string;
+  private readonly resource: CfnJobDefinition;
+
+  @memoizedGetter
+  public get jobDefinitionArn(): string {
+    return this.getResourceArnAttribute(this.resource.ref, {
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get jobDefinitionName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);
@@ -164,7 +181,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     this.useHostNetwork = props.useHostNetwork;
     this.serviceAccount = props.serviceAccount;
 
-    const resource = new CfnJobDefinition(this, 'Resource', {
+    this.resource = new CfnJobDefinition(this, 'Resource', {
       ...baseJobDefinitionProperties(this),
       type: 'container',
       jobDefinitionName: props.jobDefinitionName,
@@ -176,51 +193,38 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
           dnsPolicy: this.dnsPolicy,
           hostNetwork: this.useHostNetwork,
           serviceAccountName: this.serviceAccount,
-          volumes: Lazy.any({
-            produce: () => {
-              if (this.container.volumes.length === 0) {
-                return undefined;
-              }
-              return this.container.volumes.map((volume) => {
-                if (EmptyDirVolume.isEmptyDirVolume(volume)) {
-                  return {
-                    name: volume.name,
-                    emptyDir: {
-                      medium: volume.medium,
-                      sizeLimit: volume.sizeLimit ? volume.sizeLimit.toMebibytes().toString() + 'Mi' : undefined,
-                    },
-                  };
-                }
-                if (HostPathVolume.isHostPathVolume(volume)) {
-                  return {
-                    name: volume.name,
-                    hostPath: {
-                      path: volume.path,
-                    },
-                  };
-                }
-                if (SecretPathVolume.isSecretPathVolume(volume)) {
-                  return {
-                    name: volume.name,
-                    secret: {
-                      optional: volume.optional,
-                      secretName: volume.secretName,
-                    },
-                  };
-                }
+          volumes: this.container._mapVolumes((volume) => {
+            if (EmptyDirVolume.isEmptyDirVolume(volume)) {
+              return {
+                name: volume.name,
+                emptyDir: {
+                  medium: volume.medium,
+                  sizeLimit: volume.sizeLimit ? volume.sizeLimit.toMebibytes().toString() + 'Mi' : undefined,
+                },
+              };
+            }
+            if (HostPathVolume.isHostPathVolume(volume)) {
+              return {
+                name: volume.name,
+                hostPath: {
+                  path: volume.path,
+                },
+              };
+            }
+            if (SecretPathVolume.isSecretPathVolume(volume)) {
+              return {
+                name: volume.name,
+                secret: {
+                  optional: volume.optional,
+                  secretName: volume.secretName,
+                },
+              };
+            }
 
-                throw new ValidationError('unknown volume type', this);
-              });
-            },
+            throw new ValidationError(lit`UnknownVolumeType`, 'unknown volume type', this);
           }),
         },
       },
     });
-    this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
-      service: 'batch',
-      resource: 'job-definition',
-      resourceName: this.physicalName,
-    });
-    this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
   }
 }

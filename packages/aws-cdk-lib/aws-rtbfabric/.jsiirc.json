@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.rtbfabric"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.RTBFabric"
+    },
+    "python": {
+      "module": "aws_cdk.aws_rtbfabric"
+    }
+  }
+}

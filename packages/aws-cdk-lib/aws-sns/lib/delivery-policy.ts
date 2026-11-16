@@ -1,4 +1,4 @@
-import { Duration } from '../../core';
+import type { Duration } from '../../core';
 
 /**
  * Algorithms which can be used by SNS to calculate the delays associated with all of the retry attempts between the first and last retries in the backoff phase.

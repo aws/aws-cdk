@@ -1,12 +1,13 @@
 {
-  "version": "40.0.0",
+  "version": "52.0.0",
   "testCases": {
-    "cluster-with-availability-zone-integ/DefaultTest": {
+    "cluster-availability-zone-integ-test/DefaultTest": {
       "stacks": [
-        "rds-cluster-with-availability-zone"
+        "aws-cdk-rds-cluster-availability-zone"
       ],
-      "assertionStack": "cluster-with-availability-zone-integ/DefaultTest/DeployAssert",
-      "assertionStackName": "clusterwithavailabilityzoneintegDefaultTestDeployAssertFDC52DFE"
+      "assertionStack": "cluster-availability-zone-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clusteravailabilityzoneintegtestDefaultTestDeployAssertDA11D7A8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

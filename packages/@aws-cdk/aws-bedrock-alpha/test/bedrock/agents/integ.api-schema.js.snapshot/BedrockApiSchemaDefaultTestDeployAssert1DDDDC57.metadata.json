@@ -1,0 +1,20 @@
+{
+  "/BedrockApiSchema/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockApiSchemaDefaultTestDeployAssert1DDDDC57.template.json"
+    }
+  ],
+  "/BedrockApiSchema/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockApiSchema/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

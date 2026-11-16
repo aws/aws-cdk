@@ -1,14 +1,28 @@
 import * as fs from 'fs';
 import { join, resolve } from 'path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { App, Stack } from '../../core';
-import { Code, Repository, RepositoryProps } from '../lib';
+import type { RepositoryProps } from '../lib';
+import { Code, Repository } from '../lib';
 
 describe('codecommit', () => {
   describe('CodeCommit Repositories', () => {
+    test('repository without triggers omits Triggers property', () => {
+      const stack = new Stack();
+
+      new Repository(stack, 'MyRepository', {
+        repositoryName: 'MyRepository',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeCommit::Repository', {
+        RepositoryName: 'MyRepository',
+        Triggers: Match.absent(),
+      });
+    });
+
     test('add an SNS trigger to repository', () => {
       const stack = new Stack();
 
@@ -260,17 +274,7 @@ describe('codecommit', () => {
         PolicyDocument: {
           Statement: [
             {
-              Action: 'codecommit:GitPull',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': [
-                  'Repo02AC86CF',
-                  'Arn',
-                ],
-              },
-            },
-            {
-              Action: 'codecommit:GitPush',
+              Action: ['codecommit:GitPull', 'codecommit:GitPush'],
               Effect: 'Allow',
               Resource: {
                 'Fn::GetAtt': [

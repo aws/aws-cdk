@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '../../core';
+import type { GetContextValueOptions, GetContextValueResult } from '../../core';
+import { ContextProvider, Lazy, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
@@ -169,7 +170,7 @@ describe('vpc from lookup', () => {
 
     test('AZ in dummy lookup VPC matches AZ in Stack', () => {
       // GIVEN
-      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
+      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '123456789012', region: 'dummy' } });
       const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
 
       // WHEN
@@ -183,7 +184,7 @@ describe('vpc from lookup', () => {
 
     test('don\'t crash when using subnetgroup name in lookup VPC', () => {
       // GIVEN
-      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '1234567890', region: 'dummy' } });
+      const stack = new Stack(undefined, 'MyTestStack', { env: { account: '123456789012', region: 'dummy' } });
       const vpc = Vpc.fromLookup(stack, 'vpc', { isDefault: true });
 
       // WHEN
@@ -380,7 +381,6 @@ interface MockVpcContextResponse {
 function mockVpcContextProviderWith(
   response: MockVpcContextResponse,
   paramValidator?: (options: cxschema.VpcContextQuery) => void) {
-  // eslint-disable-next-line @typescript-eslint/unbound-method
   const previous = ContextProvider.getValue;
   ContextProvider.getValue = (_scope: Construct, options: GetContextValueOptions) => {
     // do some basic sanity checks

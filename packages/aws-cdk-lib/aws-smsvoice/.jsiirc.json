@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.smsvoice"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.SMSVOICE"
+      "namespace": "Amazon.CDK.AWS.SMSVOICE"
     },
     "python": {
       "module": "aws_cdk.aws_smsvoice"

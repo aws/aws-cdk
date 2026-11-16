@@ -45,7 +45,7 @@ describe('handler', () => {
     };
 
     // WHEN
-    const response = await handler(event);
+    const response = await handler(event as any);
 
     // THEN
     expect(mockSSM.getParameter).toHaveBeenCalledWith({ Name: 'edge-function-arn' });
@@ -60,7 +60,7 @@ describe('handler', () => {
     };
 
     // WHEN
-    const response = await handler(event);
+    const response = await handler(event as any);
 
     // THEN
     expect(mockSSM.getParameter).toHaveBeenCalledWith({ Name: 'edge-function-arn' });
@@ -75,7 +75,7 @@ describe('handler', () => {
     };
 
     // WHEN
-    const response = await handler(event);
+    const response = await handler(event as any);
 
     // THEN
     expect(mockSSM.getParameter).not.toHaveBeenCalled();

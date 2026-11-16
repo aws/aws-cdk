@@ -1,10 +1,12 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
+
 /* eslint-disable max-len */
-/* eslint-disable no-console */
+
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
 import { invokeFunction, startExecution } from './outbound';
 import { getEnv, log, parseJsonPayload } from './util';
-import { IsCompleteResponse, OnEventResponse } from '../types';
+import type { IsCompleteResponse, OnEventResponse } from '../types';
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
 export = {
@@ -41,7 +43,7 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   const resourceEvent = createResponseEvent(cfnRequest, onEventResult);
   const sanitizedEvent = { ...resourceEvent, ResponseURL: '...' };
   if (onEventResult?.NoEcho) {
-    log('readacted event:', cfnResponse.redactDataFromPayload(sanitizedEvent));
+    log('redacted event:', cfnResponse.redactDataFromPayload(sanitizedEvent));
   } else {
     log('event:', sanitizedEvent);
   }
@@ -55,13 +57,11 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // ok, we are not complete, so kick off the waiter workflow
   const waiter = {
     stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
-    name: resourceEvent.RequestId,
     input: JSON.stringify(resourceEvent),
   };
 
   log('starting waiter', {
     stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
-    name: resourceEvent.RequestId,
   });
 
   // kick off waiter state machine
@@ -108,17 +108,40 @@ async function isComplete(event: AWSCDKAsyncCustomResource.IsCompleteRequest) {
 
 // invoked when completion retries are exhaused.
 async function onTimeout(timeoutEvent: any) {
-  log('timeoutHandler', timeoutEvent);
-
-  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage) as AWSCDKAsyncCustomResource.IsCompleteRequest;
+  // the timeout event carries the full isComplete request (including the presigned
+  // ResponseURL) in `Cause`, so log the parsed request in sanitized form instead.
+  let isCompleteRequest: AWSCDKAsyncCustomResource.IsCompleteRequest;
+  try {
+    isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage);
+  } catch (e: any) {
+    // never log `Cause` or the parse error message: both can contain the
+    // presigned ResponseURL (JSON.parse quotes part of its input in its message).
+    // `Error` is the Step Functions error name (for example `States.Timeout`).
+    const isObject = timeoutEvent && typeof timeoutEvent === 'object';
+    const stepFunctionsError = isObject && typeof timeoutEvent.Error === 'string' ? timeoutEvent.Error : 'unknown';
+    const summary = `timeoutHandler: cannot read the isComplete request from the timeout event (${e?.name ?? 'Error'}); Step Functions error: ${stepFunctionsError}; event keys: ${isObject ? Object.keys(timeoutEvent).join(', ') : typeof timeoutEvent}`;
+    log(summary);
+    throw new Error(summary);
+  }
+  const sanitizedRequest = { ...isCompleteRequest, ResponseURL: '...' };
+  if (isCompleteRequest.NoEcho) {
+    log('redacted timeoutHandler request', cfnResponse.redactDataFromPayload(sanitizedRequest));
+  } else {
+    log('timeoutHandler request', sanitizedRequest);
+  }
   await cfnResponse.submitResponse('FAILED', isCompleteRequest, {
     reason: 'Operation timed out',
+    noEcho: isCompleteRequest.NoEcho,
   });
 }
 
 async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnEnv: string, sanitizedPayload: A, responseUrl: string) {
   const functionArn = getEnv(functionArnEnv);
-  log(`executing user function ${functionArn} with payload`, sanitizedPayload);
+  // an isComplete request carries the Data returned by onEvent
+  const loggablePayload = (sanitizedPayload as { NoEcho?: boolean }).NoEcho
+    ? cfnResponse.redactDataFromPayload(sanitizedPayload as OnEventResponse)
+    : sanitizedPayload;
+  log(`executing user function ${functionArn} with payload`, loggablePayload);
 
   // transient errors such as timeouts, throttling errors (429), and other
   // errors that aren't caused by a bad request (500 series) are retried
@@ -130,7 +153,10 @@ async function invokeUserFunction<A extends { ResponseURL: '...' }>(functionArnE
     Payload: JSON.stringify({ ...sanitizedPayload, ResponseURL: responseUrl }),
   });
 
-  log('user function response:', resp, typeof(resp));
+  // the raw Payload is the user function's return value, which can carry NoEcho
+  // Data (as bytes); the parsed value is logged by the caller, redacted when NoEcho
+  // is set, so only the invocation metadata is logged here.
+  log('user function response:', { ...resp, Payload: undefined }, typeof(resp));
 
   // ParseJsonPayload is very defensive. It should not be possible for `Payload`
   // to be anything other than a JSON encoded string (or intarray). Something weird is

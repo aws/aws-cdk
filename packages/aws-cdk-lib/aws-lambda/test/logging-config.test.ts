@@ -12,7 +12,7 @@ describe('logging Config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       logGroup: logGroup,
     });
     // WHEN
@@ -35,7 +35,7 @@ describe('logging Config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       logGroup: logGroup,
     });
     // WHEN
@@ -55,7 +55,7 @@ describe('logging Config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       logFormat: lambda.LogFormat.TEXT,
     });
     // WHEN
@@ -73,7 +73,7 @@ describe('logging Config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       logFormat: lambda.LogFormat.JSON,
     });
     // WHEN
@@ -91,7 +91,7 @@ describe('logging Config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       loggingFormat: lambda.LoggingFormat.TEXT,
     });
     // WHEN
@@ -109,7 +109,7 @@ describe('logging Config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       loggingFormat: lambda.LoggingFormat.JSON,
     });
     // WHEN
@@ -127,7 +127,7 @@ describe('logging Config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       logFormat: lambda.LogFormat.JSON,
       systemLogLevel: lambda.SystemLogLevel.INFO,
       applicationLogLevel: lambda.ApplicationLogLevel.INFO,
@@ -149,7 +149,7 @@ describe('logging Config', () => {
     new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       loggingFormat: lambda.LoggingFormat.JSON,
       systemLogLevelV2: lambda.SystemLogLevel.INFO,
       applicationLogLevelV2: lambda.ApplicationLogLevel.INFO,
@@ -174,7 +174,7 @@ describe('logging Config', () => {
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       logGroup: logGroup,
     });
     expect(lambdaFunction.logGroup).toEqual(logGroup);
@@ -189,7 +189,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         logRetention: logs.RetentionDays.INFINITE,
         logGroup: new logs.LogGroup(stack, 'MyLogGroup', {
           logGroupName: 'customLogGroup',
@@ -205,7 +205,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         logFormat: lambda.LogFormat.TEXT,
         applicationLogLevel: lambda.ApplicationLogLevel.INFO,
       });
@@ -219,7 +219,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         logFormat: lambda.LogFormat.TEXT,
         systemLogLevel: lambda.SystemLogLevel.INFO,
       });
@@ -233,7 +233,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         loggingFormat: lambda.LoggingFormat.TEXT,
         applicationLogLevel: lambda.ApplicationLogLevel.INFO,
       });
@@ -247,7 +247,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         applicationLogLevel: lambda.ApplicationLogLevel.INFO,
       });
     }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
@@ -260,7 +260,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         systemLogLevel: lambda.SystemLogLevel.INFO,
       });
     }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
@@ -273,7 +273,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         loggingFormat: lambda.LoggingFormat.JSON,
         logFormat: lambda.LogFormat.TEXT,
       });
@@ -287,7 +287,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         loggingFormat: lambda.LoggingFormat.JSON,
         applicationLogLevel: lambda.ApplicationLogLevel.INFO,
         applicationLogLevelV2: lambda.ApplicationLogLevel.WARN,
@@ -302,7 +302,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         loggingFormat: lambda.LoggingFormat.JSON,
         systemLogLevel: lambda.SystemLogLevel.INFO,
         systemLogLevelV2: lambda.SystemLogLevel.WARN,
@@ -317,7 +317,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         systemLogLevelV2: lambda.SystemLogLevel.INFO,
       });
     }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
@@ -330,7 +330,7 @@ describe('logging Config', () => {
       new lambda.Function(stack, 'Lambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
+        runtime: lambda.Runtime.NODEJS_20_X,
         applicationLogLevelV2: lambda.ApplicationLogLevel.INFO,
       });
     }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);

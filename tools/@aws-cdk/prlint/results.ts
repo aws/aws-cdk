@@ -1,4 +1,5 @@
-import { GitHubFile, GitHubPr } from "./github";
+
+import type { GitHubFile, GitHubPr } from './github';
 
 /**
  * Results of a single test.
@@ -49,6 +50,8 @@ export class TestResult {
   }
 }
 
+export type PrPred = (pr: GitHubPr) => boolean;
+
 /**
  * Represents a set of tests and the conditions under which those rules exempt.
  */
@@ -56,7 +59,7 @@ export interface ValidateRuleSetOptions {
   /**
    * The function to test for exemption from the rules in testRuleSet.
    */
-  exemption?: (pr: GitHubPr) => boolean;
+  exemption: PrPred;
 
   /**
    * The log message printed if the exemption is granted.
@@ -68,8 +71,6 @@ export interface ValidateRuleSetOptions {
    */
   testRuleSet: Test[];
 }
-
-
 
 /**
  * This class provides functionality for performing validation tests against each ruleset and

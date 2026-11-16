@@ -21,7 +21,7 @@ export enum JsonSchemaType {
  * Represents a JSON schema definition of the structure of a
  * REST API model. Copied from npm module jsonschema.
  *
- * @see http://json-schema.org/
+ * @see https://json-schema.org/
  * @see https://github.com/tdegrunt/jsonschema
  */
 export interface JsonSchema {
@@ -34,7 +34,7 @@ export interface JsonSchema {
   readonly type?: JsonSchemaType | JsonSchemaType[];
   readonly title?: string;
   readonly description?: string;
-  readonly 'enum'?: any[];
+  readonly enum?: any[];
   /**
    * The default value if you use an enum.
    *

@@ -42,7 +42,7 @@ const sendResource = root.addResource('InitiateAction');
 const myfunc = new lambda.Function(stack, 'lambda-s3', {
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'assets')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
 });
 
 const sendLambdaIntegration = new agw.LambdaIntegration(myfunc);

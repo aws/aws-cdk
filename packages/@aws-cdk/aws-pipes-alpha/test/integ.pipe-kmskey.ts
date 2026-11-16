@@ -1,8 +1,9 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { InputTransformation, IPipe, ISource, ITarget, Pipe, SourceConfig, TargetConfig } from '../lib';
+import type { IPipe, ISource, ITarget, SourceConfig, TargetConfig } from '../lib';
+import { InputTransformation, Pipe } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'PipesKmsKeyTestStack');

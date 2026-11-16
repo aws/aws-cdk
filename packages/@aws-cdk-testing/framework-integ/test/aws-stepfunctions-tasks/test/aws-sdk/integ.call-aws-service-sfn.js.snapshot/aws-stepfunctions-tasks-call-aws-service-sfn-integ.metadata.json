@@ -1,0 +1,148 @@
+{
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ChildStateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ParentStateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ChildStateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ChildStateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChildStateMachine9133117F"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ParentStateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ParentStateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParentStateMachine74EA937A"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/Exports/Output{\"Ref\":\"ParentStateMachine74EA937A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefParentStateMachine74EA937A758ECF42"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ChildStateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChildStateMachineRoleA7F7AB78"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ChildStateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ParentStateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParentStateMachineRoleE902D002"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ParentStateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ChildStateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChildStateMachineRoleDefaultPolicy8B4560F0"
+    }
+  ],
+  "/aws-stepfunctions-tasks-call-aws-service-sfn-integ/ParentStateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParentStateMachineRoleDefaultPolicyA368A0BA"
+    }
+  ]
+}

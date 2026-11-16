@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 export function error(...messages: Array<string | number | object>) {
   console.error(...messages);
 }

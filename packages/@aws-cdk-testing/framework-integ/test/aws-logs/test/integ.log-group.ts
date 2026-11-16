@@ -1,5 +1,6 @@
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LogGroup, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, FieldIndexPolicy } from 'aws-cdk-lib/aws-logs';
 

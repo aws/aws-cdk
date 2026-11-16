@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-eks-import-cluster/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksimportclusterDefaultTestDeployAssert71CEFD92.template.json"
+    }
+  ],
+  "/aws-cdk-eks-import-cluster/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-eks-import-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

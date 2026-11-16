@@ -1,0 +1,122 @@
+{
+  "/aws-cdk-mediapackagev2-attributes/Group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/Channel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/GroupEgressDomain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupEgressDomain"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/ChannelIngestUrl0": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChannelIngestUrl0"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/ChannelIngestUrl1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChannelIngestUrl1"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/GroupCreatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupCreatedAt"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/GroupModifiedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupModifiedAt"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/ChannelCreatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChannelCreatedAt"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/ChannelModifiedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChannelModifiedAt"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/EndpointCreatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointCreatedAt"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/EndpointModifiedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointModifiedAt"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/EndpointHlsUrls": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointHlsUrls"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/EndpointLlHlsUrls": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointLlHlsUrls"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/EndpointDashUrls": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointDashUrls"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/Group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupC77FDACD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/Channel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Channel4048F119"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-attributes/Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointEEF1FD8F"
+    }
+  ]
+}

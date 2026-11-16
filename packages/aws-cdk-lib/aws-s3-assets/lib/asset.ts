@@ -1,12 +1,13 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
-import { CopyOptions } from '../../assets';
-import * as iam from '../../aws-iam';
+import type { CopyOptions } from '../../assets';
+import type * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 
 export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
@@ -166,7 +167,7 @@ export class Asset extends Construct implements cdk.IAsset {
     super(scope, id);
 
     if (!props.path) {
-      throw new ValidationError('Asset path cannot be empty', this);
+      throw new ValidationError(lit`AssetPathCannotEmpty`, 'Asset path cannot be empty', this);
     }
 
     this.isBundled = props.bundling != null;
@@ -196,6 +197,15 @@ export class Asset extends Construct implements cdk.IAsset {
       fileName: this.assetPath,
       deployTime: props.deployTime,
       displayName: props.displayName ?? cdk.Names.stackRelativeConstructPath(this),
+    });
+
+    // Check the contract, because there are potentially multiple implementors of
+    // this and they might make mistakes.
+    contract(`${stack.synthesizer.constructor.name}.addFileAsset()`, (c) => {
+      c.assertString(location, 'bucketName');
+      c.assertString(location, 'objectKey');
+      c.assertString(location, 's3ObjectUrl');
+      c.assertString(location, 'httpUrl');
     });
 
     this.s3BucketName = location.bucketName;
@@ -247,6 +257,8 @@ export class Asset extends Construct implements cdk.IAsset {
 
   /**
    * Grants read permissions to the principal on the assets bucket.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
     // we give permissions on all files in the bucket since we don't want to
@@ -254,4 +266,18 @@ export class Asset extends Construct implements cdk.IAsset {
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
   }
+}
+
+interface Contract {
+  assertString<A extends object, K extends keyof A>(obj: A, key: K): void;
+}
+
+function contract(contractName: string, block: (c: Contract) => void) {
+  block({
+    assertString<A extends object, K extends keyof A>(obj: A, key: K) {
+      if (typeof obj[key] !== 'string') {
+        throw new cdk.AssumptionError(lit`InvalidType`, `${contractName}: ${String(key)} should be a string, got ${JSON.stringify(obj[key])}`);
+      }
+    },
+  });
 }

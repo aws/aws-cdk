@@ -1,5 +1,5 @@
-import { REPOSITORY, REPOSITORY_OWNER } from './config';
 import { backOff } from 'exponential-backoff';
+import { REPOSITORY, REPOSITORY_OWNER } from './config';
 
 const issueQuery = `
   createdAt

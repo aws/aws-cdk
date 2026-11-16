@@ -1,5 +1,6 @@
 import { CfnParameter, Stack } from '../../core';
-import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute, ClientAttributes } from '../lib';
+import type { CustomAttributeConfig, ICustomAttribute } from '../lib';
+import { BooleanAttribute, DateTimeAttribute, NumberAttribute, StringAttribute, ClientAttributes } from '../lib';
 import { StandardAttributeNames } from '../lib/private/attr-names';
 
 describe('User Pool Attributes', () => {

@@ -37,6 +37,7 @@ describe('handler', () => {
   let oldConsoleLog: any;
 
   beforeAll(() => {
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     oldConsoleLog = global.console.log;
     global.console.log = jest.fn();
   });
@@ -447,7 +448,7 @@ describe('handler', () => {
         S3BucketName: 's3BucketNameValue',
         S3ObjectKey: 's3ObjectKeyValue',
       },
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: 'x' },
       ResponseURL: 'responseUrlValue',
       StackId: 'stackIdValue',
       RequestId: 'requestIdValue',
@@ -493,7 +494,7 @@ describe('handler', () => {
         S3BucketName: 's3BucketNameValue',
         S3ObjectKey: 's3ObjectKeyValue',
       },
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: 'x' },
       ResponseURL: 'responseUrlValue',
       StackId: 'stackIdValue',
       RequestId: 'requestIdValue',
@@ -535,7 +536,7 @@ describe('handler', () => {
         S3BucketName: 's3BucketNameValue',
         S3ObjectKey: 's3ObjectKeyValue',
       },
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: 'x' },
       ResponseURL: 'responseUrlValue',
       StackId: 'stackIdValue',
       RequestId: 'requestIdValue',
@@ -572,7 +573,7 @@ describe('handler', () => {
         S3BucketName: 's3BucketNameValue',
         S3ObjectKey: 's3ObjectKeyValue',
       },
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: 'x' },
       ResponseURL: 'responseUrlValue',
       StackId: 'stackIdValue',
       RequestId: 'requestIdValue',
@@ -610,7 +611,7 @@ describe('handler', () => {
         S3BucketName: 's3BucketNameValue',
         S3ObjectKey: 's3ObjectKeyValue',
       },
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: 'x' },
       ResponseURL: 'responseUrlValue',
       StackId: 'stackIdValue',
       RequestId: 'requestIdValue',
@@ -689,7 +690,7 @@ describe('handler', () => {
         S3BucketName: 's3BucketNameValue',
         S3ObjectKey: 's3ObjectKeyValue',
       },
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: 'x' },
       ResponseURL: 'responseUrlValue',
       StackId: 'stackIdValue',
       RequestId: 'requestIdValue',
@@ -717,7 +718,7 @@ describe('handler', () => {
         S3BucketName: 's3BucketNameValue',
         S3ObjectKey: 's3ObjectKeyValue',
       },
-      OldResourceProperties: {},
+      OldResourceProperties: { ServiceToken: 'x' },
       ResponseURL: 'responseUrlValue',
       StackId: 'stackIdValue',
       RequestId: 'requestIdValue',

@@ -58,7 +58,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaWithLogGroupServiceRoleC5DDB031"
@@ -121,7 +121,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaWithLogGroupAndNoLogGroupNameServiceRoleFEE6AF87"
@@ -174,7 +174,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaWithTextFormatServiceRoleABCC0E93"
@@ -227,7 +227,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaWithJSONFormatServiceRole37FFB486"
@@ -280,7 +280,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaWithTextLoggingFormatServiceRole3ADC91E1"
@@ -333,7 +333,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaWithJSONLoggingFormatServiceRole0B3D5672"
@@ -388,7 +388,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaWithLogLevelServiceRole90A45743"
@@ -443,7 +443,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaWithLogLevelV2ServiceRoleD184382A"

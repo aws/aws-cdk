@@ -1,8 +1,10 @@
-import {
-  WebSocketAuthorizerType,
+import type {
   WebSocketRouteAuthorizerBindOptions,
   WebSocketRouteAuthorizerConfig,
   IWebSocketRouteAuthorizer,
+} from '../../../aws-apigatewayv2';
+import {
+  WebSocketAuthorizerType,
 } from '../../../aws-apigatewayv2';
 
 /**

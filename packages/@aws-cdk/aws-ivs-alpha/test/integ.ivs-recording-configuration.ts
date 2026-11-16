@@ -1,7 +1,7 @@
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Channel, ChannelType, RecordingConfiguration, Resolution } from '../lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 import { RenditionConfiguration } from '../lib/rendition-configuration';
 import { Storage, ThumbnailConfiguration } from '../lib/thumbnail-configuration';
 
@@ -34,4 +34,5 @@ new Channel(stack, 'Channel', {
 
 new integ.IntegTest(app, 'ivs-recording-configuration-test', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-west-2', 'eu-west-1', 'eu-central-1', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1'], // IVS is only available in these regions
 });

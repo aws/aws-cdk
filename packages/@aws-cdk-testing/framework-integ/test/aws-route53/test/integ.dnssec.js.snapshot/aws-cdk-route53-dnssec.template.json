@@ -13,11 +13,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
+           "arn:aws:iam::",
            {
             "Ref": "AWS::AccountId"
            },
@@ -40,11 +36,7 @@
           "Fn::Join": [
            "",
            [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":route53:::hostedzone/",
+            "arn:aws:route53:::hostedzone/",
             {
              "Ref": "HostedZoneDB99F866"
             }

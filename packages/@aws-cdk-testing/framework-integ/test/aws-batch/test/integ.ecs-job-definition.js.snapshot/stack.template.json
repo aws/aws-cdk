@@ -732,6 +732,9 @@
     "PlatformCapabilities": [
      "EC2"
     ],
+    "ResourceRetentionPolicy": {
+     "SkipDeregisterOnUpdate": true
+    },
     "RetryStrategy": {},
     "Timeout": {},
     "Type": "container"
@@ -842,6 +845,9 @@
      "FARGATE"
     ],
     "PropagateTags": true,
+    "ResourceRetentionPolicy": {
+     "SkipDeregisterOnUpdate": true
+    },
     "RetryStrategy": {
      "Attempts": 5,
      "EvaluateOnExit": [
@@ -993,6 +999,9 @@
     "PlatformCapabilities": [
      "EC2"
     ],
+    "ResourceRetentionPolicy": {
+     "SkipDeregisterOnUpdate": true
+    },
     "RetryStrategy": {},
     "Timeout": {},
     "Type": "container"
@@ -1093,6 +1102,9 @@
     "PlatformCapabilities": [
      "FARGATE"
     ],
+    "ResourceRetentionPolicy": {
+     "SkipDeregisterOnUpdate": true
+    },
     "RetryStrategy": {},
     "Timeout": {},
     "Type": "container"

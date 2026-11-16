@@ -1,0 +1,122 @@
+{
+  "/edge-lambda-stack-eu-west-1-2": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "edge-lambda-stack-eu-west-1-2.template.json"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Lambda217CFB423"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/Parameter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/Aliaslive": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "aliasName": "*",
+        "version": "*"
+      }
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Lambda2ServiceRole31A072E1"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Lambda2LogGroup4F31598F"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Lambda2CurrentVersion72012B74c1f6734ecb54ea821fc6141f309901b4"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/Parameter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Lambda2Parameter3444E17A"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/Aliaslive/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Lambda2Aliaslive77F6085F"
+    }
+  ],
+  "/edge-lambda-stack-eu-west-1-2/Lambda2/Aliaslive/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

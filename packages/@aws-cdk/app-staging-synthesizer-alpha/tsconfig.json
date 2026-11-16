@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "declarationMap": false,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "alwaysStrict": true,
+    "declaration": true,
+    "incremental": true,
+    "lib": [
+      "es2022"
+    ],
+    "module": "Node20",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "stripInternal": false,
+    "target": "es2022",
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "composite": false,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "types": [
+      "jest",
+      "node"
+    ],
+    "noUncheckedSideEffectImports": true
+  },
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

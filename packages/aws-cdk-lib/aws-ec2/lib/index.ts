@@ -10,6 +10,7 @@ export * from './machine-image';
 export * from './nat';
 export * from './network-acl';
 export * from './network-acl-types';
+export * from './network-util';
 export * from './port';
 export * from './prefix-list';
 export * from './security-group';
@@ -32,6 +33,7 @@ export * from './ip-addresses';
 export * from './machine-image';
 export * from './placement-group';
 export * from './key-pair';
+export * from './instance-requirements';
 
 // AWS::EC2 CloudFormation Resources:
 export * from './ec2.generated';

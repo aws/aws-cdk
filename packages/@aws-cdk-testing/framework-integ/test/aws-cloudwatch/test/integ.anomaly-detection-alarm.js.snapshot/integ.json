@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "AnomalyDetectionAlarmIntegTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433"
     }
-  }
+  },
+  "minimumCliVersion": "2.1025.0"
 }

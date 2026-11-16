@@ -119,7 +119,7 @@ So, if you're downloading the template to include from the CloudFormation AWS Co
 make sure to download the unprocessed template
 (the "View processed template" checkbox is left **unchecked**, which is the default):
 
-![unprocessed template in the CloudFormation AWS Console](doc-images/unprocessed-template.png)
+![unprocessed template in the CloudFormation AWS Console](https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/cloudformation-include/doc-images/unprocessed-template.png)
 
 However, certain unprocessed templates can fail when used with the `CfnInclude` class.
 The most common reason for the failure is that the unprocessed template can contain cycles between resources,
@@ -131,7 +131,7 @@ to cloudformation, set `allowCyclicalReferences` of CfnIncludeProps to true.
 When that happens, you should instead download the processed template from the CloudFormation AWS Console
 (make sure the "View processed template" checkbox is **checked** in that case):
 
-![processed template in the CloudFormation AWS Console](doc-images/processed-template.png)
+![processed template in the CloudFormation AWS Console](https://raw.githubusercontent.com/aws/aws-cdk/main/packages/aws-cdk-lib/cloudformation-include/doc-images/processed-template.png)
 
 When you include that processed template in your CDK application,
 running `cdk diff` will now show a lot of differences with the deployed Stack,

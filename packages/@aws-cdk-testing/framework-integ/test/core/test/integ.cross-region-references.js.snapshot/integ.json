@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "55.0.0",
   "testCases": {
     "CrossRegionSSMReferenceTest/DefaultTest": {
       "stacks": [
@@ -12,5 +12,7 @@
       "assertionStack": "CrossRegionSSMReferenceTest/DefaultTest/DeployAssert",
       "assertionStackName": "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }

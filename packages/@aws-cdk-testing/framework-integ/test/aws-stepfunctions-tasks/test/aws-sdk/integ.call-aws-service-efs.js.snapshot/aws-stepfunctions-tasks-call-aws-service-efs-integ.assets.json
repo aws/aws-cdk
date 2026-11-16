@@ -1,15 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "54.0.0",
   "files": {
-    "38bbea7ad7bf5c0e69f3dfe4b69946421447d0c2d561f2ca00b96df51b40c92c": {
+    "e27f3eda193a5d40a0959519cae90d8bd2e62a9b21b734c22b8dd20a3c98763d": {
+      "displayName": "aws-stepfunctions-tasks-call-aws-service-efs-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-call-aws-service-efs-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-70283c48": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "38bbea7ad7bf5c0e69f3dfe4b69946421447d0c2d561f2ca00b96df51b40c92c.json",
+          "objectKey": "e27f3eda193a5d40a0959519cae90d8bd2e62a9b21b734c22b8dd20a3c98763d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

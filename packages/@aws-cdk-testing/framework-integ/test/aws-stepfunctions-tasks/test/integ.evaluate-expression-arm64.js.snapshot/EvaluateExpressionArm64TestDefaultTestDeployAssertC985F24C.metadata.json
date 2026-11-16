@@ -1,0 +1,20 @@
+{
+  "/EvaluateExpressionArm64Test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EvaluateExpressionArm64TestDefaultTestDeployAssertC985F24C.template.json"
+    }
+  ],
+  "/EvaluateExpressionArm64Test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/EvaluateExpressionArm64Test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

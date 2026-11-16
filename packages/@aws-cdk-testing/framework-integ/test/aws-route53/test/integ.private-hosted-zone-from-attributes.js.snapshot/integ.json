@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "AwsCdkRoute53IntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-route53-integ"
+      ],
+      "diffAssets": false,
+      "assertionStack": "AwsCdkRoute53IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCdkRoute53IntegTestDefaultTestDeployAssert3C36D849"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

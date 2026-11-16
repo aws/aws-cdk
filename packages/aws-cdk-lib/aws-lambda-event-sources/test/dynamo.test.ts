@@ -8,7 +8,7 @@ import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import * as sources from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('DynamoEventSource', () => {
   test('sufficiently complex example', () => {
@@ -1037,4 +1037,14 @@ describe('DynamoEventSource', () => {
       },
     });
   });
+});
+
+test('fails for DynamoEventSource without startingPosition', () => {
+  const stack = new cdk.Stack();
+  const table = new dynamodb.Table(stack, 'T', {
+    partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+    stream: dynamodb.StreamViewType.NEW_IMAGE,
+  });
+
+  expect(() => new sources.DynamoEventSource(table, {})).toThrow(/startingPosition must be set for DynamoEventSource/);
 });

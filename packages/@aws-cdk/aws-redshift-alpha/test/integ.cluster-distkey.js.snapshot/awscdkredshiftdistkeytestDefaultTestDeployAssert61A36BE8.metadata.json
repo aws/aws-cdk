@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-redshift-distkey-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkredshiftdistkeytestDefaultTestDeployAssert61A36BE8.template.json"
+    }
+  ],
+  "/aws-cdk-redshift-distkey-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-redshift-distkey-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

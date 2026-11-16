@@ -1,13 +1,16 @@
 import { Construct } from 'constructs';
-import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
-import { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
+import type { BaseStreamEventSourceProps } from './stream';
+import { StreamEventSource } from './stream';
+import type { ISecurityGroup, IVpc, SubnetSelection } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { IKey } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
-import * as secretsmanager from '../../aws-secretsmanager';
+import type { ISchemaRegistry } from '../../aws-lambda/lib/schema-registry';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration } from '../../core';
 import { Stack, Names, Annotations, UnscopedValidationError, ValidationError } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for a Kafka event source
@@ -26,6 +29,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   readonly secret?: secretsmanager.ISecret;
   /**
    * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a length between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
+   * When `consumptionMode` is `KafkaConsumptionMode.QUEUE`, this is the name of the share group.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
    *
    * @default - none
@@ -51,7 +55,13 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   readonly filterEncryption?: IKey;
 
   /**
-   * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
+   * Add an on Failure Destination for this Kafka event.
+   *
+   * Supported destinations:
+   * - {@link KafkaDlq} - Send failed records to a Kafka topic
+   * - SNS topics - Send failed records to an SNS topic
+   * - SQS queues - Send failed records to an SQS queue
+   * - S3 buckets - Send failed records to an S3 bucket
    *
    * @default - discarded records are ignored
    */
@@ -70,6 +80,54 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - none
    */
   readonly schemaRegistryConfig?: ISchemaRegistry;
+
+  /**
+   * Configuration for logging verbosity from the event source mapping poller
+   *
+   * @default - No logging
+   */
+  readonly logLevel?: lambda.EventSourceMappingLogLevel;
+
+  /**
+   * Configuration for enhanced monitoring metrics collection
+   *
+   * @default - Enhanced monitoring is disabled
+   */
+  readonly metricsConfig?: lambda.MetricsConfig;
+  /***
+   * If the function returns an error, split the batch in two and retry.
+   *
+   * @default false
+   */
+  readonly bisectBatchOnError?: boolean;
+
+  /**
+   * The maximum age of a record that Lambda sends to a function for processing.
+   *
+   * The default value is -1, which sets the maximum age to infinite.
+   * When the value is set to infinite, Lambda never discards old records.
+   * Record are valid until it expires in the event source.
+   *
+   * @default -1
+   */
+  readonly maxRecordAge?: Duration;
+
+  /***
+   * Maximum number of retry attempts.
+   *
+   * Set to -1 for infinite retries (until the record expires in the event source).
+   * `-1` isn't supported when `consumptionMode` is `KafkaConsumptionMode.QUEUE`.
+   *
+   * @default -1 (infinite retries) in stream mode, 0 in queue mode
+   */
+  readonly retryAttempts?: number;
+
+  /***
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
 }
 
 /**
@@ -137,6 +195,22 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
   readonly securityGroup?: ISecurityGroup;
 
   /**
+   * How Lambda reads records from the Kafka topic.
+   *
+   * **Queue mode requires Kafka 4.2.0 or later.** `KafkaConsumptionMode.QUEUE` reads the topic as
+   * a Kafka share group, so records in a partition can be processed in parallel. In queue mode,
+   * `startingPosition`, `startingPositionTimestamp` and `maxBatchingWindow` are not supported, `retryAttempts` must be
+   * between 0 and 10000 and defaults to 0 (and, as in stream mode, requires provisioned mode), and
+   * `consumerGroupId` is the name of the share group. The consumption mode can't be changed after the event source
+   * mapping is created.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+   *
+   * @default - Lambda reads the topic in stream mode (`KafkaConsumptionMode.STREAM`)
+   */
+  readonly consumptionMode?: lambda.KafkaConsumptionMode;
+
+  /**
    * The authentication method for your Kafka cluster
    *
    * @default AuthenticationMethod.SASL_SCRAM_512_AUTH
@@ -154,6 +228,23 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
 
 /**
  * Use a MSK cluster as a streaming source for AWS Lambda
+ *
+ * @example
+ * import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+ * import { StartingPosition, Function } from 'aws-cdk-lib/aws-lambda';
+ *
+ * // With provisioned pollers and poller group for cost optimization
+ * declare const myFunction: Function;
+ * myFunction.addEventSource(new ManagedKafkaEventSource({
+ *   clusterArn: 'arn:aws:kafka:us-east-1:123456789012:cluster/my-cluster/abcd1234-abcd-cafe-abab-9876543210ab-4',
+ *   topic: 'orders-topic',
+ *   startingPosition: StartingPosition.LATEST,
+ *   provisionedPollerConfig: {
+ *     minimumPollers: 2,
+ *     maximumPollers: 10,
+ *     pollerGroupName: 'shared-kafka-pollers',
+ *   },
+ * }));
  */
 export class ManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
@@ -164,6 +255,16 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
     this.innerProps = props;
+
+    if (props.startingPosition === undefined) {
+      throw new UnscopedValidationError(lit`StartingPositionRequired`, 'startingPosition must be set for ManagedKafkaEventSource');
+    }
+
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError(lit`MetricsconfigContainLeastMetric`, 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -190,6 +291,12 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        logLevel: this.innerProps.logLevel,
+        metricsConfig: this.innerProps.metricsConfig,
+        bisectBatchOnError: this.innerProps.bisectBatchOnError,
+        retryAttempts: this.innerProps.retryAttempts,
+        reportBatchItemFailures: this.innerProps.reportBatchItemFailures,
+        maxRecordAge: this.innerProps.maxRecordAge,
       }),
     );
 
@@ -230,7 +337,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingId(): string {
     if (!this._eventSourceMappingId) {
-      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError(lit`KafkaEventSourceYetBound`, 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingId;
   }
@@ -240,7 +347,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
    */
   public get eventSourceMappingArn(): string {
     if (!this._eventSourceMappingArn) {
-      throw new UnscopedValidationError('KafkaEventSource is not yet bound to an event source mapping');
+      throw new UnscopedValidationError(lit`KafkaEventSourceYetBound`, 'KafkaEventSource is not yet bound to an event source mapping');
     }
     return this._eventSourceMappingArn;
   }
@@ -248,6 +355,27 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 
 /**
  * Use a self hosted Kafka installation as a streaming source for AWS Lambda.
+ *
+ * @example
+ * import { SelfManagedKafkaEventSource, AuthenticationMethod } from 'aws-cdk-lib/aws-lambda-event-sources';
+ * import { StartingPosition, Function } from 'aws-cdk-lib/aws-lambda';
+ * import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+ *
+ * // With provisioned pollers and poller group for cost optimization
+ * declare const myFunction: Function;
+ * declare const kafkaCredentials: ISecret;
+ * myFunction.addEventSource(new SelfManagedKafkaEventSource({
+ *   bootstrapServers: ['kafka-broker1.example.com:9092', 'kafka-broker2.example.com:9092'],
+ *   topic: 'events-topic',
+ *   secret: kafkaCredentials,
+ *   startingPosition: StartingPosition.LATEST,
+ *   authenticationMethod: AuthenticationMethod.SASL_SCRAM_512_AUTH,
+ *   provisionedPollerConfig: {
+ *     minimumPollers: 1,
+ *     maximumPollers: 8,
+ *     pollerGroupName: 'self-managed-kafka-group', // Group pollers to reduce costs
+ *   },
+ * }));
  */
 export class SelfManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
@@ -257,28 +385,42 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     super(props);
     if (props.vpc) {
       if (!props.securityGroup) {
-        throw new UnscopedValidationError('securityGroup must be set when providing vpc');
+        throw new UnscopedValidationError(lit`MustBeSecuritygroupProviding`, 'securityGroup must be set when providing vpc');
       }
       if (!props.vpcSubnets) {
-        throw new UnscopedValidationError('vpcSubnets must be set when providing vpc');
+        throw new UnscopedValidationError(lit`MustBeVpcsubnetsProviding`, 'vpcSubnets must be set when providing vpc');
       }
     } else if (!props.secret) {
-      throw new UnscopedValidationError('secret must be set if Kafka brokers accessed over Internet');
+      throw new UnscopedValidationError(lit`MustBeSecretKafkaBrokers`, 'secret must be set if Kafka brokers accessed over Internet');
     }
 
     if (props.startingPosition === lambda.StartingPosition.AT_TIMESTAMP && !props.startingPositionTimestamp) {
-      throw new UnscopedValidationError('startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError(lit`StartingPositionTimestampProvidedStarting`, 'startingPositionTimestamp must be provided when startingPosition is AT_TIMESTAMP');
     }
 
     if (props.startingPosition !== lambda.StartingPosition.AT_TIMESTAMP && props.startingPositionTimestamp) {
-      throw new UnscopedValidationError('startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+      throw new UnscopedValidationError(lit`StartingPositionTimestampStartingPosition`, 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
+    }
+
+    // Stream mode (the default) needs a starting position. Queue mode doesn't support one; that,
+    // and other queue-mode rules, are validated by EventSourceMapping. Custom modes are not checked.
+    const mode = props.consumptionMode?.mode;
+    const isStreamMode = mode === undefined || mode === lambda.KafkaConsumptionMode.STREAM.mode;
+    if (isStreamMode && props.startingPosition === undefined) {
+      throw new UnscopedValidationError(lit`StartingPositionRequired`, 'startingPosition must be set for SelfManagedKafkaEventSource when consumptionMode is STREAM (the default)');
+    }
+
+    if (props.metricsConfig) {
+      if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
+        throw new UnscopedValidationError(lit`MetricsconfigContainLeastMetric`, 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
+      }
     }
 
     this.innerProps = props;
   }
 
   public bind(target: lambda.IFunction) {
-    if (!(Construct.isConstruct(target))) { throw new ValidationError('Function is not a construct. Unexpected error.', target); }
+    if (!(Construct.isConstruct(target))) { throw new ValidationError(lit`FunctionConstructUnexpectedError`, 'Function is not a construct. Unexpected error.', target); }
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
@@ -287,6 +429,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
+        kafkaConsumptionMode: this.innerProps.consumptionMode,
         startingPosition: this.innerProps.startingPosition,
         startingPositionTimestamp: this.innerProps.startingPositionTimestamp,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
@@ -294,6 +437,12 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         supportS3OnFailureDestination: true,
         provisionedPollerConfig: this.innerProps.provisionedPollerConfig,
         schemaRegistryConfig: this.innerProps.schemaRegistryConfig,
+        logLevel: this.innerProps.logLevel,
+        metricsConfig: this.innerProps.metricsConfig,
+        bisectBatchOnError: this.innerProps.bisectBatchOnError,
+        retryAttempts: this.innerProps.retryAttempts,
+        reportBatchItemFailures: this.innerProps.reportBatchItemFailures,
+        maxRecordAge: this.innerProps.maxRecordAge,
       }),
     );
 

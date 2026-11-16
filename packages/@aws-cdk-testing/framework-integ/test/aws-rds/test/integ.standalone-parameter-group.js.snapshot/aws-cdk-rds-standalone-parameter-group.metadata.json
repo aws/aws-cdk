@@ -1,0 +1,66 @@
+{
+  "/aws-cdk-rds-standalone-parameter-group/InstanceParameterGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "engine": {
+          "engineType": "*",
+          "engineVersion": {
+            "fullVersion": "*",
+            "majorVersion": "*"
+          },
+          "parameterGroupFamily": "*",
+          "engineFamily": "*",
+          "defaultUsername": "*"
+        },
+        "description": "*",
+        "removalPolicy": "destroy",
+        "name": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-standalone-parameter-group/ClusterParameterGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "engine": {
+          "engineType": "*",
+          "engineVersion": {
+            "fullVersion": "*",
+            "majorVersion": "*"
+          },
+          "parameterGroupFamily": "*",
+          "engineFamily": "*",
+          "defaultUsername": "*"
+        },
+        "description": "*",
+        "removalPolicy": "destroy",
+        "name": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-standalone-parameter-group/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-rds-standalone-parameter-group/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-rds-standalone-parameter-group/InstanceParameterGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceParameterGroupA9FCF4BA"
+    }
+  ],
+  "/aws-cdk-rds-standalone-parameter-group/ClusterParameterGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterParameterGroupF60E75FA"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
-import { App, Stack, StackProps, Duration, FeatureFlags } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, Duration, FeatureFlags } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -91,7 +92,6 @@ new integ.IntegTest(appWithFeatureFlag, 'LambdaAlarmActionIntegrationTestWithFea
 });
 appWithFeatureFlag.synth();
 
-/* eslint-disable no-console */
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();

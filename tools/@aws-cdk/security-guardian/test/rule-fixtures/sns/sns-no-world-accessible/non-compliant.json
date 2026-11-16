@@ -1,0 +1,22 @@
+{
+  "Description": "SNS_NO_WORLD_ACCESSIBLE fires: the topic policy lets any AWS principal publish",
+  "Resources": {
+    "WorldPublishableTopicPolicy": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "Topics": ["arn:aws:sns:us-west-2:123456789012:example-topic"],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "*" },
+              "Action": "sns:Publish",
+              "Resource": "arn:aws:sns:us-west-2:123456789012:example-topic"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

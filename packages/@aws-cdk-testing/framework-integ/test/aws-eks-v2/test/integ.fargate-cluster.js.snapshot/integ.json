@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "eks-fargate-cluster/DefaultTest": {
+      "stacks": [
+        "eks-fargate-cluster-test-stack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "eks-fargate-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "eksfargateclusterDefaultTestDeployAssertAA8FD90E"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.0"
+}

@@ -1,0 +1,213 @@
+{
+ "Resources": {
+  "Repository22E53BBD": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ContainerRecipe8A7CC9ED": {
+   "Type": "AWS::ImageBuilder::ContainerRecipe",
+   "Properties": {
+    "Components": [
+     {
+      "ComponentArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:component/hello-world-linux/x.x.x"
+        ]
+       ]
+      }
+     }
+    ],
+    "ContainerType": "DOCKER",
+    "DockerfileTemplateData": "FROM {{{ imagebuilder:parentImage }}}\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}",
+    "ImageOsVersionOverride": "Amazon Linux 2023",
+    "Name": "aws-cdk-imagebuilder-image-container-default-parameters-containerrecipe-23122df1",
+    "ParentImage": "public.ecr.aws/amazonlinux/amazonlinux:latest",
+    "PlatformOverride": "Linux",
+    "TargetRepository": {
+     "RepositoryName": {
+      "Ref": "Repository22E53BBD"
+     },
+     "Service": "ECR"
+    },
+    "Version": "1.0.x"
+   }
+  },
+  "ImageContainerInfrastructureConfigurationInstanceProfileRole03BEBCBC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSSMManagedInstanceCore"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/EC2InstanceProfileForImageBuilder"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/EC2InstanceProfileForImageBuilderECRContainerBuilds"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ImageContainerInfrastructureConfigurationInstanceProfile7B9B2817": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "ImageContainerInfrastructureConfigurationInstanceProfileRole03BEBCBC"
+     }
+    ]
+   }
+  },
+  "ImageContainerInfrastructureConfiguration25160332": {
+   "Type": "AWS::ImageBuilder::InfrastructureConfiguration",
+   "Properties": {
+    "InstanceMetadataOptions": {
+     "HttpPutResponseHopLimit": 2,
+     "HttpTokens": "required"
+    },
+    "InstanceProfileName": {
+     "Ref": "ImageContainerInfrastructureConfigurationInstanceProfile7B9B2817"
+    },
+    "Name": "aws-cdk-imagebuilder-image-container-default-parameters-image-container-infrastructureconfiguration-4d17e6fa"
+   }
+  },
+  "ImageContainer1E84CD29": {
+   "Type": "AWS::ImageBuilder::Image",
+   "Properties": {
+    "ContainerRecipeArn": {
+     "Fn::GetAtt": [
+      "ContainerRecipe8A7CC9ED",
+      "Arn"
+     ]
+    },
+    "InfrastructureConfigurationArn": {
+     "Fn::GetAtt": [
+      "ImageContainerInfrastructureConfiguration25160332",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ImageArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "Arn"
+    ]
+   }
+  },
+  "ImageName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "Name"
+    ]
+   }
+  },
+  "ImageVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ContainerRecipe8A7CC9ED",
+     "Version"
+    ]
+   }
+  },
+  "ImageId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ImageContainer1E84CD29",
+     "ImageUri"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

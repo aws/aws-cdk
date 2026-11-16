@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.workspacesinstances"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.WorkspacesInstances"
+      "namespace": "Amazon.CDK.AWS.WorkspacesInstances"
     },
     "python": {
       "module": "aws_cdk.aws_workspacesinstances"

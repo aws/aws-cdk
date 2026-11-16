@@ -1,0 +1,16 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.ecs.mixins"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ECS.Mixins"
+    },
+    "python": {
+      "module": "aws_cdk.aws_ecs.mixins"
+    },
+    "go": {
+      "packageName": "awsecsmixins"
+    }
+  }
+}

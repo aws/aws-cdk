@@ -30,3 +30,9 @@ export interface Environment {
    */
   readonly region?: string;
 }
+
+// For backwards compatibility with TypeScript users
+// (Note that `import { ... } from '...'; export { ... }` behaves differently in jsii
+// than `export { ... } from '...'`, and we need the former).
+import type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
+export type { IEnvironmentAware, ResourceEnvironment };

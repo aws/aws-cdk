@@ -1,6 +1,7 @@
-import { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
-import { IApiDestination } from 'aws-cdk-lib/aws-events';
-import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import type { IInputTransformation, IPipe, ITarget, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
+import type { IApiDestination } from 'aws-cdk-lib/aws-events';
+import type { IRole } from 'aws-cdk-lib/aws-iam';
+import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 /**
  * EventBridge API destination target properties.

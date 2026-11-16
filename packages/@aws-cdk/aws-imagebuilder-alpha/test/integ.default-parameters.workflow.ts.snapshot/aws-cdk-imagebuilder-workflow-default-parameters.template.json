@@ -1,0 +1,47 @@
+{
+ "Resources": {
+  "Workflow193EF7C1": {
+   "Type": "AWS::ImageBuilder::Workflow",
+   "Properties": {
+    "Data": "name: build-image\ndescription: Workflow to build an AMI\nschemaVersion: \"1.0\"\nsteps:\n  - name: LaunchBuildInstance\n    action: LaunchInstance\n    onFailure: Abort\n    inputs:\n      waitFor: ssmAgent\n  - name: ApplyBuildComponents\n    action: ExecuteComponents\n    onFailure: Abort\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: InventoryCollection\n    action: CollectImageMetadata\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - booleanEquals: true\n          value: $.imagebuilder.collectImageMetadata\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: RunSanitizeScript\n    action: SanitizeInstance\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - not:\n            stringEquals: Windows\n            value: $.imagebuilder.platform\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: RunSysPrepScript\n    action: RunSysPrep\n    onFailure: Abort\n    if:\n      and:\n        - stringEquals: AMI\n          value: $.imagebuilder.imageType\n        - stringEquals: Windows\n          value: $.imagebuilder.platform\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: CreateOutputAMI\n    action: CreateImage\n    onFailure: Abort\n    if:\n      stringEquals: AMI\n      value: $.imagebuilder.imageType\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\n  - name: TerminateBuildInstance\n    action: TerminateInstance\n    onFailure: Continue\n    inputs:\n      instanceId.$: $.stepOutputs.LaunchBuildInstance.instanceId\noutputs:\n  - name: ImageId\n    value: $.stepOutputs.CreateOutputAMI.imageId\n",
+    "Name": "aws-cdk-imagebuilder-workflow-default-parameters-workflow-ee1d27c1",
+    "Type": "BUILD",
+    "Version": "1.0.0"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

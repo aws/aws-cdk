@@ -1,4 +1,4 @@
-import { ValidationRule } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { ValidationRule } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Guardrail action when a sensitive entity is detected.

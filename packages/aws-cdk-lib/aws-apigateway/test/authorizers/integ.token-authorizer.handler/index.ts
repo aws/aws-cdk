@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 
 export const handler = async (event: any, _context: any = {}): Promise<any> => {
   const authToken: string = event.authorizationToken;

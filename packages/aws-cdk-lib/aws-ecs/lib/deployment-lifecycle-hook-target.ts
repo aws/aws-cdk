@@ -1,6 +1,6 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
+import type * as lambda from '../../aws-lambda';
 
 /**
  * Deployment lifecycle stages where hooks can be executed
@@ -65,7 +65,6 @@ export interface IDeploymentLifecycleHookTarget {
    * Bind this target to a deployment lifecycle hook
    *
    * @param scope The construct scope
-   * @param id A unique identifier for this binding
    */
   bind(scope: IConstruct): DeploymentLifecycleHookTargetConfig;
 }

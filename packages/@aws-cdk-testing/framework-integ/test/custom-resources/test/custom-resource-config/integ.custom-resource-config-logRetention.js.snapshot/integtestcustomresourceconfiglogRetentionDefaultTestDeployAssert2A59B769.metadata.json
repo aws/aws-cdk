@@ -1,0 +1,20 @@
+{
+  "/integ-test-custom-resource-config-logRetention/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integtestcustomresourceconfiglogRetentionDefaultTestDeployAssert2A59B769.template.json"
+    }
+  ],
+  "/integ-test-custom-resource-config-logRetention/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-test-custom-resource-config-logRetention/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

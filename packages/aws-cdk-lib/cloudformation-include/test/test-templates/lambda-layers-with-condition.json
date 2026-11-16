@@ -1,0 +1,54 @@
+{
+  "Conditions": {
+    "MyCondition": {
+      "Fn::Equals": [
+        "true",
+        "true"
+      ]
+    }
+  },
+  "Resources": {
+    "MyFunctionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "MyFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": ""
+        },
+        "Handler": "lambda_function.lambda_handler",
+        "Layers": {
+          "Fn::If": [
+            "MyCondition",
+            [],
+            [
+              "arn:aws:lambda:us-east-1:123456789012:layer:example-layer:1"
+            ]
+          ]
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "MyFunctionRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "python3.12"
+      }
+    }
+  }
+}

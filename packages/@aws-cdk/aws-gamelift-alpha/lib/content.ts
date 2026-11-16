@@ -2,7 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import * as cdk from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 /**
  * Before deploying your GameLift-enabled multiplayer game servers for hosting with the GameLift service, you need to upload your game server files.

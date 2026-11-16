@@ -1,0 +1,21 @@
+{
+  "Description": "IAM_NO_OVERLY_PERMISSIVE_PASSROLE must not fire: iam:PassRole is scoped to a single specific role ARN string (non-wildcard).",
+  "Resources": {
+    "ScopedPassRolePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "ScopedPassRolePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": "arn:aws:iam::123456789012:role/MyServiceRole"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

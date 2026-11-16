@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.ssmguiconnect"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.SSMGuiConnect"
+      "namespace": "Amazon.CDK.AWS.SSMGuiConnect"
     },
     "python": {
       "module": "aws_cdk.aws_ssmguiconnect"

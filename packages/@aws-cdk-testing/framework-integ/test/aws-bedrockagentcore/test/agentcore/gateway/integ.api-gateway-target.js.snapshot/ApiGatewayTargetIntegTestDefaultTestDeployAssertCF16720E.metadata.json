@@ -1,0 +1,20 @@
+{
+  "/ApiGatewayTargetIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ApiGatewayTargetIntegTestDefaultTestDeployAssertCF16720E.template.json"
+    }
+  ],
+  "/ApiGatewayTargetIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ApiGatewayTargetIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

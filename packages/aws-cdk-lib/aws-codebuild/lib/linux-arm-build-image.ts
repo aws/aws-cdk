@@ -1,10 +1,12 @@
-import { BuildSpec } from './build-spec';
+import type { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { EnvironmentType } from './environment-type';
+import { ImagePullPrincipalType } from './image-pull-principal-type';
+import { isLambdaComputeType } from './is-lambda-compute-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions, isLambdaComputeType } from './project';
-import * as ecr from '../../aws-ecr';
-import * as secretsmanager from '../../aws-secretsmanager';
+import type { BuildEnvironment, IBuildImage, DockerImageOptions } from './project';
+import type * as ecr from '../../aws-ecr';
+import type * as secretsmanager from '../../aws-secretsmanager';
 
 /**
  * Construction properties of `LinuxArmBuildImage`.
@@ -45,6 +47,8 @@ export class LinuxArmBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2023_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:2.0');
   /** Image "aws/codebuild/amazonlinux-aarch64-standard:3.0" based on Amazon Linux 2023. */
   public static readonly AMAZON_LINUX_2023_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:3.0');
+  /** Image "aws/codebuild/amazonlinux-aarch64-standard:4.0" based on Amazon Linux 2023. */
+  public static readonly AMAZON_LINUX_2023_STANDARD_4_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-standard:4.0');
 
   /**
    * @returns a aarch-64 Linux build image from a Docker Hub image.

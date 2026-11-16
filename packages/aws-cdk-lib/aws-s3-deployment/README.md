@@ -1,6 +1,5 @@
 # AWS S3 Deployment Construct Library
 
-
 This library allows populating an S3 bucket with the contents of .zip files
 from other S3 buckets or from local disk.
 
@@ -83,7 +82,7 @@ User: *** is not authorized to perform: kms:Decrypt on the resource associated w
 because no identity-based policy allows the kms:Decrypt action
 ```
 
-When this happens, users can use the public `handlerRole` property of `BucketDeployment` to manually 
+When this happens, users can use the public `handlerRole` property of `BucketDeployment` to manually
 add the KMS permissions:
 
 ```ts
@@ -145,6 +144,39 @@ zip files from trusted sources. Directories bundled by the CDK CLI (by using
 file you are referencing. Zips from untrusted sources might be able to execute
 arbitrary code in the Lambda Function used by this module, and use its permissions
 to read or write unexpected files in the S3 bucket.
+
+## Referencing deployed object versions
+
+When you deploy a single zip file without extracting it (`extract: false`) to a
+**versioned** destination bucket, you can obtain the S3 `VersionId` of each deployed
+object via `objectVersionIds`. This is useful when a consumer must reference a specific,
+immutable version of a deployed object — for example a Lambda function that references its
+code in S3 by version rather than copying it.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const bucket = new s3.Bucket(this, 'CodeBucket', { versioned: true });
+
+const deployment = new s3deploy.BucketDeployment(this, 'DeployCode', {
+  sources: [s3deploy.Source.asset('/path/to/handler.zip')],
+  destinationBucket: bucket,
+  extract: false,
+});
+
+// `objectVersionIds` positionally matches `objectKeys`
+const objectKey = cdk.Fn.select(0, deployment.objectKeys);
+const versionId = cdk.Fn.select(0, deployment.objectVersionIds);
+```
+
+`objectVersionIds` returns a list of tokenized version IDs that positionally matches
+`objectKeys`. It is only supported with `extract: false` (reading it with `extract: true`
+throws), and requires versioning to be enabled on the destination bucket — otherwise the
+returned version IDs are empty strings. Because the list is defined to align with `objectKeys`,
+it also requires `outputObjectKeys` to remain enabled (its default); reading it with
+`outputObjectKeys: false` throws. A consumer holding a version reference pins that
+specific object version, so it should not rely on `prune` semantics for lifecycle of the
+referenced version.
 
 ## Retain on Delete
 
@@ -362,7 +394,7 @@ new s3deploy.BucketDeployment(this, 'DeployWithSignedPayloads', {
 
 ## Size Limits
 
-The default memory limit for the deployment resource is 128MiB. If you need to
+The default memory limit for the deployment resource is 1024MiB. If you need to
 copy larger files, you can use the `memoryLimit` configuration to increase the
 size of the AWS Lambda resource handler.
 
@@ -374,31 +406,46 @@ resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each combination
 > of memory and storage size.
 
+## Lambda Architecture
+
+The deployment resource handler runs on the `arm64` (AWS Graviton) architecture. The
+handler is CDK-managed internal code rather than your code, so the architecture is fixed
+and not configurable. Both the handler and the bundled AWS CLI v1 layer are
+architecture-independent, so the deployment behaves identically on either architecture
+while `arm64` costs less per millisecond of execution.
+
 ## JSON-Aware Source Processing
-When using `Source.jsonData` with CDK Tokens (references to construct properties), you may need to enable the escaping option. This is particularly important when the referenced properties might contain special characters that require proper JSON escaping (like double quotes, line breaks, etc.).
+
+`Source.jsonData()` and `Source.yamlData()` encode each deploy-time value according to the
+type of the tokenized value used in the data structure. So if the value is a tokenized
+string (`Token.asString()`) it will be quoted, if the value is a tokenized number or list, or
+arbitrary object (`Token.asNumber()`, `Token.asList()`, `Token.asAny()`) it will not be quoted.
 
 ```ts
 declare const bucket: s3.Bucket;
 declare const param: ssm.StringParameter;
 
-// Example with a secret value that contains double quotes
+// Works even if the parameter value contains double quotes
 const deployment = new s3deploy.BucketDeployment(this, 'JsonDeployment', {
   sources: [
     s3deploy.Source.jsonData('config.json', {
       api_endpoint: 'https://api.example.com',
-      secretValue: param.stringValue, // value with double quotes
+      secretValue: param.stringValue,
       config: {
         enabled: true,
         features: ['feature1', 'feature2']
       }
-    },
-    // Enable escaping at deployment time
-    { escape: true },
-    )
+    }),
   ],
   destinationBucket: bucket,
 });
 ```
+
+CloudFormation passes every scalar to the deployment as a string, so the elements of a
+deploy-time list are always strings: a list of port numbers is deployed as `["80", "443"]`.
+
+Escaping used to require passing `{ escape: true }` to `Source.jsonData()`, and is now the
+default. See `JsonProcessingOptions` for the rare case where you want to turn it off.
 
 ## EFS Support
 
@@ -462,7 +509,7 @@ to make from placeholders in a local file which will be resolved during deployme
 is especially useful in situations like creating an API from a spec file, where users might
 want to reference other CDK resources they have created.
 
-The syntax for template variables is `{{ variableName }}` in your local file. Then, you would 
+The syntax for template variables is `{{ variableName }}` in your local file. Then, you would
 specify the substitutions in CDK like this:
 
 ```ts
@@ -486,7 +533,7 @@ new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
 ```
 
 Nested variables, like `{{ {{ foo }} }}` or `{{ foo {{ bar }} }}`, are not supported by this
-construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only 
+construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only
 the `{{ foo }}` would be replaced by the substitution, and the extra brackets would remain in the file.
 In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be replaced
 in the file.
@@ -530,6 +577,67 @@ const myBucketDeployment = new s3deploy.BucketDeployment(this, 'DeployMeWithoutE
 
 new cdk.CfnOutput(this, 'ObjectKey', {
   value: cdk.Fn.select(0, myBucketDeployment.objectKeys),
+});
+```
+
+## Specifying a Custom VPC, Subnets, and Security Groups in BucketDeployment
+
+By default, the AWS CDK BucketDeployment construct runs in a publicly accessible environment. However, for enhanced security and compliance, you may need to deploy your assets from within a VPC while restricting network access through custom subnets and security groups.
+
+### Using a Custom VPC
+
+To deploy assets within a private network, specify the vpc property in BucketDeploymentProps. This ensures that the deployment Lambda function executes within your specified VPC.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+new s3deploy.BucketDeployment(this, 'DeployToS3', {
+    destinationBucket: bucket,
+    vpc: vpc,
+    sources: [s3deploy.Source.asset('./website')],
+});
+```
+
+### Specifying Subnets for Deployment
+
+By default, when you specify a VPC, the BucketDeployment function is deployed in the private subnets of that VPC.
+However, you can customize the subnet selection using the vpcSubnets property.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+new s3deploy.BucketDeployment(this, 'DeployToS3', {
+    destinationBucket: bucket,
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    sources: [s3deploy.Source.asset('./website')],
+});
+```
+
+### Defining Custom Security Groups
+
+For enhanced network security, you can now specify custom security groups in BucketDeploymentProps.
+This allows fine-grained control over ingress and egress rules for the deployment Lambda function.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'ExistingVPC', { vpcId: 'vpc-12345678' });
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+const securityGroup = new ec2.SecurityGroup(this, 'CustomSG', {
+    vpc: vpc,
+    description: 'Allow HTTPS outbound access',
+    allowAllOutbound: false,
+});
+
+securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Allow HTTPS traffic');
+
+new s3deploy.BucketDeployment(this, 'DeployWithSecurityGroup', {
+    destinationBucket: bucket,
+    vpc: vpc,
+    securityGroups: [securityGroup],
+    sources: [s3deploy.Source.asset('./website')],
 });
 ```
 

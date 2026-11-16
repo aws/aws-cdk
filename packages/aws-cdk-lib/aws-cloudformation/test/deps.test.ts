@@ -15,7 +15,7 @@ describe('resource dependencies', () => {
     const r2 = new CfnResource(stack, 'r2', { type: 'r2' });
 
     // WHEN
-    r1.addDependency(r2);
+    r1.addResourceDependency(r2);
 
     // THEN
     expect(app.synth().getStackArtifact(stack.artifactId).template?.Resources).toEqual({
@@ -162,7 +162,7 @@ describe('stack dependencies', () => {
     const stack = new Stack(app, 'Stack');
 
     // WHEN
-    stack.addDependency(stack);
+    stack.addStackDependency(stack);
 
     // THEN
     const assembly = app.synth();
@@ -177,7 +177,7 @@ describe('stack dependencies', () => {
     const nested = new NestedStack(parent, 'Nested');
 
     // WHEN
-    nested.addDependency(nested);
+    nested.addStackDependency(nested);
 
     // THEN
     assertNoDependsOn(app.synth(), parent);
@@ -190,9 +190,9 @@ describe('stack dependencies', () => {
     const nested2 = new NestedStack(nested1, 'Nested2');
 
     // THEN
-    expect(() => nested1.addDependency(root)).toThrow(/Nested stack 'Default\/Nested1' cannot depend on a parent stack 'Default'/);
-    expect(() => nested2.addDependency(nested1)).toThrow(/Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default\/Nested1'/);
-    expect(() => nested2.addDependency(root)).toThrow(/Nested stack 'Default\/Nested1\/Nested2' cannot depend on a parent stack 'Default'/);
+    expect(() => nested1.addStackDependency(root)).toThrow(/'Default\/Nested1' cannot depend on parent stack 'Default'/);
+    expect(() => nested2.addStackDependency(nested1)).toThrow(/'Default\/Nested1\/Nested2' cannot depend on parent nested-stack 'Default\/Nested1'/);
+    expect(() => nested2.addStackDependency(root)).toThrow(/'Default\/Nested1\/Nested2' cannot depend on parent stack 'Default'/);
   });
 
   testDeprecated('any parent stack is by definition dependent on the nested stack so dependency is ignored', () => {
@@ -202,9 +202,9 @@ describe('stack dependencies', () => {
     const nested2 = new NestedStack(nested1, 'Nested2');
 
     // WHEN
-    root.addDependency(nested1);
-    root.addDependency(nested2);
-    nested1.addDependency(nested2);
+    root.addStackDependency(nested1);
+    root.addStackDependency(nested2);
+    nested1.addStackDependency(nested2);
   });
 
   testDeprecated('sibling nested stacks transfer to resources', () => {
@@ -214,7 +214,7 @@ describe('stack dependencies', () => {
     const nested2 = new NestedStack(stack, 'Nested2');
 
     // WHEN
-    nested1.addDependency(nested2);
+    nested1.addStackDependency(nested2);
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
@@ -230,7 +230,7 @@ describe('stack dependencies', () => {
     const nested21 = new NestedStack(nested2, 'Nested21');
 
     // WHEN
-    nested1.addDependency(nested21);
+    nested1.addStackDependency(nested21);
 
     // THEN: transfered to a resource dep between the resources in the common stack
     Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
@@ -246,7 +246,7 @@ describe('stack dependencies', () => {
     const nested21 = new NestedStack(nested2, 'Nested21');
 
     // WHEN
-    nested21.addDependency(nested1);
+    nested21.addStackDependency(nested1);
 
     // THEN: transfered to a resource dep between the resources in the common stack
     Template.fromStack(stack).hasResource('AWS::CloudFormation::Stack', {
@@ -262,7 +262,7 @@ describe('stack dependencies', () => {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN
-    stack2.addDependency(nested1);
+    stack2.addStackDependency(nested1);
 
     // THEN: assembly-level dependency between stack2 and stack1
     const assembly = app.synth();
@@ -281,7 +281,7 @@ describe('stack dependencies', () => {
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN
-    nested1.addDependency(stack2);
+    nested1.addStackDependency(stack2);
 
     // THEN: assembly-level dependency between stack2 and stack1
     const assembly = app.synth();
@@ -307,7 +307,7 @@ function matrixForResourceDependencyTest(testFunction: (addDep: (source: CfnReso
       testFunction((source, target) => source.node.addDependency(target));
     });
     test('resource dependency', () => {
-      testFunction((source, target) => source.addDependency(target));
+      testFunction((source, target) => source.addResourceDependency(target));
     });
   };
 }

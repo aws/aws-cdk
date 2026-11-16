@@ -55,12 +55,19 @@ const python313 = new Function(stack, 'PYTHON_3_13', {
 });
 new CfnOutput(stack, 'PYTHON_3_13-functionName', { value: python313.functionName });
 
-const node18xfn = new Function(stack, 'NODEJS_18_X', {
-  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+const python314 = new Function(stack, 'PYTHON_3_14', {
+  code: new InlineCode('def handler(event, context):\n  return "success"'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_18_X,
+  runtime: Runtime.PYTHON_3_14,
 });
-new CfnOutput(stack, 'NODEJS_18_X-functionName', { value: node18xfn.functionName });
+new CfnOutput(stack, 'PYTHON_3_14-functionName', { value: python314.functionName });
+
+const python315 = new Function(stack, 'PYTHON_3_15', {
+  code: new InlineCode('def handler(event, context):\n  return "success"'),
+  handler: 'index.handler',
+  runtime: Runtime.PYTHON_3_15,
+});
+new CfnOutput(stack, 'PYTHON_3_15-functionName', { value: python315.functionName });
 
 const node20xfn = new Function(stack, 'NODEJS_20_X', {
   code: new InlineCode('exports.handler = async function(event) { return "success" }'),
@@ -75,6 +82,20 @@ const node22xfn = new Function(stack, 'NODEJS_22_X', {
   runtime: Runtime.NODEJS_22_X,
 });
 new CfnOutput(stack, 'NODEJS_22_X-functionName', { value: node22xfn.functionName });
+
+const node24xfn = new Function(stack, 'NODEJS_24_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_24_X,
+});
+new CfnOutput(stack, 'NODEJS_24_X-functionName', { value: node24xfn.functionName });
+
+const node26xfn = new Function(stack, 'NODEJS_26_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_26_X,
+});
+new CfnOutput(stack, 'NODEJS_26_X-functionName', { value: node26xfn.functionName });
 
 new integ.IntegTest(app, 'lambda-runtime-inlinecode', {
   testCases: [stack],

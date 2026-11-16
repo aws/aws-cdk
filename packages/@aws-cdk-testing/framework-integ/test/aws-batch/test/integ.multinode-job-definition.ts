@@ -18,6 +18,7 @@ new batch.MultiNodeJobDefinition(stack, 'SingleContainerMultiNodeJob', {
     }),
   }],
   propagateTags: true,
+  skipDeregisterOnUpdate: true,
 });
 
 const multinodeJob = new batch.MultiNodeJobDefinition(stack, 'MultiContainerMultiNodeJob', {
@@ -31,6 +32,7 @@ const multinodeJob = new batch.MultiNodeJobDefinition(stack, 'MultiContainerMult
       memory: Size.mebibytes(2048),
     }),
   }],
+  skipDeregisterOnUpdate: true,
 });
 
 multinodeJob.addContainer({
@@ -46,5 +48,3 @@ multinodeJob.addContainer({
 new integ.IntegTest(app, 'BatchMultiNodeJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -1,4 +1,4 @@
-import { Assembly, SourceLocation, Type, TypeReference } from 'jsii-reflect';
+import type { Assembly, SourceLocation, Type, TypeReference } from 'jsii-reflect';
 import { Linter } from '../linter';
 
 export const noUnusedTypeLinter = new Linter(assm => {

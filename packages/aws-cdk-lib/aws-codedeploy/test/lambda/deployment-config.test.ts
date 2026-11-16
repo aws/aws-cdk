@@ -3,7 +3,7 @@ import * as cdk from '../../../core';
 import * as codedeploy from '../../lib';
 import { TrafficRouting } from '../../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 let stack: cdk.Stack;
 

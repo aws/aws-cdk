@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "e13e6995609aa8454729e5485c2f4e44385b644253c73c5872c27fce2403603e": {
       "displayName": "MyFunc/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "01ea7d785529beb8ccb58bf850535db916d096ace7eb29249d0535a6f9626587": {
+    "e8b341afdfef883351180b633ef8ecbbb9253bd947e66d28056312b6b73cdeba": {
       "displayName": "aws-cdk-codepipeline-codecommit-custom-event Template",
       "source": {
         "path": "aws-cdk-codepipeline-codecommit-custom-event.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a54d2d7a": {
+        "current_account-current_region-9f7e729d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "01ea7d785529beb8ccb58bf850535db916d096ace7eb29249d0535a6f9626587.json",
+          "objectKey": "e8b341afdfef883351180b633ef8ecbbb9253bd947e66d28056312b6b73cdeba.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,5 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as constructs from 'constructs';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type * as constructs from 'constructs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
 export interface FakeTaskProps extends sfn.TaskStateBaseProps {

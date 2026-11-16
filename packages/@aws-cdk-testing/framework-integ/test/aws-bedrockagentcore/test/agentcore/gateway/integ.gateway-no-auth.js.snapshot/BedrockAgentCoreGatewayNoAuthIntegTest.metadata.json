@@ -1,0 +1,198 @@
+{
+  "/BedrockAgentCoreGatewayNoAuthIntegTest": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockAgentCoreGatewayNoAuthIntegTest.template.json"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/NoAuthGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "This gateway has no inbound authorization. The endpoint will be publicly accessible without credentials. Ensure you have implemented compensating security controls such as Gateway Interceptors. See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none [ack: aws-cdk-lib.aws-bedrockagentcore:noAuthGateway]",
+      "trace": [
+        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:391:47)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/gateway/integ.gateway-no-auth.js:42:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
+        "Object..js (node:internal/modules/cjs/loader:2002:10)",
+        "Module.load (node:internal/modules/cjs/loader:1594:32)",
+        "Module._load (node:internal/modules/cjs/loader:1396:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/TestFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "functionName": "*",
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/NoAuthGateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/NoAuthGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoAuthGateway34D8B21F"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/NoAuthGateway/LambdaTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/TestFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/TestFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunction22AD90FC"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/TestFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/NoAuthGateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoAuthGatewayServiceRole73E92F41"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/NoAuthGateway/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/NoAuthGateway/LambdaTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoAuthGatewayLambdaTarget244BAC7C"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/TestFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionServiceRole6ABD93C7"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/TestFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionLogGroupE7744A08"
+    }
+  ],
+  "/BedrockAgentCoreGatewayNoAuthIntegTest/NoAuthGateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NoAuthGatewayServiceRoleDefaultPolicy21867BE2"
+    }
+  ]
+}

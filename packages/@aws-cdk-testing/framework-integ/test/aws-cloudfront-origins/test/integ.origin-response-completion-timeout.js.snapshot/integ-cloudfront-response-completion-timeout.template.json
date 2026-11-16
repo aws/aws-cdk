@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"
@@ -92,6 +92,20 @@
      ]
     },
     "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
+   }
+  },
+  "FunctioninvokefunctionE13A6513": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "Function76856677",
+      "Arn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
     "Principal": "*"
    }
   },

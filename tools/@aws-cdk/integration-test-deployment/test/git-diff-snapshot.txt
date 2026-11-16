@@ -1,0 +1,11 @@
+.github/workflows/codebuild-pr-deployment-integ.yml
+packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-client-explicit-props.js.snapshot/integ-user-pool-client-explicit-props.template.json
+packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-client-explicit-props.ts
+packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.nlb-sg.js.snapshot/aws-ecs-integ-lb-fargate.assets.json
+packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.nlb-sg.js.snapshot/cdk.out
+packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.nlb-sg.js.snapshot/integ.json
+packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js.snapshot/aws-fargate-integ.assets.json
+packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js.snapshot/cdk.out
+packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js.snapshot/integ.json
+packages/@aws-cdk/aws-eks-v2-alpha/test/k8s-manifest.test.ts
+packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js.snapshot/integ.json

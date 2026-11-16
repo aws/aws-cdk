@@ -1,0 +1,140 @@
+{
+ "Resources": {
+  "MyCodeInterpreterServiceRole62BD5E8B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyCodeInterpreterB1C71BB8": {
+   "Type": "AWS::BedrockAgentCore::CodeInterpreterCustom",
+   "Properties": {
+    "Description": "A code interpreter for code execution",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MyCodeInterpreterServiceRole62BD5E8B",
+      "Arn"
+     ]
+    },
+    "Name": "my_code_interpreter",
+    "NetworkConfiguration": {
+     "NetworkMode": "PUBLIC"
+    }
+   }
+  },
+  "MyCodeInterpreter2ServiceRoleFF1481A2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyCodeInterpreter2BECCA11E": {
+   "Type": "AWS::BedrockAgentCore::CodeInterpreterCustom",
+   "Properties": {
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MyCodeInterpreter2ServiceRoleFF1481A2",
+      "Arn"
+     ]
+    },
+    "Name": "my_code_interpreter2",
+    "NetworkConfiguration": {
+     "NetworkMode": "SANDBOX"
+    }
+   }
+  },
+  "MyCodeInterpreter3ServiceRole434C7800": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyCodeInterpreter3A660EE66": {
+   "Type": "AWS::BedrockAgentCore::CodeInterpreterCustom",
+   "Properties": {
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MyCodeInterpreter3ServiceRole434C7800",
+      "Arn"
+     ]
+    },
+    "Name": "my_code_interpreter3",
+    "NetworkConfiguration": {
+     "NetworkMode": "PUBLIC"
+    },
+    "Tags": {
+     "Environment": "Dev",
+     "Project": "AgentCore",
+     "Team": "AI/ML"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

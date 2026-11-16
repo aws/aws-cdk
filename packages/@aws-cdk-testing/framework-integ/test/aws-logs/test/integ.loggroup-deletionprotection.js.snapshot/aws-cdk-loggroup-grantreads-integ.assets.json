@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "0937bcf5ad850fa03a42d40bcafc707e8a71bd575a4abe5151c35285c938a1e5": {
+      "displayName": "aws-cdk-loggroup-grantreads-integ Template",
+      "source": {
+        "path": "aws-cdk-loggroup-grantreads-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4f5efa5c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0937bcf5ad850fa03a42d40bcafc707e8a71bd575a4abe5151c35285c938a1e5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

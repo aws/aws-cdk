@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "55.0.0",
   "testCases": {
     "lambda-runtime-inlinecode/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "lambda-runtime-inlinecode/DefaultTest/DeployAssert",
       "assertionStackName": "lambdaruntimeinlinecodeDefaultTestDeployAssert2C40D679"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }

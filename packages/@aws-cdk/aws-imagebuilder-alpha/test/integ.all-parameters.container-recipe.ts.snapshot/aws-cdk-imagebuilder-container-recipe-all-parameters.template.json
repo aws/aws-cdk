@@ -1,0 +1,144 @@
+{
+ "Resources": {
+  "Repository22E53BBD": {
+   "Type": "AWS::ECR::Repository",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ParameterizedComponentD29478CA": {
+   "Type": "AWS::ImageBuilder::Component",
+   "Properties": {
+    "Data": "name: ParameterizedComponent\ndescription: This is a parameterized component\nschemaVersion: \"1.0\"\nparameters:\n  - parameter1:\n      type: string\n      description: This is the first parameter\n  - parameter2:\n      type: string\n      description: This is the second parameter\nphases:\n  - name: build\n    steps:\n      - name: step1\n        action: ExecuteBash\n        inputs:\n          commands:\n            - echo ${{ parameter1 }}\n            - echo ${{ parameter2 }}\n",
+    "Name": "aws-cdk-imagebuilder-container-recipe-all-parameters-parameterizedcomponent-145a71d0",
+    "Platform": "Linux",
+    "Version": "1.0.0"
+   }
+  },
+  "ContainerRecipe8A7CC9ED": {
+   "Type": "AWS::ImageBuilder::ContainerRecipe",
+   "Properties": {
+    "Components": [
+     {
+      "ComponentArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":imagebuilder:",
+         {
+          "Ref": "AWS::Region"
+         },
+         ":aws:component/hello-world-linux/x.x.x"
+        ]
+       ]
+      }
+     },
+     {
+      "ComponentArn": {
+       "Fn::GetAtt": [
+        "ParameterizedComponentD29478CA",
+        "Arn"
+       ]
+      },
+      "Parameters": [
+       {
+        "Name": "parameter1",
+        "Value": [
+         "parameter-value-1"
+        ]
+       },
+       {
+        "Name": "parameter2",
+        "Value": [
+         "parameter-value-2"
+        ]
+       }
+      ]
+     }
+    ],
+    "ContainerType": "DOCKER",
+    "Description": "A test container recipe",
+    "DockerfileTemplateData": "FROM {{{ imagebuilder:parentImage }}}\nCMD [\"echo\", \"Hello, world!\"]\n{{{ imagebuilder:environments }}}\n{{{ imagebuilder:components }}}",
+    "ImageOsVersionOverride": "Amazon Linux 2023",
+    "InstanceConfiguration": {
+     "BlockDeviceMappings": [
+      {
+       "DeviceName": "/dev/sda2",
+       "Ebs": {
+        "DeleteOnTermination": true,
+        "Iops": 1000,
+        "SnapshotId": "snap-123",
+        "Throughput": 125,
+        "VolumeSize": 75,
+        "VolumeType": "gp3"
+       }
+      }
+     ],
+     "Image": "ssm:/aws/service/ecs/optimized-ami/amazon-linux-2023/recommended/image_id"
+    },
+    "Name": "test-container-recipe",
+    "ParentImage": "public.ecr.aws/amazonlinux/amazonlinux:latest",
+    "PlatformOverride": "Linux",
+    "Tags": {
+     "key1": "value1",
+     "key2": "value2"
+    },
+    "TargetRepository": {
+     "RepositoryName": {
+      "Ref": "Repository22E53BBD"
+     },
+     "Service": "ECR"
+    },
+    "Version": "1.2.x",
+    "WorkingDirectory": "/var/tmp"
+   }
+  }
+ },
+ "Outputs": {
+  "ContainerRecipeVersion": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ContainerRecipe8A7CC9ED",
+     "Version"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

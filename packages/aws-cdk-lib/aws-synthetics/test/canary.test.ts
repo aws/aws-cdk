@@ -360,6 +360,7 @@ test.each([
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_5_1,
   synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0,
+  synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
   synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_1_0,
   synthetics.Runtime.SYNTHETICS_NODEJS_PLAYWRIGHT_2_0,
 ])('throws when activeTracing is enabled with an unsupported runtime', (runtime) => {
@@ -1071,7 +1072,7 @@ describe('artifact encryption test', () => {
     const stack = new Stack();
 
     // WHEN
-    const canary = new synthetics.Canary(stack, 'Canary', {
+    new synthetics.Canary(stack, 'Canary', {
       test: synthetics.Test.custom({
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`
@@ -1189,6 +1190,69 @@ describe('artifact encryption test', () => {
         artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
       });
     }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got syn-python-selenium-3.0.');
+  });
+});
+
+describe('environment variables encryption key', () => {
+  test('is not set on the canary by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      KmsKeyArn: Match.absent(),
+    });
+  });
+
+  test('sets KmsKeyArn from the provided key', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'EnvKey');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      environmentEncryption: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      KmsKeyArn: stack.resolve(key.keyArn),
+    });
+  });
+
+  test('accepts an imported key by ARN', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = kms.Key.fromKeyArn(stack, 'EnvKey', 'arn:aws:kms:us-east-1:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      environmentEncryption: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      KmsKeyArn: 'arn:aws:kms:us-east-1:111122223333:key/abcd1234-a123-456a-a12b-a123b4cd56ef',
+    });
   });
 });
 
@@ -1341,9 +1405,45 @@ describe('Browser configurations', () => {
           handler: 'index.handler',
           code: synthetics.Code.fromInline('/* Synthetics handler code */'),
         }),
-        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_6_0,
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
         browserConfigs: [synthetics.BrowserType.FIREFOX],
       });
     }).toThrow('Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.');
+  });
+});
+
+describe('Canary import', () => {
+  test('can import canary by ARN', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'ImportStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const canary = synthetics.Canary.fromCanaryArn(
+      stack,
+      'ImportedCanary',
+      'arn:aws:synthetics:us-east-1:123456789012:canary:my-canary',
+    );
+
+    // THEN
+    expect(canary.canaryName).toBe('my-canary');
+    expect(canary.canaryId).toBe('my-canary');
+    expect(canary.canaryArn).toBe(`arn:${stack.partition}:synthetics:us-east-1:123456789012:canary:my-canary`);
+  });
+
+  test('can import canary by name', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'ImportStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const canary = synthetics.Canary.fromCanaryName(stack, 'ImportedCanary', 'my-canary');
+
+    // THEN
+    expect(canary.canaryName).toBe('my-canary');
+    expect(canary.canaryId).toBe('my-canary');
+    expect(canary.canaryArn).toBe(`arn:${stack.partition}:synthetics:us-east-1:123456789012:canary:my-canary`);
   });
 });

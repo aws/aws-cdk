@@ -1,8 +1,10 @@
 import { TagType } from './cfn-resource';
-import { CfnTag } from './cfn-tag';
+import type { CfnTag } from './cfn-tag';
 import { UnscopedValidationError } from './errors';
 import { Lazy } from './lazy';
-import { IResolvable } from './resolvable';
+import { lit } from './private/literal-string';
+import type { IResolvable } from './resolvable';
+import { isResolvableObject } from './token';
 
 const TAG_MANAGER_SYM = Symbol.for('@aws-cdk/core.TagManager');
 
@@ -68,7 +70,7 @@ interface ITagFormatter {
 class StandardFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new UnscopedValidationError(`Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError(lit`InvalidTagInputExpectedArray`, `Invalid tag input expected array of {key, value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -106,7 +108,7 @@ class StandardFormatter implements ITagFormatter {
 class AsgFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (!Array.isArray(cfnPropertyTags)) {
-      throw new UnscopedValidationError(`Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError(lit`InvalidTagInputExpectedArray`, `Invalid tag input expected array of {key, value, propagateAtLaunch} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -149,7 +151,7 @@ class AsgFormatter implements ITagFormatter {
 class MapFormatter implements ITagFormatter {
   public parseTags(cfnPropertyTags: any, priority: number): ParseTagsResult {
     if (Array.isArray(cfnPropertyTags) || typeof(cfnPropertyTags) !== 'object') {
-      throw new UnscopedValidationError(`Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`);
+      throw new UnscopedValidationError(lit`InvalidTagInputExpectedMap`, `Invalid tag input expected map of {key: value} have ${JSON.stringify(cfnPropertyTags)}`);
     }
 
     const tags: Tag[] = [];
@@ -388,10 +390,21 @@ export class TagManager {
    */
   public renderTags(combineWithTags?: any): any {
     if (combineWithTags !== undefined && this.didHaveInitialTags) {
-      throw new UnscopedValidationError('Specify external tags either during the creation of TagManager, or as a parameter to renderTags(), but not both');
+      throw new UnscopedValidationError(lit`SpecifyExternalTagsEither`, 'Specify external tags either during the creation of TagManager, or as a parameter to renderTags(), but not both');
     }
     this.parseExternalTags(combineWithTags);
     const formattedTags = this.tagFormatter.formatTags(this.sortedTags);
+
+    if (isResolvableObject(this.dynamicTags)) {
+      if (this.tags.size > 0) {
+        throw new UnscopedValidationError(
+          lit`CombineTagsIntrinsicWithLiteral`,
+          'Cannot combine literal tags with a Tags property that is a single unresolved intrinsic (e.g. Fn::If). ' +
+          'Remove the literal tags or resolve the intrinsic at the property level.',
+        );
+      }
+      return this.dynamicTags;
+    }
 
     if (Array.isArray(formattedTags) || Array.isArray(this.dynamicTags)) {
       const ret = [...formattedTags ?? [], ...this.dynamicTags ?? []];
@@ -458,6 +471,10 @@ export class TagManager {
    */
   private parseExternalTags(initialTags: any) {
     if (initialTags !== undefined) {
+      if (isResolvableObject(initialTags)) {
+        this.dynamicTags = initialTags;
+        return;
+      }
       const parseTagsResult = this.tagFormatter.parseTags(initialTags, this.externalTagPriority);
       this.dynamicTags = parseTagsResult.dynamicTags;
       this._setTag(...parseTagsResult.tags);

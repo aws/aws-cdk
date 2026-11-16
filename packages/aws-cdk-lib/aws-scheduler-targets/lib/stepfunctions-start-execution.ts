@@ -1,7 +1,8 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IRole } from '../../aws-iam';
-import { IScheduleTarget } from '../../aws-scheduler';
-import { IStateMachine } from '../../aws-stepfunctions';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IRole } from '../../aws-iam';
+import type { IScheduleTarget } from '../../aws-scheduler';
+import type { IStateMachine } from '../../aws-stepfunctions';
 
 /**
  * Use an AWS Step function as a target for AWS EventBridge Scheduler.

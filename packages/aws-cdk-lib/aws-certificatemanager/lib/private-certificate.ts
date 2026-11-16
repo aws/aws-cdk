@@ -1,8 +1,8 @@
-import { Construct } from 'constructs';
-import { ICertificate, KeyAlgorithm } from './certificate';
+import type { Construct } from 'constructs';
+import type { ICertificate, KeyAlgorithm } from './certificate';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
-import * as acmpca from '../../aws-acmpca';
+import type * as acmpca from '../../aws-acmpca';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -29,7 +29,7 @@ export interface PrivateCertificateProps {
   /**
    * Private certificate authority (CA) that will be used to issue the certificate.
    */
-  readonly certificateAuthority: acmpca.ICertificateAuthority;
+  readonly certificateAuthority: acmpca.ICertificateAuthorityRef;
 
   /**
    * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
@@ -90,7 +90,7 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
-      certificateAuthorityArn: props.certificateAuthority.certificateAuthorityArn,
+      certificateAuthorityArn: props.certificateAuthority.certificateAuthorityRef.certificateAuthorityArn,
       keyAlgorithm: props.keyAlgorithm?.name,
       certificateExport,
     });

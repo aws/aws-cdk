@@ -1,14 +1,15 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { stackOf } from './private/core-construct-finders';
 import { Intrinsic } from './private/intrinsic';
-import { IPostProcessor, IResolveContext } from './resolvable';
-import { Stack } from './stack';
+import type { IPostProcessor, IResolveContext } from './resolvable';
+import type { Stack } from './stack';
 
 /**
  * Given an object, converts all keys to PascalCase given they are currently in camel case.
  * @param obj The object.
  */
 export function capitalizePropertyNames(construct: IConstruct, obj: any): any {
-  const stack = Stack.of(construct);
+  const stack = stackOf(construct);
   obj = stack.resolve(obj);
 
   if (typeof(obj) !== 'object') {

@@ -6,8 +6,8 @@
  * @param newProps new properties
  * @returns result with LogSet with enabled:false if any
  */
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as EKS from '@aws-sdk/client-eks';
+
+import type * as EKS from '@aws-sdk/client-eks';
 
 export function compareLoggingProps(oldProps: Partial<EKS.CreateClusterCommandInput>,
   newProps: Partial<EKS.CreateClusterCommandInput>): Partial<EKS.CreateClusterCommandInput> {

@@ -12,10 +12,12 @@ export * from './file-location';
 export * from './linux-gpu-build-image';
 export * from './untrusted-code-boundary-policy';
 export * from './linux-arm-build-image';
+export * from './image-pull-principal-type';
 export * from './linux-lambda-build-image';
 export * from './linux-arm-lambda-build-image';
 export * from './compute-type';
 export * from './environment-type';
+export * from './host-kernel';
 export * from './fleet';
 
 // AWS::CodeBuild CloudFormation Resources:

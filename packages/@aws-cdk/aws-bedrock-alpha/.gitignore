@@ -11,7 +11,7 @@ junit.xml
 .nyc_output
 coverage
 nyc.config.js
-!.eslintrc.js
+!eslint.config.mjs
 
 !**/*.snapshot/**/asset.*/*.js
 !**/*.snapshot/**/asset.*/*.d.ts
@@ -21,4 +21,5 @@ nyc.config.js
 *.jsii
 .jsii.tabl.json.gz
 .jsiirc.json
-tsconfig.json
+!bedrock/mixins/.jsiirc.json
+*.generated.ts

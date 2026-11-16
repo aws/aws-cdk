@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "SfnTasksEcsFargateRunTaskCapacityProviderTest/DefaultTest": {
+      "stacks": [
+        "aws-sfn-tasks-ecs-fargate-run-task-capacity-provider"
+      ],
+      "assertionStack": "SfnTasksEcsFargateRunTaskCapacityProviderTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsFargateRunTaskCapacityProviderTestDefaultTestDeployAssertF21B5199"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

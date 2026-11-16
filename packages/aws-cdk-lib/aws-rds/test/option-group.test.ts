@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import { DatabaseInstanceEngine, OptionGroup, OracleEngineVersion } from '../lib';
@@ -143,5 +143,39 @@ describe('option group', () => {
         },
       ],
     })).toThrow(/`port`.*`vpc`/);
+  });
+
+  test('option group with option group name', () => {
+    const stack = new cdk.Stack();
+
+    const optionGroup = new OptionGroup(stack, 'Options', {
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: OracleEngineVersion.VER_12_1,
+      }),
+      configurations: [],
+      optionGroupName: 'my-custom-group',
+    });
+
+    expect(optionGroup.optionGroupName).toBe('my-custom-group');
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
+      OptionGroupName: 'my-custom-group',
+    });
+  });
+  test('option group without option group name', () => {
+    const stack = new cdk.Stack();
+
+    const optionGroup = new OptionGroup(stack, 'Options', {
+      engine: DatabaseInstanceEngine.oracleSe2({
+        version: OracleEngineVersion.VER_12_1,
+      }),
+      configurations: [],
+    });
+
+    expect(cdk.Token.isUnresolved(optionGroup.optionGroupName)).toBe(true);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
+      OptionGroupName: Match.absent(),
+    });
   });
 });

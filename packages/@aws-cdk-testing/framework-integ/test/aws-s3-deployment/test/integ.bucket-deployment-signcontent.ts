@@ -4,8 +4,14 @@ import * as cdk from 'aws-cdk-lib/core';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
+/**
+ * Integration test for bucket deployment with content signing:
+ * - Lambda function signs PutObject payloads before uploading to S3
+ * - Tests signContent flag by enforcing signed payloads via bucket policy
+ * - Successful deployment proves that payloads were properly signed
+ */
 class TestBucketDeployment extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -15,17 +21,15 @@ class TestBucketDeployment extends cdk.Stack {
       autoDeleteObjects: true, // needed for integration test cleanup
     });
 
-    const deployment = new s3deploy.BucketDeployment(this, 'Deployment', {
+    const deployment = new s3deploy.BucketDeployment(this, 'DeployWithSignedContent', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
       destinationBucket: bucket,
       signContent: true,
-      retainOnDelete: false, // default is true, which will block the integration test cleanup
+      retainOnDelete: false,
     });
 
-    // The above code would be sufficient for an integration test to detect template changes,
-    // and the stack would deploy successfully, but it would not test functionality because
-    // PutObject payload signing is not mandatory unless enforced via custom resource policy.
-    // With this as a dependency, successful deployment proves that the payloads were signed.
+    // PutObject payload signing is not mandatory unless enforced via bucket policy.
+    // With this policy dependency, successful deployment proves that the payloads were signed.
     const policyResult = bucket.addToResourcePolicy(
       new iam.PolicyStatement({
         effect: iam.Effect.DENY,
@@ -53,7 +57,7 @@ const app = new cdk.App({
 });
 const testCase = new TestBucketDeployment(app, 'test-bucket-deployment-signobject');
 
-new integ.IntegTest(app, 'integ-test-bucket-deployments', {
+new integ.IntegTest(app, 'integ-test-bucket-deployment-signcontent', {
   testCases: [testCase],
   diffAssets: true,
 });

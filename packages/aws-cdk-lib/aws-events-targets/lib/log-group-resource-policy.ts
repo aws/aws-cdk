@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cr from '../../custom-resources';
