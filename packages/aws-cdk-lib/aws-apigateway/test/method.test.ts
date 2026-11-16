@@ -1343,5 +1343,41 @@ describe('method', () => {
       // THEN
       Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('does not declare it'));
     });
+
+    test('does not warn when an individual integration source value is a token', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addResource('{proxy+}').addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}', {
+        options: {
+          requestParameters: {
+            'integration.request.path.proxy': cdk.Lazy.string({ produce: () => 'method.request.path.proxy' }),
+          },
+        },
+      }));
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('does not declare it'));
+    });
+
+    test('does not warn when the method request parameters are a token', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addResource('{proxy+}').addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}', {
+        options: {
+          requestParameters: { 'integration.request.path.proxy': 'method.request.path.proxy' },
+        },
+      }), {
+        requestParameters: cdk.Lazy.any({ produce: () => ({ 'method.request.path.proxy': true }) }) as any,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', warning);
+    });
   });
 });
