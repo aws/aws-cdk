@@ -1681,7 +1681,7 @@ credential provider attached enabling you to securely access targets whether the
 | `gatewayTargetName` | `string` | No | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
-| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, Smithy, API Gateway, MCP Server, or Connector). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`, `GatewayTarget.forMcpServer()`, `GatewayTarget.forKnowledgeBases()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()`, `addApiGatewayTarget()`, `addMcpServerTarget()`, `addKnowledgeBasesTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
+| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, Smithy, API Gateway, MCP Server, or Connector). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`, `GatewayTarget.forMcpServer()`, `GatewayTarget.forKnowledgeBases()`, `GatewayTarget.forConnector()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()`, `addApiGatewayTarget()`, `addMcpServerTarget()`, `addKnowledgeBasesTarget()`, `addConnectorTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
 | `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. With Token Vault L2 constructs, prefer `GatewayCredentialProvider.fromApiKeyIdentity()` / `fromOauthIdentity()`; otherwise use `fromApiKeyIdentityArn()` / `fromOauthIdentityArn()`, or `fromIamRole()` |
 | `validateOpenApiSchema` | `boolean` | No | (OpenAPI targets only) Whether to validate the OpenAPI schema at synthesis time. Defaults to `true`. Only applies to inline and local asset schemas. For more information refer here <https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html> |
 
@@ -1776,6 +1776,9 @@ use `addKnowledgeBasesTarget()` or `GatewayTarget.forKnowledgeBases()`. The conn
   steps across the knowledge bases you list as `retrievers`, and returns the results with a synthesized, citation-backed answer
 - `retrieve` configures the `Retrieve` tool, which performs a single search on one knowledge base and returns the most relevant passages
 
+The target exposes only the tools you configure. Agentic retrieval runs with the service-managed foundation model.
+To attach a guardrail or use your own foundation or reranking model, use a connector target instead.
+
 The construct grants the gateway role the permissions the configured tools need:
 
 - `bedrock:GetKnowledgeBase` and `bedrock:Retrieve` on every knowledge base
@@ -1788,8 +1791,9 @@ Amazon Bedrock requires the caller to have decrypt permission on the key, and to
 
 The connector only supports managed knowledge bases.
 
-For any other connector, use `ConnectorTargetConfiguration` with the `GatewayTarget` constructor
-(see [Connector Target with Custom Configuration](#example-connector-target-with-custom-configuration)).
+For any other connector, use `addConnectorTarget()` or `GatewayTarget.forConnector()` with a `GatewayConnector`.
+`GatewayConnector` lists the connectors known to this library, and `GatewayConnector.of()` accepts any other connector ID.
+These targets do not grant the gateway role any permissions, because the permissions depend on the connector.
 
 ### Understanding Tool Naming
 
@@ -2264,6 +2268,45 @@ const knowledgeBasesTarget = gateway.addKnowledgeBasesTarget("MyKnowledgeBasesTa
 });
 ```
 
+- Connector Target
+
+The following example adds the [Web Search Tool connector](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-api-target-config.html).
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Connector targets use the gateway IAM role for outbound auth
+const webSearchTarget = gateway.addConnectorTarget("MyWebSearchTarget", {
+  gatewayTargetName: "web-search-tool",
+  connector: agentcore.GatewayConnector.WEB_SEARCH,
+  toolConfigurations: [
+    {
+      name: "WebSearch",
+      // Administrator-set values, hidden from the agent
+      parameterValues: {
+        domainFilter: { exclude: ["example.com"] },
+      },
+    },
+  ],
+});
+
+// Grant the gateway role the permissions the Web Search Tool connector needs
+gateway.grantInvoke(gateway.role);
+gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ["bedrock-agentcore:InvokeWebSearch"],
+  resources: [
+    cdk.Stack.of(this).formatArn({
+      service: "bedrock-agentcore",
+      account: "aws",
+      resource: "tool",
+      resourceName: "web-search.v1",
+    }),
+  ],
+}));
+```
+
 #### Using static factory methods
 
 Use static factory methods when working with imported gateways, creating targets in different constructs/stacks, or when you need more explicit control over the construct tree hierarchy.
@@ -2441,6 +2484,25 @@ const knowledgeBasesTarget = agentcore.GatewayTarget.forKnowledgeBases(this, "My
 });
 ```
 
+- Connector Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Create a gateway target using the static factory method.
+// GatewayConnector.of() accepts a connector that this library does not list yet.
+const connectorTarget = agentcore.GatewayTarget.forConnector(this, "MyConnectorTarget", {
+  gatewayTargetName: "web-answer-tool",
+  gateway: gateway,
+  connector: agentcore.GatewayConnector.of("web-answer"),
+  toolConfigurations: [{ name: "WebAnswer" }],
+  // Expose only this tool of the connector
+  enabledTools: ["WebAnswer"],
+});
+```
+
 ### Advanced Usage: Direct Configuration for gateway target
 
 For advanced use cases where you need full control over the target configuration, you can create configurations manually using the static factory methods and use the GatewayTarget constructor directly.
@@ -2498,52 +2560,6 @@ const target = new agentcore.GatewayTarget(this, "AdvancedTarget", {
 ```
 
 This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`) handle all of this internally.
-
-#### Example: Connector Target with Custom Configuration
-
-`ConnectorTargetConfiguration` works with any connector. Unlike the knowledge bases target, it does not grant
-the gateway role any permissions, because they depend on the connector: grant them yourself. The following
-example adds the [Web Search Tool connector](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-api-target-config.html).
-
-```typescript fixture=default
-const gateway = new agentcore.Gateway(this, "MyGateway", {
-  gatewayName: "my-gateway",
-});
-
-const webSearchConfig = agentcore.ConnectorTargetConfiguration.create({
-  connectorId: "web-search",
-  toolConfigurations: [
-    {
-      name: "WebSearch",
-      // Administrator-set values, hidden from the agent
-      parameterValues: {
-        domainFilter: { exclude: ["example.com"] },
-      },
-    },
-  ],
-});
-
-// Connector targets use the gateway IAM role for outbound auth, which is the default
-const webSearchTarget = new agentcore.GatewayTarget(this, "WebSearchTarget", {
-  gateway: gateway,
-  gatewayTargetName: "web-search-tool",
-  targetConfiguration: webSearchConfig,
-});
-
-// Grant the gateway role the permissions the Web Search Tool connector needs
-gateway.grantInvoke(gateway.role);
-gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
-  actions: ["bedrock-agentcore:InvokeWebSearch"],
-  resources: [
-    cdk.Stack.of(this).formatArn({
-      service: "bedrock-agentcore",
-      account: "aws",
-      resource: "tool",
-      resourceName: "web-search.v1",
-    }),
-  ],
-}));
-```
 
 ### Gateway Interceptors
 
