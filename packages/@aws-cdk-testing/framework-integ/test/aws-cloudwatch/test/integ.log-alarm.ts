@@ -1,4 +1,4 @@
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
@@ -7,10 +7,14 @@ import { ComparisonOperator, LogAlarm, TreatMissingData } from 'aws-cdk-lib/aws-
 const app = new App();
 const stack = new Stack(app, 'cdk-integ-log-alarm');
 
-const logGroup = new LogGroup(stack, 'LogGroup');
+const logGroup = new LogGroup(stack, 'LogGroup', {
+  removalPolicy: RemovalPolicy.DESTROY,
+});
 
 const queryRole = new Role(stack, 'ScheduledQueryRole', {
-  assumedBy: new ServicePrincipal('logs.amazonaws.com'),
+  assumedBy: new ServicePrincipal('logs.amazonaws.com', {
+    conditions: { StringEquals: { 'aws:SourceAccount': stack.account } },
+  }),
 });
 
 new LogAlarm(stack, 'LogAlarm', {

@@ -193,6 +193,10 @@ export interface LogAlarmProps {
    * Must be between 1 and 255 characters. Changing the name of an existing
    * alarm replaces it, because the name is the alarm's physical identifier.
    *
+   * A literal name also scopes the trust policy of the automatically created log
+   * line role to this alarm. With a generated name, that trust policy matches any
+   * alarm in the account and region.
+   *
    * @default - Automatically generated name
    */
   readonly alarmName?: string;
@@ -493,7 +497,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       this.grantReadLogLines(this.actionLogLineRole, sqc.logGroups);
       if (sqc.logGroups === undefined) {
         Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedLogLinePermissions',
-          'logGroups is not set, so the log line role is granted logs:GetQueryResults on all resources; set logGroups to scope it');
+          'logGroups is not set, so the log line role is granted logs:GetQueryResults on every log group in the account and region; set logGroups to scope it');
       }
     }
 
@@ -684,31 +688,32 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    * `mutable: false`) turns these additions into no-ops.
    *
    * `logs:StartQuery` and `logs:GetQueryResults` are scoped to the log groups, as the
-   * CloudWatch Log Alarms documentation prescribes. When the query selects its own log
-   * groups, `logs:GetQueryResults` and `logs:DescribeLogGroups` are granted on every
-   * resource instead, because the service enumerates the log groups on the role's
-   * behalf and `logs:DescribeLogGroups` supports no resource types.
+   * CloudWatch Log Alarms documentation prescribes, or to every log group in the account
+   * and region when the query selects its own log groups. `logs:DescribeLogGroups` is
+   * granted only in that case, on every resource, because the service enumerates the log
+   * groups on the role's behalf and the action supports no resource types.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Alarm-On-Logs.html
    */
   private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): void {
-    const selectsOwnLogGroups = logGroups === undefined;
-    const resourceArns = this.logGroupPolicyResources(logGroups);
     Grant.addToPrincipal({
       grantee: role,
-      actions: ['logs:StartQuery'],
-      resourceArns,
+      actions: ['logs:StartQuery', 'logs:GetQueryResults'],
+      resourceArns: this.logGroupPolicyResources(logGroups),
     });
-    Grant.addToPrincipal({
-      grantee: role,
-      actions: selectsOwnLogGroups ? ['logs:GetQueryResults', 'logs:DescribeLogGroups'] : ['logs:GetQueryResults'],
-      resourceArns: selectsOwnLogGroups ? ['*'] : resourceArns,
-    });
+    if (logGroups === undefined) {
+      Grant.addToPrincipal({
+        grantee: role,
+        actions: ['logs:DescribeLogGroups'],
+        resourceArns: ['*'],
+      });
+    }
   }
 
   /**
    * Grant a role the permission CloudWatch needs to read the log lines it includes in
-   * notifications, scoped to the log groups when they are known.
+   * notifications, scoped to the log groups, or to every log group in the account and
+   * region when the query selects its own log groups.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Alarm-On-Logs.html
    */
@@ -716,7 +721,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     Grant.addToPrincipal({
       grantee: role,
       actions: ['logs:GetQueryResults'],
-      resourceArns: logGroups === undefined ? ['*'] : this.logGroupPolicyResources(logGroups),
+      resourceArns: this.logGroupPolicyResources(logGroups),
     });
   }
 

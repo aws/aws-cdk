@@ -5,8 +5,8 @@
    "Properties": {
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ScheduledQueryRole169FA9CC": {
    "Type": "AWS::IAM::Role",
@@ -15,6 +15,13 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "logs.amazonaws.com"

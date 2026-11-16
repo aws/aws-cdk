@@ -2,7 +2,9 @@
   "/cdk-integ-log-alarm/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "removalPolicy": "destroy"
+      }
     }
   ],
   "/cdk-integ-log-alarm/ScheduledQueryRole": [
@@ -36,14 +38,6 @@
       "data": {
         "attachInlinePolicy": [
           "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
         ]
       }
     }
@@ -112,14 +106,6 @@
           {}
         ]
       }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
     }
   ],
   "/cdk-integ-log-alarm/LogAlarm/Resource": [
@@ -159,14 +145,6 @@
       "data": {
         "attachInlinePolicy": [
           "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
         ]
       }
     }
@@ -242,14 +220,6 @@
       "data": {
         "attachToRole": [
           "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
         ]
       }
     },

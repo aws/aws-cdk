@@ -226,7 +226,7 @@ describe('LogAlarm', () => {
     new LogAlarm(stack, 'Alarm', { ...props, scheduledQueryConfiguration: sqcWithout, actionLogLines: { count: 5 } });
 
     Annotations.fromStack(stack).hasWarning('/Default/Alarm',
-      Match.stringLikeRegexp('logGroups is not set, so the log line role is granted logs:GetQueryResults on all resources'));
+      Match.stringLikeRegexp('logGroups is not set, so the log line role is granted logs:GetQueryResults on every log group in the account and region'));
   });
 
   test('does not warn about the log line role when logGroups is set', () => {
@@ -444,11 +444,7 @@ describe('LogAlarm', () => {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: 'logs:StartQuery',
-            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] },
-          }),
-          Match.objectLike({
-            Action: 'logs:GetQueryResults',
+            Action: ['logs:StartQuery', 'logs:GetQueryResults'],
             Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^LogGroup'), 'Arn'] },
           }),
         ]),
@@ -466,7 +462,7 @@ describe('LogAlarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
-          Match.objectLike({ Action: ['logs:GetQueryResults', 'logs:DescribeLogGroups'], Resource: '*' }),
+          Match.objectLike({ Action: 'logs:DescribeLogGroups', Resource: '*' }),
         ]),
       }),
       Roles: [{ Ref: Match.stringLikeRegexp('^QueryRole') }],
@@ -490,7 +486,7 @@ describe('LogAlarm', () => {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: 'logs:StartQuery',
+            Action: ['logs:StartQuery', 'logs:GetQueryResults'],
             Resource: { 'Fn::Join': ['', Match.arrayWith([Match.stringLikeRegexp('log-group:\\*')])] },
           }),
         ]),
@@ -807,7 +803,7 @@ describe('LogAlarm', () => {
     });
   });
 
-  test('grants the log line role logs:GetQueryResults on * when the query selects its own log groups', () => {
+  test('grants the log line role logs:GetQueryResults on every log group in the region when the query selects its own log groups', () => {
     const props = baseProps();
     const { logGroups, ...sqcWithout } = props.scheduledQueryConfiguration;
     void logGroups;
@@ -820,7 +816,10 @@ describe('LogAlarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: Match.objectLike({
         Statement: Match.arrayWith([
-          Match.objectLike({ Action: 'logs:GetQueryResults', Resource: '*' }),
+          Match.objectLike({
+            Action: 'logs:GetQueryResults',
+            Resource: { 'Fn::Join': ['', Match.arrayWith([Match.stringLikeRegexp('log-group:\\*')])] },
+          }),
         ]),
       }),
       Roles: [{ Ref: Match.stringLikeRegexp('^AlarmLogLineRole') }],

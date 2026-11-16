@@ -730,6 +730,8 @@ logGroupKey.grantDecrypt(logAlarm.scheduledQueryRole);
 Set `actionLogLines` to include matching log lines in alarm notifications.
 A role that lets CloudWatch read the log lines is auto-created.
 Pass `role` to supply your own instead.
+Set `alarmName` to a literal name to scope the auto-created role's trust policy to this alarm.
+With a generated name, that trust policy matches any alarm in the account and region.
 
 The log lines are delivered verbatim to the alarm action targets.
 Those targets may reach a wider audience than the source log group.
