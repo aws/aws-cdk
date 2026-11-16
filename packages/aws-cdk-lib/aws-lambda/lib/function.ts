@@ -1769,7 +1769,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     const keyStack = Stack.of(key);
     const keyGrants = kms.KeyGrants.fromKey(key);
-    // Same ViaService form as other aws-cdk-lib KMS grants (secretsmanager, ec2 volumes): amazonaws.com in every partition.
     const lambdaViaService = `lambda.${stack.region}.amazonaws.com`;
 
     // The function ARN comes from the name, not the resource, so the key policy does not depend on the function.
