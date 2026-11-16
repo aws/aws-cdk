@@ -1588,8 +1588,8 @@ result in CloudFormation deployment errors. Modifying the parameters within `dur
 after which the stack update or deletion will timeout. If you have functions that are stuck deleting, please check if there
 are any running executions for the function.
 
-By default, durable execution data is encrypted at rest with an AWS owned key. To use a
-customer managed KMS key (CMK) instead, pass it through `durableConfig.kmsKey`:
+Lambda encrypts durable execution data at rest by default. To use a
+customer managed key instead, pass it through `durableConfig.kmsKey`:
 
 ```ts
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -1603,14 +1603,74 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
-For a CDK-managed key, CDK adds the statements from the
+The key must be a symmetric encryption key in the same Region as the function. CDK requires the
+key itself, not an alias, because an alias can be repointed while a durable execution keeps the key
+it started with. CDK throws an error for an alias or a non-symmetric key when it can tell at synth
+time, and for a key in another Region when both Regions are known. This key is separate from the
+function's `environmentEncryption` key.
+
+For a `kms.Key`, a key from `kms.Key.fromCfnKey`, or a `kms.CfnKey` whose `keyPolicy` is a JSON object, CDK
+adds statements based on the
 [documented key policy](https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html)
-to the key's resource policy: the Lambda service principal (`kms:GenerateDataKey`, `kms:Decrypt`),
-the function's execution role (`kms:Decrypt`), and the function author validation actions
-(`kms:DescribeKey`, `kms:GenerateDataKey`, `kms:Decrypt`) for the account principal. The function
-author statement delegates to IAM, so the identity deploying the function also needs IAM
-permissions for those actions. For an imported key (`kms.Key.fromKeyArn`), CDK cannot modify the
-key policy; author it yourself.
+to the key policy. CDK adds nothing to the execution role's identity policy.
+
+- The Lambda service principal gets `kms:Decrypt` and `kms:GenerateDataKey`.
+- The function's execution role gets `kms:Decrypt` through Lambda (`kms:ViaService`).
+- The account principal gets the function author validation actions (`kms:DescribeKey`,
+  `kms:Decrypt`, `kms:GenerateDataKey`) through Lambda. The documented policy names a function author
+  role and an operator role. CDK cannot know these identities, so it uses the account principal,
+  which defers to IAM. Any identity in the account whose IAM policy allows these actions can use the
+  key through Lambda. This covers the identity that deploys the function and durable execution
+  operators. On a key policy without the default root statement, this grants access that the policy
+  did not grant before.
+
+Set `functionName` to a literal string to scope the statements to the function with
+`kms:EncryptionContext:aws:lambda:FunctionArn`, and with `aws:SourceArn` on the Lambda service
+principal statement. `kms:DescribeKey` carries no encryption context, so it has no function condition.
+Without a literal name, the statements match every Lambda function in the account and Region, and CDK
+emits a warning. The function's execution role, and identities whose IAM policy allows the KMS
+actions, can then decrypt through Lambda the durable data of every function that uses the key.
+Setting `functionName` on a deployed function replaces it. Do not add `durableConfig` and a literal
+`functionName` to an existing function in the same deployment, as the note about `functionName` above
+describes.
+
+How CDK grants the execution role depends on what it knows about the role:
+
+- If the role's ARN references no resource, the statement uses `"Principal": {"AWS": "*"}` and
+  matches the role with `aws:PrincipalArn` and `kms:CallerAccount`. That is the case for a role with
+  a literal `roleName` and `path`, and for a role imported by name or by an ARN without tokens other
+  than the partition, account and Region. `iam.Role.fromRoleName` assumes no path, so import a role
+  that has a path with `iam.Role.fromRoleArn`. A condition value references no
+  resource, so it cannot create a circular dependency, and the role does not need to exist when KMS
+  validates the policy. Unlike a role ARN principal, the condition also matches a role that is
+  deleted and created again with the same name.
+- Otherwise, if the key is in the function's stack and the role is not in a nested stack, or the
+  role is defined in the key's stack or in the parent of the key's nested stack, the statement names
+  the role ARN as its principal. The key then
+  depends on the role. If the role depends on the key, for example through an inline or managed
+  policy, a permissions boundary, or a resource encrypted with the key, CloudFormation fails the
+  deployment with a circular dependency. Give such a role a literal `roleName`.
+- Otherwise, CDK skips the statement and emits a warning, because a reference to the role can create
+  a circular dependency between the stacks. Unless the role's IAM policy allows `kms:Decrypt` on the
+  key, durable executions fail with a KMS access denied error. Pass a role with a literal
+  `roleName`, or define the key in the function's stack and the role outside a nested stack.
+
+CDK cannot edit the key policy of an imported key, of a `kms.CfnKey` whose `keyPolicy` is not a JSON
+object (for example an `iam.PolicyDocument`), or of another `IKeyRef` implementation. For these, CDK adds no statements and emits a warning, so add
+the statements yourself. A key in another account also needs IAM policies that allow the KMS actions
+on the execution role and the deploying identity in the function's account. CDK emits a warning for
+it when both accounts are known.
+
+A durable execution keeps the key it started with. If you remove `kmsKey` or switch it to another
+key, CDK removes the statements from the old key's policy. Once Lambda's cached data key expires,
+after up to 15 minutes, running executions on the old key fail at their next checkpoint, and reads
+of retained execution data fail. Before you remove or
+switch the key, copy the statements from the synthesized template into the old key's policy, and
+keep them until those executions finish and their retention ends.
+
+Each function with a literal `functionName` adds about 1.1 to 1.5 KB of statements to the key
+policy, and a key policy is limited to 32 KB. Use more than one key when about 20 or more durable
+functions would share a key.
 
 ## AutoScaling
 

@@ -40,7 +40,7 @@ import * as sqs from '../../aws-sqs';
 import type { IAspect, RemovalPolicy, Size } from '../../core';
 import {
   Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn,
-  Names, Stack, Token,
+  Names, NestedStack, Resource, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IMapBox } from '../../core/lib/helpers-internal';
@@ -49,6 +49,8 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
+
+const DURABLE_ENCRYPTION_DOC_URL = 'https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -1154,7 +1156,7 @@ export class Function extends FunctionBase {
       architectures: this._architecture ? [this._architecture.name] : undefined,
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       tenancyConfig: props.tenancyConfig?.tenancyConfigProperty,
-      durableConfig: props.durableConfig ? this.renderDurableConfig(props.durableConfig) : undefined,
+      durableConfig: props.durableConfig ? this.configureDurableConfig(props.durableConfig) : undefined,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
       recursiveLoop: props.recursiveLoop,
@@ -1695,7 +1697,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
   }
 
-  private renderDurableConfig(config: DurableConfig): CfnFunction.DurableConfigProperty {
+  private configureDurableConfig(config: DurableConfig): CfnFunction.DurableConfigProperty {
     Annotations.of(this).addInfoV2('aws-lambda:Function.DurableConfig', 'Modifying an existing lambda to use durability will trigger a resource replacement');
     if (!config.executionTimeout.isUnresolved() && (config.executionTimeout.toSeconds() < 1 || config.executionTimeout.toSeconds() > 31622400)) {
       throw new ValidationError(lit`ExecutionTimeoutSeconds`, `executionTimeout must be between 1 and 31622400 seconds, got ${config.executionTimeout.toSeconds()}`, this);
@@ -1710,7 +1712,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     if (config.kmsKey) {
-      this.grantDurableExecutionKeyAccess(config.kmsKey);
+      this.grantDurableExecutionKeyAccess(config.kmsKey, this.role!);
     }
 
     return {
@@ -1720,31 +1722,141 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
-  private grantDurableExecutionKeyAccess(key: kms.IKeyRef) {
+  /**
+   * Validates the durable execution key, then adds the durable encryption statements to its key policy.
+   */
+  private grantDurableExecutionKeyAccess(key: kms.IKeyRef, role: iam.IRole) {
     const stack = Stack.of(this);
-    const keyGrants = kms.KeyGrants.fromKey(key);
-    const lambdaViaService = `lambda.${stack.region}.${stack.urlSuffix}`;
+    // An alias can be repointed, but a durable execution keeps the key it started with, so require the key itself.
+    const keyArn = key.keyRef.keyArn;
+    if ('aliasName' in key || (!Token.isUnresolved(keyArn) && !keyArn.includes(':key/'))) {
+      throw new ValidationError(lit`DurableConfigKmsKeyIsAlias`, `durableConfig.kmsKey must be a KMS key, not an alias (${JSON.stringify(key.node.path)}); pass the key itself`, this);
+    }
+    // Lambda supports durable execution keys only in the function's Region.
+    if (!Token.isUnresolved(key.env.region) && !Token.isUnresolved(stack.region) && key.env.region !== stack.region) {
+      throw new ValidationError(lit`DurableConfigKmsKeyMustBeSameRegion`, `durableConfig.kmsKey is in Region ${JSON.stringify(key.env.region)} but the function is in ${JSON.stringify(stack.region)}; use a key in the function's Region`, this);
+    }
+    // Lambda accepts only symmetric encryption keys for durable execution data.
+    const cfnKey = kms.CfnKey.isCfnKey(key) ? key : key.node.defaultChild;
+    const keySpec = kms.CfnKey.isCfnKey(cfnKey) ? cfnKey.keySpec : undefined;
+    if (keySpec !== undefined && !Token.isUnresolved(keySpec) && keySpec !== kms.KeySpec.SYMMETRIC_DEFAULT) {
+      throw new ValidationError(lit`DurableConfigKmsKeyNotSymmetric`, `durableConfig.kmsKey must be a symmetric encryption key, got key spec ${JSON.stringify(keySpec)}; use KeySpec.SYMMETRIC_DEFAULT`, this);
+    }
+    // Cross-account KMS access also needs an IAM policy in the function's account, which the key policy cannot provide.
+    if (!Token.isUnresolved(key.env.account) && !Token.isUnresolved(stack.account) && key.env.account !== stack.account) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-lambda:durableConfigKmsKeyCrossAccount',
+        `durableConfig.kmsKey is in account ${key.env.account} but the function is in account ${stack.account}. Cross-account KMS access also needs ` +
+        'IAM policies that allow the KMS actions on the execution role and the deploying identity in the function\'s account. Without them, ' +
+        `durable executions fail with a KMS access denied error. See ${DURABLE_ENCRYPTION_DOC_URL}.`,
+      );
+    }
 
-    // Lambda authorizes durable-function key use only through the key policy.
-    // Account-scoped to avoid a Key -> Function -> Key dependency cycle.
+    // CDK can edit a kms.Key, a key from Key.fromCfnKey (whose scope is the CfnKey), or a kms.CfnKey whose key policy is a
+    // JSON object. A CfnKey without a key policy would get only these statements and lose the default root statement.
+    const isEditableCfnKey = kms.CfnKey.isCfnKey(key) && typeof key.keyPolicy === 'object' && !Token.isUnresolved(key.keyPolicy);
+    const isEditableKey = isEditableCfnKey || (iam.ResourceWithPolicies.of(key) !== undefined
+      && (kms.CfnKey.isCfnKey(key.node.defaultChild) || kms.CfnKey.isCfnKey(key.node.scope)));
+    if (!isEditableKey) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-lambda:durableConfigKmsKeyNotEditable',
+        'CDK cannot add the durable execution statements to the durableConfig.kmsKey key policy. The key is imported, is not a kms.Key, or is a ' +
+        'kms.CfnKey whose keyPolicy is not a JSON object (for example an iam.PolicyDocument, or a CfnKey already wrapped by Key.fromCfnKey). ' +
+        `Add the statements to the key policy manually. See ${DURABLE_ENCRYPTION_DOC_URL} for the required policy.`,
+      );
+      return;
+    }
+
+    const keyStack = Stack.of(key);
+    const keyGrants = kms.KeyGrants.fromKey(key);
+    // Same ViaService form as other aws-cdk-lib KMS grants (secretsmanager, ec2 volumes): amazonaws.com in every partition.
+    const lambdaViaService = `lambda.${stack.region}.amazonaws.com`;
+
+    // The function ARN comes from the name, not the resource, so the key policy does not depend on the function.
+    // A key policy that referenced the function would create a Key -> Function -> Key cycle.
+    const usesWildcardFunctionArn = Token.isUnresolved(this.physicalName);
+    const functionArn = stack.formatArn({
+      service: 'lambda',
+      resource: 'function',
+      resourceName: usesWildcardFunctionArn ? '*' : this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+    if (usesWildcardFunctionArn) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-lambda:durableConfigKmsKeyWildcardFunctionArn',
+        'durableConfig.kmsKey key policy statements match every Lambda function in this account and Region, because functionName is not a literal ' +
+        'string. So this function\'s execution role, and identities whose IAM policy allows the KMS actions, can decrypt through Lambda the durable data ' +
+        'of every function that uses this key. Set functionName to a literal string to scope them. Setting functionName on a deployed function ' +
+        `replaces it. See ${DURABLE_ENCRYPTION_DOC_URL}.`,
+      );
+    }
+    // A literal name matches exactly. The * wildcard needs the Like operators.
+    const encryptionContextOperator = usesWildcardFunctionArn ? 'StringLike' : 'StringEquals';
+    const sourceArnOperator = usesWildcardFunctionArn ? 'ArnLike' : 'StringEquals';
+    const encryptionContextCondition = { [encryptionContextOperator]: { 'kms:EncryptionContext:aws:lambda:FunctionArn': functionArn } };
+
+    // The Lambda service principal can use the key only through the key policy. Separate withConditions calls merge
+    // conditions that share an operator, which all three do with a literal name.
     keyGrants.actions(
-      new iam.ServicePrincipal('lambda.amazonaws.com', {
-        conditions: { StringEquals: { 'aws:SourceAccount': stack.account } },
-      }),
-      'kms:GenerateDataKey',
+      new iam.ServicePrincipal('lambda.amazonaws.com')
+        .withConditions({ StringEquals: { 'aws:SourceAccount': stack.account } })
+        .withConditions({ [sourceArnOperator]: { 'aws:SourceArn': functionArn } })
+        .withConditions(encryptionContextCondition),
       'kms:Decrypt',
+      'kms:GenerateDataKey',
     );
 
-    // Execution role decrypts durable data at runtime, through Lambda only.
-    keyGrants.decrypt(new kms.ViaServicePrincipal(lambdaViaService, new iam.ArnPrincipal(this.role!.roleArn)));
+    // A role ARN built only from literals and pseudo parameters references no resource, so a condition on it cannot create
+    // a cycle, and the role need not exist when KMS validates the key policy.
+    const isOwnedRole = Resource.isOwnedResource(role);
+    const cfnRole = role.node.defaultChild;
+    let resourceFreeRoleArn: string | undefined;
+    if (!isOwnedRole) {
+      const resolvedArn = stack.resolve(role.roleArn);
+      const isPseudoOrLiteral = (part: unknown) => typeof part === 'string'
+        || (typeof part === 'object' && part !== null && Object.keys(part).length === 1
+          && ['AWS::Partition', 'AWS::AccountId', 'AWS::Region', 'AWS::URLSuffix'].includes((part as { Ref?: string }).Ref ?? ''));
+      const parts = resolvedArn?.['Fn::Join']?.[0] === '' ? resolvedArn['Fn::Join'][1] : [resolvedArn];
+      resourceFreeRoleArn = Array.isArray(parts) && parts.every(isPseudoOrLiteral) ? role.roleArn : undefined;
+    } else if (iam.CfnRole.isCfnRole(cfnRole) && cfnRole.roleName !== undefined
+      && !Token.isUnresolved(cfnRole.roleName) && !Token.isUnresolved(cfnRole.path)) {
+      const path = (cfnRole.path ?? '/').slice(1);
+      resourceFreeRoleArn = stack.formatArn({ service: 'iam', region: '', resource: 'role', resourceName: `${path}${cfnRole.roleName}` });
+    }
+    // Otherwise name the role only where that adds no stack dependency: the key is in the function's stack and the role is
+    // not in a nested stack, or the role is defined in the key's stack or in the parent of the key's nested stack.
+    const roleStack = Stack.of(role);
+    const canReferenceRole = (keyStack === stack && !NestedStack.isNestedStack(roleStack))
+      || (isOwnedRole && (roleStack === keyStack || keyStack.nestedStackParent === roleStack));
 
-    // Function author key validation at CreateFunction/UpdateFunctionConfiguration.
-    // Account principal, so IAM policies still gate the deploying identity.
+    if (resourceFreeRoleArn !== undefined) {
+      keyGrants.actions(new kms.ViaServicePrincipal(lambdaViaService,
+        new iam.AnyPrincipal()
+          .withConditions({ StringEquals: { 'kms:CallerAccount': stack.account } })
+          .withConditions({ ArnEquals: { 'aws:PrincipalArn': resourceFreeRoleArn } })
+          .withConditions(encryptionContextCondition)), 'kms:Decrypt');
+    } else if (canReferenceRole) {
+      // ArnPrincipal keeps the grant on the key policy. Passing the role would put it on the role's identity policy.
+      keyGrants.actions(new kms.ViaServicePrincipal(lambdaViaService,
+        new iam.ArnPrincipal(role.roleArn).withConditions(encryptionContextCondition)), 'kms:Decrypt');
+    } else {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-lambda:durableConfigKmsKeyExecutionRoleNotGranted',
+        'CDK did not add the execution role kms:Decrypt statement to the durableConfig.kmsKey key policy, because the role has no literal name and ' +
+        'path, and referencing it from the key policy can create a circular dependency between the stacks. Unless the role\'s IAM policy allows ' +
+        'kms:Decrypt on the key, durable executions fail with a KMS access denied error. Pass a role with a literal roleName, or define the key in ' +
+        `the function's stack and the role outside a nested stack. See ${DURABLE_ENCRYPTION_DOC_URL} for the required policy.`,
+      );
+    }
+
+    // Function author key validation, gated by the deploying identity's IAM policies through the account principal.
+    const functionAuthor = new iam.AccountPrincipal(stack.account);
+    // DescribeKey requests carry no encryption context, so this statement has no FunctionArn condition.
+    keyGrants.actions(new kms.ViaServicePrincipal(lambdaViaService, functionAuthor), 'kms:DescribeKey');
     keyGrants.actions(
-      new kms.ViaServicePrincipal(lambdaViaService, new iam.AccountPrincipal(stack.account)),
-      'kms:DescribeKey',
-      'kms:GenerateDataKey',
+      new kms.ViaServicePrincipal(lambdaViaService, functionAuthor.withConditions(encryptionContextCondition)),
       'kms:Decrypt',
+      'kms:GenerateDataKey',
     );
   }
 

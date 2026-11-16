@@ -27,14 +27,16 @@ export interface DurableConfig {
   readonly retentionPeriod?: Duration;
 
   /**
-   * The AWS KMS customer managed key (CMK) used to encrypt durable execution data at rest.
+   * The AWS KMS customer managed key that encrypts durable execution data at rest.
    *
-   * For a CDK-managed key, CDK adds the Lambda service, execution role, and function
-   * author statements to the key policy. The function author statement uses the account
-   * principal, so the deploying identity also needs IAM permissions for these KMS
-   * actions. For an imported key, author the key policy yourself.
+   * The key must be a symmetric encryption key in the function's Region. CDK requires the key itself,
+   * not an alias. It is separate from `environmentEncryption`. When CDK can edit the key's policy, it
+   * adds the key policy statements from the Lambda durable encryption guide. Set `functionName` to a
+   * literal string to scope them to this function. See the module README for the principals CDK uses
+   * and for the cases where it cannot add a statement.
    *
-   * @default - Durable execution data is encrypted at rest with an AWS owned key.
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html
+   * @default - Lambda encrypts durable execution data at rest by default.
    */
   readonly kmsKey?: IKeyRef;
 }

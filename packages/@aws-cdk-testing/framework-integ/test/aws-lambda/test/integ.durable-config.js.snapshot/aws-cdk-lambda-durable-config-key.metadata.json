@@ -1,0 +1,40 @@
+{
+  "/aws-cdk-lambda-durable-config-key": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-lambda-durable-config-key.template.json"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config-key/CrossStackKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-durable-config-key/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config-key/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config-key/CrossStackKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossStackKey8B7D4CF8"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config-key/Exports/Output{\"Fn::GetAtt\":[\"CrossStackKey8B7D4CF8\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttCrossStackKey8B7D4CF8Arn5F1D25C1"
+    }
+  ]
+}

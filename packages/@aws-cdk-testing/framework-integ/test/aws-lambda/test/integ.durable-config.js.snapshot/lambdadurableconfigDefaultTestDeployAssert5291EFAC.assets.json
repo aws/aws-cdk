@@ -1,16 +1,29 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "bd4e6dd70616f77e03bec336060476b268ab6e40898a3f35406af904ba79f07e": {
+      "source": {
+        "path": "asset.bd4e6dd70616f77e03bec336060476b268ab6e40898a3f35406af904ba79f07e.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-2a666e25": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bd4e6dd70616f77e03bec336060476b268ab6e40898a3f35406af904ba79f07e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "739efb12df28060ac8647d7ec0beabdd42bc5d5da8c6197b9d00a615abd2079c": {
       "displayName": "lambdadurableconfigDefaultTestDeployAssert5291EFAC Template",
       "source": {
         "path": "lambdadurableconfigDefaultTestDeployAssert5291EFAC.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-c73d07ea": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "739efb12df28060ac8647d7ec0beabdd42bc5d5da8c6197b9d00a615abd2079c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

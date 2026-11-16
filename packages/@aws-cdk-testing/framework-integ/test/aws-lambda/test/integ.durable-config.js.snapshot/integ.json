@@ -1,8 +1,9 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "testCases": {
     "lambda-durable-config/DefaultTest": {
       "stacks": [
+        "aws-cdk-lambda-durable-config-key",
         "aws-cdk-lambda-durable-config"
       ],
       "assertionStack": "lambda-durable-config/DefaultTest/DeployAssert",
@@ -10,5 +11,5 @@
     }
   },
   "enableLookups": true,
-  "minimumCliVersion": "2.1131.0"
+  "minimumCliVersion": "2.1148.1"
 }
