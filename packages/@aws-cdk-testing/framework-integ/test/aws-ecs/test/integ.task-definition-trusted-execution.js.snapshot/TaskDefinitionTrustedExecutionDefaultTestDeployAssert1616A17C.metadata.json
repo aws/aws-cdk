@@ -1,0 +1,20 @@
+{
+  "/TaskDefinitionTrustedExecution/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "TaskDefinitionTrustedExecutionDefaultTestDeployAssert1616A17C.template.json"
+    }
+  ],
+  "/TaskDefinitionTrustedExecution/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TaskDefinitionTrustedExecution/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

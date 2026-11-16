@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "TaskDefinitionTrustedExecution/DefaultTest": {
+      "stacks": [
+        "integ-task-definition-trusted-execution"
+      ],
+      "assertionStack": "TaskDefinitionTrustedExecution/DefaultTest/DeployAssert",
+      "assertionStackName": "TaskDefinitionTrustedExecutionDefaultTestDeployAssert1616A17C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
