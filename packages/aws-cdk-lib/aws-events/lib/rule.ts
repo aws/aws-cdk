@@ -7,7 +7,7 @@ import type { EventCommonOptions } from './on-event-options';
 import type { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import type { IRuleTarget } from './target';
-import { mergeEventPattern, renderEventPattern } from './util';
+import { mergeEventPattern, renderEventPattern, validateEventPattern } from './util';
 import type { IRole, IRoleRef } from '../../aws-iam';
 import { PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import type { IResource } from '../../core';
@@ -363,6 +363,8 @@ export class Rule extends Resource implements IRule {
     if (Object.keys(this.eventPattern.get()).length === 0 && !this.scheduleExpression) {
       errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
     }
+
+    errors.push(...validateEventPattern(this.eventPattern.get()));
 
     if (this.targets.length > 5) {
       errors.push('Event rule cannot have more than 5 targets.');

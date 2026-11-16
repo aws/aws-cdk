@@ -222,6 +222,24 @@ describe('rule', () => {
     expect(() => app.synth()).toThrow(/Either 'eventPattern' or 'schedule' must be defined/);
   });
 
+  test('fails synthesis when an event pattern field is an empty array', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyStack');
+    new Rule(stack, 'MyRule', { eventPattern: { detailType: [] } });
+    expect(() => app.synth()).toThrow(
+      "Validation failed with the following errors:\n  [MyStack/MyRule] invalid event pattern field 'detailType': empty arrays are not allowed, specify at least one value or omit the field",
+    );
+  });
+
+  test('empty event pattern array merged with addEventPattern values synthesizes', () => {
+    const stack = new cdk.Stack();
+    const rule = new Rule(stack, 'MyRule', { eventPattern: { source: [] } });
+    rule.addEventPattern({ source: ['aws.ec2'] });
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: { source: ['aws.ec2'] },
+    });
+  });
+
   test('fails synthesis when rule name is less than 1 chars', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');

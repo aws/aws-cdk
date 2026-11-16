@@ -204,4 +204,18 @@ describe('archive', () => {
       KmsKeyIdentifier: '',
     });
   });
+
+  test('fails when an event pattern field is an empty array', () => {
+    // GIVEN
+    const stack = new Stack();
+    const eventBus = new EventBus(stack, 'Bus');
+
+    // THEN
+    expect(() => new Archive(stack, 'Archive', {
+      sourceEventBus: eventBus,
+      eventPattern: {
+        source: [],
+      },
+    })).toThrow("invalid event pattern field 'source': empty arrays are not allowed, specify at least one value or omit the field");
+  });
 });
