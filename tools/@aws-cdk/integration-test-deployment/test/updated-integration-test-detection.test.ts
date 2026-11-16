@@ -1,4 +1,3 @@
-import { describe, expect, jest, test } from '@jest/globals';
 import { expectedChangedSnapshots } from './git-diff-expected-changed-snapshots';
 import { gitDiffMock } from './git-mock';
 import * as utils from '../lib/utils';

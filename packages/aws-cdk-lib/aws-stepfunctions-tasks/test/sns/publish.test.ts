@@ -1,7 +1,8 @@
 import * as sns from '../../../aws-sns';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { SnsPublish, MessageAttributeDataType, MessageAttribute } from '../../lib/sns/publish';
+import type { MessageAttribute } from '../../lib/sns/publish';
+import { SnsPublish, MessageAttributeDataType } from '../../lib/sns/publish';
 
 describe('Publish', () => {
   test('default settings', () => {

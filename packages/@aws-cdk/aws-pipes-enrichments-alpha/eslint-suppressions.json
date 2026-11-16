@@ -1,0 +1,7 @@
+{
+  "lib/stepfunctions.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  }
+}

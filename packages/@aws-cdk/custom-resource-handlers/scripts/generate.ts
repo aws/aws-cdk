@@ -1,12 +1,22 @@
+
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
-import { config, ComponentProps } from '../lib/custom-resources-framework/config';
+import type { ComponentProps } from '../lib/custom-resources-framework/config';
+import { config } from '../lib/custom-resources-framework/config';
 import { HandlerFrameworkModule } from '../lib/custom-resources-framework/framework';
 
 const framework: { [fqn: string]: ComponentProps[] } = {};
 
 async function main() {
+  // Everything under dist/ is produced below, and `calculateDirectoryHash` hashes
+  // the handler directories as they are found on disk. Leftovers from an earlier
+  // build (e.g. after switching branches) would therefore change the asset hash
+  // baked into the generated code, making this script's output depend on state
+  // rather than only on its inputs. Start from empty so a build is reproducible.
+  fs.rmSync('dist', { recursive: true, force: true });
+
   recurse(config, []);
 
   for (const [fqn, components] of Object.entries(framework)) {
@@ -20,7 +30,8 @@ async function main() {
         fs.copyFileSync(component.sourceCode, outfile);
       }
       const codeDirectory = path.dirname(outfile).split('/').pop() ?? '';
-      module.build(component, codeDirectory);
+      const sourceHash = calculateDirectoryHash(path.dirname(outfile));
+      module.build(component, codeDirectory, sourceHash);
     }
 
     if (module.hasComponents) {
@@ -84,9 +95,9 @@ async function minifyAndBundle(infile: string, outfile: string) {
       kind: 'error',
       color: true,
     });
-    // eslint-disable-next-line no-console
+
     console.log(messages.join('\n'));
-    // eslint-disable-next-line no-console
+
     console.log(`${messages.length} errors. For false positives, put '// esbuild-disable <code> - <motivation>' on the line before`);
     process.exitCode = 1;
   }
@@ -103,6 +114,32 @@ export function calculateOutfile(file: string) {
   fileContents[fileContents.lastIndexOf('lib')] = 'dist';
 
   return fileContents.join(path.sep);
+}
+
+/**
+ * Calculate a deterministic content hash of a bundled handler directory. The
+ * hash is baked into the code-generated framework classes and used as the
+ * Asset hash at synth time so the S3 object key remains stable unless the
+ * bundled code actually changes.
+ */
+export function calculateDirectoryHash(directory: string): string {
+  const hash = crypto.createHash('sha256');
+  const walk = (dir: string) => {
+    const entries = fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
+    for (const entry of entries) {
+      const full = path.join(dir, entry.name);
+      const rel = path.relative(directory, full);
+      if (entry.isDirectory()) {
+        hash.update(`D:${rel}\n`);
+        walk(full);
+      } else if (entry.isFile()) {
+        hash.update(`F:${rel}\n`);
+        hash.update(fs.readFileSync(full));
+      }
+    }
+  };
+  walk(directory);
+  return hash.digest('hex');
 }
 
 function ignoreWarnings(result: esbuild.BuildResult) {
@@ -126,8 +163,11 @@ function ignoreWarnings(result: esbuild.BuildResult) {
   return ret;
 }
 
-main().catch((e) => {
-  // eslint-disable-next-line no-console
-  console.error(e);
-  process.exitCode = 1;
-});
+// Only generate when run as a script: tests import helpers from this file, and
+// must not regenerate (and wipe) dist/ while dependent packages are reading it.
+if (require.main === module) {
+  main().catch((e) => {
+    console.error(e);
+    process.exitCode = 1;
+  });
+}

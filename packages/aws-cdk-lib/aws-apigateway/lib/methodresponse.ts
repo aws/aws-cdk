@@ -1,4 +1,4 @@
-import { IModel } from './model';
+import type { IModel } from './model';
 
 export interface MethodResponse {
 

@@ -1,10 +1,11 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 /// !cdk-integ VariablePipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 
 class PipelineStack extends Stack {
@@ -23,6 +24,19 @@ class PipelineStack extends Stack {
         // }),
         commands: ['mkdir cdk.out', 'touch cdk.out/dummy'],
       }),
+      codeBuildDefaults: {
+        buildEnvironment: {
+          fleet: new codebuild.Fleet(this, 'Fleet', {
+            baseCapacity: 1,
+            computeType: codebuild.FleetComputeType.SMALL,
+            environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+          }),
+          certificate: {
+            bucket: sourceBucket,
+            objectKey: 'my-certificate.pem',
+          },
+        },
+      },
       selfMutation: false,
     });
 

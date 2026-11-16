@@ -30,7 +30,14 @@
   "testSubnet1Subnet72087287": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.1.0.0/20",
     "Tags": [
      {
@@ -147,7 +154,14 @@
   "InstanceC1063A87": {
    "Type": "AWS::EC2::Instance",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "IamInstanceProfile": {
      "Ref": "InstanceInstanceProfileAB5AEF02"
     },
@@ -236,7 +250,14 @@
   "testSubnet2Subnet4681911A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.1.128.0/20",
     "Tags": [
      {

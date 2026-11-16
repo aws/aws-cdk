@@ -3,8 +3,8 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
-import { App, Stack } from '../../core';
 import * as ecs from '../lib';
+import { acknowledgeTestValidationRules } from './util';
 
 describe('DeploymentLifecycleHookTarget', () => {
   let stack: cdk.Stack;
@@ -15,6 +15,7 @@ describe('DeploymentLifecycleHookTarget', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'Vpc');
     cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');

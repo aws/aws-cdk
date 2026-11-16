@@ -1,13 +1,15 @@
-import {
-  WebSocketRouteIntegration,
-  WebSocketIntegrationType,
+import type {
   WebSocketRouteIntegrationConfig,
   WebSocketRouteIntegrationBindOptions,
   PassthroughBehavior,
   ContentHandling,
 } from '../../../aws-apigatewayv2';
-import { IRole } from '../../../aws-iam';
-import { Duration } from '../../../core';
+import {
+  WebSocketRouteIntegration,
+  WebSocketIntegrationType,
+} from '../../../aws-apigatewayv2';
+import type { IRole } from '../../../aws-iam';
+import type { Duration } from '../../../core';
 
 /**
  * Props for AWS type integration for a WebSocket Api.

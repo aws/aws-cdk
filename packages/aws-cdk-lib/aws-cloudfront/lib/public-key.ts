@@ -1,7 +1,10 @@
-import { Construct } from 'constructs';
-import { CfnPublicKey, IPublicKeyRef, PublicKeyReference } from './cloudfront.generated';
-import { IResource, Names, Resource, Token, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { IPublicKeyRef, PublicKeyReference } from './cloudfront.generated';
+import { CfnPublicKey } from './cloudfront.generated';
+import type { IResource } from '../../core';
+import { Names, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -69,7 +72,7 @@ export class PublicKey extends Resource implements IPublicKey {
     addConstructMetadata(this, props);
 
     if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
-      throw new ValidationError(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
+      throw new ValidationError(lit`PublicKeyMustBeInPemFormat`, `Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`, scope);
     }
 
     const resource = new CfnPublicKey(this, 'Resource', {

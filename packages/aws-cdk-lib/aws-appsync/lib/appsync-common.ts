@@ -1,8 +1,8 @@
-import { EventApiBase } from './eventapi';
-import { ICertificate } from '../../aws-certificatemanager';
-import { IRoleRef } from '../../aws-iam';
-import { RetentionDays } from '../../aws-logs';
+import type { EventApiBase } from './eventapi';
+import type { IRoleRef } from '../../aws-iam';
+import type { RetentionDays } from '../../aws-logs';
 import { Stack, ArnFormat } from '../../core';
+import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
  * A class used to generate resource arns for AppSync Event APIs
@@ -141,7 +141,7 @@ export interface AppSyncDomainOptions {
   /**
    * The certificate to use with the domain name.
    */
-  readonly certificate: ICertificate;
+  readonly certificate: ICertificateRef;
 
   /**
    * The actual domain name. For example, `api.example.com`.

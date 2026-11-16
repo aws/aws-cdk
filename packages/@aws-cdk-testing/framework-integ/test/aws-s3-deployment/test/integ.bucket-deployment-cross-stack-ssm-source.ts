@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -65,7 +65,7 @@ export class MainStack extends cdk.Stack {
 
     const ssmStack = new SsmStack(this, 'SsmStack');
     const s3Stack = new S3Stack(this, 'S3Stack');
-    s3Stack.addDependency(ssmStack);
+    s3Stack.addStackDependency(ssmStack);
 
     new cdk.CfnOutput(this, 'BucketName', {
       value: s3Stack.bucket.bucketName,

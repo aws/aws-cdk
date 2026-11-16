@@ -1,4 +1,4 @@
-import { Capacity } from './capacity';
+import type { Capacity } from './capacity';
 import { BillingMode } from './shared';
 
 /**

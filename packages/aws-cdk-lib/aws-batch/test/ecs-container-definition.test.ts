@@ -1,7 +1,5 @@
 import * as path from 'path';
 import { capitalizePropertyNames } from './utils';
-import { Size, Stack } from '../..';
-import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
@@ -12,7 +10,10 @@ import { ArnPrincipal, Role } from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
-import { CfnJobDefinitionProps, EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, Secret, UlimitName } from '../lib';
+import * as cdk from '../../core';
+import { Size, Stack } from '../../core';
+import type { CfnJobDefinitionProps, EcsContainerDefinitionProps, IEcsEc2ContainerDefinition } from '../lib';
+import { EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, LinuxParameters, Secret, UlimitName } from '../lib';
 
 // GIVEN
 const defaultContainerProps: EcsContainerDefinitionProps = {
@@ -239,6 +240,29 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
           MaxSwap: 4,
           SharedMemorySize: 256,
           Swappiness: 30,
+        },
+      },
+    });
+  });
+
+  test('linuxParameters without devices or tmpfs omits those properties', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        linuxParameters: new LinuxParameters(stack, 'linuxParameters', {
+          initProcessEnabled: true,
+        }),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        LinuxParameters: {
+          InitProcessEnabled: true,
+          Devices: Match.absent(),
+          Tmpfs: Match.absent(),
         },
       },
     });

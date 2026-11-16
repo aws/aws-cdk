@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import * as path from 'path';
+import { Stack, Validations } from 'aws-cdk-lib';
 import { Annotations, Template } from 'aws-cdk-lib/assertions';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Stack } from 'aws-cdk-lib';
 import { GoFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
 
@@ -22,6 +22,10 @@ jest.mock('../lib/bundling', () => {
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
+  Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::E2531',
+    reason: 'Deprecated runtimes',
+  });
   jest.clearAllMocks();
 });
 

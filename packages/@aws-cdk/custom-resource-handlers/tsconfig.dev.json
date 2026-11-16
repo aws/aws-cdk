@@ -18,7 +18,10 @@
         "isolatedModules": true
     },
     "include": [
-        "**/*.ts",
-        "**/*.d.ts",
+        "**/*.ts"
     ],
+    "exclude": [
+        "**/*.d.ts",
+        "test/custom-resources-framework/expected/**/*.ts"
+    ]
 }

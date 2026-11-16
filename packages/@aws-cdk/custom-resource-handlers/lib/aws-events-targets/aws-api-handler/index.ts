@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ApiCall } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 

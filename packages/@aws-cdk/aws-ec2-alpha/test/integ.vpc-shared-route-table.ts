@@ -4,12 +4,12 @@
  * only one route is created when adding an internet gateway
  */
 
-import * as vpc_v2 from '../lib/vpc-v2';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { SubnetV2, IpCidr } from '../lib/subnet-v2';
 import { RouteTable } from '../lib';
+import { SubnetV2, IpCidr } from '../lib/subnet-v2';
+import * as vpc_v2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
 
@@ -36,7 +36,7 @@ const sharedRouteTable = new RouteTable(stack, 'SharedRouteTable', {
 // Create two public subnets that share the same route table
 new SubnetV2(stack, 'PublicSubnet1', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.1.1.0/24'),
   subnetType: SubnetType.PUBLIC,
   subnetName: 'PublicSubnet1',
@@ -45,7 +45,7 @@ new SubnetV2(stack, 'PublicSubnet1', {
 
 new SubnetV2(stack, 'PublicSubnet2', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: stack.availabilityZones[1],
   ipv4CidrBlock: new IpCidr('10.1.2.0/24'),
   subnetType: SubnetType.PUBLIC,
   subnetName: 'PublicSubnet2',

@@ -1,19 +1,16 @@
 import * as cdk from 'aws-cdk-lib';
-import { VpcV2 } from '../lib/vpc-v2';
-import { IpCidr, NatGateway, SubnetV2, VpcV2Base } from '../lib/';
+import type { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { InterfaceVpcEndpointAwsService, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { testStack } from './test-stack';
+import { IpCidr, NatGateway, SubnetV2, VpcV2Base } from '../lib/';
+import { VpcV2 } from '../lib/vpc-v2';
+
+let stack: Stack;
 
 describe('Vpc V2 with full control', () => {
-  let stack: cdk.Stack;
-
   beforeEach(() => {
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/core:newStyleStackSynthesis': false,
-      },
-    });
-    stack = new cdk.Stack(app);
+    stack = testStack();
   });
 
   test('VpcV2.fromVpcV2Attributes creates correct vpcArn', () => {

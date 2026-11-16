@@ -1,12 +1,30 @@
-import { IRule } from './rule-ref';
+import type {
+  IResolvable,
+  IResolveContext,
+} from '../../core';
 import {
-  captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+  DefaultTokenResolver, Lazy, Stack, StringConcat, Token, Tokenization,
   UnscopedValidationError,
 } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
+import type { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The input to send to the event target
+ *
+ * This class abstracts over the three different ways CloudFormation lets you shape
+ * a target's input, so you do not have to choose between them yourself:
+ *
+ * * `Input` - a literal value, emitted when the input does not reference the event.
+ * * `InputPath` - a single JSONPath into the event, emitted by `fromEventPath()`.
+ * * `InputTransformer` - an `InputPathsMap` plus an `InputTemplate`, emitted
+ *   automatically when the input references parts of the event via `EventField`.
+ *
+ * You pick a factory method based on the *shape* you want the target to receive, and
+ * whether you reference `EventField` determines which of the above is synthesized.
+ * For example, `fromObject({ foo: 'bar' })` produces a literal `Input`, while
+ * `fromObject({ id: EventField.fromPath('$.detail.instance-id') })` produces an
+ * `InputTransformer` with the path lifted into `InputPathsMap`.
  */
 export abstract class RuleTargetInput {
   /**
@@ -18,6 +36,18 @@ export abstract class RuleTargetInput {
    * The Rule Target input value will be a single string: the string you pass
    * here.  Do not use this method to pass a complex value like a JSON object to
    * a Rule Target.  Use `RuleTargetInput.fromObject()` instead.
+   *
+   * The target `Input` field must be valid JSON, so the text is JSON-encoded
+   * when the template is synthesized. As a result a plain string is wrapped in
+   * double quotes: `fromText('something')` renders as `Input: '"something"'`.
+   * The quotes are part of the required JSON encoding, not an extra value added
+   * by CDK, and cannot be removed.
+   *
+   * Whether those quotes are visible to the recipient depends on the target
+   * service. Some targets deliver the JSON-encoded value as-is, so the recipient
+   * sees the surrounding quotes (for example, an SNS topic delivering to an
+   * email subscriber shows `"something"`). To send a structured payload, use
+   * `RuleTargetInput.fromObject()` instead.
    */
   public static fromText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Text);
@@ -31,6 +61,10 @@ export abstract class RuleTargetInput {
    *
    * May contain strings returned by `EventField.from()` to substitute in parts
    * of the matched event.
+   *
+   * As with `fromText`, each line is JSON-encoded, so every line is wrapped in
+   * double quotes in the synthesized template. Whether those quotes are visible
+   * to the recipient depends on the target service.
    */
   public static fromMultilineText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Multiline);
@@ -42,6 +76,25 @@ export abstract class RuleTargetInput {
    * May contain strings returned by `EventField.from()` to substitute in parts of the
    * matched event.
    *
+   * @example
+   *
+   * declare const rule: events.Rule;
+   * declare const topic: sns.Topic;
+   *
+   * // Without EventField this is a literal `Input`:
+   * //   {"source":"my-app"}
+   * rule.addTarget(new targets.SnsTopic(topic, {
+   *   message: events.RuleTargetInput.fromObject({ source: 'my-app' }),
+   * }));
+   *
+   * // Referencing the event inserts those fields from each matched event.
+   * rule.addTarget(new targets.SnsTopic(topic, {
+   *   message: events.RuleTargetInput.fromObject({
+   *     instance: events.EventField.fromPath('$.detail.instance-id'),
+   *     state: events.EventField.fromPath('$.detail.state'),
+   *   }),
+   * }));
+   *
    * @returns RuleTargetInput
    */
   public static fromObject(obj: any): RuleTargetInput {
@@ -50,6 +103,10 @@ export abstract class RuleTargetInput {
 
   /**
    * Take the event target input from a path in the event JSON
+   *
+   * This emits CloudFormation's `InputPath` directly, so the target receives only
+   * the selected fragment of the event. Use this when you want to forward part of
+   * the event unchanged; use `fromObject()` when you need to reshape it.
    */
   public static fromEventPath(path: string): RuleTargetInput {
     return new LiteralEventInput({ inputPath: path });
@@ -61,7 +118,7 @@ export abstract class RuleTargetInput {
   /**
    * Return the input properties for this input object
    */
-  public abstract bind(rule: IRule): RuleTargetInputProperties;
+  public abstract bind(rule: IRuleRef): RuleTargetInputProperties;
 }
 
 /**
@@ -109,7 +166,7 @@ class LiteralEventInput extends RuleTargetInput {
   /**
    * Return the input properties for this input object
    */
-  public bind(_rule: IRule): RuleTargetInputProperties {
+  public bind(_rule: IRuleRef): RuleTargetInputProperties {
     return this.props;
   }
 }
@@ -145,7 +202,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
     super();
   }
 
-  public bind(rule: IRule): RuleTargetInputProperties {
+  public bind(rule: IRuleRef): RuleTargetInputProperties {
     let fieldCounter = 0;
     const pathToKey = new Map<string, string>();
     const inputPathsMap: {[key: string]: string} = {};
@@ -170,7 +227,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
 
         const key = keyForField(t);
         if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {
-          throw new UnscopedValidationError(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
+          throw new UnscopedValidationError(lit`DuplicateInputPathKey`, `Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
         }
         inputPathsMap[key] = t.path;
 
@@ -223,6 +280,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
   private unquoteKeyPlaceholders(sub: string, keys: string[]) {
     if (this.inputType !== InputType.Object) { return sub; }
 
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
 
     function deepUnquote(resolved: any): any {
@@ -243,6 +301,31 @@ export class FieldAwareEventInput extends RuleTargetInput {
 
 /**
  * Represents a field in the event pattern
+ *
+ * Each `EventField` you reference from a `RuleTargetInput` becomes an entry in the
+ * target's `InputPathsMap`, keyed by a readable hint derived from the path, and the
+ * place you referenced it becomes a matching placeholder in the `InputTemplate`.
+ * Referencing the same path more than once reuses a single entry.
+ *
+ * Because these are string tokens, they can be embedded in template literals and
+ * composed with other strings.
+ *
+ * @example
+ *
+ * declare const rule: events.Rule;
+ * declare const topic: sns.Topic;
+ *
+ * rule.addTarget(new targets.SnsTopic(topic, {
+ *   message: events.RuleTargetInput.fromObject({
+ *     // Named shorthands for the standard top-level event envelope fields
+ *     account: events.EventField.account,
+ *     region: events.EventField.region,
+ *     // Any other field is reachable by JSONPath
+ *     bucket: events.EventField.fromPath('$.detail.bucket.name'),
+ *     // Tokens compose with ordinary strings
+ *     summary: `Event ${events.EventField.eventId} from ${events.EventField.source}`,
+ *   }),
+ * }));
  */
 export class EventField implements IResolvable {
   /**
@@ -298,7 +381,7 @@ export class EventField implements IResolvable {
    * Human readable display hint about the event pattern
    */
   public readonly displayHint: string;
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   /**
    *
@@ -307,7 +390,6 @@ export class EventField implements IResolvable {
   private constructor(public readonly path: string) {
     this.displayHint = this.path.replace(/^[^a-zA-Z0-9_-]+/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(_ctx: IResolveContext): any {

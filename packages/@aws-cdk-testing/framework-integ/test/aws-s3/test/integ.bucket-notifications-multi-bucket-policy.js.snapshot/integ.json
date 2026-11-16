@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "S3NotificationMultiBucketPolicyIntegTest/DefaultTest": {
+      "stacks": [
+        "S3NotificationMultiBucketPolicyTest"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        }
+      },
+      "assertionStack": "S3NotificationMultiBucketPolicyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "S3NotificationMultiBucketPolicyIntegTestDefaultTestDeployAssertD685C518"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}

@@ -1,11 +1,13 @@
 import { Construct } from 'constructs';
-import { SSM_EXPORT_PATH_PREFIX, ExportReaderCRProps, CrossRegionExports } from './types';
+import type { ExportReaderCRProps } from './types';
+import { SSM_EXPORT_PATH_PREFIX } from './types';
 import { CfnResource } from '../../cfn-resource';
 import { CustomResource } from '../../custom-resource';
 import { CrossRegionSsmReaderProvider } from '../../dist/core/cross-region-ssm-reader-provider.generated';
-import { Lazy } from '../../lazy';
-import { Intrinsic } from '../../private/intrinsic';
-import { Stack } from '../../stack';
+import type { IMapBox } from '../../helpers-internal';
+import { Box } from '../../helpers-internal';
+import { stackOf } from '../../private/core-construct-finders';
+import type { Intrinsic } from '../../private/intrinsic';
 
 /**
  * Properties for an ExportReader
@@ -20,18 +22,18 @@ export interface ExportReaderProps {}
  */
 export class ExportReader extends Construct {
   public static getOrCreate(scope: Construct, uniqueId: string, _props: ExportReaderProps = {}): ExportReader {
-    const stack = Stack.of(scope);
+    const stack = stackOf(scope);
     const existing = stack.node.tryFindChild(uniqueId);
     return existing
       ? existing as ExportReader
       : new ExportReader(stack, uniqueId);
   }
 
-  private readonly importParameters: CrossRegionExports = {};
+  private readonly importParameters: IMapBox<string, string> = Box.fromMap();
   private readonly customResource: CustomResource;
   constructor(scope: Construct, id: string, _props: ExportReaderProps = {}) {
     super(scope, id);
-    const stack = Stack.of(this);
+    const stack = stackOf(this);
 
     const resourceType = 'Custom::CrossRegionExportReader';
     const serviceToken = CrossRegionSsmReaderProvider.getOrCreate(this, resourceType, {
@@ -53,7 +55,7 @@ export class ExportReader extends Construct {
     const properties: ExportReaderCRProps = {
       region: stack.region,
       prefix: stack.stackName,
-      imports: Lazy.any({ produce: () => this.importParameters }),
+      imports: this.importParameters.derive(m => Object.fromEntries(m)),
     };
     this.customResource = new CustomResource(this, 'Resource', {
       resourceType: resourceType,
@@ -84,7 +86,7 @@ export class ExportReader extends Construct {
    * @param exports map of unique name associated with the export to SSM Dynamic reference
    */
   public importValue(name: string, value: Intrinsic): Intrinsic {
-    this.importParameters[name] = value.toString();
+    this.importParameters.put(name, value.toString());
     return this.customResource.getAtt(name);
   }
 }

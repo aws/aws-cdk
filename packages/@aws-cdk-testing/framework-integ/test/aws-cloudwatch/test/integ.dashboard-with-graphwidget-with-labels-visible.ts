@@ -1,8 +1,9 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
+import type { GraphWidgetProps } from 'aws-cdk-lib/aws-cloudwatch';
 import {
   Dashboard,
   GraphWidget,
-  GraphWidgetProps,
   GraphWidgetView,
   Metric,
   Shading,

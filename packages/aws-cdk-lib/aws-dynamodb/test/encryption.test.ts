@@ -1,4 +1,5 @@
-import { IKey, Key } from '../../aws-kms';
+import type { IKey } from '../../aws-kms';
+import { Key } from '../../aws-kms';
 import { Stack } from '../../core';
 import { TableEncryption, TableEncryptionV2 } from '../lib';
 

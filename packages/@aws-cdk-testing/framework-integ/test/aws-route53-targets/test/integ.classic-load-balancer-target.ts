@@ -3,7 +3,7 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as elb from 'aws-cdk-lib/aws-elasticloadbalancing';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 

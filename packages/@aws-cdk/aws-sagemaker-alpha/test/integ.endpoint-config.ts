@@ -1,7 +1,7 @@
 import * as path from 'path';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as sagemaker from '../lib';
 
 /*
@@ -28,6 +28,7 @@ const endpointConfig = new sagemaker.EndpointConfig(stack, 'EndpointConfig', {
       model: modelWithArtifactAndVpc,
       variantName: 'firstVariant',
       instanceType: sagemaker.InstanceType.M5_LARGE,
+      containerStartupHealthCheckTimeout: cdk.Duration.minutes(5),
     },
     {
       model: modelWithArtifactAndVpc,

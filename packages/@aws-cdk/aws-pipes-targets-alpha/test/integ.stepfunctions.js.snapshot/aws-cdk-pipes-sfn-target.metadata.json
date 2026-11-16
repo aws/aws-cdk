@@ -1,0 +1,251 @@
+{
+  "/aws-cdk-pipes-sfn-target/SourceQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/MyParameter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/TargetStateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/Pipe": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/SourceQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceQueue6E809DF0"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/MyParameter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyParameter18BA547D"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/TargetStateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/TargetStateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TargetStateMachineF037FA98"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/Pipe/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/Pipe/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Pipe7793F8A1"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefSourceQueue6E809DF09604904F"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/TargetStateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TargetStateMachineRoleF8CC820D"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/TargetStateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/Pipe/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipeRole7D4AFC73"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/Pipe/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/TargetStateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TargetStateMachineRoleDefaultPolicy55919DD3"
+    }
+  ],
+  "/aws-cdk-pipes-sfn-target/Pipe/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipeRoleDefaultPolicy56E6A74D"
+    }
+  ]
+}

@@ -1,23 +1,38 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { Group } from './group';
+import type { IPrincipal, PrincipalPolicyFragment, ServicePrincipalOpts } from './principals';
 import {
   AccountPrincipal, AccountRootPrincipal, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal,
-  FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts, validateConditionObject,
+  FederatedPrincipal, PrincipalBase, ServicePrincipal, validateConditionObject,
 } from './principals';
 import { normalizeStatement } from './private/postprocess-policy-document';
 import { LITERAL_STRING_KEY, mergePrincipal, sum } from './private/util';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
+
+/**
+ * Options for resource-based policy validation
+ */
+export interface ResourcePolicyValidationOptions {
+  /**
+   * Whether to skip resource validation for policies where resources are implicit
+   * (e.g., ECR repository policies where the resource is the repository itself)
+   *
+   * @default false
+   */
+  readonly skipResourceValidation?: boolean;
+}
 
 const ensureArrayOrUndefined = (field: any) => {
   if (field === undefined) {
     return undefined;
   }
   if (typeof (field) !== 'string' && !Array.isArray(field)) {
-    throw new UnscopedValidationError('Fields must be either a string or an array of strings');
+    throw new UnscopedValidationError(lit`MustBeFieldsEitherString`, 'Fields must be either a string or an array of strings');
   }
   if (Array.isArray(field) && !!field.find((f: any) => typeof (f) !== 'string')) {
-    throw new UnscopedValidationError('Fields must be either a string or an array of strings');
+    throw new UnscopedValidationError(lit`MustBeFieldsEitherString`, 'Fields must be either a string or an array of strings');
   }
   return Array.isArray(field) ? field : [field];
 };
@@ -68,7 +83,7 @@ export class PolicyStatement {
     // validate that the PolicyStatement has the correct shape
     const errors = ret.validateForAnyPolicy();
     if (errors.length > 0) {
-      throw new UnscopedValidationError('Incorrect Policy Statement: ' + errors.join('\n'));
+      throw new UnscopedValidationError(lit`IncorrectPolicyStatement`, 'Incorrect Policy Statement: ' + errors.join('\n'));
     }
 
     return ret;
@@ -80,7 +95,7 @@ export class PolicyStatement {
   private readonly _notPrincipal: { [key: string]: any[] } = {};
   private readonly _resource = new OrderedSet<string>();
   private readonly _notResource = new OrderedSet<string>();
-  private readonly _condition: { [key: string]: any } = { };
+  private readonly _condition: { [key: string]: any } = {};
   private _sid?: string;
   private _effect: Effect;
   private principalConditionsJson?: string;
@@ -149,7 +164,7 @@ export class PolicyStatement {
   public addActions(...actions: string[]) {
     this.assertNotFrozen('addActions');
     if (actions.length > 0 && this._notAction.length > 0) {
-      throw new UnscopedValidationError('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
+      throw new UnscopedValidationError(lit`CannotAddActionsPolicyStatement`, 'Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
     }
     this.validatePolicyActions(actions);
     this._action.push(...actions);
@@ -166,7 +181,7 @@ export class PolicyStatement {
   public addNotActions(...notActions: string[]) {
     this.assertNotFrozen('addNotActions');
     if (notActions.length > 0 && this._action.length > 0) {
-      throw new UnscopedValidationError('Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
+      throw new UnscopedValidationError(lit`CannotAddActionsPolicyStatement`, 'Cannot add \'NotActions\' to policy statement if \'Actions\' have been added');
     }
     this.validatePolicyActions(notActions);
     this._notAction.push(...notActions);
@@ -193,7 +208,7 @@ export class PolicyStatement {
   public addPrincipals(...principals: IPrincipal[]) {
     this.assertNotFrozen('addPrincipals');
     if (principals.length > 0 && this._notPrincipals.length > 0) {
-      throw new UnscopedValidationError('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
+      throw new UnscopedValidationError(lit`CannotAddPrincipalsPolicyStatement`, 'Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
     for (const principal of principals) {
       this.validatePolicyPrincipal(principal);
@@ -218,7 +233,7 @@ export class PolicyStatement {
   public addNotPrincipals(...notPrincipals: IPrincipal[]) {
     this.assertNotFrozen('addNotPrincipals');
     if (notPrincipals.length > 0 && this._principals.length > 0) {
-      throw new UnscopedValidationError('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
+      throw new UnscopedValidationError(lit`CannotAddPrincipalsPolicyStatement`, 'Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
     }
     for (const notPrincipal of notPrincipals) {
       this.validatePolicyPrincipal(notPrincipal);
@@ -237,14 +252,14 @@ export class PolicyStatement {
     if (cdk.Token.isUnresolved(actions)) return;
     for (const action of actions || []) {
       if (!cdk.Token.isUnresolved(action) && !/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
-        throw new UnscopedValidationError(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
+        throw new UnscopedValidationError(lit`ActionInvalid`, `Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
       }
     }
   }
 
   private validatePolicyPrincipal(principal: IPrincipal) {
     if (principal instanceof Group) {
-      throw new UnscopedValidationError('Cannot use an IAM Group as the \'Principal\' or \'NotPrincipal\' in an IAM Policy');
+      throw new UnscopedValidationError(lit`CannotUseGroupAsPrincipal`, 'Cannot use an IAM Group as the \'Principal\' or \'NotPrincipal\' in an IAM Policy');
     }
   }
 
@@ -324,7 +339,7 @@ export class PolicyStatement {
   public addResources(...arns: string[]) {
     this.assertNotFrozen('addResources');
     if (arns.length > 0 && this._notResource.length > 0) {
-      throw new UnscopedValidationError('Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
+      throw new UnscopedValidationError(lit`CannotAddResourcesPolicyStatement`, 'Cannot add \'Resources\' to policy statement if \'NotResources\' have been added');
     }
     this._resource.push(...arns);
   }
@@ -340,7 +355,7 @@ export class PolicyStatement {
   public addNotResources(...arns: string[]) {
     this.assertNotFrozen('addNotResources');
     if (arns.length > 0 && this._resource.length > 0) {
-      throw new UnscopedValidationError('Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
+      throw new UnscopedValidationError(lit`CannotAddResourcesPolicyStatement`, 'Cannot add \'NotResources\' to policy statement if \'Resources\' have been added');
     }
     this._notResource.push(...arns);
   }
@@ -518,7 +533,7 @@ export class PolicyStatement {
       this.principalConditionsJson = theseConditions;
     } else {
       if (this.principalConditionsJson !== theseConditions) {
-        throw new UnscopedValidationError(`All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditionsJson}' and '${theseConditions}'). Use multiple statements instead.`);
+        throw new UnscopedValidationError(lit`PrincipalsPolicystatementSameConditions`, `All principals in a PolicyStatement must have the same Conditions (got '${this.principalConditionsJson}' and '${theseConditions}'). Use multiple statements instead.`);
       }
     }
     this.addConditions(conditions);
@@ -540,13 +555,34 @@ export class PolicyStatement {
   /**
    * Validate that the policy statement satisfies all requirements for a resource-based policy.
    *
+   * @param options Optional validation options
    * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
-  public validateForResourcePolicy(): string[] {
+  public validateForResourcePolicy(options?: ResourcePolicyValidationOptions): string[] {
     const errors = this.validateForAnyPolicy();
     if (this._principals.length === 0 && this._notPrincipals.length === 0) {
       errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
     }
+    // Only validate resources if not explicitly skipped (for services like ECR where resources are implicit)
+    if (!options?.skipResourceValidation && this._resource.length === 0 && this._notResource.length === 0) {
+      errors.push('A PolicyStatement used in a resource-based policy must specify at least one resource.');
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that the policy statement satisfies all requirements for a trust policy (assume role policy).
+   *
+   * Trust policies are a special type of resource-based policy where the resource is implicit (the role itself).
+   *
+   * @returns An array of validation error messages, or an empty array if the statement is valid.
+   */
+  public validateForTrustPolicy(): string[] {
+    const errors = this.validateForAnyPolicy();
+    if (this._principals.length === 0 && this._notPrincipals.length === 0) {
+      errors.push('A PolicyStatement used in a trust policy must specify at least one IAM principal.');
+    }
+    // Note: Trust policies do not require resources because the resource is implicit (the role itself)
     return errors;
   }
 
@@ -562,6 +598,9 @@ export class PolicyStatement {
     }
     if (this._resource.length === 0 && this._notResource.length === 0) {
       errors.push('A PolicyStatement used in an identity-based policy must specify at least one resource.');
+    }
+    if (this._sid !== undefined && !cdk.Token.isUnresolved(this._sid) && !/^[0-9A-Za-z]*$/.test(this._sid)) {
+      errors.push(`Statement ID (sid) '${this._sid}' must be alphanumeric (A-Z, a-z, 0-9) when used in an identity-based policy. See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_sid.html`);
     }
     return errors;
   }
@@ -677,7 +716,7 @@ export class PolicyStatement {
    */
   private assertNotFrozen(method: string) {
     if (this._frozen) {
-      throw new UnscopedValidationError(`${method}: freeze() has been called on this PolicyStatement previously, so it can no longer be modified`);
+      throw new UnscopedValidationError(lit`FreezeCalledPolicystatementPreviously`, `${method}: freeze() has been called on this PolicyStatement previously, so it can no longer be modified`);
     }
   }
 }
@@ -736,7 +775,8 @@ export interface PolicyStatementProps {
    * policy statement. You can assign a Sid value to each statement in a
    * statement array. In services that let you specify an ID element, such as
    * SQS and SNS, the Sid value is just a sub-ID of the policy document's ID. In
-   * IAM, the Sid value must be unique within a JSON policy.
+   * IAM, the Sid value must be unique within a JSON policy. In IAM identity
+   * policies, the Sid value must contain only alphanumeric characters.
    *
    * @default - no sid
    */
@@ -789,7 +829,7 @@ export interface PolicyStatementProps {
    *
    * @default - no condition
    */
-  readonly conditions?: {[key: string]: any};
+  readonly conditions?: { [key: string]: any };
 
   /**
    * Whether to allow or deny the actions in this statement
@@ -802,16 +842,16 @@ export interface PolicyStatementProps {
 class JsonPrincipal extends PrincipalBase {
   public readonly policyFragment: PrincipalPolicyFragment;
 
-  constructor(json: any = { }) {
+  constructor(json: any = {}) {
     super();
 
     // special case: if principal is a string, turn it into a "LiteralString" principal,
     // so we render the exact same string back out.
-    if (typeof(json) === 'string') {
+    if (typeof (json) === 'string') {
       json = { [LITERAL_STRING_KEY]: [json] };
     }
     if (typeof(json) !== 'object') {
-      throw new UnscopedValidationError(`JSON IAM principal should be an object, got ${JSON.stringify(json)}`);
+      throw new UnscopedValidationError(lit`ExpectedPrincipalObject`, `JSON IAM principal should be an object, got ${JSON.stringify(json)}`);
     }
 
     this.policyFragment = {
@@ -854,7 +894,7 @@ export function deriveEstimateSizeOptions(scope: IConstruct): EstimateSizeOption
   const actionEstimate = 20;
   const arnEstimate = scope.node.tryGetContext(ARN_SIZE_ESTIMATE_CONTEXT_KEY) ?? DEFAULT_ARN_SIZE_ESTIMATE;
   if (typeof arnEstimate !== 'number') {
-    throw new UnscopedValidationError(`Context value ${ARN_SIZE_ESTIMATE_CONTEXT_KEY} should be a number, got ${JSON.stringify(arnEstimate)}`);
+    throw new UnscopedValidationError(lit`ExpectedContextNumber`, `Context value ${ARN_SIZE_ESTIMATE_CONTEXT_KEY} should be a number, got ${JSON.stringify(arnEstimate)}`);
   }
 
   return { actionEstimate, arnEstimate };

@@ -1,5 +1,6 @@
 import * as cdk from '../../../core';
-import { CfnDeliveryStream } from '../kinesisfirehose.generated';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
  * An input format to be used in Firehose record format conversion.
@@ -90,17 +91,17 @@ export class TimestampParser {
    * Creates a TimestampParser from the given format string.
    *
    * The format string should be a valid Joda Time pattern string.
-   * See [Class DateTimeFormat](https://docs.aws.amazon.com/https://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html) for more details
+   * See [Class DateTimeFormat](https://www.joda.org/joda-time/apidocs/org/joda/time/format/DateTimeFormat.html) for more details
    *
    * @param format the Joda Time format string
    */
   public static fromFormatString(format: string): TimestampParser {
     if (format === this.EPOCH_MILLIS.format) {
-      throw new cdk.UnscopedValidationError(`Cannot use reserved format string ${format} - Use 'TimestampParser.EPOCH_MILLIS' instead`);
+      throw new cdk.UnscopedValidationError(lit`ReservedFormatStringNotAllowed`, `Cannot use reserved format string ${format} - Use 'TimestampParser.EPOCH_MILLIS' instead`);
     }
 
     if (format.trim() === '') {
-      throw new cdk.UnscopedValidationError('Format string cannot be blank or empty');
+      throw new cdk.UnscopedValidationError(lit`FormatStringCannotBeBlank`, 'Format string cannot be blank or empty');
     }
 
     return new TimestampParser(format);

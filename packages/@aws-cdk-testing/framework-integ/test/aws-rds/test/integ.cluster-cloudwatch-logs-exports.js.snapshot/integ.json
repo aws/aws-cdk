@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cluster-cloudwatch-logs-exports-integ-test/DefaultTest": {
+      "stacks": [
+        "CloudWatchLogsExportsStack"
+      ],
+      "assertionStack": "cluster-cloudwatch-logs-exports-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clustercloudwatchlogsexportsintegtestDefaultTestDeployAssert99B00960"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

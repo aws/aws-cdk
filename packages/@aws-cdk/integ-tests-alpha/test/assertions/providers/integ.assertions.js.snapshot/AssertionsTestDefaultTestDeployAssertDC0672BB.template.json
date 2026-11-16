@@ -28,7 +28,7 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1706364262631"
+    "salt": "1779368627226"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -94,6 +94,24 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "cloudwatch:GetMetricData"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "cloudwatch:GetMetricData"
+         ],
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -104,12 +122,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3f0f15596be1e3fbbf4a0571522aa1e5312d44abff27360f8d043c1b0704bcf4.zip"
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -149,7 +167,7 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1706364262632"
+    "salt": "1779368627232"
    },
    "DependsOn": [
     "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2"
@@ -185,7 +203,7 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1706364262633"
+    "salt": "1779368627244"
    },
    "DependsOn": [
     "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21"
@@ -221,10 +239,46 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1706364262633"
+    "salt": "1779368627245"
    },
    "DependsOn": [
     "AwsApiCallawssdkclientssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudWatchgetMetricDataea0124ae3a62005231acf243424f2e0f": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchgetMetricData",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "getMetricData",
+    "parameters": {
+     "MetricDataQueries": {
+      "Fn::Join": [
+       "",
+       [
+        "[{\"Id\":\"id1\",\"MetricStat\":{\"Metric\":{\"Namespace\":\"AWS/SQS\",\"MetricName\":\"NumberOfMessagesReceived\",\"Dimensions\":[{\"Name\":\"QueueName\",\"Value\":\"",
+        {
+         "Fn::ImportValue": "Assertions:ExportsOutputFnGetAttQueueQueueNameDE7FBC08"
+        },
+        "\"}]},\"Period\":60,\"Stat\":\"Sum\"},\"ReturnData\":true}]"
+       ]
+      ]
+     },
+     "StartTime": "\"2026-05-20T13:03:47.245Z\"",
+     "EndTime": "\"2026-05-21T13:03:47.245Z\""
+    },
+    "flattenResponse": "false",
+    "salt": "1779368627261"
+   },
+   "DependsOn": [
+    "AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

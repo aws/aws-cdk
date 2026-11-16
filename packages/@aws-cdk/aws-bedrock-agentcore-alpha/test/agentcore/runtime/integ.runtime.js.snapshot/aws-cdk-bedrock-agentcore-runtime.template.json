@@ -231,7 +231,7 @@
     "AgentRuntimeArtifact": {
      "ContainerConfiguration": {
       "ContainerUri": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:f06c9f54828243752afd2df4e39ab9d2987b5ccf44e6bdc05621c18d5488f240"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:b6d4881a712ede895f5aebcfee7fc9dae93030a6ba5c86797d788b8e24265925"
       }
      }
     },
@@ -241,6 +241,7 @@
      "TEST_ENV": "integration",
      "LOG_LEVEL": "INFO"
     },
+    "LifecycleConfiguration": {},
     "NetworkConfiguration": {
      "NetworkMode": "PUBLIC"
     },
@@ -293,19 +294,121 @@
     }
    }
   },
-  "V2EndpointFFAF1748": {
-   "Type": "AWS::BedrockAgentCore::RuntimeEndpoint",
+  "TestInvokerFunctionServiceRole08233DAF": {
+   "Type": "AWS::IAM::Role",
    "Properties": {
-    "AgentRuntimeId": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "TestInvokerFunctionServiceRoleDefaultPolicyC6DC62B6": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock-agentcore:InvokeAgentRuntime",
+        "bedrock-agentcore:InvokeAgentRuntimeForUser"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TestRuntime65042BB5",
+          "AgentRuntimeArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TestRuntime65042BB5",
+             "AgentRuntimeArn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TestInvokerFunctionServiceRoleDefaultPolicyC6DC62B6",
+    "Roles": [
+     {
+      "Ref": "TestInvokerFunctionServiceRole08233DAF"
+     }
+    ]
+   }
+  },
+  "TestInvokerFunction6708F5AE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "def handler(event, context): return {\"statusCode\": 200}"
+    },
+    "Description": "Test function to verify runtime grant permissions with sub-resources",
+    "Handler": "index.handler",
+    "Role": {
      "Fn::GetAtt": [
-      "TestRuntime65042BB5",
-      "AgentRuntimeId"
+      "TestInvokerFunctionServiceRole08233DAF",
+      "Arn"
      ]
     },
-    "AgentRuntimeVersion": "2",
-    "Description": "Version 2 endpoint",
-    "Name": "v2_endpoint"
-   }
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "TestInvokerFunctionServiceRoleDefaultPolicyC6DC62B6",
+    "TestInvokerFunctionServiceRole08233DAF"
+   ]
+  },
+  "TestInvokerFunctionLogGroup003396AB": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "TestInvokerFunction6708F5AE"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {
@@ -341,15 +444,6 @@
    "Value": {
     "Fn::GetAtt": [
      "TaggedEndpointB1B1CDE4",
-     "Id"
-    ]
-   }
-  },
-  "V2EndpointId": {
-   "Description": "Version 2 endpoint ID",
-   "Value": {
-    "Fn::GetAtt": [
-     "V2EndpointFFAF1748",
      "Id"
     ]
    }

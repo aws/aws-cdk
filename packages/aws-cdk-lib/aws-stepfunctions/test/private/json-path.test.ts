@@ -1,4 +1,5 @@
-import { Token, Tokenization, UnscopedValidationError } from '../../../core';
+import type { IResolvable, IResolveContext } from '../../../core';
+import { Token, UnscopedValidationError } from '../../../core';
 import { JsonPath } from '../../lib';
 import { jsonPathFromAny, jsonPathString, JsonPathToken, renderInExpression } from '../../lib/private/json-path';
 

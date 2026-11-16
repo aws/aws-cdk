@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "aa3bdf992ac34a1707718d78160e7c5d2ae4656390cc011dc7e872258651e01b": {
+      "displayName": "aws-cdk-vpcv2-secondary-cidr-blocks Template",
+      "source": {
+        "path": "aws-cdk-vpcv2-secondary-cidr-blocks.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-e8c8f879": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "aa3bdf992ac34a1707718d78160e7c5d2ae4656390cc011dc7e872258651e01b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -38,7 +38,7 @@ export function namespaceToModuleDefinition(namespace: string, bases: PackageBas
   const javaPackage =
     moduleFamily === 'AWS'
       ? `${bases.java}.services.${lowcaseModuleName}`
-      : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
+      : `${bases.java}.${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
   const javaArtifactId =
     moduleFamily === 'AWS' ? lowcaseModuleName : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
 

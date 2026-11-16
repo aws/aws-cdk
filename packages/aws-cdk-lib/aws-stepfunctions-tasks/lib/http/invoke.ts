@@ -1,11 +1,12 @@
 
-import { Construct } from 'constructs';
-import * as events from '../../../aws-events';
+import type { Construct } from 'constructs';
+import type * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
+import { isValidJsonataExpression } from '../../../aws-stepfunctions/lib/private/jsonata';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
-import { integrationResourceArn, isJsonataExpression } from '../private/task-utils';
+import { integrationResourceArn } from '../private/task-utils';
 
 /**
  * The style used when applying URL encoding to array values.
@@ -190,7 +191,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
         resources: ['*'],
         conditions: {
           StringLike: {
-            'states:HTTPEndpoint': `${isJsonataExpression(this.props.apiRoot) ? '' : this.props.apiRoot}*`,
+            'states:HTTPEndpoint': `${isValidJsonataExpression(this.props.apiRoot) ? '' : this.props.apiRoot}*`,
           },
         },
       }),
@@ -200,7 +201,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
   private buildTaskParameters() {
     const unJsonata = (v: string) => v.replace(/^{%/, '').replace(/%}$/, '').trim();
     const useJsonata = this.queryLanguage === sfn.QueryLanguage.JSONATA;
-    const getStringValue = (v: string) => useJsonata && !isJsonataExpression(v) ? `'${v}'` : unJsonata(v);
+    const getStringValue = (v: string) => useJsonata && !isValidJsonataExpression(v) ? `'${v}'` : unJsonata(v);
     const apiEndpoint = useJsonata ?
       `{% ${getStringValue(this.props.apiRoot)} & '/' & ${getStringValue(this.props.apiEndpoint.value)} %}`
       : FeatureFlags.of(this).isEnabled(cxapi.STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT) ?

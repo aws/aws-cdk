@@ -1,6 +1,6 @@
-import { IEventSourceMapping, IFunction } from '../../aws-lambda/lib';
-import { ISchemaRegistry, KafkaSchemaRegistryAccessConfigType, KafkaSchemaRegistryConfig, SchemaRegistryProps } from '../../aws-lambda/lib/schema-registry';
-import { ISecret } from '../../aws-secretsmanager';
+import type { IEventSourceMapping, IFunction } from '../../aws-lambda/lib';
+import type { ISchemaRegistry, KafkaSchemaRegistryAccessConfigType, KafkaSchemaRegistryConfig, SchemaRegistryProps } from '../../aws-lambda/lib/schema-registry';
+import type { ISecret } from '../../aws-secretsmanager';
 
 /**
  * Properties for confluent schema registry configuration.

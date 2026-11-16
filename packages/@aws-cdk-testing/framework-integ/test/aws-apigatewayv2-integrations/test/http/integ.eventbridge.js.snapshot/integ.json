@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EventBridgeIntegrationIntegTest/DefaultTest": {
+      "stacks": [
+        "eventbridge-integration"
+      ],
+      "assertionStack": "EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

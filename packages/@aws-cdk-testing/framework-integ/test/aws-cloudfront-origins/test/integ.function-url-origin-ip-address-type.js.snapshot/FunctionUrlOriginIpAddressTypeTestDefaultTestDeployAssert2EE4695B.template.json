@@ -11,8 +11,8 @@
     },
     "service": "CloudFront",
     "api": "getDistribution",
-    "expected": "{\"$Exact\":false}",
-    "actualPath": "Distribution.DistributionConfig.IsIPV6Enabled",
+    "expected": "{\"$Exact\":true}",
+    "actualPath": "Distribution.DistributionConfig.IsIPV4Enabled",
     "parameters": {
      "Id": {
       "Fn::Join": [
@@ -29,9 +29,9 @@
     },
     "flattenResponse": "true",
     "outputPaths": [
-     "Distribution.DistributionConfig.IsIPV6Enabled"
+     "Distribution.DistributionConfig.IsIPV4Enabled"
     ],
-    "salt": "1759199662495"
+    "salt": "1762057131275"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -88,6 +88,33 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "cloudfront:GetDistribution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudfront:GetDistribution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudfront:GetDistribution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -98,20 +125,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "53e3ecec991005bc2ddc98d13a897e8eadf082b86dedf53475c933aed3069238.zip"
+     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -123,7 +142,79 @@
     }
    }
   },
+  "AwsApiCallCloudFrontgetDistribution4614290a52593596f8d940647c7465e51": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistribution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFront",
+    "api": "getDistribution",
+    "expected": "{\"$Exact\":false}",
+    "actualPath": "Distribution.DistributionConfig.IsIPV6Enabled",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithIPv467452C1EFE039C9B"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Distribution.DistributionConfig.IsIPV6Enabled"
+    ],
+    "salt": "1762057131277"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "AwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c70": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistribution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFront",
+    "api": "getDistribution",
+    "expected": "{\"$Exact\":false}",
+    "actualPath": "Distribution.DistributionConfig.IsIPV4Enabled",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithIPv69F24DA5D6A4AB011"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Distribution.DistributionConfig.IsIPV4Enabled"
+    ],
+    "salt": "1762057131277"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c701": {
    "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistribution",
    "Properties": {
     "ServiceToken": {
@@ -154,12 +245,48 @@
     "outputPaths": [
      "Distribution.DistributionConfig.IsIPV6Enabled"
     ],
-    "salt": "1759199662495"
+    "salt": "1762057131277"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
   "AwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistribution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFront",
+    "api": "getDistribution",
+    "expected": "{\"$Exact\":true}",
+    "actualPath": "Distribution.DistributionConfig.IsIPV4Enabled",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithDualstackCB18333921C95B2A"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Distribution.DistributionConfig.IsIPV4Enabled"
+    ],
+    "salt": "1762057131278"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa1": {
    "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistribution",
    "Properties": {
     "ServiceToken": {
@@ -190,7 +317,7 @@
     "outputPaths": [
      "Distribution.DistributionConfig.IsIPV6Enabled"
     ],
-    "salt": "1759199662496"
+    "salt": "1762057131278"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -205,10 +332,26 @@
     ]
    }
   },
+  "AssertionResultsAwsApiCallCloudFrontgetDistribution4614290a52593596f8d940647c7465e51": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFrontgetDistribution4614290a52593596f8d940647c7465e51",
+     "assertion"
+    ]
+   }
+  },
   "AssertionResultsAwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c70": {
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c70",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c701": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFrontgetDistributioneee3b1157e24dc02a70f0a2971ed8c701",
      "assertion"
     ]
    }
@@ -220,147 +363,13 @@
      "assertion"
     ]
    }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isof-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isof-south-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
+  },
+  "AssertionResultsAwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFrontgetDistribution6c222f9b6410c728f9995017259cf3fa1",
+     "assertion"
+    ]
    }
   }
  },

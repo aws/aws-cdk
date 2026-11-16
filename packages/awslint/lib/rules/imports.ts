@@ -1,4 +1,4 @@
-import * as reflect from 'jsii-reflect';
+import type * as reflect from 'jsii-reflect';
 import { AttributeSite, ResourceReflection } from './resource';
 import { Linter } from '../linter';
 
@@ -66,7 +66,6 @@ importsLinter.add({
   message: 'invalid method signature for fromXxx method. ' + baseConstructAddendum(),
   eval: e => {
     for (const method of e.ctx.fromMethods) {
-
       // "fromRoleArn" => "roleArn"
       const argName = e.ctx.resource.basename[0].toLocaleLowerCase() + method.name.slice('from'.length + 1);
 

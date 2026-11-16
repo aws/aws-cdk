@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { createRole } from './common';
 import { TopicHook } from './topic-hook';
-import * as autoscaling from '../../aws-autoscaling';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
+import type * as autoscaling from '../../aws-autoscaling';
+import type * as kms from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import * as subs from '../../aws-sns-subscriptions';
 

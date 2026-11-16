@@ -1,17 +1,16 @@
-/* eslint-disable no-console */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { ApiCall } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 // import the AWSLambda package explicitly,
 // which is globally available in the Lambda runtime,
 // as otherwise linking this repository with link-all.sh
 // fails in the CDK app executed with ts-node
-/* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
+
 import type * as AWSLambda from 'aws-lambda';
 import type { AwsSdkCall } from './construct-types';
 import { loadAwsSdk } from './load-sdk';
 import { decodeCall, decodeSpecialValues, respond, getCredentials, formatData } from './utils';
 
-/* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context): Promise<void> {
   try {
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);

@@ -1,15 +1,23 @@
-import { Construct } from 'constructs';
-import { IGroup } from './group';
-import { CfnUser, CfnUserToGroupAddition, IUserRef, UserReference } from './iam.generated';
-import { IIdentity } from './identity-base';
-import { IManagedPolicy } from './managed-policy';
+import type { Construct } from 'constructs';
+import type { IGroup } from './group';
+import type { IUserRef, UserReference } from './iam.generated';
+import { CfnUser, CfnUserToGroupAddition } from './iam.generated';
+import type { IIdentity } from './identity-base';
+import type { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
-import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
-import { AttachedPolicies, undefinedIfEmpty } from './private/util';
-import { Arn, ArnFormat, Lazy, Resource, SecretValue, Stack, ValidationError } from '../../core';
+import type { PolicyStatement } from './policy-statement';
+import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { ArnPrincipal } from './principals';
+import { AttachedPolicies, importedDefaultPolicyName } from './private/util';
+import type { SecretValue } from '../../core';
+import { Arn, ArnFormat, FeatureFlags, Resource, Stack, Token, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 
 /**
  * Represents an IAM user
@@ -137,6 +145,7 @@ export interface UserAttributes {
  * Define a new IAM user
  */
 @propertyInjectable
+@noBoxStackTraces
 export class User extends Resource implements IIdentity, IUser {
   /**
    * Uniquely identifies this class.
@@ -206,7 +215,10 @@ export class User extends Resource implements IIdentity, IUser {
 
       public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
+          const isStackSafe = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME);
+          this.defaultPolicy = new Policy(this, 'Policy', {
+            policyName: isStackSafe ? importedDefaultPolicyName(this, 'Policy') : undefined,
+          });
           this.defaultPolicy.attachToUser(this);
         }
         this.defaultPolicy.addStatements(statement);
@@ -227,7 +239,7 @@ export class User extends Resource implements IIdentity, IUser {
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
-        throw new ValidationError('Cannot add managed policy to imported User', this);
+        throw new ValidationError(lit`CannotAddManagedPolicyImported`, 'Cannot add managed policy to imported User', this);
       }
 
       public get userRef(): UserReference {
@@ -246,16 +258,33 @@ export class User extends Resource implements IIdentity, IUser {
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   /**
+   * The CfnUser resource
+   */
+  private readonly _resource: CfnUser;
+
+  /**
    * An attribute that represents the user name.
    * @attribute
    */
-  public readonly userName: string;
+  @memoizedGetter
+  public get userName(): string {
+    return this.getResourceNameAttribute(this._resource.ref);
+  }
 
   /**
    * An attribute that represents the user's ARN.
    * @attribute
    */
-  public readonly userArn: string;
+  @memoizedGetter
+  public get userArn(): string {
+    return this.getResourceArnAttribute(this._resource.attrArn, {
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      resource: 'user',
+      // Removes leading slash from path
+      resourceName: `${this._path ? this._path.substr(this._path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
+    });
+  }
 
   /**
    * Returns the permissions boundary attached  to this user
@@ -264,10 +293,11 @@ export class User extends Resource implements IIdentity, IUser {
 
   public readonly policyFragment: PrincipalPolicyFragment;
 
-  private readonly groups = new Array<any>();
-  private readonly managedPolicies = new Array<IManagedPolicy>();
+  private readonly groups: IArrayBox<any> = Box.fromArray();
+  private readonly _managedPolicies: IArrayBox<IManagedPolicy>;
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
+  private readonly _path?: string;
 
   constructor(scope: Construct, id: string, props: UserProps = {}) {
     super(scope, id, {
@@ -276,25 +306,17 @@ export class User extends Resource implements IIdentity, IUser {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.managedPolicies.push(...props.managedPolicies || []);
+    this._managedPolicies = Box.fromArray([...props.managedPolicies || []]);
     this.permissionsBoundary = props.permissionsBoundary;
+    this._path = props.path;
 
-    const user = new CfnUser(this, 'Resource', {
+    this._resource = new CfnUser(this, 'Resource', {
       userName: this.physicalName,
-      groups: undefinedIfEmpty(() => this.groups),
-      managedPolicyArns: Lazy.list({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      groups: Token.asList(this.groups),
+      managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn), { displayHint: 'managedPolicyArns' }),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       loginProfile: this.parseLoginProfile(props),
-    });
-
-    this.userName = this.getResourceNameAttribute(user.ref);
-    this.userArn = this.getResourceArnAttribute(user.attrArn, {
-      region: '', // IAM is global in each partition
-      service: 'iam',
-      resource: 'user',
-      // Removes leading slash from path
-      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
 
     this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;
@@ -325,8 +347,8 @@ export class User extends Resource implements IIdentity, IUser {
    */
   @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy) {
-    if (this.managedPolicies.find(mp => mp === policy)) { return; }
-    this.managedPolicies.push(policy);
+    if (this._managedPolicies.find(mp => mp === policy)) { return; }
+    this._managedPolicies.push(policy);
   }
 
   /**
@@ -368,7 +390,7 @@ export class User extends Resource implements IIdentity, IUser {
     }
 
     if (props.passwordResetRequired) {
-      throw new ValidationError('Cannot set "passwordResetRequired" without specifying "initialPassword"', this);
+      throw new ValidationError(lit`CannotSetPasswordResetRequired`, 'Cannot set "passwordResetRequired" without specifying "initialPassword"', this);
     }
 
     return undefined; // no console access

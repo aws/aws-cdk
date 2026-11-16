@@ -1,8 +1,9 @@
-import { describe, expect, jest, test, beforeEach, beforeAll } from '@jest/globals';
+/* eslint-disable @typescript-eslint/unbound-method */
 import { AtmosphereAllocationMock } from './atmosphere-mock';
 import { gitDiffMock } from './git-mock';
 import { AtmosphereAllocation } from '../lib/atmosphere';
 import * as integRunner from '../lib/integration-test-runner';
+import { REGIONS } from '../lib/integration-test-runner';
 import * as utils from '../lib/utils';
 
 jest.mock('../lib/atmosphere');
@@ -23,12 +24,12 @@ describe('Run Integration Tests with Atmosphere', () => {
   let mockAtmosphereAllocation: AtmosphereAllocationMock;
   let changedSnapshots: Set<string>;
 
-  const validateSnapshotRun = ({ batchSize }: {batchSize: number}) => {
+  const validateSnapshotRun = () => {
     // Test that git diff has only been called once to get the snapshots
     expect(utils.gitDiff).toHaveBeenCalledTimes(1);
 
     // Test that the each Atmosphere acquire has been released.
-    const numberOfCommands = Math.ceil(changedSnapshots.size/batchSize);
+    const numberOfCommands = Math.ceil(changedSnapshots.size/REGIONS.length);
     expect(AtmosphereAllocation.acquire).toHaveBeenCalledTimes(numberOfCommands);
     expect(mockAtmosphereAllocation.release).toHaveBeenCalledTimes(numberOfCommands);
 
@@ -81,12 +82,7 @@ describe('Run Integration Tests with Atmosphere', () => {
 
   test('successful integration test', async () => {
     await integRunner.deployIntegTests({ atmosphereRoleArn, endpoint, pool });
-    validateSnapshotRun({ batchSize: 3 });
-  });
-
-  test('successful integration test with a non-default batch size', async () => {
-    await integRunner.deployIntegTests({ atmosphereRoleArn, endpoint, pool, batchSize: 1 });
-    validateSnapshotRun({ batchSize: 1 });
+    validateSnapshotRun();
   });
 
   test('failed integration test', async () => {
@@ -98,6 +94,28 @@ describe('Run Integration Tests with Atmosphere', () => {
       'Deployment integration test did not pass',
     );
 
-    validateSnapshotRun({ batchSize: 3 });
+    validateSnapshotRun();
+  });
+
+  test('failed Atmosphere release requests after timeout creates a warning and proceeds with the next batch', async () => {
+    jest.spyOn(integRunner, 'deployIntegrationTest').mockImplementation(() => {
+      return Promise.reject(new Error('Integration tests failed with exit code 1'));
+    });
+
+    jest.spyOn(mockAtmosphereAllocation, 'release').mockImplementation(() => {
+      return Promise.reject(new Error('The security token included in the request is expired'));
+    });
+
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+    await expect(integRunner.deployIntegTests({ atmosphereRoleArn, endpoint, pool })).rejects.toThrow(
+      'Deployment integration test did not pass',
+    );
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('::warning::Atmosphere allocation release failed: Error: The security token included in the request is expired'));
+
+    consoleSpy.mockRestore();
+
+    validateSnapshotRun();
   });
 });

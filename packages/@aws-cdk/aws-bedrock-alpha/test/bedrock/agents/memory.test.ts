@@ -1,8 +1,8 @@
+import { Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { Memory } from '../../../bedrock/agents/memory';
-import { Template } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../lib';
 
 describe('Memory', () => {

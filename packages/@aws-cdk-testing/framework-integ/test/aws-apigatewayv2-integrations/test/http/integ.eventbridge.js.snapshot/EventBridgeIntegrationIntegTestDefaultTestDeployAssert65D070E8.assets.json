@@ -1,0 +1,33 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703": {
+      "source": {
+        "path": "asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-d9fa7f2c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "f62dae4733e10112350b586870216cd1c35f0297c884bf65347a028d1a3582b7": {
+      "displayName": "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8 Template",
+      "source": {
+        "path": "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-eab92a1f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f62dae4733e10112350b586870216cd1c35f0297c884bf65347a028d1a3582b7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

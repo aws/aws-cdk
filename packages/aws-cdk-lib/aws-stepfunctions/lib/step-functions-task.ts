@@ -1,7 +1,7 @@
-import { Task } from './states/task';
-import * as cloudwatch from '../../aws-cloudwatch';
-import * as iam from '../../aws-iam';
-import { Duration } from '../../core';
+import type { Task } from './states/task';
+import type * as cloudwatch from '../../aws-cloudwatch';
+import type * as iam from '../../aws-iam';
+import type { Duration } from '../../core';
 
 /**
  * Interface for resources that can be used as tasks

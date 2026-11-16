@@ -1,5 +1,6 @@
 // AWS::AppMesh CloudFormation Resources:
 export * from './appmesh.generated';
+export * from './appmesh-grants.generated';
 export * from './mesh';
 export * from './route';
 export * from './service-discovery';

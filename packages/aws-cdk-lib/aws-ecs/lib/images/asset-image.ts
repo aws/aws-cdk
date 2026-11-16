@@ -1,7 +1,9 @@
-import { Construct } from 'constructs';
-import { DockerImageAsset, DockerImageAssetOptions } from '../../../aws-ecr-assets';
-import { ContainerDefinition } from '../container-definition';
-import { ContainerImage, ContainerImageConfig } from '../container-image';
+import type { Construct } from 'constructs';
+import type { DockerImageAssetOptions } from '../../../aws-ecr-assets';
+import { DockerImageAsset } from '../../../aws-ecr-assets';
+import type { ContainerDefinition } from '../container-definition';
+import type { ContainerImageConfig } from '../container-image';
+import { ContainerImage } from '../container-image';
 
 /**
  * The properties for building an AssetImage.

@@ -1,0 +1,25 @@
+{
+  "resources": {
+    "WebSocketApi": {
+      "grants": {
+        "manageConnections": {
+          "arnFormat": "${webSocketApiArn}/*/*/@connections/*",
+          "actions": [
+            "execute-api:ManageConnections"
+          ]
+        }
+      }
+    },
+    "WebSocketStage": {
+      "grants": {
+        "managementApiAccess": {
+          "arnFormat": "${webSocketStageArn}/*/@connections/*",
+          "actions": [
+            "execute-api:ManageConnections"
+          ]
+        }
+      }
+    }
+  }
+}
+

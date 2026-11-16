@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "files": {
-    "7108847e7a0133aadbf40463e6362dd3248d047a37412df7d4698cb6ef490f01": {
+    "66e5e0330738cb0ffdcf38bdbca238257bb18479a08c37048771fbd5cfd78490": {
       "displayName": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings Template",
       "source": {
         "path": "aws-cdk-ec2-alpha-transit-gateway-disable-automatic-settings.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-ac2390b7": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7108847e7a0133aadbf40463e6362dd3248d047a37412df7d4698cb6ef490f01.json",
+          "objectKey": "66e5e0330738cb0ffdcf38bdbca238257bb18479a08c37048771fbd5cfd78490.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

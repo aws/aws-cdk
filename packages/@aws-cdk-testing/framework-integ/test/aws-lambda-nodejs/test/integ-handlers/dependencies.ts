@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 // @ts-ignore
 import delay from 'delay';
 

@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('MatchmakingRuleSet', () => {

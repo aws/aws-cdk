@@ -1,31 +1,31 @@
 {
-  "version": "44.0.0",
+  "version": "55.0.0",
   "files": {
-    "2a1e3a5c062d73050b47001ce8443b5cce3002e2af38029f60659b7002ce4b51": {
+    "10d5ae6915b185199ad0d6d9aeadecf32d640bca7428d8b4f5cbbef34751891e": {
       "displayName": "child-opt-in-stack-with-assume-role-region/Custom::CrossAccountZoneDelegationCustomResourceProvider Code",
       "source": {
-        "path": "asset.2a1e3a5c062d73050b47001ce8443b5cce3002e2af38029f60659b7002ce4b51",
+        "path": "asset.10d5ae6915b185199ad0d6d9aeadecf32d640bca7428d8b4f5cbbef34751891e",
         "packaging": "zip"
       },
       "destinations": {
-        "234567890123-af-south-1": {
+        "234567890123-af-south-1-e5be1a9c": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
-          "objectKey": "2a1e3a5c062d73050b47001ce8443b5cce3002e2af38029f60659b7002ce4b51.zip",
+          "objectKey": "10d5ae6915b185199ad0d6d9aeadecf32d640bca7428d8b4f5cbbef34751891e.zip",
           "region": "af-south-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
         }
       }
     },
-    "37f545cde55b1019f3a7d8320e11b4467046749ac858eb35c24d756e47bf1d5c": {
+    "1bee689c76547783fe50c07b3f45714917b391dab5464eb66588173cd9db8b45": {
       "displayName": "child-opt-in-stack-with-assume-role-region Template",
       "source": {
         "path": "child-opt-in-stack-with-assume-role-region.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-af-south-1": {
+        "234567890123-af-south-1-6ded57f4": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
-          "objectKey": "37f545cde55b1019f3a7d8320e11b4467046749ac858eb35c24d756e47bf1d5c.json",
+          "objectKey": "1bee689c76547783fe50c07b3f45714917b391dab5464eb66588173cd9db8b45.json",
           "region": "af-south-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
         }

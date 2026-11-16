@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as ec2 from '../../aws-ec2';
+import type { Construct } from 'constructs';
+import type * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import { Duration, NestedStack, Stack } from '../../core';
 import { ClusterResourceOnEventFunction, ClusterResourceIsCompleteFunction } from '../../custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated';

@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
-import * as codedeploy from '../../../aws-codedeploy';
+import type { Construct } from 'constructs';
+import type * as codedeploy from '../../../aws-codedeploy';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import { Action } from '../action';

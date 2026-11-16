@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import { Match, Template } from '../../assertions';
 import * as s3 from '../../aws-s3';
-import { App, Stack } from '../../core';
+import { Stack } from '../../core';
 import { KeyValueStore, ImportSource } from '../lib';
 
 describe('Key Value Store', () => {

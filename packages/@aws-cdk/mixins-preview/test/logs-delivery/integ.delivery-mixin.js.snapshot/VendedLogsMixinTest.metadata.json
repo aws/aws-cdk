@@ -1,0 +1,76 @@
+{
+  "/VendedLogsMixinTest/EventBus": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/VendedLogsMixinTest/DeliveryLogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/VendedLogsMixinTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/VendedLogsMixinTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/VendedLogsMixinTest/EventBus/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBus7B8748AA"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "@aws-cdk/mixins-preview.aws_events.mixins.CfnEventBusLogsMixin"
+      }
+    }
+  ],
+  "/VendedLogsMixinTest/DeliveryLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryLogGroup2A53FD53"
+    }
+  ],
+  "/VendedLogsMixinTest/DeliveryLogGroup/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VendedLogsMixinTest/EventBus/Resource/CDKSourceERROR_LOGSVendedLogsMixinTestEventBus050202CA": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCDKSourceERRORLOGSVendedLogsMixinTestEventBus050202CA0AA12A32"
+    }
+  ],
+  "/VendedLogsMixinTest/DeliveryLogGroup/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryLogGroupPolicyResourcePolicy1BCF8DEE"
+    }
+  ],
+  "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Desterror-logs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDesterrorlogs4809B813"
+    }
+  ],
+  "/VendedLogsMixinTest/EventBus/Resource/CdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335F/Delivery": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBusCdkLogGroupErrorLogsDeliveryVendedLogsMixinTestEventBus050202CAVendedLogsMixinTestDeliveryLogGroupD06F335FDelivery2D4329FE"
+    }
+  ]
+}

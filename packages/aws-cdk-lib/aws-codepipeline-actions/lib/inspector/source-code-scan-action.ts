@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { InspectorScanActionBase, InspectorScanActionBaseProps } from './scan-action-base';
-import * as codepipeline from '../../../aws-codepipeline';
+import type { Construct } from 'constructs';
+import type { InspectorScanActionBaseProps } from './scan-action-base';
+import { InspectorScanActionBase } from './scan-action-base';
+import type * as codepipeline from '../../../aws-codepipeline';
 
 /**
  * Construction properties of the `InspectorSourceCodeScanAction`.

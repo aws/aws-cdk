@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksclusterwindowsngDefaultTestDeployAssert22077693.template.json"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

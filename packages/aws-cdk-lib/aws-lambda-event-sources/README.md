@@ -51,6 +51,7 @@ behavior:
 * __batchSize__: Determines how many records are buffered before invoking your lambda function.
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of delayed processing.
 * __maxConcurrency__: The maximum concurrency setting limits the number of concurrent instances of the function that an Amazon SQS event source can invoke.
+* __provisionedPollerConfig__: Controls the number of pollers that can be provisioned to read from the queue. Valid ranges: `minimumPollers` 2–200 (default: 2), `maximumPollers` 2–2000 (default: 200).
 * __enabled__: If the SQS event source mapping should be enabled. The default is true.
 
 ```ts
@@ -279,6 +280,11 @@ You can write Lambda functions to process data either from [Amazon MSK](https://
 * __maxBatchingWindow__: The maximum amount of time to gather records before invoking the lambda. This increases the likelihood of a full batch at the cost of possibly delaying processing.
 * __onFailure__: In the event a record fails and consumes all retries, the record will be sent to SQS queue or SNS topic that is specified here
 * __enabled__: If the Kafka event source mapping should be enabled. The default is true.
+* __bisectBatchOnError__: If a batch encounters an error, this will cause the batch to be split in two and have each new smaller batch retried, allowing the records in error to be isolated. Available in provisioned mode only.
+* __reportBatchItemFailures__: Allow functions to return partially successful responses for a batch of records. Available in provisioned mode only.
+* __retryAttempts__: The maximum number of times a record should be retried in the event of failure. Available in provisioned mode only.
+* __maxRecordAge__: The maximum age of a record that will be sent to the function for processing. Records that exceed the max age will be treated as failures. Available in provisioned mode only.
+* __provisionedPollerConfig__: Controls the number of pollers that can be provisioned to read from the event source. Valid ranges: `minimumPollers` 1–200 (default: 1), `maximumPollers` 1–2000 (default: 200).
 
 The following code sets up Amazon MSK as an event source for a lambda function. Credentials will need to be configured to access the
 MSK cluster, as described in [Username/Password authentication](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html).
@@ -294,7 +300,6 @@ const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/a
 const topic = 'some-cool-topic';
 
 // The secret that allows access to your MSK cluster
-// You still have to make sure that it is associated with your cluster as described in the documentation
 const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
 declare const myFunction: lambda.Function;
@@ -304,6 +309,14 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
   secret: secret,
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  bisectBatchOnError: true,
+  reportBatchItemFailures: true,
+  retryAttempts: 3,
+  maxRecordAge: Duration.hours(24),
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
 }));
 ```
 
@@ -334,6 +347,14 @@ myFunction.addEventSource(new SelfManagedKafkaEventSource({
   secret: secret,
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  bisectBatchOnError: true,
+  reportBatchItemFailures: true,
+  retryAttempts: 3,
+  maxRecordAge: Duration.hours(24),
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },  
 }));
 ```
 
@@ -397,6 +418,102 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
+### Consumption mode (Kafka queues)
+
+By default, Lambda reads a Kafka topic as a consumer group: each partition is read by one poller, in order
+(`lambda.KafkaConsumptionMode.STREAM`). If your self-managed cluster runs Kafka 4.2.0 or later, you can instead read
+the topic as a share group (`lambda.KafkaConsumptionMode.QUEUE`). In queue mode, several pollers can read the same
+partition in parallel, which removes head-of-line blocking at the cost of ordering.
+
+```ts
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { SelfManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+declare const myFunction: lambda.Function;
+declare const secret: Secret;
+
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers: ['kafka-broker-1:9092', 'kafka-broker-2:9092'],
+  topic: 'orders',
+  secret,
+  consumerGroupId: 'orders-queue',
+  consumptionMode: lambda.KafkaConsumptionMode.QUEUE,
+}));
+```
+
+Queue mode changes how some options behave:
+
+* `startingPosition` and `startingPositionTimestamp` aren't supported. Leave them unset.
+* `maxBatchingWindow` isn't supported. Leave it unset.
+* `retryAttempts` accepts 0 to 10000, and defaults to 0. `-1` (infinite retries) isn't supported. As in stream mode,
+  `retryAttempts` is only available in provisioned mode (`provisionedPollerConfig`).
+* The consumption mode can't be changed after the event source mapping is created. To switch modes, create a new
+  event source (for example, with a different `consumerGroupId`) and remove the old one.
+* `consumerGroupId` is the name of the share group. Kafka doesn't allow a consumer group and a share group with the
+  same name, so if the ID already exists on the broker as a consumer group, Lambda disables the mapping. Use a new ID,
+  or omit it to let Lambda generate one.
+
+Other options work the same as in stream mode. Queue mode isn't available for `ManagedKafkaEventSource` (Amazon
+MSK).
+
+### Failure Destinations
+
+You can specify failure destinations for records that fail processing. Kafka event sources support Kafka Topic Destinations, S3 Bucket Destinations, SQS Queue and SNS topic:
+
+#### Kafka Topic Destination
+
+For Kafka event sources, you can send failed records to another Kafka topic using `KafkaDlq`:
+
+```ts
+import { ManagedKafkaEventSource, KafkaDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+declare const myFunction: lambda.Function;
+
+// Create a Kafka DLQ destination
+const kafkaDlq = new KafkaDlq('failure-topic');
+
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  onFailure: kafkaDlq,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 1,
+  },
+}));
+```
+
+The same approach works with self-managed Kafka:
+
+```ts
+import { SelfManagedKafkaEventSource, KafkaDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+const bootstrapServers = ['kafka-broker:9092'];
+const topic = 'some-cool-topic';
+
+declare const myFunction: lambda.Function;
+
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  onFailure: new KafkaDlq('error-topic'),
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 1,
+  },
+}));
+```
+
+#### S3 Bucket Destination
+
 You can also specify an S3 bucket as an "on failure" destination:
 
 ```ts
@@ -422,13 +539,82 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
-Set configuration for provisioned pollers that read from the event source.
+### Kafka Observability Features
+
+AWS Lambda provides enhanced observability for Kafka event sources through logging and metrics configuration.
+
+**Important**: Observability features (`LogLevel` and `MetricsConfig`) are only available when using provisioned mode. 
+
+#### Logging
+
+You can configure the verbosity of logs generated by the polling infrastructure.
+This is particularly useful for troubleshooting connection issues, monitoring 
+polling behavior, and understanding the internal operations of your event 
+source mapping.
 
 ```ts
 import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
 // Your MSK cluster arn
-declare const clusterArn: string
+const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
+
+declare const myFunction: lambda.Function;
+
+// Configure INFO level logging for production monitoring
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic: 'production-events',
+  startingPosition: lambda.StartingPosition.LATEST,
+  // Provisioned mode is required for observability features
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 5,
+  },
+  logLevel: lambda.EventSourceMappingLogLevel.INFO
+}));
+```
+
+#### Metrics Configuration
+
+Enhanced metrics provide detailed insights into your Kafka event source performance. 
+Metrics include event processing rates, error counts, and Kafka-specific metrics 
+like consumer lag.
+
+```ts
+import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
+
+declare const myFunction: lambda.Function;
+
+// Enable basic event and error metrics
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic: 'basic-monitoring',
+  startingPosition: lambda.StartingPosition.LATEST,
+  // Provisioned mode is required for observability features
+  provisionedPollerConfig: {
+    minimumPollers: 2,
+    maximumPollers: 10,
+  },
+  metricsConfig: {
+    metrics: [
+      lambda.MetricType.EVENT_COUNT,
+      lambda.MetricType.ERROR_COUNT
+    ]
+  }
+}));
+```
+
+Set configuration for provisioned pollers that read from the event source. When specified, allows control over
+the minimum and maximum number of pollers that can be provisioned to process events from the source.
+
+```ts
+import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+// Your MSK cluster arn
+declare const clusterArn: string;
 
 // The Kafka topic you want to subscribe to
 const topic = 'some-cool-topic';
@@ -445,7 +631,50 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
-Set a confluent or self-managed schema registry to de-serialize events from the event source. Note, this will similarly work for `SelfManagedKafkaEventSource` but the example only shows setup for `ManagedKafkaEventSource`.
+You can reduce costs by sharing provisioned pollers across multiple Kafka event sources using the `pollerGroupName` property. This is particularly useful when you have multiple Kafka topics that don't require dedicated polling capacity.
+
+```ts
+import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
+
+declare const clusterArn: string;
+declare const ordersFunction: lambda.Function;
+
+// Orders processing function
+ordersFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic: 'orders-topic',
+  startingPosition: lambda.StartingPosition.LATEST,
+  provisionedPollerConfig: {
+    minimumPollers: 2,
+    maximumPollers: 10,
+    pollerGroupName: 'shared-kafka-pollers',
+  },
+}));
+
+```
+
+### Schema Registry
+
+Lambda can validate the key, the value, or both of each Kafka record against a schema registry before it
+invokes your function. Set `schemaRegistryConfig` on `ManagedKafkaEventSource` or `SelfManagedKafkaEventSource`
+to an AWS Glue schema registry with `GlueSchemaRegistry`, or to a Confluent schema registry, cloud or
+self-managed, with `ConfluentSchemaRegistry`. The registry can validate Avro, Protobuf and JSON Schema records.
+
+Schema registries need provisioned pollers, so also set `provisionedPollerConfig`. Then choose:
+
+* `eventRecordFormat`: `JSON` passes the validated parts to your function as JSON, which suits languages such as
+  Python and Node.js; `SOURCE` passes them in their original format, which suits Avro or Protobuf generated classes.
+* `schemaValidationConfigs`: whether to validate the key, the value, or both.
+
+For Confluent, give the registry URL, an authentication type and the Secrets Manager secret that goes with it;
+the function gets read access to the secret. For Glue, pass the registry; the function gets the Glue
+permissions it needs to read it.
+
+For details, see
+[Using schema registries with Kafka event sources in Lambda](https://docs.aws.amazon.com/lambda/latest/dg/services-consume-kafka-events.html)
+in the AWS Lambda Developer Guide.
+
+This example uses a Confluent schema registry with Amazon MSK:
 
 ```ts
 import { ManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -457,7 +686,8 @@ declare const clusterArn: string;
 // The Kafka topic you want to subscribe to
 const topic = 'some-cool-topic';
 
-const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+// The secret with the credentials for your schema registry
+declare const secret: Secret;
 
 declare const myFunction: lambda.Function;
 myFunction.addEventSource(new ManagedKafkaEventSource({
@@ -478,7 +708,7 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
-Set Glue schema registry to de-serialize events from the event source. Note, this will similarly work for `SelfManagedKafkaEventSource` but the example only shows setup for `ManagedKafkaEventSource`.
+This example uses an AWS Glue schema registry with Amazon MSK:
 
 ```ts
 import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
@@ -509,6 +739,44 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
     schemaRegistry: glueRegistry,
     eventRecordFormat: lambda.EventRecordFormat.JSON,
     schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+  }),
+}));
+```
+
+This example uses a self-managed Confluent schema registry with a self-managed Kafka cluster:
+
+```ts
+import { SelfManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+
+// The list of Kafka brokers
+const bootstrapServers = ['kafka-broker:9092'];
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+// The secret that allows access to your self hosted Kafka cluster
+declare const kafkaSecret: ISecret;
+
+// The secret with the client certificate and private key for your schema registry
+declare const registrySecret: ISecret;
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers,
+  topic,
+  secret: kafkaSecret,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+  schemaRegistryConfig: new ConfluentSchemaRegistry({
+    schemaRegistryUri: 'https://schema-registry.example.com',
+    eventRecordFormat: lambda.EventRecordFormat.SOURCE,
+    authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.CLIENT_CERTIFICATE_TLS_AUTH,
+    secret: registrySecret,
+    schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.VALUE }],
   }),
 }));
 ```

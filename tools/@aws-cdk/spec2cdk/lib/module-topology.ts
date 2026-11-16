@@ -1,6 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { ModuleDefinition } from '@aws-cdk/pkglint';
+import type { PackageBaseNames } from './util/jsii';
 import { namespaceToModuleDefinition } from './util/jsii';
 
 /**
@@ -37,18 +38,55 @@ export interface ModuleMap {
 }
 
 /**
+ * Describes what a generator contributes to a submodule's barrel files.
+ */
+export interface SubmoduleContribution {
+  /** The barrel file to add export lines to, e.g. 'mixins.ts' or 'events.ts' */
+  readonly barrelFile: string;
+  /** Export lines to add to the barrel file, e.g. "export * from './cfn-props-mixins.generated'" */
+  readonly exportLines: string[];
+  /** The jsiirc namespace for this barrel, e.g. 'mixins' or 'events' */
+  readonly jsiircNamespace: string;
+}
+
+/**
+ * Result of a generator run: a ModuleMap plus submodule contributions.
+ */
+export interface GeneratorResult {
+  readonly moduleMap: ModuleMap;
+  readonly contributions: SubmoduleContribution[];
+}
+
+export interface ModuleMapLoadingOptions {
+  /**
+   * The package base names used to generate jsii target names
+   * @default - for `aws-cdk-lib`
+   */
+  readonly packageBases?: PackageBaseNames;
+
+  /**
+   * Read namespaces from the current module map
+   *
+   * If false, ignore the existing values and always synthesize new ones.
+   *
+   * @default true
+   */
+  readonly respectOverrides?: boolean;
+}
+
+/**
  * Reads a module map from a file and transforms it into the type we need.
  */
-export function readModuleMap(filepath: string): ModuleMap {
+export function readModuleMap(filepath: string, opts: ModuleMapLoadingOptions = {}): ModuleMap {
   const theMap: Record<string, { scopes: Array<ModuleMapScope>; targets?: ModuleMapEntry['targets'] }> = JSON.parse(fs.readFileSync(filepath).toString());
   return Object.entries(theMap).reduce((moduleMap, [name, loaded]) => {
     // We load the definition for the first scope
     let definition = undefined;
     if (loaded.scopes[0]?.namespace) {
-      definition = namespaceToModuleDefinition(loaded.scopes[0].namespace);
+      definition = namespaceToModuleDefinition(loaded.scopes[0].namespace, opts.packageBases);
 
       // update definition with values from targets
-      if (loaded.targets) {
+      if (loaded.targets && (opts.respectOverrides ?? true)) {
         definition = {
           ...definition,
           dotnetPackage: loaded.targets.dotnet?.namespace ?? definition.dotnetPackage,
@@ -72,14 +110,14 @@ export function readModuleMap(filepath: string): ModuleMap {
   }, {});
 }
 
-const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
+export const moduleMapPath = path.join(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib', 'scripts', 'scope-map.json');
 
 /**
  * Loads the global module map from the `aws-cdk-lib` package.
  * It maps every `aws-cdk-lib` submodule to the AWS service prefix in that submodule.
  */
-export function loadModuleMap(): ModuleMap {
-  return readModuleMap(moduleMapPath);
+export function loadModuleMap(opts: ModuleMapLoadingOptions = {}): ModuleMap {
+  return readModuleMap(moduleMapPath, opts);
 }
 
 /**
@@ -99,6 +137,27 @@ export function writeModuleMap(modules: ModuleMap) {
     }, {});
 
   fs.writeFileSync(moduleMapPath, JSON.stringify(newScopeMap, null, 2) + '\n');
+}
+
+/**
+ * Merge multiple module maps into one, combining files and resources.
+ */
+export function mergeModuleMaps(...maps: ModuleMap[]): ModuleMap {
+  const merged: ModuleMap = {};
+  for (const map of maps) {
+    for (const [name, entry] of Object.entries(map)) {
+      if (!merged[name]) {
+        merged[name] = entry;
+      } else {
+        merged[name] = {
+          ...entry,
+          files: [...new Set([...merged[name].files, ...entry.files])],
+          resources: { ...merged[name].resources, ...entry.resources },
+        };
+      }
+    }
+  }
+  return merged;
 }
 
 function noEmpty<A extends object>(x: A | undefined): A | undefined {

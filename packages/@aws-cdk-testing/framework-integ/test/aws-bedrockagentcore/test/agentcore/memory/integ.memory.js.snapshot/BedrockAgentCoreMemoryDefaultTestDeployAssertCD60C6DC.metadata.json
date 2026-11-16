@@ -1,0 +1,56 @@
+{
+  "/BedrockAgentCoreMemory/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:121:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreMemory/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:222:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:586: (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:586:3)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:643:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:640:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:640:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:640:9)",
+        "synthesizeTree (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:579:5)",
+        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:142:5)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreMemory/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:230:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:586: (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:586:3)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:643:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:640:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:640:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:640:9)",
+        "synthesizeTree (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:579:5)",
+        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:142:5)"
+      ]
+    }
+  ]
+}

@@ -1,4 +1,3 @@
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';

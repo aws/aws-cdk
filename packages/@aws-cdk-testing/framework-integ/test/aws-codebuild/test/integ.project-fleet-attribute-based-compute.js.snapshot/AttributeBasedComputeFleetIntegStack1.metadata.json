@@ -1,0 +1,274 @@
+{
+  "/AttributeBasedComputeFleetIntegStack1": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85:5)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/MyFleet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "baseCapacity": "*",
+        "computeType": "ATTRIBUTE_BASED_COMPUTE",
+        "computeConfiguration": {
+          "machineType": "GENERAL",
+          "vCpu": "*",
+          "disk": "*"
+        },
+        "environmentType": "LINUX_CONTAINER",
+        "vpc": "*",
+        "securityGroups": "*",
+        "subnetSelection": "*"
+      }
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/MyProject": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environment": {
+          "buildImage": {
+            "type": "*",
+            "defaultComputeType": "BUILD_GENERAL1_SMALL",
+            "imageId": "*",
+            "imagePullPrincipalType": "CODEBUILD",
+            "secretsManagerCredentials": "*",
+            "repository": "*"
+          },
+          "fleet": "*"
+        }
+      }
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/MyFleet/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFleet1E628396"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Fleet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/fleet.js:276:30)",
+        "new Fleet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new FleetStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:61:22)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85:5)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/MyProject/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/MyProject/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProject39F7B0AE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:685:30)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new FleetStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:70:24)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85:5)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "FleetStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:116:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProjectRole9BBE5233"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:638:39)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new FleetStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:70:24)",
+        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85:5)",
+        "Array.map (:)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:85:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/AttributeBasedComputeFleetIntegStack1/MyProject/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyProjectRoleDefaultPolicyB19B7C29"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:124:23)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:719:18)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new FleetStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-attribute-based-compute.js:70:24)"
+      ]
+    }
+  ]
+}

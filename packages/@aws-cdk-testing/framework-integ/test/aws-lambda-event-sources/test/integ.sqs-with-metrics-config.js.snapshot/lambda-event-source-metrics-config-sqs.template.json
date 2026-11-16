@@ -76,7 +76,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "F1ServiceRoleDefaultPolicy1610A985",
@@ -182,7 +182,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "F2ServiceRoleDefaultPolicy999D30A8",

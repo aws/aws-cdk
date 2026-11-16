@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-eks-cluster-al2023-nodegroup/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkeksclusteral2023nodegroupDefaultTestDeployAssert96F213C8.template.json"
+    }
+  ],
+  "/aws-cdk-eks-cluster-al2023-nodegroup/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-eks-cluster-al2023-nodegroup/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

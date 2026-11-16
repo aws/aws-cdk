@@ -1,7 +1,8 @@
 import { Alarm } from 'aws-cdk-lib/aws-cloudwatch';
-import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { AttributeType, Operation, Table } from 'aws-cdk-lib/aws-dynamodb';
 
 export class TestStack extends Stack {

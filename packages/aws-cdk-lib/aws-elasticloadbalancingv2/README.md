@@ -74,9 +74,12 @@ lb.addSecurityGroup(securityGroup2);
 ### Conditions
 
 It's possible to route traffic to targets based on conditions in the incoming
-HTTP request. For example, the following will route requests to the indicated
-AutoScalingGroup only if the requested host in the request is either for
-`example.com/ok` or `example.com/path`:
+HTTP request.
+
+Path patterns, host headers, HTTP headers, query strings, HTTP
+request methods, and source IPs can all be used as conditions. For example, the
+following will route requests to the indicated AutoScalingGroup only if the
+requested host in the request is either for `example.com/ok` or `example.com/path`:
 
 ```ts
 declare const listener: elbv2.ApplicationListener;
@@ -93,13 +96,71 @@ listener.addTargets('Example.Com Fleet', {
 });
 ```
 
-A target with a condition contains either `pathPatterns` or `hostHeader`, or
-both. If both are specified, both conditions must be met for the requests to
+If multiple conditions are specified, all conditions must be met for the requests to
 be routed to the given target. `priority` is a required field when you add
 targets with conditions. The lowest number wins.
 
 Every listener must have at least one target without conditions, which is
 where all requests that didn't match any of the conditions will be sent.
+
+#### Condition Types
+
+The following condition types are supported:
+
+- **Host headers** (`hostHeaders`) - Match against the host header in the request.
+  Supports wildcards (e.g., `*.example.com`).
+- **Host headers (regex)** (`hostHeadersRegex`) - Match against the host header using
+  regular expressions.
+- **Path patterns** (`pathPatterns`) - Match against the URL path. Supports wildcards
+  (e.g., `/api/*`).
+- **Path patterns (regex)** (`pathPatternsRegex`) - Match against the URL path using
+  regular expressions.
+- **HTTP headers** (`httpHeader`) - Match against a specific HTTP header name and value(s).
+- **HTTP headers (regex)** (`httpHeaderRegex`) - Match against a specific HTTP header
+  name using regular expressions for values.
+- **HTTP request methods** (`httpRequestMethods`) - Match against the HTTP request method
+  (e.g., GET, POST, PUT).
+- **Query strings** (`queryStrings`) - Match against query string key/value pairs.
+- **Source IPs** (`sourceIps`) - Match against the source IP address of the request.
+  Supports CIDR blocks.
+
+A listener rule can hold up to 5 host header, HTTP header and path pattern values in
+total, counting both plain and regex values across all of its conditions. A single
+`pathPatterns`, `pathPatternsRegex`, `hostHeadersRegex` or `httpHeaderRegex` condition
+with more than 5 values throws at synthesis; a rule whose conditions only exceed the limit
+together is rejected by the service at deployment.
+
+Example using multiple condition types:
+
+```ts
+declare const listener: elbv2.ApplicationListener;
+declare const asg: autoscaling.AutoScalingGroup;
+
+listener.addTargets('API any version', {
+  priority: 10,
+  conditions: [
+    elbv2.ListenerCondition.pathPatternsRegex(['/api/v[0-9]+/.*']),
+    elbv2.ListenerCondition.httpRequestMethods(['GET', 'POST']),
+    elbv2.ListenerCondition.sourceIps(['192.0.2.0/24', '198.51.100.0/24']),
+  ],
+  port: 8080,
+  targets: [asg]
+});
+
+listener.addTargets('API v2 with custom header', {
+  priority: 20,
+  conditions: [
+    elbv2.ListenerCondition.pathPatterns(['/api/v2/*']),
+    elbv2.ListenerCondition.httpHeader('X-Custom-Header', ['value1', 'value2']),
+    elbv2.ListenerCondition.queryStrings([
+      { key: 'version', value: '2' },
+      { value: 'debug' },
+    ]),
+  ],
+  port: 8080,
+  targets: [asg]
+});
+```
 
 ### Convenience methods and more complex Actions
 
@@ -137,7 +198,9 @@ Balancer that the other two convenience methods don't:
 * **Redirects**: use `ListenerAction.redirect()` to serve an HTTP
   redirect response (ALB only).
 * **Authentication**: use `ListenerAction.authenticateOidc()` to
-  perform OpenID authentication before serving a request (see the
+  perform OpenID authentication before serving a request, or
+  `ListenerAction.authenticateJwt()` to verify JSON Web Tokens (JWT)
+  for secure service-to-service communications (see the
   `aws-cdk-lib/aws-elasticloadbalancingv2-actions` package for direct authentication
   integration with Cognito) (ALB only).
 
@@ -175,6 +238,28 @@ listener.addAction('DefaultAction', {
     userInfoEndpoint: '...',
 
     // Next
+    next: elbv2.ListenerAction.forward([myTargetGroup]),
+  }),
+});
+```
+
+Here's an example of using JWT authentication for service-to-service communication:
+
+**Note:** JWT authentication requires an HTTPS listener. If you attempt to use it with an HTTP listener, a validation error will be thrown.
+
+```ts
+declare const lb: elbv2.ApplicationLoadBalancer;
+declare const certificate: elbv2.IListenerCertificate;
+declare const myTargetGroup: elbv2.ApplicationTargetGroup;
+
+// JWT authentication requires HTTPS
+const listener = lb.addListener('Listener', {
+  protocol: elbv2.ApplicationProtocol.HTTPS,
+  port: 443,
+  certificates: [certificate],
+  defaultAction: elbv2.ListenerAction.authenticateJwt({
+    issuer: 'https://issuer.example.com',
+    jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
     next: elbv2.ListenerAction.forward([myTargetGroup]),
   }),
 });
@@ -840,6 +925,7 @@ const targetGroup = new elbv2.ApplicationTargetGroup(this, 'LambdaTargetGroup', 
   targets: [new targets.LambdaTarget(lambdaFunction)],
 
   // Enable multi-value headers
+  targetType: elbv2.TargetType.LAMBDA,
   multiValueHeadersEnabled: true,
 });
 ```

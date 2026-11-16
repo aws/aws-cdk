@@ -1,8 +1,9 @@
-import { IResource, Resource } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from 'aws-cdk-lib/aws-neptune';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
 
 /**
  * The DB parameter group family that a DB parameter group is compatible with
@@ -24,6 +25,10 @@ export class ParameterGroupFamily {
    * Family used by Neptune engine versions 1.4.0.0 and later
    */
   public static readonly NEPTUNE_1_4 = new ParameterGroupFamily('neptune1.4');
+  /**
+   * Family used by Neptune engine versions 1.5.0.0 and later
+   */
+  public static readonly NEPTUNE_1_5 = new ParameterGroupFamily('neptune1.5');
 
   /**
    * Constructor for specifying a custom parameter group family

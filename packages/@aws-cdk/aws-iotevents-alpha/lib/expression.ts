@@ -1,4 +1,4 @@
-import { IInput } from './input';
+import type { IInput } from './input';
 
 /**
  * Expression for events in Detector Model state.

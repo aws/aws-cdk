@@ -1,11 +1,10 @@
-import { Endpoints } from '@octokit/types';
-import { StatusEvent } from '@octokit/webhooks-definitions/schema';
 import type { components } from '@octokit/openapi-types';
+import type { Octokit } from '@octokit/rest';
+import type { StatusEvent } from '@octokit/webhooks-definitions/schema';
 
-export type GitHubPr =
-  Endpoints['GET /repos/{owner}/{repo}/pulls/{pull_number}']['response']['data'];
+export type GitHubPr = Awaited<ReturnType<Octokit['pulls']['get']>>['data'];
 
-export  type CheckRun = components['schemas']['check-run'];
+export type CheckRun = components['schemas']['check-run'];
 
 export interface GitHubComment {
   id: number;
@@ -49,12 +48,11 @@ export function sumChanges(files: GitHubFile[]) {
 
   const identity = {
     additions: 0,
-    deletions: 0
+    deletions: 0,
   };
 
   return files.reduce(add, identity);
 }
-
 
 /**
  * Combine all check run conclusions

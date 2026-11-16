@@ -1,0 +1,13 @@
+{
+  "version": "50.0.0",
+  "testCases": {
+    "DeletionProtectionTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-deletion-protection"
+      ],
+      "assertionStack": "DeletionProtectionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DeletionProtectionTestDefaultTestDeployAssert40122E2E"
+    }
+  },
+  "minimumCliVersion": "2.1105.0"
+}

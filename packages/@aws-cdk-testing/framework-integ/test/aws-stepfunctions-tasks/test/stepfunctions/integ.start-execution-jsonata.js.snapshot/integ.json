@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "testCases": {
     "integ-sfn-start-execution-jsonata-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "integ-sfn-start-execution-jsonata-integ/DefaultTest/DeployAssert",
       "assertionStackName": "integsfnstartexecutionjsonataintegDefaultTestDeployAssert66319094"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

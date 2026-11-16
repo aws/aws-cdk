@@ -87,7 +87,7 @@ const chain = sfn.Chain
   .next(deleteVirtualCluster);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.minutes(20),
 });
 

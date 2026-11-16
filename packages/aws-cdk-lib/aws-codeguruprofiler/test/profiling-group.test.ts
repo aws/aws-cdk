@@ -3,7 +3,7 @@ import { AccountRootPrincipal, Role } from '../../aws-iam';
 import { Stack } from '../../core';
 import { ProfilingGroup, ComputePlatform } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('profiling group', () => {
   test('attach read permission to Profiling group via fromProfilingGroupArn', () => {
@@ -13,9 +13,9 @@ describe('profiling group', () => {
       assumedBy: new AccountRootPrincipal(),
     });
 
-    const profilingGroup = ProfilingGroup.fromProfilingGroupArn(stack, 'MyProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
+    const profilingGroup = ProfilingGroup.fromProfilingGroupArn(stack, 'MyProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:123456789012:profilingGroup/MyAwesomeProfilingGroup');
     expect(profilingGroup.profilingGroupName).toBe('MyAwesomeProfilingGroup');
-    expect(profilingGroup.profilingGroupArn).toBe('arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
+    expect(profilingGroup.profilingGroupArn).toBe('arn:aws:codeguru-profiler:us-east-1:123456789012:profilingGroup/MyAwesomeProfilingGroup');
     expect(profilingGroup.env.region).toBe('us-east-1');
 
     profilingGroup.grantRead(readAppRole);
@@ -65,7 +65,7 @@ describe('profiling group', () => {
                     'codeguru-profiler:DescribeProfilingGroup',
                   ],
                   'Effect': 'Allow',
-                  'Resource': 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
+                  'Resource': 'arn:aws:codeguru-profiler:us-east-1:123456789012:profilingGroup/MyAwesomeProfilingGroup',
                 },
               ],
               'Version': '2012-10-17',

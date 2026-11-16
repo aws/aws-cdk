@@ -1,0 +1,452 @@
+{
+  "/aws-cdk-ec2-alpha-tag": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:43:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/TestRouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/testsubnet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/IpamIntegTest": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/CustomIpamScope": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/IpamScope": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IpamScope"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new IpamScope (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.js:244:31)",
+        "new IpamScope (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addScope (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.js:406:31)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:85:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttag58C3A45F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2.js:352:29)",
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:45:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/AmazonProvided": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/InternetGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/VpnGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/NATGateway-testsubnet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/TestRouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRouteTableC34C2E1C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RouteTable (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:716:29)",
+        "new RouteTable (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:57:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/testsubnet/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testsubnetSubnetDD417829"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:258:28)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:61:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/testsubnet/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testsubnetRouteTableAssociationC106676D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:288:32)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:61:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/IpamIntegTest/Ipam": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IpamIntegTestIpam00B5B97A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Ipam (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/ipam.js:375:26)",
+        "new Ipam (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:81:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtesttag58C3A45F\",\"VpcId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttVPCintegtesttag58C3A45FVpcIdC12EBB53"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtesttagInternetGatewayIGWC653A733\",\"InternetGatewayId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttVPCintegtesttagInternetGatewayIGWC653A733InternetGatewayIdBB15D4AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"VPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBF\",\"NatGatewayId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttVPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBFNatGatewayId76DD764D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"TestRouteTableC34C2E1C\",\"RouteTableId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTestRouteTableC34C2E1CRouteTableId4C8A7F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"IpamIntegTestIpam00B5B97A\",\"IpamId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttIpamIntegTestIpam00B5B97AIpamId2B933FDC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/Exports/Output{\"Fn::GetAtt\":[\"IpamScope\",\"IpamScopeId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttIpamScopeIpamScopeIdB53A2540"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/AmazonProvided/AmazonProvided": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttagAmazonProvided3931207E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VPCCidrBlock (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2.js:584:29)",
+        "new VPCCidrBlock (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2.js:397:42)",
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:45:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/InternetGateway/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttagInternetGatewayIGWC653A733"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new InternetGateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:181:29)",
+        "new InternetGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addInternetGateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2-base.js:250:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:69:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/InternetGateway/GWAttachment": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttagInternetGatewayGWAttachmentF8074F9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new InternetGateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:192:13)",
+        "new InternetGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addInternetGateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2-base.js:250:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:69:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/VpnGateway/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttagVpnGatewayIGW22B9A571"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VPNGatewayV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:265:29)",
+        "new VPNGatewayV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.enableVpnGatewayV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2-base.js:137:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:72:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/VpnGateway/VPCVPNGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttagVpnGatewayVPCVPNGW8D48C216"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VPNGatewayV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:272:32)",
+        "new VPNGatewayV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.enableVpnGatewayV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2-base.js:137:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:72:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/VpnGateway/RoutePropagation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttagVpnGatewayRoutePropagation4E2BFD4D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VPNGatewayV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:286:38)",
+        "new VPNGatewayV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.enableVpnGatewayV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2-base.js:137:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:72:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/NATGateway-testsubnet/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttagNATGatewaytestsubnetEIP03F9A44C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NatGateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:385:32)",
+        "new NatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2-base.js:331:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:76:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-tag/VPC-integ-test-tag/NATGateway-testsubnet/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCintegtesttagNATGatewaytestsubnetNATGateway36D56DBF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NatGateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:394:29)",
+        "new NatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2-base.js:331:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.vpc-v2-tagging.js:76:19)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

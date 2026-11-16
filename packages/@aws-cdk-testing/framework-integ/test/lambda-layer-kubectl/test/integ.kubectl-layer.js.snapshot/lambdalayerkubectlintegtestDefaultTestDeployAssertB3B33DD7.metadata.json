@@ -1,0 +1,20 @@
+{
+  "/lambda-layer-kubectl-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "lambdalayerkubectlintegtestDefaultTestDeployAssertB3B33DD7.template.json"
+    }
+  ],
+  "/lambda-layer-kubectl-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-layer-kubectl-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "resources": {
+    "ProfilingGroup": {
+      "grants": {
+        "publish": {
+          "actions": [
+            "codeguru-profiler:ConfigureAgent",
+            "codeguru-profiler:PostAgentProfile"
+          ],
+          "docSummary": "Grant access to publish profiling information to the Profiling Group to the given identity.\n\nThis will grant the following permissions:\n\n - codeguru-profiler:ConfigureAgent\n - codeguru-profiler:PostAgentProfile"
+        },
+        "read": {
+          "actions": [
+            "codeguru-profiler:GetProfile",
+            "codeguru-profiler:DescribeProfilingGroup"
+          ],
+          "docSummary": "Grant access to read profiling information from the Profiling Group to the given identity.\n\nThis will grant the following permissions:\n\n - codeguru-profiler:GetProfile\n - codeguru-profiler:DescribeProfilingGroup"
+        }
+      }
+    }
+  }
+}
+
+
+

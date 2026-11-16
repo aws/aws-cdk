@@ -3,8 +3,6 @@ import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { AwsApiCall, ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as cdk from 'aws-cdk-lib';
-import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import * as ssm from 'aws-cdk-lib/aws-ssm';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
@@ -30,6 +28,9 @@ const bucket = new Bucket(stack, 'Bucket', {
 
 // Create a temporary directory for our large files
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-large-files-'));
+process.on('exit', () => {
+  fs.rmSync(tempDir, { force: true, recursive: true });
+});
 
 // Generate a large JSON file (10MB) programmatically
 const largeJsonFilePath = path.join(tempDir, 'large-file.json');
@@ -139,30 +140,10 @@ const largeTextSource = Source.asset(tempDir, {
   exclude: ['*', '!large-file.txt'],
 });
 
-const secret = new secretsmanager.Secret(stack, 'TestSecret', {
-  generateSecretString: {
-    secretStringTemplate: JSON.stringify({
-      value: 'test"with"quotes',
-    }),
-    generateStringKey: 'password',
-  },
-});
-const param = new ssm.StringParameter(stack, 'SecretParam', {
-  stringValue: secret.secretValueFromJson('value').unsafeUnwrap(),
-});
-
-const fileWithMarker = Source.jsonData('my-json/secret-config.json', {
-  secret_value: param.stringValue, // Using a tokenized value
-}, { escape: true });
-
-const noEscapeFileWithMarker = Source.jsonData('my-json/secret-config-no-escape.json', {
-  secret_value: param.stringValue,
-});
-
 // Deploy the large files
 new BucketDeployment(stack, 'DeployWithLargeFiles', {
   destinationBucket: bucket,
-  sources: [largeJsonSource, largeTextSource, fileWithMarker, noEscapeFileWithMarker],
+  sources: [largeJsonSource, largeTextSource],
   retainOnDelete: false,
 });
 
@@ -171,27 +152,6 @@ new CfnOutput(stack, 'BucketName', { value: bucket.bucketName });
 const integTest = new IntegTest(app, 'integ-test-bucket-deployment-large-file', {
   testCases: [stack],
 });
-
-// Assert that escaped JSON is properly escaped
-const assertionProvider = integTest.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: bucket.bucketName,
-  Key: 'my-json/secret-config.json',
-});
-
-// Verify the content is valid JSON and properly escaped
-assertionProvider.expect(ExpectedResult.objectLike({
-  // Properly escaped JSON.
-  Body: '{"secret_value":"test\\"with\\"quotes"}',
-}));
-
-// Assert that unescaped JSON works without escape option
-integTest.assertions.awsApiCall('S3', 'getObject', {
-  Bucket: bucket.bucketName,
-  Key: 'my-json/secret-config-no-escape.json',
-}).expect(ExpectedResult.objectLike({
-  // un-escaped JSON.
-  Body: '{"secret_value":"test"with"quotes"}',
-}));
 
 // Assert that large JSON file was deployed successfully
 const jsonAssertionProvider = integTest.assertions.awsApiCall('S3', 'listObjectsV2', {

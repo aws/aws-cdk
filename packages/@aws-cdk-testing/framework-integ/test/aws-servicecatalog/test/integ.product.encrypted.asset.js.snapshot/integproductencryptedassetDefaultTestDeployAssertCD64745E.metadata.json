@@ -1,0 +1,20 @@
+{
+  "/integ-product-encrypted-asset/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integproductencryptedassetDefaultTestDeployAssertCD64745E.template.json"
+    }
+  ],
+  "/integ-product-encrypted-asset/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-product-encrypted-asset/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

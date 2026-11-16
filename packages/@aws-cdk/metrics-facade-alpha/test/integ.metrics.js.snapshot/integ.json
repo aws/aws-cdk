@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "Metrics-Test/DefaultTest": {
+      "stacks": [
+        "MetricsDashboard"
+      ],
+      "assertionStack": "Metrics-Test/DefaultTest/DeployAssert",
+      "assertionStackName": "MetricsTestDefaultTestDeployAssertA07A9F30"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
+}

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.licensemanagerusersubscriptions"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.LicenseManagerUserSubscriptions"
+    },
+    "python": {
+      "module": "aws_cdk.aws_licensemanagerusersubscriptions"
+    }
+  }
+}

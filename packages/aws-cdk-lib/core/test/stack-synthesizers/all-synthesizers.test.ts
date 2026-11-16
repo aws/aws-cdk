@@ -1,6 +1,6 @@
 import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { getAssetManifest, readAssetManifest } from './_helpers';
-import { Aws, CliCredentialsStackSynthesizer, LegacyStackSynthesizer } from '../../lib';
+import { Aws, CliCredentialsStackSynthesizer } from '../../lib';
 import { App } from '../../lib/app';
 import { Stack } from '../../lib/stack';
 import { DefaultStackSynthesizer } from '../../lib/stack-synthesizers/default-synthesizer';

@@ -3,7 +3,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { App, Stack } from '../../../core';
 import * as ecs from '../../lib';
-import { addDefaultCapacityProvider } from '../util';
+import { acknowledgeTestValidationRules, addDefaultCapacityProvider } from '../util';
 
 // Test various cross-stack Cluster/Service/ALB scenario's
 
@@ -25,6 +25,7 @@ describe('cross stack', () => {
     addDefaultCapacityProvider(cluster, stack1, vpc);
 
     stack2 = new Stack(app, 'Stack2');
+    acknowledgeTestValidationRules(stack2);
     const taskDefinition = new ecs.Ec2TaskDefinition(stack2, 'TD');
     const container = taskDefinition.addContainer('Main', {
       image: ecs.ContainerImage.fromRegistry('asdf'),

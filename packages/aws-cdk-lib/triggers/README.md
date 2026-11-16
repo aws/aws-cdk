@@ -18,7 +18,7 @@ triggered *during* deployment:
 import * as triggers from 'aws-cdk-lib/triggers';
 
 new triggers.TriggerFunction(this, 'MyTrigger', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(__dirname + '/my-trigger'),
 });
@@ -34,7 +34,7 @@ import * as triggers from 'aws-cdk-lib/triggers';
 
 const func = new lambda.Function(this, 'MyFunction', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   code: lambda.Code.fromInline('foo'),
 });
 

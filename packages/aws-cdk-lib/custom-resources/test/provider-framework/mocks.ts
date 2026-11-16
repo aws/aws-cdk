@@ -1,7 +1,9 @@
-import * as https from 'https';
+
+import type { OutgoingHttpHeaders } from 'http';
+import type * as https from 'https';
 import { parse as urlparse } from 'url';
-import { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
-import { StartExecutionCommandInput, StartExecutionInput } from '@aws-sdk/client-sfn';
+import type { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
+import type { StartExecutionCommandInput, StartExecutionInput } from '@aws-sdk/client-sfn';
 import * as consts from '../../lib/provider-framework/runtime/consts';
 
 export const MOCK_REQUEST = {
@@ -38,8 +40,8 @@ export async function httpRequestMock(options: https.RequestOptions, body: strin
   expect(options.path).toEqual(responseUrl.path);
   expect(options.hostname).toEqual(responseUrl.hostname);
   const headers = options.headers || {};
-  expect(headers['content-length']).toEqual(body.length);
-  expect(headers['content-type']).toStrictEqual('');
+  expect((headers as OutgoingHttpHeaders)['content-length']).toEqual(body.length);
+  expect((headers as OutgoingHttpHeaders)['content-type']).toStrictEqual('');
   cfnResponse = JSON.parse(body);
 
   if (!cfnResponse) { throw new Error('unexpected'); }
@@ -133,6 +135,7 @@ export function prepareForExecution() {
 export async function startExecutionMock(req: StartExecutionInput) {
   startStateMachineInput = req;
   expect(req.stateMachineArn).toEqual(MOCK_SFN_ARN);
+  expect(req.name).toBeUndefined();
   return {
     executionArn: req.stateMachineArn + '/execution',
     startDate: new Date(),

@@ -79,7 +79,7 @@ class CallDynamoDBStack extends cdk.Stack {
       .next(deleteItemTask);
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-      definition,
+      definitionBody: sfn.DefinitionBody.fromChainable(definition),
     });
 
     new cdk.CfnOutput(this, 'StateMachineArn', {

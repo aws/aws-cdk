@@ -7,7 +7,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 const app = new cdk.App({
   postCliContext: {
@@ -51,7 +51,7 @@ const sourceAction = new cpactions.S3SourceAction({
 
 const project = new codebuild.PipelineProject(stack, 'EcsProject', {
   environment: {
-    buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_DOCKER_17_09_0,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
     privileged: true,
   },
   buildSpec: codebuild.BuildSpec.fromObject({

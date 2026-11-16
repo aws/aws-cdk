@@ -1,20 +1,21 @@
 import { hashValues } from './util';
 import { InputValidator } from './validation';
-import * as iam from '../../../aws-iam';
-import * as sns from '../../../aws-sns';
-import * as cdk from '../../../core';
+import type * as iam from '../../../aws-iam';
+import type * as sns from '../../../aws-sns';
+import type * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
-import {
+import { lit } from '../../../core/lib/private/literal-string';
+import type {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions, StackSetsConstraintOptions,
   TagUpdateConstraintOptions, TemplateRule, TemplateRuleAssertion,
 } from '../constraints';
-import { IPortfolio } from '../portfolio';
-import { IProduct } from '../product';
+import type { IPortfolio } from '../portfolio';
+import type { IProduct } from '../product';
 import {
   CfnLaunchNotificationConstraint, CfnLaunchRoleConstraint, CfnLaunchTemplateConstraint, CfnPortfolioProductAssociation,
   CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOptionAssociation,
 } from '../servicecatalog.generated';
-import { TagOptions } from '../tag-options';
+import type { TagOptions } from '../tag-options';
 
 export class AssociationManager {
   public static associateProductWithPortfolio(
@@ -51,9 +52,9 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Cannot have multiple tag update constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError(lit`MultipleTagUpdateConstraintsNotAllowed`, `Cannot have multiple tag update constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 
@@ -71,9 +72,9 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Topic ${topic.node.path} is already subscribed to association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError(lit`TopicAlreadySubscribedToAssociation`, `Topic ${topic.node.path} is already subscribed to association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 
@@ -94,9 +95,9 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Provisioning rule ${options.rule.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError(lit`ProvisioningRuleAlreadyConfigured`, `Provisioning rule ${options.rule.ruleName} already configured on association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 
@@ -116,7 +117,7 @@ export class AssociationManager {
     const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a launch role has already been set.
     if (portfolio.node.tryFindChild(this.launchRoleConstraintLogicalId(association.associationKey))) {
-      throw new ValidationError(`Cannot configure StackSet deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError(lit`CannotConfigureStackSetWithLaunchRole`, `Cannot configure StackSet deployment when a launch role is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
 
     const constructId = this.stackSetConstraintLogicalId(association.associationKey);
@@ -134,9 +135,9 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Cannot configure multiple StackSet deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError(lit`MultipleStackSetConstraintsNotAllowed`, `Cannot configure multiple StackSet deployment constraints for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 
@@ -159,7 +160,7 @@ export class AssociationManager {
     const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a stackset deployment constraint has already been configured.
     if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
-      throw new ValidationError(`Cannot set launch role when a StackSet rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError(lit`CannotSetLaunchRoleWithStackSet`, `Cannot set launch role when a StackSet rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
 
     const constructId = this.launchRoleConstraintLogicalId(association.associationKey);
@@ -174,9 +175,9 @@ export class AssociationManager {
       });
 
       // Add dependsOn to force proper order in deployment.
-      constraint.addDependency(association.cfnPortfolioProductAssociation);
+      constraint.addResourceDependency(association.cfnPortfolioProductAssociation);
     } else {
-      throw new ValidationError(`Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
+      throw new ValidationError(lit`MultipleLaunchRolesNotAllowed`, `Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`, portfolio);
     }
   }
 

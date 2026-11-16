@@ -1,6 +1,6 @@
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { Stack, aws_ec2 as ec2, aws_elasticloadbalancingv2 as elbv2, App } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 class TestStack extends Stack {
   public readonly lbWithSg: elbv2.NetworkLoadBalancer;

@@ -1,4 +1,4 @@
-import { CfnEndpointGroup } from './globalaccelerator.generated';
+import type { CfnEndpointGroup } from './globalaccelerator.generated';
 
 /**
  * An endpoint for the endpoint group

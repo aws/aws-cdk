@@ -1,8 +1,9 @@
-import { loadAwsServiceSpec } from '@aws-cdk/aws-service-spec';
-import { generate as generateModules } from '../generate';
-import { ModuleMap, readModuleMap } from '../module-topology';
+import { generate as generateModules, loadPatchedSpec } from '../generate';
+import type { ModuleMap, ModuleMapScope } from '../module-topology';
+import { readModuleMap } from '../module-topology';
 import * as naming from '../naming';
 import { jsii } from '../util';
+import { CANNED_METRICS_SUFFIX } from './submodules';
 import { getAllScopes } from '../util/db';
 
 /**
@@ -25,6 +26,34 @@ export interface GenerateAllOptions {
    * @default false
    */
   readonly autoGenerateSuffixes?: boolean;
+
+  /**
+   * Whether the modules being generated are considered stable
+   *
+   * @default true
+   */
+  readonly isStable?: boolean;
+
+  /**
+   * If specified, only generate code for the service that corresponds to this module name.
+   * Takes precedence over `skippedServices`.
+   *
+   * @default - generate all modules
+   */
+  readonly singleModule?: string;
+
+  /**
+   * The orgs to generate code for. An org is the first part of a CloudFormation type name, e.g. `AWS` in `AWS::S3::Bucket`.
+   *
+   * Services of any other org are skipped, along with their resources.
+   *
+   * Mutually exclusive with `singleModule`, whose module name already selects the services.
+   * Exactly one of the two must be specified.
+   *
+   * @example ['AWS', 'Alexa']
+   * @default - none, `singleModule` must be specified instead
+   */
+  readonly orgs?: string[];
 }
 
 /**
@@ -37,17 +66,34 @@ export interface GenerateAllOptions {
  * Code-generates all L1s, and writes the necessary index files.
  *
  * @param outPath The root directory to generate L1s in
- * @param param1  Options
+ * @param alphaRootDir The root directory to generate grant modules for grants configured in alpha packages
  * @returns       A ModuleMap containing the ModuleDefinition and CFN scopes for each generated module.
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, skippedServices }: GenerateAllOptions,
+  { scopeMapPath, skippedServices, isStable, singleModule, orgs }: GenerateAllOptions,
 ): Promise<ModuleMap> {
-  const db = await loadAwsServiceSpec();
-  const allScopes = getAllScopes(db, 'cloudFormationNamespace');
-  const scopes = skippedServices ? allScopes.filter((scope) => !skippedServices.includes(scope.namespace)) : allScopes;
-  const moduleMap = readModuleMap(scopeMapPath);
+  if (singleModule != null && orgs != null) {
+    throw new Error('Specify only one of orgs and singleModule');
+  }
+  if (singleModule == null && orgs == null) {
+    throw new Error('Specify one of orgs and singleModule');
+  }
+
+  const db = await loadPatchedSpec();
+  const allScopes = getAllScopes(db, orgs, 'cloudFormationNamespace');
+
+  let scopes: ModuleMapScope[];
+  if (singleModule != null) {
+    scopes = allScopes.filter((scope) => {
+      const moduleName = naming.modulePartsFromNamespace(scope.namespace).moduleName;
+      return moduleName === singleModule;
+    });
+  } else {
+    scopes = skippedServices ? allScopes.filter((scope) => !skippedServices.includes(scope.namespace)) : allScopes;
+  }
+
+  const moduleMap = singleModule == null ? readModuleMap(scopeMapPath): {};
 
   // Make sure all scopes have their own dedicated package/namespace.
   // Adds new submodules for new namespaces.
@@ -82,11 +128,16 @@ export async function generateAll(
     {
       outputPath: outPath,
       clearOutput: false,
-      inCdkLib: true,
-      filePatterns: {
-        resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
-        augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
-        cannedMetrics: '%moduleName%/lib/%serviceShortName%-canned-metrics.generated.ts',
+      isStable,
+      orgs,
+      builderProps: {
+        inCdkLib: true,
+        filePatterns: {
+          resources: '%moduleName%/lib/%serviceShortName%.generated.ts',
+          augmentations: '%moduleName%/lib/%serviceShortName%-augmentations.generated.ts',
+          cannedMetrics: `%moduleName%/lib/%serviceShortName%${CANNED_METRICS_SUFFIX}`,
+          grants: `${isStable ? '%moduleName%/' : ''}lib/%serviceShortName%-grants.generated.ts`,
+        },
       },
     },
   );

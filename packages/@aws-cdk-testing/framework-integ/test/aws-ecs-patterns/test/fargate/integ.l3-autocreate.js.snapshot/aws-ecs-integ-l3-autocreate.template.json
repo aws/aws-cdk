@@ -726,6 +726,14 @@
      }
     ],
     "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "NLBFargateServiceLBSecurityGroup4E9972CC",
+       "GroupId"
+      ]
+     }
+    ],
     "Subnets": [
      {
       "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1Subnet3C273B99"
@@ -742,6 +750,36 @@
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520",
     "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C"
    ]
+  },
+  "NLBFargateServiceLBSecurityGroup4E9972CC": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB awsecsintegl3autocreateNLBFargateServiceLB8BCF6203",
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
+   }
+  },
+  "NLBFargateServiceLBSecurityGrouptoawsecsintegl3autocreateNLBFargateServiceSecurityGroup4E46ADC380FFB3D8AD": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "to awsecsintegl3autocreateNLBFargateServiceSecurityGroup4E46ADC3:80",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "NLBFargateServiceSecurityGroup9D81388B",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NLBFargateServiceLBSecurityGroup4E9972CC",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 80
+   }
   },
   "NLBFargateServiceLBPublicListenerB0DCA73C": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
@@ -956,6 +994,30 @@
     "VpcId": {
      "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
     }
+   },
+   "DependsOn": [
+    "NLBFargateServiceTaskDefTaskRole6C88F40B"
+   ]
+  },
+  "NLBFargateServiceSecurityGroupfromawsecsintegl3autocreateNLBFargateServiceLBSecurityGroup8F2082EC80A3DE63EF": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awsecsintegl3autocreateNLBFargateServiceLBSecurityGroup8F2082EC:80",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NLBFargateServiceSecurityGroup9D81388B",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "NLBFargateServiceLBSecurityGroup4E9972CC",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
    },
    "DependsOn": [
     "NLBFargateServiceTaskDefTaskRole6C88F40B"

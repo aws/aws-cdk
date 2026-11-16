@@ -5,7 +5,7 @@ import * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cdk from '../../core';
 import * as ecr from '../lib';
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('repository', () => {
   describe('lookup', () => {
@@ -194,7 +194,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // eslint-disable-next-line max-len
+
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
     });
@@ -211,7 +211,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // eslint-disable-next-line max-len
+
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPatternList":["abc*"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
     });
@@ -272,7 +272,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // eslint-disable-next-line max-len
+
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPatternList":["abc*d*e*f*"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
     });
@@ -335,7 +335,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // eslint-disable-next-line max-len
+
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":5,"countUnit":"days"},"action":{"type":"expire"}}]}',
       },
     });
@@ -354,7 +354,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // eslint-disable-next-line max-len
+
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     });
@@ -372,7 +372,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // eslint-disable-next-line max-len
+
         LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["b"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}},{"rulePriority":11,"selection":{"tagStatus":"tagged","tagPrefixList":["a"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     });
@@ -390,7 +390,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       LifecyclePolicy: {
-        // eslint-disable-next-line max-len
+
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["important"],"countType":"imageCountMoreThan","countNumber":999},"action":{"type":"expire"}},{"rulePriority":2,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     });
@@ -410,7 +410,7 @@ describe('repository', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       'LifecyclePolicy': {
-        // eslint-disable-next-line max-len
+
         'LifecyclePolicyText': '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},"action":{"type":"expire"}}]}',
       },
     });
@@ -497,7 +497,7 @@ describe('repository', () => {
 
     // WHEN/THEN
     expect(() => {
-      ecr.Repository.fromRepositoryArn(stack, 'arn', cdk.Fn.getAtt('Boom', 'Boom').toString());
+      ecr.Repository.fromRepositoryArn(stack, 'arn', cdk.Fn.importValue('Arn').toString());
     }).toThrow(/\"repositoryArn\" is a late-bound value, and therefore \"repositoryName\" is required\. Use \`fromRepositoryAttributes\` instead/);
   });
 
@@ -507,8 +507,8 @@ describe('repository', () => {
 
     // WHEN
     const repo = ecr.Repository.fromRepositoryAttributes(stack, 'Repo', {
-      repositoryArn: cdk.Fn.getAtt('Boom', 'Arn').toString(),
-      repositoryName: cdk.Fn.getAtt('Boom', 'Name').toString(),
+      repositoryArn: cdk.Fn.importValue('Arn').toString(),
+      repositoryName: cdk.Fn.importValue('Name').toString(),
     });
     new cdk.CfnOutput(stack, 'RepoArn', {
       value: repo.repositoryArn,
@@ -519,10 +519,10 @@ describe('repository', () => {
 
     // THEN
     Template.fromStack(stack).hasOutput('*', {
-      Value: { 'Fn::GetAtt': ['Boom', 'Arn'] },
+      Value: { 'Fn::ImportValue': 'Arn' },
     });
     Template.fromStack(stack).hasOutput('*', {
-      Value: { 'Fn::GetAtt': ['Boom', 'Name'] },
+      Value: { 'Fn::ImportValue': 'Name' },
     });
   });
 
@@ -561,7 +561,7 @@ describe('repository', () => {
   test('arnForLocalRepository can be used to render an ARN for a local repository', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const repoName = cdk.Fn.getAtt('Boom', 'Name').toString();
+    const repoName = cdk.Fn.importValue('Name').toString();
 
     // WHEN
     const repo = ecr.Repository.fromRepositoryAttributes(stack, 'Repo', {
@@ -577,7 +577,7 @@ describe('repository', () => {
 
     // THEN
     Template.fromStack(stack).hasOutput('*', {
-      Value: { 'Fn::GetAtt': ['Boom', 'Name'] },
+      Value: { 'Fn::ImportValue': 'Name' },
     });
     Template.fromStack(stack).hasOutput('*', {
       Value: {
@@ -589,7 +589,7 @@ describe('repository', () => {
           ':',
           { Ref: 'AWS::AccountId' },
           ':repository/',
-          { 'Fn::GetAtt': ['Boom', 'Name'] },
+          { 'Fn::ImportValue': 'Name' },
         ]],
       },
     });

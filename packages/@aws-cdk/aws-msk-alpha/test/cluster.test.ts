@@ -1,13 +1,13 @@
+import * as core from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as core from 'aws-cdk-lib';
 import * as msk from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 describe('MSK Cluster', () => {
   let stack: core.Stack;
   let vpc: ec2.IVpc;
@@ -1016,6 +1016,24 @@ describe('MSK Cluster', () => {
       });
     });
 
+    test('create a cluster with express broker and Kafka version 4.2.x', () => {
+      new msk.Cluster(expressStack, 'ExpressCluster', {
+        clusterName: 'express-cluster',
+        kafkaVersion: msk.KafkaVersion.V4_2_X_KRAFT,
+        vpc: expressVpc,
+        instanceType: ec2.InstanceType.of(
+          ec2.InstanceClass.M7G,
+          ec2.InstanceSize.XLARGE,
+        ),
+        brokerType: msk.BrokerType.EXPRESS,
+      });
+
+      Template.fromStack(expressStack).hasResourceProperties('AWS::MSK::Cluster', {
+        BrokerNodeGroupInfo: { InstanceType: 'express.m7g.xlarge' },
+        KafkaVersion: '4.2.x.kraft',
+      });
+    });
+
     test('fails when instanceType is not specified', () => {
       expect(() => {
         new msk.Cluster(expressStack, 'ExpressClusterNoInstanceType', {
@@ -1106,7 +1124,7 @@ describe('MSK Cluster', () => {
           ),
           brokerType: msk.BrokerType.EXPRESS,
         });
-      }).toThrow('Express brokers are only supported with Apache Kafka 3.6.x and 3.8.x, got 2.6.1');
+      }).toThrow('Express brokers are only supported with Apache Kafka 3.6, 3.8, 3.9, 4.2, got 2.6.1');
     });
   });
 });

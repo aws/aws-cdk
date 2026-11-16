@@ -10,10 +10,12 @@ import * as sqs from '../../../aws-sqs';
 import { Queue } from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import * as ecsPatterns from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 test('test ECS queue worker service construct - with only required props', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -90,6 +92,7 @@ test('test ECS queue worker service construct - with only required props', () =>
 test('test ECS queue worker service construct - with optional props for queues', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -170,6 +173,7 @@ test('test ECS queue worker service construct - with optional props for queues',
 test('test ECS queue worker service construct - with ECS Exec', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -252,6 +256,7 @@ test('test ECS queue worker service construct - with ECS Exec', () => {
 testDeprecated('test ECS queue worker service construct - with optional props', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -355,6 +360,7 @@ testDeprecated('test ECS queue worker service construct - with optional props', 
 testDeprecated('throws if desiredTaskCount and maxScalingCapacity are 0', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -379,6 +385,7 @@ testDeprecated('throws if desiredTaskCount and maxScalingCapacity are 0', () => 
 test('can set custom containerName', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -410,6 +417,7 @@ test('can set custom containerName', () => {
 test('can set capacity provider strategies', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
@@ -450,6 +458,7 @@ test('can set capacity provider strategies', () => {
 it('can set queue props by queue construct', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -497,6 +506,7 @@ it('can set queue props by queue construct', () => {
 it('can set queue props by QueueProcessingServiceBaseProps', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
   cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
@@ -535,6 +545,7 @@ it('can set queue props by QueueProcessingServiceBaseProps', () => {
 it('throws validation errors of the specific queue prop, when setting queue and queue related props at same time', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const queue = new Queue(stack, 'Queue');
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
@@ -572,6 +583,7 @@ it('throws validation errors of the specific queue prop, when setting queue and 
 test('throws if image is undefined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'VPC');
   // WHEN
   expect(() => {

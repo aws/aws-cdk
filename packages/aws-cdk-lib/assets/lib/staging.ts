@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
-import { FingerprintOptions } from './fs/options';
+import type { FingerprintOptions } from './fs/options';
 import { AssetStaging } from '../../core';
 
 /**

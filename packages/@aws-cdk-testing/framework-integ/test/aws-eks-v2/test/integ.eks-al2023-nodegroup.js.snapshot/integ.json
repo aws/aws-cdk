@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-al2023-nodegroup/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-al2023-nodegroup-test"
+      ],
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-eks-cluster-al2023-nodegroup/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusteral2023nodegroupDefaultTestDeployAssert96F213C8"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.0"
+}

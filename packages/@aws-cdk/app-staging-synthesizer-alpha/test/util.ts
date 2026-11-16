@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import type * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 
 export const CFN_CONTEXT = {

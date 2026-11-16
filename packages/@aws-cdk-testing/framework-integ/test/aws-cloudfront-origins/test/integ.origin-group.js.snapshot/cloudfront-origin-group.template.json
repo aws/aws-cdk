@@ -15,14 +15,32 @@
      "Statement": [
       {
        "Action": "s3:GetObject",
+       "Condition": {
+        "StringEquals": {
+         "AWS:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "Distribution830FAC52"
+            }
+           ]
+          ]
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
-        "CanonicalUser": {
-         "Fn::GetAtt": [
-          "DistributionOrigin1S3Origin5F5C0696",
-          "S3CanonicalUserId"
-         ]
-        }
+        "Service": "cloudfront.amazonaws.com"
        },
        "Resource": {
         "Fn::Join": [
@@ -44,11 +62,14 @@
     }
    }
   },
-  "DistributionOrigin1S3Origin5F5C0696": {
-   "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+  "DistributionOrigin1S3OriginAccessControlEB606076": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
    "Properties": {
-    "CloudFrontOriginAccessIdentityConfig": {
-     "Comment": "Identity for cloudfrontorigingroupDistributionOrigin137659A54"
+    "OriginAccessControlConfig": {
+     "Name": "cloudfrontorigingroupDistribOrigin1S3OriginAccessControlC4868AFC",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
     }
    }
   },
@@ -113,18 +134,14 @@
         ]
        },
        "Id": "cloudfrontorigingroupDistributionOrigin137659A54",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "DistributionOrigin1S3OriginAccessControlEB606076",
+         "Id"
+        ]
+       },
        "S3OriginConfig": {
-        "OriginAccessIdentity": {
-         "Fn::Join": [
-          "",
-          [
-           "origin-access-identity/cloudfront/",
-           {
-            "Ref": "DistributionOrigin1S3Origin5F5C0696"
-           }
-          ]
-         ]
-        }
+        "OriginAccessIdentity": ""
        }
       },
       {

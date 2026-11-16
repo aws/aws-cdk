@@ -17,9 +17,6 @@ new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
     familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
     email: ProviderAttribute.GOOGLE_EMAIL,
     gender: ProviderAttribute.GOOGLE_GENDER,
-    custom: {
-      names: ProviderAttribute.GOOGLE_NAMES,
-    },
   },
 });
 const otherPool = new UserPool(stack, 'OtherPool');
@@ -30,9 +27,6 @@ new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
   attributeMapping: {
     givenName: ProviderAttribute.AMAZON_NAME,
     email: ProviderAttribute.AMAZON_EMAIL,
-    custom: {
-      userId: ProviderAttribute.AMAZON_USER_ID,
-    },
   },
 });
 const client = userPool.addClient('testClient');

@@ -1,11 +1,14 @@
-import { Construct } from 'constructs';
-import {
-  CfnCloudFrontOriginAccessIdentity,
+import type { Construct } from 'constructs';
+import type {
   CloudFrontOriginAccessIdentityReference,
   ICloudFrontOriginAccessIdentityRef,
 } from './cloudfront.generated';
+import {
+  CfnCloudFrontOriginAccessIdentity,
+} from './cloudfront.generated';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -154,7 +157,10 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
    *
    * @attribute
    */
-  public readonly originAccessIdentityId: string;
+  @memoizedGetter
+  public get originAccessIdentityId(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
 
   public readonly cloudFrontOriginAccessIdentityRef: CloudFrontOriginAccessIdentityReference;
 
@@ -174,8 +180,6 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
       cloudFrontOriginAccessIdentityConfig: { comment },
     });
     this.cloudFrontOriginAccessIdentityRef = this.resource.cloudFrontOriginAccessIdentityRef;
-    // physical id - OAI Id
-    this.originAccessIdentityId = this.getResourceNameAttribute(this.resource.ref);
 
     // Canonical user to grant access to in the S3 Bucket Policy
     this.cloudFrontOriginAccessIdentityS3CanonicalUserId = this.resource.attrS3CanonicalUserId;

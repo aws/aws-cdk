@@ -4,13 +4,13 @@
 
 /// !cdk-integ aws-cdk-bedrock-agentcore-memory-1
 
-import * as cdk from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
-import * as agentcore from '../../../agentcore';
 import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import * as kms from 'aws-cdk-lib/aws-kms';
+import * as agentcore from '../../../lib';
 
 const app = new cdk.App();
 
@@ -86,8 +86,19 @@ new agentcore.Memory(stack, 'MemoryWithSelfManagedStrategy', {
   ],
 });
 
+// Create a memory with built-in episodic strategy
+new agentcore.Memory(stack, 'MemoryWithBuiltinEpisodicEx', {
+  memoryName: 'memory_with_builtin_episodic_example',
+  description: 'A test memory with built-in episodic strategy',
+  expirationDuration: cdk.Duration.days(90),
+  memoryStrategies: [
+    agentcore.MemoryStrategy.usingBuiltInEpisodic(),
+  ],
+});
+
 new integ.IntegTest(app, 'BedrockAgentCoreMemory', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ca-central-1', 'eu-central-1', 'eu-north-1', 'eu-west-1', 'eu-west-2', 'eu-west-3', 'ap-northeast-1', 'ap-northeast-2', 'ap-south-1', 'ap-southeast-1', 'ap-southeast-2'], // Bedrock Agent Core is only available in these regions
 });
 
 app.synth();
