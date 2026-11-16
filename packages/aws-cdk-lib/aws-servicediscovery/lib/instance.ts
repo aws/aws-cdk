@@ -49,6 +49,7 @@ export abstract class InstanceBase extends Resource implements IInstance {
 
   public get instanceRef(): InstanceReference {
     return {
+      serviceId: this.service.serviceId,
       instanceId: this.instanceId,
     };
   }

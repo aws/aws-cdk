@@ -1,0 +1,50 @@
+{
+  "/BatchConsumableResourceIntegTest/ReplenishableResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BatchConsumableResourceIntegTest/NonReplenishableResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BatchConsumableResourceIntegTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BatchConsumableResourceIntegTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BatchConsumableResourceIntegTest/ReplenishableResource/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplenishableResourceA1CB5048"
+    }
+  ],
+  "/BatchConsumableResourceIntegTest/NonReplenishableResource/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NonReplenishableResourceA53BF4E2"
+    }
+  ],
+  "/BatchConsumableResourceIntegTest/Exports/Output{\"Ref\":\"ReplenishableResourceA1CB5048\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefReplenishableResourceA1CB5048B849E5AD"
+    }
+  ],
+  "/BatchConsumableResourceIntegTest/Exports/Output{\"Ref\":\"NonReplenishableResourceA53BF4E2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefNonReplenishableResourceA53BF4E2EFAB513D"
+    }
+  ]
+}

@@ -3,9 +3,9 @@ import type { IConstruct } from 'constructs';
 import type { LiteralString } from './private/literal-string';
 import { constructInfoFromConstruct } from './private/runtime-info';
 import { enhancedStackTrace } from './private/stack-trace';
-import type { AssertionError } from '../../assertions/lib/private/error';
 import { ERRORFILE_ENV } from '../../cx-api';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
+import type { AssertionError } from '../../matching/lib/private/error';
 
 const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
 const VALIDATION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ValidationError');

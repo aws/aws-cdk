@@ -384,6 +384,7 @@ export class RecordSet extends Resource implements IRecordSet {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-route53.RecordSet';
   public readonly domainName: string;
+  private readonly recordType: RecordType;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
   private readonly region?: string;
@@ -393,6 +394,7 @@ export class RecordSet extends Resource implements IRecordSet {
   public get recordSetRef(): RecordSetReference {
     return {
       recordSetName: this.domainName,
+      type: this.recordType,
     };
   }
 
@@ -440,6 +442,7 @@ export class RecordSet extends Resource implements IRecordSet {
       }
     }
 
+    this.recordType = props.recordType;
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;
     this.region = props.region;

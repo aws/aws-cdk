@@ -243,6 +243,63 @@ describe('vpc endpoint', () => {
 
       expect(() => vpc.addGatewayEndpoint('Gateway', { service: GatewayVpcEndpointAwsService.S3 })).toThrow(/route table/);
     });
+
+    test('gateway endpoint with ipAddressType', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      new GatewayVpcEndpoint(stack, 'Endpoint', {
+        vpc,
+        service: GatewayVpcEndpointAwsService.S3,
+        ipAddressType: VpcEndpointIpAddressType.DUALSTACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        VpcEndpointType: 'Gateway',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test('gateway endpoint with dnsRecordIpType', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      new GatewayVpcEndpoint(stack, 'Endpoint', {
+        vpc,
+        service: GatewayVpcEndpointAwsService.S3,
+        dnsRecordIpType: VpcEndpointDnsRecordIpType.IPV6,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        VpcEndpointType: 'Gateway',
+        DnsOptions: { DnsRecordIpType: 'ipv6' },
+      });
+    });
+
+    test('gateway endpoint without ipAddressType or dnsRecordIpType omits those fields', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VpcNetwork');
+
+      // WHEN
+      new GatewayVpcEndpoint(stack, 'Endpoint', {
+        vpc,
+        service: GatewayVpcEndpointAwsService.S3,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        VpcEndpointType: 'Gateway',
+        IpAddressType: Match.absent(),
+        DnsOptions: Match.absent(),
+      });
+    });
   });
 
   describe('interface endpoint', () => {
@@ -872,6 +929,15 @@ describe('vpc endpoint', () => {
       });
     });
 
+    test('EKS_PROXY uses the com.amazonaws prefix in eusc-de-east-1', () => {
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'eusc-de-east-1' } });
+      new Vpc(stack, 'VPC').addInterfaceEndpoint('EksProxy', { service: InterfaceVpcEndpointAwsService.EKS_PROXY });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.eusc-de-east-1.eks-proxy',
+      });
+    });
+
     test.each([
       ['ecr.api', InterfaceVpcEndpointAwsService.ECR],
       ['ecr.dkr', InterfaceVpcEndpointAwsService.ECR_DOCKER],
@@ -1128,6 +1194,30 @@ describe('vpc endpoint', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.us-west-2.application-autoscaling',
+      });
+    });
+
+    test('test sso vpc interface endpoints in us-west-2', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('SSO Endpoint', {
+        service: InterfaceVpcEndpointAwsService.IAM_IDENTITY_CENTER_SSO,
+      });
+
+      vpc.addInterfaceEndpoint('SSO OAuth Endpoint', {
+        service: InterfaceVpcEndpointAwsService.IAM_IDENTITY_CENTER_SSO_OAUTH,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.sso',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.sso-oauth',
       });
     });
 

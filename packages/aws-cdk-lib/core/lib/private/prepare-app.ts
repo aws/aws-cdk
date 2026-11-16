@@ -1,10 +1,10 @@
 import type { IConstruct } from 'constructs';
-import { resolveReferences } from './refs';
+import { resolveReferences, resolveReferencesInElements } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { debugModeEnabled } from '../debug';
 import type { Stack } from '../stack';
-import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
-import { STACK_TYPE, stageOf } from './core-construct-finders';
+import { iterateDfsPostorderStopAtStage, iterateDfsPreorder } from './construct-iteration';
+import { STACK_TYPE, STAGE_TYPE, stageOf } from './core-construct-finders';
 import { reifyConstructDependencies } from './deps';
 import { writePropertyAssignmentMetadataForConstruct } from './resolve';
 
@@ -38,16 +38,13 @@ export function prepareApp(root: IConstruct) {
   resolveReferences(root);
   writePropertyAssignmentMetadata(root);
 
-  // depth-first (children first) queue of nested stacks. We will pop a stack
-  // from the head of this queue to prepare its template asset.
-  //
-  // Depth-first since the a nested stack's template hash will be reflected in
-  // its parent's template, which then changes the parent's hash, etc.
-  const queue = findAllNestedStacks(root);
+  // Depth-first (children first) list of nested stacks, since a nested stack's
+  // template hash will be reflected in its parent's template, which then
+  // changes the parent's hash, etc.
+  const nestedStacks = findAllNestedStacks(root);
 
-  if (queue.length > 0) {
-    while (queue.length > 0) {
-      const nested = queue.shift()!;
+  if (nestedStacks.length > 0) {
+    for (const nested of nestedStacks) {
       defineNestedStackAsset(nested);
     }
 
@@ -56,12 +53,17 @@ export function prepareApp(root: IConstruct) {
     // Adding nested stack assets may have added CfnParameters to the top-level
     // stack which are referenced in a deeper-level stack. The values of these
     // parameters need to be carried through to the right location via Nested
-    // Stack parameters, which `resolveReferences()` will do.
+    // Stack parameters, which reference resolution will do.
+    //
+    // Everything a nested stack asset introduces (the template URL, the stack
+    // parameters and the copied tags) is consumed by that nested stack's own
+    // `AWS::CloudFormation::Stack` resource, so only those resources need to be
+    // revisited.
     //
     // Yes, this may add `Parameter` elements to a template whose hash has
     // already been calculated, but the invariant that if the functional part
     // of the template changes its hash will change is still upheld.
-    resolveReferences(root);
+    resolveReferencesInElements(nestedStacks.map(s => s.nestedStackResource!));
   }
 }
 
@@ -80,19 +82,18 @@ function defineNestedStackAsset(nestedStack: Stack) {
 function findAllNestedStacks(root: IConstruct) {
   const result = new Array<Stack>();
 
+  // Preserve legacy behavior: when synthesizing a bare Stack that lives inside a
+  // Stage/App, the Stage owns nested stack assets, not us.
+  if (!STAGE_TYPE.isMarked(root) && stageOf(root)) { return result; }
+
   const includeStack = (stack: IConstruct): stack is Stack => {
     if (!STACK_TYPE.isMarked(stack)) { return false; }
-    if (!stack.nested) { return false; }
-
-    // test: if we are not within a stage, then include it.
-    if (!stageOf(stack)) { return true; }
-
-    return stageOf(stack) === root;
+    return stack.nested;
   };
 
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
-  for (const node of iterateDfsPostorder(root)) { /* <== important to use postorder */
+  for (const node of iterateDfsPostorderStopAtStage(root)) { /* <== important to use postorder */
     if (includeStack(node)) {
       result.push(node);
     }

@@ -1,0 +1,132 @@
+{
+  "/integ-sfn-start-execution-jsonata/Child": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Parent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Child/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Child/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChildDAB30558"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Parent/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Parent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Parent8B210403"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Exports/Output{\"Ref\":\"Parent8B210403\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefParent8B210403B455DBC1"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Child/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ChildRole1E3E0EF5"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Parent/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParentRole5F0C366C"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Parent/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-sfn-start-execution-jsonata/Parent/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ParentRoleDefaultPolicy9BDC56DC"
+    }
+  ]
+}

@@ -43,7 +43,7 @@ export interface OidcProviderNativeProps extends OpenIdConnectProviderProps {}
  * This implementation has default values for thumbprints and clientIds props
  * that will be compatible with the eks cluster
  *
- * @see http://openid.net/connect
+ * @see https://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
  * **For new projects, it is recommended to use `OidcProviderNative` instead which creates the OIDC provider using the native CloudFormation resource (AWS::IAM::OIDCProvider).**
@@ -85,7 +85,7 @@ export class OpenIdConnectProvider extends iam.OpenIdConnectProvider {
  * This implementation uses the native CloudFormation resource and has default
  * values for thumbprints and clientIds props that will be compatible with the eks cluster.
  *
- * @see http://openid.net/connect
+ * @see https://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
  * @resource AWS::IAM::OIDCProvider

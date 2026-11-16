@@ -32,6 +32,7 @@ describe('stack', () => {
       { id: 'CloudFormation-Validate::F3003', reason: "For cross-stack tests, we don't care about property names being valid" },
       { id: 'CloudFormation-Validate::E9004', reason: 'We are using non-existing property names' },
       { id: 'CloudFormation-Validate::F6101', reason: 'We are doing nonsensical type manipulations in these tests' },
+      { id: 'CloudFormation-Validate::E2001', reason: 'We are using Fn::ImportValue where they are not allowed' },
     );
     return app;
   }
@@ -82,6 +83,20 @@ describe('stack', () => {
     // THEN
     expect(stack.stackName).toBe('ValidStackName');
     expect(stack.artifactId).toBe(expected);
+  });
+
+  test('getter values involving tokens return the same value every invocation', () => {
+    const app = new App({});
+
+    // WHEN
+    const stack = new Stack(app, 'Stack');
+
+    // THEN
+    expect(stack.availabilityZones).toEqual(stack.availabilityZones);
+    expect(stack.partition).toEqual(stack.partition);
+    expect(stack.urlSuffix).toEqual(stack.urlSuffix);
+    expect(stack.stackId).toEqual(stack.stackId);
+    expect(stack.notificationArns).toEqual(stack.notificationArns);
   });
 
   test('stack objects have some template-level properties, such as Description, Version, Transform', () => {
@@ -1163,6 +1178,37 @@ describe('stack', () => {
     );
     expect(relevantWarnings).toHaveLength(1);
     expect(relevantWarnings[0].path).toContain('Stack2');
+  });
+
+  test.each(['up', 'down'])('no cross-stack reference flag warning when referencing %s across nested stacks', (direction) => {
+    // GIVEN - context flag explicitly set to 'strong'
+    const app = makeCrossStackApp();
+    const stack1 = new Stack(app, 'Stack1');
+    const stack2 = new NestedStack(stack1, 'Stack2');
+
+    // WHEN
+    if (direction === 'up') {
+      const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+      new CfnResource(stack2, 'Resource2', {
+        type: 'AWS::S3::Bucket',
+        properties: { Prop1: resource1.getAtt('Arn') },
+      });
+    } else {
+      const resource2 = new CfnResource(stack2, 'Resource2', { type: 'AWS::S3::Bucket' });
+      new CfnResource(stack1, 'Resource1', {
+        type: 'AWS::S3::Bucket',
+        properties: { Prop1: resource2.getAtt('Arn') },
+      });
+    }
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - no warning because nested stacks are not cross-stack references
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesDefaultStrong'),
+    );
+    expect(relevantWarnings).toHaveLength(0);
   });
 
   test('cross-region strong references use ExportWriter/ExportReader', () => {
@@ -2397,7 +2443,7 @@ describe('stack', () => {
     const app = makeCrossStackApp();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
     const account1 = new ScopedAws(stack1).accountId;
-    const stack2 = new Stack(app, 'Stack2', { env: { account: '11111111111', region: 'es-norst-2' } });
+    const stack2 = new Stack(app, 'Stack2', { env: { account: '111111111111', region: 'es-norst-2' } });
 
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
@@ -2961,7 +3007,7 @@ describe('stack', () => {
   test('account id passed in stack environment must be a string', () => {
     // GIVEN
     const envConfig: any = {
-      account: 11111111111,
+      account: 111111111111,
     };
 
     // WHEN
@@ -3045,6 +3091,41 @@ describe('stack', () => {
     // THEN
     const metadata = res.node.metadata.find(m => m.type === 'aws:cdk:creationStack');
     expect(metadata).toBeDefined();
+  });
+
+  test('stack adds template-producer metadata to the cloud assembly', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateProducerEntries = artifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    expect(templateProducerEntries).toEqual([
+      { path: '/MyStack', type: cxapi.CDK_TEMPLATE_FILE_KEY, data: stack.templateFile },
+    ]);
+  });
+
+  test('stack inside a Stage has a nested-assembly-relative template path in template-producer metadata', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stage = new Stage(app, 'MyStage');
+    const stack = new Stack(stage, 'MyStack');
+
+    // WHEN
+    const rootAssembly = app.synth();
+    const stageAssembly = rootAssembly.getNestedAssembly(stage.artifactId);
+    const artifact = stageAssembly.getStackArtifact(stack.artifactId);
+
+    // THEN — templateFile is just the filename, relative to the nested assembly directory
+    const templateProducerEntries = artifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    expect(templateProducerEntries).toEqual([
+      { path: '/MyStage/MyStack', type: cxapi.CDK_TEMPLATE_FILE_KEY, data: stack.templateFile },
+    ]);
+    expect(stack.templateFile).not.toContain('/');
   });
 });
 

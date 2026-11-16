@@ -1,0 +1,25 @@
+{
+  "Description": "S3_SECURE_TRANSPORT fires: the Deny statement denies HTTPS requests instead of plain HTTP ones",
+  "Resources": {
+    "InvertedTransportBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": "example-bucket",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Deny",
+              "Principal": { "AWS": "*" },
+              "Action": "s3:*",
+              "Resource": ["arn:aws:s3:::example-bucket", "arn:aws:s3:::example-bucket/*"],
+              "Condition": {
+                "Bool": { "aws:SecureTransport": "true" }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

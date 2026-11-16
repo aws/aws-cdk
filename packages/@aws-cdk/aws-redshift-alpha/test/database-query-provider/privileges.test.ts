@@ -341,6 +341,226 @@ describe('update', () => {
   });
 });
 
+describe('PUBLIC grantee', () => {
+  const publicSpellings = ['PUBLIC', 'public', 'Public'];
+
+  test.each(publicSpellings)('fails when the grantee is %j on create, before any statement runs', async (username_) => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+
+    await expect(managePrivileges({ ...resourceProperties, username: username_ }, event)).rejects.toThrow(/pseudo-role/);
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test.each(publicSpellings)('revokes from %j on delete rather than refusing', async (username_) => {
+    const event: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
+      RequestType: 'Delete',
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+
+    await managePrivileges({ ...resourceProperties, username: username_ }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username_}`,
+    }));
+  });
+
+  test('fails when the grantee is PUBLIC on update, before any statement runs', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: resourceProperties,
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+
+    await expect(managePrivileges({ ...resourceProperties, username: 'PUBLIC' }, event)).rejects.toThrow(/pseudo-role/);
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test('fails when the grantee is PUBLIC for a table newly added by an update', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: { ...resourceProperties, username: 'PUBLIC' },
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+    };
+    const properties = {
+      ...resourceProperties,
+      username: 'PUBLIC',
+      tablePrivileges: [
+        { tableId, tableName, actions: ['INSERT', 'SELECT'] },
+        { tableId: 'addedTableId', tableName: 'addedTableName', actions: ['SELECT'] },
+      ],
+    };
+
+    await expect(managePrivileges(properties, event)).rejects.toThrow(/pseudo-role/);
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test('still accepts a user name that merely contains "public"', async () => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+
+    await managePrivileges({ ...resourceProperties, username: 'public_reader' }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `GRANT INSERT, SELECT ON ${tableName} TO public_reader`,
+    }));
+  });
+
+  const paddedGrantees: Array<[string, string]> = [
+    [' PUBLIC ', '" PUBLIC "'],
+    ['\tpublic\n', '"\tpublic\n"'],
+  ];
+
+  test.each(paddedGrantees)('emits %j as a quoted identifier rather than the pseudo-role', async (username_, grantee) => {
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      RequestType: 'Create',
+      ...genericEvent,
+    };
+
+    await managePrivileges({ ...resourceProperties, username: username_ }, event);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `GRANT INSERT, SELECT ON ${tableName} TO ${grantee}`,
+    }));
+  });
+});
+
+describe('generated SQL for accepted grantee names', () => {
+  const createEvent: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    RequestType: 'Create',
+    ...genericEvent,
+  };
+
+  const cases: Array<[string, string, string[], string]> = [
+    ['GROUP analysts', 'my_table', ['SELECT'], 'GRANT SELECT ON my_table TO "GROUP analysts"'],
+    ['ROLE analysts', 'my_table', ['SELECT'], 'GRANT SELECT ON my_table TO "ROLE analysts"'],
+    ['publıc', 'my_table', ['SELECT'], 'GRANT SELECT ON my_table TO publıc'],
+    ['PuBlıC', 'my_table', ['SELECT'], 'GRANT SELECT ON my_table TO PuBlıC'],
+  ];
+
+  test.each(cases)('grants to %s on %s as %j', async (username_, tableName_, actions_, expected) => {
+    const properties = {
+      ...resourceProperties,
+      username: username_,
+      tablePrivileges: [{ tableId, tableName: tableName_, actions: actions_ }],
+    };
+
+    await managePrivileges(properties, createEvent);
+
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({ Sql: expected }));
+  });
+});
+
+describe('grant update preflight', () => {
+  test('fails on PUBLIC narrowing before any statement runs', async () => {
+    const properties = {
+      ...resourceProperties,
+      username: 'PUBLIC',
+      tablePrivileges: [{ tableId, tableName, actions: ['SELECT'] }],
+    };
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: {
+        ...resourceProperties,
+        username: 'PUBLIC',
+        tablePrivileges: [{ tableId, tableName, actions: ['SELECT', 'INSERT'] }],
+      },
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+      ResourceProperties: properties,
+    };
+
+    await expect(managePrivileges(properties, event)).rejects.toThrow(/pseudo-role/);
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    { description: 'no-op', grants: [{ tableId, tableName, actions: ['SELECT', 'INSERT'] }] },
+    { description: 'whole-entry removal', grants: [] },
+  ])('preserves PUBLIC $description without statements', async ({ grants }) => {
+    const properties = {
+      ...resourceProperties,
+      username: 'PUBLIC',
+      tablePrivileges: grants,
+    };
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: {
+        ...resourceProperties,
+        username: 'PUBLIC',
+        tablePrivileges: [{ tableId, tableName, actions: ['SELECT', 'INSERT'] }],
+      },
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+      ResourceProperties: properties,
+    };
+
+    await expect(managePrivileges(properties, event)).resolves.toEqual({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).not.toHaveBeenCalled();
+  });
+
+  test('replaces PUBLIC with an ordinary user by granting to the new user', async () => {
+    const properties = {
+      ...resourceProperties,
+      username: 'alice',
+      tablePrivileges: [{ tableId, tableName, actions: ['SELECT', 'INSERT'] }],
+    };
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: { ...properties, username: 'PUBLIC' },
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+      ResourceProperties: properties,
+    };
+
+    await expect(managePrivileges(properties, event)).resolves.toEqual({
+      PhysicalResourceId: 'clusterName:databaseName:alice:requestId',
+    });
+    expect(mockExecuteStatement).toHaveBeenCalledTimes(1);
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `GRANT SELECT, INSERT ON ${tableName} TO alice`,
+    }));
+  });
+
+  test('narrows an ordinary user grant with the existing revoke and grant order', async () => {
+    const properties = {
+      ...resourceProperties,
+      username: 'alice',
+      tablePrivileges: [{ tableId, tableName, actions: ['SELECT'] }],
+    };
+    const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
+      RequestType: 'Update',
+      OldResourceProperties: {
+        ...properties,
+        tablePrivileges: [{ tableId, tableName, actions: ['SELECT', 'INSERT'] }],
+      },
+      PhysicalResourceId: physicalResourceId,
+      ...genericEvent,
+      ResourceProperties: properties,
+    };
+
+    await expect(managePrivileges(properties, event)).resolves.toEqual({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).toHaveBeenCalledTimes(2);
+    expect(mockExecuteStatement).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      Sql: `REVOKE SELECT, INSERT ON ${tableName} FROM alice`,
+    }));
+    expect(mockExecuteStatement).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      Sql: `GRANT SELECT ON ${tableName} TO alice`,
+    }));
+  });
+});
+
 describe('special-character handling', () => {
   const specialUsername = 'gr"p';
 

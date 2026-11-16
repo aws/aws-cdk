@@ -1007,7 +1007,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/719ec4472b5c98af50defcab667afee84d08e830d3bcc7ea3e7479145855e980.json"
+       "/35a69d8d5985726e8c9723ed487fa54b80f29b0a12a6f802c8a2e78f3bc326af.json"
       ]
      ]
     }
@@ -1057,7 +1057,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/2d58e2e7ce8ccb38e2681dd90cfc59579a1087756610d55c3782b35e61317104.json"
+       "/67699745972b774c12e09134eef12d17786605a1c160fac52070c91694e60334.json"
       ]
      ]
     }
@@ -1138,7 +1138,6 @@
       {
        "Action": [
         "logs:CreateLogStream",
-        "logs:DescribeLogStreams",
         "logs:PutLogEvents"
        ],
        "Effect": "Allow",
@@ -1148,6 +1147,41 @@
          "Arn"
         ]
        }
+      },
+      {
+       "Action": "logs:DescribeLogStreams",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StartaJobRunMonitoringLogGroupD033B7AF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:",
+           {
+            "Ref": "StartaJobRunMonitoringLogGroupD033B7AF"
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": "logs:DescribeLogGroups",
@@ -1227,6 +1261,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":states:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stateMachine:*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"

@@ -1,16 +1,16 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "files": {
-    "f544cfe9f587a4eb7533be999940f88948fe5abf0316902e641d7983b4d23f2d": {
+    "91a1baf5ee034c551f0fe8982cf1d3fed8d897527aecba4dcff06a4d78ecbcc0": {
       "displayName": "integ-sfn-start-execution-jsonata Template",
       "source": {
         "path": "integ-sfn-start-execution-jsonata.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-28c9bd18": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f544cfe9f587a4eb7533be999940f88948fe5abf0316902e641d7983b4d23f2d.json",
+          "objectKey": "91a1baf5ee034c551f0fe8982cf1d3fed8d897527aecba4dcff06a4d78ecbcc0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

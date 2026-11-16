@@ -41,7 +41,11 @@ export class AggregateLinter extends LinterBase {
   public eval(assembly: reflect.Assembly, options: LinterOptions | undefined): Diagnostic[] {
     const diags = new Array<Diagnostic>();
     for (const linter of this.linters) {
-      diags.push(...linter.eval(assembly, options));
+      // Push one by one: spreading a large array into push() passes every element
+      // as a separate argument and overflows the call stack.
+      for (const diag of linter.eval(assembly, options)) {
+        diags.push(diag);
+      }
     }
     return diags;
   }

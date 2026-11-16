@@ -1953,4 +1953,30 @@ describe('record set', () => {
       multiValueAnswer: true,
     })).toThrow('Cannot use both failover and multiValueAnswer routing policies');
   });
+
+  const recordSetRefCases: Array<[string, (stack: Stack, zone: route53.IHostedZone) => route53.RecordSet]> = [
+    ['CNAME', (stack, zone) => new route53.RecordSet(stack, 'Record', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+    })],
+    ['A', (stack, zone) => new route53.ARecord(stack, 'Record', {
+      zone,
+      recordName: 'www',
+      target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+    })],
+  ];
+
+  test.each(recordSetRefCases)('recordSetRef exposes the %s record type', (expectedType, createRecord) => {
+    // GIVEN
+    const stack = new Stack();
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // WHEN
+    const record = createRecord(stack, zone);
+
+    // THEN
+    expect(record.recordSetRef.type).toEqual(expectedType);
+  });
 });

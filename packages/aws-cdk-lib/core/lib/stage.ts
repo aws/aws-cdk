@@ -5,13 +5,13 @@ import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { STAGE_TYPE, stageOf } from './private/core-construct-finders';
+import { lit } from './private/literal-string';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
 import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
-import { lit } from './private/literal-string';
 
 /**
  * Initialization props for a stage.
@@ -183,6 +183,7 @@ export class Stage extends Construct {
    * synthesis will be interrupted and the report displayed to the user.
    *
    * @default - no validation plugins are used
+   * @deprecated Do not use this function to look up validation plugins. Use `Validations.of(stage).plugins` instead.
    */
   public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
     return this._policyValidation.map(_toBeta1Plugin);
