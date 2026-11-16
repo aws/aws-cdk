@@ -329,6 +329,33 @@ describe('resource', () => {
     });
   });
 
+  test('applyRemovalPolicy forwards RemovalPolicyOptions to the L1 resource', () => {
+    class Child extends Resource {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        new CfnResource(this, 'Resource', {
+          type: 'ChildResourceType',
+        });
+      }
+    }
+
+    const stack = new Stack();
+    const child = new Child(stack, 'Child');
+
+    // WHEN - UpdateReplacePolicy is not applied
+    child.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: false });
+
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        ChildDAB30558: {
+          DeletionPolicy: 'Retain',
+          Type: 'ChildResourceType',
+        },
+      },
+    });
+  });
+
   test('addDependency adds all dependencyElements of dependent constructs', () => {
     class C1 extends Construct {
       public readonly r1: CfnResource;
