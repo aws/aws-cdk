@@ -10,7 +10,7 @@ describe('bundling', () => {
     sinon.restore();
   });
 
-  test('AssetBundlingVolumeCopy bundles with volume copy ', () => {
+  test('AssetBundlingVolumeCopy bundles with volume copy', () => {
     // GIVEN
     sinon.stub(process, 'platform').value('darwin');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
@@ -58,7 +58,7 @@ describe('bundling', () => {
       'public.ecr.aws/docker/library/alpine',
       'sh',
       '-c',
-      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${options.user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R '${options.user}' ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R '${options.user}' ${AssetStaging.BUNDLING_INPUT_DIR}`,
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
 
     // delete copy container
@@ -82,6 +82,40 @@ describe('bundling', () => {
       '--platform', 'linux/amd64',
       '--volumes-from', helper.copyContainerName,
       'public.ecr.aws/docker/library/alpine',
+    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('user argument is escaped correctly', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const options = {
+      sourcePath: '/tmp/source',
+      bundleDir: '/tmp/output',
+      image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
+      user: '; rm -rf /; #',
+      platform: 'linux/amd64',
+    };
+    const helper = new AssetBundlingVolumeCopy(options);
+    helper.run();
+
+    // volume Creation
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match([
+      'run',
+      '--name', sinon.match(/copyContainer.*/g),
+      '-v', sinon.match(/assetInput.*/g),
+      '-v', sinon.match(/assetOutput.*/g),
+      'public.ecr.aws/docker/library/alpine',
+      'sh',
+      '-c',
+      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R '${options.user}' ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R '${options.user}' ${AssetStaging.BUNDLING_INPUT_DIR}`,
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 

@@ -165,6 +165,22 @@
       "data": "NODEJS24XfunctionName"
     }
   ],
+  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X-functionName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NODEJS26XfunctionName"
+    }
+  ],
   "/aws-cdk-lambda-runtime-inlinecode/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -397,6 +413,28 @@
       "data": "NODEJS24X3400670E"
     }
   ],
+  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NODEJS26XE1AF63D3"
+    }
+  ],
   "/aws-cdk-lambda-runtime-inlinecode/PYTHON_3_8/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -455,6 +493,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "NODEJS24XServiceRoleF97C2B58"
+    }
+  ],
+  "/aws-cdk-lambda-runtime-inlinecode/NODEJS_26_X/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NODEJS26XServiceRoleA51FBA13"
     }
   ]
 }

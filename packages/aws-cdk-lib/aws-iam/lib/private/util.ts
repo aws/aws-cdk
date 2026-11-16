@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
 import {
   DefaultTokenResolver,
+  Names,
   StringConcat,
   Token,
   Tokenization,
@@ -14,6 +15,18 @@ import type { IPolicy } from '../policy';
 export const MAX_POLICY_NAME_LEN = 128;
 
 export const LITERAL_STRING_KEY = 'LiteralString';
+
+/**
+ * The physical name of the default policy of an imported user or group.
+ *
+ * An inline policy is identified by the principal it is attached to and its name. The name is
+ * derived from the principal's path including the stack name, so importing the same user or group
+ * into several stacks gives each stack an inline policy of its own, instead of letting the stack
+ * that deploys last replace the grants made by the others.
+ */
+export function importedDefaultPolicyName(principal: IConstruct, prefix: string): string {
+  return prefix + Names.uniqueResourceName(principal, { maxLength: MAX_POLICY_NAME_LEN - prefix.length });
+}
 
 /**
  * Used to generate a unique policy name based on the policy resource construct.
