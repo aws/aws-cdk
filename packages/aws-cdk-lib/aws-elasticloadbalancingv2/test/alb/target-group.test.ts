@@ -5,6 +5,8 @@ import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
+const PROTOCOL_AND_PORT_WARNING = Match.stringLikeRegexp('\\[ack: @aws-cdk/aws-elbv2:targetGroupProtocolAndPortNotSpecified\\]');
+
 let app: cdk.App;
 let stack: cdk.Stack;
 beforeEach(() => {
@@ -81,7 +83,7 @@ describe('tests', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Stack/TG', Match.stringLikeRegexp('ApplicationTargetGroup protocol and port not specified'));
+    Annotations.fromStack(stack).hasWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
   });
 
   test('ApplicationTargetGroup with port but no protocol does not show warning', () => {
@@ -95,7 +97,7 @@ describe('tests', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', Match.stringLikeRegexp('ApplicationTargetGroup protocol and port not specified'));
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Port: 80,
       Protocol: 'HTTP',
@@ -114,7 +116,7 @@ describe('tests', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', Match.stringLikeRegexp('ApplicationTargetGroup protocol and port not specified'));
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Port: 80,
       Protocol: 'HTTP',
@@ -128,12 +130,33 @@ describe('tests', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', Match.stringLikeRegexp('ApplicationTargetGroup protocol and port not specified'));
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetType: 'lambda',
       Port: Match.absent(),
       Protocol: Match.absent(),
     });
+  });
+
+  test('ApplicationTargetGroup with Lambda target passed via props.targets does not show warning', () => {
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      targets: [fakeLambdaTarget()],
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
+  });
+
+  test('ApplicationTargetGroup with Lambda target added after construction does not show warning', () => {
+    // GIVEN
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TG');
+
+    // WHEN
+    tg.addTarget(fakeLambdaTarget());
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
   });
 
   test('fails when neither protocol nor port specified and non-Lambda target added later', () => {
@@ -1177,3 +1200,12 @@ describe('tests', () => {
     });
   });
 });
+
+function fakeLambdaTarget(): elbv2.IApplicationLoadBalancerTarget {
+  return {
+    attachToApplicationTargetGroup: () => ({
+      targetType: elbv2.TargetType.LAMBDA,
+      targetJson: { id: 'arn:aws:lambda:us-east-1:123456789012:function:fn' },
+    }),
+  };
+}
