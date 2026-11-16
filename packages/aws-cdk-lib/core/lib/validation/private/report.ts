@@ -161,7 +161,7 @@ export class PolicyValidationReportFormatter {
                 locations: resource.locations,
                 resourceLogicalId: resource.resourceLogicalId ?? 'N/A',
                 templatePath: resource.templatePath ?? 'N/A',
-              };
+              } satisfies ValidationViolatingConstruct;
             }),
           })),
         })),
@@ -171,16 +171,41 @@ export class PolicyValidationReportFormatter {
   public formatJson(
     reps: NamedValidationPluginReport[],
     schemaVersion: string,
+    stackTraces: ViolationStackTraces,
     suppressedByReport?: Map<number, SuppressedViolation[]>,
   ): PolicyValidationReportJson {
     return {
       version: schemaVersion,
       title: 'Validation Report',
-      pluginReports: this.buildPluginReports(reps, suppressedByReport),
+      pluginReports: this.buildPluginReports(reps, stackTraces, suppressedByReport),
     };
   }
 
-  private formatViolationJson(violation: report.PolicyViolation): PolicyViolationJson {
+  private buildPluginReports(
+    reps: NamedValidationPluginReport[],
+    stackTraces: ViolationStackTraces,
+    suppressedByReport?: Map<number, SuppressedViolation[]>,
+  ): PluginReportJson[] {
+    const results: PluginReportJson[] = [];
+    for (let idx = 0; idx < reps.length; idx++) {
+      const rep = reps[idx];
+      const suppressed = suppressedByReport?.get(idx);
+      if (rep.success && rep.violations.length === 0 && !suppressed) continue;
+      results.push({
+        pluginName: rep.pluginName,
+        pluginVersion: rep.pluginVersion,
+        conclusion: (rep.success ? 'success' : 'failure') satisfies PolicyValidationReportConclusion,
+        metadata: rep.metadata,
+        violations: rep.violations.map(violation => this.formatViolationJson(violation, stackTraces)),
+        suppressedViolations: suppressed
+          ? suppressed.map(sv => this.formatSuppressedViolationJson(sv, stackTraces))
+          : undefined,
+      });
+    }
+    return results;
+  }
+
+  private formatViolationJson(violation: report.PolicyViolation, stackTraces: ViolationStackTraces): PolicyViolationJson {
     const severity = normalizeSeverity(violation.severity);
     return {
       ruleName: violation.ruleName,
@@ -209,18 +234,15 @@ export class PolicyValidationReportFormatter {
             }
             : undefined,
 
-          // TODO: Property-level stack trace
-          stackTraces: constructPath
-            ? this.creationStackTrace(constructPath)
-            : undefined,
+          stackTraces: stackTraces.get(resource),
         };
         return result;
       }),
     };
   }
 
-  private formatSuppressedViolationJson(sv: SuppressedViolation): SuppressedViolationJson {
-    const base = this.formatViolationJson(sv);
+  private formatSuppressedViolationJson(sv: SuppressedViolation, stackTraces: ViolationStackTraces): SuppressedViolationJson {
+    const base = this.formatViolationJson(sv, stackTraces);
     return {
       ...base,
       acknowledgedId: sv.acknowledgedId,
@@ -228,40 +250,6 @@ export class PolicyValidationReportFormatter {
       acknowledgedAt: sv.acknowledgedAt || undefined,
       acknowledgedStackTrace: sv.acknowledgedStackTrace || undefined,
     };
-  }
-
-  private buildPluginReports(
-    reps: NamedValidationPluginReport[],
-    suppressedByReport?: Map<number, SuppressedViolation[]>,
-  ): PluginReportJson[] {
-    const results: PluginReportJson[] = [];
-    for (let idx = 0; idx < reps.length; idx++) {
-      const rep = reps[idx];
-      const suppressed = suppressedByReport?.get(idx);
-      if (rep.success && rep.violations.length === 0 && !suppressed) continue;
-      results.push({
-        pluginName: rep.pluginName,
-        pluginVersion: rep.pluginVersion,
-        conclusion: (rep.success ? 'success' : 'failure') satisfies PolicyValidationReportConclusion,
-        metadata: rep.metadata,
-        violations: rep.violations.map(violation => this.formatViolationJson(violation)),
-        suppressedViolations: suppressed
-          ? suppressed.map(sv => this.formatSuppressedViolationJson(sv))
-          : undefined,
-      });
-    }
-    return results;
-  }
-
-  /**
-   * Returns all stack traces on the root path of the construct tree for the given construct path.
-   *
-   * First element of the array will be the stack trace of the root, the next
-   * the stack trace of the first stack, etc. The last element of the array will
-   * be the stack trace of the construct itself.
-   */
-  private creationStackTrace(constructPath: string): string[] | undefined {
-    return this.reportTrace.creationStackTraceByPath(constructPath);
   }
 }
 
@@ -306,4 +294,24 @@ export function isSuppressibleViolation(violation: { severity?: string; ruleMeta
   const isFatal = violation.severity?.toLowerCase() === 'fatal';
   const isErrorAnnotation = violation.ruleMetadata?.['cdk:annotation'] && violation.severity?.toLowerCase() === 'error';
   return !isFatal && !isErrorAnnotation;
+}
+
+export type ViolationStackTraces = ExtraObjectData<report.PolicyViolatingResource, string[]>;
+
+/**
+ * Attach information to objects without them formally being part of the type
+ */
+export class ExtraObjectData<A extends object, B> {
+  private readonly extra: WeakMap<A, B> = new WeakMap();
+
+  constructor() {
+  }
+
+  public attach(obj: A, data: B) {
+    this.extra.set(obj, data);
+  }
+
+  public get(obj: A): B | undefined {
+    return this.extra.get(obj);
+  }
 }

@@ -1,28 +1,30 @@
 {
-  "version": "36.0.0",
+  "version": "54.0.0",
   "files": {
     "d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d": {
+      "displayName": "Glue Job Script",
       "source": {
         "path": "asset.d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d.py",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-1b4f0157": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "d030bb7913ca422df69f29b2ea678ab4e5085bb3cbb17029e4b101d2dc4e3e0d.py",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "1f4d5c69a5a9f0519332cc1d0b992cff0fb8fd1717f731962587a2a602621022": {
+    "90b99ba2cea7f9474115121bb5df7bcd36d4194d6ab8cbe5546a73f4b7d80439": {
+      "displayName": "aws-stepfunctions-integ-execution-class Template",
       "source": {
         "path": "aws-stepfunctions-integ-execution-class.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-05b59cb3": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1f4d5c69a5a9f0519332cc1d0b992cff0fb8fd1717f731962587a2a602621022.json",
+          "objectKey": "90b99ba2cea7f9474115121bb5df7bcd36d4194d6ab8cbe5546a73f4b7d80439.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

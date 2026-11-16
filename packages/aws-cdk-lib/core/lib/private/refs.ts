@@ -24,7 +24,7 @@ import type { IResolvable, IResolveContext } from '../resolvable';
 import type { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
-import { iterateDfsPreorder } from './construct-iteration';
+import { iterateDfsPreorderStopAtStage } from './construct-iteration';
 import { CfnResource } from '../cfn-resource';
 import { lit } from './literal-string';
 import type {
@@ -94,7 +94,7 @@ export class CustomCoupledReference extends Intrinsic {
  * reference is resolved based on its consumption context.
  */
 export function resolveReferences(scope: IConstruct): void {
-  resolveReferencesInElements(iterateDfsPreorder(scope));
+  resolveReferencesInElements(iterateDfsPreorderStopAtStage(scope));
 }
 
 /**

@@ -756,6 +756,55 @@ class TestHandler(unittest.TestCase):
                     else:
                         self.assertEqual(content, '{\n    "root": {\n        "key_with_quote": "prefixvalue"with"quotessuffix",\n        "key_without_quote": "prefixboom-marker2-replacedsuffix"\n    }\n}')
 
+    def test_marker_encodings(self):
+        cases = [
+            ('LITERAL', 'a"b', 'a"b'),
+            ('UNQUOTED_JSON_VALUE', 'a"b\\c', 'a\\"b\\\\c'),
+            ('UNQUOTED_JSON_VALUE', ['a"1', 'b'], '["a\\"1", "b"]'),
+            ('JSON_VALUE', 'a"b', '"a\\"b"'),
+            ('JSON_VALUE', ['a', 'b'], '["a", "b"]'),
+            ('JSON_VALUE', {'k': 'v'}, '{"k": "v"}'),
+        ]
+        for encoding, value, expected in cases:
+            with self.subTest(encoding=encoding, value=value):
+                self.assertEqual(index.encode_marker_value('m', value, {'markerEncodings': {'m': encoding}}), expected)
+
+    def test_yaml_string_encoding_keeps_values_strings(self):
+        import yaml
+        # Each value must come back as the same string from a YAML parser, whatever it looks like
+        values = ['plain', 'arn:aws:s3:::bucket', 'a b', '', 'test"with"quotes', 'line\nbreak',
+                  'true', 'True', 'NULL', 'yes', 'Off', 'y', 'n', '~', '.inf', '.NaN', '0x1F', '0o17',
+                  '42', '1.5', '012345678901', '2024-01-01', '-', '#comment', 'a: b']
+        for value in values:
+            with self.subTest(value=value):
+                rendered = index.encode_marker_value('m', value, {'markerEncodings': {'m': 'YAML_STRING'}})
+                self.assertEqual(yaml.safe_load('v: ' + rendered)['v'], value)
+
+        # A value that is unambiguous stays unquoted
+        self.assertEqual(index.encode_marker_value('m', 'plain', {'markerEncodings': {'m': 'YAML_STRING'}}), 'plain')
+
+    def test_default_marker_encoding_follows_json_escape(self):
+        # Templates synthesized before per-marker encodings only carry `jsonEscape`, and must render as before
+        self.assertEqual(index.encode_marker_value('m', 'a"b', {}), 'a"b')
+        self.assertEqual(index.encode_marker_value('m', 'a"b', {'jsonEscape': 'true'}), 'a\\"b')
+        self.assertEqual(index.encode_marker_value('m', ['a'], {'jsonEscape': 'true'}), '["a"]')
+
+    def test_marker_encoding_overrides_json_escape_for_that_marker_only(self):
+        config = {'jsonEscape': 'true', 'markerEncodings': {'m': 'JSON_VALUE'}}
+        self.assertEqual(index.encode_marker_value('m', 'a"b', config), '"a\\"b"')
+        self.assertEqual(index.encode_marker_value('other', 'a"b', config), 'a\\"b')
+
+    def test_string_encodings_reject_non_strings_without_revealing_the_value(self):
+        for encoding in ['LITERAL', 'YAML_STRING']:
+            with self.subTest(encoding=encoding):
+                with self.assertRaises(ValueError) as cm:
+                    index.encode_marker_value('m', ['secret-value'], {'markerEncodings': {'m': encoding}})
+                self.assertNotIn('secret-value', str(cm.exception))
+
+    def test_unknown_marker_encoding_is_rejected(self):
+        with self.assertRaises(ValueError):
+            index.encode_marker_value('m', 'x', {'markerEncodings': {'m': 'SOMETHING_NEW'}})
+
     def test_marker_substitution(self):
         outdir = tempfile.mkdtemp()
 

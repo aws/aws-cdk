@@ -1,4 +1,10 @@
 {
+  "/codepipeline-ecr-image-scan-action": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "codepipeline-ecr-image-scan-action.template.json"
+    }
+  ],
   "/codepipeline-ecr-image-scan-action/SourceBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -19,6 +25,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -191,6 +198,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],

@@ -1,6 +1,6 @@
 import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin } from './validation';
-import { Annotations } from '../annotations';
+import { Annotations, type WarningOptions } from '../annotations';
 import { UnscopedValidationError } from '../errors';
 import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
@@ -20,6 +20,31 @@ export interface Acknowledgment {
    * The reason for acknowledging this rule.
    */
   readonly reason: string;
+
+  /**
+   * Optionally narrow the acknowledgement to only the warning occurrences whose
+   * call-site context matches this filter.
+   *
+   * The object is treated as an **`objectLike` partial match** against the
+   * context attached to each occurrence (the same semantics as
+   * `template.hasResourceProperties`): every key you specify must be present
+   * with a matching value, and any key you do not mention is left unconstrained.
+   * A warning emitted without any context is never matched by a non-empty
+   * filter, so a specific filter cannot accidentally silence an undetailed
+   * warning.
+   *
+   * A value is matched for equality (including non-string values such as
+   * numbers, booleans, or arrays). Because the value type is `any`, richer
+   * per-key matching can be introduced later without a breaking change — a
+   * future release may accept a matcher as a value (e.g. a glob/regex) in
+   * addition to a literal, leaving existing literal callers untouched.
+   *
+   * When omitted, all occurrences of the rule id are acknowledged
+   * (backwards-compatible behavior).
+   *
+   * @default - acknowledges all occurrences of the rule id
+   */
+  readonly where?: { [key: string]: any };
 }
 
 /**
@@ -79,10 +104,11 @@ export class Validations {
    *
    * @param id unique identifier for the warning, used for acknowledgement
    * @param message the warning message
+   * @param options optional settings, including structured `context` for selective acknowledgement
    */
-  public addWarning(id: string, message: string): void {
+  public addWarning(id: string, message: string, options?: WarningOptions): void {
     id = normalizeValidationIdForAnnotations(id);
-    Annotations.of(this.scope).addWarningV2(id, message);
+    Annotations.of(this.scope).addWarningV2(id, message, options);
   }
 
   /**
@@ -140,11 +166,11 @@ export class Validations {
       //
       // Since we can't know if `Validations.of().acknowledge('<id>')` should
       // suppress the namespaced or unnamespaced version of the warning, we will suppress both.
-      Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
+      Annotations.of(this.scope)._acknowledgeWarning(qualifiedId, rule.where);
 
       if (qualifiedId.startsWith(`${ANNOTATION_PLUGIN_NAMESPACE}::`)) {
         const annotationId = qualifiedId.substring(`${ANNOTATION_PLUGIN_NAMESPACE}::`.length);
-        Annotations.of(this.scope).acknowledgeWarning(annotationId);
+        Annotations.of(this.scope)._acknowledgeWarning(annotationId, rule.where);
       }
     }
   }

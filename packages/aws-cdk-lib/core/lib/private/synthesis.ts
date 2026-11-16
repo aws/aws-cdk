@@ -1,19 +1,19 @@
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
+import { STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
+import { validateTemplates } from './synthesis-validation';
 import { TreeMetadata } from './tree-metadata';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { UnscopedValidationError } from '../errors';
-import { STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
-import { validateTemplates } from './synthesis-validation';
 
 /**
  * Options for `synthesize()`

@@ -1,0 +1,82 @@
+{
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/Users/naviret/projects/runtime-header-allowlist-expansion/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockAgentCoreRuntimeBuildHooksTestDefaultTestDeployAssert3CADF67F.template.json"
+    }
+  ],
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert/LambdaInvokeba6c6b6e12994c5657955bec4846f242/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert/LambdaInvokeba6c6b6e12994c5657955bec4846f242/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeba6c6b6e12994c5657955bec4846f242InvokeFF298FB6"
+    }
+  ],
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert/LambdaInvokeba6c6b6e12994c5657955bec4846f242/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeba6c6b6e12994c5657955bec4846f242"
+    }
+  ],
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/BedrockAgentCoreRuntimeBuildHooksTest/DefaultTest/DeployAssert/LambdaInvokeba6c6b6e12994c5657955bec4846f242/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeba6c6b6e12994c5657955bec4846f242"
+    }
+  ]
+}

@@ -1,21 +1,36 @@
 {
-  "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10": [
+  "/aws-cdk-sfn-evaluate-expression-arm64-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-sfn-evaluate-expression-arm64-integ.template.json"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-arm64-integ/EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "runtime": "*",
-        "architecture": "*",
-        "code": "*",
-        "handler": "*"
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
       }
     },
     {
-      "type": "aws:cdk:is-custom-resource-handler-singleton",
-      "data": true
-    },
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-arm64-integ/ImmutableRoleEvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd": [
     {
-      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 0
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-cdk-sfn-evaluate-expression-arm64-integ/StateMachine": [
@@ -57,61 +72,22 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "uuid": "*",
-        "lambdaPurpose": "*",
         "runtime": "*",
         "architecture": "*",
+        "role": "*",
         "code": "*",
         "handler": "*"
       }
     },
     {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
     }
   ],
-  "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/ServiceRole": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
-    }
-  ],
-  "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/Resource": [
+  "/aws-cdk-sfn-evaluate-expression-arm64-integ/EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f1028726088"
-    }
-  ],
-  "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/LogGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41"
     }
   ],
   "/aws-cdk-sfn-evaluate-expression-arm64-integ/StateMachine/Role": [
@@ -155,22 +131,18 @@
       "data": "StateMachine2E01A3A5"
     }
   ],
-  "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/ServiceRole/Resource": [
+  "/aws-cdk-sfn-evaluate-expression-arm64-integ/EvaluateExpression/EvalFunction/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10ServiceRole037E5D29"
+      "data": "EvaluateExpressionEvalFunctionD463D928"
     }
   ],
-  "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/Code/AssetBucket": [
+  "/aws-cdk-sfn-evaluate-expression-arm64-integ/EvaluateExpression/EvalFunction/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/aws-cdk-sfn-evaluate-expression-arm64-integ/Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10/LogGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "Evalbe6d8ca19d2c4db3aeebf6f27f3f2f10LogGroup29F31548"
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/aws-cdk-sfn-evaluate-expression-arm64-integ/StateMachine/Role/Resource": [
@@ -207,6 +179,18 @@
           {}
         ]
       }
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-arm64-integ/EvaluateExpression/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-sfn-evaluate-expression-arm64-integ/EvaluateExpression/EvalFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EvaluateExpressionEvalFunctionLogGroup7C023450"
     }
   ],
   "/aws-cdk-sfn-evaluate-expression-arm64-integ/StateMachine/Role/DefaultPolicy/Resource": [

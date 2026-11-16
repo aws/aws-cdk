@@ -75,8 +75,10 @@ export interface PolicyViolatingResource {
   /**
    * The locations in the CloudFormation template that pose the violations.
    *
-   * TODO: Define whether this is from the root of the template, or from the
-   * resource itself. Not sure this is well-defined at the moment.
+   * This is a location in the CloudFormation template, relative to the resource that
+   * this violation is about. For example, if the violation is about a property of a resource,
+   * this will contain something like `Properties.MyProperty`. If the violation is about the Stack
+   * itself, it will contain something like `Parameters.MyParameter`.
    */
   readonly locations: string[];
 

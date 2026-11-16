@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "WebFunctionCopyLogRedactionTest/DefaultTest": {
+      "stacks": [
+        "WebFunctionCopyLogRedactionStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "WebFunctionCopyLogRedactionTest/DefaultTest/DeployAssert",
+      "assertionStackName": "WebFunctionCopyLogRedactionTestDefaultTestDeployAssert637E1042"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
+}

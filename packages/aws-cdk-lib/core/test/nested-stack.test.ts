@@ -219,6 +219,28 @@ describe('nested-stack', () => {
     expect(child.bundlingRequired).toBe(false);
     expect(child2.bundlingRequired).toBe(false);
   });
+
+  test('nested stack adds template-producer metadata to the cloud assembly', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DISABLE_METADATA_STACK_TRACE]: 'true' } });
+    const parentStack = new Stack(app, 'ParentStack');
+    const nestedStack = new NestedStack(parentStack, 'NestedStack');
+    new CfnResource(nestedStack, 'Resource', { type: 'AWS::Test::Resource' });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN — nested stack metadata is collected in the parent stack artifact
+    const parentArtifact = assembly.getStackArtifact(parentStack.artifactId);
+    const entries = parentArtifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    const nestedEntry = entries.find(e => e.path.includes('NestedStack'));
+    expect(nestedEntry).toEqual({
+      path: '/' + nestedStack.node.path,
+      type: cxapi.CDK_TEMPLATE_FILE_KEY,
+      data: nestedStack.templateFile,
+    });
+    expect(nestedStack.templateFile).toMatch(/\.nested\.template\.json$/);
+  });
 });
 
 /**

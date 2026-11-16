@@ -165,9 +165,10 @@ Which subnets are selected is evaluated as follows:
     In short: by default ENIs will preferentially be placed in subnets not connected to
     the Internet.
 * `availabilityZones`/`onePerAz`: finally, some availability-zone based filtering may be done.
-  This filtering by availability zones will only be possible if the VPC has been created or
-  looked up in a non-environment agnostic stack (so account and region have been set and
-  availability zones have been looked up).
+  Filtering by literal availability zone names requires the subnet availability zones
+  to be known at synthesis time, for example from an environment-specific lookup or
+  explicit `VpcProps.availabilityZones`. Literal names do not match unresolved AZ
+  tokens, such as those returned by `Fn.getAzs()` in an environment-agnostic stack.
   * `availabilityZones`: only the specific subnets from the selected subnet groups that are
     in the given availability zones will be returned.
   * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
@@ -181,6 +182,101 @@ Which subnets are selected is evaluated as follows:
   * `containsIpAddresses`: chooses a subnet which contains *any* of the listed ip addresses
   * `byCidrMask`: chooses subnets that have the provided CIDR netmask
   * `byCidrRanges`: chooses subnets which are inside any of the specified CIDR ranges
+
+For example, to select a subnet by its AZ in a newly created VPC, specify the AZs
+explicitly when creating the VPC. Use AZ names that are available in the account
+and Region where you deploy:
+
+```ts
+const vpc = new ec2.Vpc(this, 'VpcWithExplicitAzs', {
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
+  natGateways: 0,
+  subnetConfiguration: [{
+    name: 'Application',
+    subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+  }],
+});
+
+const selectedSubnets = vpc.selectSubnets({
+  subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+  availabilityZones: ['us-east-1a'],
+});
+```
+
+Deploying a VPC in another stack does not resolve tokens in the CDK application.
+If you pass that VPC construct to a second stack, its AZ values can still be
+unresolved at synthesis time.
+
+### Using Regional NAT Gateways
+
+[Regional NAT Gateways](https://docs.aws.amazon.com/vpc/latest/userguide/nat-gateways-regional.html) provide automatic multi-AZ redundancy with a single gateway that scales across availability zones.
+Unlike zonal NAT gateways, a regional NAT gateway does not require public subnets and is created at the VPC level.
+
+```ts
+// Basic usage
+// Creates a single Regional NAT Gateway for the VPC and automatically allocate Elastic IPs
+new ec2.Vpc(this, 'Vpc', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway(),
+});
+```
+
+You can specify an existing EIP from a `CfnEIP` resource or an allocation ID:
+
+```ts
+const eip = new ec2.CfnEIP(this, 'NatEip');
+
+new ec2.Vpc(this, 'Vpc1', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    eip,
+  }),
+});
+
+new ec2.Vpc(this, 'Vpc2', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    allocationId: eip.attrAllocationId,
+  }),
+});
+```
+
+For manual control over AZ coverage and EIP allocation, use `availabilityZoneAddresses`:
+
+```ts
+const eip1 = new ec2.CfnEIP(this, 'NatEip1');
+const eip2 = new ec2.CfnEIP(this, 'NatEip2');
+
+new ec2.Vpc(this, 'Vpc', {
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    availabilityZoneAddresses: [
+      { allocationIds: [eip1.attrAllocationId], availabilityZone: 'us-east-1a' },
+      { allocationIds: [eip2.attrAllocationId], availabilityZone: 'us-east-1b' },
+    ],
+  }),
+});
+```
+
+Each Availability Zone may only appear once in `availabilityZoneAddresses`.
+
+In this manual mode the gateway only serves the listed Availability Zones and does not
+expand to other zones automatically, so every Availability Zone that contains a private
+subnet must be listed. When the zone names are known at synthesis time, a private subnet
+in an unlisted zone is rejected with an error. Entries that use `availabilityZoneId` or
+unresolved tokens cannot be checked at synthesis time.
+
+The `natGateways` property is ignored when using a Regional NAT Gateway, since a single
+gateway already covers every Availability Zone. Values below 1, as well as unresolved
+tokens, are rejected because they would silently disable the gateway you explicitly
+configured; omit `natGatewayProvider` instead if you do not want a NAT gateway.
+
+You can also configure the maximum drain duration:
+
+```ts
+new ec2.Vpc(this, 'Vpc', {
+  natGatewayProvider: ec2.NatProvider.regionalGateway({
+    maxDrainDuration: Duration.minutes(10),
+  }),
+});
+```
 
 ### Using NAT instances
 

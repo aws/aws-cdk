@@ -10,6 +10,7 @@
   },
   "include": [
     "**/*.test.ts",
-    "../../pr-issue-check.ts"
+    "../../pr-issue-check.ts",
+    "../../request-response-on-idle-drafts.ts"
   ]
 }
