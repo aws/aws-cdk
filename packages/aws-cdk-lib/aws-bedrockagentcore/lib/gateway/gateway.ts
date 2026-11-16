@@ -17,6 +17,7 @@ import * as cognito from '../../../aws-cognito';
 import * as iam from '../../../aws-iam';
 import type * as kms from '../../../aws-kms';
 import type { IPolicyEngine } from '../policy/policy-engine-base';
+import type { KnowledgeBaseAgenticRetrieveOptions, KnowledgeBaseRetrieveOptions } from './targets/connector-target-configuration';
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
@@ -223,6 +224,41 @@ export interface AddApiGatewayTargetOptions {
    * @default - No metadata configuration
    */
   readonly metadataConfiguration?: MetadataConfiguration;
+}
+
+/**
+ * Options for adding a target backed by Amazon Bedrock Managed Knowledge Bases to a gateway
+ *
+ * At least one of `agenticRetrieve` and `retrieve` is required.
+ */
+export interface AddKnowledgeBasesTargetOptions {
+  /**
+   * The name of the gateway target
+   * Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen)
+   * @default - auto generate
+   */
+  readonly gatewayTargetName?: string;
+
+  /**
+   * Optional description for the gateway target
+   * @default - No description
+   */
+  readonly description?: string;
+
+  /**
+   * Configures the `AgenticRetrieveStream` tool, which plans and runs multiple retrieval
+   * steps across the knowledge bases and returns a synthesized answer.
+   *
+   * @default - the tool is not configured
+   */
+  readonly agenticRetrieve?: KnowledgeBaseAgenticRetrieveOptions;
+
+  /**
+   * Configures the `Retrieve` tool, which performs a single search on a knowledge base.
+   *
+   * @default - the tool is not configured
+   */
+  readonly retrieve?: KnowledgeBaseRetrieveOptions;
 }
 
 /**
@@ -838,6 +874,30 @@ export class Gateway extends GatewayBase {
     });
 
     return target;
+  }
+
+  /**
+   * Add a target backed by Amazon Bedrock Managed Knowledge Bases to this gateway
+   * This is a convenience method that creates a GatewayTarget associated with this gateway
+   *
+   * @param id The construct id for the target
+   * @param props Properties for the knowledge bases target
+   * @returns The created GatewayTarget
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-connector-managed-kb.html
+   */
+  @MethodMetadata()
+  public addKnowledgeBasesTarget(
+    id: string,
+    props: AddKnowledgeBasesTargetOptions,
+  ): GatewayTarget {
+    // Knowledge base permissions are automatically granted in KnowledgeBasesTargetConfiguration.bind()
+    return GatewayTarget.forKnowledgeBases(this, id, {
+      gatewayTargetName: props.gatewayTargetName,
+      description: props.description,
+      gateway: this,
+      agenticRetrieve: props.agenticRetrieve,
+      retrieve: props.retrieve,
+    });
   }
 
   /**
