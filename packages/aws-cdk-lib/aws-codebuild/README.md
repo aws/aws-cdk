@@ -634,7 +634,7 @@ const fleet = new codebuild.Fleet(this, 'MacFleet', {
   computeType: codebuild.FleetComputeType.LARGE,
   environmentType: codebuild.EnvironmentType.MAC_ARM,
   baseCapacity: 1,
-  imageId: 'aws/codebuild/macos-arm-base:26',
+  imageId: codebuild.MacBuildImage.BASE_26.imageId,
 });
 ```
 
