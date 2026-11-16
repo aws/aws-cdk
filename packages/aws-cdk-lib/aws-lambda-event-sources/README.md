@@ -653,9 +653,28 @@ ordersFunction.addEventSource(new ManagedKafkaEventSource({
 
 ```
 
-Set a confluent or self-managed schema registry to de-serialize events from the event source. 
+### Schema Registry
 
-Note: This will also work for `SelfManagedKafkaEventSource`.
+Lambda can validate the key, the value, or both of each Kafka record against a schema registry before it
+invokes your function. Set `schemaRegistryConfig` on `ManagedKafkaEventSource` or `SelfManagedKafkaEventSource`
+to an AWS Glue schema registry with `GlueSchemaRegistry`, or to a Confluent schema registry, cloud or
+self-managed, with `ConfluentSchemaRegistry`. The registry can validate Avro, Protobuf and JSON Schema records.
+
+Schema registries need provisioned pollers, so also set `provisionedPollerConfig`. Then choose:
+
+* `eventRecordFormat`: `JSON` passes the validated parts to your function as JSON, which suits languages such as
+  Python and Node.js; `SOURCE` passes them in their original format, which suits Avro or Protobuf generated classes.
+* `schemaValidationConfigs`: whether to validate the key, the value, or both.
+
+For Confluent, give the registry URL, an authentication type and the Secrets Manager secret that goes with it;
+the function gets read access to the secret. For Glue, pass the registry; the function gets the Glue
+permissions it needs to read it.
+
+For details, see
+[Using schema registries with Kafka event sources in Lambda](https://docs.aws.amazon.com/lambda/latest/dg/services-consume-kafka-events.html)
+in the AWS Lambda Developer Guide.
+
+This example uses a Confluent schema registry with Amazon MSK:
 
 ```ts
 import { ManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
@@ -667,7 +686,8 @@ declare const clusterArn: string;
 // The Kafka topic you want to subscribe to
 const topic = 'some-cool-topic';
 
-const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+// The secret with the credentials for your schema registry
+declare const secret: Secret;
 
 declare const myFunction: lambda.Function;
 myFunction.addEventSource(new ManagedKafkaEventSource({
@@ -688,9 +708,7 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
 }));
 ```
 
-Set Glue schema registry to de-serialize events from the event source.
-
-Note: This will also work for `SelfManagedKafkaEventSource`.
+This example uses an AWS Glue schema registry with Amazon MSK:
 
 ```ts
 import { CfnRegistry } from 'aws-cdk-lib/aws-glue';
@@ -721,6 +739,44 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
     schemaRegistry: glueRegistry,
     eventRecordFormat: lambda.EventRecordFormat.JSON,
     schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.KEY }],
+  }),
+}));
+```
+
+This example uses a self-managed Confluent schema registry with a self-managed Kafka cluster:
+
+```ts
+import { SelfManagedKafkaEventSource, ConfluentSchemaRegistry } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
+
+// The list of Kafka brokers
+const bootstrapServers = ['kafka-broker:9092'];
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+// The secret that allows access to your self hosted Kafka cluster
+declare const kafkaSecret: ISecret;
+
+// The secret with the client certificate and private key for your schema registry
+declare const registrySecret: ISecret;
+
+declare const myFunction: lambda.Function;
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers,
+  topic,
+  secret: kafkaSecret,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  provisionedPollerConfig: {
+    minimumPollers: 1,
+    maximumPollers: 3,
+  },
+  schemaRegistryConfig: new ConfluentSchemaRegistry({
+    schemaRegistryUri: 'https://schema-registry.example.com',
+    eventRecordFormat: lambda.EventRecordFormat.SOURCE,
+    authenticationType: lambda.KafkaSchemaRegistryAccessConfigType.CLIENT_CERTIFICATE_TLS_AUTH,
+    secret: registrySecret,
+    schemaValidationConfigs: [{ attribute: lambda.KafkaSchemaValidationAttribute.VALUE }],
   }),
 }));
 ```
