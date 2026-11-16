@@ -1,0 +1,19 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "FleetImageIdIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-project-fleet-imageId"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
+      "assertionStack": "FleetImageIdIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FleetImageIdIntegTestDefaultTestDeployAssertF1F283E4"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

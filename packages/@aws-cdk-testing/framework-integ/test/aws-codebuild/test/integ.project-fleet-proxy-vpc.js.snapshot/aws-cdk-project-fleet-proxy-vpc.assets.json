@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "14fb79f4311c938f8945284deb1f7250908f9a55d4eb2728caba954987ff997a": {
+      "displayName": "aws-cdk-project-fleet-proxy-vpc Template",
+      "source": {
+        "path": "aws-cdk-project-fleet-proxy-vpc.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-eab0b75e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "14fb79f4311c938f8945284deb1f7250908f9a55d4eb2728caba954987ff997a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
