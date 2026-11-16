@@ -24,6 +24,11 @@ export interface IPublicKey extends IResource, IPublicKeyRef {
 export interface PublicKeyProps {
   /**
    * A name to identify the public key.
+   *
+   * The name cannot be changed after the public key is created. Changing it
+   * makes the deployment fail. To rotate a key, create a new `PublicKey` with
+   * a new construct id instead.
+   *
    * @default - generated from the `id`
    */
   readonly publicKeyName?: string;
@@ -37,6 +42,11 @@ export interface PublicKeyProps {
   /**
    * The public key that you can use with signed URLs and signed cookies, or with field-level encryption.
    * The `encodedKey` parameter must include `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines.
+   *
+   * The encoded key cannot be changed after the public key is created. Changing
+   * it makes the deployment fail. To rotate a key, create a new `PublicKey` with
+   * a new construct id instead.
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html
    */
