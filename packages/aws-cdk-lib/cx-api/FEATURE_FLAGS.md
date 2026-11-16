@@ -123,6 +123,7 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 | [@aws-cdk/aws-ec2:flowLogsCloudWatchLogsTrustScoped](#aws-cdkaws-ec2flowlogscloudwatchlogstrustscoped) | Scope the default VPC Flow Logs CloudWatch Logs role trust policy | V2NEXT | fix |
+| [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -179,6 +180,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
+    "@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:minimizePolicies": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
@@ -1496,7 +1498,7 @@ any prefix.
 
 Flag type: New default behavior
 
-When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
+When this feature flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
 
 
 | Since | Unset behaves like | Recommended value |
@@ -2679,6 +2681,31 @@ If unset, existing applications continue to synthesize the legacy, unconditioned
 trust policy. User-supplied IAM roles remain under caller control.
 Enabling the flag on an existing stack updates the default role's trust policy
 in place; check the CloudFormation change set before deploying.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName
+
+*When enabled, the default policy of an imported user or group gets a name that includes the stack name*
+
+Flag type: Backwards incompatible bugfix
+
+An imported user or group puts the permissions granted to it in a default inline policy. Without this flag, the
+name of that policy only depends on the construct path inside the stack, so stacks that import the same user or
+group under the same construct id use the same inline policy name on the same principal, and their deployments
+conflict.
+
+When this flag is enabled, the policy name also includes the stack name, so each stack gets an inline policy of
+its own. The logical ID of the policy does not change, so CloudFormation renames the existing policy in place.
+
+Deploy all stacks that import the same user or group after enabling this flag. The first of them to rename its
+policy removes the inline policy under the old shared name, which may hold the permissions of another stack until
+that stack is deployed too.
 
 
 | Since | Unset behaves like | Recommended value |
