@@ -178,6 +178,10 @@ export interface CustomTopicProps {
   /**
    * Provide a clear definition to detect and block user inputs and FM responses
    * that fall into this topic. Avoid starting with "don't".
+   *
+   * The maximum length depends on the guardrail's `topicsTierConfig`:
+   * 200 characters for CLASSIC (the default) and 1000 characters for STANDARD.
+   * Put additional detail in `examples`, which are counted separately.
    * @example `Investment advice refers to inquiries, guidance, or recommendations
    * regarding the management or allocation of funds or assets with the goal of
    * generating returns or achieving specific financial objectives.`
