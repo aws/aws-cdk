@@ -15,6 +15,7 @@ import { RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
+import type { IResolvable } from '../../core';
 import { Annotations, ArnFormat, FeatureFlags, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
@@ -24,6 +25,12 @@ import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
+/**
+ * Method request parameters that must be declared on the method before an
+ * integration can map them. `method.request.body` is never declared.
+ */
+const DECLARABLE_METHOD_REQUEST_PARAMETER = /^method\.request\.(path|querystring|multivaluequerystring|header|multivalueheader)\.[^.]+$/;
+
 export interface MethodOptions {
   /**
    * A friendly operation name for the method. For example, you can assign the
@@ -249,7 +256,6 @@ export class Method extends Resource {
 
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
-    const requestParameters = options.requestParameters || defaultMethodOptions.requestParameters;
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
@@ -259,7 +265,7 @@ export class Method extends Resource {
       apiKeyRequired: options.apiKeyRequired ?? defaultMethodOptions.apiKeyRequired,
       authorizationType,
       authorizerId,
-      requestParameters,
+      requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
       integration: this.renderIntegration(bindResult),
       methodResponses: this.methodResponses.derive(mrs => this.renderMethodResponses(mrs)),
       requestModels: this.renderRequestModels(options.requestModels),
@@ -267,9 +273,10 @@ export class Method extends Resource {
       authorizationScopes: authorizationScopes,
     };
 
-    this.warnUndeclaredPathParameters(requestParameters, bindResult.options?.requestParameters);
-
     const resource = new CfnMethod(this, 'Resource', methodProps);
+    // Check the final L1 state, so parameters declared later on the L1 (e.g. by
+    // a Mixin or by setting `requestParameters` on the default child) count.
+    this.node.addValidation({ validate: () => this.warnUndeclaredRequestParameters(resource) });
 
     this.methodId = resource.ref;
 
@@ -359,32 +366,36 @@ export class Method extends Resource {
   }
 
   /**
-   * Warn when the integration maps a method request path parameter that the
-   * method does not declare. API Gateway rejects such a mapping at deploy time
-   * with "Invalid mapping expression parameter specified".
+   * Warn when the integration maps a method request parameter that the method
+   * does not declare. API Gateway rejects such a mapping at deploy time with
+   * "Invalid mapping expression parameter specified".
    */
-  private warnUndeclaredPathParameters(
-    methodRequestParameters?: { [param: string]: boolean },
-    integrationRequestParameters?: { [dest: string]: string },
-  ) {
-    if (!integrationRequestParameters || Token.isUnresolved(integrationRequestParameters)) {
-      return;
+  private warnUndeclaredRequestParameters(resource: CfnMethod): string[] {
+    const integration = resource.integration;
+    if (!integration || Token.isUnresolved(integration)) {
+      return [];
     }
+    const integrationRequestParameters = (integration as CfnMethod.IntegrationProperty).requestParameters;
+    if (!integrationRequestParameters || Token.isUnresolved(integrationRequestParameters)) {
+      return [];
+    }
+    const methodRequestParameters = resource.requestParameters;
     if (methodRequestParameters && Token.isUnresolved(methodRequestParameters)) {
-      return;
+      return [];
     }
 
-    for (const source of Object.values(integrationRequestParameters)) {
-      if (typeof source !== 'string' || Token.isUnresolved(source) || !/^method\.request\.path\.[^.]+$/.test(source)) {
+    for (const source of Object.values(integrationRequestParameters as Record<string, string>)) {
+      if (typeof source !== 'string' || Token.isUnresolved(source) || !DECLARABLE_METHOD_REQUEST_PARAMETER.test(source)) {
         continue;
       }
-      if (methodRequestParameters?.[source] === undefined) {
+      if ((methodRequestParameters as Record<string, boolean | IResolvable> | undefined)?.[source] === undefined) {
         const proxyHint = source === 'method.request.path.proxy'
           ? ' For a proxy resource, you can also set \'autoConfigurePathParameter: true\' to configure both sides.'
           : '';
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:undeclaredPathParameter', `the integration maps ${JSON.stringify(source)}, but the method does not declare it in 'requestParameters'. Deployment will fail with "Invalid mapping expression parameter specified". Add ${JSON.stringify(source)} to the method's 'requestParameters'.${proxyHint}`);
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:undeclaredMethodRequestParameter', `the integration maps ${JSON.stringify(source)}, but the method does not declare it in 'requestParameters'. Deployment will fail with "Invalid mapping expression parameter specified". Add ${JSON.stringify(source)} to the method's 'requestParameters'.${proxyHint}`);
       }
     }
+    return [];
   }
 
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {

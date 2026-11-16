@@ -1240,7 +1240,7 @@ describe('method', () => {
     });
   });
 
-  describe('undeclared path parameter warning', () => {
+  describe('undeclared method request parameter warning', () => {
     const warning = Match.stringLikeRegexp('the integration maps "method.request.path.proxy", but the method does not declare it');
 
     test('warns when the integration maps a path parameter the method does not declare', () => {
@@ -1256,7 +1256,68 @@ describe('method', () => {
       }));
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/test-api/Default/{proxy+}/ANY', warning);
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasWarning('/Default/test-api/Default/{proxy+}/ANY', warning);
+      annotations.hasWarning('/Default/test-api/Default/{proxy+}/ANY', Match.stringLikeRegexp('\\[ack: @aws-cdk/aws-apigateway:undeclaredMethodRequestParameter\\]'));
+    });
+
+    test('warns on the proxy method for addProxy without autoConfigurePathParameter', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addProxy({
+        defaultIntegration: new apigw.HttpIntegration('http://example.com/{proxy}', {
+          options: {
+            requestParameters: { 'integration.request.path.proxy': 'method.request.path.proxy' },
+          },
+        }),
+      });
+
+      // THEN
+      const annotations = Annotations.fromStack(stack);
+      annotations.hasWarning('/Default/test-api/Default/{proxy+}/ANY', warning);
+      // the method added to the root uses the root's default (mock) integration
+      annotations.hasNoWarning('/Default/test-api/Default/ANY', warning);
+    });
+
+    test.each([
+      'method.request.querystring.page',
+      'method.request.multivaluequerystring.page',
+      'method.request.header.x-page',
+      'method.request.multivalueheader.x-page',
+    ])('warns when the integration maps an undeclared %s', (source) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addMethod('GET', new apigw.HttpIntegration('http://example.com', {
+        options: {
+          requestParameters: { 'integration.request.header.x-page': source },
+        },
+      }));
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/test-api/Default/GET', Match.stringLikeRegexp(`the integration maps ${JSON.stringify(source)}, but the method does not declare it`));
+    });
+
+    test('does not warn when the parameter is declared later on the L1 resource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+      const method = api.root.addResource('{proxy+}').addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}', {
+        options: {
+          requestParameters: { 'integration.request.path.proxy': 'method.request.path.proxy' },
+        },
+      }));
+
+      // WHEN
+      (method.node.defaultChild as apigw.CfnMethod).requestParameters = { 'method.request.path.proxy': true };
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', warning);
     });
 
     test('suggests autoConfigurePathParameter only for the proxy path parameter', () => {
@@ -1349,7 +1410,7 @@ describe('method', () => {
       Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('does not declare it'));
     });
 
-    test('does not warn for non-path method request parameters or static values', () => {
+    test('does not warn for body, context or static values', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
@@ -1358,7 +1419,8 @@ describe('method', () => {
       api.root.addMethod('GET', new apigw.HttpIntegration('http://example.com', {
         options: {
           requestParameters: {
-            'integration.request.header.x-page': 'method.request.querystring.page',
+            'integration.request.header.x-body': 'method.request.body.name',
+            'integration.request.header.x-request-id': 'context.requestId',
             'integration.request.header.x-static': "'static'",
           },
         },
