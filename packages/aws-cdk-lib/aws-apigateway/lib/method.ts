@@ -249,6 +249,7 @@ export class Method extends Resource {
 
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
+    const requestParameters = options.requestParameters || defaultMethodOptions.requestParameters;
 
     const methodProps: CfnMethodProps = {
       resourceId: props.resource.resourceId,
@@ -258,7 +259,7 @@ export class Method extends Resource {
       apiKeyRequired: options.apiKeyRequired ?? defaultMethodOptions.apiKeyRequired,
       authorizationType,
       authorizerId,
-      requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
+      requestParameters,
       integration: this.renderIntegration(bindResult),
       methodResponses: this.methodResponses.derive(mrs => this.renderMethodResponses(mrs)),
       requestModels: this.renderRequestModels(options.requestModels),
@@ -266,7 +267,7 @@ export class Method extends Resource {
       authorizationScopes: authorizationScopes,
     };
 
-    this.warnUndeclaredPathParameters(methodProps.requestParameters, bindResult.options?.requestParameters);
+    this.warnUndeclaredPathParameters(requestParameters, bindResult.options?.requestParameters);
 
     const resource = new CfnMethod(this, 'Resource', methodProps);
 
