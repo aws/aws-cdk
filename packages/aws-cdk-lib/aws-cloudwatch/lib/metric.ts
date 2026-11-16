@@ -266,13 +266,6 @@ export interface MathExpressionProps extends MathExpressionOptions {
    *
    * When an expression contains a SEARCH function, it cannot be used
    * within an Alarm.
-   *
-   * The array form of `MAX`, `MIN`, `AVG` and `SUM` only accepts time series.
-   * Mixing a metric and a scalar number, such as `MAX([m1, 1])`, fails at
-   * deploy time. To avoid dividing by zero, use `IF` instead:
-   * `IF(m1 > 0, m2 / m1 * 100, 0)`.
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax-functions-list
    */
   readonly expression: string;
 

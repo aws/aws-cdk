@@ -143,9 +143,10 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 
 The array form of `MAX`, `MIN`, `AVG` and `SUM` (for example `MAX([m1, m2])`)
 only accepts time series. An array that mixes a metric with a scalar number,
-such as `MAX([invocations, 1])`, fails at deploy time with
-`Unsupported operand type(s) for MAX: '[Array[TimeSeries, Scalar]]'`. To avoid
-dividing by zero, use `IF` instead: `IF(invocations > 0, errors / invocations * 100, 0)`.
+such as `MAX([invocations, 1])`, is rejected by CloudWatch at deploy time with
+`Unsupported operand type(s) for MAX: '[Array[TimeSeries, Scalar]]'`. To get `0`
+instead of a gap when `invocations` is 0, use `IF`:
+`IF(invocations > 0, errors / invocations * 100, 0)`.
 See [Metric math syntax and functions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax-functions-list)
 for the arguments each function accepts.
 
