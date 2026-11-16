@@ -27,8 +27,11 @@ export interface PublicKeyProps {
    *
    * The name cannot be changed after the public key is created. Changing it
    * makes the deployment fail. To rotate a key, create a new `PublicKey` with
-   * a new construct id instead.
+   * a new construct id instead. If you set this property, the new key also
+   * needs a new name: names must be unique in the account, and the old key
+   * still exists when the new one is created.
    *
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_CreatePublicKey.html#API_CreatePublicKey_Errors
    * @default - generated from the `id`
    */
   readonly publicKeyName?: string;

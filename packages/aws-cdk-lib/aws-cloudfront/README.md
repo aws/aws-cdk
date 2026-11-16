@@ -1629,6 +1629,11 @@ The steps below follow CloudFront's
 [Rotating key pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html#private-content-rotating-key-pairs)
 guidance.
 
+If you set `publicKeyName`, give the new key a new name as well. Public key names must be unique in the
+account, and the old key still exists when the new key is created, so reusing the name fails with
+`PublicKeyAlreadyExists` (see
+[CreatePublicKey errors](https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_CreatePublicKey.html#API_CreatePublicKey_Errors)).
+
 First, add the new key next to the old one, put both in the key group, and deploy:
 
 ```ts
@@ -1650,7 +1655,8 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
 ```
 
 Then switch your signers to the new private key and the new key's ID (`newKey.publicKeyId`, used as
-`Key-Pair-Id`), and wait until URLs and cookies signed with the old key have expired. CloudFront accepts
+`Key-Pair-Id`), confirm that URLs and cookies signed with the new key work, and wait until URLs and
+cookies signed with the old key have expired. CloudFront accepts
 URLs and cookies signed with any key in the key group, so both keep working in the meantime.
 
 Finally, remove the old `PublicKey` from your code and from the key group, and deploy again:
