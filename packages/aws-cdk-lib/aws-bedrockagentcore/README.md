@@ -879,6 +879,8 @@ new agentcore.Runtime(this, 'test-runtime', {
 });
 ```
 
+> **Note:** Tracing requires CloudWatch Transaction Search, enabled once per account and Region. Without it the deploy fails with `X-Ray Delivery Destination is supported with CloudWatch Logs as a Trace Segment Destination`. Turn it on in the CloudWatch console, or deploy [`xray.CfnTransactionSearchConfig`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_xray.CfnTransactionSearchConfig.html) in a stack you deploy once per account; see [Enable Transaction Search with CloudFormation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Transaction-Search-Cloudformation.html).
+
 ```typescript fixture=default
 const repository = new ecr.Repository(this, 'TestRepository', {
   repositoryName: 'test-agent-runtime',
