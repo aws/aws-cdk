@@ -1,0 +1,20 @@
+{
+  "/InstanceUpdateBehaviorTests/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "InstanceUpdateBehaviorTestsDefaultTestDeployAssert287956FD.template.json"
+    }
+  ],
+  "/InstanceUpdateBehaviorTests/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/InstanceUpdateBehaviorTests/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

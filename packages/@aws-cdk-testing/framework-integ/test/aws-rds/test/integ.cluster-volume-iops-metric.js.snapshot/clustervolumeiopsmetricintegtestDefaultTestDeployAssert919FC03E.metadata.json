@@ -1,0 +1,20 @@
+{
+  "/cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "clustervolumeiopsmetricintegtestDefaultTestDeployAssert919FC03E.template.json"
+    }
+  ],
+  "/cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cluster-volume-iops-metric-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

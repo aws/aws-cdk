@@ -1,0 +1,20 @@
+{
+  "/cdk-rds-cluster-instance-ca-certificate-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkrdsclusterinstancecacertificatetestDefaultTestDeployAssertBEAA84EE.template.json"
+    }
+  ],
+  "/cdk-rds-cluster-instance-ca-certificate-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-rds-cluster-instance-ca-certificate-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "/test-rds-cluster-s3/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "testrdsclusters3DefaultTestDeployAssert4BF11861.template.json"
+    }
+  ],
+  "/test-rds-cluster-s3/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/test-rds-cluster-s3/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

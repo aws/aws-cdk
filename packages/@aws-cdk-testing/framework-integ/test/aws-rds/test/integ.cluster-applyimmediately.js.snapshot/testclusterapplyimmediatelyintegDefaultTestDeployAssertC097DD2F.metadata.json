@@ -1,0 +1,20 @@
+{
+  "/test-cluster-applyimmediately-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "testclusterapplyimmediatelyintegDefaultTestDeployAssertC097DD2F.template.json"
+    }
+  ],
+  "/test-cluster-applyimmediately-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/test-cluster-applyimmediately-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

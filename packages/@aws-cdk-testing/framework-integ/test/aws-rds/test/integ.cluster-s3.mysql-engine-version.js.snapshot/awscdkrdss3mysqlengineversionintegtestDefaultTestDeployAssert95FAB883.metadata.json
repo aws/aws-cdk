@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-rds-s3-mysql-engine-version-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkrdss3mysqlengineversionintegtestDefaultTestDeployAssert95FAB883.template.json"
+    }
+  ],
+  "/aws-cdk-rds-s3-mysql-engine-version-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-rds-s3-mysql-engine-version-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "/cluster-database-insights-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "clusterdatabaseinsightsintegtestDefaultTestDeployAssert71AD9E18.template.json"
+    }
+  ],
+  "/cluster-database-insights-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cluster-database-insights-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

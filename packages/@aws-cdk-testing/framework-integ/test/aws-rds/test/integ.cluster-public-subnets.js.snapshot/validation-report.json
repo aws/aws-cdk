@@ -1,0 +1,63 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W9011",
+          "description": "PubliclyAccessible: RDS instance has PubliclyAccessible set to true - consider restricting access",
+          "suggestedFix": "Set PubliclyAccessible to false",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/writer/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-aurora-pub-sn-cluster.template.json",
+                "logicalId": "IntegCluster0writer825E34BB",
+                "propertyPaths": [
+                  "Properties.PubliclyAccessible"
+                ]
+              }
+            },
+            {
+              "constructPath": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/writer/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-aurora-pub-sn-cluster.template.json",
+                "logicalId": "IntegCluster1writer2545F93A",
+                "propertyPaths": [
+                  "Properties.PubliclyAccessible"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "test-aurora-pub-sn-cluster/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W2501",
+          "description": "MasterUserPassword: Property 'MasterUserPassword' should not be a hardcoded string - use a parameter with NoEcho or a dynamic reference",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-rds-cluster-dual-integ/DualstackCluster/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-cluster-dual-integ.template.json",
+                "logicalId": "DualstackCluster84A5FE37",
+                "propertyPaths": [
+                  "Properties.MasterUserPassword"
+                ]
+              }
+            },
+            {
+              "constructPath": "aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-cluster-dual-integ.template.json",
+                "logicalId": "Ipv4Cluster5F67A28A",
+                "propertyPaths": [
+                  "Properties.MasterUserPassword"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "cluster-dual-test/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
