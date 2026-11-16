@@ -1,0 +1,590 @@
+import type { Construct } from 'constructs';
+import { McpTargetType } from './target-base';
+import type { TargetConfigurationConfig } from './target-configuration';
+import { McpTargetConfiguration } from './target-configuration';
+import * as iam from '../../../../aws-iam';
+import { KeyGrants } from '../../../../aws-kms';
+import { Token } from '../../../../core';
+import { UnscopedValidationError } from '../../../../core/lib/errors';
+import { lit } from '../../../../core/lib/helpers-internal';
+import type { IKnowledgeBaseRef } from '../../../../interfaces/generated/aws-bedrock-interfaces.generated';
+import type { IKeyRef } from '../../../../interfaces/generated/aws-kms-interfaces.generated';
+import type { IGateway } from '../gateway-base';
+
+/******************************************************************************
+ *                     Connector Target Configuration
+ *****************************************************************************/
+
+/**
+ * Controls whether the agent can see and set a parameter of a connector tool.
+ */
+export interface ConnectorParameterOverride {
+  /**
+   * The path identifying the parameter in the tool's request, for example
+   * `$.retrievalConfiguration.managedSearchConfiguration.numberOfResults`.
+   */
+  readonly path: string;
+
+  /**
+   * An agent-facing description override for this parameter.
+   *
+   * @default - the description provided by the connector
+   */
+  readonly description?: string;
+
+  /**
+   * Whether this parameter is visible to the agent.
+   *
+   * A hidden parameter still receives the value configured in `parameterValues`.
+   *
+   * @default - the service default for the parameter
+   */
+  readonly visible?: boolean;
+}
+
+/**
+ * Configuration for a single tool within a connector.
+ */
+export interface ConnectorToolConfiguration {
+  /**
+   * The tool or operation name, for example `Retrieve` or `WebSearch`.
+   *
+   * Can be up to 64 characters long.
+   */
+  readonly name: string;
+
+  /**
+   * An agent-facing description override for this tool.
+   *
+   * Can be up to 2000 characters long.
+   *
+   * @default - the description provided by the connector
+   */
+  readonly description?: string;
+
+  /**
+   * Parameters to set as fixed or default values when provisioning this tool.
+   *
+   * The accepted keys depend on the connector and the tool.
+   *
+   * @default - no parameter values
+   */
+  readonly parameterValues?: { [key: string]: any };
+
+  /**
+   * Parameters to expose to the agent at runtime, with optional description overrides.
+   *
+   * @default - the service defaults for the tool
+   */
+  readonly parameterOverrides?: ConnectorParameterOverride[];
+}
+
+/**
+ * Properties for creating a connector target configuration
+ */
+export interface ConnectorTargetConfigurationProps {
+  /**
+   * The identifier of the connector to use, for example `bedrock-knowledge-bases` or `web-search`.
+   */
+  readonly connectorId: string;
+
+  /**
+   * Per-tool configurations for the connector.
+   *
+   * @default - no per-tool configuration
+   */
+  readonly toolConfigurations?: ConnectorToolConfiguration[];
+
+  /**
+   * The names of the tools to enable from this connector.
+   *
+   * Must contain between 1 and 50 names.
+   *
+   * @default - all tools provided by the connector are enabled
+   */
+  readonly enabledTools?: string[];
+}
+
+/**
+ * Configuration for connector-based MCP targets
+ *
+ * Connectors provide pre-built integrations with AWS services and third-party tools.
+ * This configuration works with any connector, but does not grant the gateway role any
+ * permissions: grant the role what the connector needs yourself. For Amazon Bedrock Managed
+ * Knowledge Bases, prefer `KnowledgeBasesTargetConfiguration`, which also sets up permissions.
+ *
+ * Connector targets only support the gateway IAM role credential provider.
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-api-target-config.html
+ */
+export class ConnectorTargetConfiguration extends McpTargetConfiguration {
+  /**
+   * Create a connector target configuration
+   *
+   * @param props The configuration properties
+   * @returns A new ConnectorTargetConfiguration instance
+   */
+  public static create(props: ConnectorTargetConfigurationProps): ConnectorTargetConfiguration {
+    return new ConnectorTargetConfiguration(props);
+  }
+
+  public readonly targetType = McpTargetType.CONNECTOR;
+
+  /**
+   * The identifier of the connector
+   */
+  public readonly connectorId: string;
+
+  /**
+   * Per-tool configurations for the connector
+   */
+  public readonly toolConfigurations?: ConnectorToolConfiguration[];
+
+  /**
+   * The names of the tools enabled from this connector
+   */
+  public readonly enabledTools?: string[];
+
+  constructor(props: ConnectorTargetConfigurationProps) {
+    super();
+    this.connectorId = props.connectorId;
+    this.toolConfigurations = props.toolConfigurations;
+    this.enabledTools = props.enabledTools;
+
+    this.validateConfiguration();
+  }
+
+  /**
+   * Binds this configuration to a construct scope
+   * No permissions are granted: the required permissions depend on the connector
+   *
+   * @param _scope The construct scope
+   * @param _gateway The gateway that will use this target
+   */
+  public bind(_scope: Construct, _gateway: IGateway): TargetConfigurationConfig {
+    return { bound: true };
+  }
+
+  /**
+   * Renders the MCP-specific configuration
+   */
+  protected renderMcpConfiguration(): any {
+    const configurations = this.toolConfigurations?.map(tool => ({
+      name: tool.name,
+      description: tool.description,
+      parameterValues: tool.parameterValues,
+      parameterOverrides: tool.parameterOverrides && tool.parameterOverrides.length > 0
+        ? tool.parameterOverrides.map(override => ({
+          path: override.path,
+          description: override.description,
+          visible: override.visible,
+        }))
+        : undefined,
+    }));
+
+    return {
+      connector: {
+        source: { connectorId: this.connectorId },
+        configurations: configurations && configurations.length > 0 ? configurations : undefined,
+        enabled: this.enabledTools,
+      },
+    };
+  }
+
+  private validateConfiguration(): void {
+    if (!Token.isUnresolved(this.connectorId) && this.connectorId.length === 0) {
+      throw new UnscopedValidationError(lit`ConnectorIdInvalid`, 'connectorId must not be empty');
+    }
+
+    for (const tool of this.toolConfigurations ?? []) {
+      if (!Token.isUnresolved(tool.name) && (tool.name.length < 1 || tool.name.length > 64)) {
+        throw new UnscopedValidationError(
+          lit`ConnectorToolNameInvalid`,
+          `connector tool name must be between 1 and 64 characters long, got ${JSON.stringify(tool.name)} (${tool.name.length} characters)`,
+        );
+      }
+      if (tool.description !== undefined && !Token.isUnresolved(tool.description) && tool.description.length > 2000) {
+        throw new UnscopedValidationError(
+          lit`ConnectorToolDescriptionInvalid`,
+          `description of connector tool ${JSON.stringify(tool.name)} must be at most 2000 characters long, got ${tool.description.length} characters`,
+        );
+      }
+    }
+
+    if (this.enabledTools !== undefined && !Token.isUnresolved(this.enabledTools)
+      && (this.enabledTools.length < 1 || this.enabledTools.length > 50)) {
+      throw new UnscopedValidationError(
+        lit`ConnectorEnabledToolsInvalid`,
+        `enabledTools must contain between 1 and 50 tool names, got ${this.enabledTools.length}; omit enabledTools to enable all tools of the connector`,
+      );
+    }
+  }
+}
+
+/******************************************************************************
+ *                  Knowledge Bases Target Configuration
+ *****************************************************************************/
+
+/**
+ * The search type used by the `Retrieve` tool of the knowledge bases connector
+ */
+export enum KnowledgeBaseSearchType {
+  /** Combines keyword and vector search */
+  HYBRID = 'HYBRID',
+  /** Uses vector search only */
+  SEMANTIC = 'SEMANTIC',
+}
+
+/**
+ * A managed knowledge base that agentic retrieval can query
+ */
+export interface KnowledgeBaseRetriever {
+  /**
+   * The managed knowledge base to query
+   */
+  readonly knowledgeBase: IKnowledgeBaseRef;
+
+  /**
+   * A description of what the knowledge base contains.
+   *
+   * Agentic retrieval uses it to decide which knowledge base to query.
+   *
+   * @default - no description
+   */
+  readonly description?: string;
+
+  /**
+   * The customer managed KMS key that encrypts the knowledge base.
+   *
+   * The gateway role is granted permission to decrypt with this key, which Amazon Bedrock
+   * requires from the caller when it reads a knowledge base encrypted with a customer managed key.
+   *
+   * @default - the knowledge base is not encrypted with a customer managed key, no KMS permission is granted
+   */
+  readonly encryptionKey?: IKeyRef;
+}
+
+/**
+ * Options for the `AgenticRetrieveStream` tool of the knowledge bases connector
+ *
+ * Agentic retrieval plans a retrieval strategy, runs multiple retrieval steps across the
+ * knowledge bases, and returns the supporting results with a synthesized, citation-backed answer.
+ */
+export interface KnowledgeBaseAgenticRetrieveOptions {
+  /**
+   * The managed knowledge bases to query. At least one is required.
+   */
+  readonly retrievers: KnowledgeBaseRetriever[];
+
+  /**
+   * The maximum number of planning and retrieval iterations.
+   *
+   * @default - the service default
+   */
+  readonly maxAgentIterations?: number;
+
+  /**
+   * Whether to return a synthesized answer with citations in addition to the retrieval results.
+   *
+   * @default true
+   */
+  readonly generateResponse?: boolean;
+
+  /**
+   * An agent-facing description override for this tool.
+   *
+   * Can be up to 2000 characters long.
+   *
+   * @default - the description provided by the connector
+   */
+  readonly description?: string;
+
+  /**
+   * Parameters to expose to the agent at runtime, with optional description overrides.
+   *
+   * @default - the agent can only set the conversation messages
+   */
+  readonly parameterOverrides?: ConnectorParameterOverride[];
+}
+
+/**
+ * Options for the `Retrieve` tool of the knowledge bases connector
+ *
+ * `Retrieve` performs a single search and returns the most relevant passages.
+ */
+export interface KnowledgeBaseRetrieveOptions {
+  /**
+   * The managed knowledge base to query
+   */
+  readonly knowledgeBase: IKnowledgeBaseRef;
+
+  /**
+   * The customer managed KMS key that encrypts the knowledge base.
+   *
+   * The gateway role is granted permission to decrypt with this key, which Amazon Bedrock
+   * requires from the caller when it reads a knowledge base encrypted with a customer managed key.
+   *
+   * @default - the knowledge base is not encrypted with a customer managed key, no KMS permission is granted
+   */
+  readonly encryptionKey?: IKeyRef;
+
+  /**
+   * The number of source chunks to retrieve. Must be between 1 and 100.
+   *
+   * @default - the service default
+   */
+  readonly numberOfResults?: number;
+
+  /**
+   * The search type to use.
+   *
+   * @default - the service default
+   */
+  readonly searchType?: KnowledgeBaseSearchType;
+
+  /**
+   * An agent-facing description override for this tool.
+   *
+   * Can be up to 2000 characters long.
+   *
+   * @default - the description provided by the connector
+   */
+  readonly description?: string;
+
+  /**
+   * Parameters to expose to the agent at runtime, with optional description overrides.
+   *
+   * @default - the agent can only set the query text
+   */
+  readonly parameterOverrides?: ConnectorParameterOverride[];
+}
+
+/**
+ * Properties for creating a knowledge bases target configuration
+ *
+ * At least one of `agenticRetrieve` and `retrieve` is required.
+ */
+export interface KnowledgeBasesTargetConfigurationProps {
+  /**
+   * Configures the `AgenticRetrieveStream` tool.
+   *
+   * @default - the tool is not configured
+   */
+  readonly agenticRetrieve?: KnowledgeBaseAgenticRetrieveOptions;
+
+  /**
+   * Configures the `Retrieve` tool.
+   *
+   * @default - the tool is not configured
+   */
+  readonly retrieve?: KnowledgeBaseRetrieveOptions;
+}
+
+/**
+ * Configuration for MCP targets backed by Amazon Bedrock Managed Knowledge Bases
+ *
+ * This configuration uses the `bedrock-knowledge-bases` connector to expose managed knowledge
+ * bases as MCP tools, and grants the gateway role the permissions the configured tools need.
+ * The connector only supports managed knowledge bases.
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-target-connector-managed-kb.html
+ */
+export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
+  /**
+   * The identifier of the Amazon Bedrock Managed Knowledge Bases connector
+   */
+  public static readonly CONNECTOR_ID = 'bedrock-knowledge-bases';
+
+  /**
+   * Create a knowledge bases target configuration
+   *
+   * @param props The configuration properties
+   * @returns A new KnowledgeBasesTargetConfiguration instance
+   */
+  public static create(props: KnowledgeBasesTargetConfigurationProps): KnowledgeBasesTargetConfiguration {
+    return new KnowledgeBasesTargetConfiguration(props);
+  }
+
+  public readonly targetType = McpTargetType.CONNECTOR;
+
+  /**
+   * The configuration of the `AgenticRetrieveStream` tool
+   */
+  public readonly agenticRetrieve?: KnowledgeBaseAgenticRetrieveOptions;
+
+  /**
+   * The configuration of the `Retrieve` tool
+   */
+  public readonly retrieve?: KnowledgeBaseRetrieveOptions;
+
+  private readonly connector: ConnectorTargetConfiguration;
+
+  constructor(props: KnowledgeBasesTargetConfigurationProps) {
+    super();
+    this.agenticRetrieve = props.agenticRetrieve;
+    this.retrieve = props.retrieve;
+
+    this.validateConfiguration();
+
+    const toolConfigurations: ConnectorToolConfiguration[] = [];
+    if (this.agenticRetrieve) {
+      toolConfigurations.push(this.renderAgenticRetrieve(this.agenticRetrieve));
+    }
+    if (this.retrieve) {
+      toolConfigurations.push(this.renderRetrieve(this.retrieve));
+    }
+    this.connector = ConnectorTargetConfiguration.create({
+      connectorId: KnowledgeBasesTargetConfiguration.CONNECTOR_ID,
+      toolConfigurations,
+    });
+  }
+
+  /**
+   * Binds this configuration to a construct scope
+   * Grants the gateway role the permissions the configured tools need
+   *
+   * @param scope The construct scope
+   * @param gateway The gateway that will use this target
+   */
+  public bind(scope: Construct, gateway: IGateway): TargetConfigurationConfig {
+    const grants: iam.Grant[] = [];
+    const retrieveArn = this.retrieve?.knowledgeBase.knowledgeBaseRef.knowledgeBaseArn;
+    const retrieverArns = new Set(this.agenticRetrieve?.retrievers.map(r => r.knowledgeBase.knowledgeBaseRef.knowledgeBaseArn));
+
+    if (retrieverArns.size > 0) {
+      // Agentic retrieval searches each knowledge base and expands passages to full documents with
+      // the gateway role, on top of the GetKnowledgeBase check the gateway runs when the target is created.
+      // See https://docs.aws.amazon.com/bedrock/latest/userguide/kb-test-agentic-retrieve.html
+      grants.push(iam.Grant.addToPrincipal({
+        grantee: gateway.role,
+        actions: ['bedrock:GetKnowledgeBase', 'bedrock:Retrieve', 'bedrock:GetDocumentContent'],
+        resourceArns: Array.from(retrieverArns),
+      }));
+      // AgenticRetrieveStream does not support resource-level permissions
+      grants.push(iam.Grant.addToPrincipal({
+        grantee: gateway.role,
+        actions: ['bedrock:AgenticRetrieveStream'],
+        resourceArns: ['*'],
+      }));
+    }
+
+    if (retrieveArn !== undefined && !retrieverArns.has(retrieveArn)) {
+      // See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-add-target-api-target-config.html
+      grants.push(iam.Grant.addToPrincipal({
+        grantee: gateway.role,
+        actions: ['bedrock:GetKnowledgeBase', 'bedrock:Retrieve'],
+        resourceArns: [retrieveArn],
+      }));
+    }
+
+    // Amazon Bedrock decrypts customer-managed-key knowledge bases with the caller's permissions
+    const encryptionKeys = new Map<string, IKeyRef>();
+    for (const key of [this.retrieve?.encryptionKey, ...(this.agenticRetrieve?.retrievers.map(r => r.encryptionKey) ?? [])]) {
+      if (key !== undefined) {
+        encryptionKeys.set(key.keyRef.keyArn, key);
+      }
+    }
+    for (const key of encryptionKeys.values()) {
+      grants.push(KeyGrants.fromKey(key).decrypt(gateway.role));
+    }
+
+    // The gateway validates the knowledge bases as soon as the target is created
+    for (const grant of grants) {
+      grant.applyBefore(scope);
+    }
+
+    return { bound: true };
+  }
+
+  /**
+   * Renders the MCP-specific configuration
+   */
+  protected renderMcpConfiguration(): any {
+    return this.connector._render().mcp;
+  }
+
+  private renderAgenticRetrieve(options: KnowledgeBaseAgenticRetrieveOptions): ConnectorToolConfiguration {
+    // The gateway rejects tool calls when this object is empty, so the service-managed models,
+    // which are the defaults, are always spelled out
+    const agenticRetrieveConfiguration: { [key: string]: any } = {
+      foundationModelType: 'MANAGED',
+      rerankingModelType: 'MANAGED',
+    };
+    if (options.maxAgentIterations !== undefined) {
+      agenticRetrieveConfiguration.maxAgentIteration = options.maxAgentIterations;
+    }
+
+    const parameterValues: { [key: string]: any } = {
+      retrievers: options.retrievers.map(retriever => {
+        const rendered: { [key: string]: any } = {};
+        if (retriever.description !== undefined) {
+          rendered.description = retriever.description;
+        }
+        rendered.configuration = {
+          knowledgeBase: { knowledgeBaseId: retriever.knowledgeBase.knowledgeBaseRef.knowledgeBaseId },
+        };
+        return rendered;
+      }),
+      agenticRetrieveConfiguration,
+    };
+    if (options.generateResponse !== undefined) {
+      parameterValues.generateResponse = options.generateResponse;
+    }
+
+    return {
+      name: 'AgenticRetrieveStream',
+      description: options.description,
+      parameterValues,
+      parameterOverrides: options.parameterOverrides,
+    };
+  }
+
+  private renderRetrieve(options: KnowledgeBaseRetrieveOptions): ConnectorToolConfiguration {
+    const managedSearchConfiguration: { [key: string]: any } = {};
+    if (options.numberOfResults !== undefined) {
+      managedSearchConfiguration.numberOfResults = options.numberOfResults;
+    }
+    if (options.searchType !== undefined) {
+      managedSearchConfiguration.overrideSearchType = options.searchType;
+    }
+
+    const parameterValues: { [key: string]: any } = {
+      knowledgeBaseId: options.knowledgeBase.knowledgeBaseRef.knowledgeBaseId,
+    };
+    if (Object.keys(managedSearchConfiguration).length > 0) {
+      parameterValues.retrievalConfiguration = { managedSearchConfiguration };
+    }
+
+    return {
+      name: 'Retrieve',
+      description: options.description,
+      parameterValues,
+      parameterOverrides: options.parameterOverrides,
+    };
+  }
+
+  private validateConfiguration(): void {
+    if (this.agenticRetrieve === undefined && this.retrieve === undefined) {
+      throw new UnscopedValidationError(
+        lit`KnowledgeBasesToolRequired`,
+        'at least one of agenticRetrieve and retrieve must be configured for a knowledge bases target',
+      );
+    }
+
+    if (this.agenticRetrieve !== undefined && this.agenticRetrieve.retrievers.length === 0) {
+      throw new UnscopedValidationError(
+        lit`KnowledgeBasesRetrieversRequired`,
+        'agenticRetrieve.retrievers must contain at least one knowledge base',
+      );
+    }
+
+    const numberOfResults = this.retrieve?.numberOfResults;
+    if (numberOfResults !== undefined && !Token.isUnresolved(numberOfResults)
+      && (!Number.isInteger(numberOfResults) || numberOfResults < 1 || numberOfResults > 100)) {
+      throw new UnscopedValidationError(
+        lit`KnowledgeBasesNumberOfResultsInvalid`,
+        `retrieve.numberOfResults must be an integer between 1 and 100, got ${JSON.stringify(numberOfResults)}`,
+      );
+    }
+  }
+}

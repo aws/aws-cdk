@@ -30,6 +30,8 @@ export enum McpTargetType {
   MCP_SERVER = 'MCP_SERVER',
   /** API Gateway target type */
   API_GATEWAY = 'API_GATEWAY',
+  /** Connector target type */
+  CONNECTOR = 'CONNECTOR',
 }
 
 /******************************************************************************
