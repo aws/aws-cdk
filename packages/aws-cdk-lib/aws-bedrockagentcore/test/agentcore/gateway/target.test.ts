@@ -666,6 +666,7 @@ describe('GatewayTarget Tests', () => {
       expect(imported.targetId).toBe('test-target-id');
       expect(imported.gatewayTargetName).toBe('imported-target');
       expect(imported.gateway).toBe(gateway);
+      expect(imported.description).toBeUndefined();
     });
 
     test('Should import target with optional attributes', () => {
@@ -674,14 +675,29 @@ describe('GatewayTarget Tests', () => {
         targetId: 'test-target-id',
         gatewayTargetName: 'imported-target',
         gateway: gateway,
+        description: 'My imported target description',
         status: 'AVAILABLE',
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-02T00:00:00Z',
       });
 
+      expect(imported.description).toBe('My imported target description');
       expect(imported.status).toBe('AVAILABLE');
       expect(imported.createdAt).toBe('2024-01-01T00:00:00Z');
       expect(imported.updatedAt).toBe('2024-01-02T00:00:00Z');
+    });
+
+    test('Should not set description to status when description is omitted', () => {
+      const imported = GatewayTarget.fromGatewayTargetAttributes(stack, 'ImportedTargetStatusOnly', {
+        targetArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/test-gateway/target/test-target',
+        targetId: 'test-target-id',
+        gatewayTargetName: 'imported-target',
+        gateway: gateway,
+        status: 'READY',
+      });
+
+      expect(imported.status).toBe('READY');
+      expect(imported.description).toBeUndefined();
     });
 
     test('Should have empty credential configurations for imported target', () => {

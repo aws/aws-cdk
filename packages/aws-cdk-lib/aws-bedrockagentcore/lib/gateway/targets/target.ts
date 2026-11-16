@@ -243,6 +243,12 @@ export interface GatewayTargetAttributes {
   readonly gateway: IGateway;
 
   /**
+   * Optional description of the target
+   * @default - No description
+   */
+  readonly description?: string;
+
+  /**
    * Optional status of the target
    * @default - No status
    */
@@ -297,7 +303,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       public readonly targetArn = attrs.targetArn;
       public readonly targetId = attrs.targetId;
       public readonly gatewayTargetName = attrs.gatewayTargetName;
-      public readonly description = attrs.status;
+      public readonly description = attrs.description;
       public readonly gateway = attrs.gateway;
       public readonly credentialProviderConfigurations = [];
       public readonly targetProtocolType = GatewayTargetProtocolType.MCP;
