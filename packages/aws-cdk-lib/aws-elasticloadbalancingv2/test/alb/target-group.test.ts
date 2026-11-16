@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Match, Template } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
@@ -75,85 +75,79 @@ describe('tests', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    // WHEN - Create ApplicationTargetGroup without protocol or port
+    // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       vpc,
-      // Neither protocol nor port specified - this should generate a warning
     });
 
-    // THEN - Should synthesize successfully but show warning
-    const assembly = app.synth();
-    const stackArtifact = assembly.getStackByName(stack.stackName);
-    const warnings = stackArtifact.messages.filter(m => m.level === 'warning');
-    expect(warnings.some(w => w.entry.data && typeof w.entry.data === 'string' &&
-      w.entry.data.includes('ApplicationTargetGroup protocol and port not specified'))).toBe(true);
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Stack/TG', Match.stringLikeRegexp('ApplicationTargetGroup protocol and port not specified'));
   });
 
-  test('ApplicationTargetGroup with port but no protocol should not show warning', () => {
+  test('ApplicationTargetGroup with port but no protocol does not show warning', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    // WHEN - Create ApplicationTargetGroup without protocol but with port
+    // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       vpc,
-      port: 80, // Providing port satisfies the requirement - protocol will be determined automatically
+      port: 80,
     });
 
-    // THEN - Should synthesize successfully without warning
-    const assembly = app.synth();
-    const stackArtifact = assembly.getStackByName(stack.stackName);
-    const warnings = stackArtifact.messages.filter(m => m.level === 'warning');
-    expect(warnings.some(w => w.entry.data && typeof w.entry.data === 'string' &&
-      w.entry.data.includes('ApplicationTargetGroup protocol and port not specified'))).toBe(false);
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', Match.stringLikeRegexp('ApplicationTargetGroup protocol and port not specified'));
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+    });
   });
 
-  test('ApplicationTargetGroup with protocol should not throw validation error', () => {
+  test('ApplicationTargetGroup with port and protocol synthesizes without warning', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
-    // WHEN - Create ApplicationTargetGroup with protocol
+    // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       vpc,
       port: 80,
       protocol: elbv2.ApplicationProtocol.HTTP,
     });
 
-    // THEN - Should not throw
-    expect(() => app.synth()).not.toThrow();
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', Match.stringLikeRegexp('ApplicationTargetGroup protocol and port not specified'));
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+    });
   });
 
-  test('ApplicationTargetGroup with Lambda target does not require protocol', () => {
-    // GIVEN
-
-    // WHEN - Create ApplicationTargetGroup for Lambda without protocol
+  test('ApplicationTargetGroup with Lambda target does not require protocol or port', () => {
+    // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       targetType: elbv2.TargetType.LAMBDA,
-      // protocol is missing but should be allowed for Lambda
     });
 
-    // THEN - Should not throw
-    expect(() => app.synth()).not.toThrow();
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', Match.stringLikeRegexp('ApplicationTargetGroup protocol and port not specified'));
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetType: 'lambda',
+      Port: Match.absent(),
+      Protocol: Match.absent(),
+    });
   });
 
-  test('ApplicationTargetGroup requires protocol or port even when targets added later', () => {
+  test('fails when neither protocol nor port specified and non-Lambda target added later', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
-
-    // WHEN - Create ApplicationTargetGroup without protocol or port, then add non-Lambda target
     const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
       vpc,
-      // Neither protocol nor port specified - this should generate a warning
     });
 
-    // Add a non-Lambda target
+    // WHEN
     tg.addTarget(new elbv2.InstanceTarget('i-1234'));
 
-    // THEN - Should synthesize successfully but show warning
-    const assembly = app.synth();
-    const stackArtifact = assembly.getStackByName(stack.stackName);
-    const warnings = stackArtifact.messages.filter(m => m.level === 'warning');
-    expect(warnings.some(w => w.entry.data && typeof w.entry.data === 'string' &&
-      w.entry.data.includes('ApplicationTargetGroup protocol and port not specified'))).toBe(true);
+    // THEN
+    expect(() => Template.fromStack(stack)).toThrow(/At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup/);
   });
 
   test('Can add self-registering target to imported TargetGroup', () => {
