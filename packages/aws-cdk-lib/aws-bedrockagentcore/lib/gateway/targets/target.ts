@@ -297,7 +297,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       public readonly targetArn = attrs.targetArn;
       public readonly targetId = attrs.targetId;
       public readonly gatewayTargetName = attrs.gatewayTargetName;
-      public readonly description = attrs.status;
+      public readonly description = undefined;
       public readonly gateway = attrs.gateway;
       public readonly credentialProviderConfigurations = [];
       public readonly targetProtocolType = GatewayTargetProtocolType.MCP;

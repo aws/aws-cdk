@@ -680,6 +680,7 @@ describe('GatewayTarget Tests', () => {
       });
 
       expect(imported.status).toBe('AVAILABLE');
+      expect(imported.description).toBeUndefined();
       expect(imported.createdAt).toBe('2024-01-01T00:00:00Z');
       expect(imported.updatedAt).toBe('2024-01-02T00:00:00Z');
     });
