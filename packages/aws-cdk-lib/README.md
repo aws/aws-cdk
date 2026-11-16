@@ -1619,6 +1619,40 @@ the context key setting.
 
 Similarly, to do this for a specific nested stack, add a `suppressTemplateIndentation: true` property to its `NestedStackProps` parameter. You can also set this property to `false` to override the context key setting.
 
+## Metadata Context
+
+CDK offers structured APIs to populate the [CloudFormation Metadata Context attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-attribute-metadata.html#aws-attribute-metadata-context-schema).
+
+### Resource-level context
+
+Use `CfnResourceMetadataContext` to add context to a CloudFormation resource:
+
+```typescript
+declare const queue: sqs.Queue;
+
+CfnResourceMetadataContext.of(queue).set({
+  why: 'buffers order events for asynchronous processing',
+  must: ['VisibilityTimeout must be at least six times the consumer timeout'],
+});
+```
+
+By default, the API targets a `CfnResource` scope or its immediate `CfnResource`
+`defaultChild`. Set `selector` to target other resources, including resources
+owned by L2 and L3 constructs.
+
+### Template-level context
+
+Use `CfnTemplateMetadataContext` to add context to a CloudFormation template:
+
+```typescript
+declare const stack: Stack;
+
+CfnTemplateMetadataContext.of(stack).set({
+  arch: 'SQS buffer -> Lambda -> DynamoDB',
+  owner: 'order-processing-team',
+});
+```
+
 ## App Context
 
 [Context values](https://docs.aws.amazon.com/cdk/v2/guide/context.html) are key-value pairs that can be associated with an app, stack, or construct.
