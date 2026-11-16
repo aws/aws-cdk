@@ -139,10 +139,9 @@ export interface FleetProps {
    * Proxy configuration that applies network access control to reserved
    * capacity fleet instances.
    *
-   * Only supported for container-based environment types (LINUX_CONTAINER,
-   * ARM_CONTAINER, LINUX_GPU_CONTAINER, WINDOWS_SERVER_2019_CONTAINER,
-   * WINDOWS_SERVER_2022_CONTAINER). Not supported for EC2-based environment
-   * types (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM).
+   * Only supported for Linux container environment types (LINUX_CONTAINER,
+   * ARM_CONTAINER, LINUX_GPU_CONTAINER). Not supported for Windows containers
+   * or EC2-based environment types.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/run-codebuild-in-managed-proxy-server.html
    * @default - no proxy configuration
@@ -619,18 +618,18 @@ export class Fleet extends Resource implements IFleet {
     }
 
     if (props.proxyConfiguration) {
-      // proxyConfiguration is only supported for container-based environment types
-      const containerEnvironmentTypes = [
+      // proxyConfiguration is only supported for Linux container-based environment types.
+      // Windows containers and all EC2-based types are not supported.
+      // Tested via CFN deploy: service returns "Proxy configuration is not supported for {type}"
+      const proxyAllowedEnvironmentTypes = [
         EnvironmentType.LINUX_CONTAINER,
         EnvironmentType.ARM_CONTAINER,
         EnvironmentType.LINUX_GPU_CONTAINER,
-        EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
-        EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
       ];
-      if (!containerEnvironmentTypes.includes(props.environmentType)) {
+      if (!proxyAllowedEnvironmentTypes.includes(props.environmentType)) {
         throw new ValidationError(
-          lit`ProxyConfigurationRequiresContainerEnvironment`,
-          `proxyConfiguration is only supported for container-based environment types, got: ${props.environmentType}`,
+          lit`ProxyConfigurationRequiresLinuxContainer`,
+          `proxyConfiguration is only supported for Linux container environment types (LINUX_CONTAINER, ARM_CONTAINER, LINUX_GPU_CONTAINER), got: ${props.environmentType}`,
           this,
         );
       }

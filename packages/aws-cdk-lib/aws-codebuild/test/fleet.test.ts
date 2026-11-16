@@ -1073,16 +1073,34 @@ describe('proxyConfiguration', () => {
           defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
         },
       });
-    }).toThrow(/proxyConfiguration is only supported for container-based environment types/);
+    }).toThrow(/proxyConfiguration is only supported for Linux container environment types/);
+  });
+
+  test.each([
+    codebuild.EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
+    codebuild.EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
+  ])('throws if proxyConfiguration is specified with Windows container environment type: %s', (environmentType) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.MEDIUM,
+        environmentType,
+        proxyConfiguration: {
+          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+        },
+      });
+    }).toThrow(/proxyConfiguration is only supported for Linux container environment types/);
   });
 
   test.each([
     codebuild.EnvironmentType.LINUX_CONTAINER,
     codebuild.EnvironmentType.ARM_CONTAINER,
     codebuild.EnvironmentType.LINUX_GPU_CONTAINER,
-    codebuild.EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
-    codebuild.EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
-  ])('accepts proxyConfiguration with container-based environment type: %s', (environmentType) => {
+  ])('accepts proxyConfiguration with Linux container environment type: %s', (environmentType) => {
     // GIVEN
     const stack = new cdk.Stack();
 

@@ -664,9 +664,8 @@ const fleet = new codebuild.Fleet(this, 'ScalingFleet', {
 ### Fleet proxy configuration
 
 You can apply network access control to your fleet instances using the `proxyConfiguration` property.
-Proxy configuration is only supported for container-based environment types (LINUX_CONTAINER,
-ARM_CONTAINER, LINUX_GPU_CONTAINER, WINDOWS_SERVER_2019_CONTAINER, WINDOWS_SERVER_2022_CONTAINER).
-It is not supported for EC2-based environment types.
+Proxy configuration is only supported for Linux container environment types (LINUX_CONTAINER,
+ARM_CONTAINER, LINUX_GPU_CONTAINER). It is not supported for Windows containers or EC2-based environment types.
 
 For more information, see [Use AWS CodeBuild with a managed proxy server](https://docs.aws.amazon.com/codebuild/latest/userguide/run-codebuild-in-managed-proxy-server.html) in the CodeBuild documentation.
 
