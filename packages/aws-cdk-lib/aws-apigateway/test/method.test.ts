@@ -1,5 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
@@ -1237,6 +1237,111 @@ describe('method', () => {
           Ref: 'user2C2B57AE',
         }],
       });
+    });
+  });
+
+  describe('undeclared path parameter warning', () => {
+    const warning = Match.stringLikeRegexp('the integration maps "method.request.path.proxy", but the method does not declare it');
+
+    test('warns when the integration maps a path parameter the method does not declare', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addResource('{proxy+}').addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}', {
+        options: {
+          requestParameters: { 'integration.request.path.proxy': 'method.request.path.proxy' },
+        },
+      }));
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/test-api/Default/{proxy+}/ANY', warning);
+    });
+
+    test.each([true, false])('does not warn when the method declares the path parameter (required: %s)', (required) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addResource('{proxy+}').addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}', {
+        options: {
+          requestParameters: { 'integration.request.path.proxy': 'method.request.path.proxy' },
+        },
+      }), {
+        requestParameters: { 'method.request.path.proxy': required },
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', warning);
+    });
+
+    test('does not warn when the path parameter is declared in defaultMethodOptions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addResource('{proxy+}', {
+        defaultMethodOptions: { requestParameters: { 'method.request.path.proxy': true } },
+      }).addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}', {
+        options: {
+          requestParameters: { 'integration.request.path.proxy': 'method.request.path.proxy' },
+        },
+      }));
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', warning);
+    });
+
+    test('does not warn when the method declares the path parameter but the integration does not map it', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addResource('{proxy+}').addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}'), {
+        requestParameters: { 'method.request.path.proxy': true },
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('does not declare it'));
+    });
+
+    test('does not warn for non-path method request parameters or static values', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addMethod('GET', new apigw.HttpIntegration('http://example.com', {
+        options: {
+          requestParameters: {
+            'integration.request.header.x-page': 'method.request.querystring.page',
+            'integration.request.header.x-static': "'static'",
+          },
+        },
+      }));
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('does not declare it'));
+    });
+
+    test('does not warn when the integration request parameters are a token', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const api = new apigw.RestApi(stack, 'test-api', { deploy: false });
+
+      // WHEN
+      api.root.addResource('{proxy+}').addMethod('ANY', new apigw.HttpIntegration('http://example.com/{proxy}', {
+        options: {
+          requestParameters: cdk.Lazy.any({ produce: () => ({ 'integration.request.path.proxy': 'method.request.path.proxy' }) }) as any,
+        },
+      }));
+
+      // THEN
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('does not declare it'));
     });
   });
 });

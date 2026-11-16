@@ -15,7 +15,7 @@ import { RestApiBase } from './restapi';
 import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, FeatureFlags, Names, Resource, Stack } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
@@ -266,6 +266,8 @@ export class Method extends Resource {
       authorizationScopes: authorizationScopes,
     };
 
+    this.warnUndeclaredPathParameters(methodProps.requestParameters, bindResult.options?.requestParameters);
+
     const resource = new CfnMethod(this, 'Resource', methodProps);
 
     this.methodId = resource.ref;
@@ -353,6 +355,32 @@ export class Method extends Resource {
     }
 
     return finalAuthType;
+  }
+
+  /**
+   * Warn when the integration maps a method request path parameter that the
+   * method does not declare. API Gateway rejects such a mapping at deploy time
+   * with "Invalid mapping expression parameter specified".
+   */
+  private warnUndeclaredPathParameters(
+    methodRequestParameters?: { [param: string]: boolean },
+    integrationRequestParameters?: { [dest: string]: string },
+  ) {
+    if (!integrationRequestParameters || Token.isUnresolved(integrationRequestParameters)) {
+      return;
+    }
+    if (methodRequestParameters && Token.isUnresolved(methodRequestParameters)) {
+      return;
+    }
+
+    for (const source of Object.values(integrationRequestParameters)) {
+      if (typeof source !== 'string' || Token.isUnresolved(source) || !/^method\.request\.path\.[^.]+$/.test(source)) {
+        continue;
+      }
+      if (methodRequestParameters?.[source] === undefined) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:undeclaredPathParameter', `the integration maps ${JSON.stringify(source)}, but the method does not declare it in 'requestParameters'. Deployment will fail with "Invalid mapping expression parameter specified". Add ${JSON.stringify(source)} to the method's 'requestParameters'.`);
+      }
+    }
   }
 
   private renderIntegration(bindResult: IntegrationConfig): CfnMethod.IntegrationProperty {
