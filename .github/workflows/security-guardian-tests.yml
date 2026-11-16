@@ -1,0 +1,50 @@
+# Builds and unit-tests the Security Guardian tool when a pull request changes it
+# or the root dependencies, which pin the tool's jest and ts-jest.
+# security-guardian.yml checks out the base branch; this workflow uses the default
+# checkout (the pull request merge commit), so it tests the pull request's own code.
+name: Security Guardian Tests
+on:
+  pull_request:
+    paths:
+      - 'tools/@aws-cdk/security-guardian/**'
+      - '.github/workflows/security-guardian-tests.yml'
+      - 'yarn.lock'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # GitHub runs the Security Guardian action (action.yml: node20) on Node.js 24
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      # The rule tests run the same cfn-guard release as the Security Guardian scan
+      - name: Install cfn-guard
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          curl -L -o cfn-guard.tar.gz https://github.com/aws-cloudformation/cloudformation-guard/releases/latest/download/cfn-guard-v3-x86_64-ubuntu-latest.tar.gz
+          tar -xzf cfn-guard.tar.gz
+          mv cfn-guard-v3-*/cfn-guard "$HOME/.local/bin/cfn-guard"
+          chmod +x "$HOME/.local/bin/cfn-guard"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install & Build security-guardian
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/security-guardian && yarn build
+
+      - name: Test security-guardian
+        run: |
+          cfn-guard --version
+          cd tools/@aws-cdk/security-guardian
+          yarn test --ci

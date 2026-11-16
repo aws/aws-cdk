@@ -180,7 +180,7 @@ const input = new RouterInput(stack, 'FailoverInput', {
   routerInputName: 'failover-input',
   maximumBitrate: Bitrate.mbps(10),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterInputTier.INPUT_50,
+  tier: RouterInputTier.INPUT_20,
   configuration: RouterInputConfiguration.failover({
     networkInterface: networkInterface,
     protocols: [
@@ -210,7 +210,7 @@ const input = new RouterInput(stack, 'ChannelInput', {
   routerInputName: 'channel-input',
   maximumBitrate: Bitrate.mbps(20),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterInputTier.INPUT_50,
+  tier: RouterInputTier.INPUT_20,
   configuration: RouterInputConfiguration.mediaLiveChannel({
     channel: mediaLiveChannel,
     outputName: 'router-ts',
@@ -231,7 +231,7 @@ const input = new RouterInput(stack, 'ChannelInput', {
   routerInputName: 'channel-input',
   maximumBitrate: Bitrate.mbps(20),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterInputTier.INPUT_50,
+  tier: RouterInputTier.INPUT_20,
   configuration: RouterInputConfiguration.mediaLiveChannel({
     channel: mediaLiveChannel,
     outputName: 'router-ts',
@@ -250,7 +250,7 @@ const input = new RouterInput(stack, 'ChannelInputNoConnection', {
   routerInputName: 'channel-input-no-connection',
   maximumBitrate: Bitrate.mbps(20),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterInputTier.INPUT_50,
+  tier: RouterInputTier.INPUT_20,
   configuration: RouterInputConfiguration.mediaLiveChannelWithoutConnection({
     availabilityZone: 'us-east-1a',
   }),
@@ -270,7 +270,7 @@ const input = new RouterInput(stack, 'FlowInput', {
   routerInputName: 'flow-input',
   maximumBitrate: Bitrate.mbps(20),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterInputTier.INPUT_50,
+  tier: RouterInputTier.INPUT_20,
   configuration: RouterInputConfiguration.mediaConnectFlow({
     flow: flow,
     flowOutput: flowOutput,
@@ -287,7 +287,7 @@ const input = new RouterInput(stack, 'FlowInputNoConnection', {
   routerInputName: 'flow-input-no-connection',
   maximumBitrate: Bitrate.mbps(20),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterInputTier.INPUT_50,
+  tier: RouterInputTier.INPUT_20,
   configuration: RouterInputConfiguration.mediaConnectFlowWithoutConnection({
     availabilityZone: 'us-east-1a',
   }),
@@ -333,7 +333,7 @@ const output = new RouterOutput(stack, 'MediaLiveOutput', {
   routerOutputName: 'medialive-output',
   maximumBitrate: Bitrate.mbps(15),
   routingScope: RoutingScope.GLOBAL,
-  tier: RouterOutputTier.OUTPUT_50,
+  tier: RouterOutputTier.OUTPUT_20,
   configuration: RouterOutputConfiguration.mediaLiveInput({
     input: mediaLiveInput,
     pipeline: MediaLivePipeline.PIPELINE_0,
@@ -350,7 +350,7 @@ const output = new RouterOutput(stack, 'MediaLiveOutputNoConnection', {
   routerOutputName: 'medialive-output-no-connection',
   maximumBitrate: Bitrate.mbps(15),
   routingScope: RoutingScope.GLOBAL,
-  tier: RouterOutputTier.OUTPUT_50,
+  tier: RouterOutputTier.OUTPUT_20,
   configuration: RouterOutputConfiguration.mediaLiveInputWithoutConnection({
     availabilityZone: 'us-east-1a',
   }),
@@ -369,7 +369,7 @@ const output = new RouterOutput(stack, 'FlowOutput', {
   routerOutputName: 'flow-output',
   maximumBitrate: Bitrate.mbps(20),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterOutputTier.OUTPUT_100,
+  tier: RouterOutputTier.OUTPUT_20,
   configuration: RouterOutputConfiguration.mediaConnectFlow({
     flow: flow,
   }),
@@ -385,7 +385,7 @@ const output = new RouterOutput(stack, 'FlowOutputNoConnection', {
   routerOutputName: 'flow-output-no-connection',
   maximumBitrate: Bitrate.mbps(20),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterOutputTier.OUTPUT_100,
+  tier: RouterOutputTier.OUTPUT_20,
   configuration: RouterOutputConfiguration.mediaConnectFlowWithoutConnection({
     availabilityZone: 'us-east-1a',
   }),
@@ -404,7 +404,7 @@ const output = new RouterOutput(stack, 'EncryptedOutput', {
   routerOutputName: 'encrypted-output',
   maximumBitrate: Bitrate.mbps(10),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterOutputTier.OUTPUT_50,
+  tier: RouterOutputTier.OUTPUT_20,
   configuration: RouterOutputConfiguration.standard({
     protocol: RouterOutputProtocol.srtCaller({
       destinationAddress: '203.0.113.100',
@@ -1221,7 +1221,7 @@ const output = new RouterOutput(stack, 'EncryptedSrtOutput', {
   routerOutputName: 'encrypted-srt-output',
   maximumBitrate: Bitrate.mbps(10),
   routingScope: RoutingScope.REGIONAL,
-  tier: RouterOutputTier.OUTPUT_50,
+  tier: RouterOutputTier.OUTPUT_20,
   configuration: RouterOutputConfiguration.standard({
     protocol: RouterOutputProtocol.srtCaller({
       destinationAddress: '203.0.113.100',

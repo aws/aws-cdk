@@ -95,6 +95,10 @@ export class LinuxLambdaBuildImage implements IBuildImage {
       ].join(' '));
     }
 
+    if (buildEnvironment.hostKernel) {
+      errors.push('Lambda images do not support host kernel selection');
+    }
+
     return errors;
   }
 

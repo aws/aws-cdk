@@ -1,0 +1,34 @@
+{
+  "/cloudfront-origin-access-control-always-amz-auth/OriginAccessControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "signing": "*"
+      }
+    }
+  ],
+  "/cloudfront-origin-access-control-always-amz-auth/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cloudfront-origin-access-control-always-amz-auth/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cloudfront-origin-access-control-always-amz-auth/OriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OriginAccessControlDC2011A2"
+    }
+  ],
+  "/cloudfront-origin-access-control-always-amz-auth/Exports/Output{\"Fn::GetAtt\":[\"OriginAccessControlDC2011A2\",\"Id\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttOriginAccessControlDC2011A2Id1E1884FF"
+    }
+  ]
+}

@@ -1,21 +1,36 @@
 {
-  "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e": [
+  "/evaluate-expression-nodejs22": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "evaluate-expression-nodejs22.template.json"
+    }
+  ],
+  "/evaluate-expression-nodejs22/EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "runtime": "*",
-        "architecture": "*",
-        "code": "*",
-        "handler": "*"
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
       }
     },
     {
-      "type": "aws:cdk:is-custom-resource-handler-singleton",
-      "data": true
-    },
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "withoutPolicyUpdates": []
+      }
+    }
+  ],
+  "/evaluate-expression-nodejs22/ImmutableRoleEvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd": [
     {
-      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 0
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/evaluate-expression-nodejs22/StateMachine": [
@@ -50,61 +65,22 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "uuid": "*",
-        "lambdaPurpose": "*",
         "runtime": "*",
         "architecture": "*",
+        "role": "*",
         "code": "*",
         "handler": "*"
       }
     },
     {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
     }
   ],
-  "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/ServiceRole": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
-    }
-  ],
-  "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/Resource": [
+  "/evaluate-expression-nodejs22/EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "Evalb64e1fb89c894f7d8a342e2a1c5f6d7e3682A325"
-    }
-  ],
-  "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/LogGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd10E01C41"
     }
   ],
   "/evaluate-expression-nodejs22/StateMachine/Role": [
@@ -148,22 +124,18 @@
       "data": "StateMachine2E01A3A5"
     }
   ],
-  "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/ServiceRole/Resource": [
+  "/evaluate-expression-nodejs22/Task/EvalFunction/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "Evalb64e1fb89c894f7d8a342e2a1c5f6d7eServiceRole544E6136"
+      "data": "TaskEvalFunction5A5BDA9B"
     }
   ],
-  "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/Code/AssetBucket": [
+  "/evaluate-expression-nodejs22/Task/EvalFunction/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/evaluate-expression-nodejs22/Evalb64e1fb89c894f7d8a342e2a1c5f6d7e/LogGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "Evalb64e1fb89c894f7d8a342e2a1c5f6d7eLogGroup529D8984"
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/evaluate-expression-nodejs22/StateMachine/Role/Resource": [
@@ -200,6 +172,18 @@
           {}
         ]
       }
+    }
+  ],
+  "/evaluate-expression-nodejs22/Task/EvalFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/evaluate-expression-nodejs22/Task/EvalFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskEvalFunctionLogGroup1E89EEA7"
     }
   ],
   "/evaluate-expression-nodejs22/StateMachine/Role/DefaultPolicy/Resource": [

@@ -31,6 +31,29 @@ const template = Template.fromString(templateJson);
 If allowing cyclical references is desired, for example in the case of unprocessed Transform templates, supply TemplateParsingOptions and
 set skipCyclicalDependenciesCheck to true. In all other cases, will fail on detecting cyclical dependencies.
 
+## Cleaning up temporary output in Jest
+
+Synthesizing a stack without an explicit output directory can create a temporary
+`cdk.out*` directory. CDK normally removes these directories when the Node.js
+process exits, but Jest does not trigger the `exit` event used for that cleanup.
+When using `Template.fromStack()` in Jest tests, add the cleanup helper to
+`setupFilesAfterEnv` so temporary assemblies are removed after each test file.
+For example, in a CommonJS Jest configuration (`jest.config.cjs`):
+
+```js
+module.exports = {
+  setupFilesAfterEnv: [
+    // Include any existing setup files here as well.
+    'aws-cdk-lib/testhelpers/jest-autoclean',
+  ],
+};
+```
+
+The helper calls `CloudAssembly.cleanupTemporaryDirectories()` from an `afterAll`
+hook. It removes registered temporary assembly directories; explicitly configured
+output directories are retained. To keep temporary assemblies for debugging,
+set `CDK_NO_CLEAN_TESTS=1` when running Jest.
+
 ## Full Template Match
 
 The simplest assertion would be to assert that the template matches a given

@@ -1,4 +1,10 @@
 {
+  "/S3Stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "S3Stack.template.json"
+    }
+  ],
   "/S3Stack/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -18,6 +24,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -123,6 +130,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],

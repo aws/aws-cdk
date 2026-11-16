@@ -1,56 +1,82 @@
 {
   "/redshift-cluster-database-integ/DefaultTest/DeployAssert": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DeployAssert (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
-        "new IntegTestCase (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
-        "new IntegTest (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/workplace/ozelali/aws-cdk-private-redshift-red/packages/@aws-cdk/aws-redshift-alpha/test/integ.database.js:108:1)",
-        "...node internals..."
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/app.js:164:51)",
+        "Object.onceWrapper (node:events:631:26)",
+        "process.emit (node:events:509:28)"
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48.template.json"
     }
   ],
   "/redshift-cluster-database-integ/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
-      ]
     }
   ],
   "/redshift-cluster-database-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert/LambdaInvoke02cea2a674c1d724329fe6a02ffeeb93/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     },
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
-        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
-        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "visit (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
-        "synthesizeTree (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
-        "synthesize (/workplace/ozelali/aws-cdk-private-redshift-red/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)"
-      ]
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert/LambdaInvoke02cea2a674c1d724329fe6a02ffeeb93/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke02cea2a674c1d724329fe6a02ffeeb93Invoke8CE23A34"
+    }
+  ],
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert/LambdaInvoke02cea2a674c1d724329fe6a02ffeeb93/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke02cea2a674c1d724329fe6a02ffeeb93"
+    }
+  ],
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/redshift-cluster-database-integ/DefaultTest/DeployAssert/LambdaInvoke02cea2a674c1d724329fe6a02ffeeb93/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke02cea2a674c1d724329fe6a02ffeeb93"
     }
   ]
 }
