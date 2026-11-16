@@ -2120,6 +2120,29 @@ export interface SubnetIpv4IpamAllocation {
 }
 
 /**
+ * Allocation of a subnet's IPv6 CIDR block from an Amazon VPC IP Address Manager (IPAM) pool
+ */
+export interface SubnetIpv6IpamAllocation {
+  /**
+   * The IPAM pool from which the IPv6 CIDR block is allocated at deploy time
+   *
+   * The pool must be an IPv6 resource planning pool for the VPC the subnet belongs to (its
+   * `sourceResource` is the VPC), and the allocated CIDR block must lie within an IPv6 CIDR
+   * block of that VPC.
+   * To reference a pool that is not defined in this app, use `CfnIPAMPool.fromIpamPoolId()`.
+   */
+  readonly ipamPool: IIPAMPoolRef;
+
+  /**
+   * The netmask length of the IPv6 CIDR block to allocate from the pool
+   *
+   * Must be between 44 and 64 (inclusive) in increments of 4, the sizes allowed for an
+   * IPv6 subnet.
+   */
+  readonly netmaskLength: number;
+}
+
+/**
  * Specify configuration parameters for a VPC subnet
  */
 export interface SubnetProps {
@@ -2166,16 +2189,28 @@ export interface SubnetProps {
   /**
    * The IPv6 CIDR block.
    *
-   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock.
+   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock
+   * or `ipv6IpamAllocation`. Cannot be combined with `ipv6IpamAllocation`.
    *
    * @default - no IPv6 CIDR block.
    */
   readonly ipv6CidrBlock?: string;
 
   /**
+   * Allocate the IPv6 CIDR block of this subnet from an IPAM pool at deploy time
+   *
+   * Cannot be combined with `ipv6CidrBlock`. The allocated block is available as
+   * `subnetIpv6CidrBlocks`.
+   *
+   * @default - the subnet gets an IPv6 CIDR block only if `ipv6CidrBlock` is set
+   */
+  readonly ipv6IpamAllocation?: SubnetIpv6IpamAllocation;
+
+  /**
    * Indicates whether a network interface created in this subnet receives an IPv6 address.
    *
-   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock.
+   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock
+   * or `ipv6IpamAllocation`.
    *
    * @default false
    */
@@ -2290,6 +2325,14 @@ export class Subnet extends Resource implements ISubnet {
     if (netmaskLength !== undefined && !Token.isUnresolved(netmaskLength) && (netmaskLength < 16 || netmaskLength > 28)) {
       throw new ValidationError(lit`InvalidIpv4IpamAllocationNetmaskLength`, `'ipv4IpamAllocation.netmaskLength' must be between 16 and 28, got ${netmaskLength}`, this);
     }
+    if (props.ipv6CidrBlock !== undefined && props.ipv6IpamAllocation !== undefined) {
+      throw new ValidationError(lit`CannotSpecifyBothIpv6CidrBlockAndIpv6IpamAllocation`, 'Cannot specify both \'ipv6CidrBlock\' and \'ipv6IpamAllocation\'; supply at most one of them', this);
+    }
+    const ipv6NetmaskLength = props.ipv6IpamAllocation?.netmaskLength;
+    if (ipv6NetmaskLength !== undefined && !Token.isUnresolved(ipv6NetmaskLength)
+      && (ipv6NetmaskLength < 44 || ipv6NetmaskLength > 64 || ipv6NetmaskLength % 4 !== 0)) {
+      throw new ValidationError(lit`InvalidIpv6IpamAllocationNetmaskLength`, `'ipv6IpamAllocation.netmaskLength' must be between 44 and 64 in increments of 4, got ${ipv6NetmaskLength}`, this);
+    }
 
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
@@ -2304,6 +2347,8 @@ export class Subnet extends Resource implements ISubnet {
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
       ipv6CidrBlock: props.ipv6CidrBlock,
+      ipv6IpamPoolId: props.ipv6IpamAllocation?.ipamPool.ipamPoolRef.ipamPoolId,
+      ipv6NetmaskLength,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
     // With IPAM the CIDR block is only known at deploy time

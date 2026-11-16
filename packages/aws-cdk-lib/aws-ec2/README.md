@@ -475,6 +475,23 @@ IPAM must discover the VPC before a planning pool can be created for it, and for
 
 Because the CIDR block is only known at deploy time, `subnet.ipv4CidrBlock` is a CloudFormation attribute reference rather than a concrete string. Subnet filters that parse the CIDR (`SubnetFilter.byCidrMask()`, `SubnetFilter.byCidrRanges()` and `SubnetFilter.containsIpAddresses()`) therefore cannot be used with IPAM-allocated subnets. Subnets created by `Vpc` from `subnetConfiguration` are not affected by this option; they keep getting their CIDRs from the VPC's `IpAddresses` provider.
 
+The subnet's IPv6 CIDR block can be allocated from an IPAM pool in the same way: pass `ipv6IpamAllocation` instead of `ipv6CidrBlock` (at most one of the two can be set). The pool must be an IPv6 resource planning pool for the subnet's VPC, and the netmask length must be between /44 and /64 in increments of /4. The allocated block is available at deploy time as `subnet.subnetIpv6CidrBlocks`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const subnet = new ec2.Subnet(this, 'DualStackIpamSubnet', {
+  vpcId: vpc.vpcId,
+  availabilityZone: vpc.availabilityZones[0],
+  cidrBlock: '10.0.0.0/24',
+  ipv6IpamAllocation: {
+    ipamPool: ec2.CfnIPAMPool.fromIpamPoolId(this, 'Ipv6SubnetPool', 'ipam-pool-0123456789abcdef0'),
+    netmaskLength: 64,
+  },
+  assignIpv6AddressOnCreation: true,
+});
+```
+
 ### Dual Stack configuration
 
 To allocate both IPv4 and IPv6 addresses in your VPC, you can configure your VPC to have a dual stack protocol.
