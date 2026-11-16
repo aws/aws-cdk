@@ -472,7 +472,7 @@ export class StateMachine extends StateMachineBase {
     if (props.logs) {
       this.validateLogOptions(props.logs);
     }
-    if (props.timeout !== undefined && props.timeout.toSeconds() <= 0) {
+    if (props.timeout !== undefined && !props.timeout.isUnresolved() && props.timeout.toSeconds() <= 0) {
       throw new ValidationError(lit`TimeoutMustBePositive`, 'Timeout must be positive', this);
     }
 
@@ -847,14 +847,32 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.comment !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:stringDefinitionBodyCommentIgnored',
+        'comment is ignored when using StringDefinitionBody. Set Comment directly in the ASL definition string.');
+    }
+    if (sfnProps.queryLanguage !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:stringDefinitionBodyQueryLanguageIgnored',
+        'queryLanguage is ignored when using StringDefinitionBody. Set QueryLanguage directly in the ASL definition string.');
+    }
     if (sfnProps.timeout !== undefined) {
+      // Only a literal JSON object can be parsed at synth time. A body that is itself
+      // a token (e.g. the result of Fn.sub) is resolved by CloudFormation, so we cannot
+      // inject TimeoutSeconds into it.
+      if (!this.body.trimStart().startsWith('{')) {
+        Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:stringDefinitionBodyTimeoutIgnored',
+          'timeout is ignored because the StringDefinitionBody is not a literal JSON object. Set TimeoutSeconds directly in the ASL definition string.');
+        return { definitionString: this.body };
+      }
       const definition = JSON.parse(this.body);
       if (definition.TimeoutSeconds === undefined) {
         definition.TimeoutSeconds = sfnProps.timeout.toSeconds();
       }
       return {
-        definitionString: JSON.stringify(definition),
+        // toJsonString (not JSON.stringify) so that tokens, including a token-valued
+        // timeout, are rendered correctly.
+        definitionString: Stack.of(scope).toJsonString(definition),
       };
     }
     return {
