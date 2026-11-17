@@ -139,8 +139,10 @@ export interface CopyOptions extends FileOptions {
    * `SymlinkFollowMode.EXTERNAL` or `SymlinkFollowMode.BLOCK_EXTERNAL`.
    *
    * If the `SymlinkFollowMode.BLOCK_EXTERNAL` mode is used:
-   * - symlinks pointing outside the source tree will be blocked if using `AssetHashType.SOURCE`.
-   * - symlinks pointing outside the bundle output will be blocked.
+   *
+   * - Symlinks pointing outside the source tree will be blocked, but only
+   *   if using `AssetHashType.SOURCE` (not for any of the other asset hash types).
+   * - Symlinks pointing outside the bundle output will be blocked.
    *
    * @default SymlinkFollowMode.EXTERNAL
    */

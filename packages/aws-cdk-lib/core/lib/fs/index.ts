@@ -34,11 +34,12 @@ export class FileSystem {
    *
    * The temporary directory is deleted if an error occurs.
    */
-  public static copyDirectoryAtomic(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
+  public static copyDirectoryAtomic(srcDir: string, destDir: string, options: CopyOptions = { }) {
     const tmpDest = `${destDir}.tmp`;
     FileSystem.rmrf(tmpDest);
     try {
-      copyDirectory(srcDir, tmpDest, options, rootDir);
+      fs.mkdirSync(tmpDest, { recursive: true });
+      copyDirectory(srcDir, tmpDest, options);
       FileSystem.rmrf(destDir);
       fs.renameSync(tmpDest, destDir);
     } finally {

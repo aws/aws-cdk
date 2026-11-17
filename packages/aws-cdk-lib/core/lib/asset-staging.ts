@@ -83,6 +83,14 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * - The asset hash is calculated based on the files that are copied into the asset,
  *   unless the hash is overridden entirely by the `assetHash` property.
  *
+ * The copy-staging operation can be disabled by setting the context
+ * key `'aws:cdk:asset-staging': false`. This can be useful for local
+ * development tools like SAM CLI, so that you can update the source files
+ * directly and immediately see the result in a local emulator without needing
+ * to run `cdk synth` every time to stage the assets. Note that in this mode,
+ * since there is no copying, `exclude` and `follow` settings have no effect,
+ * including `BLOCK_EXTERNAL` which will not be applied.
+ *
  * ## With bundling
  *
  * With `bundling` property the transformation of source files to a final asset
@@ -107,13 +115,11 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * any symlinks written by bundling that point outside the output directory
  * will be blocked.
  *
- * ## Other behavior
+ * For bundled assets, staging can not be disabled for the benefit of local
+ * development. If you are iterating against a local emulator, you will need to
+ * run `cdk synth` for every asset change.
  *
- * This is controlled by the context key 'aws:cdk:asset-staging' and enabled
- * by the CLI by default in order to ensure that when the CDK app exists, all
- * assets are available for deployment. Otherwise, if an app references assets
- * in temporary locations, those will not be available when it exists (see
- * https://github.com/aws/aws-cdk/issues/1716).
+ * ## Other behavior
  *
  * The `stagedPath` property is a stringified token that represents the location
  * of the file or directory after staging. It will be resolved only during the
@@ -411,7 +417,7 @@ export class AssetStaging extends Construct {
     // let's leave the output directory in place in the Cloud Assembly, and take its existence (with the source
     // hash in place) as proof that we have already performed the bundling step.
     let bundleDir = this.bundlingOutputdir(assetHash);
-    if (!assetHash || !bundleDir || !fs.existsSync(bundleDir)) {
+    if (!assetHash || !bundleDir || !fs.existsSync(bundleDir) || isLegacyPlaceholderDirectory(bundleDir)) {
       const tempDir = this.bundleToTempDir(bundling, assetHash);
 
       // Calculate the final output asset hash here if we didn't have one yet
@@ -821,4 +827,25 @@ class FileStats {
 
 function isArchiveFile(filename: string): boolean {
   return ARCHIVE_EXTENSIONS.includes(getExtension(filename).toLowerCase());
+}
+
+/**
+ * Returns `true` if this is a directory with a single 0-byte file
+ *
+ * This is to catch the behavior of the old `AssetStaging` implementation,
+ * where it would move single-file bundling outputs out of the bundling
+ * directory and leave a 0-byte placeholder file behind.
+ *
+ * The new implementation expects an existing directory to be complete,
+ * but we have to catch that single case where a 0-byte placeholder file exists
+ * and treat it as uncacheable detritus.
+ */
+function isLegacyPlaceholderDirectory(bundleDir: string) {
+  const files = fs.readdirSync(bundleDir);
+  if (files.length !== 1) {
+    return false;
+  }
+  const singleFile = path.join(bundleDir, files[0]);
+  const stats = fs.lstatSync(singleFile);
+  return stats.isFile() && stats.size === 0;
 }
