@@ -1939,7 +1939,16 @@ published and what is cached locally, and can change independently of the AWS CD
 specific tool versions, select an explicit image tag:
 
 ```ts
-const image = DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153');
+new lambda.Function(this, 'JavaFunction', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-java-handler'), {
+    bundling: {
+      image: DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153'),
+      command: ['bash', '-c', 'gradle build && cp build/distributions/*.zip /asset-output/'],
+    },
+  }),
+  runtime: lambda.Runtime.JAVA_21,
+  handler: 'com.example.Handler::handleRequest',
+});
 ```
 
 SAM build image tags follow AWS SAM CLI releases. Choose a tag that contains the tools your build requires, and update
