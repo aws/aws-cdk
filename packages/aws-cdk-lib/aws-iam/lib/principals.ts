@@ -701,7 +701,9 @@ export class FederatedPrincipal extends PrincipalBase {
   /**
    *
    * @param federated federated identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
-   * @param sessionTags Whether to enable session tagging (see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html)
+   * @param conditions The conditions under which the policy is in effect.
+   *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
+   * @param assumeRoleAction When this principal is used in an AssumeRole policy, the action to use.
    */
   constructor(
     public readonly federated: string,
@@ -736,7 +738,6 @@ export class WebIdentityPrincipal extends FederatedPrincipal {
    * @param identityProvider identity provider (i.e. 'cognito-identity.amazonaws.com' for users authenticated through Cognito)
    * @param conditions The conditions under which the policy is in effect.
    *   See [the IAM documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_condition.html).
-   * @param sessionTags Whether to enable session tagging (see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html)
    */
   constructor(identityProvider: string, conditions: Conditions = {}) {
     super(identityProvider, conditions ?? {}, 'sts:AssumeRoleWithWebIdentity');
