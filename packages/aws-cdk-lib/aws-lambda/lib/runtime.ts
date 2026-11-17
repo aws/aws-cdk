@@ -467,7 +467,10 @@ export class Runtime {
    * `bundling.image`. Constructs that build their own bundling image on top of
    * this runtime's image (for example `NodejsFunction`) do not run it directly;
    * to pin the base image for them, create a runtime with a pinned image, e.g.
-   * `new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { bundlingDockerImage: 'public.ecr.aws/sam/build-nodejs20.x:<tag>' })`.
+   * `new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true,
+   * bundlingDockerImage: 'public.ecr.aws/sam/build-nodejs20.x:<tag>' })`. Copy
+   * any other props the predefined runtime sets, such as `supportsSnapStart`,
+   * so that the custom runtime stays equivalent to it.
    *
    * @see https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
    */
