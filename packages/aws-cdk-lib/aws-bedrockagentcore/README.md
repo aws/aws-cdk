@@ -2249,13 +2249,13 @@ const knowledgeBasesTarget = gateway.addKnowledgeBasesTarget("MyKnowledgeBasesTa
       { knowledgeBase: productDocs, description: "Product documentation" },
       { knowledgeBase: runbooks, description: "Engineering runbooks" },
     ],
-    maxAgentIterations: 3,
+    maxAgentIteration: 3,
   },
   // Single search on one knowledge base
   retrieve: {
     knowledgeBase: productDocs,
     numberOfResults: 10,
-    searchType: agentcore.KnowledgeBaseSearchType.HYBRID,
+    overrideSearchType: agentcore.KnowledgeBaseSearchType.HYBRID,
     // Let the agent choose the number of results; the default above applies otherwise
     parameterOverrides: [
       {
@@ -2492,11 +2492,11 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 });
 
 // Create a gateway target using the static factory method.
-// GatewayConnector.of() accepts a connector that this library does not list yet.
+// For a connector that this library does not list yet, use GatewayConnector.of("<connector-id>").
 const connectorTarget = agentcore.GatewayTarget.forConnector(this, "MyConnectorTarget", {
   gatewayTargetName: "web-answer-tool",
   gateway: gateway,
-  connector: agentcore.GatewayConnector.of("web-answer"),
+  connector: agentcore.GatewayConnector.WEB_ANSWER,
   toolConfigurations: [{ name: "WebAnswer" }],
   // Expose only this tool of the connector
   enabledTools: ["WebAnswer"],
