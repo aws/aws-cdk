@@ -1993,7 +1993,7 @@ new lambda.Function(this, 'JavaFunction', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-java-handler'), {
     bundling: {
       image: DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153'),
-      command: ['bash', '-c', 'gradle build && cp build/distributions/*.zip /asset-output/'],
+      command: ['bash', '-c', 'gradle build && cp build/distributions/*.zip /asset-output/'], // adjust to your build
     },
   }),
   runtime: lambda.Runtime.JAVA_21,
