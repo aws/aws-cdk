@@ -19,6 +19,24 @@ const CONSUMER_OPTIONS: ts.CompilerOptions = {
 };
 
 /**
+ * The declaration files for the entry points a package publishes.
+ *
+ * The entry points are every target in the `exports` map, at any depth, because
+ * conditional exports nest their targets in objects. A package without an
+ * `exports` map uses its `types` or `main` entry. Each `.js` target maps to the
+ * `.d.ts` next to it, and targets that are neither (`.jsii`, `.json`) are skipped.
+ *
+ * @returns paths relative to the package directory, without duplicates
+ */
+export function declarationEntryPoints(pkg: { exports?: unknown; types?: string; main?: string }): string[] {
+  const targets = pkg.exports !== undefined ? leaves(pkg.exports) : [pkg.types ?? pkg.main];
+  const declarations = targets
+    .filter((t): t is string => typeof t === 'string' && /\.(js|d\.ts)$/.test(t))
+    .map((t) => t.replace(/\.js$/, '.d.ts'));
+  return [...new Set(declarations)];
+}
+
+/**
  * Type-check a package's emitted declarations the way a strict consumer would.
  *
  * Only diagnostics in the package's own declarations are returned. Its
@@ -80,6 +98,10 @@ function declarationProgram(rootFiles: string[], options: ts.CompilerOptions, co
     ? ts.createSourceFile(f, consumer.code, languageVersion)
     : getSourceFile(f, languageVersion, ...rest);
   return ts.createProgram(rootFiles, options, host);
+}
+
+function leaves(value: unknown): unknown[] {
+  return typeof value === 'object' && value !== null ? Object.values(value).flatMap(leaves) : [value];
 }
 
 function isSource(fileName: string): boolean {

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { checkDeclarations, formatDiagnostics } from './declaration-check';
+import { checkDeclarations, declarationEntryPoints, formatDiagnostics } from './declaration-check';
 import { makeExecutable, shell } from './os';
 import type { CDKBuildOptions, CompilerOverrides } from './package-info';
 import { currentPackageJson, isJsii, packageCompiler } from './package-info';
@@ -26,16 +26,12 @@ export async function compileCurrentPackage(options: CDKBuildOptions, timers: Ti
 /**
  * Fail the build if the declarations consumers can import do not compile for a strict consumer
  *
- * The entry points are the `.js` targets of the package's `exports` map, or its
- * `types`/`main` entry when it has none.
+ * Entry points without a declaration file are skipped: jsii emits
+ * `.warnings.jsii.js` without one, and an export can name a file the package
+ * does not build.
  */
 function checkCurrentPackageDeclarations(timers: Timers): void {
-  const { exports, types, main } = currentPackageJson();
-  const targets: unknown[] = exports ? Object.values(exports) : [types ?? main];
-  const entryPoints = targets
-    .filter((t): t is string => typeof t === 'string' && /\.(js|d\.ts)$/.test(t))
-    .map((t) => t.replace(/\.js$/, '.d.ts'))
-    .filter((t) => fs.existsSync(t));
+  const entryPoints = declarationEntryPoints(currentPackageJson()).filter((f) => fs.existsSync(f));
   if (entryPoints.length === 0) {
     throw new Error('No declaration files to check: none of the package\'s entry points has a .d.ts file');
   }

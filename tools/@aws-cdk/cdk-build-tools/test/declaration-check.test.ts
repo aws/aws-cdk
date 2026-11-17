@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import bockfs from '../lib/bockfs';
-import { checkConsumer, checkDeclarations, formatDiagnostics } from '../lib/declaration-check';
+import { checkConsumer, checkDeclarations, declarationEntryPoints, formatDiagnostics } from '../lib/declaration-check';
 
 /**
  * Each fixture compiles without `exactOptionalPropertyTypes`, as the CDK source
@@ -52,6 +52,38 @@ describe('checkDeclarations', () => {
     const dir = fixture('export function f(): void { const o: { a?: string } = { a: undefined }; void o; }');
 
     expect(checkDeclarations(dir, ['index.d.ts'])).toEqual([]);
+  });
+});
+
+describe('declarationEntryPoints', () => {
+  test('maps each JavaScript export to its declarations and skips other files', () => {
+    expect(declarationEntryPoints({
+      exports: {
+        '.': './index.js',
+        './aws-s3': './aws-s3/index.js',
+        './.jsii': './.jsii',
+        './package.json': './package.json',
+      },
+    })).toEqual(['./index.d.ts', './aws-s3/index.d.ts']);
+  });
+
+  test('reads the targets of conditional exports, at any depth', () => {
+    expect(declarationEntryPoints({
+      exports: {
+        '.': { types: './index.d.ts', default: './index.js' },
+        './sub': { node: { require: './sub.js' } },
+      },
+    })).toEqual(['./index.d.ts', './sub.d.ts']);
+  });
+
+  test('uses types, then main, when there is no exports map', () => {
+    expect(declarationEntryPoints({ types: 'lib/index.d.ts', main: 'lib/other.js' })).toEqual(['lib/index.d.ts']);
+    expect(declarationEntryPoints({ main: 'lib/index.js' })).toEqual(['lib/index.d.ts']);
+  });
+
+  test('returns nothing when no entry point is JavaScript or declarations', () => {
+    expect(declarationEntryPoints({ exports: { './.jsii': './.jsii' } })).toEqual([]);
+    expect(declarationEntryPoints({})).toEqual([]);
   });
 });
 
