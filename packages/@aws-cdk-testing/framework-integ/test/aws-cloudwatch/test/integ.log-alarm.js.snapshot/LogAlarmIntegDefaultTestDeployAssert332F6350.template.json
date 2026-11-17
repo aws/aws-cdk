@@ -17,7 +17,7 @@
      "AlarmTypes": "[\"LogAlarm\"]"
     },
     "flattenResponse": "false",
-    "salt": "1789723032011"
+    "salt": "1794913241859"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -48,6 +48,15 @@
       "PolicyDocument": {
        "Version": "2012-10-17",
        "Statement": [
+        {
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
         {
          "Action": [
           "cloudwatch:DescribeAlarms"
@@ -113,7 +122,29 @@
      "AlarmTypes": "[\"LogAlarm\"]"
     },
     "flattenResponse": "false",
-    "salt": "1789723032012"
+    "salt": "1794913241859"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudWatchdescribeAlarmsfb6bb6dff40ba65291de73b513b6b8d9": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "describeAlarms",
+    "expected": "{\"$ObjectLike\":{\"LogAlarms\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"AlarmName\":\"integ-log-alarm-source-query\"}}]}}}",
+    "parameters": {
+     "AlarmNames": "[\"integ-log-alarm-source-query\"]",
+     "AlarmTypes": "[\"LogAlarm\"]"
+    },
+    "flattenResponse": "false",
+    "salt": "1794913241860"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -132,6 +163,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallCloudWatchdescribeAlarms52b56b811f2668234a041beb5a98ac13",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarmsfb6bb6dff40ba65291de73b513b6b8d9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchdescribeAlarmsfb6bb6dff40ba65291de73b513b6b8d9",
      "assertion"
     ]
    }

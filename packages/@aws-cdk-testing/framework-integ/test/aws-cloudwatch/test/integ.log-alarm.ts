@@ -1,4 +1,4 @@
-import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, ArnFormat, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
@@ -13,7 +13,17 @@ const logGroup = new LogGroup(stack, 'LogGroup', {
 
 const queryRole = new Role(stack, 'ScheduledQueryRole', {
   assumedBy: new ServicePrincipal('logs.amazonaws.com', {
-    conditions: { StringEquals: { 'aws:SourceAccount': stack.account } },
+    conditions: {
+      StringEquals: { 'aws:SourceAccount': stack.account },
+      ArnLike: {
+        'aws:SourceArn': stack.formatArn({
+          service: 'logs',
+          resource: 'scheduled-query',
+          resourceName: '*',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        }),
+      },
+    },
   }),
 });
 
@@ -60,6 +70,24 @@ new LogAlarm(stack, 'AutoRoleLogAlarm', {
   },
 });
 
+// No logGroups: the query selects its own log groups with SOURCE.
+new LogAlarm(stack, 'SourceQueryLogAlarm', {
+  alarmName: 'integ-log-alarm-source-query',
+  threshold: 5,
+  comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+  queryResultsToEvaluate: 1,
+  queryResultsToAlarm: 1,
+  treatMissingData: TreatMissingData.NOT_BREACHING,
+  scheduledQueryConfiguration: {
+    queryString: `SOURCE logGroups(namePrefix: ['${logGroup.logGroupName}']) | fields @message | filter @message like /ERROR/`,
+    aggregationExpression: 'count(*)',
+    schedule: {
+      rate: Duration.minutes(5),
+      startTimeOffset: Duration.minutes(5),
+    },
+  },
+});
+
 const integ = new IntegTest(app, 'LogAlarmInteg', {
   testCases: [stack],
 });
@@ -80,5 +108,14 @@ integ.assertions.awsApiCall('CloudWatch', 'describeAlarms', {
 }).expect(ExpectedResult.objectLike({
   LogAlarms: Match.arrayWith([
     Match.objectLike({ AlarmName: 'integ-log-alarm-auto-role' }),
+  ]),
+}));
+
+integ.assertions.awsApiCall('CloudWatch', 'describeAlarms', {
+  AlarmNames: ['integ-log-alarm-source-query'],
+  AlarmTypes: ['LogAlarm'],
+}).expect(ExpectedResult.objectLike({
+  LogAlarms: Match.arrayWith([
+    Match.objectLike({ AlarmName: 'integ-log-alarm-source-query' }),
   ]),
 }));

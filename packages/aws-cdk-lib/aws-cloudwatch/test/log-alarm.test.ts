@@ -15,7 +15,7 @@ describe('LogAlarm', () => {
   beforeEach(() => {
     stack = new Stack();
     queryRole = new Role(stack, 'QueryRole', {
-      assumedBy: new ServicePrincipal('cloudwatch.amazonaws.com'),
+      assumedBy: new ServicePrincipal('logs.amazonaws.com'),
     });
     logGroup = new LogGroup(stack, 'LogGroup');
   });
@@ -80,6 +80,24 @@ describe('LogAlarm', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       ScheduledQueryConfiguration: { ScheduleConfiguration: { ScheduleExpression: 'rate(1 hour)' } },
+    });
+  });
+
+  test.each([
+    [Duration.hours(2), 'rate(2 hours)'],
+    [Duration.days(1), 'rate(1 day)'],
+    [Duration.days(2), 'rate(2 days)'],
+  ])('renders a rate of %s in the largest whole unit', (rate, expression) => {
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      scheduledQueryConfiguration: {
+        ...baseProps().scheduledQueryConfiguration,
+        schedule: { rate, startTimeOffset: Duration.minutes(5) },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      ScheduledQueryConfiguration: { ScheduleConfiguration: { ScheduleExpression: expression } },
     });
   });
 
@@ -857,6 +875,19 @@ describe('LogAlarm', () => {
 
     expect(stack.resolve(imported.alarmName)).toEqual('my-log-alarm');
     expect(stack.resolve(imported.alarmArn)).toEqual('arn:aws:cloudwatch:us-east-1:123456789012:alarm:my-log-alarm');
+    expect(stack.resolve(imported.logAlarmRef)).toEqual({
+      alarmName: 'my-log-alarm',
+      logAlarmArn: 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:my-log-alarm',
+    });
+  });
+
+  test('exposes a log alarm reference to the alarm resource', () => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+
+    expect(stack.resolve(alarm.logAlarmRef)).toEqual({
+      alarmName: { Ref: expect.stringMatching(/^Alarm/) },
+      logAlarmArn: { 'Fn::GetAtt': [expect.stringMatching(/^Alarm/), 'Arn'] },
+    });
   });
 
   test('fromLogAlarmName formats an alarm arn and derives the name back', () => {

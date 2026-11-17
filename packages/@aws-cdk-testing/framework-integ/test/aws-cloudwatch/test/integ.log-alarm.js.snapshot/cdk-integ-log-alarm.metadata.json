@@ -54,6 +54,16 @@
       "data": "*"
     }
   ],
+  "/cdk-integ-log-alarm/SourceQueryLogAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "logGroups is not set, so the scheduled query role is granted query permissions on every log group in the account and region; set logGroups to scope them [ack: aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedQueryPermissions]"
+    }
+  ],
   "/cdk-integ-log-alarm/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -190,6 +200,55 @@
       "data": "AutoRoleLogAlarm537427CB"
     }
   ],
+  "/cdk-integ-log-alarm/SourceQueryLogAlarm/ScheduledQueryRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-log-alarm/SourceQueryLogAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceQueryLogAlarm8A6BED78"
+    }
+  ],
   "/cdk-integ-log-alarm/ScheduledQueryRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -268,6 +327,50 @@
       }
     }
   ],
+  "/cdk-integ-log-alarm/SourceQueryLogAlarm/ScheduledQueryRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceQueryLogAlarmScheduledQueryRole75A1A6A8"
+    }
+  ],
+  "/cdk-integ-log-alarm/SourceQueryLogAlarm/ScheduledQueryRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
   "/cdk-integ-log-alarm/AutoRoleLogAlarm/ScheduledQueryRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -278,6 +381,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AutoRoleLogAlarmLogLineRoleDefaultPolicy540A6D84"
+    }
+  ],
+  "/cdk-integ-log-alarm/SourceQueryLogAlarm/ScheduledQueryRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SourceQueryLogAlarmScheduledQueryRoleDefaultPolicy5E96EE56"
     }
   ]
 }

@@ -63,6 +63,26 @@
       "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms52b56b811f2668234a041beb5a98ac13"
     }
   ],
+  "/LogAlarmInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsfb6bb6dff40ba65291de73b513b6b8d9/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/LogAlarmInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsfb6bb6dff40ba65291de73b513b6b8d9/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarmsfb6bb6dff40ba65291de73b513b6b8d9"
+    }
+  ],
   "/LogAlarmInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms0f2a7c0fbfc27a9eca3879455cb371eb/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -73,6 +93,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallCloudWatchdescribeAlarms52b56b811f2668234a041beb5a98ac13"
+    }
+  ],
+  "/LogAlarmInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsfb6bb6dff40ba65291de73b513b6b8d9/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchdescribeAlarmsfb6bb6dff40ba65291de73b513b6b8d9"
     }
   ]
 }

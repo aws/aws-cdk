@@ -14,6 +14,7 @@ import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { ILogAlarmRef, LogAlarmReference } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
@@ -36,8 +37,9 @@ export interface LogAlarmScheduledQuerySchedule {
   /**
    * How often the scheduled query runs.
    *
-   * Rendered to a `rate(...)` schedule expression, so only whole numbers of
-   * minutes or hours are supported.
+   * Must be a whole number of minutes, and at least 1 minute. It is rendered to a
+   * `rate(...)` schedule expression in the largest unit that divides it evenly:
+   * days, hours, or minutes.
    *
    * A rate whose amount is only known at deploy time must be given in minutes,
    * hours, or days, and is rendered in that unit.
@@ -47,9 +49,7 @@ export interface LogAlarmScheduledQuerySchedule {
   /**
    * How far into the past the query window starts, relative to each run.
    *
-   * Must be between 1 second and 2592000 seconds (30 days). This is required by
-   * the scheduled query service; omitting it causes the alarm creation to be
-   * rejected at deploy time.
+   * Must be between 1 second and 2592000 seconds (30 days).
    *
    * An offset whose amount is only known at deploy time must be given as
    * `Duration.seconds()`.
@@ -59,12 +59,13 @@ export interface LogAlarmScheduledQuerySchedule {
   /**
    * How far into the past the query window ends, relative to each run.
    *
-   * Must be between 0 seconds and 2592000 seconds (30 days).
+   * Must be between 0 seconds and 2592000 seconds (30 days), and less than
+   * `startTimeOffset`.
    *
    * An offset whose amount is only known at deploy time must be given as
    * `Duration.seconds()`.
    *
-   * @default - no end offset
+   * @default - 0 seconds, so each window ends at the run's scheduled time
    */
   readonly endTimeOffset?: Duration;
 }
@@ -99,8 +100,8 @@ export interface LogAlarmScheduledQueryConfiguration {
    * A query that selects log groups outside this list fails at run time with an
    * access-denied error. The permissions only cover the log groups named here.
    *
-   * The list itself must be resolvable at synthesis time, because the log group names are
-   * rendered into the template. Individual log groups in it may be unresolved.
+   * The list itself must be resolvable at synthesis time, because each log group in it is
+   * rendered and granted individually. Individual log groups in it may be unresolved.
    *
    * Log groups defined outside the current app can be referenced with
    * `LogGroup.fromLogGroupName()` or `LogGroup.fromLogGroupArn()`. A log group in another
@@ -109,12 +110,15 @@ export interface LogAlarmScheduledQueryConfiguration {
    * before querying across accounts.
    *
    * @default - no log groups; the query must select its own
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-logalarm.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-cloudwatch-logalarm.html
    */
   readonly logGroups?: ILogGroupRef[];
 
   /**
-   * The IAM role that grants CloudWatch permission to run the scheduled query.
+   * The IAM role that CloudWatch's scheduled-query service (`logs.amazonaws.com`) assumes to run the query.
+   *
+   * Condition its trust policy on `aws:SourceAccount` and `aws:SourceArn`, as the
+   * automatically created role does, to prevent confused-deputy access.
    *
    * The construct adds the query permissions to this role, so it must be mutable.
    * A role imported with `Role.fromRoleArn(..., { mutable: false })` discards those
@@ -319,7 +323,10 @@ export interface LogAlarmActionLogLines {
   readonly count: number;
 
   /**
-   * The IAM role used to read the log lines included in notifications.
+   * The IAM role that CloudWatch (`cloudwatch.amazonaws.com`) assumes to read the log lines included in notifications.
+   *
+   * Condition its trust policy on `aws:SourceAccount` and `aws:SourceArn`, as the
+   * automatically created role does, to prevent confused-deputy access.
    *
    * The construct adds the log-line read permission to this role, so it must be
    * mutable. A role imported with `Role.fromRoleArn(..., { mutable: false })`
@@ -336,11 +343,11 @@ export interface LogAlarmActionLogLines {
 }
 
 /**
- * A CloudWatch log alarm. Marker interface so `fromLogAlarmArn`/`fromLogAlarmName`
+ * A CloudWatch log alarm. Exists so `fromLogAlarmArn`/`fromLogAlarmName`
  * can return a log-alarm-specific type; optional members can be added later without
  * a breaking change (adding to an interface is additive).
  */
-export interface ILogAlarm extends IAlarm {}
+export interface ILogAlarm extends IAlarm, ILogAlarmRef {}
 
 /**
  * A CloudWatch alarm evaluated against the results of a scheduled Logs query.
@@ -348,7 +355,7 @@ export interface ILogAlarm extends IAlarm {}
  * Unlike a metric alarm, a log alarm runs a query against one or more log
  * groups on a schedule and alarms on the aggregated results.
  *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-logalarm.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-cloudwatch-logalarm.html
  * @resource AWS::CloudWatch::LogAlarm
  */
 @propertyInjectable
@@ -363,6 +370,10 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     class Import extends AlarmBase implements ILogAlarm {
       public readonly alarmArn = logAlarmArn;
       public readonly alarmName = Stack.of(scope).splitArn(logAlarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+
+      public get logAlarmRef(): LogAlarmReference {
+        return { alarmName: this.alarmName, logAlarmArn: this.alarmArn };
+      }
     }
     return new Import(scope, id);
   }
@@ -448,7 +459,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     }
 
     if (logGroups !== undefined && Token.isUnresolved(logGroups)) {
-      throw new ValidationError(lit`UnresolvedLogGroups`, 'logGroups must be a resolved list because the log group names are rendered at synthesis time, got an unresolved list; pass the log groups individually or omit logGroups and select them in queryString', this);
+      throw new ValidationError(lit`UnresolvedLogGroups`, 'logGroups must be a resolved list because each log group is rendered and granted individually, got an unresolved list; pass the log groups individually or omit logGroups and select them in queryString', this);
     }
 
     if (!Token.isUnresolved(sqc.queryString) && (sqc.queryString.length < 1 || sqc.queryString.length > 10000)) {
@@ -550,12 +561,16 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     return this.getResourceNameAttribute(this.alarm.ref);
   }
 
+  public get logAlarmRef(): LogAlarmReference {
+    return { alarmName: this.alarmName, logAlarmArn: this.alarmArn };
+  }
+
   /**
    * Trigger these actions when the alarm transitions to ALARM state.
    *
-   * Log alarms dispatch a narrower set of action types than metric alarms. An
-   * action the service does not dispatch is ignored rather than rejected, so
-   * adding one emits a synthesis-time warning where the type can be determined.
+   * Log alarms dispatch a narrower set of action types than metric alarms. Adding
+   * an action of a type log alarms do not dispatch emits a synthesis-time warning
+   * where the type can be determined.
    */
   public addAlarmAction(...actions: IAlarmAction[]) {
     this.addActions('alarmActions', this._alarmActionArns, actions);
@@ -564,9 +579,9 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
   /**
    * Trigger these actions when the alarm transitions to OK state.
    *
-   * Log alarms dispatch a narrower set of action types than metric alarms. An
-   * action the service does not dispatch is ignored rather than rejected, so
-   * adding one emits a synthesis-time warning where the type can be determined.
+   * Log alarms dispatch a narrower set of action types than metric alarms. Adding
+   * an action of a type log alarms do not dispatch emits a synthesis-time warning
+   * where the type can be determined.
    */
   public addOkAction(...actions: IAlarmAction[]) {
     this.addActions('okActions', this._okActionArns, actions);
@@ -575,9 +590,9 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
   /**
    * Trigger these actions when the alarm transitions to INSUFFICIENT_DATA state.
    *
-   * Log alarms dispatch a narrower set of action types than metric alarms. An
-   * action the service does not dispatch is ignored rather than rejected, so
-   * adding one emits a synthesis-time warning where the type can be determined.
+   * Log alarms dispatch a narrower set of action types than metric alarms. Adding
+   * an action of a type log alarms do not dispatch emits a synthesis-time warning
+   * where the type can be determined.
    */
   public addInsufficientDataAction(...actions: IAlarmAction[]) {
     this.addActions('insufficientDataActions', this._insufficientDataActionArns, actions);
@@ -596,7 +611,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     const dispatches = components && DISPATCHABLE_ACTIONS[components.service];
     if (components !== undefined && (dispatches === undefined || !dispatches(components))) {
       Validations.of(this).addWarning('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
-        `log alarms do not dispatch this action type, so this action will be ignored by the service. Got ${JSON.stringify(arn)}`,
+        `log alarms do not dispatch this action type. Got ${JSON.stringify(arn)}`,
         { context: { service: components.service, resource: components.resource } });
     }
     return arn;
@@ -799,6 +814,10 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     const minutes = rate.toMinutes({ integral: false });
     if (!Number.isInteger(minutes) || minutes < 1) {
       throw new ValidationError(lit`InvalidScheduleRate`, `schedule rate must be a whole number of minutes and at least 1 minute, got ${rate.toSeconds()} seconds`, this);
+    }
+    if (minutes % 1440 === 0) {
+      const days = minutes / 1440;
+      return `rate(${days} ${days === 1 ? 'day' : 'days'})`;
     }
     if (minutes % 60 === 0) {
       const hours = minutes / 60;
