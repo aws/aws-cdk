@@ -477,7 +477,7 @@ export class AssetStaging extends Construct {
 
     let localBundling: boolean | undefined;
     try {
-      process.stderr.write(`Bundling asset ${this.node.path}...\n`);
+      process.stdout.write(`Bundling asset ${this.node.path}...\n`);
 
       using _span = timerSpanFromOptions(options);
 
