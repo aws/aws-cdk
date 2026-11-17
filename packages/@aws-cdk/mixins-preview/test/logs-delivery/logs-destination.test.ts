@@ -899,6 +899,119 @@ describe('S3 Destination', () => {
     });
   });
 
+  test('uses the provided key for an imported bucket', () => {
+    const key = new Key(stack, 'ProvidedKey');
+    const bucket = Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket');
+
+    new S3DeliveryDestination(bucket, 'S3Dest', {
+      bucket,
+      encryptionKey: key,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('prefers the provided key over the bucket encryption key', () => {
+    const bucketKey = new Key(stack, 'BucketKey');
+    const providedKey = new Key(stack, 'ProvidedKey');
+    const bucket = new Bucket(stack, 'Bucket', { encryptionKey: bucketKey });
+
+    new S3DeliveryDestination(bucket, 'S3Dest', {
+      bucket,
+      encryptionKey: providedKey,
+    });
+
+    const keys = Template.fromStack(stack).findResources('AWS::KMS::Key');
+    const grantedKeys = Object.keys(keys).filter(id => JSON.stringify(keys[id]).includes('delivery.logs.amazonaws.com'));
+    expect(grantedKeys).toHaveLength(1);
+    expect(grantedKeys[0]).toMatch(/^ProvidedKey/);
+  });
+
+  test('discovers the bucket encryption key when no key is provided', () => {
+    const bucketKey = new Key(stack, 'BucketKey');
+    const bucket = new Bucket(stack, 'Bucket', { encryptionKey: bucketKey });
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: {
+              Service: 'delivery.logs.amazonaws.com',
+            },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': [{ Ref: 'AWS::AccountId' }],
+              },
+              ArnLike: {
+                'aws:SourceArn': [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':logs:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':delivery-source:*',
+                    ],
+                  ],
+                }],
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grants no key permissions when neither a provided nor a discoverable key exists', () => {
+    const bucket = Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket');
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket });
+
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+  });
+
   test('uses outputFormat when provided', () => {
     const bucket = new Bucket(stack, 'Bucket', {});
 

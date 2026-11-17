@@ -182,7 +182,7 @@ class LogsHelper extends ClassType {
               optional: true,
               immutable: true,
               docs: {
-                summary: 'Encrpytion key for your delivery bucket',
+                summary: 'Encryption key for your delivery bucket',
               },
             }],
           });
@@ -232,7 +232,7 @@ class LogsHelper extends ClassType {
               mixin.newInstance(expr.str(this.log.logType), new NewExpression(MIXINS_LOGS_DELIVERY.S3LogsDelivery, paramS3,
                 expr.object({
                   permissionsVersion: permissions,
-                  kmsKey: expr.directCode('props?.encryptionKey'),
+                  encryptionKey: expr.directCode('props?.encryptionKey'),
                   outputFormat: expr.directCode('props?.outputFormat'),
                   providedFields: recordFields ? expr.directCode('props?.recordFields') : expr.UNDEFINED,
                   mandatoryFields: this.log.mandatoryFields ? expr.directCode(JSON.stringify(this.log.mandatoryFields)) : expr.UNDEFINED,
@@ -583,7 +583,7 @@ class LogsMixin extends ClassType {
       name: 'supports',
       returnType: Type.ambient(`construct is service.${this.resourceType.symbol}`),
       docs: {
-        summary: 'Check if this mixin supports the given construct (has vendedLogs property)',
+        summary: 'Check if this mixin supports the given construct',
       },
     });
 
