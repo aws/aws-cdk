@@ -7,7 +7,7 @@ import { Gateway } from '../../../lib';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
 import {
   ConnectorTargetConfiguration,
-  GatewayConnector,
+  McpConnector,
   KnowledgeBaseSearchType,
   KnowledgeBasesTargetConfiguration,
 } from '../../../lib/gateway/targets/connector-target-configuration';
@@ -18,6 +18,7 @@ const KB1_ARN = 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB1111111
 const KB2_ARN = 'arn:aws:bedrock:us-east-1:123456789012:knowledge-base/KB22222222';
 const KEY1_ARN = 'arn:aws:kms:us-east-1:123456789012:key/11111111-1111-1111-1111-111111111111';
 const KEY2_ARN = 'arn:aws:kms:us-east-1:123456789012:key/22222222-2222-2222-2222-222222222222';
+const VIA_BEDROCK = { StringEquals: { 'kms:ViaService': 'bedrock.us-east-1.amazonaws.com' } };
 
 describe('Connector gateway targets', () => {
   let stack: cdk.Stack;
@@ -58,7 +59,7 @@ describe('Connector gateway targets', () => {
         gateway,
         gatewayTargetName: 'web-search',
         targetConfiguration: ConnectorTargetConfiguration.create({
-          connector: GatewayConnector.WEB_SEARCH,
+          connector: McpConnector.WEB_SEARCH,
           enabledTools: ['WebSearch'],
           toolConfigurations: [{
             name: 'WebSearch',
@@ -99,7 +100,7 @@ describe('Connector gateway targets', () => {
       new GatewayTarget(stack, 'Target', {
         gateway,
         targetConfiguration: ConnectorTargetConfiguration.create({
-          connector: GatewayConnector.WEB_SEARCH,
+          connector: McpConnector.WEB_SEARCH,
           toolConfigurations: [{ name: 'WebSearch' }],
         }),
       });
@@ -128,7 +129,7 @@ describe('Connector gateway targets', () => {
     ])('omits Configurations for %s', (_, toolConfigurations) => {
       new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH, toolConfigurations }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: McpConnector.WEB_SEARCH, toolConfigurations }),
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
@@ -141,7 +142,7 @@ describe('Connector gateway targets', () => {
     test('has the CONNECTOR target type and grants the gateway role nothing', () => {
       const target = new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: McpConnector.WEB_SEARCH }),
       });
 
       expect(target.targetType).toBe(McpTargetType.CONNECTOR);
@@ -151,7 +152,7 @@ describe('Connector gateway targets', () => {
     test('accepts an explicit gateway IAM role credential provider', () => {
       new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: McpConnector.WEB_SEARCH }),
         credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
       });
 
@@ -173,7 +174,7 @@ describe('Connector gateway targets', () => {
     ])('fails for an %s credential provider', (type, provider) => {
       expect(() => new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: McpConnector.WEB_SEARCH }),
         credentialProviderConfigurations: [provider()],
       })).toThrow(`connector targets only support the GATEWAY_IAM_ROLE credential provider, got "${type}"`);
     });
@@ -181,22 +182,22 @@ describe('Connector gateway targets', () => {
     test('fails for an IAM role credential provider with an explicit service', () => {
       expect(() => new GatewayTarget(stack, 'Target', {
         gateway,
-        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH }),
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: McpConnector.WEB_SEARCH }),
         credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole({ service: 'bedrock-agentcore' })],
       })).toThrow('IamCredentialProvider with explicit service/region is only supported for MCP Server and OpenAPI targets, got target type "CONNECTOR"');
     });
 
     test('fails for an empty connectorId', () => {
-      expect(() => GatewayConnector.of(''))
+      expect(() => McpConnector.of(''))
         .toThrow('connectorId must not be empty');
     });
 
     test.each([
-      [GatewayConnector.BEDROCK_KNOWLEDGE_BASES, 'bedrock-knowledge-bases'],
-      [GatewayConnector.WEB_SEARCH, 'web-search'],
-      [GatewayConnector.WEB_ANSWER, 'web-answer'],
-      [GatewayConnector.STEP_FUNCTIONS, 'states'],
-      [GatewayConnector.of('my-connector'), 'my-connector'],
+      [McpConnector.BEDROCK_KNOWLEDGE_BASES, 'bedrock-knowledge-bases'],
+      [McpConnector.WEB_SEARCH, 'web-search'],
+      [McpConnector.WEB_ANSWER, 'web-answer'],
+      [McpConnector.STEP_FUNCTIONS, 'states'],
+      [McpConnector.of('my-connector'), 'my-connector'],
     ])('renders connector %s as ConnectorId %s', (connector, connectorId) => {
       new GatewayTarget(stack, 'Target', {
         gateway,
@@ -212,7 +213,7 @@ describe('Connector gateway targets', () => {
       const options = {
         gatewayTargetName: 'web-search',
         description: 'Search the public web',
-        connector: GatewayConnector.WEB_SEARCH,
+        connector: McpConnector.WEB_SEARCH,
         enabledTools: ['WebSearch'],
         toolConfigurations: [{ name: 'WebSearch', parameterValues: { domainFilter: { exclude: ['example.com'] } } }],
       };
@@ -248,35 +249,35 @@ describe('Connector gateway targets', () => {
       ['a 65 character', 'a'.repeat(65)],
     ])('fails for %s tool name', (_, name) => {
       expect(() => ConnectorTargetConfiguration.create({
-        connector: GatewayConnector.WEB_SEARCH,
+        connector: McpConnector.WEB_SEARCH,
         toolConfigurations: [{ name }],
       })).toThrow(`connector tool name must be between 1 and 64 characters long, got "${name}" (${name.length} characters)`);
     });
 
     test('accepts a 64 character tool name and a 2000 character description', () => {
       expect(() => ConnectorTargetConfiguration.create({
-        connector: GatewayConnector.WEB_SEARCH,
+        connector: McpConnector.WEB_SEARCH,
         toolConfigurations: [{ name: 'a'.repeat(64), description: 'd'.repeat(2000) }],
       })).not.toThrow();
     });
 
     test('fails for a tool description longer than 2000 characters', () => {
       expect(() => ConnectorTargetConfiguration.create({
-        connector: GatewayConnector.WEB_SEARCH,
+        connector: McpConnector.WEB_SEARCH,
         toolConfigurations: [{ name: 'WebSearch', description: 'd'.repeat(2001) }],
       })).toThrow('description of connector tool "WebSearch" must be at most 2000 characters long, got 2001 characters');
     });
 
     test.each([0, 51])('fails for %d enabled tools', (count) => {
       expect(() => ConnectorTargetConfiguration.create({
-        connector: GatewayConnector.WEB_SEARCH,
+        connector: McpConnector.WEB_SEARCH,
         enabledTools: Array.from({ length: count }, (_, i) => `Tool${i}`),
       })).toThrow(`enabledTools must contain between 1 and 50 tool names, got ${count}`);
     });
 
     test.each([1, 50])('accepts %d enabled tools', (count) => {
       expect(() => ConnectorTargetConfiguration.create({
-        connector: GatewayConnector.WEB_SEARCH,
+        connector: McpConnector.WEB_SEARCH,
         enabledTools: Array.from({ length: count }, (_, i) => `Tool${i}`),
       })).not.toThrow();
     });
@@ -287,7 +288,7 @@ describe('Connector gateway targets', () => {
 
       // The literal parts alone exceed the limits, so only the token checks let these through.
       expect(() => ConnectorTargetConfiguration.create({
-        connector: GatewayConnector.of(param.valueAsString),
+        connector: McpConnector.of(param.valueAsString),
         enabledTools: listParam.valueAsList,
         toolConfigurations: [{
           name: `${param.valueAsString}${'a'.repeat(64)}`,
@@ -364,6 +365,29 @@ describe('Connector gateway targets', () => {
                 ParameterValues: Match.objectEquals({
                   retrievers: [{ configuration: { knowledgeBase: { knowledgeBaseId: 'KB11111111' } } }],
                   agenticRetrieveConfiguration: { foundationModelType: 'MANAGED', maxAgentIteration: 3 },
+                  generateResponse: false,
+                }),
+              }],
+            },
+          },
+        },
+      });
+    });
+
+    test('renders generateResponse as false when maxAgentIteration is 0 and generateResponse is not given', () => {
+      gateway.addKnowledgeBasesTarget('Target', {
+        agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIteration: 0 },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        TargetConfiguration: {
+          Mcp: {
+            Connector: {
+              Configurations: [{
+                Name: 'AgenticRetrieveStream',
+                ParameterValues: Match.objectEquals({
+                  retrievers: [{ configuration: { knowledgeBase: { knowledgeBaseId: 'KB11111111' } } }],
+                  agenticRetrieveConfiguration: { foundationModelType: 'MANAGED', maxAgentIteration: 0 },
                   generateResponse: false,
                 }),
               }],
@@ -581,7 +605,7 @@ describe('Connector gateway targets', () => {
         });
 
         expect(statementsFor('kms')).toEqual([
-          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: KEY1_ARN },
+          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: KEY1_ARN, Condition: VIA_BEDROCK },
         ]);
       });
 
@@ -596,8 +620,8 @@ describe('Connector gateway targets', () => {
         });
 
         expect(statementsFor('kms')).toEqual([
-          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: KEY1_ARN },
-          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: KEY2_ARN },
+          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: KEY1_ARN, Condition: VIA_BEDROCK },
+          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: KEY2_ARN, Condition: VIA_BEDROCK },
         ]);
       });
 
@@ -615,7 +639,7 @@ describe('Connector gateway targets', () => {
         });
 
         expect(statementsFor('kms')).toEqual([
-          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: KEY1_ARN },
+          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: KEY1_ARN, Condition: VIA_BEDROCK },
         ]);
       });
 
@@ -627,7 +651,12 @@ describe('Connector gateway targets', () => {
         });
 
         expect(statementsFor('kms')).toEqual([
-          { Action: 'kms:Decrypt', Effect: 'Allow', Resource: { 'Fn::GetAtt': [stack.getLogicalId(key.node.defaultChild as cdk.CfnElement), 'Arn'] } },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': [stack.getLogicalId(key.node.defaultChild as cdk.CfnElement), 'Arn'] },
+            Condition: VIA_BEDROCK,
+          },
         ]);
       });
 

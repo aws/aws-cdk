@@ -4,7 +4,7 @@ import type { TargetConfigurationConfig } from './target-configuration';
 import { McpTargetConfiguration } from './target-configuration';
 import * as iam from '../../../../aws-iam';
 import { KeyGrants } from '../../../../aws-kms';
-import { Token } from '../../../../core';
+import { Stack, Token } from '../../../../core';
 import { UnscopedValidationError } from '../../../../core/lib/errors';
 import { lit } from '../../../../core/lib/helpers-internal';
 import type { IKnowledgeBaseRef } from '../../../../interfaces/generated/aws-bedrock-interfaces.generated';
@@ -16,29 +16,29 @@ import type { IGateway } from '../gateway-base';
  *****************************************************************************/
 
 /**
- * A connector that a gateway target can use
+ * A connector that an MCP gateway target can use
  *
  * Connectors are pre-built integrations with AWS services and third-party tools.
  */
-export class GatewayConnector {
+export class McpConnector {
   /** Amazon Bedrock Managed Knowledge Bases */
-  public static readonly BEDROCK_KNOWLEDGE_BASES = new GatewayConnector('bedrock-knowledge-bases');
+  public static readonly BEDROCK_KNOWLEDGE_BASES = new McpConnector('bedrock-knowledge-bases');
   /** Web Search Tool */
-  public static readonly WEB_SEARCH = new GatewayConnector('web-search');
+  public static readonly WEB_SEARCH = new McpConnector('web-search');
   /** Web Answer */
-  public static readonly WEB_ANSWER = new GatewayConnector('web-answer');
+  public static readonly WEB_ANSWER = new McpConnector('web-answer');
   /** AWS Step Functions */
-  public static readonly STEP_FUNCTIONS = new GatewayConnector('states');
+  public static readonly STEP_FUNCTIONS = new McpConnector('states');
 
   /**
    * Use a connector that is not yet defined in this class.
    * @param connectorId The identifier of the connector
    */
-  public static of(connectorId: string): GatewayConnector {
+  public static of(connectorId: string): McpConnector {
     if (!Token.isUnresolved(connectorId) && connectorId.length === 0) {
       throw new UnscopedValidationError(lit`ConnectorIdInvalid`, 'connectorId must not be empty');
     }
-    return new GatewayConnector(connectorId);
+    return new McpConnector(connectorId);
   }
 
   /** The identifier of the connector. */
@@ -125,7 +125,7 @@ export interface ConnectorTargetConfigurationProps {
   /**
    * The connector to use
    */
-  readonly connector: GatewayConnector;
+  readonly connector: McpConnector;
 
   /**
    * Per-tool configurations for the connector.
@@ -172,7 +172,7 @@ export class ConnectorTargetConfiguration extends McpTargetConfiguration {
   /**
    * The connector this configuration uses
    */
-  public readonly connector: GatewayConnector;
+  public readonly connector: McpConnector;
 
   /**
    * Per-tool configurations for the connector
@@ -291,8 +291,8 @@ export interface KnowledgeBaseRetriever {
   /**
    * The customer managed KMS key that encrypts the knowledge base.
    *
-   * The gateway role is granted permission to decrypt with this key, which Amazon Bedrock
-   * requires from the caller when it reads a knowledge base encrypted with a customer managed key.
+   * The gateway role is granted permission to decrypt with this key through Amazon Bedrock, which
+   * requires it from the caller when it reads a knowledge base encrypted with a customer managed key.
    *
    * @default - the knowledge base is not encrypted with a customer managed key, no KMS permission is granted
    */
@@ -307,7 +307,8 @@ export interface KnowledgeBaseRetriever {
  *
  * It runs with the service-managed foundation model, and the reranking model follows the service
  * default for each knowledge base. To attach a guardrail or use your own foundation or reranking
- * model, configure the tool with `ConnectorTargetConfiguration` instead.
+ * model, add the fields with a property override on the target's `CfnGatewayTarget`. The target
+ * keeps the permissions this configuration grants, and you grant what the added fields need.
  */
 export interface KnowledgeBaseAgenticRetrieveOptions {
   /**
@@ -319,8 +320,8 @@ export interface KnowledgeBaseAgenticRetrieveOptions {
    * The maximum number of planning and retrieval iterations. Must be between 0 and 5.
    *
    * Values from 2 to 5 run agentic retrieval. `1` runs a single retrieval followed by an
-   * answer, and `0` runs a single retrieval without an answer, which requires
-   * `generateResponse` to be `false`.
+   * answer, and `0` runs a single retrieval without an answer, so `generateResponse`
+   * cannot be `true` with it.
    *
    * @default - the service default
    */
@@ -329,7 +330,7 @@ export interface KnowledgeBaseAgenticRetrieveOptions {
   /**
    * Whether to return a synthesized answer with citations in addition to the retrieval results.
    *
-   * @default true
+   * @default - true, or false when `maxAgentIteration` is 0
    */
   readonly generateResponse?: boolean;
 
@@ -364,8 +365,8 @@ export interface KnowledgeBaseRetrieveOptions {
   /**
    * The customer managed KMS key that encrypts the knowledge base.
    *
-   * The gateway role is granted permission to decrypt with this key, which Amazon Bedrock
-   * requires from the caller when it reads a knowledge base encrypted with a customer managed key.
+   * The gateway role is granted permission to decrypt with this key through Amazon Bedrock, which
+   * requires it from the caller when it reads a knowledge base encrypted with a customer managed key.
    *
    * @default - the knowledge base is not encrypted with a customer managed key, no KMS permission is granted
    */
@@ -473,7 +474,7 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
       toolConfigurations.push(this.renderRetrieve(this.retrieve));
     }
     this.connectorConfiguration = ConnectorTargetConfiguration.create({
-      connector: GatewayConnector.BEDROCK_KNOWLEDGE_BASES,
+      connector: McpConnector.BEDROCK_KNOWLEDGE_BASES,
       toolConfigurations,
       // Only the configured tools are usable, so only they are enabled
       enabledTools: toolConfigurations.map(tool => tool.name),
@@ -525,8 +526,16 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
         encryptionKeys.set(key.keyRef.keyArn, key);
       }
     }
+    // The gateway role only needs to decrypt through Amazon Bedrock
+    const viaBedrock = {
+      StringEquals: { 'kms:ViaService': `bedrock.${Stack.of(scope).region}.amazonaws.com` },
+    };
     for (const key of encryptionKeys.values()) {
-      grants.push(KeyGrants.fromKey(key).decrypt(gateway.role));
+      const grant = KeyGrants.fromKey(key).decrypt(gateway.role);
+      for (const statement of [...grant.principalStatements, ...grant.resourceStatements]) {
+        statement.addConditions(viaBedrock);
+      }
+      grants.push(grant);
     }
 
     // The gateway validates the knowledge bases as soon as the target is created
@@ -568,8 +577,10 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
       }),
       agenticRetrieveConfiguration,
     };
-    if (options.generateResponse !== undefined) {
-      parameterValues.generateResponse = options.generateResponse;
+    // Without an agent iteration no answer is generated, and the service rejects the default of true
+    const generateResponse = options.generateResponse ?? (options.maxAgentIteration === 0 ? false : undefined);
+    if (generateResponse !== undefined) {
+      parameterValues.generateResponse = generateResponse;
     }
 
     return {
