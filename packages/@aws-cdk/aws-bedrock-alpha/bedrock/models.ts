@@ -252,6 +252,21 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   });
 
   /**
+   * Amazon's Nova 2 Lite model, a fast, cost-effective reasoning model.
+   *
+   * Features:
+   * - Supports Bedrock Agents integration
+   * - Cross-region support
+   * - Optimized for agents
+   * - Best for: General-purpose language tasks with configurable reasoning effort
+   */
+  public static readonly AMAZON_NOVA_2_LITE_V1 = new BedrockFoundationModel('amazon.nova-2-lite-v1:0', {
+    supportsAgents: true,
+    supportsCrossRegion: true,
+    optimizedForAgents: true,
+  });
+
+  /**
    * Amazon's Nova Pro model, offering advanced capabilities for complex tasks.
    *
    * Features:

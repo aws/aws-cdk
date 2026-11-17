@@ -219,6 +219,11 @@ describe('BedrockFoundationModel', () => {
       expect(BedrockFoundationModel.AMAZON_NOVA_MICRO_V1.supportsAgents).toBe(true);
       expect(BedrockFoundationModel.AMAZON_NOVA_MICRO_V1.supportsCrossRegion).toBe(true);
 
+      expect(BedrockFoundationModel.AMAZON_NOVA_2_LITE_V1.modelId).toBe('amazon.nova-2-lite-v1:0');
+      expect(BedrockFoundationModel.AMAZON_NOVA_2_LITE_V1.supportsAgents).toBe(true);
+      expect(BedrockFoundationModel.AMAZON_NOVA_2_LITE_V1.supportsCrossRegion).toBe(true);
+      expect(BedrockFoundationModel.AMAZON_NOVA_2_LITE_V1.optimizedForAgents).toBe(true);
+
       expect(BedrockFoundationModel.TITAN_EMBED_TEXT_V1.modelId).toBe('amazon.titan-embed-text-v1');
       expect(BedrockFoundationModel.TITAN_EMBED_TEXT_V1.supportsKnowledgeBase).toBe(true);
       expect(BedrockFoundationModel.TITAN_EMBED_TEXT_V1.vectorDimensions).toBe(1536);
