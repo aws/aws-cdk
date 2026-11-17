@@ -628,22 +628,61 @@ describe('vpc', () => {
     }).toThrow('Cannot configure subnetSelection without configuring a VPC');
   });
 
-  test('throws error when multiple subnets are selected', () => {
+  test('auto-narrows to first subnet when no subnetSelection provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+
+    // WHEN - no explicit subnetSelection, construct should auto-narrow to first subnet
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+    });
+
+    // THEN - should only have one subnet
+    const template = Template.fromStack(stack);
+    const fleet = template.findResources('AWS::CodeBuild::Fleet');
+    const fleetResource = Object.values(fleet)[0];
+    expect(fleetResource.Properties.FleetVpcConfig.Subnets).toHaveLength(1);
+  });
+
+  test('throws error when explicit subnetSelection resolves to multiple subnets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
     // THEN
     // Per AWS docs: "reserved capacity fleets support only one subnet in a single Availability Zone"
+    // Only throws when user explicitly provides a subnetSelection that resolves to multiple subnets
     expect(() => {
       new codebuild.Fleet(stack, 'Fleet', {
         baseCapacity: 1,
         computeType: codebuild.FleetComputeType.SMALL,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         vpc,
-        // Default subnetSelection selects all private subnets (2 in this case)
+        subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       });
     }).toThrow(/Reserved capacity fleets support only one subnet, but 2 subnets were selected/);
+  });
+
+  test('does not throw on pending VPC lookup', () => {
+    // GIVEN
+    // Before the context lookup resolves, `selectSubnets` returns a dummy set
+    // with `isPendingLookup: true`; this must not throw.
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
+    const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { vpcId: 'vpc-1234' });
+
+    // WHEN/THEN - should not throw despite dummy VPC having multiple subnets
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        vpc,
+      });
+    }).not.toThrow();
   });
 
   test('accepts single subnet selection', () => {
@@ -977,21 +1016,57 @@ describe('scalingConfiguration', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    // WHEN/THEN - should not throw
-    expect(() => {
-      new codebuild.Fleet(stack, 'Fleet', {
-        baseCapacity: 1,
-        computeType: codebuild.FleetComputeType.SMALL,
-        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
-        scalingConfiguration: {
-          maxCapacity: cdk.Token.asNumber({ Ref: 'MaxCapacity' }),
-          targetTrackingScalingConfigs: [{
-            metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
-            targetValue: cdk.Token.asNumber({ Ref: 'TargetValue' }),
-          }],
-        },
-      });
-    }).not.toThrow();
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      scalingConfiguration: {
+        maxCapacity: cdk.Token.asNumber({ Ref: 'MaxCapacity' }),
+        targetTrackingScalingConfigs: [{
+          metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+          targetValue: cdk.Token.asNumber({ Ref: 'TargetValue' }),
+        }],
+      },
+    });
+
+    // THEN - tokens should reach the template
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      ScalingConfiguration: {
+        MaxCapacity: { Ref: 'MaxCapacity' },
+        TargetTrackingScalingConfigs: [{
+          MetricType: 'FLEET_UTILIZATION_RATE',
+          TargetValue: { Ref: 'TargetValue' },
+        }],
+      },
+    });
+  });
+
+  test('tokenized baseCapacity skips maxCapacity comparison', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN - maxCapacity (5) < baseCapacity (token) should not throw
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: cdk.Token.asNumber({ Ref: 'BaseCapacity' }),
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      scalingConfiguration: {
+        maxCapacity: 5,
+        targetTrackingScalingConfigs: [{
+          metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+          targetValue: 70,
+        }],
+      },
+    });
+
+    // THEN - tokens should reach the template
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      BaseCapacity: { Ref: 'BaseCapacity' },
+      ScalingConfiguration: {
+        MaxCapacity: 5,
+      },
+    });
   });
 });
 

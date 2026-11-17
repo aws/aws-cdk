@@ -65,11 +65,24 @@ listFleets.expect(integ.ExpectedResult.objectLike({
   fleets: integ.Match.arrayWith([fleet.fleetArn]),
 }));
 
-test.assertions.awsApiCall('CodeBuild', 'batchGetFleets', {
+const batchGetFleets = test.assertions.awsApiCall('CodeBuild', 'batchGetFleets', {
   names: [fleet.fleetArn],
-}).assertAtPath(
+});
+
+// Verify the default behavior is set correctly
+batchGetFleets.assertAtPath(
   'fleets.0.proxyConfiguration.defaultBehavior',
   integ.ExpectedResult.stringLikeRegexp('ALLOW_ALL'),
+);
+
+// Verify the ordered proxy rules are set correctly
+batchGetFleets.assertAtPath(
+  'fleets.0.proxyConfiguration.orderedProxyRules.0.effect',
+  integ.ExpectedResult.stringLikeRegexp('^DENY$'),
+);
+batchGetFleets.assertAtPath(
+  'fleets.0.proxyConfiguration.orderedProxyRules.0.type',
+  integ.ExpectedResult.stringLikeRegexp('^DOMAIN$'),
 );
 
 // Start a build to verify the fleet works with proxy configuration.
@@ -86,5 +99,3 @@ test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
   totalTimeout: cdk.Duration.minutes(15),
   interval: cdk.Duration.seconds(30),
 });
-
-app.synth();

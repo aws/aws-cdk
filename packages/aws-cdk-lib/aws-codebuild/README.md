@@ -665,7 +665,8 @@ const fleet = new codebuild.Fleet(this, 'ScalingFleet', {
 
 You can apply network access control to your fleet instances using the `proxyConfiguration` property.
 Proxy configuration is only supported for Linux container environment types (LINUX_CONTAINER,
-ARM_CONTAINER, LINUX_GPU_CONTAINER). It is not supported for Windows containers or EC2-based environment types.
+ARM_CONTAINER, LINUX_GPU_CONTAINER). It is not supported for Windows containers, EC2-based environment types,
+or fleets placed in a VPC.
 
 For more information, see [Use AWS CodeBuild with a managed proxy server](https://docs.aws.amazon.com/codebuild/latest/userguide/run-codebuild-in-managed-proxy-server.html) in the CodeBuild documentation.
 
@@ -706,20 +707,28 @@ The available overflow behaviors are:
 Note: If you set overflow behavior to `ON_DEMAND` for a VPC-connected fleet, ensure your VPC settings allow access to public AWS services.
 
 ### VPCs
+
 The same considerations that apply to [Project
 VPCs](#definition-of-vpc-configuration-in-codebuild-project) also apply to Fleet
 VPCs.  When using a Fleet in a CodeBuild Project, it is an error to configure a
 VPC on the Project. Configure a VPC on the fleet instead.
 
+Reserved capacity fleets support only one subnet in a single Availability Zone.
+If you don't specify a `subnetSelection`, the construct automatically selects
+the first subnet from the default selection. If you provide an explicit
+`subnetSelection` that resolves to multiple subnets, synthesis will fail.
+
 ```ts
 declare const loadBalancer: elbv2.ApplicationLoadBalancer;
 
 const vpc = new ec2.Vpc(this, 'MyVPC');
-const fleet = new codebuild.Fleet(this, 'MyProject', {
+const fleet = new codebuild.Fleet(this, 'MyFleet', {
   computeType: codebuild.FleetComputeType.MEDIUM,
   environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
   baseCapacity: 1,
   vpc,
+  // Optional: explicitly select a single subnet
+  // subnetSelection: { subnets: [vpc.privateSubnets[0]] },
 });
 
 fleet.connections.allowTo(loadBalancer, ec2.Port.tcp(443));

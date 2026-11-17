@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
 /**
  * Deployment notice:
  *
@@ -8,9 +9,9 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
  * which can cause the integ test to timeout and fail.
  *
  * You can try deploying to a different region, or
- * or Deploying the stack without integ tests first, with the --no-clean flag,
+ * deploying the stack without integ tests first, with the --no-clean flag,
  * waiting for the fleet allocation to reach its capacity,
- * and then running the integ test was the workaround used.
+ * and then running the integ test as the workaround.
  */
 
 const app = new cdk.App();
@@ -54,12 +55,12 @@ const test = new integ.IntegTest(app, 'FleetScalingIntegTest', {
   },
 });
 
-const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
+const listFleets = test.assertions.awsApiCall('CodeBuild', 'listFleets');
 listFleets.expect(integ.ExpectedResult.objectLike({
   fleets: integ.Match.arrayWith([fleet.fleetArn]),
 }));
 
-const startBuild = test.assertions.awsApiCall('Codebuild', 'startBuild', { projectName: project.projectName });
+const startBuild = test.assertions.awsApiCall('CodeBuild', 'startBuild', { projectName: project.projectName });
 
 test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
   ids: [startBuild.getAttString('build.id')],
@@ -70,5 +71,3 @@ test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
   totalTimeout: cdk.Duration.minutes(15),
   interval: cdk.Duration.seconds(30),
 });
-
-app.synth();
