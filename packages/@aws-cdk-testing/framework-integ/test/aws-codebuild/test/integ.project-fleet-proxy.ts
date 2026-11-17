@@ -29,7 +29,7 @@ const fleet = new codebuild.Fleet(stack, 'ProxyFleet', {
       {
         type: codebuild.FleetProxyRuleType.DOMAIN,
         effect: codebuild.FleetProxyRuleEffect.DENY,
-        entities: ['blocked.example.com'],
+        entities: ['httpbin.org'],
       },
     ],
   },
@@ -39,7 +39,15 @@ const project = new codebuild.Project(stack, 'ProxyProject', {
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
-      build: { commands: ['echo "Build with proxy configuration"'] },
+      build: {
+        commands: [
+          // First verify we CAN reach an allowed domain
+          'curl -sS --max-time 15 https://aws.amazon.com > /dev/null',
+          // Then verify we CANNOT reach the blocked domain - if we can, fail the build
+          'if curl -sS --max-time 15 https://httpbin.org/get 2>/dev/null; then echo "proxy deny not enforced"; exit 1; fi',
+          'echo "Proxy deny rule correctly enforced"',
+        ],
+      },
     },
   }),
   environment: {
@@ -65,25 +73,17 @@ listFleets.expect(integ.ExpectedResult.objectLike({
   fleets: integ.Match.arrayWith([fleet.fleetArn]),
 }));
 
-const batchGetFleets = test.assertions.awsApiCall('CodeBuild', 'batchGetFleets', {
+// Verify the proxy configuration is set correctly (use single expect to check all fields)
+test.assertions.awsApiCall('CodeBuild', 'batchGetFleets', {
   names: [fleet.fleetArn],
-});
-
-// Verify the default behavior is set correctly
-batchGetFleets.assertAtPath(
-  'fleets.0.proxyConfiguration.defaultBehavior',
-  integ.ExpectedResult.stringLikeRegexp('ALLOW_ALL'),
-);
-
-// Verify the ordered proxy rules are set correctly
-batchGetFleets.assertAtPath(
-  'fleets.0.proxyConfiguration.orderedProxyRules.0.effect',
-  integ.ExpectedResult.stringLikeRegexp('^DENY$'),
-);
-batchGetFleets.assertAtPath(
-  'fleets.0.proxyConfiguration.orderedProxyRules.0.type',
-  integ.ExpectedResult.stringLikeRegexp('^DOMAIN$'),
-);
+}).expect(integ.ExpectedResult.objectLike({
+  fleets: [integ.Match.objectLike({
+    proxyConfiguration: {
+      defaultBehavior: 'ALLOW_ALL',
+      orderedProxyRules: [{ effect: 'DENY', type: 'DOMAIN', entities: ['httpbin.org'] }],
+    },
+  })],
+}));
 
 // Start a build to verify the fleet works with proxy configuration.
 const startBuild = test.assertions.awsApiCall('CodeBuild', 'startBuild', {

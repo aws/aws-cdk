@@ -1,4 +1,4 @@
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import * as codebuild from '../lib';
@@ -641,11 +641,54 @@ describe('vpc', () => {
       vpc,
     });
 
-    // THEN - should only have one subnet
+    // THEN - should only have the first private subnet
     const template = Template.fromStack(stack);
-    const fleet = template.findResources('AWS::CodeBuild::Fleet');
-    const fleetResource = Object.values(fleet)[0];
-    expect(fleetResource.Properties.FleetVpcConfig.Subnets).toHaveLength(1);
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }],
+      }),
+    });
+
+    // THEN - IAM policy should also be narrowed to only the first subnet
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'ec2:CreateNetworkInterfacePermission',
+            Condition: {
+              ArnEquals: {
+                'ec2:Subnet': [
+                  {
+                    'Fn::Join': ['', Match.arrayWith([
+                      { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+                    ])],
+                  },
+                ],
+              },
+            },
+          }),
+        ]),
+      }),
+    });
+  });
+
+  test('auto-narrow emits warning when narrowing occurs', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+
+    // WHEN - no explicit subnetSelection triggers auto-narrow
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+    });
+
+    // THEN - warning should be emitted
+    const messages = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('Reserved capacity fleets support only one subnet'));
+    expect(messages.length).toBeGreaterThan(0);
   });
 
   test('throws error when explicit subnetSelection resolves to multiple subnets', () => {
@@ -675,14 +718,43 @@ describe('vpc', () => {
     const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { vpcId: 'vpc-1234' });
 
     // WHEN/THEN - should not throw despite dummy VPC having multiple subnets
-    expect(() => {
-      new codebuild.Fleet(stack, 'Fleet', {
-        baseCapacity: 1,
-        computeType: codebuild.FleetComputeType.SMALL,
-        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
-        vpc,
-      });
-    }).not.toThrow();
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+    });
+
+    // THEN - both dummy subnets should be kept (no narrowing during pending lookup)
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: Match.arrayWith([Match.stringLikeRegexp('^p-')]),
+      }),
+    });
+  });
+
+  test('does not throw on pending VPC lookup with explicit subnetSelection', () => {
+    // GIVEN - pending lookup with explicit multi-subnet selection
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
+    const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { vpcId: 'vpc-1234' });
+
+    // WHEN/THEN - should not throw; the isPendingLookup guard should skip validation
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    // THEN - dummy subnets should be in the template
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: Match.arrayWith([Match.stringLikeRegexp('^p-')]),
+      }),
+    });
   });
 
   test('accepts single subnet selection', () => {

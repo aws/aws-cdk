@@ -643,7 +643,7 @@ const fleet = new codebuild.Fleet(this, 'MacFleet', {
 You can configure auto-scaling for your fleet using the `scalingConfiguration` property.
 This allows the fleet to automatically scale up to handle increased build demand.
 
-For more information, see [Auto-scaling for reserved capacity fleets](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets-autoscaling.html) in the CodeBuild documentation.
+For more information, see [Working with reserved capacity in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.reserved-capacity-fleets.html) in the CodeBuild documentation.
 
 ```ts
 const fleet = new codebuild.Fleet(this, 'ScalingFleet', {
@@ -715,8 +715,11 @@ VPC on the Project. Configure a VPC on the fleet instead.
 
 Reserved capacity fleets support only one subnet in a single Availability Zone.
 If you don't specify a `subnetSelection`, the construct automatically selects
-the first subnet from the default selection. If you provide an explicit
+the first subnet from the default selection and emits a warning. If you provide an explicit
 `subnetSelection` that resolves to multiple subnets, synthesis will fail.
+
+The fleet's IAM policy restricts `ec2:CreateNetworkInterfacePermission` to only the
+selected subnet.
 
 ```ts
 declare const loadBalancer: elbv2.ApplicationLoadBalancer;

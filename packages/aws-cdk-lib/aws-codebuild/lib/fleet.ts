@@ -5,7 +5,7 @@ import { EnvironmentType } from './environment-type';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type { IResource, Size } from '../../core';
-import { Arn, ArnFormat, PhysicalName, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { Annotations, Arn, ArnFormat, PhysicalName, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -84,7 +84,7 @@ export interface FleetProps {
    *
    * Reserved capacity fleets support only one subnet in a single Availability Zone.
    * If `subnetSelection` is not specified, the construct automatically narrows
-   * the selection to the first availability zone. If you provide an explicit
+   * the default selection to its first subnet. If you provide an explicit
    * `subnetSelection` that resolves to multiple subnets, synthesis will fail.
    *
    * Cannot be combined with `proxyConfiguration`.
@@ -756,6 +756,9 @@ export class Fleet extends Resource implements IFleet {
       // Then narrow to just the first subnet if multiple were selected
       // Skip this narrowing if the lookup is pending (subnets are dummies)
       if (!defaultSelection.isPendingLookup && defaultSelection.subnets.length > 1) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed',
+          `Reserved capacity fleets support only one subnet; using ${defaultSelection.subnets[0].node.path}. ` +
+          'Pass subnetSelection to choose a specific subnet.');
         selectedSubnets = props.vpc.selectSubnets({ subnets: [defaultSelection.subnets[0]] });
       } else {
         selectedSubnets = defaultSelection;

@@ -24,7 +24,7 @@
      ]
     },
     "flattenResponse": "false",
-    "salt": "1794777720351"
+    "salt": "1794898772349"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -141,8 +141,7 @@
     },
     "service": "CodeBuild",
     "api": "batchGetFleets",
-    "expected": "{\"$StringLike\":\"ALLOW_ALL\"}",
-    "actualPath": "fleets.0.proxyConfiguration.defaultBehavior",
+    "expected": "{\"$ObjectLike\":{\"fleets\":[{\"$ObjectLike\":{\"proxyConfiguration\":{\"defaultBehavior\":\"ALLOW_ALL\",\"orderedProxyRules\":[{\"effect\":\"DENY\",\"type\":\"DOMAIN\",\"entities\":[\"httpbin.org\"]}]}}}]}}",
     "parameters": {
      "names": {
       "Fn::Join": [
@@ -157,11 +156,8 @@
       ]
      }
     },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "fleets.0.proxyConfiguration.defaultBehavior"
-    ],
-    "salt": "1794777720357"
+    "flattenResponse": "false",
+    "salt": "1794898772356"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -195,7 +191,7 @@
     "outputPaths": [
      "build.id"
     ],
-    "salt": "1794777720359"
+    "salt": "1794898772358"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -237,7 +233,7 @@
     "outputPaths": [
      "builds.0.buildStatus"
     ],
-    "salt": "1794777720360"
+    "salt": "1794898772359"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
