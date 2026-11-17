@@ -1,6 +1,6 @@
 /**
  * Integration test: Gateway connector targets backed by an Amazon Bedrock
- * managed knowledge base.
+ * managed knowledge base, and a generic connector target.
  *
  * The assertions wait for the targets to reach READY, which covers create-time
  * validation. Tool calls need a token from the gateway's Cognito client, so
@@ -10,8 +10,9 @@
  * * Deploy with `--no-clean` and obtain a token from the gateway's Cognito client
  *   (client_credentials flow, scopes `<resource server>/read` and `<resource server>/write`)
  * * POST `tools/list` to the gateway URL: expect `managed-kb___AgenticRetrieveStream`,
- *   `managed-kb___Retrieve` and `managed-kb-retrieve___Retrieve`, and no
- *   `managed-kb-retrieve___AgenticRetrieveStream`
+ *   `managed-kb___Retrieve`, `managed-kb-retrieve___Retrieve` and `web-search___WebSearch`,
+ *   and no `managed-kb-retrieve___AgenticRetrieveStream`. `managed-kb___Retrieve` takes
+ *   `retrievalConfiguration.managedSearchConfiguration.numberOfResults` as an input
  * * POST `tools/call` for each tool: expect a successful (possibly empty) result,
  *   not an access denied error or "Missing required field(s)"
  */
@@ -64,12 +65,22 @@ const target = gateway.addKnowledgeBasesTarget('KnowledgeBases', {
   gatewayTargetName: 'managed-kb',
   agenticRetrieve: {
     retrievers: [{ knowledgeBase, description: 'Integration test documents' }],
-    maxAgentIterations: 3,
+    maxAgentIteration: 3,
+    generateResponse: false,
+    description: 'Answer questions from the integration test documents.',
   },
   retrieve: {
     knowledgeBase,
     numberOfResults: 5,
-    searchType: agentcore.KnowledgeBaseSearchType.HYBRID,
+    overrideSearchType: agentcore.KnowledgeBaseSearchType.HYBRID,
+    description: 'Search the integration test documents.',
+    parameterOverrides: [
+      {
+        path: '$.retrievalConfiguration.managedSearchConfiguration.numberOfResults',
+        description: 'Number of results to retrieve (1-100).',
+        visible: true,
+      },
+    ],
   },
 });
 
@@ -93,11 +104,39 @@ const retrieveOnlyTarget = gateway.addKnowledgeBasesTarget('RetrieveOnly', {
   retrieve: { knowledgeBase: retrieveOnlyKnowledgeBase },
 });
 
+// A generic connector target. It grants the gateway role nothing, so the permissions
+// the Web Search Tool connector needs for tool calls are added here.
+const webSearchTarget = gateway.addConnectorTarget('WebSearch', {
+  gatewayTargetName: 'web-search',
+  connector: agentcore.GatewayConnector.WEB_SEARCH,
+  enabledTools: ['WebSearch'],
+  toolConfigurations: [
+    {
+      name: 'WebSearch',
+      description: 'Search the public web.',
+      parameterValues: { domainFilter: { exclude: ['example.com'] } },
+    },
+  ],
+});
+gateway.grantInvoke(gateway.role);
+gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['bedrock-agentcore:InvokeWebSearch'],
+  resources: [
+    stack.formatArn({ service: 'bedrock-agentcore', account: 'aws', resource: 'tool', resourceName: 'web-search.v1' }),
+  ],
+}));
+
 const integTest = new integ.IntegTest(app, 'GatewayKnowledgeBasesTarget', {
   testCases: [stack],
 });
 
-for (const [targetName, gatewayTarget] of [['managed-kb', target], ['managed-kb-retrieve', retrieveOnlyTarget]] as const) {
+const targets = [
+  ['managed-kb', target],
+  ['managed-kb-retrieve', retrieveOnlyTarget],
+  ['web-search', webSearchTarget],
+] as const;
+
+for (const [targetName, gatewayTarget] of targets) {
   const apiCall = integTest.assertions.awsApiCall('bedrock-agentcore-control', 'getGatewayTarget', {
     gatewayIdentifier: gateway.gatewayId,
     targetId: gatewayTarget.targetId,

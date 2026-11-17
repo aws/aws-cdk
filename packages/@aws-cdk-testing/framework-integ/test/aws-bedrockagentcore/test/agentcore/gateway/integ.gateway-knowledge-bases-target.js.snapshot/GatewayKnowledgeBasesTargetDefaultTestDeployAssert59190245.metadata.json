@@ -111,6 +111,26 @@
       "data": "AssertionResultsAwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38"
     }
   ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa"
+    }
+  ],
   "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -147,6 +167,24 @@
       "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38WaitFor7B22060D"
     }
   ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForRole4CF55770"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitFor821ABBDF"
+    }
+  ],
   "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/WaitFor/IsCompleteProvider/Invoke": [
     {
       "type": "aws:cdk:logicalId",
@@ -169,6 +207,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38WaitForTimeoutProviderInvokeCD6D69F1"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForIsCompleteProviderInvoke99AC7235"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForTimeoutProviderInvoke2A9F28F2"
     }
   ]
 }

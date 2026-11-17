@@ -34,6 +34,10 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/RetrieveOnlyKnowledgeBase": [
@@ -110,6 +114,22 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool": [
@@ -138,6 +158,12 @@
       "data": "*"
     }
   ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/WebSearch": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"Gateway43CB3636\",\"GatewayIdentifier\"]}": [
     {
       "type": "aws:cdk:logicalId",
@@ -154,6 +180,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputFnGetAttGatewayRetrieveOnlyF6191441TargetId9055F51C"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"GatewayWebSearchFCF67CA7\",\"TargetId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGatewayWebSearchFCF67CA7TargetId99CF92DB"
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole/Resource": [
@@ -180,6 +212,22 @@
       "data": {
         "attachToRole": [
           "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
         ]
       }
     },
@@ -260,6 +308,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "GatewayRetrieveOnlyF6191441"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/WebSearch/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayWebSearchFCF67CA7"
     }
   ],
   "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole/DefaultPolicy/Resource": [

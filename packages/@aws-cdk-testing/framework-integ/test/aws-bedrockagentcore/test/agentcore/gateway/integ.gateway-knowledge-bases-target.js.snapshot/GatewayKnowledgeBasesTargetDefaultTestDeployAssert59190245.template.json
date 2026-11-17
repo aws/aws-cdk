@@ -42,7 +42,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1794863097025"
+    "salt": "1794876167035"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -243,6 +243,33 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "bedrock-agentcore-control:GetGatewayTarget"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "bedrock-agentcore:GetGatewayTarget"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -300,6 +327,24 @@
       "PolicyDocument": {
        "Version": "2012-10-17",
        "Statement": [
+        {
+         "Action": [
+          "bedrock-agentcore-control:GetGatewayTarget"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "bedrock-agentcore:GetGatewayTarget"
+         ],
+         "Resource": [
+          "*"
+         ]
+        },
         {
          "Action": [
           "bedrock-agentcore-control:GetGatewayTarget"
@@ -454,7 +499,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1794863097028"
+    "salt": "1794876167038"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -575,6 +620,170 @@
    "DependsOn": [
     "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38WaitForRoleB1192B4A"
    ]
+  },
+  "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa": {
+   "Type": "Custom::DeployAssert@SdkCallbedrock-agentcore-controlgetGate",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "bedrock-agentcore-control",
+    "api": "getGatewayTarget",
+    "expected": "{\"$ObjectLike\":{\"name\":\"web-search\",\"status\":\"READY\",\"credentialProviderConfigurations\":[{\"credentialProviderType\":\"GATEWAY_IAM_ROLE\"}]}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitFor821ABBDF"
+    },
+    "parameters": {
+     "gatewayIdentifier": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputFnGetAttGateway43CB3636GatewayIdentifier8B82BE81"
+        },
+        "\""
+       ]
+      ]
+     },
+     "targetId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputFnGetAttGatewayWebSearchFCF67CA7TargetId99CF92DB"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794876167039"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForIsCompleteProviderInvoke99AC7235": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForRole4CF55770",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForTimeoutProviderInvoke2A9F28F2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForRole4CF55770",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForRole4CF55770": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitFor821ABBDF": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":30,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForRole4CF55770",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForRole4CF55770"
+   ]
   }
  },
  "Outputs": {
@@ -590,6 +799,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa",
      "assertion"
     ]
    }

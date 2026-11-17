@@ -147,6 +147,36 @@
          "KnowledgeBaseArn"
         ]
        }
+      },
+      {
+       "Action": "bedrock-agentcore:InvokeGateway",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Gateway43CB3636",
+         "GatewayArn"
+        ]
+       }
+      },
+      {
+       "Action": "bedrock-agentcore:InvokeWebSearch",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock-agentcore:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":aws:tool/web-search.v1"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -330,6 +360,7 @@
       "Connector": {
        "Configurations": [
         {
+         "Description": "Answer questions from the integration test documents.",
          "Name": "AgenticRetrieveStream",
          "ParameterValues": {
           "retrievers": [
@@ -347,11 +378,20 @@
           "agenticRetrieveConfiguration": {
            "foundationModelType": "MANAGED",
            "maxAgentIteration": 3
-          }
+          },
+          "generateResponse": false
          }
         },
         {
+         "Description": "Search the integration test documents.",
          "Name": "Retrieve",
+         "ParameterOverrides": [
+          {
+           "Description": "Number of results to retrieve (1-100).",
+           "Path": "$.retrievalConfiguration.managedSearchConfiguration.numberOfResults",
+           "Visible": true
+          }
+         ],
          "ParameterValues": {
           "knowledgeBaseId": {
            "Ref": "KnowledgeBase"
@@ -422,6 +462,48 @@
     "GatewayServiceRoleDefaultPolicy5A851A93"
    ]
   },
+  "GatewayWebSearchFCF67CA7": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProviderType": "GATEWAY_IAM_ROLE"
+     }
+    ],
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "web-search",
+    "TargetConfiguration": {
+     "Mcp": {
+      "Connector": {
+       "Configurations": [
+        {
+         "Description": "Search the public web.",
+         "Name": "WebSearch",
+         "ParameterValues": {
+          "domainFilter": {
+           "exclude": [
+            "example.com"
+           ]
+          }
+         }
+        }
+       ],
+       "Enabled": [
+        "WebSearch"
+       ],
+       "Source": {
+        "ConnectorId": "web-search"
+       }
+      }
+     }
+    }
+   }
+  },
   "RetrieveOnlyKnowledgeBase": {
    "Type": "AWS::Bedrock::KnowledgeBase",
    "Properties": {
@@ -473,6 +555,17 @@
    },
    "Export": {
     "Name": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputFnGetAttGatewayRetrieveOnlyF6191441TargetId9055F51C"
+   }
+  },
+  "ExportsOutputFnGetAttGatewayWebSearchFCF67CA7TargetId99CF92DB": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GatewayWebSearchFCF67CA7",
+     "TargetId"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-knowledge-bases-target:ExportsOutputFnGetAttGatewayWebSearchFCF67CA7TargetId99CF92DB"
    }
   }
  },
