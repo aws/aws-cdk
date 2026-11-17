@@ -1,0 +1,20 @@
+{
+  "/BedrockGuardrailTopicDefinitionLength/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockGuardrailTopicDefinitionLengthDefaultTestDeployAssert43C15CDF.template.json"
+    }
+  ],
+  "/BedrockGuardrailTopicDefinitionLength/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockGuardrailTopicDefinitionLength/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

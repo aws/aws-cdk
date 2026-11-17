@@ -1,0 +1,116 @@
+{
+ "Resources": {
+  "ClassicGuardrailMyGuardrail78FBFFCE": {
+   "Type": "AWS::Bedrock::Guardrail",
+   "Properties": {
+    "BlockedInputMessaging": "Sorry, your query violates our usage policy.",
+    "BlockedOutputsMessaging": "Sorry, I am unable to answer your question because of our usage policy.",
+    "Description": "Denied topic with a 200 character definition on the CLASSIC tier",
+    "Name": "TopicLengthClassic",
+    "TopicPolicyConfig": {
+     "TopicsConfig": [
+      {
+       "Definition": "Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and ho.",
+       "Examples": [
+        "Which stocks should I buy this year?"
+       ],
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "Name": "Investment_Advice_Classic",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
+       "Type": "DENY"
+      }
+     ],
+     "TopicsTierConfig": {
+      "TierName": "CLASSIC"
+     }
+    }
+   }
+  },
+  "StandardGuardrailMyGuardrailCC7F42BF": {
+   "Type": "AWS::Bedrock::Guardrail",
+   "Properties": {
+    "BlockedInputMessaging": "Sorry, your query violates our usage policy.",
+    "BlockedOutputsMessaging": "Sorry, I am unable to answer your question because of our usage policy.",
+    "CrossRegionConfig": {
+     "GuardrailProfileArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":bedrock:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":",
+        {
+         "Ref": "AWS::AccountId"
+        },
+        ":guardrail-profile/us.guardrail.v1:0"
+       ]
+      ]
+     }
+    },
+    "Description": "Denied topic with a 1000 character definition on the STANDARD tier",
+    "Name": "TopicLengthStandard",
+    "TopicPolicyConfig": {
+     "TopicsConfig": [
+      {
+       "Definition": "Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about investing money in stocks, bonds, funds or other financial products and how to grow savings. Questions about in.",
+       "Examples": [
+        "Which stocks should I buy this year?"
+       ],
+       "InputAction": "BLOCK",
+       "InputEnabled": true,
+       "Name": "Investment_Advice_Standard",
+       "OutputAction": "BLOCK",
+       "OutputEnabled": true,
+       "Type": "DENY"
+      }
+     ],
+     "TopicsTierConfig": {
+      "TierName": "STANDARD"
+     }
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

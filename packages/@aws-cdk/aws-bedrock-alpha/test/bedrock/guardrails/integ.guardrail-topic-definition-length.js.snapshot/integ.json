@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "BedrockGuardrailTopicDefinitionLength/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-guardrail-topic-definition-length"
+      ],
+      "assertionStack": "BedrockGuardrailTopicDefinitionLength/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockGuardrailTopicDefinitionLengthDefaultTestDeployAssert43C15CDF"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

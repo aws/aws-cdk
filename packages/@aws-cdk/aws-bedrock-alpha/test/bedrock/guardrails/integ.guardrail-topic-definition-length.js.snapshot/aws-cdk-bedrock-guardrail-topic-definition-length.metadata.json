@@ -1,0 +1,44 @@
+{
+  "/aws-cdk-bedrock-guardrail-topic-definition-length": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-bedrock-guardrail-topic-definition-length.template.json"
+    }
+  ],
+  "/aws-cdk-bedrock-guardrail-topic-definition-length/ClassicGuardrail": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-guardrail-topic-definition-length/StandardGuardrail": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-guardrail-topic-definition-length/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-guardrail-topic-definition-length/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-guardrail-topic-definition-length/ClassicGuardrail/MyGuardrail": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClassicGuardrailMyGuardrail78FBFFCE"
+    }
+  ],
+  "/aws-cdk-bedrock-guardrail-topic-definition-length/StandardGuardrail/MyGuardrail": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StandardGuardrailMyGuardrailCC7F42BF"
+    }
+  ]
+}
