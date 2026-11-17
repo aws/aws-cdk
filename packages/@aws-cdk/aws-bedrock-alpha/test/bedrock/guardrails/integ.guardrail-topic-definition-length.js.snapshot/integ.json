@@ -5,6 +5,11 @@
       "stacks": [
         "aws-cdk-bedrock-guardrail-topic-definition-length"
       ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2"
+      ],
       "assertionStack": "BedrockGuardrailTopicDefinitionLength/DefaultTest/DeployAssert",
       "assertionStackName": "BedrockGuardrailTopicDefinitionLengthDefaultTestDeployAssert43C15CDF"
     }

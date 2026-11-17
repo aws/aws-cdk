@@ -69,6 +69,9 @@ new bedrock.Guardrail(stack, 'StandardGuardrail', {
 
 new integ.IntegTest(app, 'BedrockGuardrailTopicDefinitionLength', {
   testCases: [stack],
+  // us.guardrail.v1:0 can only be called from US source Regions
+  // https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-cross-region-support.html
+  regions: ['us-east-1', 'us-east-2', 'us-west-2'],
 });
 
 app.synth();
