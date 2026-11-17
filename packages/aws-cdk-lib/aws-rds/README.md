@@ -1399,7 +1399,7 @@ declare const vpc: ec2.Vpc;
 
 const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
   engine: rds.DatabaseInstanceEngine.sqlServerEe({
-    version: rds.SqlServerEngineVersion.VER_11,
+    version: rds.SqlServerEngineVersion.VER_16,
   }),
   name: 'my-parameter-group',
   parameters: {
@@ -1421,7 +1421,7 @@ You can use this if you do not want to reuse the parameter group instance for di
 declare const vpc: ec2.Vpc;
 
 new rds.DatabaseInstance(this, 'Database', {
-  engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_11 }),
+  engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_16 }),
   vpc,
   parameters: {
     locks: '100',
