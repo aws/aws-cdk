@@ -6,6 +6,8 @@ on:
     - cron: 15 10 * * 1
   workflow_dispatch: {}
 
+cache-mode: read
+
 jobs:
   update-spec:
     # this workflow will always fail in forks; bail if this isn't running in the upstream
