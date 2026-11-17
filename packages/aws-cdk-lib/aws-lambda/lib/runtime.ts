@@ -461,10 +461,12 @@ export class Runtime {
    *
    * Unless the runtime was created with `bundlingDockerImage`, this is an
    * untagged AWS SAM build image. Its contents can change independently of the
-   * AWS CDK version. To pin a specific image version, pass
-   * `DockerImage.fromRegistry('<image>:<tag>')` to the bundling image option of
-   * the construct that bundles your code, for example `bundling.image` of
-   * `Code.fromAsset()` or `bundling.dockerImage` of `NodejsFunction`.
+   * AWS CDK version. To pin a specific image version when bundling with
+   * `Code.fromAsset()`, pass `DockerImage.fromRegistry('<image>:<tag>')` as
+   * `bundling.image`. Constructs that build their own bundling image on top of
+   * this runtime's image (for example `NodejsFunction`) do not run it directly;
+   * to pin the base image for them, create a runtime with a pinned image, e.g.
+   * `new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { bundlingDockerImage: 'public.ecr.aws/sam/build-nodejs20.x:<tag>' })`.
    *
    * @see https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
    */
