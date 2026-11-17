@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "ff43d4404460eeeb3a7f8562112e8a916fab45325b1a7c3de751539b8cdaaf0e": {
+      "displayName": "aws-cdk-ecr-repository-grant-dependency Template",
+      "source": {
+        "path": "aws-cdk-ecr-repository-grant-dependency.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-08bd7a17": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ff43d4404460eeeb3a7f8562112e8a916fab45325b1a7c3de751539b8cdaaf0e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

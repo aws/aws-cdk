@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "RepositoryGrantDependencyIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ecr-repository-grant-dependency"
+      ],
+      "assertionStack": "RepositoryGrantDependencyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RepositoryGrantDependencyIntegTestDefaultTestDeployAssert59A1A189"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

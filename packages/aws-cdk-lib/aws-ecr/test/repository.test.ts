@@ -1,4 +1,5 @@
 import { EOL } from 'os';
+import type { IConstruct } from 'constructs';
 import { Annotations, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -1167,6 +1168,79 @@ describe('repository', () => {
     });
   });
 
+  describe('grant as a dependency', () => {
+    function logicalIdOf(stack: cdk.Stack, construct: IConstruct): string {
+      return stack.getLogicalId(construct.node.defaultChild as cdk.CfnElement);
+    }
+
+    test('a grant on the repository policy makes the dependent depend on the repository', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+      const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+      // WHEN
+      repo.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com')).applyBefore(dependent);
+
+      // THEN
+      Template.fromStack(stack).hasResource('Test::Dependent', {
+        DependsOn: [logicalIdOf(stack, repo)],
+      });
+    });
+
+    test('the target of a repository event rule can depend on a grant on the repository policy', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+      const consumer = new cdk.CfnResource(stack, 'Consumer', { type: 'Test::Consumer' });
+      repo.onImageScanCompleted('ScanCompleted', {
+        target: { bind: () => ({ arn: consumer.getAtt('Arn').toString() }) },
+      });
+
+      // WHEN
+      repo.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com')).applyBefore(consumer);
+
+      // THEN
+      Template.fromStack(stack).hasResource('Test::Consumer', {
+        DependsOn: [logicalIdOf(stack, repo)],
+      });
+    });
+
+    test('a grant on the repository policy does not make the dependent depend on the auto delete images custom resource', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo', {
+        autoDeleteImages: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+      // WHEN
+      repo.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com')).applyBefore(dependent);
+
+      // THEN
+      Template.fromStack(stack).hasResource('Test::Dependent', {
+        DependsOn: [logicalIdOf(stack, repo)],
+      });
+    });
+
+    test('a grant only on the principal policy does not make the dependent depend on the repository', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+      const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+      const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+      // WHEN
+      repo.grantPull(role).applyBefore(dependent);
+
+      // THEN
+      Template.fromStack(stack).hasResource('Test::Dependent', {
+        DependsOn: [logicalIdOf(stack, role.node.findChild('DefaultPolicy'))],
+      });
+    });
+  });
+
   describe('repository name validation', () => {
     test('repository name validations', () => {
       const stack = new cdk.Stack();
@@ -1253,20 +1327,21 @@ describe('repository', () => {
       ], "Version": "2012-10-17"}`;
 
       // WHEN
-      const artifact1 = new ecr.Repository(stack, 'Repo1').addToResourcePolicy(policyStmt1);
+      const repo1 = new ecr.Repository(stack, 'Repo1');
+      const artifact1 = repo1.addToResourcePolicy(policyStmt1);
       const repo = new ecr.Repository(stack, 'Repo2');
       repo.addToResourcePolicy(policyStmt1);
       const artifact2 =repo.addToResourcePolicy(policyStmt2);
 
       // THEN
       expect(stack.resolve(artifact1.statementAdded)).toEqual(true);
-      expect(stack.resolve(artifact1.policyDependable)).toEqual(JSON.parse(policyText1));
+      expect(artifact1.policyDependable).toBe(repo1.node.defaultChild);
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         RepositoryPolicyText: JSON.parse(policyText1),
       });
 
       expect(stack.resolve(artifact2.statementAdded)).toEqual(true);
-      expect(stack.resolve(artifact2.policyDependable)).toEqual(JSON.parse(policyText2));
+      expect(artifact2.policyDependable).toBe(repo.node.defaultChild);
       Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         RepositoryPolicyText: JSON.parse(policyText2),
       });

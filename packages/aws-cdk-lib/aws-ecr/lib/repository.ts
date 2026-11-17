@@ -898,7 +898,9 @@ export class Repository extends RepositoryBase {
       this._policyDocument.set(new iam.PolicyDocument());
     }
     this._policyDocument.get()!.addStatements(statement);
-    return { statementAdded: true, policyDependable: this._policyDocument.get()! };
+    // The policy is a property of the CfnRepository. Depending on this construct instead would also
+    // depend on its children, such as event rules whose targets may depend on this grant.
+    return { statementAdded: true, policyDependable: this._resource };
   }
 
   /**
