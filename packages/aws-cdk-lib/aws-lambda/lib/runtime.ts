@@ -466,7 +466,8 @@ export class Runtime {
    * `Code.fromAsset()`, pass `DockerImage.fromRegistry('<image>:<tag>')` as
    * `bundling.image`. Constructs that build their own bundling image on top of
    * this runtime's image (for example `NodejsFunction`) do not run it directly;
-   * to pin the base image for them, create a runtime with a pinned image, e.g.
+   * when bundling runs in Docker (for example with `forceDockerBundling: true`),
+   * pin the base image for them by creating a runtime with a pinned image, e.g.
    * `new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true,
    * bundlingDockerImage: 'public.ecr.aws/sam/build-nodejs20.x:<tag>' })`. Copy
    * any other props the predefined runtime sets, such as `supportsSnapStart`,
