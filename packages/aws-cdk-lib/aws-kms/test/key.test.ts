@@ -1468,6 +1468,23 @@ describe('grant as a dependency', () => {
     });
   });
 
+  test('a grant through an alias makes the dependent depend on the key and its aliases', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const alias = key.addAlias('alias/my-key');
+    const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+    // WHEN
+    alias.grantDecrypt(new iam.ServicePrincipal('sns.amazonaws.com')).applyBefore(dependent);
+
+    // THEN
+    // DependsOn is sorted by construct path: Key/Alias comes before Key/Resource
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(stack, alias), logicalIdOf(stack, key)],
+    });
+  });
+
   test('a grant on a CfnKey through KeyGrants makes the dependent depend on the key and the principal policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1479,8 +1496,9 @@ describe('grant as a dependency', () => {
     dependent.node.addDependency(KeyGrants.fromKey(key).decrypt(role));
 
     // THEN
+    // DependsOn is sorted by construct path: Key comes before Role/DefaultPolicy
     Template.fromStack(stack).hasResource('Test::Dependent', {
-      DependsOn: [stack.getLogicalId(key), logicalIdOf(stack, role.node.findChild('DefaultPolicy'))].sort(),
+      DependsOn: [stack.getLogicalId(key), logicalIdOf(stack, role.node.findChild('DefaultPolicy'))],
     });
   });
 
