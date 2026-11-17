@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "f7ca10e22881b84843540f64c46298b6175842d746699474cde53263a9650649": {
+      "displayName": "aws-cdk-rds-cluster-instance-delete-automated-backups Template",
+      "source": {
+        "path": "aws-cdk-rds-cluster-instance-delete-automated-backups.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-32fda326": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f7ca10e22881b84843540f64c46298b6175842d746699474cde53263a9650649.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

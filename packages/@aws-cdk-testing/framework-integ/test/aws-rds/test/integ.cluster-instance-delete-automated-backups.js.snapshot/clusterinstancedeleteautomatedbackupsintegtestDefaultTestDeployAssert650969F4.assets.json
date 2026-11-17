@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "e2f966653c43eadd3eae8e788ec9a56b6ef06d664f115b24067be126955c04df": {
+      "source": {
+        "path": "asset.e2f966653c43eadd3eae8e788ec9a56b6ef06d664f115b24067be126955c04df.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-905d579f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e2f966653c43eadd3eae8e788ec9a56b6ef06d664f115b24067be126955c04df.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "1f45a0ff13f1adff267744d0918ec4dab68d68654a7d57b597d98e2834ec692f": {
+      "displayName": "clusterinstancedeleteautomatedbackupsintegtestDefaultTestDeployAssert650969F4 Template",
+      "source": {
+        "path": "clusterinstancedeleteautomatedbackupsintegtestDefaultTestDeployAssert650969F4.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f8665c36": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1f45a0ff13f1adff267744d0918ec4dab68d68654a7d57b597d98e2834ec692f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

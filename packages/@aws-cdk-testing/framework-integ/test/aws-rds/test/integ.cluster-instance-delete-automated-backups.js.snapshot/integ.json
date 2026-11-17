@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "cluster-instance-delete-automated-backups-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-cluster-instance-delete-automated-backups"
+      ],
+      "assertionStack": "cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clusterinstancedeleteautomatedbackupsintegtestDefaultTestDeployAssert650969F4"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

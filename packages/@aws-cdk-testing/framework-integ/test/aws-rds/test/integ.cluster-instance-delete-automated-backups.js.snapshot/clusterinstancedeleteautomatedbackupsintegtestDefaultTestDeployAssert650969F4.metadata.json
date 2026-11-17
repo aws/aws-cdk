@@ -1,0 +1,76 @@
+{
+  "/cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\annotations.js:271:29)",
+        "Annotations.addWarningV2 (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\annotations.js:137:18)",
+        "resolveValue (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.js:207:52)",
+        "resolveReferencesInElements (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.js:131:30)",
+        "resolveReferences (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\refs.js:116:5)",
+        "prepareApp (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\prepare-app.js:35:34)",
+        "synthesize (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\private\\synthesis.js:64:34)",
+        "App.synth (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\stage.js:222:92)",
+        "App.synth (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.js:223:27)",
+        "process.<anonymous> (C:\\Users\\icepa\\Documents\\GitHub\\aws-cdk\\packages\\aws-cdk-lib\\core\\lib\\app.js:170:51)",
+        "Object.onceWrapper (node:events:631:26)",
+        "process.emit (node:events:509:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "clusterinstancedeleteautomatedbackupsintegtestDefaultTestDeployAssert650969F4.template.json"
+    }
+  ],
+  "/cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180"
+    }
+  ],
+  "/cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/cluster-instance-delete-automated-backups-integ-test/DefaultTest/DeployAssert/AwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallRDSdescribeDBInstances05d5145d8889dabbef29252fc7a93180"
+    }
+  ]
+}
