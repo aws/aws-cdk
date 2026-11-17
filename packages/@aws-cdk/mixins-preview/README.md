@@ -72,6 +72,7 @@ Configures Vended Logs for an S3 Bucket destination:
 
 ```typescript 
 import * as eventBusMixins from '@aws-cdk/mixins-preview/aws-events/mixins';
+import * as events from 'aws-cdk-lib/aws-events';
 
 const eventBus = new events.EventBus(scope, 'EventBus', {
   eventBusName: 'my-event-bus',
@@ -81,15 +82,18 @@ const eventBus = new events.EventBus(scope, 'EventBus', {
   },
 });
 
-const bucket = new s3.Bucket(scope, 'Bucket');
+const logsBucket = new s3.Bucket(scope, 'Bucket');
 
-eventBus.with(eventBusMixins.CfnEventBusLogsMixin.INFO_LOGS.toS3(bucket));
+eventBus.with(eventBusMixins.CfnEventBusLogsMixin.INFO_LOGS.toS3(logsBucket));
 ```
 
 Configures Vended Logs for a Firehose Delivery Stream destination:
 
 ```typescript
 import * as eventBusMixins from '@aws-cdk/mixins-preview/aws-events/mixins';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as cdk from 'aws-cdk-lib/core';
 
 const eventBus = new events.EventBus(scope, 'EventBus', {
   eventBusName: 'my-event-bus',
@@ -99,20 +103,20 @@ const eventBus = new events.EventBus(scope, 'EventBus', {
   },
 });
 
-const firehoseBucket = new s3.Bucket(this, 'FirehoseBucket', {
+const firehoseBucket = new s3.Bucket(scope, 'FirehoseBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
   encryption: s3.BucketEncryption.S3_MANAGED,
 });
 
-const deliveryStream = new firehose.CfnDeliveryStream(this, 'DeliveryStream', {
+const deliveryStream = new firehose.CfnDeliveryStream(scope, 'DeliveryStream', {
   s3DestinationConfiguration: {
     bucketArn: firehoseBucket.bucketArn,
     bufferingHints: {
       intervalInSeconds: 10,
       sizeInMBs: 1,
     },
-    roleArn: new iam.Role(this, 'FirehoseRole', {
+    roleArn: new iam.Role(scope, 'FirehoseRole', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
       inlinePolicies: {
         s3: new iam.PolicyDocument({
@@ -129,15 +133,16 @@ const deliveryStream = new firehose.CfnDeliveryStream(this, 'DeliveryStream', {
   },
 });
 
-eventbus.with(eventBusMixins.CfnEventBusLogsMixin.ERROR_LOGS.toFirehose(deliveryStream));
+eventBus.with(eventBusMixins.CfnEventBusLogsMixin.ERROR_LOGS.toFirehose(deliveryStream));
 ```
 
 Configures Vended Logs for XRay Traces (unlike the other destinations, XRay Traces do not have a resource assoicated with them):
 
 ```typescript
 import * as memoryMixins from '@aws-cdk/mixins-preview/aws-bedrockagentcore/mixins';
+import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 
-const memory = new bedrockAgentcore.CfnMemory(scope, 'Memory', {
+const memory = new agentcore.CfnMemory(scope, 'Memory', {
   name: 'agentcore_memory',
   eventExpiryDuration: 7,
 });
@@ -162,6 +167,7 @@ const distribution = new cloudfront.Distribution(scope, 'Distribution', {
 
 // Create destination bucket
 const destBucket = new s3.Bucket(scope, 'DeliveryBucket');
+const env = destBucket.env;
 // Add permissions to bucket to facilitate log delivery
 const bucketPolicy = new s3.BucketPolicy(scope, 'DeliveryBucketPolicy', {
   bucket: destBucket,
@@ -170,14 +176,14 @@ const bucketPolicy = new s3.BucketPolicy(scope, 'DeliveryBucketPolicy', {
       effect: iam.Effect.ALLOW,
       principals: [ new iam.ServicePrincipal('delivery.logs.amazonaws.com') ],
       actions: ['s3:PutObject'],
-      resources: [`${destination.bucketArn}/AWSLogs/${account}/*`],
+      resources: [`${destBucket.bucketArn}/AWSLogs/${env.account}/*`],
       conditions: {
         StringEquals: {
           's3:x-amz-acl': 'bucket-owner-full-control',
-          'aws:SourceAccount': account,
+          'aws:SourceAccount': env.account,
         },
         ArnLike: {
-          'aws:SourceArn': `arn:aws:logs:${region}:${account}:delivery-source:*`,
+          'aws:SourceArn': `arn:aws:logs:${env.region}:${env.account}:delivery-source:*`,
         },
       },
     })
@@ -207,26 +213,29 @@ const region = 'us-east-1';
 
 class DestinationStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
     // Create destination bucket
-    const destBucket = new s3.Bucket(destStack, 'DeliveryBucket');
-    new logDestinations.S3DeliveryDestination(destStack, 'Destination', {
+    const destBucket = new s3.Bucket(this, 'DeliveryBucket');
+    new logDestinations.S3DeliveryDestination(this, 'Destination', {
       bucket: destBucket,
       sourceAccountId: sourceAccount,
     });
   }
 }
 
+declare const origin: s3.IBucket;
+
 class SourceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
     // Create CloudFront distribution
-    declare const origin: s3.IBucket;
-    const distribution = new cloudfront.Distribution(sourceStack, 'Distribution', {
+    const distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(origin),
       },
     });
 
-    const destination = logs.CfnDeliveryDestination.fromDeliveryDestinationArn(sourceStack, 'Destination', `arn:aws:logs:${region}:${destinationAccount}:delivery-destination:<name of delivery destination>`);
+    const destination = logs.CfnDeliveryDestination.fromDeliveryDestinationArn(this, 'Destination', `arn:aws:logs:${region}:${destinationAccount}:delivery-destination:<name of delivery destination>`);
 
     distribution
       .with(cloudfrontMixins.CfnDistributionLogsMixin.CONNECTION_LOGS.toDestination(destination));
