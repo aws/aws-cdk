@@ -1,6 +1,7 @@
 import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
-import { destinationKey, s3, s3ObjectCopyHandler } from '../../../lib/aws-s3-deployment/s3-object-copy-handler/index';
+import { destinationKey, handler, s3, s3ObjectCopyHandler } from '../../../lib/aws-s3-deployment/s3-object-copy-handler/index';
+import { external } from '../../../lib/nodejs-entrypoint';
 
 const s3Mock = mockClient(S3Client);
 
@@ -32,6 +33,50 @@ const baseEvent = {
 function physicalId(key: string, version: string, bucket = 'destination-bucket') {
   return `${bucket}/${key}?versionId=${version}`;
 }
+
+describe('wrapped handler', () => {
+  const originalLog = external.log;
+  const originalSend = external.sendHttpRequest;
+  afterEach(() => {
+    external.log = originalLog;
+    external.sendHttpRequest = originalSend;
+  });
+
+  test('keeps Configuration out of the logged event and still uses it for the key', async () => {
+    // GIVEN
+    s3Mock.on(CopyObjectCommand).resolves({ VersionId: 'v2' });
+    const logs = new Array<string>();
+    external.log = (fmt: string, ...params: any[]) => {
+      logs.push([fmt, ...params.map(p => typeof p === 'string' ? p : JSON.stringify(p))].join(' '));
+    };
+    let responseBody: string | undefined;
+    external.sendHttpRequest = async (_options, body) => {
+      responseBody = body;
+    };
+    const oldConfiguration = { Runtime: 'nodejs22.x', ServiceConfig: { ExecutionRoleArn: 'arn:old-role' } };
+
+    // WHEN
+    await handler({
+      ...baseEvent,
+      ResponseURL: 'https://cfn-response.example.com/path?X-Amz-Signature=signature',
+      RequestType: 'Update',
+      PhysicalResourceId: physicalId(destinationKey({ ...properties, Configuration: oldConfiguration } as any), 'v1'),
+      OldResourceProperties: { ...properties, Configuration: oldConfiguration },
+    } as any);
+
+    // THEN
+    const response = JSON.parse(responseBody!);
+    expect(response.Status).toEqual('SUCCESS');
+    expect(response.PhysicalResourceId).toEqual(physicalId(KEY, 'v2'));
+    const loggedEvent = JSON.parse(logs[0]);
+    expect(loggedEvent.ResourceProperties.Configuration).toEqual('*****');
+    expect(loggedEvent.OldResourceProperties.Configuration).toEqual('*****');
+    expect(loggedEvent.ResourceProperties.SourceObjectKey).toEqual('assets/handler code.zip');
+    const logged = logs.join('\n');
+    expect(logged).not.toContain('arn:role');
+    expect(logged).not.toContain('arn:old-role');
+  });
+});
 
 describe('destination key', () => {
   test('is the prefix followed by a hash and .zip', () => {

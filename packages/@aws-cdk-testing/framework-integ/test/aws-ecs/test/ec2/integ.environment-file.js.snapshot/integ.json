@@ -10,5 +10,6 @@
       "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }

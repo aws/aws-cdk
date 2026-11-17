@@ -1191,6 +1191,56 @@ fn.addEventSource(new eventsources.DynamoEventSource(table, {
 }));
 ```
 
+#### Defining event filter criteria
+
+Wrap each event pattern with `FilterCriteria.filter()`. It serializes the pattern
+into the `Pattern` string required by the event source mapping. Use `FilterRule`
+helpers to construct comparisons for the fields in that pattern:
+
+* Fields within one pattern are combined with AND.
+* `FilterRule.or()` matches any of the supplied string values for one field.
+* Separate entries in `filters` are combined with OR.
+
+For example, the following DynamoDB stream filter accepts an `INSERT` or `MODIFY`
+event only when the new item's `status` string begins with `approved`:
+
+```ts
+import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+
+declare const fn: lambda.Function;
+declare const table: dynamodb.Table;
+
+fn.addEventSource(new eventsources.DynamoEventSource(table, {
+  startingPosition: lambda.StartingPosition.LATEST,
+  filters: [lambda.FilterCriteria.filter({
+    eventName: lambda.FilterRule.or('INSERT', 'MODIFY'),
+    dynamodb: {
+      NewImage: {
+        status: { S: lambda.FilterRule.beginsWith('approved') },
+      },
+    },
+  })],
+}));
+```
+
+This produces the following `FilterCriteria` property:
+
+```json
+{
+  "Filters": [{
+    "Pattern": "{\"eventName\":[\"INSERT\",\"MODIFY\"],\"dynamodb\":{\"NewImage\":{\"status\":{\"S\":[{\"prefix\":\"approved\"}]}}}}"
+  }]
+}
+```
+
+Use field names and data types that match the event source's record format.
+For DynamoDB, the example requires a stream view that includes the new image,
+such as `StreamViewType.NEW_IMAGE`. Other sources use different data fields,
+for example `body` for SQS and `data` for Kinesis. See
+[Lambda event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html)
+for comparison operators and event source behavior.
+
 By default, Lambda will encrypt Filter Criteria using AWS managed keys. But if you want to use a self managed KMS key to encrypt the filters, You can specify the self managed key using the `filterEncryption` property.
 
 ```ts

@@ -10,5 +10,6 @@
       "assertionStackName": "integtestbucketdeploymentsigncontentDefaultTestDeployAssert99231547"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }

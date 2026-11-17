@@ -93,6 +93,22 @@ export interface IBucket extends IResource, IBucketRef {
   readonly isWebsite?: boolean;
 
   /**
+   * The default server-side encryption mode that S3 applies to new objects in this bucket.
+   *
+   * For a bucket defined in this app, the mode is derived from the typed `bucketEncryption`
+   * property of the underlying `CfnBucket`, so it includes changes made by assigning that
+   * property through an escape hatch. Raw overrides made with `addPropertyOverride()` or
+   * `addOverride()` are applied only when the template is rendered and are not reflected
+   * here.
+   *
+   * S3 applies SSE-S3 to every bucket that has no default encryption rule, so such a
+   * bucket reports `S3_MANAGED` and `UNENCRYPTED` is never returned.
+   *
+   * @default - undefined when the mode cannot be determined at synthesis time, or for an imported bucket that does not specify it
+   */
+  readonly encryption?: BucketEncryption;
+
+  /**
    * Optional KMS encryption key associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -487,6 +503,16 @@ export interface BucketAttributes {
   readonly bucketWebsiteNewUrlFormat?: boolean;
 
   /**
+   * The default server-side encryption mode of the imported bucket.
+   *
+   * `UNENCRYPTED` is reported as `S3_MANAGED`, because S3 applies SSE-S3 to every bucket
+   * that has no default encryption rule.
+   *
+   * @default - the encryption mode of the imported bucket is unknown
+   */
+  readonly encryption?: BucketEncryption;
+
+  /**
    * KMS encryption key associated with this bucket.
    *
    * @default - no encryption key
@@ -588,6 +614,15 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
   public abstract readonly bucketWebsiteDomainName: string;
   public abstract readonly bucketRegionalDomainName: string;
   public abstract readonly bucketDualStackDomainName: string;
+
+  /**
+   * The default server-side encryption mode that S3 applies to new objects in this bucket.
+   *
+   * `UNENCRYPTED` is never returned; see `IBucket.encryption`.
+   */
+  public get encryption(): BucketEncryption | undefined {
+    return undefined;
+  }
 
   /**
    * Optional KMS encryption key associated with this bucket.
@@ -2236,6 +2271,8 @@ export class Bucket extends BucketBase {
       bucketWebsiteDomainName: attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain,
       bucketRegionalDomainName: attrs.bucketRegionalDomainName || `${bucketName}.s3.${region}.${urlSuffix}`,
       bucketDualStackDomainName: attrs.bucketDualStackDomainName || `${bucketName}.s3.dualstack.${region}.${urlSuffix}`,
+      // S3 applies SSE-S3 to every bucket without a default rule, so report one consistent mode.
+      encryption: attrs.encryption === BucketEncryption.UNENCRYPTED ? BucketEncryption.S3_MANAGED : attrs.encryption,
       encryptionKey: attrs.encryptionKey,
       isWebsite: attrs.isWebsite ?? false,
       autoCreatePolicy: false,
@@ -2308,6 +2345,10 @@ export class Bucket extends BucketBase {
 
       public get isWebsite(): boolean | undefined {
         return this.reflection.isWebsite;
+      }
+
+      public get encryption(): BucketEncryption | undefined {
+        return effectiveEncryption(this.reflection);
       }
 
       public get disallowPublicAccess(): boolean | undefined {
@@ -2499,6 +2540,9 @@ export class Bucket extends BucketBase {
   public readonly bucketDualStackDomainName: string;
   public readonly bucketRegionalDomainName: string;
 
+  public get encryption(): BucketEncryption | undefined {
+    return effectiveEncryption(this.reflection);
+  }
   public readonly encryptionKey?: kms.IKey;
   public get isWebsite(): boolean | undefined {
     return this.reflection.isWebsite;
@@ -3994,6 +4038,36 @@ function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U
 }
 
 /**
+ * Maps the default encryption rule of a CfnBucket to the mode S3 applies to new objects.
+ *
+ * - No rule, or a rule without `SSEAlgorithm`: S3 applies SSE-S3 to every bucket.
+ * - `aws:kms` / `aws:kms:dsse` without `KMSMasterKeyID`: S3 uses the AWS managed key `aws/s3`,
+ *   so the mode is `KMS_MANAGED` / `DSSE_MANAGED`. With a key ID it is `KMS` / `DSSE`.
+ * - An algorithm CDK does not model, or a rule that is unresolved at synthesis time: `undefined`.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-bucket-encryption.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-s3-bucket-serversideencryptionbydefault.html
+ */
+function effectiveEncryption(reflection: BucketReflection): BucketEncryption | undefined {
+  const rule = reflection.defaultEncryption;
+  if (rule === undefined) {
+    return undefined;
+  }
+
+  switch (rule.sseAlgorithm) {
+    case undefined:
+    case 'AES256':
+      return BucketEncryption.S3_MANAGED;
+    case 'aws:kms':
+      return rule.hasKmsMasterKeyId ? BucketEncryption.KMS : BucketEncryption.KMS_MANAGED;
+    case 'aws:kms:dsse':
+      return rule.hasKmsMasterKeyId ? BucketEncryption.DSSE : BucketEncryption.DSSE_MANAGED;
+    default:
+      return undefined;
+  }
+}
+
+/**
  * An instance of a referenced Bucket
  *
  * An explicit class declaration to save memory; previously,
@@ -4021,6 +4095,11 @@ class ReferencedBucket extends BucketBase {
   protected autoCreatePolicy: boolean;
   public disallowPublicAccess?: boolean | undefined;
   protected notificationsHandlerRole?: iam.IRole;
+  private readonly encryptionMode?: BucketEncryption;
+
+  public get encryption(): BucketEncryption | undefined {
+    return this.encryptionMode;
+  }
 
   constructor(scope: Construct, id: string, props: {
     account?: string;
@@ -4032,6 +4111,7 @@ class ReferencedBucket extends BucketBase {
     bucketWebsiteDomainName: string;
     bucketRegionalDomainName: string;
     bucketDualStackDomainName: string;
+    encryption?: BucketEncryption | undefined;
     encryptionKey?: kms.IKey | undefined;
     isWebsite?: boolean | undefined;
     policy?: BucketPolicy | undefined;
@@ -4053,6 +4133,7 @@ class ReferencedBucket extends BucketBase {
     this.bucketWebsiteDomainName = props.bucketWebsiteDomainName;
     this.bucketRegionalDomainName = props.bucketRegionalDomainName;
     this.bucketDualStackDomainName = props.bucketDualStackDomainName;
+    this.encryptionMode = props.encryption;
     this.encryptionKey = props.encryptionKey;
     this.isWebsite = props.isWebsite;
     this.policy = props.policy;
