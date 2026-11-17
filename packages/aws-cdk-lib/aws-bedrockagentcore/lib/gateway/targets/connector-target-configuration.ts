@@ -316,11 +316,15 @@ export interface KnowledgeBaseAgenticRetrieveOptions {
   readonly retrievers: KnowledgeBaseRetriever[];
 
   /**
-   * The maximum number of planning and retrieval iterations. Must be between 2 and 5.
+   * The maximum number of planning and retrieval iterations. Must be between 0 and 5.
+   *
+   * Values from 2 to 5 run agentic retrieval. `1` runs a single retrieval followed by an
+   * answer, and `0` runs a single retrieval without an answer, which requires
+   * `generateResponse` to be `false`.
    *
    * @default - the service default
    */
-  readonly maxAgentIterations?: number;
+  readonly maxAgentIteration?: number;
 
   /**
    * Whether to return a synthesized answer with citations in addition to the retrieval results.
@@ -375,11 +379,11 @@ export interface KnowledgeBaseRetrieveOptions {
   readonly numberOfResults?: number;
 
   /**
-   * The search type to use.
+   * The search type to use instead of the one the knowledge base selects.
    *
-   * @default - the service default
+   * @default - the knowledge base selects the search type
    */
-  readonly searchType?: KnowledgeBaseSearchType;
+  readonly overrideSearchType?: KnowledgeBaseSearchType;
 
   /**
    * An agent-facing description override for this tool.
@@ -405,14 +409,15 @@ export interface KnowledgeBaseRetrieveOptions {
  */
 export interface KnowledgeBasesTargetConfigurationProps {
   /**
-   * Configures the `AgenticRetrieveStream` tool.
+   * Configures the `AgenticRetrieveStream` tool, which plans and runs multiple retrieval
+   * steps across the knowledge bases and returns a synthesized answer.
    *
    * @default - the tool is not configured, and the target does not expose it
    */
   readonly agenticRetrieve?: KnowledgeBaseAgenticRetrieveOptions;
 
   /**
-   * Configures the `Retrieve` tool.
+   * Configures the `Retrieve` tool, which performs a single search on a knowledge base.
    *
    * @default - the tool is not configured, and the target does not expose it
    */
@@ -546,8 +551,8 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
     const agenticRetrieveConfiguration: { [key: string]: any } = {
       foundationModelType: 'MANAGED',
     };
-    if (options.maxAgentIterations !== undefined) {
-      agenticRetrieveConfiguration.maxAgentIteration = options.maxAgentIterations;
+    if (options.maxAgentIteration !== undefined) {
+      agenticRetrieveConfiguration.maxAgentIteration = options.maxAgentIteration;
     }
 
     const parameterValues: { [key: string]: any } = {
@@ -580,8 +585,8 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
     if (options.numberOfResults !== undefined) {
       managedSearchConfiguration.numberOfResults = options.numberOfResults;
     }
-    if (options.searchType !== undefined) {
-      managedSearchConfiguration.overrideSearchType = options.searchType;
+    if (options.overrideSearchType !== undefined) {
+      managedSearchConfiguration.overrideSearchType = options.overrideSearchType;
     }
 
     const parameterValues: { [key: string]: any } = {
@@ -614,12 +619,18 @@ export class KnowledgeBasesTargetConfiguration extends McpTargetConfiguration {
       );
     }
 
-    const maxAgentIterations = this.agenticRetrieve?.maxAgentIterations;
-    if (maxAgentIterations !== undefined && !Token.isUnresolved(maxAgentIterations)
-      && (!Number.isInteger(maxAgentIterations) || maxAgentIterations < 2 || maxAgentIterations > 5)) {
+    const maxAgentIteration = this.agenticRetrieve?.maxAgentIteration;
+    if (maxAgentIteration !== undefined && !Token.isUnresolved(maxAgentIteration)
+      && (!Number.isInteger(maxAgentIteration) || maxAgentIteration < 0 || maxAgentIteration > 5)) {
       throw new UnscopedValidationError(
-        lit`KnowledgeBasesMaxAgentIterationsInvalid`,
-        `agenticRetrieve.maxAgentIterations must be an integer between 2 and 5, got ${JSON.stringify(maxAgentIterations)}`,
+        lit`KnowledgeBasesMaxAgentIterationInvalid`,
+        `agenticRetrieve.maxAgentIteration must be an integer between 0 and 5, got ${JSON.stringify(maxAgentIteration)}`,
+      );
+    }
+    if (maxAgentIteration === 0 && this.agenticRetrieve?.generateResponse === true) {
+      throw new UnscopedValidationError(
+        lit`KnowledgeBasesGenerateResponseWithoutIterations`,
+        'agenticRetrieve.generateResponse cannot be true when maxAgentIteration is 0, because no answer is generated without an agent iteration; set generateResponse to false or raise maxAgentIteration',
       );
     }
 

@@ -178,6 +178,14 @@ describe('Connector gateway targets', () => {
       })).toThrow(`connector targets only support the GATEWAY_IAM_ROLE credential provider, got "${type}"`);
     });
 
+    test('fails for an IAM role credential provider with an explicit service', () => {
+      expect(() => new GatewayTarget(stack, 'Target', {
+        gateway,
+        targetConfiguration: ConnectorTargetConfiguration.create({ connector: GatewayConnector.WEB_SEARCH }),
+        credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole({ service: 'bedrock-agentcore' })],
+      })).toThrow('IamCredentialProvider with explicit service/region is only supported for MCP Server and OpenAPI targets, got target type "CONNECTOR"');
+    });
+
     test('fails for an empty connectorId', () => {
       expect(() => GatewayConnector.of(''))
         .toThrow('connectorId must not be empty');
@@ -277,10 +285,14 @@ describe('Connector gateway targets', () => {
       const param = new cdk.CfnParameter(stack, 'Param');
       const listParam = new cdk.CfnParameter(stack, 'ListParam', { type: 'CommaDelimitedList' });
 
+      // The literal parts alone exceed the limits, so only the token checks let these through.
       expect(() => ConnectorTargetConfiguration.create({
         connector: GatewayConnector.of(param.valueAsString),
         enabledTools: listParam.valueAsList,
-        toolConfigurations: [{ name: param.valueAsString, description: param.valueAsString }],
+        toolConfigurations: [{
+          name: `${param.valueAsString}${'a'.repeat(64)}`,
+          description: `${param.valueAsString}${'d'.repeat(2000)}`,
+        }],
       })).not.toThrow();
     });
   });
@@ -334,7 +346,7 @@ describe('Connector gateway targets', () => {
       gateway.addKnowledgeBasesTarget('Target', {
         agenticRetrieve: {
           retrievers: [{ knowledgeBase: kb1 }],
-          maxAgentIterations: 3,
+          maxAgentIteration: 3,
           generateResponse: false,
           description: 'Answer questions about the product',
           parameterOverrides: [{ path: '$.userContext', description: 'End-user identity', visible: true }],
@@ -388,7 +400,7 @@ describe('Connector gateway targets', () => {
         retrieve: {
           knowledgeBase: kb1,
           numberOfResults: 5,
-          searchType: KnowledgeBaseSearchType.SEMANTIC,
+          overrideSearchType: KnowledgeBaseSearchType.SEMANTIC,
           description: 'Search the product documentation',
           parameterOverrides: [{ path: '$.retrievalQuery.text', description: 'The search query' }],
         },
@@ -480,7 +492,7 @@ describe('Connector gateway targets', () => {
     test('GatewayTarget.forKnowledgeBases renders the same target as addKnowledgeBasesTarget', () => {
       const options = {
         gatewayTargetName: 'docs',
-        agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIterations: 2 },
+        agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIteration: 2 },
         retrieve: { knowledgeBase: kb1, numberOfResults: 5 },
       };
       const added = gateway.addKnowledgeBasesTarget('Added', options);
@@ -667,23 +679,35 @@ describe('Connector gateway targets', () => {
           .toThrow('agenticRetrieve.retrievers must contain at least one knowledge base');
       });
 
-      test.each([1, 6, 2.5, 0, -1])('fails for maxAgentIterations %d', (maxAgentIterations) => {
+      test.each([-1, 6, 2.5])('fails for maxAgentIteration %d', (maxAgentIteration) => {
         expect(() => gateway.addKnowledgeBasesTarget('Target', {
-          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIterations },
-        })).toThrow(`agenticRetrieve.maxAgentIterations must be an integer between 2 and 5, got ${maxAgentIterations}`);
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIteration },
+        })).toThrow(`agenticRetrieve.maxAgentIteration must be an integer between 0 and 5, got ${maxAgentIteration}`);
       });
 
-      test.each([2, 5])('accepts maxAgentIterations %d', (maxAgentIterations) => {
+      test.each([1, 2, 5])('accepts maxAgentIteration %d', (maxAgentIteration) => {
         expect(() => gateway.addKnowledgeBasesTarget('Target', {
-          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIterations },
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIteration },
         })).not.toThrow();
       });
 
-      test('accepts an unresolved maxAgentIterations', () => {
+      test('accepts maxAgentIteration 0 when generateResponse is false', () => {
+        expect(() => gateway.addKnowledgeBasesTarget('Target', {
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIteration: 0, generateResponse: false },
+        })).not.toThrow();
+      });
+
+      test('fails for maxAgentIteration 0 when generateResponse is true', () => {
+        expect(() => gateway.addKnowledgeBasesTarget('Target', {
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIteration: 0, generateResponse: true },
+        })).toThrow('agenticRetrieve.generateResponse cannot be true when maxAgentIteration is 0');
+      });
+
+      test('accepts an unresolved maxAgentIteration', () => {
         const param = new cdk.CfnParameter(stack, 'Iterations', { type: 'Number' });
 
         gateway.addKnowledgeBasesTarget('Target', {
-          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIterations: param.valueAsNumber },
+          agenticRetrieve: { retrievers: [{ knowledgeBase: kb1 }], maxAgentIteration: param.valueAsNumber },
         });
 
         Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {

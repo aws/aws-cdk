@@ -856,14 +856,7 @@ export class Gateway extends GatewayBase {
     id: string,
     props: AddConnectorTargetOptions,
   ): GatewayTarget {
-    return GatewayTarget.forConnector(this, id, {
-      gatewayTargetName: props.gatewayTargetName,
-      description: props.description,
-      gateway: this,
-      connector: props.connector,
-      toolConfigurations: props.toolConfigurations,
-      enabledTools: props.enabledTools,
-    });
+    return GatewayTarget.forConnector(this, id, { ...props, gateway: this });
   }
 
   /**
@@ -881,13 +874,7 @@ export class Gateway extends GatewayBase {
     props: AddKnowledgeBasesTargetOptions,
   ): GatewayTarget {
     // Knowledge base permissions are automatically granted in KnowledgeBasesTargetConfiguration.bind()
-    return GatewayTarget.forKnowledgeBases(this, id, {
-      gatewayTargetName: props.gatewayTargetName,
-      description: props.description,
-      gateway: this,
-      agenticRetrieve: props.agenticRetrieve,
-      retrieve: props.retrieve,
-    });
+    return GatewayTarget.forKnowledgeBases(this, id, { ...props, gateway: this });
   }
 
   /**

@@ -10,7 +10,7 @@ import { propertyInjectable } from '../../../../core/lib/prop-injectable';
 import { validateStringFieldLength, validateFieldPattern } from '../../common/validation-helpers';
 import type { IGateway } from '../gateway-base';
 import { GATEWAY_SYNC_PERMS } from '../perms';
-import type { ConnectorTargetConfigurationProps, KnowledgeBaseAgenticRetrieveOptions, KnowledgeBaseRetrieveOptions } from './connector-target-configuration';
+import type { ConnectorTargetConfigurationProps, KnowledgeBasesTargetConfigurationProps } from './connector-target-configuration';
 import { ConnectorTargetConfiguration, KnowledgeBasesTargetConfiguration } from './connector-target-configuration';
 import type { ApiSchema } from './schema/api-schema';
 import type { ToolSchema } from './schema/tool-schema';
@@ -225,21 +225,7 @@ export interface GatewayTargetApiGatewayProps extends GatewayTargetCommonProps {
  *
  * At least one of `agenticRetrieve` and `retrieve` is required.
  */
-export interface AddKnowledgeBasesTargetOptions extends GatewayTargetCommonProps {
-  /**
-   * Configures the `AgenticRetrieveStream` tool, which plans and runs multiple retrieval
-   * steps across the knowledge bases and returns a synthesized answer.
-   *
-   * @default - the tool is not configured, and the target does not expose it
-   */
-  readonly agenticRetrieve?: KnowledgeBaseAgenticRetrieveOptions;
-
-  /**
-   * Configures the `Retrieve` tool, which performs a single search on a knowledge base.
-   *
-   * @default - the tool is not configured, and the target does not expose it
-   */
-  readonly retrieve?: KnowledgeBaseRetrieveOptions;
+export interface AddKnowledgeBasesTargetOptions extends GatewayTargetCommonProps, KnowledgeBasesTargetConfigurationProps {
 }
 
 /**
@@ -511,15 +497,12 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     id: string,
     props: GatewayTargetConnectorProps,
   ): GatewayTarget {
+    const { gateway, gatewayTargetName, description, ...configuration } = props;
     return new GatewayTarget(scope, id, {
-      gateway: props.gateway,
-      gatewayTargetName: props.gatewayTargetName,
-      description: props.description,
-      targetConfiguration: ConnectorTargetConfiguration.create({
-        connector: props.connector,
-        toolConfigurations: props.toolConfigurations,
-        enabledTools: props.enabledTools,
-      }),
+      gateway,
+      gatewayTargetName,
+      description,
+      targetConfiguration: ConnectorTargetConfiguration.create(configuration),
     });
   }
 
@@ -539,14 +522,12 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     id: string,
     props: GatewayTargetKnowledgeBasesProps,
   ): GatewayTarget {
+    const { gateway, gatewayTargetName, description, ...configuration } = props;
     return new GatewayTarget(scope, id, {
-      gateway: props.gateway,
-      gatewayTargetName: props.gatewayTargetName,
-      description: props.description,
-      targetConfiguration: KnowledgeBasesTargetConfiguration.create({
-        agenticRetrieve: props.agenticRetrieve,
-        retrieve: props.retrieve,
-      }),
+      gateway,
+      gatewayTargetName,
+      description,
+      targetConfiguration: KnowledgeBasesTargetConfiguration.create(configuration),
     });
   }
 
