@@ -1944,7 +1944,7 @@ const image = DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153');
 Choose a tag that contains the tools your build requires, and update the pinned image regularly to receive tool and
 security updates.
 
-Use `cdk.DockerImage.fromBuild(path)` to build a specific image instead:
+Use `DockerImage.fromBuild(path)` to build a specific image instead:
 
 ```ts
 new lambda.Function(this, 'Function', {
