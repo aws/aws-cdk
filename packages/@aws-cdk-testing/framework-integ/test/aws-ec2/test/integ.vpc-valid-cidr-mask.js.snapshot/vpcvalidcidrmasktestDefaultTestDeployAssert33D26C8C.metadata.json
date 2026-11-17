@@ -1,0 +1,20 @@
+{
+  "/vpc-valid-cidr-mask-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "vpcvalidcidrmasktestDefaultTestDeployAssert33D26C8C.template.json"
+    }
+  ],
+  "/vpc-valid-cidr-mask-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/vpc-valid-cidr-mask-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

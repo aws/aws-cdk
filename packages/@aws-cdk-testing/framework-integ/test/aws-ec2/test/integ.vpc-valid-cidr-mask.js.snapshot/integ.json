@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "vpc-valid-cidr-mask-test/DefaultTest": {
+      "stacks": [
+        "integ-vpc-valid-cidr-mask"
+      ],
+      "assertionStack": "vpc-valid-cidr-mask-test/DefaultTest/DeployAssert",
+      "assertionStackName": "vpcvalidcidrmasktestDefaultTestDeployAssert33D26C8C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
