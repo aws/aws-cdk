@@ -1992,7 +1992,7 @@ specific tool versions, select an explicit image tag:
 new lambda.Function(this, 'JavaFunction', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-java-handler'), {
     bundling: {
-      image: DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153'),
+      image: DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153'), // example: the last image with Gradle 8.x
       command: ['bash', '-c', 'gradle build && cp build/distributions/*.zip /asset-output/'], // adjust to your build
     },
   }),
