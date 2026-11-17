@@ -1941,8 +1941,9 @@ AWS CDK version. If your build depends on specific tool versions, select an expl
 const image = DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153');
 ```
 
-Choose a tag that contains the tools your build requires, and update the pinned image regularly to receive tool and
-security updates.
+SAM build image tags follow AWS SAM CLI releases. Choose a tag that contains the tools your build requires, and update
+the pinned image regularly to receive tool and security updates. Tags can be re-pushed, so if you need a fully
+reproducible build, pin the image by digest instead (`public.ecr.aws/sam/build-java21@sha256:<digest>`).
 
 Use `DockerImage.fromBuild(path)` to build a specific image instead:
 
