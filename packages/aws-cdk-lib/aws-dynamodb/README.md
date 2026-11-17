@@ -1,6 +1,8 @@
 # Amazon DynamoDB Construct Library
 
 > The DynamoDB construct library has two table constructs - `Table` and `TableV2`. `TableV2` is the preferred construct for all use cases, including creating a single table or a table with multiple `replicas`.
+>
+> Note that `TableV2` synthesizes an `AWS::DynamoDB::GlobalTable` CloudFormation resource, while the legacy `Table` synthesizes `AWS::DynamoDB::Table`. The two resource types have different APIs and behaviors — for example, an `AWS::DynamoDB::GlobalTable` is always managed as a single global resource with the same name and attributes in every region of its replication set.
 
 [`Table` API documentation](./TABLE_V1_API.md)
 

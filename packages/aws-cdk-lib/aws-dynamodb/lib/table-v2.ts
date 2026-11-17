@@ -603,6 +603,13 @@ export interface TableAttributesV2 {
 
 /**
  * A DynamoDB Table.
+ *
+ * Note that this construct synthesizes an `AWS::DynamoDB::GlobalTable` CloudFormation
+ * resource (unlike the legacy `Table` construct, which synthesizes `AWS::DynamoDB::Table`).
+ * The two resource types have different APIs and behaviors: in particular, `AWS::DynamoDB::GlobalTable`
+ * always creates a table with the same name and attributes in every region that is part of its
+ * replication set, so deployments are managed as a single global resource rather than
+ * per-region tables.
  */
 @propertyInjectable
 @noBoxStackTraces
