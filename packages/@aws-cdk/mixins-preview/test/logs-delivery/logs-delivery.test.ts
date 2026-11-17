@@ -598,7 +598,7 @@ describe('S3 Delivery', () => {
       encryptionKey: key,
     });
 
-    const s3Logs = new S3LogsDelivery(bucket, { kmsKey: key });
+    const s3Logs = new S3LogsDelivery(bucket, { encryptionKey: key });
     s3Logs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -652,7 +652,7 @@ describe('S3 Delivery', () => {
       },
     });
 
-    const s3Logs = new S3LogsDelivery(bucket, { kmsKey: key });
+    const s3Logs = new S3LogsDelivery(bucket, { encryptionKey: key });
     s3Logs.bind(source, logType, source.bucketArn);
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {

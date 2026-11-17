@@ -129,7 +129,7 @@ export class S3LogsDelivery implements ILogsDelivery {
 
   /**
    * Binds S3 Bucket to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
-   * Note that delivery sources may be reused if one already exists for a source resource/log type pair. 
+   * Note that delivery sources may be reused if one already exists for a source resource/log type pair.
    */
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const container = new Construct(scope, deliveryId('S3', logType, scope, this.bucket));
