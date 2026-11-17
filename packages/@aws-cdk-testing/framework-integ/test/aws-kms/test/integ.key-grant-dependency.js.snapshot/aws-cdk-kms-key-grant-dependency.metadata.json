@@ -1,0 +1,183 @@
+{
+  "/aws-cdk-kms-key-grant-dependency": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-kms-key-grant-dependency.template.json"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/KeyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/CfnKey": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CfnKey"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/CfnKeyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/ImportedCfnKey": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportedCfnKey"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/FromCfnKeyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/KeyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KeyTopicE0B15B86"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Role1ABCC5F0"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/CfnKeyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CfnKeyTopicC31DFBB0"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/FromCfnKeyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FromCfnKeyTopic3B168EB6"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Exports/Output{\"Ref\":\"Key961B73FD\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefKey961B73FD1C116C2C"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Exports/Output{\"Fn::GetAtt\":[\"Role1ABCC5F0\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Exports/Output{\"Ref\":\"CfnKey\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCfnKeyCCF4F1EC"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Exports/Output{\"Ref\":\"ImportedCfnKey\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefImportedCfnKey44357E75"
+    }
+  ],
+  "/aws-cdk-kms-key-grant-dependency/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RoleDefaultPolicy5FFB7DAB"
+    }
+  ]
+}

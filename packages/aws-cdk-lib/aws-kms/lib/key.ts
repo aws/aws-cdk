@@ -193,7 +193,8 @@ abstract class KeyBase extends Resource implements IKey {
     }
 
     this.policy.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.policy };
+    // The key policy is a property of the key resource, so depending on the statement means depending on the key
+    return { statementAdded: true, policyDependable: this };
   }
 
   /**
@@ -666,6 +667,12 @@ export class Key extends KeyBase {
       public readonly keyId = cfnKey.ref;
       protected readonly policy = keyPolicy;
       protected readonly trustAccountIdentities = false;
+
+      public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp = true): iam.AddToResourcePolicyResult {
+        const result = super.addToResourcePolicy(statement, allowNoOp);
+        // This construct is a child of the CfnKey and contains no resources, so depend on the CfnKey instead
+        return result.statementAdded ? { ...result, policyDependable: cfnKey } : result;
+      }
     }(cfnKey, id);
   }
 
