@@ -1777,22 +1777,35 @@ use `addKnowledgeBasesTarget()` or `GatewayTarget.forKnowledgeBases()`. The conn
 - `retrieve` configures the `Retrieve` tool, which performs a single search on one knowledge base and returns the most relevant passages
 
 The target exposes only the tools you configure. Agentic retrieval runs with the service-managed foundation model.
-To attach a guardrail or use your own foundation or reranking model, use a connector target instead.
+To attach a guardrail or use your own foundation or reranking model, add the fields with a property override on the
+target's `CfnGatewayTarget`. The target keeps the permissions described below, and you grant the gateway role what the
+added fields need. The number in the path is the position of the tool: `AgenticRetrieveStream` comes first when it is configured.
+
+```typescript fixture=default
+declare const knowledgeBasesTarget: agentcore.GatewayTarget;
+
+const cfnTarget = knowledgeBasesTarget.node.defaultChild as agentcore.CfnGatewayTarget;
+cfnTarget.addPropertyOverride(
+  "TargetConfiguration.Mcp.Connector.Configurations.0.ParameterValues.agenticRetrieveConfiguration.policyConfiguration",
+  { guardrailConfiguration: { guardrailId: "abcdefghijkl", guardrailVersion: "1" } },
+);
+```
 
 The construct grants the gateway role the permissions the configured tools need:
 
 - `bedrock:GetKnowledgeBase` and `bedrock:Retrieve` on every knowledge base
 - `bedrock:GetDocumentContent` on the `retrievers` of `agenticRetrieve`, which agentic retrieval uses to expand passages to full documents
 - `bedrock:AgenticRetrieveStream`, which does not support resource-level permissions, when `agenticRetrieve` is configured
-- `kms:Decrypt` on the `encryptionKey` of a knowledge base, when you pass one
+- `kms:Decrypt` on the `encryptionKey` of a knowledge base, when you pass one. The grant only applies to requests
+  made through Amazon Bedrock (`kms:ViaService`)
 
 If a knowledge base is encrypted with a customer managed KMS key, pass that key as `encryptionKey` next to the knowledge base.
 Amazon Bedrock requires the caller to have decrypt permission on the key, and tool calls fail with an access denied error without it.
 
 The connector only supports managed knowledge bases.
 
-For any other connector, use `addConnectorTarget()` or `GatewayTarget.forConnector()` with a `GatewayConnector`.
-`GatewayConnector` lists the connectors known to this library, and `GatewayConnector.of()` accepts any other connector ID.
+For any other connector, use `addConnectorTarget()` or `GatewayTarget.forConnector()` with a `McpConnector`.
+`McpConnector` lists the connectors known to this library, and `McpConnector.of()` accepts any other connector ID.
 These targets do not grant the gateway role any permissions, because the permissions depend on the connector.
 
 ### Understanding Tool Naming
@@ -2280,7 +2293,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 // Connector targets use the gateway IAM role for outbound auth
 const webSearchTarget = gateway.addConnectorTarget("MyWebSearchTarget", {
   gatewayTargetName: "web-search-tool",
-  connector: agentcore.GatewayConnector.WEB_SEARCH,
+  connector: agentcore.McpConnector.WEB_SEARCH,
   toolConfigurations: [
     {
       name: "WebSearch",
@@ -2478,7 +2491,7 @@ const knowledgeBasesTarget = agentcore.GatewayTarget.forKnowledgeBases(this, "My
   gateway: gateway,
   retrieve: {
     knowledgeBase: knowledgeBase,
-    // Grants the gateway role kms:Decrypt on the key
+    // Grants the gateway role kms:Decrypt on the key, through Amazon Bedrock only
     encryptionKey: knowledgeBaseKey,
   },
 });
@@ -2492,15 +2505,30 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 });
 
 // Create a gateway target using the static factory method.
-// For a connector that this library does not list yet, use GatewayConnector.of("<connector-id>").
+// For a connector that this library does not list yet, use McpConnector.of("<connector-id>").
 const connectorTarget = agentcore.GatewayTarget.forConnector(this, "MyConnectorTarget", {
   gatewayTargetName: "web-answer-tool",
   gateway: gateway,
-  connector: agentcore.GatewayConnector.WEB_ANSWER,
+  connector: agentcore.McpConnector.WEB_ANSWER,
   toolConfigurations: [{ name: "WebAnswer" }],
   // Expose only this tool of the connector
   enabledTools: ["WebAnswer"],
 });
+
+// Grant the gateway role the permissions the Web Answer connector needs.
+// Web Answer is available in us-east-1.
+gateway.grantInvoke(gateway.role);
+gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ["bedrock-agentcore:InvokeWebAnswer"],
+  resources: [
+    cdk.Stack.of(this).formatArn({
+      service: "bedrock-agentcore",
+      account: "aws",
+      resource: "tool",
+      resourceName: "web-answer.v1",
+    }),
+  ],
+}));
 ```
 
 ### Advanced Usage: Direct Configuration for gateway target
