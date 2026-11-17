@@ -955,10 +955,20 @@ describe('S3 Destination', () => {
       encryptionKey: providedKey,
     });
 
-    const keys = Template.fromStack(stack).findResources('AWS::KMS::Key');
-    const grantedKeys = Object.keys(keys).filter(id => JSON.stringify(keys[id]).includes('delivery.logs.amazonaws.com'));
-    expect(grantedKeys).toHaveLength(1);
-    expect(grantedKeys[0]).toMatch(/^ProvidedKey/);
+    // the provided key is the only one whose policy grants the delivery service
+    const granted = Template.fromStack(stack).findResources('AWS::KMS::Key', {
+      Properties: {
+        KeyPolicy: {
+          Statement: Match.arrayWith([Match.objectLike({
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Action: ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'],
+            Resource: '*',
+          })]),
+        },
+      },
+    });
+    expect(Object.keys(granted)).toEqual([stack.getLogicalId(providedKey.node.defaultChild as CfnKey)]);
   });
 
   test('discovers the bucket encryption key when no key is provided', () => {
