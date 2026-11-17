@@ -73,5 +73,3 @@ new integ.IntegTest(app, 'BedrockGuardrailTopicDefinitionLength', {
   // https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-cross-region-support.html
   regions: ['us-east-1', 'us-east-2', 'us-west-2'],
 });
-
-app.synth();
