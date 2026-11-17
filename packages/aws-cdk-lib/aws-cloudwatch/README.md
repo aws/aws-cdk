@@ -143,9 +143,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 
 The array form of `MAX`, `MIN`, `AVG` and `SUM` (for example `MAX([m1, m2])`)
 only accepts time series. CloudWatch rejects an array that mixes a metric with a
-scalar number, such as `MAX([invocations, 1])`, so an alarm using it fails to
-deploy. Dividing by zero doesn't cause an error: CloudWatch drops data points
-where the divisor is 0.
+scalar number, so an alarm using it fails to deploy.
 See [Metric math syntax and functions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/using-metric-math.html#metric-math-syntax-functions-list)
 for the arguments each function accepts.
 
