@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "events-eventbus-policy-integ/DefaultTest": {
+      "stacks": [
+        "events-eventbus-policy-stack"
+      ],
+      "assertionStack": "events-eventbus-policy-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "eventseventbuspolicyintegDefaultTestDeployAssert2075AD1D"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
