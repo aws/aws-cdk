@@ -102,9 +102,9 @@ export interface FleetProps {
    * 2. Private subnets unconnected to the internet, but with [VPC endpoints](https://docs.aws.amazon.com/codebuild/latest/userguide/use-vpc-endpoints-with-codebuild.html) for the necessary services.
    *
    * Reserved capacity fleets support only one subnet in a single Availability Zone.
-   * If not specified, the construct automatically selects the first subnet from the
-   * default selection. If your selection resolves to multiple subnets, synthesis
-   * will fail with `FleetVpcSingleSubnetRequired`.
+   * The construct auto-narrows to the first subnet and warns when your selection
+   * resolves to multiple subnets. If you explicitly list multiple subnets or
+   * availability zones, synthesis will fail with `FleetVpcSingleSubnetRequired`.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
@@ -411,6 +411,7 @@ export interface IFleet extends IResource, iam.IGrantable, ec2.IConnectable, IFl
  *
  * You will be charged for the resources in the fleet, even if they are idle.
  *
+ * @stateful
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
  */
 @propertyInjectable
@@ -621,6 +622,7 @@ export class Fleet extends Resource implements IFleet {
       }
       const effectiveScalingType = props.scalingConfiguration.scalingType ?? FleetScalingType.TARGET_TRACKING_SCALING;
       if (effectiveScalingType === FleetScalingType.TARGET_TRACKING_SCALING
+        && !Token.isUnresolved(props.scalingConfiguration.targetTrackingScalingConfigs)
         && props.scalingConfiguration.targetTrackingScalingConfigs.length === 0) {
         throw new ValidationError(lit`TargetTrackingScalingConfigsRequired`, 'At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING', this);
       }
@@ -658,7 +660,7 @@ export class Fleet extends Resource implements IFleet {
         );
       }
       for (const rule of props.proxyConfiguration.orderedProxyRules ?? []) {
-        if (rule.entities.length === 0) {
+        if (!Token.isUnresolved(rule.entities) && rule.entities.length === 0) {
           throw new ValidationError(lit`ProxyRuleEntitiesRequired`, 'Each proxy rule must have at least one entity', this);
         }
       }
@@ -747,41 +749,41 @@ export class Fleet extends Resource implements IFleet {
 
     // Reserved capacity fleets support only one subnet in a single Availability Zone.
     // https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.reserved-capacity-fleets.html
-    // When subnetSelection is not provided, we auto-narrow to the first subnet to avoid
-    // surprising users with an error when using a default VPC with multiple subnets.
-    let selectedSubnets: ec2.SelectedSubnets;
-    if (props.subnetSelection === undefined) {
-      // First, select with default behavior (private > public)
-      const defaultSelection = props.vpc.selectSubnets();
-      // Then narrow to just the first subnet if multiple were selected
-      // Skip this narrowing if the lookup is pending (subnets are dummies)
-      if (!defaultSelection.isPendingLookup && defaultSelection.subnets.length > 1) {
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed',
-          `Reserved capacity fleets support only one subnet; using ${defaultSelection.subnets[0].node.path}. ` +
-          'Pass subnetSelection to choose a specific subnet.');
-        selectedSubnets = props.vpc.selectSubnets({ subnets: [defaultSelection.subnets[0]] });
-      } else {
-        selectedSubnets = defaultSelection;
-      }
-    } else {
-      selectedSubnets = props.vpc.selectSubnets(props.subnetSelection);
-    }
-    const { subnetIds } = selectedSubnets;
+    //
+    // We auto-narrow to the first subnet and warn when:
+    // - subnetSelection is undefined (default behavior)
+    // - subnetSelection uses filters (subnetType, subnetGroupName, etc.) that don't explicitly pin subnets
+    //
+    // We throw only when the user explicitly lists multiple items in `subnets` or `availabilityZones`,
+    // since that indicates intentional multi-subnet selection which conflicts with the one-subnet limit.
+    const userExplicitlySelectedMultiple = props.subnetSelection !== undefined && (
+      (props.subnetSelection.subnets !== undefined && props.subnetSelection.subnets.length > 1) ||
+      (props.subnetSelection.availabilityZones !== undefined && props.subnetSelection.availabilityZones.length > 1)
+    );
 
-    // Validate subnet count only when:
-    // - Not a pending VPC lookup (dummy VPCs have 2 subnets per group)
-    // - Not a tokenized subnet list
-    // - User explicitly provided a subnetSelection (auto-narrowed selections are already single-subnet)
-    if (props.subnetSelection !== undefined
-      && !selectedSubnets.isPendingLookup
-      && !Token.isUnresolved(subnetIds)
-      && subnetIds.length > 1) {
-      throw new ValidationError(
-        lit`FleetVpcSingleSubnetRequired`,
-        `Reserved capacity fleets support only one subnet, but ${subnetIds.length} subnets were selected. Use subnetSelection to specify a single subnet.`,
-        this,
-      );
+    let selectedSubnets = props.vpc.selectSubnets(props.subnetSelection);
+
+    // Skip all narrowing/validation during pending lookup or with tokenized subnet lists
+    if (!selectedSubnets.isPendingLookup && !Token.isUnresolved(selectedSubnets.subnetIds) && selectedSubnets.subnetIds.length > 1) {
+      if (userExplicitlySelectedMultiple) {
+        // User explicitly listed multiple subnets or AZs — this is intentional, so throw
+        throw new ValidationError(
+          lit`FleetVpcSingleSubnetRequired`,
+          `Reserved capacity fleets support only one subnet, but ${selectedSubnets.subnetIds.length} were selected; ` +
+          'narrow subnetSelection with `subnets: [subnet]` or `availabilityZones: [\'<az>\']`.',
+          this,
+        );
+      } else {
+        // Selection came from filters or default — auto-narrow to first subnet and warn
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed',
+          `Reserved capacity fleets support only one subnet; using ${selectedSubnets.subnets[0].node.path}. ` +
+          'Pass subnetSelection with a single subnet to suppress this warning.');
+        selectedSubnets = props.vpc.selectSubnets({ subnets: [selectedSubnets.subnets[0]] });
+      }
     }
+
+    // Extract subnetIds AFTER potential narrowing
+    const { subnetIds } = selectedSubnets;
     const networkInterfaceArn = Arn.format({ service: 'ec2', resource: 'network-interface', resourceName: '*' }, this.stack);
     const subnetArns = subnetIds.map((subnetId) =>
       Arn.format({ service: 'ec2', resource: 'subnet', resourceName: subnetId }, this.stack),

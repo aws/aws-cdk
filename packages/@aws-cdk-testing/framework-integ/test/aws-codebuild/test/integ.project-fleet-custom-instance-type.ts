@@ -28,7 +28,6 @@ const configurations: Array<StackConfiguration> = [
     },
     vpcProps: {
       maxAzs: 1,
-      restrictDefaultSecurityGroup: false,
     },
   },
   {
@@ -36,12 +35,10 @@ const configurations: Array<StackConfiguration> = [
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
     },
     vpcProps: {
-      maxAzs: 1,
-      // Incredibly, if you pass a SubnetSelection that produces more than 1
-      // subnet, you currently get this error:
-      // > Resource handler returned message: "Invalid vpc config: the maximum number of subnets is 1
-      // This seems like a terrible limitation from the CodeBuild team.
-      // maxAzs: 2,
+      // VPC has 2 AZs with private subnets; the Fleet construct auto-narrows
+      // to a single subnet and emits a warning. This tests the auto-narrowing
+      // behavior end-to-end.
+      maxAzs: 2,
     },
     subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     securityGroupProps: [
@@ -117,13 +114,13 @@ const test = new integ.IntegTest(app, 'CustomInstanceTypeComputeFleetIntegTest',
   },
 });
 
-const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
+const listFleets = test.assertions.awsApiCall('CodeBuild', 'listFleets');
 for (const { fleet, project } of stacks) {
   listFleets.expect(integ.ExpectedResult.objectLike({
     fleets: integ.Match.arrayWith([fleet.fleetArn]),
   }));
 
-  const startBuild = test.assertions.awsApiCall('Codebuild', 'startBuild', { projectName: project.projectName });
+  const startBuild = test.assertions.awsApiCall('CodeBuild', 'startBuild', { projectName: project.projectName });
 
   // Describe the build and wait for the status to be successful
   test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {

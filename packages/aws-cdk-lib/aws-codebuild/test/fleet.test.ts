@@ -203,6 +203,19 @@ test('throws if trying to retrieve properties from an imported Fleet', () => {
   }).toThrow(/Cannot retrieve environmentType property from an imported Fleet/);
 });
 
+test('throws if accessing connections without vpc', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fleet = new codebuild.Fleet(stack, 'Fleet', {
+    baseCapacity: 1,
+    computeType: codebuild.FleetComputeType.SMALL,
+    environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  });
+
+  // THEN
+  expect(() => fleet.connections).toThrow(/Only VPC-associated Fleets have security groups to manage/);
+});
+
 describe('attribute based compute', () => {
   test('specify compute configuration', () => {
     // GIVEN
@@ -352,6 +365,24 @@ describe('attribute based compute', () => {
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       });
     }).toThrow('At least one compute configuration criteria must be specified if computeType is ATTRIBUTE_BASED');
+  });
+
+  test('throws error if instanceType is specified with ATTRIBUTE_BASED', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.ATTRIBUTE_BASED,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        computeConfiguration: {
+          vCpu: 2,
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+        },
+      });
+    }).toThrow('instanceType can only be specified in computeConfiguration if computeType is CUSTOM_INSTANCE_TYPE');
   });
 });
 
@@ -672,7 +703,7 @@ describe('vpc', () => {
     });
   });
 
-  test('auto-narrow emits warning when narrowing occurs', () => {
+  test('auto-narrow emits warning with subnet path when narrowing occurs', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
@@ -686,35 +717,120 @@ describe('vpc', () => {
       vpc,
     });
 
-    // THEN - warning should be emitted
-    const messages = Annotations.fromStack(stack).findWarning('*', Match.stringLikeRegexp('Reserved capacity fleets support only one subnet'));
-    expect(messages.length).toBeGreaterThan(0);
+    // THEN - warning should be emitted with the subnet path
+    Annotations.fromStack(stack).hasWarning('/Default/Fleet',
+      Match.stringLikeRegexp('using Default/Vpc/PrivateSubnet1.*Pass subnetSelection'));
   });
 
-  test('throws error when explicit subnetSelection resolves to multiple subnets', () => {
+  test('no warning emitted for single-AZ VPC', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+    });
+
+    // THEN - no warning because only one subnet exists
+    Annotations.fromStack(stack).hasNoWarning('*',
+      Match.stringLikeRegexp('Reserved capacity fleets support only one subnet'));
+  });
+
+  test('no warning emitted for explicit single-subnet selection', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+
+    // WHEN - explicit single subnet
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: { subnets: [vpc.privateSubnets[0]] },
+    });
+
+    // THEN - no warning because user explicitly selected one subnet
+    Annotations.fromStack(stack).hasNoWarning('*',
+      Match.stringLikeRegexp('Reserved capacity fleets support only one subnet'));
+  });
+
+  test('auto-narrows and warns when subnetSelection uses subnetType filter', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+
+    // WHEN - subnetType filter selects multiple subnets, should auto-narrow
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    // THEN - should only have the first private subnet (auto-narrowed)
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }],
+      }),
+    });
+
+    // THEN - warning should be emitted
+    Annotations.fromStack(stack).hasWarning('/Default/Fleet',
+      Match.stringLikeRegexp('using Default/Vpc/PrivateSubnet1.*Pass subnetSelection'));
+  });
+
+  test('throws error when explicit subnets array has multiple entries', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
-    // THEN
-    // Per AWS docs: "reserved capacity fleets support only one subnet in a single Availability Zone"
-    // Only throws when user explicitly provides a subnetSelection that resolves to multiple subnets
+    // THEN - explicit subnets array with >1 entries should throw
     expect(() => {
       new codebuild.Fleet(stack, 'Fleet', {
         baseCapacity: 1,
         computeType: codebuild.FleetComputeType.SMALL,
         environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
         vpc,
-        subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+        subnetSelection: { subnets: [vpc.privateSubnets[0], vpc.privateSubnets[1]] },
       });
-    }).toThrow(/Reserved capacity fleets support only one subnet, but 2 subnets were selected/);
+    }).toThrow(/Reserved capacity fleets support only one subnet, but 2 were selected.*narrow subnetSelection/);
+  });
+
+  test('throws error when explicit availabilityZones has multiple entries', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      availabilityZones: ['us-east-1a', 'us-east-1b'],
+    });
+
+    // THEN - explicit availabilityZones with >1 entries should throw
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        vpc,
+        subnetSelection: { availabilityZones: ['us-east-1a', 'us-east-1b'] },
+      });
+    }).toThrow(/Reserved capacity fleets support only one subnet, but 2 were selected.*narrow subnetSelection/);
   });
 
   test('does not throw on pending VPC lookup', () => {
     // GIVEN
     // Before the context lookup resolves, `selectSubnets` returns a dummy set
     // with `isPendingLookup: true`; this must not throw.
-    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
     const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { vpcId: 'vpc-1234' });
 
     // WHEN/THEN - should not throw despite dummy VPC having multiple subnets
@@ -729,14 +845,20 @@ describe('vpc', () => {
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CodeBuild::Fleet', {
       FleetVpcConfig: Match.objectLike({
-        Subnets: Match.arrayWith([Match.stringLikeRegexp('^p-')]),
+        // Exact two-element array to ensure no narrowing occurred
+        Subnets: [Match.stringLikeRegexp('^p-'), Match.stringLikeRegexp('^p-')],
       }),
     });
+
+    // THEN - no warning during pending lookup
+    Annotations.fromStack(stack).hasNoWarning('*',
+      Match.stringLikeRegexp('Reserved capacity fleets support only one subnet'));
   });
 
   test('does not throw on pending VPC lookup with explicit subnetSelection', () => {
     // GIVEN - pending lookup with explicit multi-subnet selection
-    const stack = new cdk.Stack(undefined, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
     const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { vpcId: 'vpc-1234' });
 
     // WHEN/THEN - should not throw; the isPendingLookup guard should skip validation
@@ -748,11 +870,44 @@ describe('vpc', () => {
       subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
     });
 
-    // THEN - dummy subnets should be in the template
+    // THEN - dummy subnets should be in the template (exact two-element array)
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CodeBuild::Fleet', {
       FleetVpcConfig: Match.objectLike({
-        Subnets: Match.arrayWith([Match.stringLikeRegexp('^p-')]),
+        Subnets: [Match.stringLikeRegexp('^p-'), Match.stringLikeRegexp('^p-')],
+      }),
+    });
+
+    // THEN - no warning during pending lookup
+    Annotations.fromStack(stack).hasNoWarning('*',
+      Match.stringLikeRegexp('Reserved capacity fleets support only one subnet'));
+  });
+
+  test('auto-narrows to first token element when subnet IDs are individual tokens', () => {
+    // GIVEN - VPC with per-element tokenized subnet IDs from Fn.importListValue.
+    // Fn.importListValue produces a real JS array whose *elements* are Fn::Select tokens,
+    // so Token.isUnresolved(subnetIds) is false and auto-narrowing applies normally.
+    const stack = new cdk.Stack();
+    const vpc = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+      vpcId: 'vpc-1234',
+      availabilityZones: ['us-east-1a', 'us-east-1b'],
+      privateSubnetIds: cdk.Fn.importListValue('SubnetIds', 2),
+    });
+
+    // WHEN - auto-narrowing selects the first element, no throw
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    // THEN - only the first Fn::Select token reaches the template
+    const fnSplit = { 'Fn::Split': [',', { 'Fn::ImportValue': 'SubnetIds' }] };
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: [{ 'Fn::Select': [0, fnSplit] }],
       }),
     });
   });
@@ -1306,6 +1461,35 @@ describe('proxyConfiguration', () => {
         },
       });
     }).toThrow(/Each proxy rule must have at least one entity/);
+  });
+
+  test('tokenized entities skips empty-array validation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN - tokenized entities list has .length === 1 (the marker), must not throw
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      proxyConfiguration: {
+        defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+        orderedProxyRules: [{
+          effect: codebuild.FleetProxyRuleEffect.ALLOW,
+          entities: cdk.Token.asList({ Ref: 'Entities' }),
+          type: codebuild.FleetProxyRuleType.DOMAIN,
+        }],
+      },
+    });
+
+    // THEN - token reaches the template
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetProxyConfiguration: {
+        OrderedProxyRules: [{
+          Entities: { Ref: 'Entities' },
+        }],
+      },
+    });
   });
 });
 

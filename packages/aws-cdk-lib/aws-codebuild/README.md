@@ -714,9 +714,10 @@ VPCs.  When using a Fleet in a CodeBuild Project, it is an error to configure a
 VPC on the Project. Configure a VPC on the fleet instead.
 
 Reserved capacity fleets support only one subnet in a single Availability Zone.
-If you don't specify a `subnetSelection`, the construct automatically selects
-the first subnet from the default selection and emits a warning. If you provide an explicit
-`subnetSelection` that resolves to multiple subnets, synthesis will fail.
+If your `subnetSelection` resolves to multiple subnets (including the default selection),
+the construct automatically narrows to the first subnet and emits a warning.
+Only if you explicitly list multiple subnets or availability zones
+(e.g. `subnets: [a, b]` or `availabilityZones: ['us-east-1a', 'us-east-1b']`) will synthesis fail.
 
 The fleet's IAM policy restricts `ec2:CreateNetworkInterfacePermission` to only the
 selected subnet.
