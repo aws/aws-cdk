@@ -1984,7 +1984,8 @@ new lambda.Function(this, 'Function', {
 
 Runtimes expose a `bundlingImage` property that points to an
 [AWS SAM build image](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html).
-Predefined runtimes reference the image without a tag (`:latest`), so the image version used depends on what is
+Unless a runtime is created with a custom bundling image, it references the image without a tag (`:latest`), so the
+image version used depends on what is
 published and what is cached locally, and can change independently of the AWS CDK version. If your build depends on
 specific tool versions, select an explicit image tag:
 
