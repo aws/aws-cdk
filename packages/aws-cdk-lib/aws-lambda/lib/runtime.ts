@@ -459,7 +459,8 @@ export class Runtime {
   /**
    * The bundling Docker image for this runtime.
    *
-   * Unless the runtime was created with `bundlingDockerImage`, this is an
+   * Unless the runtime was created with the `bundlingDockerImage` prop of
+   * `LambdaRuntimeProps`, this is an
    * untagged AWS SAM build image. Its contents can change independently of the
    * AWS CDK version. To pin a specific image version when bundling with
    * `Code.fromAsset()`, pass `DockerImage.fromRegistry('<image>:<tag>')` as
