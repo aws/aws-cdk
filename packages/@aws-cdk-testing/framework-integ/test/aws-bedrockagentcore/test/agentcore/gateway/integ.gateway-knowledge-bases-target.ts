@@ -108,7 +108,7 @@ const retrieveOnlyTarget = gateway.addKnowledgeBasesTarget('RetrieveOnly', {
 // the Web Search Tool connector needs for tool calls are added here.
 const webSearchTarget = gateway.addConnectorTarget('WebSearch', {
   gatewayTargetName: 'web-search',
-  connector: agentcore.GatewayConnector.WEB_SEARCH,
+  connector: agentcore.McpConnector.WEB_SEARCH,
   enabledTools: ['WebSearch'],
   toolConfigurations: [
     {
