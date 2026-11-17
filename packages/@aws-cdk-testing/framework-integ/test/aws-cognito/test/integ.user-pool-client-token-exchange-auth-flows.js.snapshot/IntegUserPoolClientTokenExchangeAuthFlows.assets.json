@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "add73c90b88bbd28769876346abe2064772a774e32d4feae8bb6b73c3f1e989e": {
+      "displayName": "IntegUserPoolClientTokenExchangeAuthFlows Template",
+      "source": {
+        "path": "IntegUserPoolClientTokenExchangeAuthFlows.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-66fb4d6b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "add73c90b88bbd28769876346abe2064772a774e32d4feae8bb6b73c3f1e989e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

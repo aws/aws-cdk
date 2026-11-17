@@ -1,0 +1,279 @@
+{
+ "Resources": {
+  "AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClientb9e95e44c45641196073c29b46360d0b": {
+   "Type": "Custom::DeployAssert@SdkCallCognitoIdentityServiceProviderde",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CognitoIdentityServiceProvider",
+    "api": "describeUserPoolClient",
+    "expected": "{\"$ObjectLike\":{\"UserPoolClient\":{\"ExplicitAuthFlows\":{\"$ArrayWith\":[\"ALLOW_TOKEN_EXCHANGE_IMPERSONATION\"]}}}}",
+    "parameters": {
+     "UserPoolId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "IntegUserPoolClientTokenExchangeAuthFlows:ExportsOutputRefPoolD3F588B86FF122B2"
+        },
+        "\""
+       ]
+      ]
+     },
+     "ClientId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "IntegUserPoolClientTokenExchangeAuthFlows:ExportsOutputRefPoolTokenExchangeClientD7F74CF1C639E3A3"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794956277696"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cognito-idp:DescribeUserPoolClient"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cognito-idp:DescribeUserPoolClient"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cognito-idp:DescribeUserPoolClient"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6782def3f2c11763a959a423bbcc99a1a2a0e3576fb32aad163fb874dca0042a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClientb9e95e44c45641196073c29b46360d0b1": {
+   "Type": "Custom::DeployAssert@SdkCallCognitoIdentityServiceProviderde",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CognitoIdentityServiceProvider",
+    "api": "describeUserPoolClient",
+    "expected": "{\"$ObjectLike\":{\"UserPoolClient\":{\"ExplicitAuthFlows\":{\"$ArrayWith\":[\"ALLOW_TOKEN_EXCHANGE_DELEGATION\"]}}}}",
+    "parameters": {
+     "UserPoolId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "IntegUserPoolClientTokenExchangeAuthFlows:ExportsOutputRefPoolD3F588B86FF122B2"
+        },
+        "\""
+       ]
+      ]
+     },
+     "ClientId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "IntegUserPoolClientTokenExchangeAuthFlows:ExportsOutputRefPoolTokenExchangeClientD7F74CF1C639E3A3"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794956277697"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClient8f6c0a729b38867597eab0c01b003139": {
+   "Type": "Custom::DeployAssert@SdkCallCognitoIdentityServiceProviderde",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CognitoIdentityServiceProvider",
+    "api": "describeUserPoolClient",
+    "expected": "{\"$ObjectLike\":{\"UserPoolClient\":{\"ExplicitAuthFlows\":[\"ALLOW_CLIENT_TOKEN_AUTH\"]}}}",
+    "parameters": {
+     "UserPoolId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "IntegUserPoolClientTokenExchangeAuthFlows:ExportsOutputRefPoolD3F588B86FF122B2"
+        },
+        "\""
+       ]
+      ]
+     },
+     "ClientId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "IntegUserPoolClientTokenExchangeAuthFlows:ExportsOutputRefPoolClientTokenClient797D2CE1C61D9D9B"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794956277697"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClientb9e95e44c45641196073c29b46360d0b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClientb9e95e44c45641196073c29b46360d0b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClientb9e95e44c45641196073c29b46360d0b1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClientb9e95e44c45641196073c29b46360d0b1",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClient8f6c0a729b38867597eab0c01b003139": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCognitoIdentityServiceProviderdescribeUserPoolClient8f6c0a729b38867597eab0c01b003139",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

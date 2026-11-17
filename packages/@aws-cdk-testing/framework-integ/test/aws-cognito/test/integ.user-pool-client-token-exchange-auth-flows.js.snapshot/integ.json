@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-user-pool-client-token-exchange-auth-flows/DefaultTest": {
+      "stacks": [
+        "IntegUserPoolClientTokenExchangeAuthFlows"
+      ],
+      "assertionStack": "integ-user-pool-client-token-exchange-auth-flows/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolclienttokenexchangeauthflowsDefaultTestDeployAssert3CE768F2"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

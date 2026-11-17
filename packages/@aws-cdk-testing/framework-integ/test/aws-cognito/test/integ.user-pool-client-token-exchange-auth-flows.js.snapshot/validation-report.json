@@ -1,0 +1,92 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [],
+      "suppressedViolations": [
+        {
+          "ruleName": "W3030",
+          "description": "ExplicitAuthFlows.0: 'ALLOW_TOKEN_EXCHANGE_IMPERSONATION' is not one of ['ADMIN_NO_SRP_AUTH', 'ALLOW_ADMIN_USER_PASSWORD_AUTH', 'ALLOW_CUSTOM_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH', 'ALLOW_USER_AUTH', 'ALLOW_USER_PASSWORD_AUTH', 'ALLOW_USER_SRP_AUTH', 'CUSTOM_AUTH_FLOW_ONLY', 'USER_PASSWORD_AUTH']",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "IntegUserPoolClientTokenExchangeAuthFlows/Pool/TokenExchangeClient/Resource",
+              "constructFqn": "aws-cdk-lib.CfnRefElement",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "IntegUserPoolClientTokenExchangeAuthFlows.template.json",
+                "logicalId": "PoolTokenExchangeClientD7F74CF1",
+                "propertyPaths": [
+                  "Properties.ExplicitAuthFlows.0"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W3030",
+          "reason": "The bundled schemas do not list the token exchange and client token auth flows yet",
+          "acknowledgedAt": "IntegUserPoolClientTokenExchangeAuthFlows/Pool/TokenExchangeClient",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/home/user/git/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:105:18)\n    at new UserPoolClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.js:279:40)\n    at PropertyInjectable.addClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:322:16)\n    at <anonymous> (/home/user/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-client-token-exchange-auth-flows.js:16:38)\n    ...node internals..."
+        },
+        {
+          "ruleName": "W3030",
+          "description": "ExplicitAuthFlows.1: 'ALLOW_TOKEN_EXCHANGE_DELEGATION' is not one of ['ADMIN_NO_SRP_AUTH', 'ALLOW_ADMIN_USER_PASSWORD_AUTH', 'ALLOW_CUSTOM_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH', 'ALLOW_USER_AUTH', 'ALLOW_USER_PASSWORD_AUTH', 'ALLOW_USER_SRP_AUTH', 'CUSTOM_AUTH_FLOW_ONLY', 'USER_PASSWORD_AUTH']",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "IntegUserPoolClientTokenExchangeAuthFlows/Pool/TokenExchangeClient/Resource",
+              "constructFqn": "aws-cdk-lib.CfnRefElement",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "IntegUserPoolClientTokenExchangeAuthFlows.template.json",
+                "logicalId": "PoolTokenExchangeClientD7F74CF1",
+                "propertyPaths": [
+                  "Properties.ExplicitAuthFlows.1"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W3030",
+          "reason": "The bundled schemas do not list the token exchange and client token auth flows yet",
+          "acknowledgedAt": "IntegUserPoolClientTokenExchangeAuthFlows/Pool/TokenExchangeClient",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/home/user/git/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:105:18)\n    at new UserPoolClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.js:279:40)\n    at PropertyInjectable.addClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:322:16)\n    at <anonymous> (/home/user/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-client-token-exchange-auth-flows.js:16:38)\n    ...node internals..."
+        },
+        {
+          "ruleName": "W3030",
+          "description": "ExplicitAuthFlows.0: 'ALLOW_CLIENT_TOKEN_AUTH' is not one of ['ADMIN_NO_SRP_AUTH', 'ALLOW_ADMIN_USER_PASSWORD_AUTH', 'ALLOW_CUSTOM_AUTH', 'ALLOW_REFRESH_TOKEN_AUTH', 'ALLOW_USER_AUTH', 'ALLOW_USER_PASSWORD_AUTH', 'ALLOW_USER_SRP_AUTH', 'CUSTOM_AUTH_FLOW_ONLY', 'USER_PASSWORD_AUTH']",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "IntegUserPoolClientTokenExchangeAuthFlows/Pool/ClientTokenClient/Resource",
+              "constructFqn": "aws-cdk-lib.CfnRefElement",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "IntegUserPoolClientTokenExchangeAuthFlows.template.json",
+                "logicalId": "PoolClientTokenClient797D2CE1",
+                "propertyPaths": [
+                  "Properties.ExplicitAuthFlows.0"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::W3030",
+          "reason": "The bundled schemas do not list the token exchange and client token auth flows yet",
+          "acknowledgedAt": "IntegUserPoolClientTokenExchangeAuthFlows/Pool/ClientTokenClient",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/home/user/git/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:105:18)\n    at new UserPoolClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.js:279:40)\n    at PropertyInjectable.addClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:322:16)\n    at <anonymous> (/home/user/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-client-token-exchange-auth-flows.js:27:36)\n    ...node internals..."
+        }
+      ]
+    }
+  ]
+}

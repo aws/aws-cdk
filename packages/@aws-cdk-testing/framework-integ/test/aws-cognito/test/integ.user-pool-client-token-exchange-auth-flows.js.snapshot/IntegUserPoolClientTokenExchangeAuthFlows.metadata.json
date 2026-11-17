@@ -1,0 +1,119 @@
+{
+  "/IntegUserPoolClientTokenExchangeAuthFlows": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "IntegUserPoolClientTokenExchangeAuthFlows.template.json"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Pool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "featurePlan": "ESSENTIALS",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Pool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PoolD3F588B8"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Pool/ResourceServer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "identifier": "*",
+        "scopes": "*"
+      }
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Pool/TokenExchangeClient": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3030": "The bundled schemas do not list the token exchange and client token auth flows yet"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/home/user/git/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:105:18)",
+        "    at new UserPoolClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.js:279:40)",
+        "    at PropertyInjectable.addClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:322:16)",
+        "    at <anonymous> (/home/user/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-client-token-exchange-auth-flows.js:16:38)",
+        "    ...node internals..."
+      ]
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Pool/ClientTokenClient": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3030": "The bundled schemas do not list the token exchange and client token auth flows yet"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/home/user/git/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:105:18)",
+        "    at new UserPoolClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.js:279:40)",
+        "    at PropertyInjectable.addClient (/home/user/git/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:322:16)",
+        "    at <anonymous> (/home/user/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cognito/test/integ.user-pool-client-token-exchange-auth-flows.js:27:36)",
+        "    ...node internals..."
+      ]
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Exports/Output{\"Ref\":\"PoolD3F588B8\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPoolD3F588B86FF122B2"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Exports/Output{\"Ref\":\"PoolTokenExchangeClientD7F74CF1\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPoolTokenExchangeClientD7F74CF1C639E3A3"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Exports/Output{\"Ref\":\"PoolClientTokenClient797D2CE1\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPoolClientTokenClient797D2CE1C61D9D9B"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Pool/ResourceServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PoolResourceServerEFE645D4"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Pool/TokenExchangeClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PoolTokenExchangeClientD7F74CF1"
+    }
+  ],
+  "/IntegUserPoolClientTokenExchangeAuthFlows/Pool/ClientTokenClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PoolClientTokenClient797D2CE1"
+    }
+  ]
+}
