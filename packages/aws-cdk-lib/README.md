@@ -1443,6 +1443,27 @@ For RemovalPolicies, the policies are applied in order of aspect execution, with
 
 When using MissingRemovalPolicies with priority, a warning will be issued as this can lead to unexpected behavior. This is because MissingRemovalPolicies only applies to resources without existing policies, making priority less relevant.
 
+### Applying a Removal Policy to a Single Resource
+
+Individual resources can have a removal policy applied directly with
+`applyRemovalPolicy`. The optional `RemovalPolicyOptions` control how the
+policy is applied — for example, `applyToUpdateReplacePolicy: false` limits
+the policy to the resource's `DeletionPolicy` attribute and leaves
+`UpdateReplacePolicy` untouched:
+
+```ts
+declare const bucket: s3.Bucket;
+
+// By default, the policy is applied to both DeletionPolicy and UpdateReplacePolicy
+bucket.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+// Only apply to DeletionPolicy; UpdateReplacePolicy stays unset
+bucket.applyRemovalPolicy(RemovalPolicy.RETAIN, { applyToUpdateReplacePolicy: false });
+
+// Provide a fallback policy used when the resource does not define one
+bucket.applyRemovalPolicy(undefined, { default: RemovalPolicy.DESTROY });
+```
+
 ### Template Options & Transform
 
 CloudFormation templates support a number of options, including which Macros or
