@@ -18,6 +18,19 @@ bedrock.FoundationModel.fromFoundationModelId(
 );
 ```
 
+Identifiers for Amazon's Nova family of models are also available, including the
+Nova 2 Lite reasoning model (`amazon.nova-2-lite-v1:0`):
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_NOVA_2_LITE_V1_0,
+);
+```
+
 To look up a Bedrock provisioned throughput model:
 
 ```ts
