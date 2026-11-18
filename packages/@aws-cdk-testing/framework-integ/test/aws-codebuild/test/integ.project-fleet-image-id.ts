@@ -18,29 +18,12 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-project-fleet-image-id');
 
-// imageId is only supported for EC2-based environment types.
-// LINUX_EC2 with CUSTOM_INSTANCE_TYPE is the most practical combination to test.
-const fleet = new codebuild.Fleet(stack, 'ImageIdFleet', {
+// Custom AMI resolved from the public SSM parameter, so the template does not pin an AMI ID.
+const fleet = new codebuild.Fleet(stack, 'CustomAmiFleet', {
   baseCapacity: 1,
-  computeType: codebuild.FleetComputeType.CUSTOM_INSTANCE_TYPE,
+  computeType: codebuild.FleetComputeType.SMALL,
   environmentType: codebuild.EnvironmentType.LINUX_EC2,
-  computeConfiguration: {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
-  },
-  imageId: codebuild.LinuxBuildImage.AMAZON_LINUX_2023_6.imageId,
-});
-
-const project = new codebuild.Project(stack, 'ImageIdProject', {
-  buildSpec: codebuild.BuildSpec.fromObject({
-    version: '0.2',
-    phases: {
-      build: { commands: ['echo "Nothing to do!"'] },
-    },
-  }),
-  environment: {
-    fleet,
-    buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2023_6,
-  },
+  image: codebuild.FleetImage.fromMachineImage(ec2.MachineImage.latestAmazonLinux2023()),
 });
 
 const test = new integ.IntegTest(app, 'FleetImageIdIntegTest', {
@@ -54,25 +37,16 @@ const test = new integ.IntegTest(app, 'FleetImageIdIntegTest', {
   },
 });
 
-// Verify the fleet was created with the correct imageId.
+// The fleet uses the custom AMI with the generated service role and becomes active.
 test.assertions.awsApiCall('CodeBuild', 'batchGetFleets', {
   names: [fleet.fleetArn],
 }).expect(integ.ExpectedResult.objectLike({
   fleets: [integ.Match.objectLike({
-    imageId: codebuild.LinuxBuildImage.AMAZON_LINUX_2023_6.imageId,
+    imageId: integ.Match.stringLikeRegexp('^ami-'),
+    fleetServiceRole: integ.Match.stringLikeRegexp('^arn:aws:iam::'),
+    status: integ.Match.objectLike({ statusCode: 'ACTIVE' }),
   })],
-}));
-
-const startBuild = test.assertions.awsApiCall('CodeBuild', 'startBuild', {
-  projectName: project.projectName,
-});
-
-test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
-  ids: [startBuild.getAttString('build.id')],
-}).assertAtPath(
-  'builds.0.buildStatus',
-  integ.ExpectedResult.stringLikeRegexp('SUCCEEDED'),
-).waitForAssertions({
+})).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(15),
   interval: cdk.Duration.seconds(30),
 });

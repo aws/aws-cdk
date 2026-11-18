@@ -1,0 +1,116 @@
+{
+ "Resources": {
+  "CustomAmiFleetRoleFE717169": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomAmiFleetRoleDefaultPolicyC26009B7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:DescribeImages",
+        "ec2:DescribeSnapshots"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomAmiFleetRoleDefaultPolicyC26009B7",
+    "Roles": [
+     {
+      "Ref": "CustomAmiFleetRoleFE717169"
+     }
+    ]
+   }
+  },
+  "CustomAmiFleetEEDFB120": {
+   "Type": "AWS::CodeBuild::Fleet",
+   "Properties": {
+    "BaseCapacity": 1,
+    "ComputeType": "BUILD_GENERAL1_SMALL",
+    "EnvironmentType": "LINUX_EC2",
+    "FleetServiceRole": {
+     "Fn::GetAtt": [
+      "CustomAmiFleetRoleFE717169",
+      "Arn"
+     ]
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+    }
+   },
+   "DependsOn": [
+    "CustomAmiFleetRoleDefaultPolicyC26009B7"
+   ]
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttCustomAmiFleetEEDFB120Arn9C07717B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "CustomAmiFleetEEDFB120",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-project-fleet-image-id:ExportsOutputFnGetAttCustomAmiFleetEEDFB120Arn9C07717B"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

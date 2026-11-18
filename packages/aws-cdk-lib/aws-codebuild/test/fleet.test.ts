@@ -1,5 +1,6 @@
 import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as codebuild from '../lib';
 
@@ -680,27 +681,8 @@ describe('vpc', () => {
       }),
     });
 
-    // THEN - IAM policy should also be narrowed to only the first subnet
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: 'ec2:CreateNetworkInterfacePermission',
-            Condition: {
-              ArnEquals: {
-                'ec2:Subnet': [
-                  {
-                    'Fn::Join': ['', Match.arrayWith([
-                      { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
-                    ])],
-                  },
-                ],
-              },
-            },
-          }),
-        ]),
-      }),
-    });
+    // The IAM condition is intentionally not narrowed; see
+    // 'auto-narrowing keeps both subnet ARNs in IAM condition'.
   });
 
   test('auto-narrow emits warning with subnet path when narrowing occurs', () => {
@@ -717,9 +699,9 @@ describe('vpc', () => {
       vpc,
     });
 
-    // THEN - warning should be emitted with the subnet path
+    // THEN - warning should be emitted with the subnet path and warning ID
     Annotations.fromStack(stack).hasWarning('/Default/Fleet',
-      Match.stringLikeRegexp('using Default/Vpc/PrivateSubnet1.*Pass subnetSelection'));
+      Match.stringLikeRegexp('using Default/Vpc/PrivateSubnet1.*Pass subnetSelection.*\\[ack: @aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed\\]'));
   });
 
   test('no warning emitted for single-AZ VPC', () => {
@@ -784,9 +766,9 @@ describe('vpc', () => {
       }),
     });
 
-    // THEN - warning should be emitted
+    // THEN - warning should be emitted with the warning ID
     Annotations.fromStack(stack).hasWarning('/Default/Fleet',
-      Match.stringLikeRegexp('using Default/Vpc/PrivateSubnet1.*Pass subnetSelection'));
+      Match.stringLikeRegexp('using Default/Vpc/PrivateSubnet1.*Pass subnetSelection.*\\[ack: @aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed\\]'));
   });
 
   test('throws error when explicit subnets array has multiple entries', () => {
@@ -910,6 +892,67 @@ describe('vpc', () => {
         Subnets: [{ 'Fn::Select': [0, fnSplit] }],
       }),
     });
+    // IAM condition still covers both original subnet ARNs (each ARN is an Fn::Join around the Fn::Select)
+    const subnetArn = (index: number) => ({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':ec2:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':subnet/',
+        { 'Fn::Select': [index, fnSplit] },
+      ]],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: 'ec2:CreateNetworkInterfacePermission',
+          Condition: {
+            ArnEquals: { 'ec2:Subnet': [subnetArn(0), subnetArn(1)] },
+          },
+        })]),
+      }),
+    });
+  });
+
+  test('auto-narrowing keeps both subnet ARNs in IAM condition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+
+    // WHEN - filter-based selection resolves to 2 subnets, auto-narrowed to 1
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    const template = Template.fromStack(stack);
+    // FleetVpcConfig.Subnets is narrowed to one subnet
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }],
+      }),
+    });
+    // IAM ec2:Subnet condition still covers both original subnets
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Condition: Match.objectLike({
+            ArnEquals: Match.objectLike({
+              'ec2:Subnet': Match.arrayWith([
+                Match.objectLike({ 'Fn::Join': Match.arrayWith([Match.arrayWith([Match.stringLikeRegexp('subnet'), { Ref: 'VpcPrivateSubnet1Subnet536B997A' }])]) }),
+                Match.objectLike({ 'Fn::Join': Match.arrayWith([Match.arrayWith([Match.stringLikeRegexp('subnet'), { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }])]) }),
+              ]),
+            }),
+          }),
+        })]),
+      }),
+    });
   });
 
   test('accepts single subnet selection', () => {
@@ -935,8 +978,14 @@ describe('vpc', () => {
   });
 });
 
-describe('imageId', () => {
-  test('imageId is passed to CloudFormation', () => {
+describe('image', () => {
+  const amiPolicyStatement = {
+    Effect: 'Allow',
+    Action: ['ec2:DescribeImages', 'ec2:DescribeSnapshots'],
+    Resource: '*',
+  };
+
+  test('fromCodeBuildImageId renders ImageId without a service role', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -945,19 +994,21 @@ describe('imageId', () => {
       baseCapacity: 1,
       computeType: codebuild.FleetComputeType.LARGE,
       environmentType: codebuild.EnvironmentType.MAC_ARM,
-      imageId: 'aws/codebuild/macos-arm-base:26',
+      image: codebuild.FleetImage.fromCodeBuildImageId('aws/codebuild/macos-arm-base:26'),
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
-      BaseCapacity: 1,
-      ComputeType: 'BUILD_GENERAL1_LARGE',
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
       EnvironmentType: 'MAC_ARM',
       ImageId: 'aws/codebuild/macos-arm-base:26',
+      FleetServiceRole: Match.absent(),
     });
+    template.resourceCountIs('AWS::IAM::Role', 0);
+    template.resourceCountIs('AWS::IAM::Policy', 0);
   });
 
-  test('imageId is absent when not specified', () => {
+  test('ImageId is absent when image is not specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -971,6 +1022,143 @@ describe('imageId', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
       ImageId: Match.absent(),
+      FleetServiceRole: Match.absent(),
+    });
+  });
+
+  test('fromAmiId creates a service role with AMI permissions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
+      image: codebuild.FleetImage.fromAmiId('ami-12345678'),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'codebuild.amazonaws.com' },
+        }],
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: [amiPolicyStatement] },
+      Roles: [{ Ref: 'FleetRole427BC000' }],
+    });
+    template.hasResource('AWS::CodeBuild::Fleet', {
+      Properties: {
+        ImageId: 'ami-12345678',
+        FleetServiceRole: { 'Fn::GetAtt': ['FleetRole427BC000', 'Arn'] },
+      },
+      DependsOn: ['FleetRoleDefaultPolicyE9296E86'],
+    });
+  });
+
+  test('fromAmiId grants AMI permissions to a provided role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = new iam.Role(stack, 'MyRole', {
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+    });
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
+      image: codebuild.FleetImage.fromAmiId('ami-12345678'),
+      role,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: [amiPolicyStatement] },
+      Roles: [{ Ref: 'MyRoleF48FFE04' }],
+    });
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetServiceRole: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
+    });
+  });
+
+  test('fromAmiId grants AMI permissions to an imported role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const role = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/FleetRole');
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
+      image: codebuild.FleetImage.fromAmiId('ami-12345678'),
+      role,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: [amiPolicyStatement] },
+      Roles: ['FleetRole'],
+    });
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetServiceRole: 'arn:aws:iam::123456789012:role/FleetRole',
+    });
+  });
+
+  test('fromAmiId grants AMI permissions for a token AMI ID', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const amiId = new cdk.CfnParameter(stack, 'AmiId').valueAsString;
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
+      image: codebuild.FleetImage.fromAmiId(amiId),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: [amiPolicyStatement] },
+    });
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      ImageId: { Ref: 'AmiId' },
+      FleetServiceRole: { 'Fn::GetAtt': ['FleetRole427BC000', 'Arn'] },
+    });
+  });
+
+  test('fromMachineImage resolves the AMI and grants AMI permissions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
+      image: codebuild.FleetImage.fromMachineImage(ec2.MachineImage.latestAmazonLinux2023()),
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: [amiPolicyStatement] },
+    });
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      ImageId: { Ref: Match.stringLikeRegexp('^SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel') },
+      FleetServiceRole: { 'Fn::GetAtt': ['FleetRole427BC000', 'Arn'] },
     });
   });
 
@@ -979,7 +1167,7 @@ describe('imageId', () => {
     codebuild.EnvironmentType.ARM_EC2,
     codebuild.EnvironmentType.WINDOWS_EC2,
     codebuild.EnvironmentType.MAC_ARM,
-  ])('accepts imageId with EC2-based environment type: %s', (environmentType) => {
+  ])('accepts image with EC2-based environment type: %s', (environmentType) => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -988,7 +1176,7 @@ describe('imageId', () => {
       baseCapacity: 1,
       computeType: codebuild.FleetComputeType.MEDIUM,
       environmentType,
-      imageId: 'ami-12345678',
+      image: codebuild.FleetImage.fromAmiId('ami-12345678'),
     });
 
     // THEN
@@ -1003,7 +1191,7 @@ describe('imageId', () => {
     codebuild.EnvironmentType.LINUX_GPU_CONTAINER,
     codebuild.EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
     codebuild.EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
-  ])('throws if imageId is specified with container-based environment type: %s', (environmentType) => {
+  ])('fails if image is specified with container-based environment type: %s', (environmentType) => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1013,9 +1201,9 @@ describe('imageId', () => {
         baseCapacity: 1,
         computeType: codebuild.FleetComputeType.MEDIUM,
         environmentType,
-        imageId: 'ami-12345678',
+        image: codebuild.FleetImage.fromCodeBuildImageId('aws/codebuild/macos-arm-base:26'),
       });
-    }).toThrow(/imageId is only supported for EC2-based environment types/);
+    }).toThrow(`image is only supported for EC2-based environment types (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM), got: ${environmentType}`);
   });
 });
 
@@ -1494,7 +1682,7 @@ describe('proxyConfiguration', () => {
 });
 
 describe('combined properties', () => {
-  test('imageId and scalingConfiguration together (EC2 environment)', () => {
+  test('image and scalingConfiguration together (EC2 environment)', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -1503,7 +1691,7 @@ describe('combined properties', () => {
       baseCapacity: 1,
       computeType: codebuild.FleetComputeType.MEDIUM,
       environmentType: codebuild.EnvironmentType.LINUX_EC2,
-      imageId: 'ami-12345678',
+      image: codebuild.FleetImage.fromAmiId('ami-12345678'),
       scalingConfiguration: {
         maxCapacity: 3,
         scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,

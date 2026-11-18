@@ -7,9 +7,9 @@
       },
       "trace": [
         "    at Validations.acknowledge (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
-        "    at FleetStack._silenceLiteralAzWarning (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
-        "    at get availabilityZones (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
-        "    at new Vpc (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at FleetStack._silenceLiteralAzWarning (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1503:47)",
+        "    at get availabilityZones (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:849:18)",
+        "    at new Vpc (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:48)",
         "    at new FleetStack (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-custom-instance-type.js:85:19)",
         "    at /home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-custom-instance-type.js:113: (/home/robert/workspace-kiro/github/review-37598/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-codebuild/test/integ.project-fleet-custom-instance-type.js:113:5)",
         "    at Array.map (:)",

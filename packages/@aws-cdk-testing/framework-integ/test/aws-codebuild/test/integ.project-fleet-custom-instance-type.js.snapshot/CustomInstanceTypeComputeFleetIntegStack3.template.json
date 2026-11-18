@@ -593,6 +593,29 @@
              }
             ]
            ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":subnet/",
+             {
+              "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+             }
+            ]
+           ]
           }
          ]
         }

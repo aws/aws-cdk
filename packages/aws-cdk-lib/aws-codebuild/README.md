@@ -626,15 +626,33 @@ const fleet = new codebuild.Fleet(this, 'MyFleet', {
 
 ### Fleet image
 
-You can specify a custom image for your fleet using the `imageId` property.
-This is useful for controlling the OS version on macOS fleets, for example:
+You can specify the image for your fleet instances using the `image` property.
+This is only supported for EC2-based environment types.
+
+Use `FleetImage.fromCodeBuildImageId()` for an image managed by CodeBuild,
+for example to control the OS version on macOS fleets:
 
 ```ts
 const fleet = new codebuild.Fleet(this, 'MacFleet', {
   computeType: codebuild.FleetComputeType.LARGE,
   environmentType: codebuild.EnvironmentType.MAC_ARM,
   baseCapacity: 1,
-  imageId: codebuild.MacBuildImage.BASE_26.imageId,
+  image: codebuild.FleetImage.fromCodeBuildImageId(codebuild.MacBuildImage.BASE_26.imageId),
+});
+```
+
+Use `FleetImage.fromMachineImage()` or `FleetImage.fromAmiId()` for a custom AMI.
+The fleet service role is granted `ec2:DescribeImages` and `ec2:DescribeSnapshots`,
+and a role is created if you don't pass one. The AMI must match the architecture of the
+environment type and be shared with the CodeBuild service organization of the region.
+See [custom AMI for a reserved capacity fleet](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami).
+
+```ts
+const fleet = new codebuild.Fleet(this, 'CustomAmiFleet', {
+  computeType: codebuild.FleetComputeType.SMALL,
+  environmentType: codebuild.EnvironmentType.LINUX_EC2,
+  baseCapacity: 1,
+  image: codebuild.FleetImage.fromMachineImage(ec2.MachineImage.latestAmazonLinux2023()),
 });
 ```
 

@@ -83,9 +83,10 @@ export interface FleetProps {
    * Specify this if the fleet needs to access resources in a VPC.
    *
    * Reserved capacity fleets support only one subnet in a single Availability Zone.
-   * If `subnetSelection` is not specified, the construct automatically narrows
-   * the default selection to its first subnet. If you provide an explicit
-   * `subnetSelection` that resolves to multiple subnets, synthesis will fail.
+   * If the default or a filter-based `subnetSelection` (for example `subnetType`)
+   * resolves to multiple subnets, the construct uses the first subnet and emits a
+   * warning. If you explicitly list multiple `subnets` or `availabilityZones`,
+   * synthesis fails with `FleetVpcSingleSubnetRequired`.
    *
    * Cannot be combined with `proxyConfiguration`.
    *
@@ -123,17 +124,20 @@ export interface FleetProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * The image identifier for the compute fleet.
-   *
-   * This can be a CodeBuild-managed image identifier
-   * (e.g., 'aws/codebuild/macos-arm-base:26') or a custom AMI ID.
+   * The image for the compute fleet instances.
    *
    * Only supported for EC2-based environment types
    * (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM).
    *
-   * @default - no specific image, CodeBuild uses the default for the environment type
+   * For a custom AMI, the fleet service role is granted
+   * `ec2:DescribeImages` and `ec2:DescribeSnapshots`. A role is created
+   * if `role` is not specified.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
+   *
+   * @default - CodeBuild uses the default image for the environment type
    */
-  readonly imageId?: string;
+  readonly image?: FleetImage;
 
   /**
    * The scaling configuration of the compute fleet.
@@ -411,7 +415,7 @@ export interface IFleet extends IResource, iam.IGrantable, ec2.IConnectable, IFl
  *
  * You will be charged for the resources in the fleet, even if they are idle.
  *
- * @stateful
+ * @stateless
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
  */
 @propertyInjectable
@@ -548,17 +552,16 @@ export class Fleet extends Resource implements IFleet {
       throw new ValidationError(lit`BaseCapacityGreaterEqual`, 'baseCapacity must be greater than or equal to 1', this);
     }
 
-    // imageId is only supported for EC2-based environment types
     const ec2EnvironmentTypes = [
       EnvironmentType.LINUX_EC2,
       EnvironmentType.ARM_EC2,
       EnvironmentType.WINDOWS_EC2,
       EnvironmentType.MAC_ARM,
     ];
-    if (props.imageId !== undefined && !ec2EnvironmentTypes.includes(props.environmentType)) {
+    if (props.image !== undefined && !ec2EnvironmentTypes.includes(props.environmentType)) {
       throw new ValidationError(
-        lit`ImageIdRequiresEc2Environment`,
-        `imageId is only supported for EC2-based environment types (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM), got: ${props.environmentType}`,
+        lit`ImageRequiresEc2Environment`,
+        `image is only supported for EC2-based environment types (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM), got: ${props.environmentType}`,
         this,
       );
     }
@@ -667,6 +670,7 @@ export class Fleet extends Resource implements IFleet {
     }
 
     const vpcConfiguration = this.configureVpc(props);
+    const imageConfiguration = this.configureImage(props);
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
@@ -676,7 +680,7 @@ export class Fleet extends Resource implements IFleet {
       computeConfiguration,
       fleetVpcConfig: vpcConfiguration?.fleetVpcConfig,
       fleetServiceRole: this.role?.roleArn,
-      imageId: props.imageId,
+      imageId: imageConfiguration?.imageId,
       scalingConfiguration: props.scalingConfiguration ? {
         maxCapacity: props.scalingConfiguration.maxCapacity,
         scalingType: props.scalingConfiguration.scalingType ?? FleetScalingType.TARGET_TRACKING_SCALING,
@@ -703,6 +707,10 @@ export class Fleet extends Resource implements IFleet {
       // config.
       resource.node.addDependency(...vpcConfiguration.policyDependables);
     }
+    if (imageConfiguration) {
+      // The AMI permissions must exist before the fleet launches instances.
+      resource.node.addDependency(...imageConfiguration.policyDependables);
+    }
     if (props.vpc) {
       // Similarly, we should not try to create the fleet until all the
       // resources created by the VPC are created. Otherwise fleet instances may
@@ -719,6 +727,25 @@ export class Fleet extends Resource implements IFleet {
     if (value !== undefined && !Token.isUnresolved(value) && (value < 0 || !Number.isInteger(value))) {
       throw new ValidationError(lit`MustBePositiveInteger`, `${fieldName} must be a positive integer, got: ${value}`, this);
     }
+  }
+
+  private configureImage(props: FleetProps): { imageId: string; policyDependables: Array<IDependable> } | undefined {
+    if (!props.image) {
+      return undefined;
+    }
+    const { imageId, isCustomAmi } = props.image._bind(this);
+    const policyDependables: Array<IDependable> = [];
+    if (isCustomAmi) {
+      // https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
+      const addResult = this.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['ec2:DescribeImages', 'ec2:DescribeSnapshots'],
+        resources: ['*'],
+      }));
+      if (addResult.policyDependable) {
+        policyDependables.push(addResult.policyDependable);
+      }
+    }
+    return { imageId, policyDependables };
   }
 
   private configureVpc(props: FleetProps): { fleetVpcConfig: CfnFleet.VpcConfigProperty; policyDependables: Array<IDependable> } | undefined {
@@ -761,16 +788,18 @@ export class Fleet extends Resource implements IFleet {
       (props.subnetSelection.availabilityZones !== undefined && props.subnetSelection.availabilityZones.length > 1)
     );
 
-    let selectedSubnets = props.vpc.selectSubnets(props.subnetSelection);
+    const originalSubnets = props.vpc.selectSubnets(props.subnetSelection);
+    let selectedSubnets = originalSubnets;
 
-    // Skip all narrowing/validation during pending lookup or with tokenized subnet lists
-    if (!selectedSubnets.isPendingLookup && !Token.isUnresolved(selectedSubnets.subnetIds) && selectedSubnets.subnetIds.length > 1) {
+    // Skip narrowing/validation during pending lookup. A tokenized subnet list
+    // always has length 1, so the length check already excludes it.
+    if (!selectedSubnets.isPendingLookup && selectedSubnets.subnetIds.length > 1) {
       if (userExplicitlySelectedMultiple) {
         // User explicitly listed multiple subnets or AZs — this is intentional, so throw
         throw new ValidationError(
           lit`FleetVpcSingleSubnetRequired`,
           `Reserved capacity fleets support only one subnet, but ${selectedSubnets.subnetIds.length} were selected; ` +
-          'narrow subnetSelection with `subnets: [subnet]` or `availabilityZones: [\'<az>\']`.',
+          'narrow subnetSelection with `subnets: [subnet]` or `availabilityZones: [\'<az>\']`',
           this,
         );
       } else {
@@ -782,10 +811,13 @@ export class Fleet extends Resource implements IFleet {
       }
     }
 
-    // Extract subnetIds AFTER potential narrowing
+    // FleetVpcConfig.Subnets uses the narrowed selection (one subnet).
+    // subnetArns for the IAM condition uses the original selection so existing
+    // stacks that override FleetVpcConfig.Subnets on the L1 keep their IAM unchanged.
     const { subnetIds } = selectedSubnets;
+    const originalSubnetIds = originalSubnets.subnetIds;
     const networkInterfaceArn = Arn.format({ service: 'ec2', resource: 'network-interface', resourceName: '*' }, this.stack);
-    const subnetArns = subnetIds.map((subnetId) =>
+    const subnetArns = originalSubnetIds.map((subnetId) =>
       Arn.format({ service: 'ec2', resource: 'subnet', resourceName: subnetId }, this.stack),
     );
     const policyDependables: Array<IDependable> = [];
@@ -927,4 +959,56 @@ export enum FleetOverflowBehavior {
    * Overflow builds run on CodeBuild on-demand instances.
    */
   ON_DEMAND = 'ON_DEMAND',
+}
+
+/**
+ * The image used by the instances of a CodeBuild Fleet.
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
+ */
+export class FleetImage {
+  /**
+   * An image managed by CodeBuild.
+   *
+   * @param id The CodeBuild image identifier
+   * @example 'aws/codebuild/macos-arm-base:26'
+   */
+  public static fromCodeBuildImageId(id: string): FleetImage {
+    return new FleetImage(() => id, false);
+  }
+
+  /**
+   * A custom AMI.
+   *
+   * The AMI must be shared with the CodeBuild service organization of the region.
+   *
+   * @param amiId The AMI ID
+   * @example 'ami-0123456789abcdef0'
+   */
+  public static fromAmiId(amiId: string): FleetImage {
+    return new FleetImage(() => amiId, true);
+  }
+
+  /**
+   * A custom AMI from an EC2 machine image.
+   *
+   * The AMI must be shared with the CodeBuild service organization of the region.
+   *
+   * @param machineImage The machine image, for example `ec2.MachineImage.latestAmazonLinux2023()`
+   */
+  public static fromMachineImage(machineImage: ec2.IMachineImage): FleetImage {
+    return new FleetImage((scope) => machineImage.getImage(scope).imageId, true);
+  }
+
+  private constructor(
+    private readonly produceImageId: (scope: Construct) => string,
+    private readonly isCustomAmi: boolean,
+  ) {}
+
+  /**
+   * @internal
+   */
+  public _bind(scope: Construct): { imageId: string; isCustomAmi: boolean } {
+    return { imageId: this.produceImageId(scope), isCustomAmi: this.isCustomAmi };
+  }
 }
