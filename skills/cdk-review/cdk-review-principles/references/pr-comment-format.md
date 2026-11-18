@@ -66,15 +66,14 @@ review `summary`, not as a finding.
 
 Keep these OUT of the findings (put them in the `summary` text if they matter):
 high-level design observations not tied to a line, positive feedback, clusters of
-related nits (consolidate into one finding on the first occurrence), findings already
-surfaced by automated PR analysis (unless you add new context), and philosophical
+related nits (consolidate into one finding on the first occurrence), and philosophical
 questions.
 
 ### Severity-based filtering
 
 | Severity | Emit as a finding? | Rule |
 |----------|--------------------|------|
-| `BLOCKING` | Always | Every blocking issue becomes a finding. |
+| `BLOCKING` | Always, when it meets the posting conditions | Every blocking issue that meets them becomes a finding. |
 | `RECOMMENDED` | Usually | Emit when tied to specific code; consolidate related ones. |
 | `OPTIONAL` | Sparingly | Only if it is a quick fix and the total count is low. |
 
