@@ -1,0 +1,52 @@
+{
+  "/aws-cdk-dynamodb-v2-grant-resource-policy": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-dynamodb-v2-grant-resource-policy.template.json"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-resource-policy/Table": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-resource-policy/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-resource-policy/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-resource-policy/Table/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableCD117FA1"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-resource-policy/Exports/Output{\"Fn::GetAtt\":[\"TableCD117FA1\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTableCD117FA1ArnE2C8C204"
+    }
+  ]
+}
