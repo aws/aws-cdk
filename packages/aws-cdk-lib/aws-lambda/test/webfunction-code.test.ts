@@ -759,6 +759,35 @@ describe('WebFunctionCode', () => {
         expect(withEnv('one')).toEqual(withEnv('one'));
       });
 
+      test('cross-stack references in environment are resolved in copy configuration', () => {
+        const app = new cdk.App({
+          context: { '@aws-cdk/core:validateAgainstDefaultRules': true },
+        });
+        const env = { account: '111111111111', region: 'us-east-1' };
+        const dataStack = new cdk.Stack(app, 'DataStack', { env });
+        const dataBucket = new s3.Bucket(dataStack, 'DataBucket');
+
+        const webStack = new cdk.Stack(app, 'WebStack', { env });
+        new WebFunction(webStack, 'TestFunction', {
+          code: WebFunctionCode.fromAssetToManagedBucket(ASSET_PATH),
+          runtime: WebFunctionRuntime.NODEJS_24_X,
+          defaultEndpointAuth: WebFunctionAuthType.IAM_AUTH,
+          environment: { DATA_BUCKET: dataBucket.bucketName },
+        });
+
+        // Cross-stack references must resolve to Fn::ImportValue in copy configuration without CloudFormation-Validate::F1020
+        app.synth();
+
+        const [copy] = Object.values(Template.fromStack(webStack).findResources('Custom::S3ObjectCopy'));
+        const [revision] = Object.values(Template.fromStack(webStack).findResources('AWS::Lambda::WebFunctionRevision'));
+
+        const copyEnv = copy.Properties.Configuration.ServiceConfig.EnvironmentVariables.DATA_BUCKET;
+        const revEnv = revision.Properties.ServiceConfig.EnvironmentVariables.DATA_BUCKET;
+
+        expect(copyEnv).toEqual(revEnv);
+        expect(copyEnv).toHaveProperty('Fn::ImportValue');
+      });
+
       test.each<[string, (s: cdk.Stack) => Setup]>([
         ['a new key prefix', s => ({ bucket: owned(s), options: { keyPrefix: 'b/' } })],
         ['the same bucket imported by name', s => ({ bucket: s3.Bucket.fromBucketName(s, 'MyBucket', 'my-bucket') })],

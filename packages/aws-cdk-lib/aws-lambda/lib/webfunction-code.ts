@@ -387,7 +387,7 @@ abstract class StagedAssetCode extends WebFunctionCode {
       sourceKey: this.asset.s3ObjectKey,
       destinationKeyPrefix: functionPrefix,
       contentHash: this.asset.assetHash,
-      configuration: cdk.Lazy.any({ produce: () => holder.revision && revisionConfiguration(holder.revision) }),
+      configuration: cdk.Lazy.uncachedAny({ produce: () => holder.revision && revisionConfiguration(holder.revision) }),
     });
     this.pending = { copy, holder };
 
