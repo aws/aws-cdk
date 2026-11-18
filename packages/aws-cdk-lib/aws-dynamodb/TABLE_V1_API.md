@@ -310,9 +310,14 @@ deployment. A single stack update can add or remove only one index, either a
 global secondary index or a vector index.
 
 Searching a vector index requires the `dynamodb:SearchVectors` permission on
-the index resource. It is not included in `grantReadData` because fine-grained
-access control condition keys (such as `dynamodb:LeadingKeys`) have no effect
-on `SearchVectors`. Grant it explicitly with `grants.vectorSearch()`:
+the index resource. Fine-grained access control condition keys (such as
+`dynamodb:LeadingKeys`) have no effect on `SearchVectors`, so `grantReadData`
+does not include `SearchVectors`. Grant it with `grants.vectorSearch()`, which
+grants it on all indexes of the table (`index/*`). The grantee can search every
+item in those indexes and read every attribute they project. A statement that
+allows `SearchVectors` with one of those conditions does not match the request,
+so DynamoDB denies the request. For this reason `grants.vectorSearch()` grants
+`SearchVectors` in a separate statement:
 
 ```ts
 declare const table: dynamodb.Table;

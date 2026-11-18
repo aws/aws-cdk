@@ -170,9 +170,16 @@ export class TableGrants {
    * SearchVectors on the index resources in the table's region and in each
    * region of `regions`.
    *
-   * SearchVectors is deliberately not part of `readData`: fine-grained access
-   * control condition keys (such as `dynamodb:LeadingKeys`) have no effect on
-   * SearchVectors, so it must be granted explicitly.
+   * Fine-grained access control condition keys (such as `dynamodb:LeadingKeys`)
+   * have no effect on SearchVectors, so SearchVectors is not part of `readData`.
+   * The grant covers all indexes of the table (`index/*`), and the grantee can
+   * search every item in those indexes and read every attribute they project.
+   * A statement that allows SearchVectors with one of those conditions does not
+   * match the request, so DynamoDB denies the request. For this reason this
+   * method grants SearchVectors in a separate statement. When the grant goes to
+   * the table's resource policy, the conditions of a `PrincipalWithConditions`
+   * grantee are added to the statement. So do not pass a grantee with
+   * fine-grained access control conditions.
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
