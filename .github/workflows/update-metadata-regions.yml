@@ -7,6 +7,8 @@ on:
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   update-regions:
     name: Update Regions

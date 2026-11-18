@@ -3,6 +3,8 @@ on:
     # Cron format: min hr day month dow
     - cron: "0 0 * * *"
   workflow_dispatch:
+cache-mode: read
+
 jobs:
   close-stale-prs:
     # this workflow will always fail in forks; bail if this isn't running in the upstream
