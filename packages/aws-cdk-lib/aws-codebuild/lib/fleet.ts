@@ -83,10 +83,8 @@ export interface FleetProps {
    * Specify this if the fleet needs to access resources in a VPC.
    *
    * Reserved capacity fleets support only one subnet in a single Availability Zone.
-   * If the default or a filter-based `subnetSelection` (for example `subnetType`)
-   * resolves to multiple subnets, the construct uses the first subnet and emits a
-   * warning. If you explicitly list multiple `subnets` or `availabilityZones`,
-   * synthesis fails with `FleetVpcSingleSubnetRequired`.
+   * If the subnet selection resolves to multiple subnets, the construct uses the
+   * first subnet and emits a warning.
    *
    * Cannot be combined with `proxyConfiguration`.
    *
@@ -103,9 +101,9 @@ export interface FleetProps {
    * 2. Private subnets unconnected to the internet, but with [VPC endpoints](https://docs.aws.amazon.com/codebuild/latest/userguide/use-vpc-endpoints-with-codebuild.html) for the necessary services.
    *
    * Reserved capacity fleets support only one subnet in a single Availability Zone.
-   * The construct auto-narrows to the first subnet and warns when your selection
-   * resolves to multiple subnets. If you explicitly list multiple subnets or
-   * availability zones, synthesis will fail with `FleetVpcSingleSubnetRequired`.
+   * If the selection resolves to multiple subnets, the construct uses the first
+   * subnet and emits a warning. The `ec2:CreateNetworkInterfacePermission` grant
+   * still covers all selected subnets, so select a single subnet for the narrowest grant.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
@@ -777,38 +775,21 @@ export class Fleet extends Resource implements IFleet {
     // Reserved capacity fleets support only one subnet in a single Availability Zone.
     // https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.reserved-capacity-fleets.html
     //
-    // We auto-narrow to the first subnet and warn when:
-    // - subnetSelection is undefined (default behavior)
-    // - subnetSelection uses filters (subnetType, subnetGroupName, etc.) that don't explicitly pin subnets
-    //
-    // We throw only when the user explicitly lists multiple items in `subnets` or `availabilityZones`,
-    // since that indicates intentional multi-subnet selection which conflicts with the one-subnet limit.
-    const userExplicitlySelectedMultiple = props.subnetSelection !== undefined && (
-      (props.subnetSelection.subnets !== undefined && props.subnetSelection.subnets.length > 1) ||
-      (props.subnetSelection.availabilityZones !== undefined && props.subnetSelection.availabilityZones.length > 1)
-    );
+    // If the selection resolves to multiple subnets, we narrow to the first one and warn
+    // instead of throwing, so apps that pin a subnet via an L1 override of
+    // FleetVpcConfig.Subnets keep synthesizing.
 
     const originalSubnets = props.vpc.selectSubnets(props.subnetSelection);
     let selectedSubnets = originalSubnets;
 
-    // Skip narrowing/validation during pending lookup. A tokenized subnet list
+    // Skip narrowing during pending lookup. A tokenized subnet list
     // always has length 1, so the length check already excludes it.
     if (!selectedSubnets.isPendingLookup && selectedSubnets.subnetIds.length > 1) {
-      if (userExplicitlySelectedMultiple) {
-        // User explicitly listed multiple subnets or AZs — this is intentional, so throw
-        throw new ValidationError(
-          lit`FleetVpcSingleSubnetRequired`,
-          `Reserved capacity fleets support only one subnet, but ${selectedSubnets.subnetIds.length} were selected; ` +
-          'narrow subnetSelection with `subnets: [subnet]` or `availabilityZones: [\'<az>\']`',
-          this,
-        );
-      } else {
-        // Selection came from filters or default — auto-narrow to first subnet and warn
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed',
-          `Reserved capacity fleets support only one subnet; using ${selectedSubnets.subnets[0].node.path}. ` +
-          'Pass subnetSelection with a single subnet to suppress this warning.');
-        selectedSubnets = props.vpc.selectSubnets({ subnets: [selectedSubnets.subnets[0]] });
-      }
+      const source = props.subnetSelection === undefined ? 'the default subnet selection' : 'subnetSelection';
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed',
+        `Reserved capacity fleets support only one subnet, but ${source} resolves to ${selectedSubnets.subnetIds.length} subnets; ` +
+        `using ${selectedSubnets.subnets[0].node.path}. Pass subnetSelection with a single subnet to suppress this warning.`);
+      selectedSubnets = props.vpc.selectSubnets({ subnets: [selectedSubnets.subnets[0]] });
     }
 
     // FleetVpcConfig.Subnets uses the narrowed selection (one subnet).
@@ -970,10 +951,18 @@ export class FleetImage {
   /**
    * An image managed by CodeBuild.
    *
+   * For a custom AMI, use `fromAmiId` or `fromMachineImage` instead.
+   *
    * @param id The CodeBuild image identifier
    * @example 'aws/codebuild/macos-arm-base:26'
    */
   public static fromCodeBuildImageId(id: string): FleetImage {
+    if (!Token.isUnresolved(id) && id.startsWith('ami-')) {
+      throw new UnscopedValidationError(
+        lit`FleetImageAmiIdNotCodeBuildImage`,
+        `fromCodeBuildImageId expects a CodeBuild image identifier, got AMI ID ${JSON.stringify(id)}; use FleetImage.fromAmiId() for custom AMIs`,
+      );
+    }
     return new FleetImage(() => id, false);
   }
 

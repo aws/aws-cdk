@@ -771,40 +771,73 @@ describe('vpc', () => {
       Match.stringLikeRegexp('using Default/Vpc/PrivateSubnet1.*Pass subnetSelection.*\\[ack: @aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed\\]'));
   });
 
-  test('throws error when explicit subnets array has multiple entries', () => {
+  test.each([
+    ['subnets', (vpc: ec2.Vpc): ec2.SubnetSelection => ({ subnets: vpc.privateSubnets })],
+    ['availabilityZones', (_vpc: ec2.Vpc): ec2.SubnetSelection => ({ availabilityZones: ['us-east-1a', 'us-east-1b'] })],
+    ['subnetFilters byIds', (vpc: ec2.Vpc): ec2.SubnetSelection => ({
+      subnetFilters: [ec2.SubnetFilter.byIds(vpc.privateSubnets.map(s => s.subnetId))],
+    })],
+  ])('auto-narrows and warns when explicit %s selects multiple subnets', (_name, selection) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', { availabilityZones: ['us-east-1a', 'us-east-1b'] });
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: selection(vpc),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }],
+      }),
+    });
+    Annotations.fromStack(stack).hasWarning('/Default/Fleet',
+      Match.stringLikeRegexp('but subnetSelection resolves to 2 subnets; using Default/Vpc/PrivateSubnet1.*\\[ack: @aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed\\]'));
+  });
+
+  test('explicit multi-subnet selection with an L1 override of FleetVpcConfig.Subnets still synthesizes', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
-    // THEN - explicit subnets array with >1 entries should throw
-    expect(() => {
-      new codebuild.Fleet(stack, 'Fleet', {
-        baseCapacity: 1,
-        computeType: codebuild.FleetComputeType.SMALL,
-        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
-        vpc,
-        subnetSelection: { subnets: [vpc.privateSubnets[0], vpc.privateSubnets[1]] },
-      });
-    }).toThrow(/Reserved capacity fleets support only one subnet, but 2 were selected.*narrow subnetSelection/);
-  });
-
-  test('throws error when explicit availabilityZones has multiple entries', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', {
-      availabilityZones: ['us-east-1a', 'us-east-1b'],
+    // WHEN - existing pattern: pin the second subnet via an L1 override
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      vpc,
+      subnetSelection: { subnets: vpc.privateSubnets },
     });
+    (fleet.node.defaultChild as codebuild.CfnFleet).addPropertyOverride('FleetVpcConfig.Subnets', [vpc.privateSubnets[1].subnetId]);
 
-    // THEN - explicit availabilityZones with >1 entries should throw
-    expect(() => {
-      new codebuild.Fleet(stack, 'Fleet', {
-        baseCapacity: 1,
-        computeType: codebuild.FleetComputeType.SMALL,
-        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
-        vpc,
-        subnetSelection: { availabilityZones: ['us-east-1a', 'us-east-1b'] },
-      });
-    }).toThrow(/Reserved capacity fleets support only one subnet, but 2 were selected.*narrow subnetSelection/);
+    // THEN - the override wins and the IAM condition still covers the pinned subnet
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+      FleetVpcConfig: Match.objectLike({
+        Subnets: [{ Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }],
+      }),
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: 'ec2:CreateNetworkInterfacePermission',
+          Condition: {
+            ArnEquals: {
+              'ec2:Subnet': [
+                Match.objectLike({ 'Fn::Join': Match.arrayWith([Match.arrayWith([{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }])]) }),
+                Match.objectLike({ 'Fn::Join': Match.arrayWith([Match.arrayWith([{ Ref: 'VpcPrivateSubnet2Subnet3788AAA1' }])]) }),
+              ],
+            },
+          },
+        })]),
+      }),
+    });
   });
 
   test('does not throw on pending VPC lookup', () => {
@@ -837,30 +870,31 @@ describe('vpc', () => {
       Match.stringLikeRegexp('Reserved capacity fleets support only one subnet'));
   });
 
-  test('does not throw on pending VPC lookup with explicit subnetSelection', () => {
-    // GIVEN - pending lookup with explicit multi-subnet selection
+  test.each([
+    ['a subnetType filter', (_vpc: ec2.IVpc): ec2.SubnetSelection => ({ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS })],
+    ['explicit subnets', (vpc: ec2.IVpc): ec2.SubnetSelection => ({ subnets: vpc.privateSubnets })],
+    ['explicit availabilityZones', (_vpc: ec2.IVpc): ec2.SubnetSelection => ({ availabilityZones: ['dummy1a', 'dummy1b'] })],
+  ])('does not narrow on pending VPC lookup with %s', (_name, selection) => {
+    // GIVEN - pending lookup, the dummy VPC has two private subnets
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', { env: { account: '1234', region: 'us-east-1' } });
     const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { vpcId: 'vpc-1234' });
 
-    // WHEN/THEN - should not throw; the isPendingLookup guard should skip validation
+    // WHEN
     new codebuild.Fleet(stack, 'Fleet', {
       baseCapacity: 1,
       computeType: codebuild.FleetComputeType.SMALL,
       environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       vpc,
-      subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      subnetSelection: selection(vpc),
     });
 
-    // THEN - dummy subnets should be in the template (exact two-element array)
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::CodeBuild::Fleet', {
+    // THEN - both dummy subnets are kept and no warning is emitted
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
       FleetVpcConfig: Match.objectLike({
         Subnets: [Match.stringLikeRegexp('^p-'), Match.stringLikeRegexp('^p-')],
       }),
     });
-
-    // THEN - no warning during pending lookup
     Annotations.fromStack(stack).hasNoWarning('*',
       Match.stringLikeRegexp('Reserved capacity fleets support only one subnet'));
   });
@@ -1006,6 +1040,31 @@ describe('image', () => {
     });
     template.resourceCountIs('AWS::IAM::Role', 0);
     template.resourceCountIs('AWS::IAM::Policy', 0);
+  });
+
+  test('fails if fromCodeBuildImageId is given an AMI ID', () => {
+    expect(() => codebuild.FleetImage.fromCodeBuildImageId('ami-12345678'))
+      .toThrow('fromCodeBuildImageId expects a CodeBuild image identifier, got AMI ID "ami-12345678"; use FleetImage.fromAmiId() for custom AMIs');
+  });
+
+  test('fromCodeBuildImageId accepts a token', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const imageId = new cdk.CfnParameter(stack, 'ImageId').valueAsString;
+
+    // WHEN
+    new codebuild.Fleet(stack, 'Fleet', {
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.LARGE,
+      environmentType: codebuild.EnvironmentType.MAC_ARM,
+      image: codebuild.FleetImage.fromCodeBuildImageId(imageId),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
+      ImageId: { Ref: 'ImageId' },
+      FleetServiceRole: Match.absent(),
+    });
   });
 
   test('ImageId is absent when image is not specified', () => {
