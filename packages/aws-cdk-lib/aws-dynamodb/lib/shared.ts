@@ -380,6 +380,7 @@ export enum SearchSchemaElementType {
 
   /**
    * The attribute can be used as an inline filter when querying the vector index.
+   * A search schema can contain at most 18 INLINE_FILTER elements.
    */
   INLINE_FILTER = 'INLINE_FILTER',
 }
@@ -409,13 +410,21 @@ export interface SearchSchemaElement {
  *
  * Vector indexes enable similarity search over embedding attributes and can
  * only be used with tables in `PAY_PER_REQUEST` (on-demand) billing mode.
+ *
+ * You cannot change a vector index after you create it, because CloudFormation
+ * does not support updates to vector index properties. To change a vector
+ * index, add a new vector index with a different `indexName` and deploy. When
+ * your application searches the new index, remove the old vector index in a
+ * later deployment. A single stack update can add or remove only one index,
+ * either a global secondary index or a vector index.
  */
 export interface VectorIndexProps {
   /**
    * The name of the vector index.
    *
    * Index names must be unique across all global secondary indexes, local
-   * secondary indexes, and vector indexes on the table.
+   * secondary indexes, and vector indexes on the table. You cannot change
+   * this value after you create the index.
    */
   readonly indexName: string;
 
@@ -423,24 +432,32 @@ export interface VectorIndexProps {
    * The name of the attribute that contains the vector embedding.
    *
    * This attribute has an implicit type of List (`L`) and does not need to be
-   * declared in the table's attribute definitions.
+   * declared in the table's attribute definitions. You cannot change this
+   * value after you create the index.
    */
   readonly vectorAttribute: string;
 
   /**
    * The number of dimensions of each vector stored in the index.
    *
-   * Must be between 1 and 4096.
+   * Must be between 1 and 4096. You cannot change this value after you create
+   * the index.
    */
   readonly dimensions: number;
 
   /**
    * The distance function used to perform vector similarity search.
+   *
+   * You cannot change this value after you create the index.
    */
   readonly distanceFunction: VectorDistanceFunction;
 
   /**
    * The search schema defining partitioning (HASH) and inline filters.
+   *
+   * A search schema can contain at most one HASH element and at most 18
+   * INLINE_FILTER elements. You cannot change this value after you create the
+   * index.
    *
    * @default - no search schema
    */
@@ -450,6 +467,7 @@ export interface VectorIndexProps {
    * The set of attributes that are projected into the vector index.
    *
    * The vector attribute and search schema attributes are always included.
+   * You cannot change this value after you create the index.
    *
    * @default ALL
    */
@@ -457,6 +475,8 @@ export interface VectorIndexProps {
 
   /**
    * The non-key attributes that are projected into the vector index.
+   *
+   * You cannot change this value after you create the index.
    *
    * @default - no additional attributes
    */
@@ -686,39 +706,54 @@ export function validateContributorInsights(
  * dimensions and search schema. `Table` and `TableV2` both call this, so they
  * reject the same input.
  *
- * The search schema check requires unique attribute names and at most one
- * HASH element.
+ * The search schema check requires unique attribute names, at most one HASH
+ * element and at most 18 INLINE_FILTER elements.
  *
  * @param props the properties of the vector index
  * @param billingMode the billing mode of the table
+ * @param onDemandSetting the table setting that selects PAY_PER_REQUEST billing, named in the billing mode error
  * @param scope the construct that reports a validation error
  */
-export function validateVectorIndexProps(props: VectorIndexProps, billingMode: string, scope: IConstruct): void {
+export function validateVectorIndexProps(props: VectorIndexProps, billingMode: string, onDemandSetting: string, scope: IConstruct): void {
+  const indexName = JSON.stringify(props.indexName);
+
   // Vector indexes are only supported in on-demand (PAY_PER_REQUEST) billing mode.
   if (billingMode !== BillingMode.PAY_PER_REQUEST) {
-    throw new ValidationError(lit`VectorIndexRequiresOnDemand`, `Vector indexes can only be used with ${BillingMode.PAY_PER_REQUEST} billing mode`, scope);
+    throw new ValidationError(lit`VectorIndexRequiresOnDemand`, `vector index ${indexName} requires ${BillingMode.PAY_PER_REQUEST} billing mode, got ${JSON.stringify(billingMode)} (set ${onDemandSetting} on the table)`, scope);
   }
 
   if (!Token.isUnresolved(props.dimensions) && (!Number.isInteger(props.dimensions) || props.dimensions < 1 || props.dimensions > 4096)) {
-    throw new ValidationError(lit`VectorIndexInvalidDimensions`, `Dimensions for vector index ${props.indexName} must be an integer between 1 and 4096, got ${props.dimensions}`, scope);
+    // String interpolation prints NaN and Infinity, which JSON.stringify() would print as null.
+    throw new ValidationError(lit`VectorIndexInvalidDimensions`, `vector index ${indexName} has dimensions ${props.dimensions} (use an integer from 1 to 4096)`, scope);
   }
 
   if (!props.searchSchema) {
     return;
   }
   if (props.searchSchema.length === 0) {
-    throw new ValidationError(lit`VectorIndexEmptySearchSchema`, `Search schema for vector index ${props.indexName} must contain at least one element when provided; omit searchSchema instead of passing an empty array`, scope);
+    throw new ValidationError(lit`VectorIndexEmptySearchSchema`, `vector index ${indexName} has an empty search schema (omit searchSchema or add at least one element)`, scope);
   }
   const seen = new Set<string>();
   let hashCount = 0;
+  let inlineFilterCount = 0;
   for (const element of props.searchSchema) {
     if (seen.has(element.attribute.name)) {
-      throw new ValidationError(lit`VectorIndexDuplicateSearchSchemaAttribute`, `Duplicate search schema attribute name, ${element.attribute.name}, in vector index ${props.indexName}`, scope);
+      throw new ValidationError(lit`VectorIndexDuplicateSearchSchemaAttribute`, `vector index ${indexName} lists the search schema attribute ${JSON.stringify(element.attribute.name)} more than once (list each attribute once)`, scope);
     }
     seen.add(element.attribute.name);
-    if (element.type === SearchSchemaElementType.HASH && ++hashCount > 1) {
-      throw new ValidationError(lit`VectorIndexMultipleHashElements`, `At most one HASH search schema element is allowed in vector index ${props.indexName}`, scope);
+    if (element.type === SearchSchemaElementType.HASH) {
+      hashCount++;
     }
+    if (element.type === SearchSchemaElementType.INLINE_FILTER) {
+      inlineFilterCount++;
+    }
+  }
+  if (hashCount > 1) {
+    throw new ValidationError(lit`VectorIndexMultipleHashElements`, `vector index ${indexName} can have at most one HASH search schema element, got ${hashCount} (keep one HASH element)`, scope);
+  }
+  // DynamoDB allows at most 18 inline filters per vector index, and the quota is not adjustable.
+  if (inlineFilterCount > 18) {
+    throw new ValidationError(lit`VectorIndexTooManyInlineFilters`, `vector index ${indexName} can have at most 18 INLINE_FILTER search schema elements, got ${inlineFilterCount} (remove ${inlineFilterCount - 18} of them)`, scope);
   }
 }
 

@@ -1014,7 +1014,7 @@ export class TableV2 extends TableBaseV2 {
   @MethodMetadata()
   public addVectorIndex(props: VectorIndexProps) {
     this.validateIndexName(props.indexName);
-    validateVectorIndexProps(props, this.billingMode, this);
+    validateVectorIndexProps(props, this.billingMode, 'billing: Billing.onDemand()', this);
     const vectorIndex = this.configureVectorIndex(props);
     this.vectorIndexes.put(props.indexName, vectorIndex);
   }

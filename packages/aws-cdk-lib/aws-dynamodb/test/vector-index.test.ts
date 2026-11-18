@@ -29,6 +29,14 @@ function newTable(): Table {
   });
 }
 
+// `count` INLINE_FILTER search schema elements named filter0, filter1, and so on.
+function inlineFilters(count: number) {
+  return Array.from({ length: count }, (_, i) => ({
+    attribute: { name: `filter${i}`, type: AttributeType.STRING },
+    type: SearchSchemaElementType.INLINE_FILTER,
+  }));
+}
+
 // Index ARN of the table 'my-table' imported by name into the test stack, which sets no account or region.
 const importedByNameIndexArn = {
   'Fn::Join': ['', [
@@ -128,17 +136,44 @@ test('throws when the table is not in PAY_PER_REQUEST billing mode', () => {
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
-  })).toThrow(/can only be used with PAY_PER_REQUEST billing mode/);
+  })).toThrow('vector index "vectorIndex" requires PAY_PER_REQUEST billing mode, got "PROVISIONED" (set billingMode: BillingMode.PAY_PER_REQUEST on the table)');
 });
 
-test.each([0, 4097])('throws when dimensions %d is out of range', (dimensions) => {
+test('throws when the table uses the default billing mode, PROVISIONED', () => {
+  const table = new Table(stack, 'DefaultBilling', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => table.addVectorIndex({
+    indexName: 'vectorIndex',
+    vectorAttribute: 'embedding',
+    dimensions: 128,
+    distanceFunction: VectorDistanceFunction.COSINE,
+  })).toThrow('got "PROVISIONED" (set billingMode: BillingMode.PAY_PER_REQUEST on the table)');
+});
+
+test.each([1, 4096])('accepts dimensions %d at the boundary', (dimensions) => {
+  const table = newTable();
+  table.addVectorIndex({
+    indexName: 'vectorIndex',
+    vectorAttribute: 'embedding',
+    dimensions,
+    distanceFunction: VectorDistanceFunction.COSINE,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', Dimensions: dimensions })],
+  });
+});
+
+test.each([-1, 0, 4097])('throws when dimensions %d is out of range', (dimensions) => {
   const table = newTable();
   expect(() => table.addVectorIndex({
     indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions,
     distanceFunction: VectorDistanceFunction.COSINE,
-  })).toThrow(/must be an integer between 1 and 4096/);
+  })).toThrow(`vector index "vectorIndex" has dimensions ${dimensions} (use an integer from 1 to 4096)`);
 });
 
 test('throws when a vector index name collides with a GSI name', () => {
@@ -204,14 +239,14 @@ test('throws when INCLUDE projection has no nonKeyAttributes', () => {
   })).toThrow(/non-key attributes should be specified/);
 });
 
-test('throws when dimensions is not an integer', () => {
+test.each([2.5, NaN])('throws when dimensions %d is not an integer', (dimensions) => {
   const table = newTable();
   expect(() => table.addVectorIndex({
     indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
-    dimensions: 2.5,
+    dimensions,
     distanceFunction: VectorDistanceFunction.COSINE,
-  })).toThrow(/must be an integer between 1 and 4096/);
+  })).toThrow(`vector index "vectorIndex" has dimensions ${dimensions} (use an integer from 1 to 4096)`);
 });
 
 test('tokenized dimensions is not validated at synth and resolves in the template', () => {
@@ -355,21 +390,57 @@ test('throws when search schema contains duplicate attribute names', () => {
       { attribute: { name: 'category', type: AttributeType.STRING }, type: SearchSchemaElementType.HASH },
       { attribute: { name: 'category', type: AttributeType.STRING }, type: SearchSchemaElementType.INLINE_FILTER },
     ],
-  })).toThrow(/Duplicate search schema attribute name, category/);
+  })).toThrow('vector index "vectorIndex" lists the search schema attribute "category" more than once (list each attribute once)');
 });
 
-test('throws when search schema contains more than one HASH element', () => {
+test.each([2, 3])('throws when the search schema has %d HASH elements', (count) => {
   const table = newTable();
   expect(() => table.addVectorIndex({
     indexName: 'vectorIndex',
     vectorAttribute: 'embedding',
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
+    searchSchema: Array.from({ length: count }, (_, i) => ({
+      attribute: { name: `hash${i}`, type: AttributeType.STRING },
+      type: SearchSchemaElementType.HASH,
+    })),
+  })).toThrow(`vector index "vectorIndex" can have at most one HASH search schema element, got ${count} (keep one HASH element)`);
+});
+
+test('accepts a HASH element and 18 INLINE_FILTER elements', () => {
+  const table = newTable();
+  table.addVectorIndex({
+    indexName: 'vectorIndex',
+    vectorAttribute: 'embedding',
+    dimensions: 128,
+    distanceFunction: VectorDistanceFunction.COSINE,
     searchSchema: [
       { attribute: { name: 'category', type: AttributeType.STRING }, type: SearchSchemaElementType.HASH },
-      { attribute: { name: 'region', type: AttributeType.STRING }, type: SearchSchemaElementType.HASH },
+      ...inlineFilters(18),
     ],
-  })).toThrow(/At most one HASH search schema element is allowed/);
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    VectorIndexes: [
+      Match.objectLike({
+        SearchSchema: [
+          { AttributeName: 'category', SearchSchemaElementType: 'HASH' },
+          ...Array.from({ length: 18 }, (_, i) => ({ AttributeName: `filter${i}`, SearchSchemaElementType: 'INLINE_FILTER' })),
+        ],
+      }),
+    ],
+  });
+});
+
+test.each([19, 25])('throws when the search schema has %d INLINE_FILTER elements', (count) => {
+  const table = newTable();
+  expect(() => table.addVectorIndex({
+    indexName: 'vectorIndex',
+    vectorAttribute: 'embedding',
+    dimensions: 128,
+    distanceFunction: VectorDistanceFunction.COSINE,
+    searchSchema: inlineFilters(count),
+  })).toThrow(`vector index "vectorIndex" can have at most 18 INLINE_FILTER search schema elements, got ${count} (remove ${count - 18} of them)`);
 });
 
 describe('grants.vectorSearch', () => {
@@ -678,7 +749,7 @@ test('throws when search schema is an empty array', () => {
     dimensions: 128,
     distanceFunction: VectorDistanceFunction.COSINE,
     searchSchema: [],
-  })).toThrow(/must contain at least one element when provided/);
+  })).toThrow('vector index "vectorIndex" has an empty search schema (omit searchSchema or add at least one element)');
 });
 
 // E3039 reports attribute definitions that no key schema references. DynamoDB

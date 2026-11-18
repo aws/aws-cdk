@@ -298,9 +298,16 @@ referenced by the `searchSchema` are added to the table's attribute definitions
 automatically. Index names must be unique across all global secondary indexes,
 local secondary indexes, and vector indexes on the table.
 
-A `searchSchema` may contain at most one `HASH` element. When a `HASH` element
-is declared, queries against the vector index must provide a search condition
-expression targeting it.
+A `searchSchema` may contain at most one `HASH` element and at most 18
+`INLINE_FILTER` elements. When a `HASH` element is declared, queries against
+the vector index must provide a search condition expression targeting it.
+
+You cannot change a vector index after you create it, because CloudFormation
+does not support updates to vector index properties. To change a vector index,
+add a new vector index with a different `indexName` and deploy. When your
+application searches the new index, remove the old vector index in a later
+deployment. A single stack update can add or remove only one index, either a
+global secondary index or a vector index.
 
 Searching a vector index requires the `dynamodb:SearchVectors` permission on
 the index resource. It is not included in `grantReadData` because fine-grained

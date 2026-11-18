@@ -1528,7 +1528,7 @@ export class Table extends TableBase {
   @MethodMetadata()
   public addVectorIndex(props: VectorIndexProps) {
     this.validateIndexName(props.indexName);
-    validateVectorIndexProps(props, this.billingMode, this);
+    validateVectorIndexProps(props, this.billingMode, 'billingMode: BillingMode.PAY_PER_REQUEST', this);
 
     // Search schema attributes require attribute definitions on the table. The
     // vector attribute has an implicit type of List and is therefore not registered.
