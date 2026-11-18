@@ -3,7 +3,8 @@ import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags, Token } from '../../core';
+import { App, CfnDeletionPolicy, CfnResource, Fn, Lazy, RemovalPolicy, Stack, Tags, Token } from '../../core';
+import type { CfnElement } from '../../core';
 import type {
   GlobalSecondaryIndexPropsV2,
   LocalSecondaryIndexProps,
@@ -4848,5 +4849,186 @@ test('no stream resource policy by default', () => {
         ReplicaStreamSpecification: Match.absent(),
       },
     ],
+  });
+});
+
+describe('grant as a dependency', () => {
+  const env = { account: '123456789012', region: 'us-east-1' };
+  const partitionKey = { name: 'pk', type: AttributeType.STRING };
+  const otherAccount = new iam.AccountPrincipal('111122223333');
+
+  function logicalIdOf(construct: TableV2 | TableV2MultiAccountReplica | iam.Policy) {
+    return Stack.of(construct).getLogicalId(construct.node.defaultChild as CfnElement);
+  }
+
+  function newDependent(stack: Stack) {
+    return new CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+  }
+
+  function newStatement(...actions: string[]) {
+    return new iam.PolicyStatement({ actions, principals: [otherAccount], resources: ['*'] });
+  }
+
+  test('the dependent of a grant to another account depends on the table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env });
+    const table = new TableV2(stack, 'Table', { partitionKey });
+    const dependent = newDependent(stack);
+
+    // WHEN
+    table.grantReadData(otherAccount).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(table)],
+    });
+  });
+
+  test('the dependent of a grant to the account root in an environment-agnostic stack depends on the table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+    const table = new TableV2(stack, 'Table', { partitionKey });
+    const dependent = newDependent(stack);
+
+    // WHEN
+    dependent.node.addDependency(table.grantReadData(new iam.AccountRootPrincipal()));
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(table)],
+    });
+  });
+
+  test('the dependent of a grant made through TableGrants depends on the table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env });
+    const table = new TableV2(stack, 'Table', { partitionKey });
+    const dependent = newDependent(stack);
+
+    // WHEN
+    table.grants.readData(otherAccount).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(table)],
+    });
+  });
+
+  test('the dependent depends only on the table when the table has replicas', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env });
+    const table = new TableV2(stack, 'Table', { partitionKey, replicas: [{ region: 'us-west-2' }] });
+    table.addReplica({ region: 'eu-west-1' });
+    const dependent = newDependent(stack);
+
+    // WHEN
+    table.grantReadData(otherAccount).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(table)],
+    });
+  });
+
+  test('the dependent does not depend on constructs created with the table as their scope', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env });
+    const table = new TableV2(stack, 'Table', { partitionKey });
+    new CfnResource(table, 'Child', { type: 'Test::Child' });
+    const dependent = newDependent(stack);
+
+    // WHEN
+    table.grantReadData(otherAccount).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(table)],
+    });
+  });
+
+  test('policyDependable returned by addToResourcePolicy is the table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env });
+    const table = new TableV2(stack, 'Table', { partitionKey });
+    const dependent = newDependent(stack);
+
+    // WHEN
+    const result = table.addToResourcePolicy(newStatement('dynamodb:GetItem'));
+    dependent.node.addDependency(result.policyDependable!);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(table)],
+    });
+  });
+
+  test('policyDependable returned by addToStreamResourcePolicy is the table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env });
+    const table = new TableV2(stack, 'Table', { partitionKey, dynamoStream: StreamViewType.NEW_IMAGE });
+    const dependent = newDependent(stack);
+
+    // WHEN
+    const result = table.addToStreamResourcePolicy(newStatement('dynamodb:GetRecords'));
+    dependent.node.addDependency(result.policyDependable!);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(table)],
+    });
+  });
+
+  describe('TableV2MultiAccountReplica', () => {
+    function newReplica() {
+      const app = new App();
+      const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+      const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+      const sourceTable = new TableV2(sourceStack, 'SourceTable', { partitionKey, dynamoStream: StreamViewType.NEW_IMAGE });
+      const replica = new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', { replicaSourceTable: sourceTable });
+      return { replicaStack, replica, dependent: newDependent(replicaStack) };
+    }
+
+    test('the dependent of a grant to another account depends on the replica', () => {
+      // GIVEN
+      const { replicaStack, replica, dependent } = newReplica();
+
+      // WHEN
+      replica.grantReadData(otherAccount).applyBefore(dependent);
+
+      // THEN
+      Template.fromStack(replicaStack).hasResource('Test::Dependent', {
+        DependsOn: [logicalIdOf(replica)],
+      });
+    });
+
+    test('policyDependable returned by addToStreamResourcePolicy is the replica', () => {
+      // GIVEN
+      const { replicaStack, replica, dependent } = newReplica();
+
+      // WHEN
+      const result = replica.addToStreamResourcePolicy(newStatement('dynamodb:GetRecords'));
+      dependent.node.addDependency(result.policyDependable!);
+
+      // THEN
+      Template.fromStack(replicaStack).hasResource('Test::Dependent', {
+        DependsOn: [logicalIdOf(replica)],
+      });
+    });
+  });
+
+  test('the dependent of a grant to a role in the same account depends on the role policy, not the table', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env });
+    const table = new TableV2(stack, 'Table', { partitionKey });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+    const dependent = newDependent(stack);
+
+    // WHEN
+    table.grantReadData(role).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(role.node.findChild('DefaultPolicy') as iam.Policy)],
+    });
   });
 });

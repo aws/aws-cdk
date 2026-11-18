@@ -907,7 +907,9 @@ export class TableV2 extends TableBaseV2 {
 
     return {
       statementAdded: true,
-      policyDependable: this.resourcePolicy,
+      // The resource policy is a property of the CfnGlobalTable. Depend on it rather than on `this`,
+      // which would also bring in any construct created with the table as its scope
+      policyDependable: this.resource,
     };
   }
 
@@ -929,7 +931,9 @@ export class TableV2 extends TableBaseV2 {
 
     return {
       statementAdded: true,
-      policyDependable: this.streamResourcePolicy,
+      // The stream resource policy is a property of the CfnGlobalTable. Depend on it rather than on `this`,
+      // which would also bring in any construct created with the table as its scope
+      policyDependable: this.resource,
     };
   }
 
@@ -1572,7 +1576,9 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
 
     return {
       statementAdded: true,
-      policyDependable: this.resourcePolicy,
+      // The resource policy is a property of the CfnGlobalTable. Depend on it rather than on `this`,
+      // which would also bring in any construct created with the table as its scope
+      policyDependable: this.resource,
     };
   }
 
@@ -1589,7 +1595,9 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
 
     return {
       statementAdded: true,
-      policyDependable: this.streamResourcePolicy,
+      // The stream resource policy is a property of the CfnGlobalTable. Depend on it rather than on `this`,
+      // which would also bring in any construct created with the table as its scope
+      policyDependable: this.resource,
     };
   }
 
