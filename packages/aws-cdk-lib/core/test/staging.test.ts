@@ -782,6 +782,46 @@ describe('staging', () => {
     );
   });
 
+  test('if copying is interrupted, target asset directory is not produced, and the next synth recovers', () => {
+    // GIVEN
+    const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
+    if (fs.existsSync(TEST_OUTDIR)) {
+      fs.removeSync(TEST_OUTDIR);
+    }
+
+    // WHEN
+    try {
+      execSync(`npx ts-node --preferTsExts ${__dirname}/app-that-is-interrupted-during-copy.ts`, {
+        env: {
+          ...process.env,
+          CDK_OUTDIR: TEST_OUTDIR,
+        },
+      });
+      throw new Error('We expected the above command to fail');
+    } catch (e: any) {
+      // See 'if bundling is interrupted' for why both are checked
+      if (e.signal === 'SIGTERM' || e.status === 143) {
+        // pass
+      } else {
+        throw e;
+      }
+    }
+
+    // THEN - only the half-written temporary directory exists...
+    const generatedFiles = fs.readdirSync(TEST_OUTDIR);
+    expect(generatedFiles).toContainEqual(`asset.${FIXTURE_TEST1_HASH}.tmp`);
+    expect(generatedFiles).not.toContainEqual(`asset.${FIXTURE_TEST1_HASH}`);
+
+    // ...and a regular synth into the same directory produces the complete asset
+    AssetStaging.clearAssetHashCache();
+    const app = new App({ outdir: TEST_OUTDIR });
+    const staging = new AssetStaging(new Stack(app, 'stack'), 'Asset', { sourcePath: FIXTURE_TEST1_DIR });
+    app.synth();
+
+    expect(fs.readdirSync(staging.absoluteStagedPath).sort()).toEqual(fs.readdirSync(FIXTURE_TEST1_DIR).sort());
+    expect(fs.readdirSync(TEST_OUTDIR)).not.toContainEqual(expect.stringMatching(/\.tmp$/));
+  });
+
   test('bundler re-uses assets from previous synths, ignoring tokens', () => {
     // GIVEN
     const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
@@ -1667,6 +1707,38 @@ describe('staging', () => {
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);
+  });
+
+  test.each([
+    ['test.zip', true],
+    ['test.jar', true],
+    ['test.tar.gz', true],
+    ['test.txt', false],
+  ])('bundling that produces a single file %p with SINGLE_FILE sets isArchive to %p', (fileName, expectedIsArchive) => {
+    // GIVEN
+    AssetStaging.clearAssetHashCache();
+    const stack = new Stack(new App(), 'stack');
+
+    // WHEN
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath: FIXTURE_TEST1_DIR,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        outputType: BundlingOutput.SINGLE_FILE,
+        environment: { FILE_NAME: fileName }, // keeps the cases from sharing a source hash
+        local: {
+          tryBundle(outputDir: string) {
+            fs.writeFileSync(path.join(outputDir, fileName), 'contents');
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN
+    expect(path.basename(staging.absoluteStagedPath)).toEqual(fileName);
+    expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(staging.isArchive).toEqual(expectedIsArchive);
   });
 
   test('bundling that produces a single file with SINGLE_FILE and hash type OUTPUT', () => {

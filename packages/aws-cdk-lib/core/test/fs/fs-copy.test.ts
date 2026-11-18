@@ -205,6 +205,61 @@ describe('fs copy', () => {
       '        .hidden',
     ]);
   });
+
+  describe('copyDirectoryAtomic', () => {
+    const SRC = path.join(__dirname, 'fixtures', 'test1', 'subdir4');
+    const SRC_TREE = ['file4.txt', 'local-link4.txt => file4.txt'];
+    let dest: string;
+    beforeEach(() => {
+      dest = path.join(outdir, 'dest');
+    });
+
+    test('copies to a new destination', () => {
+      // WHEN
+      FileSystem.copyDirectoryAtomic(SRC, dest);
+
+      // THEN
+      expect(tree(outdir)).toEqual(['dest (D)', ...SRC_TREE.map(l => `    ${l}`)]);
+    });
+
+    test('replaces an existing destination instead of merging into it', () => {
+      // GIVEN
+      fs.mkdirSync(dest);
+      fs.writeFileSync(path.join(dest, 'stale.txt'), 'stale');
+
+      // WHEN
+      FileSystem.copyDirectoryAtomic(SRC, dest);
+
+      // THEN
+      expect(tree(dest)).toEqual(SRC_TREE);
+    });
+
+    test('discards a temporary directory left behind by an earlier interrupted copy', () => {
+      // GIVEN
+      fs.mkdirSync(`${dest}.tmp`);
+      fs.writeFileSync(path.join(`${dest}.tmp`, 'partial.txt'), 'partial');
+
+      // WHEN
+      FileSystem.copyDirectoryAtomic(SRC, dest);
+
+      // THEN
+      expect(tree(outdir)).toEqual(['dest (D)', ...SRC_TREE.map(l => `    ${l}`)]);
+    });
+
+    test('on failure, removes the temporary directory and leaves an existing destination untouched', () => {
+      // GIVEN
+      fs.mkdirSync(dest);
+      fs.writeFileSync(path.join(dest, 'previous.txt'), 'previous');
+
+      // WHEN - the symlinks fixture has external links, which BLOCK_EXTERNAL rejects during the copy
+      expect(() => FileSystem.copyDirectoryAtomic(path.join(__dirname, 'fixtures', 'symlinks'), dest, {
+        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+      })).toThrow(/BLOCK_EXTERNAL forbids the symbolic link/);
+
+      // THEN
+      expect(tree(outdir)).toEqual(['dest (D)', '    previous.txt']);
+    });
+  });
 });
 
 function tree(dir: string, depth = ''): string[] {
