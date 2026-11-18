@@ -1520,8 +1520,8 @@ export class Table extends TableBase {
    *
    * Vector indexes enable similarity search over an embedding attribute and can
    * only be used with tables in `PAY_PER_REQUEST` (on-demand) billing mode. The
-   * index name must be unique across all global secondary indexes and vector
-   * indexes on the table.
+   * index name must be unique across all global secondary indexes, local
+   * secondary indexes, and vector indexes on the table.
    *
    * @param props the properties of the vector index
    */

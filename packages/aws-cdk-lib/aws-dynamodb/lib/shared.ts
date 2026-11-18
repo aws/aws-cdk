@@ -414,8 +414,8 @@ export interface VectorIndexProps {
   /**
    * The name of the vector index.
    *
-   * Index names must be unique across all global secondary indexes and vector
-   * indexes on the table.
+   * Index names must be unique across all global secondary indexes, local
+   * secondary indexes, and vector indexes on the table.
    */
   readonly indexName: string;
 
