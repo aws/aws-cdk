@@ -82,24 +82,30 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   linked by file + line) → CDK design guidelines (`docs/DESIGN_GUIDELINES.md`,
   `docs/AGENTS_CONSTRUCT_DESIGN.md`, `docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) →
   CloudFormation resource specification (property/enum correctness) → linked issue / PR
-  discussion (customer context) → existing tests (behavioral expectations). Skip a citation
-  only for pure style, an obvious typo or unused import, or a genuine question.
-  **Verify before you cite:** never post from memory.
-  - When a finding turns on how CDK code behaves (a constructor signature, what a fixture
-    declares, whether a lint rule fires), read that code in the repo.
-  - When a finding turns on what a CDK guide says (`AGENTS.md`, a `docs/AGENTS_*` guide,
-    `INTEGRATION_TESTS.md`, a module README), read that section and quote it.
-  - When a finding turns on how an AWS service behaves (a limit, a default, an allowed
-    value), read the AWS documentation. Cite that page in `reference`.
-  - Service documentation is sometimes wrong or incomplete. When the PR says the author
-    tested the service's behavior, do not contradict them from documentation alone.
+  discussion (customer context) → existing tests (behavioral expectations). Prefer AWS
+  documentation when sources disagree. Skip a citation only for pure style, an obvious
+  typo or unused import, or a genuine question. **Verify before you cite:** when a finding
+  turns on whether an attribute, mode, default, enum value, or a service/CDK behavior is
+  REAL — or on what CDK's own API, testing, or README guidance says — you MUST search and
+  read the authoritative AWS and CDK documentation available to you and confirm the fact
+  against it before posting; never post from memory. An unverified "X isn't supported" or
+  "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
 - **A concrete fix** — a code example, or a question framing a specific alternative
   ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
   out; never just point at the problem. The fix never suggests:
-  - **Catching, swallowing or falling back from errors** to make code "defensive". A broken
-    invariant or a malformed input must fail loudly; hiding it is a bug.
+  - **Catching, swallowing or falling back from errors** to make code "defensive". A malformed
+    input fails fast ([`AGENTS.md § Error Handling`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#error-handling));
+    do not hide it behind a `catch` or a pre-check that returns `undefined`. This does not cover
+    auto-correcting configuration the user did not contradict, or a fallback kept so existing
+    apps do not break.
   - **A feature flag for a change that cannot break an existing deployment.** Flags are for
-    changes that alter what deployed stacks get in a way users may depend on.
+    changes to existing behavior that an existing app would notice: a template change that
+    replaces resources or breaks what users relied on
+    ([`CONTRIBUTING.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#feature-flags)),
+    or new validation that rejects input which used to deploy
+    ([`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)).
+    Validation of input that always failed at deploy time needs no flag, and a new API element
+    is preferred to a flag where it works.
 
 Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
 suggestions as questions where you can; stay direct but not harsh on blocking issues
@@ -117,24 +123,19 @@ A finding becomes a posted comment only when all of these hold, whatever its tie
 1. It is tied to a specific line.
 2. It is actionable.
 3. It is significant enough to stand alone.
-4. **It asks for a specific change in the PR** — to its code, tests, docs or description. If
+4. **It asks for a specific change in the PR** — to its code, tests, docs, title or description. If
    your conclusion is "this is fine", "no change required", "either is defensible", or
    "confirm this is intentional", there is no finding.
-5. **It has not already been discussed.** When reviewing a PR, read its existing review
-   comments and the author's replies first. If this point was raised there (by you or by a
-   human), do not raise it again. If the author answered a comment, accept the answer unless
-   you have new evidence. Never ask the author to undo something an earlier review comment
-   asked for.
 
 Keep high-level observations, positive notes, and clusters of nits in the review summary,
-not the posted comments. A point that fails (4) or (5) is dropped, not summarised.
+not the posted comments. A point that fails (4) is dropped, not summarised.
 
 See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
 structured finding fields and how to write each one before you generate findings.
 
 ## What NOT to flag — the shared exclusions
 
-Every dimension skill applies these exclusions on top of its own dimension-specific
+Every dimension skill applies these five exclusions on top of its own dimension-specific
 carve-outs. None is a finding, at any severity:
 
 - **Pre-existing / not introduced by this PR** — if the diff did not add or change it, the
@@ -150,12 +151,9 @@ carve-outs. None is a finding, at any severity:
 - **Release-tooling / monorepo markers** — `0.0.0` workspace or alpha versions, `V2NEXT`
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
-- **Choices the guidelines leave open** — when the guidelines allow more than one shape
-  (a required or an optional physical name), the author's choice stands, and so does a choice
-  the same module already makes among those shapes.
 
 Each dimension skill's own `## What NOT to flag` lists only its dimension-specific
-carve-outs; it applies these in addition.
+carve-outs; it applies these five in addition.
 
 ## Rules-lookup convention
 

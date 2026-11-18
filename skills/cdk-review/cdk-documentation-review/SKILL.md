@@ -42,9 +42,9 @@ Work the changed docs in this order — a method, not a rigid script. Adapt to w
    attribute; every `@deprecated` tag and breaking API change; and every fenced ` ```ts ` block and
    `*.ts-fixture` it adds or edits. Then READ
    [`documentation-rules.md`](references/documentation-rules.md) — its rows ARE your checklist. Before
-   flagging a `@default` wrong, an `@attribute` missing, or an example / convention violated, read the
-   code the fact lives in (at the PR's head) or the guide (on `main`), and confirm the fact there, not
-   from memory (see
+   flagging a `@default` wrong, an `@attribute` missing, or an example / convention violated, search and
+   read the authoritative aws/aws-cdk docs
+   on `main` available to you, and confirm the fact against those docs, not from memory (see
    `cdk-review-principles` "Verify before you cite").
 
 2. **Check the inventory against the rules.** Walk the changed docs family by family — **Example

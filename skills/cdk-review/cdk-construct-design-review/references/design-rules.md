@@ -128,8 +128,12 @@ affordance where the service supports it. See
 [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
 and the sections following it for the signatures.
 - **Facades:** [`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo)
-  requires features as Facade classes exposed as readonly properties (`foo.grants`, `foo.metrics`); do
-  not ask to move them onto the construct.
+  requires features as Facade classes exposed as readonly properties, such as `foo.grants`
+  ([`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants Class Pattern`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants-class-pattern));
+  do not ask to move a facade's methods onto the construct. A missing `metric*` or `onXxx` method is
+  still a finding under
+  [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
+  and [`§ CloudWatch Events`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-events).
 - **Auto-wired affordances (doc-absent detail):** before flagging an absence, confirm the framework
   doesn't already provide it — tagging works through `Tags.of(x).add(...)` wherever the L1 is taggable, and
   `removalPolicy`, dependencies, and metadata come from `cdk.Resource`; flagging one of these as missing is

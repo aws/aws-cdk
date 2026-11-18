@@ -21,9 +21,8 @@ for the patch bar.
 - **Detection method (doc-absent detail):** ask **if I broke the behavior this test covers, would this
   test turn red?** If not, it is a non-asserting test — it raised the Codecov number without proving anything.
   Close it by asserting the specific property/value with `Match.objectLike` (or `objectEquals` /
-  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts. Before calling
-  an assertion vacuous, read what it actually compares against: for example, `addWarningV2` appends
-  `[ack: <id>]` to the message, so matching on the id is a real assertion.
+  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts. `addWarningV2`
+  appends `[ack: <id>]` to the message, so a `hasWarning` that matches the id asserts the id.
 
   ```ts
   // NON-ASSERTING: runs the new prop path, asserts nothing that would catch a wrong value
@@ -103,8 +102,10 @@ validation or a string manipulation for deploy-time values), and no test passes 
 it. See [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety) for
 the guard itself.
 - **Why the test (doc-absent detail):** the guide requires the guard, not a test of it. Without a test that
-  passes an unresolved token (for example `Token.asString({ Ref: 'P' })`), a later edit that drops the
-  guard breaks every user passing a `Ref` or `Fn::` value.
+  passes an unresolved token (for example `Token.asString({ Ref: 'P' })`), a later edit can drop the
+  guard unnoticed. The check or manipulation then runs on the encoded token, and rejects or corrupts
+  deploy-time values (a `CfnParameter`, an imported value, a resource attribute) whenever the encoding
+  fails it.
 
 **[TEST-UNIT-DOC-NAME] (OPTIONAL)** — A test name that describes nothing (`'works'`, `'test 2'`), so the
 suite fails as a specification; a merely awkward-but-descriptive title is a cosmetic, out of scope. See
