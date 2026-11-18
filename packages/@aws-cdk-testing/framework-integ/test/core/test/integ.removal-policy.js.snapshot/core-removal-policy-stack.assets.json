@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "56e79e44e2f4be89bc4bdc90607dc7c45739fc0b2dba14b1524a085d2fd37616": {
+      "displayName": "core-removal-policy-stack Template",
+      "source": {
+        "path": "core-removal-policy-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-b5c6795e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "56e79e44e2f4be89bc4bdc90607dc7c45739fc0b2dba14b1524a085d2fd37616.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

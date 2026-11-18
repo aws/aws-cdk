@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "RemovalPolicyTest/DefaultTest": {
+      "stacks": [
+        "core-removal-policy-stack"
+      ],
+      "assertionStack": "RemovalPolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RemovalPolicyTestDefaultTestDeployAssertB2D3B447"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

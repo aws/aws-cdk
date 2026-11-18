@@ -1,0 +1,20 @@
+{
+  "/RemovalPolicyTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "RemovalPolicyTestDefaultTestDeployAssertB2D3B447.template.json"
+    }
+  ],
+  "/RemovalPolicyTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/RemovalPolicyTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
