@@ -29,6 +29,14 @@ interface NotificationsProps {
    * Skips notification validation of Amazon SQS, Amazon SNS, and Lambda destinations.
    */
   skipDestinationValidation: boolean;
+
+  /**
+   * Keeps an EventBridge configuration set by the bucket resource when this resource is deleted.
+   *
+   * Needed when EventBridge can move to the bucket resource, which CloudFormation
+   * updates before it deletes this resource.
+   */
+  preserveEventBridgeOnDelete: boolean;
 }
 
 /**
@@ -56,12 +64,14 @@ export class BucketNotifications extends Construct {
   private readonly bucket: IBucket;
   private readonly handlerRole?: iam.IRole;
   private readonly skipDestinationValidation: boolean;
+  private readonly preserveEventBridgeOnDelete: boolean;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
     this.handlerRole = props.handlerRole;
     this.skipDestinationValidation = props.skipDestinationValidation;
+    this.preserveEventBridgeOnDelete = props.preserveEventBridgeOnDelete;
   }
 
   /**
@@ -163,6 +173,8 @@ export class BucketNotifications extends Construct {
           NotificationConfiguration: this.renderNotificationConfiguration(),
           Managed: managed,
           SkipDestinationValidation: this.skipDestinationValidation,
+          // Only rendered when set, so templates that don't need it are unchanged
+          PreserveEventBridgeOnDelete: this.preserveEventBridgeOnDelete ? true : undefined,
         },
       });
 
@@ -209,8 +221,9 @@ export class BucketNotifications extends Construct {
 
     // Unmanaged (imported) buckets need GetBucketNotification to read existing configurations
     // before merging with new notifications. Managed buckets don't need this since CDK
-    // controls their complete notification state from creation.
-    if (!managed) {
+    // controls their complete notification state from creation, unless the handler has to
+    // check for an EventBridge configuration set by the bucket resource on delete.
+    if (!managed || this.preserveEventBridgeOnDelete) {
       statements.push(new iam.PolicyStatement({
         actions: ['s3:GetBucketNotification'],
         resources: [this.bucket.bucketArn],

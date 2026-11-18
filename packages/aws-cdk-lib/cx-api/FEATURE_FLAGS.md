@@ -122,6 +122,8 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
+| [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | V2NEXT | fix |
+| [@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty](#aws-cdkaws-s3eventbridgenotificationviacfnproperty) | When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -177,6 +179,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
     "@aws-cdk/aws-events:requireEventBusPolicySid": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
+    "@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:minimizePolicies": true,
     "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
     "@aws-cdk/aws-kms:aliasNameRef": true,
@@ -197,6 +200,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
     "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
+    "@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty": true,
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
@@ -1494,7 +1498,7 @@ any prefix.
 
 Flag type: New default behavior
 
-When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
+When this feature flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
 
 
 | Since | Unset behaves like | Recommended value |
@@ -2661,6 +2665,68 @@ running executions finish first.
 | 2.275.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
+### @aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName
+
+*When enabled, the default policy of an imported user or group gets a name that includes the stack name*
+
+Flag type: Backwards incompatible bugfix
+
+An imported user or group puts the permissions granted to it in a default inline policy. Without this flag, the
+name of that policy only depends on the construct path inside the stack, so stacks that import the same user or
+group under the same construct id use the same inline policy name on the same principal, and their deployments
+conflict.
+
+When this flag is enabled, the policy name also includes the stack name, so each stack gets an inline policy of
+its own. The logical ID of the policy does not change, so CloudFormation renames the existing policy in place.
+
+Deploy all stacks that import the same user or group after enabling this flag. The first of them to rename its
+policy removes the inline policy under the old shared name, which may hold the permissions of another stack until
+that stack is deployed too.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty
+
+*When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource*
+
+Flag type: Backwards incompatible bugfix
+
+Enabling EventBridge notifications on a bucket (via the `eventBridgeEnabled` prop or
+`enableEventBridgeNotification()`) currently routes through the stack-singleton
+`BucketNotificationsHandler` custom resource. That handler accumulates one IAM policy
+statement per bucket, so stacks with many EventBridge-enabled buckets can exceed the
+10,240 byte IAM role policy size limit at deploy time.
+
+EventBridge enablement is a simple boolean on the bucket and, unlike Lambda/SQS/SNS
+notification targets, has no circular-dependency reason to go through the custom resource.
+
+When this feature flag is enabled, EventBridge notifications for buckets created in the
+current stack are set directly on the `AWS::S3::Bucket` resource's
+`NotificationConfiguration.EventBridgeConfiguration` property. A bucket that only enables
+EventBridge no longer creates the custom resource or its per-bucket IAM policy. Buckets that
+also have Lambda/SQS/SNS notifications continue to use the custom resource, which keeps
+rendering the EventBridge configuration so it is not lost. Imported buckets are unaffected
+and continue to use the custom resource.
+
+Do not enable this flag on a stack that has already deployed EventBridge-enabled buckets:
+the deployment removes the old notifications custom resource after updating the bucket,
+and its Delete clears the bucket's notification configuration, so EventBridge delivery
+stops even though the template shows it enabled.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to keep routing EventBridge notifications through the notifications custom resource.
 
 
 <!-- END details -->

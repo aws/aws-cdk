@@ -1943,9 +1943,10 @@ export const FLAGS: Record<string, FlagInfo> = {
       rendering the EventBridge configuration so it is not lost. Imported buckets are unaffected
       and continue to use the custom resource.
 
-      This flag does not change EventBridge behavior for stacks that have already deployed with the
-      flag disabled; leave it disabled for those stacks to avoid moving the configuration between
-      the custom resource and the bucket resource in a single deployment.
+      Do not enable this flag on a stack that has already deployed EventBridge-enabled buckets:
+      the deployment removes the old notifications custom resource after updating the bucket,
+      and its Delete clears the bucket's notification configuration, so EventBridge delivery
+      stops even though the template shows it enabled.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

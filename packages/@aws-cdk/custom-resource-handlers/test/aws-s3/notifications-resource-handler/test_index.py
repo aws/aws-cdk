@@ -60,6 +60,19 @@ def make_event_with_skip_destination_validation(request_type: str, managed: bool
         },
     }
 
+def make_event_with_preserve_eventbridge(request_type: str):
+    return {
+        "StackId": "StackId",
+        "RequestType": request_type,
+        "ResourceProperties": {
+            "Managed": str(True),
+            "BucketName": "BucketName",
+            "NotificationConfiguration": make_notification_configuration_with_eventbridge(),
+            "SkipDestinationValidation": str(False),
+            "PreserveEventBridgeOnDelete": str(True),
+        },
+    }
+
 def make_notification_configuration(id_prefix: str = None):
     def make_id():
         return f"{id_prefix or ''}{str(uuid.uuid4())}"
@@ -153,6 +166,73 @@ class ManagedBucketTest(unittest.TestCase):
             Bucket=event["ResourceProperties"]["BucketName"],
             NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
             SkipDestinationValidation=True,
+        )
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_delete_with_preserve_eventbridge_keeps_eventbridge_set_by_bucket_resource(self, _, mock_s3: MagicMock):
+
+        event = make_event_with_preserve_eventbridge("Delete")
+
+        # the bucket resource replaced the configuration with EventBridge only
+        mock_s3.get_bucket_notification_configuration.return_value = {
+            "ResponseMetadata": {"HTTPStatusCode": 200},
+            **make_eventbridge_configuration(),
+        }
+
+        index.handler(event, {})
+
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=make_eventbridge_configuration(),
+            SkipDestinationValidation=False,
+        )
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_delete_with_preserve_eventbridge_removes_own_configuration(self, _, mock_s3: MagicMock):
+
+        event = make_event_with_preserve_eventbridge("Delete")
+
+        # our own configuration is still in place, so EventBridge was not set by the bucket resource
+        mock_s3.get_bucket_notification_configuration.return_value = make_notification_configuration_with_eventbridge()
+
+        index.handler(event, {})
+
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration={},
+            SkipDestinationValidation=False,
+        )
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_delete_without_preserve_eventbridge_does_not_read_configuration(self, _, mock_s3: MagicMock):
+
+        event = make_event_with_eventbridge("Delete", True)
+
+        index.handler(event, {})
+
+        mock_s3.get_bucket_notification_configuration.assert_not_called()
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration={},
+            SkipDestinationValidation=False,
+        )
+
+    @patch('index.s3')
+    @patch("index.submit_response")
+    def test_update_with_preserve_eventbridge_puts_configuration(self, _, mock_s3: MagicMock):
+
+        event = make_event_with_preserve_eventbridge("Update")
+
+        index.handler(event, {})
+
+        mock_s3.get_bucket_notification_configuration.assert_not_called()
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
+            SkipDestinationValidation=False,
         )
 
 

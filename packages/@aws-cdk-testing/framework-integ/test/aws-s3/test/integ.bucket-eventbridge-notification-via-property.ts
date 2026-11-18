@@ -25,8 +25,11 @@ const integTest = new integ.IntegTest(app, 'S3EventBridgeNotificationViaProperty
 });
 
 // The bucket itself carries the EventBridge configuration.
-integTest.assertions.awsApiCall('S3', 'getBucketNotificationConfiguration', {
+const call = integTest.assertions.awsApiCall('S3', 'getBucketNotificationConfiguration', {
   Bucket: bucketViaProp.bucketName,
-}).expect(integ.ExpectedResult.objectLike({
+});
+// The auto-granted s3:GetBucketNotificationConfiguration is not an IAM action
+call.provider.addToRolePolicy({ Effect: 'Allow', Action: ['s3:GetBucketNotification'], Resource: ['*'] });
+call.expect(integ.ExpectedResult.objectLike({
   EventBridgeConfiguration: {},
 }));

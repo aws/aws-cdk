@@ -572,6 +572,94 @@ describe('notification', () => {
         },
       });
     });
+
+    test('many EventBridge-only buckets create no notification handler policies', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY, true);
+
+      // WHEN
+      for (let i = 0; i < 100; i++) {
+        new s3.Bucket(stack, `Bucket${i}`, { eventBridgeEnabled: true });
+      }
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::IAM::Policy', 0);
+      template.resourceCountIs('Custom::S3BucketNotifications', 0);
+    });
+
+    test('custom resource keeps EventBridge set by the bucket resource on delete', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY, true);
+
+      // WHEN
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+        bind: () => ({
+          arn: 'ARN',
+          type: s3.BucketNotificationDestinationType.TOPIC,
+        }),
+      });
+
+      // THEN - the handler checks the bucket's configuration on delete, so it needs to read it
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::S3BucketNotifications', {
+        Managed: true,
+        PreserveEventBridgeOnDelete: true,
+      });
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:PutBucketNotification',
+              Effect: 'Allow',
+              Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+            },
+            {
+              Action: 's3:GetBucketNotification',
+              Effect: 'Allow',
+              Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
+
+    test('without the feature flag the custom resource does not keep EventBridge on delete', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+        bind: () => ({
+          arn: 'ARN',
+          type: s3.BucketNotificationDestinationType.TOPIC,
+        }),
+      });
+
+      // THEN - unchanged behavior
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('Custom::S3BucketNotifications', {
+        Managed: true,
+        PreserveEventBridgeOnDelete: Match.absent(),
+      });
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: 's3:PutBucketNotification',
+              Effect: 'Allow',
+              Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      });
+    });
   });
 
   test('Notification custom resource uses always treat bucket as unmanaged', () => {
