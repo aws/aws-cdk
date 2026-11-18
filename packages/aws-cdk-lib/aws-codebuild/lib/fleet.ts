@@ -102,8 +102,11 @@ export interface FleetProps {
    *
    * Reserved capacity fleets support only one subnet in a single Availability Zone.
    * If the selection resolves to multiple subnets, the construct uses the first
-   * subnet and emits a warning. The `ec2:CreateNetworkInterfacePermission` grant
-   * still covers all selected subnets, so select a single subnet for the narrowest grant.
+   * subnet and emits the warning `@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed`.
+   * If you pin the subnet with an L1 override of `FleetVpcConfig.Subnets`, suppress it with
+   * `Annotations.of(fleet).acknowledgeWarning('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed')`.
+   * The `ec2:CreateNetworkInterfacePermission` grant still covers all selected subnets,
+   * so select a single subnet for the narrowest grant.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
@@ -969,7 +972,13 @@ export class FleetImage {
   /**
    * A custom AMI.
    *
-   * The AMI must be shared with the CodeBuild service organization of the region.
+   * The AMI must:
+   * - match the architecture of the fleet's environment type
+   *   (MAC_ARM: Mac-Arm, LINUX_EC2 and WINDOWS_EC2: x86_64, ARM_EC2: Arm64)
+   * - allow the CodeBuild service Organization ARN of the region
+   * - if encrypted with a KMS key, have a key policy that allows the CodeBuild service Organization ID
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
    *
    * @param amiId The AMI ID
    * @example 'ami-0123456789abcdef0'
@@ -981,7 +990,15 @@ export class FleetImage {
   /**
    * A custom AMI from an EC2 machine image.
    *
-   * The AMI must be shared with the CodeBuild service organization of the region.
+   * Only the AMI ID of the machine image is used. Its OS type and user data are ignored.
+   *
+   * The AMI must:
+   * - match the architecture of the fleet's environment type
+   *   (MAC_ARM: Mac-Arm, LINUX_EC2 and WINDOWS_EC2: x86_64, ARM_EC2: Arm64)
+   * - allow the CodeBuild service Organization ARN of the region
+   * - if encrypted with a KMS key, have a key policy that allows the CodeBuild service Organization ID
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
    *
    * @param machineImage The machine image, for example `ec2.MachineImage.latestAmazonLinux2023()`
    */

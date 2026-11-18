@@ -645,6 +645,8 @@ Use `FleetImage.fromMachineImage()` or `FleetImage.fromAmiId()` for a custom AMI
 The fleet service role is granted `ec2:DescribeImages` and `ec2:DescribeSnapshots`,
 and a role is created if you don't pass one. The AMI must match the architecture of the
 environment type and be shared with the CodeBuild service organization of the region.
+If the AMI is encrypted with a KMS key, the key policy must allow the CodeBuild service
+Organization ID. `FleetImage.fromMachineImage()` only uses the AMI ID of the machine image.
 See [custom AMI for a reserved capacity fleet](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami).
 
 ```ts
@@ -733,8 +735,11 @@ VPC on the Project. Configure a VPC on the fleet instead.
 
 Reserved capacity fleets support only one subnet in a single Availability Zone.
 If your `subnetSelection` (or the default selection) resolves to multiple subnets,
-the construct uses the first subnet and emits a warning. Pass a selection that
-resolves to a single subnet to choose it explicitly.
+the construct uses the first subnet and emits the warning
+`@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed`. Pass a selection that resolves to a
+single subnet to choose it explicitly. If you pin the subnet with an L1 override of
+`FleetVpcConfig.Subnets` instead, suppress the warning with
+`Annotations.of(fleet).acknowledgeWarning('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed')`.
 
 The fleet's IAM policy restricts `ec2:CreateNetworkInterfacePermission` to all
 subnets of your selection, including the ones that are not used after narrowing.
