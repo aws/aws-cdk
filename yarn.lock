@@ -2807,13 +2807,13 @@
     "@aws-sdk/credential-providers" "^3.1169.0"
     aws4fetch "^1.0.20"
 
-"@cdklabs/eslint-plugin@^1.5.10":
-  version "1.5.10"
-  resolved "https://registry.npmjs.org/@cdklabs/eslint-plugin/-/eslint-plugin-1.5.10.tgz#25a331d7d58112cc8ff98e70d011d1c72ef481d7"
-  integrity sha512-/w9uGWblDvC5opip58RpmrcOnEgv3Ly6wbeHYX/S3k1lCfP2+AdxVpYV+kvN3OVijQKFilfqUKvI+N5Zlar+Lw==
+"@cdklabs/eslint-plugin@^2.0.28":
+  version "2.0.28"
+  resolved "https://registry.npmjs.org/@cdklabs/eslint-plugin/-/eslint-plugin-2.0.28.tgz#5a8786db7b855d50d5909db7e253e03fa5f3c128"
+  integrity sha512-beLXM79Pg7NmyVMg+e6znz78/vSQYey7teurNnEWzo1N1uZogukoM6kQk5y2Y5SFFfqEbO3wftwUkEgXCxC1gg==
   dependencies:
-    "@typescript-eslint/utils" "^8.58.0"
-    fs-extra "^11.3.4"
+    "@typescript-eslint/utils" "^8.72.2"
+    fs-extra "^11.4.1"
     typescript "^5.9.3"
 
 "@cdklabs/tskb@^0.0.4":
@@ -5343,7 +5343,7 @@
     semver "^7.3.5"
     tsutils "^3.21.0"
 
-"@typescript-eslint/utils@8.73.0", "@typescript-eslint/utils@^6.0.0 || ^7.0.0 || ^8.0.0", "@typescript-eslint/utils@^8.58.0":
+"@typescript-eslint/utils@8.73.0", "@typescript-eslint/utils@^6.0.0 || ^7.0.0 || ^8.0.0", "@typescript-eslint/utils@^8.72.2":
   version "8.73.0"
   resolved "https://registry.npmjs.org/@typescript-eslint/utils/-/utils-8.73.0.tgz#566a437a6a9492fd81b58a169bb7114bdf205639"
   integrity sha512-j2SVJJvVkXdUL0WcEzo4vEH1mO1vIi8KlVukcYA2MgMZvYN2LlZR4PmsW+GTSxSW24j6Q/EP7+MOifLtg5hmsA==
@@ -8186,7 +8186,7 @@ fs-extra@^10.1.0:
     jsonfile "^6.0.1"
     universalify "^2.0.0"
 
-fs-extra@^11.2.0, fs-extra@^11.3.4, fs-extra@^11.4.1:
+fs-extra@^11.2.0, fs-extra@^11.4.1:
   version "11.4.1"
   resolved "https://registry.npmjs.org/fs-extra/-/fs-extra-11.4.1.tgz#6a01ca80008eacf3ca1ffde5ef79088f68203a5a"
   integrity sha512-KYAb4c9BJQI6QqGKthV68OHe0badztdXJWKo0WtBA9IuCFPTKvE5ZdUBglP833aMjhaSPNO4A5j/EkzZtGlKjA==
@@ -13369,7 +13369,7 @@ tar-stream@2.2.0, tar-stream@~2.2.0:
     inherits "^2.0.3"
     readable-stream "^3.1.1"
 
-tar@6.2.1, tar@^6.1.11, tar@^6.2.1, tar@^7.5.23, tar@^7.5.7:
+tar@6.2.1, tar@^6.1.11, tar@^6.2.1, tar@^7.5.7:
   version "7.5.23"
   resolved "https://registry.npmjs.org/tar/-/tar-7.5.23.tgz#5ff22a2b3bb122b4c412b81cb54102a80d153e80"
   integrity sha512-lkukzdoGngZHJZXxW4S/E4Fp9ghTDlyZXrQGRNoJ/LXvDKcXUTq2sg5yQe74po7Voea6n/IN09+wE/QvJMiifA==
