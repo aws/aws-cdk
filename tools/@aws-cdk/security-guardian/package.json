@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "@actions/core": "^1.10.0",
-    "@actions/exec": "^1.1.1"
+    "@actions/exec": "^1.1.1",
+    "@xmldom/xmldom": "^0.9.12"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

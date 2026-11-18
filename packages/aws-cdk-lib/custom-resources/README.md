@@ -147,7 +147,7 @@ Provider Request]:
 | `RequestType`           | String | The type of lifecycle event: `Create`, `Update` or `Delete`.                                                                                        |
 | `LogicalResourceId`     | String | The template developer-chosen name (logical ID) of the custom resource in the AWS CloudFormation template.                                          |
 | `PhysicalResourceId`    | String | This field will only be present for `Update` and `Delete` events and includes the value returned in `PhysicalResourceId` of the previous operation. |
-| `ResourceProperties`    | JSON   | This field contains the properties defined in the template for this custom resource.                                                                |
+| `ResourceProperties`    | JSON   | This field contains the properties defined in the template for this custom resource. All scalar values are stringified by CloudFormation.           |
 | `OldResourceProperties` | JSON   | This field will only be present for `Update` events and contains the resource properties that were declared previous to the update request.         |
 | `ResourceType`          | String | The resource type defined for this custom resource in the template. A provider may handle any number of custom resource types.                      |
 | `RequestId`             | String | A unique ID for the request.                                                                                                                        |
@@ -330,6 +330,9 @@ make sure your custom resource behaves correctly in all cases:
   rollback `Updates`) or in `OldResourceProperties` (during rollforward
   `Update`). You must continue to handle all possible sets of properties
   your custom resource could have ever been created with in the past.
+* Keep in mind that all scalars in the `ResourceProperties` are stringified.
+  That means that numbers arrive as `"42"`, booleans arrive as `"true"`, and
+  lists of numbers arrive as `["80", "443"]`.
 
 ### Provider Framework Execution Policy
 

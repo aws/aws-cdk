@@ -270,20 +270,6 @@ export const config: HandlerFrameworkConfig = {
       },
     ],
   },
-  'aws-glue-alpha': {
-    'partition-index-provider': [
-      {
-        type: ComponentType.FUNCTION,
-        sourceCode: path.resolve(__dirname, '..', 'aws-glue-alpha', 'partition-index-handler', 'index.ts'),
-        handler: 'index.onEvent',
-      },
-      {
-        type: ComponentType.FUNCTION,
-        sourceCode: path.resolve(__dirname, '..', 'aws-glue-alpha', 'partition-index-handler', 'index.ts'),
-        handler: 'index.isComplete',
-      },
-    ],
-  },
   'aws-glue': {
     'partition-index-provider': [
       {
@@ -359,6 +345,12 @@ export const config: HandlerFrameworkConfig = {
         sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
         runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
+      },
+    ],
+    's3-object-copy-provider': [
+      {
+        type: ComponentType.SINGLETON_FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 's3-object-copy-handler', 'index.ts'),
       },
     ],
   },

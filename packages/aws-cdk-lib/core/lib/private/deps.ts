@@ -1,7 +1,7 @@
 import { Dependable, type IConstruct } from 'constructs';
 import { UnscopedValidationError } from '../errors';
 import type { NestedStack } from '../nested-stack';
-import { iterateDfsPreorder, iterateTemplateCfnResources } from './construct-iteration';
+import { iterateDfsPreorderStopAtStage, iterateTemplateCfnResources } from './construct-iteration';
 import { NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { lit } from '../private/literal-string';
 import type { Stack } from '../stack';
@@ -234,7 +234,7 @@ function sharedDependencyContainerIndex(as: DependencyContainer[], bs: Dependenc
 function* registeredConstructDependencies(root: IConstruct): IterableIterator<DependencyOperation> {
   const found = new Map<IConstruct, Set<IConstruct>>(); // Deduplication map
 
-  for (const source of iterateDfsPreorder(root)) {
+  for (const source of iterateDfsPreorderStopAtStage(root)) {
     for (const dependable of source.node.dependencies) {
       for (const target of Dependable.of(dependable).dependencyRoots) {
         if (source === target) {

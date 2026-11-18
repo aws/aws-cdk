@@ -1,4 +1,10 @@
 {
+  "/CdkPipelineStepFunctionsActionStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CdkPipelineStepFunctionsActionStack.template.json"
+    }
+  ],
   "/CdkPipelineStepFunctionsActionStack/SourceBucketKey": [
     {
       "type": "aws:cdk:analytics:construct",

@@ -1,7 +1,7 @@
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -37,13 +37,19 @@ class EksClusterStack extends Stack {
       chartAsset: chartAsset,
     });
 
+    // Release name and namespace for the OCI chart whose end-to-end install we verify with
+    // a deploy-time assertion below. Declared once and shared with the assertion so the two
+    // cannot silently drift apart.
+    const ociChartRelease = 's3-chart';
+    const ociChartNamespace = 'ack-system';
+
     // https://gallery.ecr.aws/aws-controllers-k8s/s3-chart
-    this.cluster.addHelmChart('test-oci-chart', {
+    const ociChart = this.cluster.addHelmChart('test-oci-chart', {
       chart: 's3-chart',
-      release: 's3-chart',
+      release: ociChartRelease,
       repository: 'oci://public.ecr.aws/aws-controllers-k8s/s3-chart',
       version: 'v0.1.0',
-      namespace: 'ack-system',
+      namespace: ociChartNamespace,
       createNamespace: true,
       values: { aws: { region: this.region } },
     });
@@ -126,6 +132,25 @@ class EksClusterStack extends Stack {
       repository: 'https://kubernetes-sigs.github.io/headlamp/',
       version: '0.39.0',
     });
+
+    // Deploy-time verification that the OCI chart actually installed: Helm stores each release
+    // revision as a Secret `sh.helm.release.v1.<release>.v<rev>` carrying a `status` label.
+    // Reading that label back from the live cluster proves the end-to-end OCI pull + install
+    // path succeeded, not merely that the stack synthesized. CI always installs fresh, so
+    // revision 1 must read `deployed`.
+    const ociReleaseStatus = new eks.KubernetesObjectValue(this, 'OciHelmReleaseStatus', {
+      cluster: this.cluster,
+      objectType: 'secret',
+      objectName: `sh.helm.release.v1.${ociChartRelease}.v1`,
+      objectNamespace: ociChartNamespace,
+      // Keep this scoped to the release's `status` label. Never widen to `.data` /
+      // `.stringData`: that would publish the rendered manifest and any user-supplied values
+      // into a CloudFormation output, the kubectl provider's logs, and the committed snapshot.
+      jsonPath: '.metadata.labels.status',
+    });
+    ociReleaseStatus.node.addDependency(ociChart);
+
+    new CfnOutput(this, 'HelmReleaseStatus', { value: ociReleaseStatus.value });
   }
 }
 
@@ -141,8 +166,28 @@ const [previousVersion, latestVersion] = getLatestVersions(2);
 
 const stackLatest = new EksClusterStack(app, 'aws-cdk-eks-helm-test', eks.KubernetesVersion.of(latestVersion));
 const stackPrevious = new EksClusterStack(app, 'aws-cdk-eks-helm-test-prev', eks.KubernetesVersion.of(previousVersion));
-new integ.IntegTest(app, 'aws-cdk-eks-helm', {
+const integTest = new integ.IntegTest(app, 'aws-cdk-eks-helm', {
   testCases: [stackLatest, stackPrevious],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
 });
+
+// Deploy-time assertion: confirm the OCI Helm release reached the `deployed` state on each
+// cluster, via the `HelmReleaseStatus` output. Both the latest- and previous-version stacks
+// install the chart (on different kubectl layers), so assert on both.
+for (const stack of [stackLatest, stackPrevious]) {
+  integTest.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+    StackName: stack.stackName,
+  }).expect(integ.ExpectedResult.objectLike({
+    Stacks: integ.Match.arrayWith([
+      integ.Match.objectLike({
+        Outputs: integ.Match.arrayWith([
+          integ.Match.objectLike({
+            OutputKey: 'HelmReleaseStatus',
+            OutputValue: 'deployed',
+          }),
+        ]),
+      }),
+    ]),
+  }));
+}

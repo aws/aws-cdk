@@ -238,7 +238,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
     charset: nodejs.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
     format: nodejs.OutputFormat.ESM, // ECMAScript module output format, defaults to OutputFormat.CJS (OutputFormat.ESM requires Node.js >= 14)
     mainFields: ['module', 'main'], // prefer ECMAScript versions of dependencies
-    inject: ['./my-shim.js', './other-shim.js'], // allows to automatically replace a global variable with an import from another file
+    inject: ['./my-shim.js', './other-shim.js'], // allows you to automatically replace a global variable with an import from another file
     esbuildArgs: { // Pass additional arguments to esbuild
       "--log-limit": "0",
       "--splitting": true,
@@ -289,6 +289,30 @@ an array of commands to run. Commands are chained with `&&`.
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
 
+### Repeated esbuild arguments
+
+Use an array value in `esbuildArgs` for options that esbuild supports repeating.
+Each value becomes a separate CLI argument using `--flag:value` syntax; an empty
+array omits the option. Single-value options must use a string or boolean instead.
+For example:
+
+```ts
+const esbuildArgs = {
+  '--alias': ['first=./first', 'second=./second'],
+  '--pure': ['console.log', 'console.debug'],
+};
+
+new nodejs.NodejsFunction(this, 'aliased-handler', {
+  bundling: {
+    esbuildArgs,
+  },
+});
+```
+
+This passes `--alias:first=./first`, `--alias:second=./second`,
+`--pure:console.log`, and `--pure:console.debug` to esbuild. Existing string and
+boolean values continue to work.
+
 ## Pre Compilation with TSC
 
 In some cases, `esbuild` may not yet support some newer features of the typescript language, such as,
@@ -303,7 +327,35 @@ new nodejs.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required
+A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required.
+Enable the required compiler options (for example, `experimentalDecorators` and
+`emitDecoratorMetadata`) in that file. You can select a configuration explicitly with
+`bundling.tsconfig`.
+
+Pre-compilation passes the JavaScript entry point emitted by `tsc` to `esbuild`.
+However, when an extensionless import can resolve to both a TypeScript source file
+and its emitted JavaScript file, [esbuild prefers TypeScript by default](https://esbuild.github.io/api/#resolve-extensions).
+It may therefore compile an imported module again without emitting decorator metadata.
+If your bundle loses metadata from imported modules, configure resolution to use the
+JavaScript emitted by `tsc`:
+
+```ts
+const esbuildArgs = { '--resolve-extensions': '.js' };
+
+new nodejs.NodejsFunction(this, 'metadata-handler', {
+  entry: 'lib/handler.ts',
+  bundling: {
+    preCompilation: true,
+    tsconfig: 'tsconfig.lambda.json',
+    esbuildArgs,
+  },
+});
+```
+
+This setting changes extensionless import resolution throughout the bundle. Ensure
+all required modules have JavaScript output available; extend the list if your
+application also needs other file extensions. Pre-compilation does not invoke your
+package's build script, so its commands and configuration can produce different output.
 
 ## Customizing Docker bundling
 

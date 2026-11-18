@@ -1,4 +1,10 @@
 {
+  "/lambda-layer-awscli-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "lambdalayerawscliintegtestDefaultTestDeployAssert8E1153D3.template.json"
+    }
+  ],
   "/lambda-layer-awscli-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

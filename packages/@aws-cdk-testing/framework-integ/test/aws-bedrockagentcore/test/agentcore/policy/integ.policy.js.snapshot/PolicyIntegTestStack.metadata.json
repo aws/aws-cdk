@@ -1,4 +1,10 @@
 {
+  "/PolicyIntegTestStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PolicyIntegTestStack.template.json"
+    }
+  ],
   "/PolicyIntegTestStack/SharedGateway": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -8,19 +14,18 @@
       "type": "aws:cdk:warning",
       "data": "This gateway has no inbound authorization. The endpoint will be publicly accessible without credentials. Ensure you have implemented compensating security controls such as Gateway Interceptors. See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none [ack: aws-cdk-lib.aws-bedrockagentcore:noAuthGateway]",
       "trace": [
-        "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:376:47)",
-        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:67:23)",
-        "Module._compile (node:internal/modules/cjs/loader:1705:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1838:10)",
-        "Module.load (node:internal/modules/cjs/loader:1441:32)",
-        "Module._load (node:internal/modules/cjs/loader:1263:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
-        "node:internal/main/run_main_module:36:49"
+        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:391:47)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:67:23)",
+        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
+        "Object..js (node:internal/modules/cjs/loader:2002:10)",
+        "Module.load (node:internal/modules/cjs/loader:1594:32)",
+        "Module._load (node:internal/modules/cjs/loader:1396:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
     }
   ],
@@ -115,19 +120,18 @@
       "type": "aws:cdk:warning",
       "data": "This gateway has no inbound authorization. The endpoint will be publicly accessible without credentials. Ensure you have implemented compensating security controls such as Gateway Interceptors. See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none [ack: aws-cdk-lib.aws-bedrockagentcore:noAuthGateway]",
       "trace": [
-        "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:376:47)",
-        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:202:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1705:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1838:10)",
-        "Module.load (node:internal/modules/cjs/loader:1441:32)",
-        "Module._load (node:internal/modules/cjs/loader:1263:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
-        "node:internal/main/run_main_module:36:49"
+        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:391:47)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:218:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
+        "Object..js (node:internal/modules/cjs/loader:2002:10)",
+        "Module.load (node:internal/modules/cjs/loader:1594:32)",
+        "Module._load (node:internal/modules/cjs/loader:1396:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
     }
   ],
@@ -140,19 +144,18 @@
       "type": "aws:cdk:warning",
       "data": "This gateway has no inbound authorization. The endpoint will be publicly accessible without credentials. Ensure you have implemented compensating security controls such as Gateway Interceptors. See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none [ack: aws-cdk-lib.aws-bedrockagentcore:noAuthGateway]",
       "trace": [
-        "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:376:47)",
-        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:212:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1705:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1838:10)",
-        "Module.load (node:internal/modules/cjs/loader:1441:32)",
-        "Module._load (node:internal/modules/cjs/loader:1263:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
-        "node:internal/main/run_main_module:36:49"
+        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:391:47)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:228:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
+        "Object..js (node:internal/modules/cjs/loader:2002:10)",
+        "Module.load (node:internal/modules/cjs/loader:1594:32)",
+        "Module._load (node:internal/modules/cjs/loader:1396:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
     }
   ],
@@ -169,21 +172,39 @@
     },
     {
       "type": "aws:cdk:warning",
+      "data": "The gateway name is a token. If it is only known at deployment, the trust policy of the default service role cannot name this gateway and allows any gateway in this account and region (gateway/*) to assume the role. To trust only this gateway, use a literal gatewayName, or supply a role whose trust policy limits aws:SourceAccount and aws:SourceArn to this gateway. [ack: aws-cdk-lib.aws-bedrockagentcore:wildcardGatewayServiceRoleTrust]",
+      "trace": [
+        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "PropertyInjectable.createGatewayRole (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:614:47)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:376:44)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:243:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
+        "Object..js (node:internal/modules/cjs/loader:2002:10)",
+        "Module.load (node:internal/modules/cjs/loader:1594:32)",
+        "Module._load (node:internal/modules/cjs/loader:1396:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
       "data": "This gateway has no inbound authorization. The endpoint will be publicly accessible without credentials. Ensure you have implemented compensating security controls such as Gateway Interceptors. See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none [ack: aws-cdk-lib.aws-bedrockagentcore:noAuthGateway]",
       "trace": [
-        "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:376:47)",
-        "new Gateway (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:227:1)",
-        "Module._compile (node:internal/modules/cjs/loader:1705:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1838:10)",
-        "Module.load (node:internal/modules/cjs/loader:1441:32)",
-        "Module._load (node:internal/modules/cjs/loader:1263:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
-        "node:internal/main/run_main_module:36:49"
+        "Annotations.addMessage (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway.js:391:47)",
+        "new Gateway (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/ozelali/worktrees/aws-cdk/gateway-default-role-trust/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/policy/integ.policy.js:243:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1871:14)",
+        "Object..js (node:internal/modules/cjs/loader:2002:10)",
+        "Module.load (node:internal/modules/cjs/loader:1594:32)",
+        "Module._load (node:internal/modules/cjs/loader:1396:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
       ]
     }
   ],
