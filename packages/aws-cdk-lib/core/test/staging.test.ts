@@ -233,7 +233,7 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       `asset.${FIXTURE_TEST1_HASH}`,
-      'asset.39def77ac40e423b62f5529cfb8c9ae54b9d6ecd344f49770f27bc81fac36a6c.tar.gz',
+      'asset.245e31402d71cfe7e9307561109ec33f76649c0a9e9caab8ac02a56f927823c8.tar.gz',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
