@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import type { CfnTableProps, ITableRef, TableReference } from './dynamodb.generated';
 import { CfnTable } from './dynamodb.generated';
+import { validateVectorIndexProps } from './private/vector-index';
 import { ReplicaProvider } from './replica-provider';
 import type { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -16,7 +17,6 @@ import type {
 import {
   Operation, BillingMode, ProjectionType, TableEncryption, StreamViewType,
   validateContributorInsights,
-  validateVectorIndexProps,
   parseKeySchema,
 } from './shared';
 import { StreamGrants } from './stream-grants';

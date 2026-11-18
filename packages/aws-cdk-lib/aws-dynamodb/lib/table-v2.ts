@@ -4,6 +4,7 @@ import type { Billing } from './billing';
 import type { Capacity } from './capacity';
 import { CfnGlobalTable } from './dynamodb.generated';
 import type { TableEncryptionV2 } from './encryption';
+import { validateVectorIndexProps } from './private/vector-index';
 import type {
   Attribute,
   ContributorInsightsSpecification,
@@ -24,7 +25,6 @@ import {
   ProjectionType,
   StreamViewType,
   validateContributorInsights,
-  validateVectorIndexProps,
 } from './shared';
 import { TableGrants } from './table-grants';
 import type { ITableV2 } from './table-v2-base';
