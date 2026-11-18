@@ -852,6 +852,9 @@ function isArchiveFile(filename: string): boolean {
  * The new implementation expects an existing directory to be complete,
  * but we have to catch that single case where a 0-byte placeholder file exists
  * and treat it as uncacheable detritus.
+ *
+ * (Shortcoming: a genuine single 0-byte bundling output also matches and is re-bundled
+ * on every synth; accepted as too rare to matter).
  */
 function isLegacyPlaceholderDirectory(bundleDir: string) {
   const files = fs.readdirSync(bundleDir);

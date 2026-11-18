@@ -707,6 +707,43 @@ describe('staging', () => {
     ]);
   });
 
+  test('bundling with OUTPUT hash type replaces existing asset directory, even if the hash is the same', () => {
+    // GIVEN
+    const directory = FIXTURE_TEST1_DIR;
+    const props = {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    };
+
+    const app1 = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const staging1 = new AssetStaging(new Stack(app1, 'stack'), 'Asset', props);
+    app1.synth();
+
+    // Leave a marker in the staged directory, so we can tell whether it was replaced or merged into
+    fs.writeFileSync(path.join(staging1.absoluteStagedPath, 'stale.txt'), 'stale');
+
+    // Clear the in-memory cache so the second synth isn't bypassed
+    AssetStaging.clearAssetHashCache();
+
+    // WHEN - OUTPUT can't know its hash before bundling, so this bundles again onto the existing asset.<hash>
+    const app2 = new App({ outdir: app1.outdir, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const staging2 = new AssetStaging(new Stack(app2, 'stack'), 'Asset', props);
+    app2.synth();
+
+    // THEN
+    const dockerRun = `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`;
+    expect(readDockerStubInputConcat()).toEqual(`${dockerRun}\n${dockerRun}`);
+
+    expect(staging2.assetHash).toEqual(staging1.assetHash);
+    expect(staging2.absoluteStagedPath).toEqual(staging1.absoluteStagedPath);
+    expect(fs.readdirSync(staging2.absoluteStagedPath)).toEqual(['test.txt']);
+    expect(fs.readdirSync(app1.outdir).filter(f => f.startsWith('asset.'))).toEqual([`asset.${staging1.assetHash}`]);
+  });
+
   test('if bundling is interrupted, target asset directory is not produced', () => {
     // GIVEN
     const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
@@ -922,6 +959,43 @@ describe('staging', () => {
 
     // THEN
     expect(asset.assetHash).toEqual(DOCKER_STUB_SUCCESS_HASH);
+  });
+
+  describe('OUTPUT asset hash ignores the source fingerprinting options', () => {
+    // The output has a regular file and an internal symlink, so `exclude` and `follow`
+    // would both change the fingerprint if they were applied to it.
+    const BASE_PROPS: AssetStagingProps = {
+      sourcePath: path.join(FIXTURE_TEST1_DIR, 'subdir'),
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.DIR_WITH_LOCAL_SYMLINK],
+        outputType: BundlingOutput.NOT_ARCHIVED,
+      },
+    };
+
+    function outputHash(props: Partial<AssetStagingProps>) {
+      // Each construction must really bundle and hash, not be served from the in-memory cache
+      AssetStaging.clearAssetHashCache();
+      const stack = new Stack(new App(), 'stack');
+      return new AssetStaging(stack, 'Asset', { ...BASE_PROPS, ...props }).assetHash;
+    }
+
+    test.each<[string, Partial<AssetStagingProps>]>([
+      ['exclude', { exclude: ['test.txt'] }],
+      ['ignoreMode', { ignoreMode: IgnoreMode.DOCKER }],
+      ['exclude with ignoreMode', { exclude: ['test.txt'], ignoreMode: IgnoreMode.GIT }],
+      ['follow ALWAYS', { follow: SymlinkFollowMode.ALWAYS }],
+      ['follow EXTERNAL', { follow: SymlinkFollowMode.EXTERNAL }],
+      ['follow NEVER', { follow: SymlinkFollowMode.NEVER }],
+    ])('%s does not change the hash', (_, props) => {
+      expect(outputHash(props)).toEqual(outputHash({}));
+    });
+
+    // Control: the hash does react to inputs that are documented to affect it
+    test('extraHash does change the hash', () => {
+      expect(outputHash({ extraHash: 'extra' })).not.toEqual(outputHash({}));
+    });
   });
 
   test('custom hash', () => {
@@ -1456,6 +1530,48 @@ describe('staging', () => {
     expect(staging1.isArchive).toEqual(true);
     expect(staging2.packaging).toEqual(staging1.packaging);
     expect(staging2.isArchive).toEqual(staging1.isArchive);
+  });
+
+  test.each(['normal', 'legacy placeholder'] as const)('bundling if the bundling dir already exists: %s', (mode) => {
+    // The old implementation used to move a SINGLE_FILE bundling output to a sibling file and leave a 0-byte placeholder behind.
+    // We don't do that anymore, but we also have to be sure not to mistake a 0-byte placeholder for a complete asset.
+    // mode='normal': write a zip file with contents, we expect bundling to be skipped
+    // mode='legacy placeholder': write an empty zip file, we expect bundling to be performed
+
+    const app = new App({ });
+    const stack = new Stack(app, 'Stack');
+
+    // Will get asset properties mixed into the custom hash
+    const predictedAssetHash = '528df5030cd644fab9bf55368aea1a6914b20290ec6e231d34eb6b298a2e2674';
+
+    const assetDir = path.join(app.assetOutdir, `asset.${predictedAssetHash}`);
+    fs.mkdirSync(assetDir, { recursive: true });
+    fs.writeFileSync(path.join(assetDir, 'test.zip'), mode === 'normal' ? 'zip contents' : '');
+
+    let bundleCount = 0;
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath: FIXTURE_TEST1_DIR,
+
+      // Easiest way to make this collission is to use a CUSTOM hash
+      assetHash: 'custom-hash',
+
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        outputType: BundlingOutput.ARCHIVED,
+        local: {
+          tryBundle(outputDir: string) {
+            bundleCount++;
+            fs.writeFileSync(path.join(outputDir, 'test.zip'), 'zip contents');
+            return true;
+          },
+        },
+      },
+    });
+
+    // Compare this first so that we can fix the source code if the predicted hash ever changes
+    expect(staging.assetHash).toEqual(predictedAssetHash);
+
+    expect(bundleCount).toEqual(mode === 'normal' ? 0 : 1);
   });
 
   test('bundling that produces a single archive file with NOT_ARCHIVED', () => {
