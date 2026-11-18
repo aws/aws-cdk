@@ -97,6 +97,32 @@
       "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
     }
   ],
+  "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvoke6eaae83e3e4bd5775499741c7a314886/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvoke6eaae83e3e4bd5775499741c7a314886/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke6eaae83e3e4bd5775499741c7a314886Invoke863BDBE3"
+    }
+  ],
+  "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvoke6eaae83e3e4bd5775499741c7a314886/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke6eaae83e3e4bd5775499741c7a314886"
+    }
+  ],
   "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvokeb8e58dc6419f17dcb45afd535f1be227/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -115,6 +141,24 @@
       "data": "LambdaInvokeb8e58dc6419f17dcb45afd535f1be227WaitFor9A074D8F"
     }
   ],
+  "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvoke6eaae83e3e4bd5775499741c7a314886/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke6eaae83e3e4bd5775499741c7a314886"
+    }
+  ],
+  "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvoke6eaae83e3e4bd5775499741c7a314886/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke6eaae83e3e4bd5775499741c7a314886WaitForRoleDADE5829"
+    }
+  ],
+  "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvoke6eaae83e3e4bd5775499741c7a314886/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke6eaae83e3e4bd5775499741c7a314886WaitForCA3F8806"
+    }
+  ],
   "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvokeb8e58dc6419f17dcb45afd535f1be227/WaitFor/IsCompleteProvider/Invoke": [
     {
       "type": "aws:cdk:logicalId",
@@ -125,6 +169,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "LambdaInvokeb8e58dc6419f17dcb45afd535f1be227WaitForTimeoutProviderInvokeA7FEA837"
+    }
+  ],
+  "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvoke6eaae83e3e4bd5775499741c7a314886/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke6eaae83e3e4bd5775499741c7a314886WaitForIsCompleteProviderInvokeB11E6BE2"
+    }
+  ],
+  "/dynamodb-vector-index-v2-test/DefaultTest/DeployAssert/LambdaInvoke6eaae83e3e4bd5775499741c7a314886/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke6eaae83e3e4bd5775499741c7a314886WaitForTimeoutProviderInvoke2323432C"
     }
   ]
 }

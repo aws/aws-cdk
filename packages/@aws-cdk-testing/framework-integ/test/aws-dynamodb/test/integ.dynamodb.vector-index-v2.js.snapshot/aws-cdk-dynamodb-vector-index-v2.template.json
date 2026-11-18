@@ -28,6 +28,26 @@
      {
       "Region": {
        "Ref": "AWS::Region"
+      },
+      "ResourcePolicy": {
+       "PolicyDocument": {
+        "Statement": [
+         {
+          "Action": "dynamodb:SearchVectors",
+          "Effect": "Allow",
+          "Principal": {
+           "AWS": {
+            "Fn::GetAtt": [
+             "PolicySearcherRole60825F05",
+             "Arn"
+            ]
+           }
+          },
+          "Resource": "*"
+         }
+        ],
+        "Version": "2012-10-17"
+       }
       }
      }
     ],
@@ -177,6 +197,90 @@
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "PolicySearcherRole60825F05": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PolicySearcher8ACA2A46": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "dac145d63308af0fa5bc49e2c97fb4233359b619a543fa5772d64816331d3546.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "TABLE_NAME": {
+       "Ref": "VectorTableB2143AA2"
+      },
+      "INDEX_NAME": "SimilarItems",
+      "DIMENSIONS": "128",
+      "HASH_ATTRIBUTE": "category",
+      "HASH_VALUE": "books"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "PolicySearcherRole60825F05",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.14",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "PolicySearcherRole60825F05"
+   ]
+  },
+  "PolicySearcherLogGroupD4A78BB2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "PolicySearcher8ACA2A46"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {
@@ -186,6 +290,14 @@
    },
    "Export": {
     "Name": "aws-cdk-dynamodb-vector-index-v2:ExportsOutputRefVectorSearcherD42D38E880020600"
+   }
+  },
+  "ExportsOutputRefPolicySearcher8ACA2A46C31D075B": {
+   "Value": {
+    "Ref": "PolicySearcher8ACA2A46"
+   },
+   "Export": {
+    "Name": "aws-cdk-dynamodb-vector-index-v2:ExportsOutputRefPolicySearcher8ACA2A46C31D075B"
    }
   }
  },
