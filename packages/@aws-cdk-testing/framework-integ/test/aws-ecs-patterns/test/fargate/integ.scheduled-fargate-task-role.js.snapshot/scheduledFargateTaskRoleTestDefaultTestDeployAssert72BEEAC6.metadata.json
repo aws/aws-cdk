@@ -1,0 +1,20 @@
+{
+  "/scheduledFargateTaskRoleTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "scheduledFargateTaskRoleTestDefaultTestDeployAssert72BEEAC6.template.json"
+    }
+  ],
+  "/scheduledFargateTaskRoleTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/scheduledFargateTaskRoleTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

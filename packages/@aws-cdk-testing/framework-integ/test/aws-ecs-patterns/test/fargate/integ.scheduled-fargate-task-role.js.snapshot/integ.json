@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "scheduledFargateTaskRoleTest/DefaultTest": {
+      "stacks": [
+        "aws-fargate-scheduled-task-role-integ"
+      ],
+      "assertionStack": "scheduledFargateTaskRoleTest/DefaultTest/DeployAssert",
+      "assertionStackName": "scheduledFargateTaskRoleTestDefaultTestDeployAssert72BEEAC6"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
