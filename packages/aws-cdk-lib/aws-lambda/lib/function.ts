@@ -1171,6 +1171,12 @@ export class Function extends FunctionBase {
     this.runtime = effectiveRuntime;
     this.timeout = props.timeout;
 
+    if (effectiveRuntime.name === 'custom') {
+      // On the L1 child, where the FunctionRuntimeConfig mixin acknowledges it when applied.
+      Annotations.of(this.resource).addInfoV2('@aws-cdk/aws-lambda:customRuntimeRequiresRuntimeConfig',
+        "The 'custom' runtime requires a RuntimeConfig, or the deployment fails. Apply the FunctionRuntimeConfig mixin (aws-cdk-lib/aws-lambda/mixins) to set the customer-managed runtime and alias.");
+    }
+
     this.architecture = props.architecture ?? Architecture.X86_64;
 
     if (props.layers) {
