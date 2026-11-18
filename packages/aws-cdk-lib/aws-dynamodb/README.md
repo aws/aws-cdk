@@ -759,6 +759,10 @@ declare const grantee: iam.IGrantable;
 table.grants.vectorSearch(grantee);
 ```
 
+`grants.vectorSearch()` throws when the grantee's conditions name
+`dynamodb:LeadingKeys`, `dynamodb:Attributes` or `dynamodb:Select`, for example
+a principal from `withConditions()`, because those keys cannot scope the grant.
+
 On a `TableV2`, `grants.vectorSearch()` grants `SearchVectors` on the indexes of
 the primary table and of each replica in the `replicas` property. It does not
 cover replicas added later with `addReplica()`, and it grants on the primary

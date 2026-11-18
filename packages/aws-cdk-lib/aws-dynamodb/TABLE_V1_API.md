@@ -298,6 +298,12 @@ referenced by the `searchSchema` are added to the table's attribute definitions
 automatically. Index names must be unique across all global secondary indexes,
 local secondary indexes, and vector indexes on the table.
 
+The CloudFormation-Validate rule E3039 counts only key schema attributes, so it
+reports search schema attributes as unused attribute definitions. A table whose
+vector index has a `searchSchema` acknowledges E3039 once. The acknowledgement
+covers every E3039 finding on that table, so the rule no longer reports any
+unused attribute definition on it.
+
 A `searchSchema` may contain at most one `HASH` element and at most 18
 `INLINE_FILTER` elements. When a `HASH` element is declared, queries against
 the vector index must provide a search condition expression targeting it.
@@ -325,6 +331,10 @@ declare const grantee: iam.IGrantable;
 
 table.grants.vectorSearch(grantee);
 ```
+
+`grants.vectorSearch()` throws when the grantee's conditions name
+`dynamodb:LeadingKeys`, `dynamodb:Attributes` or `dynamodb:Select`, for example
+a principal from `withConditions()`, because those keys cannot scope the grant.
 
 A table imported with `Table.fromTableName()` or another `from*` method has the
 type `ITable`, which has no `grants` property. Use `TableGrants.fromTable()` for

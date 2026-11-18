@@ -1,5 +1,6 @@
 import { ServicePrincipal } from '../../../aws-iam';
 import type { IPrincipal } from '../../../aws-iam';
+import { Token } from '../../../core';
 
 /**
  * Service principals known to be valid grantees for DynamoDB resource policies.
@@ -49,6 +50,42 @@ function extractServiceName(principal: IPrincipal): string | undefined {
   const inner = (principal as any).wrapped;
   if (inner != null) {
     return extractServiceName(inner);
+  }
+  return undefined;
+}
+
+/**
+ * Fine-grained access control condition keys, in lower case. They are not in
+ * the SearchVectors request context, so a statement that names one of them
+ * does not match a SearchVectors request.
+ *
+ * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/VectorSearch.Security.html
+ */
+const FGAC_CONDITION_KEYS = new Set([
+  'dynamodb:leadingkeys',
+  'dynamodb:attributes',
+  'dynamodb:select',
+]);
+
+/**
+ * Returns the first fine-grained access control condition key in the
+ * principal's conditions, or undefined if there is none. IAM condition keys
+ * are case-insensitive. Conditions that are a token, and condition blocks that
+ * are tokens, are skipped.
+ */
+export function findFgacConditionKey(principal: IPrincipal): string | undefined {
+  const conditions = principal.policyFragment.conditions;
+  if (Token.isUnresolved(conditions)) {
+    return undefined;
+  }
+  for (const block of Object.values(conditions)) {
+    if (block === null || typeof block !== 'object' || Token.isUnresolved(block)) {
+      continue;
+    }
+    const key = Object.keys(block).find(k => FGAC_CONDITION_KEYS.has(k.toLowerCase()));
+    if (key !== undefined) {
+      return key;
+    }
   }
   return undefined;
 }

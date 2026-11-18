@@ -2,7 +2,7 @@ import type { ITableRef } from './dynamodb.generated';
 import * as perms from './perms';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
-import { isUnsupportedServicePrincipal } from './private/principal-utils';
+import { findFgacConditionKey, isUnsupportedServicePrincipal } from './private/principal-utils';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -176,10 +176,11 @@ export class TableGrants {
    * search every item in those indexes and read every attribute they project.
    * A statement that allows SearchVectors with one of those conditions does not
    * match the request, so DynamoDB denies the request. For this reason this
-   * method grants SearchVectors in a separate statement. When the grant goes to
-   * the table's resource policy, the conditions of a `PrincipalWithConditions`
-   * grantee are added to the statement. So do not pass a grantee with
-   * fine-grained access control conditions.
+   * method grants SearchVectors in a separate statement. It also rejects a
+   * grantee whose conditions name `dynamodb:LeadingKeys`, `dynamodb:Attributes`
+   * or `dynamodb:Select`, such as a `PrincipalWithConditions`. Those keys are not
+   * in the SearchVectors request context, so they cannot scope the grant, and
+   * in an identity policy CDK does not add a grantee's conditions at all.
    *
    * Appropriate grants will also be added to the customer-managed KMS key
    * if one was configured.
@@ -193,6 +194,15 @@ export class TableGrants {
         'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
         'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
         'with required service principal, actions, and conditions',
+        this.table,
+      );
+    }
+
+    const fgacKey = findFgacConditionKey(grantee.grantPrincipal);
+    if (fgacKey !== undefined) {
+      throw new ValidationError(
+        lit`VectorSearchFgacConditionNotSupported`,
+        `vectorSearch() does not support a grantee with the condition key ${JSON.stringify(fgacKey)}, because fine-grained access control keys are not in the SearchVectors request context (grant to the principal without this condition)`,
         this.table,
       );
     }

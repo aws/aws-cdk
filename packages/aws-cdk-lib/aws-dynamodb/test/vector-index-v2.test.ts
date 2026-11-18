@@ -189,6 +189,29 @@ test('INCLUDE projection renders its nonKeyAttributes', () => {
   });
 });
 
+test('vector index INCLUDE attributes count toward the limit of 100 projected attributes', () => {
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+  for (let n = 0; n < 5; n++) {
+    table.addGlobalSecondaryIndex({
+      indexName: `gsi${n}`,
+      partitionKey: { name: 'g', type: AttributeType.STRING },
+      projectionType: ProjectionType.INCLUDE,
+      nonKeyAttributes: Array.from({ length: 20 }, (_, i) => `a${n * 20 + i}`),
+    });
+  }
+
+  expect(() => table.addVectorIndex({
+    indexName: 'vectorIndex',
+    vectorAttribute: 'embedding',
+    dimensions: 128,
+    distanceFunction: VectorDistanceFunction.COSINE,
+    projectionType: ProjectionType.INCLUDE,
+    nonKeyAttributes: ['extra'],
+  })).toThrow("The maximum number of 'nonKeyAttributes' across all secondary indexes is 100");
+});
+
 test('throws when INCLUDE projection has no nonKeyAttributes', () => {
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
@@ -767,6 +790,79 @@ describe('grants.vectorSearch', () => {
 
     expect(() => table.grants.vectorSearch(principal))
       .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test.each(['dynamodb:LeadingKeys', 'dynamodb:Attributes', 'dynamodb:Select', 'dynamodb:leadingkeys'])('throws when the grantee has the condition key %s', (key) => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+    const grantee = new iam.PrincipalWithConditions(role, { 'ForAllValues:StringEquals': { [key]: ['x'] } });
+
+    expect(() => table.grants.vectorSearch(grantee)).toThrow(`vectorSearch() does not support a grantee with the condition key ${JSON.stringify(key)}, because fine-grained access control keys are not in the SearchVectors request context (grant to the principal without this condition)`);
+  });
+
+  test('throws when an account principal has a fine-grained access control condition', () => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const grantee = new iam.AccountPrincipal('111122223333').withConditions({
+      'ForAllValues:StringEquals': { 'dynamodb:Attributes': ['title'] },
+    });
+
+    expect(() => table.grants.vectorSearch(grantee)).toThrow(/does not support a grantee with the condition key "dynamodb:Attributes"/);
+  });
+
+  test('throws when the fine-grained access control key is not the first key of the first condition block', () => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+    const grantee = new iam.PrincipalWithConditions(role, {
+      'StringEquals': { 'aws:SourceVpc': 'vpc-12345678' },
+      'ForAllValues:StringEquals': { 'aws:PrincipalTag/team': ['a'], 'dynamodb:LeadingKeys': ['x'] },
+    });
+
+    expect(() => table.grants.vectorSearch(grantee)).toThrow(/condition key "dynamodb:LeadingKeys"/);
+  });
+
+  test('accepts a grantee whose conditions name no fine-grained access control key', () => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+
+    table.grants.vectorSearch(new iam.PrincipalWithConditions(role, { StringEquals: { 'aws:SourceVpc': 'vpc-12345678' } }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({ Action: 'dynamodb:SearchVectors' })]),
+      },
+    });
   });
 });
 

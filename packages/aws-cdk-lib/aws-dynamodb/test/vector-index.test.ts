@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import { AssemblyValidationReport } from '../../assertions/lib/helpers-internal';
 import * as iam from '../../aws-iam';
-import { App, Lazy, Stack } from '../../core';
+import { App, Lazy, Stack, Validations } from '../../core';
 import type { CfnTable } from '../lib';
 import {
   AttributeType,
@@ -226,6 +226,27 @@ test('INCLUDE projection renders its nonKeyAttributes', () => {
       }),
     ],
   });
+});
+
+test('vector index INCLUDE attributes count toward the limit of 100 projected attributes', () => {
+  const table = newTable();
+  for (let n = 0; n < 5; n++) {
+    table.addGlobalSecondaryIndex({
+      indexName: `gsi${n}`,
+      partitionKey: { name: 'g', type: AttributeType.STRING },
+      projectionType: ProjectionType.INCLUDE,
+      nonKeyAttributes: Array.from({ length: 20 }, (_, i) => `a${n * 20 + i}`),
+    });
+  }
+
+  expect(() => table.addVectorIndex({
+    indexName: 'vectorIndex',
+    vectorAttribute: 'embedding',
+    dimensions: 128,
+    distanceFunction: VectorDistanceFunction.COSINE,
+    projectionType: ProjectionType.INCLUDE,
+    nonKeyAttributes: ['extra'],
+  })).toThrow('a maximum number of nonKeyAttributes across all of secondary indexes is 100');
 });
 
 test('throws when INCLUDE projection has no nonKeyAttributes', () => {
@@ -739,6 +760,71 @@ describe('grants.vectorSearch', () => {
     expect(() => table.grants.vectorSearch(principal))
       .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
   });
+
+  test.each(['dynamodb:LeadingKeys', 'dynamodb:Attributes', 'dynamodb:Select', 'dynamodb:leadingkeys'])('throws when the grantee has the condition key %s', (key) => {
+    const table = newTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+    const grantee = new iam.PrincipalWithConditions(role, { 'ForAllValues:StringEquals': { [key]: ['x'] } });
+
+    expect(() => table.grants.vectorSearch(grantee)).toThrow(`vectorSearch() does not support a grantee with the condition key ${JSON.stringify(key)}, because fine-grained access control keys are not in the SearchVectors request context (grant to the principal without this condition)`);
+  });
+
+  test('throws when an account principal has a fine-grained access control condition', () => {
+    const table = newTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const grantee = new iam.AccountPrincipal('111122223333').withConditions({
+      'ForAllValues:StringEquals': { 'dynamodb:Attributes': ['title'] },
+    });
+
+    expect(() => table.grants.vectorSearch(grantee)).toThrow(/does not support a grantee with the condition key "dynamodb:Attributes"/);
+  });
+
+  test('throws when the fine-grained access control key is not the first key of the first condition block', () => {
+    const table = newTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+    const grantee = new iam.PrincipalWithConditions(role, {
+      'StringEquals': { 'aws:SourceVpc': 'vpc-12345678' },
+      'ForAllValues:StringEquals': { 'aws:PrincipalTag/team': ['a'], 'dynamodb:LeadingKeys': ['x'] },
+    });
+
+    expect(() => table.grants.vectorSearch(grantee)).toThrow(/condition key "dynamodb:LeadingKeys"/);
+  });
+
+  test('accepts a grantee whose conditions name no fine-grained access control key', () => {
+    const table = newTable();
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+
+    table.grants.vectorSearch(new iam.PrincipalWithConditions(role, { StringEquals: { 'aws:SourceVpc': 'vpc-12345678' } }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({ Action: 'dynamodb:SearchVectors' })]),
+      },
+    });
+  });
 });
 
 test('throws when search schema is an empty array', () => {
@@ -811,5 +897,28 @@ describe('CloudFormation-Validate E3039', () => {
     });
 
     AssemblyValidationReport.fromApp(reportApp).hasNoViolation({ ruleName: 'E3039' });
+  });
+
+  test('acknowledges E3039 once for the whole table, which also hides an unused attribute definition', () => {
+    const table = newReportTable();
+    for (const indexName of ['vi1', 'vi2']) {
+      table.addVectorIndex({
+        indexName,
+        vectorAttribute: `embedding${indexName}`,
+        dimensions: 128,
+        distanceFunction: VectorDistanceFunction.COSINE,
+        searchSchema: [{ attribute: { name: `category${indexName}`, type: AttributeType.STRING }, type: SearchSchemaElementType.HASH }],
+      });
+    }
+    (table.node.defaultChild as CfnTable).addPropertyOverride('AttributeDefinitions', [
+      { AttributeName: 'pk', AttributeType: 'S' },
+      { AttributeName: 'categoryvi1', AttributeType: 'S' },
+      { AttributeName: 'categoryvi2', AttributeType: 'S' },
+      { AttributeName: 'unused', AttributeType: 'S' },
+    ]);
+
+    // The acknowledgement covers the whole table, so the unused definition is not reported either.
+    AssemblyValidationReport.fromApp(reportApp).hasNoViolation({ ruleName: 'E3039' });
+    expect(table.node.metadata.filter(m => m.type === Validations.ACKNOWLEDGED_RULES_METADATA_KEY)).toHaveLength(1);
   });
 });

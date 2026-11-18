@@ -1523,6 +1523,11 @@ export class Table extends TableBase {
    * index name must be unique across all global secondary indexes, local
    * secondary indexes, and vector indexes on the table.
    *
+   * When the vector index has a search schema, the table acknowledges the
+   * CloudFormation-Validate rule E3039. The rule counts only key schema
+   * attributes, so it reports search schema attributes as unused attribute
+   * definitions. The acknowledgement covers every E3039 finding on the table.
+   *
    * @param props the properties of the vector index
    */
   @MethodMetadata()
