@@ -20,11 +20,11 @@ import type {
 import {
   BillingMode,
   MultiRegionConsistency,
-  SearchSchemaElementType,
   parseKeySchema,
   ProjectionType,
   StreamViewType,
   validateContributorInsights,
+  validateVectorIndexProps,
 } from './shared';
 import { TableGrants } from './table-grants';
 import type { ITableV2 } from './table-v2-base';
@@ -1013,7 +1013,8 @@ export class TableV2 extends TableBaseV2 {
    */
   @MethodMetadata()
   public addVectorIndex(props: VectorIndexProps) {
-    this.validateVectorIndex(props);
+    this.validateIndexName(props.indexName);
+    validateVectorIndexProps(props, this.billingMode, this);
     const vectorIndex = this.configureVectorIndex(props);
     this.vectorIndexes.put(props.indexName, vectorIndex);
   }
@@ -1385,46 +1386,6 @@ export class TableV2 extends TableBaseV2 {
 
     if (this.localSecondaryIndexes.size === MAX_LSI_COUNT) {
       throw new ValidationError(lit`MaxLocalSecondaryIndexesExceeded`, `You may not provide more than ${MAX_LSI_COUNT} local secondary indexes`, this);
-    }
-  }
-
-  private validateVectorIndex(props: VectorIndexProps) {
-    this.validateIndexName(props.indexName);
-
-    if (this.billingMode !== BillingMode.PAY_PER_REQUEST) {
-      throw new ValidationError(lit`VectorIndexRequiresOnDemand`, `Vector indexes can only be used with ${BillingMode.PAY_PER_REQUEST} billing mode`, this);
-    }
-
-    if (!Token.isUnresolved(props.dimensions) && (!Number.isInteger(props.dimensions) || props.dimensions < 1 || props.dimensions > 4096)) {
-      throw new ValidationError(lit`VectorIndexInvalidDimensions`, `Dimensions for vector index ${props.indexName} must be an integer between 1 and 4096, got ${props.dimensions}`, this);
-    }
-
-    this.validateVectorSearchSchema(props);
-  }
-
-  /**
-   * Validate the search schema of a vector index: attribute names must be
-   * unique within the schema and at most one HASH element is allowed.
-   *
-   * @param props the properties of the vector index
-   */
-  private validateVectorSearchSchema(props: VectorIndexProps) {
-    if (!props.searchSchema) {
-      return;
-    }
-    if (props.searchSchema.length === 0) {
-      throw new ValidationError(lit`VectorIndexEmptySearchSchema`, `Search schema for vector index ${props.indexName} must contain at least one element when provided; omit searchSchema instead of passing an empty array`, this);
-    }
-    const seen = new Set<string>();
-    let hashCount = 0;
-    for (const element of props.searchSchema) {
-      if (seen.has(element.attribute.name)) {
-        throw new ValidationError(lit`VectorIndexDuplicateSearchSchemaAttribute`, `Duplicate search schema attribute name, ${element.attribute.name}, in vector index ${props.indexName}`, this);
-      }
-      seen.add(element.attribute.name);
-      if (element.type === SearchSchemaElementType.HASH && ++hashCount > 1) {
-        throw new ValidationError(lit`VectorIndexMultipleHashElements`, `At most one HASH search schema element is allowed in vector index ${props.indexName}`, this);
-      }
     }
   }
 

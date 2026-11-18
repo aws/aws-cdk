@@ -3,7 +3,7 @@ import type { GlobalSecondaryIndexProps } from './table';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import type * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
-import { ValidationError, type IResource } from '../../core';
+import { Token, ValidationError, type IResource } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import type { ITableRef } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
@@ -679,6 +679,47 @@ export function validateContributorInsights(
 
   return contributorInsightsSpecification ??
     (contributorInsights !== undefined ? { enabled: contributorInsights } : undefined);
+}
+
+/**
+ * Validate a vector index against the table's billing mode and check its
+ * dimensions and search schema. `Table` and `TableV2` both call this, so they
+ * reject the same input.
+ *
+ * The search schema check requires unique attribute names and at most one
+ * HASH element.
+ *
+ * @param props the properties of the vector index
+ * @param billingMode the billing mode of the table
+ * @param scope the construct that reports a validation error
+ */
+export function validateVectorIndexProps(props: VectorIndexProps, billingMode: string, scope: IConstruct): void {
+  // Vector indexes are only supported in on-demand (PAY_PER_REQUEST) billing mode.
+  if (billingMode !== BillingMode.PAY_PER_REQUEST) {
+    throw new ValidationError(lit`VectorIndexRequiresOnDemand`, `Vector indexes can only be used with ${BillingMode.PAY_PER_REQUEST} billing mode`, scope);
+  }
+
+  if (!Token.isUnresolved(props.dimensions) && (!Number.isInteger(props.dimensions) || props.dimensions < 1 || props.dimensions > 4096)) {
+    throw new ValidationError(lit`VectorIndexInvalidDimensions`, `Dimensions for vector index ${props.indexName} must be an integer between 1 and 4096, got ${props.dimensions}`, scope);
+  }
+
+  if (!props.searchSchema) {
+    return;
+  }
+  if (props.searchSchema.length === 0) {
+    throw new ValidationError(lit`VectorIndexEmptySearchSchema`, `Search schema for vector index ${props.indexName} must contain at least one element when provided; omit searchSchema instead of passing an empty array`, scope);
+  }
+  const seen = new Set<string>();
+  let hashCount = 0;
+  for (const element of props.searchSchema) {
+    if (seen.has(element.attribute.name)) {
+      throw new ValidationError(lit`VectorIndexDuplicateSearchSchemaAttribute`, `Duplicate search schema attribute name, ${element.attribute.name}, in vector index ${props.indexName}`, scope);
+    }
+    seen.add(element.attribute.name);
+    if (element.type === SearchSchemaElementType.HASH && ++hashCount > 1) {
+      throw new ValidationError(lit`VectorIndexMultipleHashElements`, `At most one HASH search schema element is allowed in vector index ${props.indexName}`, scope);
+    }
+  }
 }
 
 /**
