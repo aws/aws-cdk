@@ -1,0 +1,109 @@
+{
+  "/aws-cdk-dynamodb-v2-grant-dependency": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-dynamodb-v2-grant-dependency.template.json"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/Table": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/TableTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/StreamTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "dynamoStream": "NEW_IMAGE",
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToStreamResourcePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/StreamTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/Table/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableCD117FA1"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/TableTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableTopic611F61C2"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/StreamTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StreamTable3967ED33"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/StreamTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StreamTopicAA8D1C20"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/Exports/Output{\"Fn::GetAtt\":[\"TableCD117FA1\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttTableCD117FA1ArnE2C8C204"
+    }
+  ],
+  "/aws-cdk-dynamodb-v2-grant-dependency/Exports/Output{\"Fn::GetAtt\":[\"StreamTable3967ED33\",\"StreamArn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttStreamTable3967ED33StreamArnB5BC5F74"
+    }
+  ]
+}

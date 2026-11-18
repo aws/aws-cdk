@@ -1,0 +1,194 @@
+{
+ "Resources": {
+  "AwsApiCallDynamoDBgetResourcePolicye513134ecc1bc7746e61bba9c8f2071e": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBgetResourcePolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "DynamoDB",
+    "api": "getResourcePolicy",
+    "expected": "{\"$ObjectLike\":{\"Policy\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Statement\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Action\":{\"$ArrayWith\":[\"dynamodb:GetItem\"]}}}]}}}}}}",
+    "parameters": {
+     "ResourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-dynamodb-v2-grant-dependency:ExportsOutputFnGetAttTableCD117FA1ArnE2C8C204"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794994802363"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "dynamodb:GetResourcePolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "dynamodb:GetResourcePolicy"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallDynamoDBgetResourcePolicy3f72ad51296be3bf9ed93257f963410e": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBgetResourcePolicy",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "DynamoDB",
+    "api": "getResourcePolicy",
+    "expected": "{\"$ObjectLike\":{\"Policy\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Statement\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Action\":{\"$ArrayWith\":[\"dynamodb:GetRecords\"]}}}]}}}}}}",
+    "parameters": {
+     "ResourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-dynamodb-v2-grant-dependency:ExportsOutputFnGetAttStreamTable3967ED33StreamArnB5BC5F74"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794994802366"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallDynamoDBgetResourcePolicye513134ecc1bc7746e61bba9c8f2071e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallDynamoDBgetResourcePolicye513134ecc1bc7746e61bba9c8f2071e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallDynamoDBgetResourcePolicy3f72ad51296be3bf9ed93257f963410e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallDynamoDBgetResourcePolicy3f72ad51296be3bf9ed93257f963410e",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

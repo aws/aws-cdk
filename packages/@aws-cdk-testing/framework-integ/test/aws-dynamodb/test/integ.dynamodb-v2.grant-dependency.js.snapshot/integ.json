@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "TableV2GrantDependencyIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dynamodb-v2-grant-dependency"
+      ],
+      "assertionStack": "TableV2GrantDependencyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "TableV2GrantDependencyIntegTestDefaultTestDeployAssert1235DDBB"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

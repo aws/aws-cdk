@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "3e87f754576451f921235000faa93c8242f016c171b41778aa1bd75d269a2c6b": {
+      "displayName": "aws-cdk-dynamodb-v2-grant-dependency Template",
+      "source": {
+        "path": "aws-cdk-dynamodb-v2-grant-dependency.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-815176c2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3e87f754576451f921235000faa93c8242f016c171b41778aa1bd75d269a2c6b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
