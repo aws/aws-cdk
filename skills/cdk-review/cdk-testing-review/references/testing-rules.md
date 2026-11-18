@@ -101,6 +101,8 @@ which lists rejection and validation-failure as required coverage.
 validation or a string manipulation for deploy-time values), and no test passes an unresolved token through
 it. See [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety) for
 the guard itself.
+- **Conditional (doc-absent detail):** up-tier BLOCKING when the guard skips a security- or
+  correctness-critical validation the change adds.
 - **Why the test (doc-absent detail):** the guide requires the guard, not a test of it. Without a test that
   passes an unresolved token (for example `Token.asString({ Ref: 'P' })`), a later edit can drop the
   guard unnoticed. The check or manipulation then runs on the encoded token, and rejects or corrupts
