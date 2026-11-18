@@ -2013,10 +2013,33 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
-Runtimes expose a `bundlingImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
+Runtimes expose a `bundlingImage` property that points to an
+[AWS SAM build image](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html).
+Unless a runtime is created with a custom bundling image, it references the image without a tag (`:latest`), so the
+image version used depends on what is
+published and what is cached locally, and can change independently of the AWS CDK version. If your build depends on
+specific tool versions, select an explicit image tag:
 
-Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
-`cdk.DockerImage.fromBuild(path)` to build a specific image:
+```ts
+new lambda.Function(this, 'JavaFunction', {
+  code: lambda.Code.fromAsset(path.join(__dirname, 'my-java-handler'), {
+    bundling: {
+      image: DockerImage.fromRegistry('public.ecr.aws/sam/build-java21:1.153'), // example: the last image with Gradle 8.x
+      command: ['bash', '-c', 'gradle build && cp build/distributions/*.zip /asset-output/'], // adjust to your build
+    },
+  }),
+  runtime: lambda.Runtime.JAVA_21,
+  handler: 'com.example.Handler::handleRequest',
+});
+```
+
+SAM build image tags follow AWS SAM CLI releases. Choose a tag that contains the tools your build requires, and update
+the pinned image regularly to receive tool and security updates. Tags can be re-pushed, so if you need a fully
+reproducible build, pin the image by digest instead (`public.ecr.aws/sam/build-java21@sha256:<digest>`). The bundling
+image is part of the asset hash, so changing the pinned tag or digest updates the function code on the next deployment,
+even if your source code is unchanged.
+
+Use `DockerImage.fromBuild(path)` to build a specific image instead:
 
 ```ts
 new lambda.Function(this, 'Function', {

@@ -34,6 +34,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
+cache-mode: read
+
 jobs:
   # Validates the approval: finds the PR, confirms a CDK team member approved
   # the current head commit, checks for snapshot changes, and posts commit
