@@ -141,6 +141,30 @@ test('throws when a vector index name collides with a GSI name', () => {
   })).toThrow(/Duplicate secondary index name, shared/);
 });
 
+test('INCLUDE projection renders its nonKeyAttributes', () => {
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addVectorIndex({
+    indexName: 'vectorIndex',
+    vectorAttribute: 'embedding',
+    dimensions: 128,
+    distanceFunction: VectorDistanceFunction.COSINE,
+    projectionType: ProjectionType.INCLUDE,
+    nonKeyAttributes: ['title', 'price'],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    VectorIndexes: [
+      Match.objectLike({
+        IndexName: 'vectorIndex',
+        Projection: { ProjectionType: 'INCLUDE', NonKeyAttributes: ['title', 'price'] },
+      }),
+    ],
+  });
+});
+
 test('throws when INCLUDE projection has no nonKeyAttributes', () => {
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
