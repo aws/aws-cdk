@@ -58,16 +58,13 @@ module.exports = {
     'html' // for local deep dive
   ],
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/', '/analytics-data-source/'],
-  reporters: process.env.GITHUB_ACTIONS
-    ? [
-      // Failures and totals at the end of the log
-      'summary',
-      // Failure annotations on the PR. Not grouped per test file, because nx
-      // already groups each package's output and GitHub can't nest groups.
-      ['github-actions', { silent: true }],
-      jestJunitReporter,
-    ]
-    : ['default', jestJunitReporter],
+  reporters: [
+    'default',
+    // Failure annotations on the PR. Not grouped per test file, because nx
+    // already groups each package's output and GitHub can't nest groups.
+    ...(process.env.GITHUB_ACTIONS ? [['github-actions', { silent: true }]] : []),
+    jestJunitReporter,
+  ],
 
   setupFilesAfterEnv,
 };
