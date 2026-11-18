@@ -16,6 +16,8 @@ on:
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   upload:
     runs-on: ubuntu-latest
