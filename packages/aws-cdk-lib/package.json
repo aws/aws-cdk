@@ -129,7 +129,7 @@
     "ignore": "^5.3.2",
     "jsonschema": "^1.5.0",
     "mime-types": "^2.1.35",
-    "minimatch": "^11.0.1",
+    "minimatch": "^11.0.9",
     "punycode": "^2.3.1",
     "semver": "^7.8.6",
     "yaml": "1.10.3"
@@ -172,7 +172,7 @@
     "aws-cdk": "^2.1148.1",
     "aws-sdk-client-mock": "4.1.0",
     "aws-sdk-client-mock-jest": "4.1.0",
-    "cdk8s": "2.70.122",
+    "cdk8s": "2.70.126",
     "constructs": "^10.5.0",
     "delay": "5.0.0",
     "esbuild": "^0.28.2",

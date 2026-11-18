@@ -273,12 +273,12 @@ To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFo
 
 ### Log Group Creation Methods
 
-| Method | Description | Tag Propagation | Prop Injection | Aspects | Notes |
-|--------|-------------|-----------------|----------------|---------|-------|
-| **logRetention prop** | Legacy approach using Custom Resource | False | False | False | Does not support TPA |
-| **logGroup prop** | Explicitly supplied by user in CDK app | True | True | True | Full support for TPA |
-| **Lazy creation** | Lambda service creates logGroup on first invocation | False | False | False | Occurs when both logRetention and logGroup are undefined and USE_CDK_MANAGED_LAMBDA_LOGGROUP is false |
-| **USE_CDK_MANAGED_LAMBDA_LOGGROUP** | CDK Lambda function construct creates log group with default props | True | True | True | Feature flag must be enabled |
+| Method                              | Description                                                        | Tag Propagation | Prop Injection | Aspects | Notes                                                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------ | --------------- | -------------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| **logRetention prop**               | Legacy approach using Custom Resource                              | False           | False          | False   | Does not support TPA                                                                                  |
+| **logGroup prop**                   | Explicitly supplied by user in CDK app                             | True            | True           | True    | Full support for TPA                                                                                  |
+| **Lazy creation**                   | Lambda service creates logGroup on first invocation                | False           | False          | False   | Occurs when both logRetention and logGroup are undefined and USE_CDK_MANAGED_LAMBDA_LOGGROUP is false |
+| **USE_CDK_MANAGED_LAMBDA_LOGGROUP** | CDK Lambda function construct creates log group with default props | True            | True           | True    | Feature flag must be enabled                                                                          |
 
 *TPA: Tag propagation, Prop Injection, Aspects*
 
@@ -925,19 +925,19 @@ Note that once you use a capacity provider in a function, it cannot be removed, 
 
 #### CapacityProviderFunctionOptions (addFunction method)
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| perExecutionEnvironmentMaxConcurrency | number | No | Maximum concurrent invokes per execution environment. |
-| executionEnvironmentMemoryGiBPerVCpu | number | No | Memory per VCPU in GiB. |
-| publishToLatestPublished | boolean | No | Whether to automatically publish to $LATEST.PUBLISHED version. |
-| latestPublishedScalingConfig | LatestPublishedScalingConfig | No | Scaling configuration for $LATEST.PUBLISHED version. |
+| Name                                  | Type                         | Required | Description                                                    |
+| ------------------------------------- | ---------------------------- | -------- | -------------------------------------------------------------- |
+| perExecutionEnvironmentMaxConcurrency | number                       | No       | Maximum concurrent invokes per execution environment.          |
+| executionEnvironmentMemoryGiBPerVCpu  | number                       | No       | Memory per VCPU in GiB.                                        |
+| publishToLatestPublished              | boolean                      | No       | Whether to automatically publish to $LATEST.PUBLISHED version. |
+| latestPublishedScalingConfig          | LatestPublishedScalingConfig | No       | Scaling configuration for $LATEST.PUBLISHED version.           |
 
 #### LatestPublishedScalingConfig
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| minExecutionEnvironments | number | No | Minimum execution environments for $LATEST.PUBLISHED version. |
-| maxExecutionEnvironments | number | No | Maximum execution environments for $LATEST.PUBLISHED version. |
+| Name                     | Type   | Required | Description                                                   |
+| ------------------------ | ------ | -------- | ------------------------------------------------------------- |
+| minExecutionEnvironments | number | No       | Minimum execution environments for $LATEST.PUBLISHED version. |
+| maxExecutionEnvironments | number | No       | Maximum execution environments for $LATEST.PUBLISHED version. |
 
 ### Capacity Provider Versions
 
@@ -976,10 +976,10 @@ capacityProvider.addFunction(fn, {
 
 #### VersionOptions (Capacity Provider Related Fields)
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| minExecutionEnvironments | number | No | Minimum execution environments to maintain for this version. |
-| maxExecutionEnvironments | number | No | Maximum execution environments allowed for this version. |
+| Name                     | Type   | Required | Description                                                  |
+| ------------------------ | ------ | -------- | ------------------------------------------------------------ |
+| minExecutionEnvironments | number | No       | Minimum execution environments to maintain for this version. |
+| maxExecutionEnvironments | number | No       | Maximum execution environments allowed for this version.     |
 
 ### Security and Encryption
 
@@ -1004,19 +1004,19 @@ const capacityProvider = new lambda.CapacityProvider(this, 'MyCapacityProvider',
 
 #### CapacityProviderProps
 
-| Name | Type | Required | Description |
-|------|------|----------|-------------|
-| capacityProviderName | string | No | Name of the capacity provider. Must be unique within the AWS account and region. |
-| securityGroups | ISecurityGroup[] | Yes | Security groups to associate with EC2 instances. Up to 5 allowed. |
-| subnets | ISubnet[] | Yes | Subnets where the capacity provider can launch EC2 instances. 1-16 subnets supported. |
-| operatorRole | IRole | No | IAM role for Lambda to manage the capacity provider. Uses AWS Managed Policy AWSLambdaManagedEC2ResourceOperator by default. |
-| architectures | Architecture[] | No | Instruction set architecture for compute instances. |
-| instanceTypeFilter | InstanceTypeFilter | No | Filter for allowed or excluded instance types. |
-| maxVCpuCount | number | No | Maximum number of EC2 instances for scaling. |
-| scalingOptions | ScalingOptions | No | Scaling configuration including policies. |
-| kmsKey | IKey | No | KMS key for encrypting capacity provider data. |
-| logGroup | ILogGroup | No | CloudWatch log group for capacity provider system logs. |
-| systemLogLevel | SystemLogLevel | No | Level of detail for capacity provider system logs (DEBUG, INFO, WARN). |
+| Name                 | Type               | Required | Description                                                                                                                  |
+| -------------------- | ------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| capacityProviderName | string             | No       | Name of the capacity provider. Must be unique within the AWS account and region.                                             |
+| securityGroups       | ISecurityGroup[]   | Yes      | Security groups to associate with EC2 instances. Up to 5 allowed.                                                            |
+| subnets              | ISubnet[]          | Yes      | Subnets where the capacity provider can launch EC2 instances. 1-16 subnets supported.                                        |
+| operatorRole         | IRole              | No       | IAM role for Lambda to manage the capacity provider. Uses AWS Managed Policy AWSLambdaManagedEC2ResourceOperator by default. |
+| architectures        | Architecture[]     | No       | Instruction set architecture for compute instances.                                                                          |
+| instanceTypeFilter   | InstanceTypeFilter | No       | Filter for allowed or excluded instance types.                                                                               |
+| maxVCpuCount         | number             | No       | Maximum number of EC2 instances for scaling.                                                                                 |
+| scalingOptions       | ScalingOptions     | No       | Scaling configuration including policies.                                                                                    |
+| kmsKey               | IKey               | No       | KMS key for encrypting capacity provider data.                                                                               |
+| logGroup             | ILogGroup          | No       | CloudWatch log group for capacity provider system logs.                                                                      |
+| systemLogLevel       | SystemLogLevel     | No       | Level of detail for capacity provider system logs (DEBUG, INFO, WARN).                                                       |
 
 ## Lambda Insights
 
@@ -2008,13 +2008,15 @@ reproducible build, pin the image by digest instead (`public.ecr.aws/sam/build-j
 image is part of the asset hash, so changing the pinned tag or digest updates the function code on the next deployment,
 even if your source code is unchanged.
 
-Use `DockerImage.fromBuild(path)` to build a specific image instead:
+Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
+`cdk.DockerImage.fromBuildV2(path)` to build a specific image. The image is only
+built when the asset is bundled:
 
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler', {
     bundling: {
-      image: DockerImage.fromBuild('/path/to/dir/with/DockerFile', {
+      image: DockerImage.fromBuildV2('/path/to/dir/with/DockerFile', {
         buildArgs: {
           ARG1: 'value1',
         },

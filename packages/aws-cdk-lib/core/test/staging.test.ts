@@ -703,6 +703,101 @@ describe('staging', () => {
     ]);
   });
 
+  test('bundler builds its image only when it bundles', () => {
+    // GIVEN
+    const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
+    if (fs.existsSync(TEST_OUTDIR)) {
+      fs.removeSync(TEST_OUTDIR);
+    }
+    const image = DockerImage.fromRegistry('alpine');
+    const build = jest.spyOn(image, 'buildImage');
+    const bundling = {
+      image,
+      command: [DockerStubCommand.SUCCESS],
+    };
+
+    // WHEN
+    const app = new App({ outdir: TEST_OUTDIR });
+    new AssetStaging(new Stack(app, 'stack'), 'Asset', { sourcePath: FIXTURE_TEST1_DIR, bundling });
+    // Once from asset staging before it sets up the container, once from DockerImage.run()
+    expect(build).toHaveBeenCalledTimes(2);
+    build.mockClear();
+    AssetStaging.clearAssetHashCache();
+    const app2 = new App({ outdir: TEST_OUTDIR });
+    new AssetStaging(new Stack(app2, 'stack'), 'Asset', { sourcePath: FIXTURE_TEST1_DIR, bundling });
+
+    // THEN
+    expect(build).not.toHaveBeenCalled();
+  });
+
+  test('bundler fails before it sets up bundling containers when its on-demand image fails to build', () => {
+    // GIVEN
+    const stack = new Stack(new App(), 'stack');
+    // The Docker stub fails every command without a stub keyword, including `build`
+    const image = DockerImage.fromBuildV2(FIXTURE_TEST1_DIR);
+
+    // WHEN
+    expect(() => new AssetStaging(stack, 'Asset', {
+      sourcePath: FIXTURE_TEST1_DIR,
+      bundling: { image, command: [DockerStubCommand.SUCCESS], bundlingFileAccess: BundlingFileAccess.VOLUME_COPY },
+    })).toThrow(/Failed to bundle asset/);
+
+    // THEN
+    const calls = fs.readFileSync(STUB_INPUT_CONCAT_FILE, 'utf-8').trim().split('\n');
+    expect(calls.some(c => c.startsWith('build '))).toBe(true);
+    expect(calls.filter(c => /^(volume create|create|run) /.test(c))).toEqual([]);
+  });
+
+  test('bundler works with an image object that has no buildImage method', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const run = jest.fn((options: { volumes?: { hostPath: string; containerPath: string }[] }) => {
+      const output = options.volumes?.find(v => v.containerPath === AssetStaging.BUNDLING_OUTPUT_DIR);
+      if (!output) {
+        throw new Error('Expected an output volume');
+      }
+      fs.writeFileSync(path.join(output.hostPath, 'hello.txt'), 'hello');
+    });
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: FIXTURE_TEST1_DIR,
+      bundling: {
+        image: { image: 'alpine', run, toJSON: () => 'alpine' } as any,
+        command: ['echo'],
+      },
+    });
+
+    // THEN
+    expect(run).toHaveBeenCalled();
+  });
+
+  test('bundler does not build its image when local bundling succeeds', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const image = DockerImage.fromRegistry('alpine');
+    const build = jest.spyOn(image, 'buildImage');
+
+    // WHEN
+    new AssetStaging(stack, 'Asset', {
+      sourcePath: FIXTURE_TEST1_DIR,
+      bundling: {
+        image,
+        local: {
+          tryBundle(outputDir: string): boolean {
+            fs.writeFileSync(path.join(outputDir, 'hello.txt'), 'hello');
+            return true;
+          },
+        },
+      },
+    });
+
+    // THEN
+    expect(build).not.toHaveBeenCalled();
+  });
+
   test('if bundling is interrupted, target asset directory is not produced', () => {
     // GIVEN
     const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
