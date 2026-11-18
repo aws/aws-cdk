@@ -78,6 +78,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Inbound authorization](#inbound-authorization)
     - [Gateway with KMS Encryption](#gateway-with-kms-encryption)
     - [Gateway with Custom Execution Role](#gateway-with-custom-execution-role)
+    - [Gateway behind a Custom Domain](#gateway-behind-a-custom-domain)
     - [Gateway IAM Permissions](#gateway-iam-permissions)
   - [Gateway Target](#gateway-target)
     - [Gateway Target Properties](#gateway-target-properties)
@@ -1382,6 +1383,7 @@ The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateway
 | `role` | `iam.IRole` | No | The IAM role that provides permissions for the gateway to access AWS services. A new role will be created if not provided |
 | `tags` | `{ [key: string]: string }` | No | Tags for the gateway. A list of key:value pairs of tags to apply to this Gateway resource |
 | `policyEngineConfiguration` | `GatewayPolicyEngineConfig` | No | Associates a policy engine with this gateway. All agent requests are evaluated against the Cedar policies in the engine. The gateway role is automatically granted evaluate permissions. Default: no policy engine |
+| `domainOverride` | `GatewayDomainOverride` | No | Public domain names that the gateway advertises in its OAuth discovery URLs instead of the inbound `Host` header. Use it when clients reach the gateway through your own proxy or custom domain. Default: no domain override |
 
 ### Basic Gateway Creation
 
@@ -1629,6 +1631,28 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   role: executionRole,
 });
 ```
+
+### Gateway behind a Custom Domain
+
+When clients reach the gateway through your own proxy or custom domain (for example Amazon CloudFront or an Application Load Balancer), set `domainOverride`. The gateway then advertises the configured public domain, instead of the inbound `Host` header, in the URLs that it returns for OAuth discovery: the protected resource metadata and the `WWW-Authenticate` challenge. Without it, an MCP client that connects through the custom domain is sent to the gateway's own host name during OAuth discovery.
+
+`defaultDomain` is the domain the gateway advertises when a request doesn't select one. `alternateDomains` lists up to 10 more domains. A request selects one of them, or the default domain, with the `x-amzn-bedrock-agentcore-gateway-domain` header, and the gateway rejects a request that selects a domain that isn't configured.
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
+    allowedAudience: ["my-app"],
+  }),
+  domainOverride: {
+    defaultDomain: "mcp.example.com",
+    alternateDomains: ["mcp-eu.example.com"],
+  },
+});
+```
+
+Each domain is a host name such as `mcp.example.com`, without a scheme, port or path. CDK checks at synthesis time that each domain is 1 to 253 characters and is a valid host name with at least two labels, that `alternateDomains` has 1 to 10 entries, and that it doesn't list a domain twice or repeat `defaultDomain`. Values that are tokens are not checked. The domain override only changes the advertised URLs: you still set up the proxy or custom domain, its certificate and its DNS records yourself. For more information, see [DomainOverride](https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_DomainOverride.html) in the API reference.
 
 ### Gateway IAM Permissions
 

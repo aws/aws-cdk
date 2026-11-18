@@ -1737,3 +1737,196 @@ describe('Gateway PolicyEngine association', () => {
     });
   });
 });
+
+describe('Gateway domain override', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack');
+    // TODO: Remove this acknowledge once the bundled CFN validation schema includes DomainOverride
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'DomainOverride is a newly launched property not yet in the bundled schema' });
+  });
+
+  const jwtAuthorizer = () => GatewayAuthorizer.usingCustomJwt({
+    discoveryUrl: 'https://auth.example.com/.well-known/openid-configuration',
+    allowedAudience: ['my-app'],
+  });
+
+  test('renders DomainOverride with default and alternate domains', () => {
+    const gateway = new Gateway(stack, 'Gateway', {
+      gatewayName: 'domain-override-gateway',
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: {
+        defaultDomain: 'mcp.example.com',
+        alternateDomains: ['mcp-eu.example.com', 'mcp-ap.example.com'],
+      },
+    });
+
+    expect(gateway.domainOverride).toEqual({
+      defaultDomain: 'mcp.example.com',
+      alternateDomains: ['mcp-eu.example.com', 'mcp-ap.example.com'],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'domain-override-gateway',
+      DomainOverride: {
+        DefaultDomain: 'mcp.example.com',
+        AlternateDomains: ['mcp-eu.example.com', 'mcp-ap.example.com'],
+      },
+    });
+  });
+
+  test('renders DomainOverride with only the default domain', () => {
+    new Gateway(stack, 'Gateway', {
+      gatewayName: 'default-domain-only',
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: { defaultDomain: 'mcp.example.com' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'default-domain-only',
+      DomainOverride: {
+        DefaultDomain: 'mcp.example.com',
+        AlternateDomains: Match.absent(),
+      },
+    });
+  });
+
+  test('accepts 10 alternate domains and 253-character domains', () => {
+    const label = 'a'.repeat(63);
+    const longDomain = `${label}.${label}.${label}.${'b'.repeat(61)}`;
+    expect(longDomain.length).toBe(253);
+    const alternateDomains = Array.from({ length: 10 }, (_, i) => `mcp-${i}.example.com`);
+
+    new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: { defaultDomain: longDomain, alternateDomains },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      DomainOverride: { DefaultDomain: longDomain, AlternateDomains: alternateDomains },
+    });
+  });
+
+  test('does not render DomainOverride when not set', () => {
+    const gateway = new Gateway(stack, 'Gateway', {
+      gatewayName: 'no-domain-override',
+    });
+
+    expect(gateway.domainOverride).toBeUndefined();
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      Name: 'no-domain-override',
+      DomainOverride: Match.absent(),
+    });
+  });
+
+  test.each([
+    ['empty', ''],
+    ['single label', 'localhost'],
+    ['leading hyphen in a label', '-mcp.example.com'],
+    ['trailing hyphen in a label', 'mcp-.example.com'],
+    ['invalid character', 'mcp_1.example.com'],
+    ['scheme', 'https://mcp.example.com'],
+    ['port', 'mcp.example.com:443'],
+    ['trailing dot', 'mcp.example.com.'],
+    ['label longer than 63 characters', `${'a'.repeat(64)}.example.com`],
+    ['longer than 253 characters', `${'a'.repeat(63)}.${'a'.repeat(63)}.${'a'.repeat(63)}.${'b'.repeat(62)}`],
+  ])('rejects a default domain that is %s', (_, defaultDomain) => {
+    expect(() => new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: { defaultDomain },
+    })).toThrow(/domainOverride\.defaultDomain/);
+  });
+
+  test('rejects an invalid alternate domain', () => {
+    expect(() => new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: { defaultDomain: 'mcp.example.com', alternateDomains: ['mcp_eu.example.com'] },
+    })).toThrow(/domainOverride\.alternateDomains entry "mcp_eu\.example\.com" must be a host name/);
+  });
+
+  test('rejects an empty alternateDomains list', () => {
+    expect(() => new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: { defaultDomain: 'mcp.example.com', alternateDomains: [] },
+    })).toThrow(/must contain between 1 and 10 domains, got 0/);
+  });
+
+  test('rejects more than 10 alternate domains', () => {
+    const alternateDomains = Array.from({ length: 11 }, (_, i) => `mcp-${i}.example.com`);
+    expect(() => new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: { defaultDomain: 'mcp.example.com', alternateDomains },
+    })).toThrow(/must contain between 1 and 10 domains, got 11/);
+  });
+
+  test('rejects duplicate alternate domains', () => {
+    expect(() => new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: {
+        defaultDomain: 'mcp.example.com',
+        alternateDomains: ['mcp-eu.example.com', 'mcp-eu.example.com'],
+      },
+    })).toThrow(/lists "mcp-eu\.example\.com" more than once/);
+  });
+
+  test('rejects an alternate domain that repeats the default domain', () => {
+    expect(() => new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: {
+        defaultDomain: 'mcp.example.com',
+        alternateDomains: ['mcp-eu.example.com', 'mcp.example.com'],
+      },
+    })).toThrow(/must not repeat the default domain "mcp\.example\.com"/);
+  });
+
+  test('skips validation for tokens', () => {
+    const defaultDomain = new cdk.CfnParameter(stack, 'DefaultDomain').valueAsString;
+    const alternateDomain = new cdk.CfnParameter(stack, 'AlternateDomain').valueAsString;
+
+    new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: {
+        defaultDomain,
+        alternateDomains: [alternateDomain, 'mcp-eu.example.com'],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      DomainOverride: {
+        DefaultDomain: { Ref: 'DefaultDomain' },
+        AlternateDomains: [{ Ref: 'AlternateDomain' }, 'mcp-eu.example.com'],
+      },
+    });
+  });
+
+  test('skips validation for a token alternateDomains list', () => {
+    const alternateDomains = new cdk.CfnParameter(stack, 'AlternateDomains', {
+      type: 'CommaDelimitedList',
+    }).valueAsList;
+
+    new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: jwtAuthorizer(),
+      domainOverride: { defaultDomain: 'mcp.example.com', alternateDomains },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      DomainOverride: {
+        DefaultDomain: 'mcp.example.com',
+        AlternateDomains: { Ref: 'AlternateDomains' },
+      },
+    });
+  });
+
+  test('accepts a domain override with an IAM authorizer', () => {
+    new Gateway(stack, 'Gateway', {
+      authorizerConfiguration: GatewayAuthorizer.usingAwsIam(),
+      domainOverride: { defaultDomain: 'mcp.example.com' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      AuthorizerType: 'AWS_IAM',
+      DomainOverride: { DefaultDomain: 'mcp.example.com' },
+    });
+  });
+});

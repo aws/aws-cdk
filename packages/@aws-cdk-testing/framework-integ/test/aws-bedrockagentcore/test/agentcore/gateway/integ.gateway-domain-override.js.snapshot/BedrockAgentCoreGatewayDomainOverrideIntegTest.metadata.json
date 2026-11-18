@@ -1,0 +1,129 @@
+{
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::F3002": "DomainOverride is a newly launched property not yet in the bundled schema"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at <anonymous> (/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/gateway/integ.gateway-domain-override.js:50:27)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BedrockAgentCoreGatewayDomainOverrideIntegTest.template.json"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "signInCaseSensitive": false
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainOverrideGatewayC3CA88E9"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainOverrideGatewayServiceRole02F2E452"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainOverrideGatewayUserPool003241FD"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/UserPool/ResourceServer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "identifier": "*",
+        "scopes": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/UserPool/DefaultClient": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "generateSecret": true,
+        "oAuth": {
+          "flows": {
+            "clientCredentials": true
+          },
+          "scopes": "*"
+        }
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/UserPool/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "cognitoDomain": {
+          "domainPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/UserPool/ResourceServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainOverrideGatewayUserPoolResourceServer81F611EC"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/UserPool/DefaultClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainOverrideGatewayUserPoolDefaultClientF5D52167"
+    }
+  ],
+  "/BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DomainOverrideGatewayUserPoolDomainCFB97D54"
+    }
+  ]
+}

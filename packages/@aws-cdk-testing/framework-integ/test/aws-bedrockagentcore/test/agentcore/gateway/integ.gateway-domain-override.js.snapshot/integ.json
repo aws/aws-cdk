@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "GatewayDomainOverrideIntegTest/DefaultTest": {
+      "stacks": [
+        "BedrockAgentCoreGatewayDomainOverrideIntegTest"
+      ],
+      "assertionStack": "GatewayDomainOverrideIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GatewayDomainOverrideIntegTestDefaultTestDeployAssertB83D496A"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
