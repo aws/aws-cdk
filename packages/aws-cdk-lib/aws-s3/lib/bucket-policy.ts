@@ -4,7 +4,7 @@ import { Bucket } from './bucket';
 import type { BucketPolicyReference, IBucketPolicyRef } from './s3.generated';
 import { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
-import type { RemovalPolicy } from '../../core';
+import type { RemovalPolicy, RemovalPolicyOptions } from '../../core';
 import { Resource, Token, Tokenization, Validations } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
@@ -140,9 +140,10 @@ export class BucketPolicy extends Resource implements IBucketPolicyRef {
   /**
    * Sets the removal policy for the BucketPolicy.
    * @param removalPolicy the RemovalPolicy to set.
+   * @param options RemovalPolicyOptions
    */
   @MethodMetadata()
-  public applyRemovalPolicy(removalPolicy: RemovalPolicy) {
-    this.resource.applyRemovalPolicy(removalPolicy);
+  public applyRemovalPolicy(removalPolicy: RemovalPolicy, options?: RemovalPolicyOptions) {
+    this.resource.applyRemovalPolicy(removalPolicy, options);
   }
 }

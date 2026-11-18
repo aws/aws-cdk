@@ -175,8 +175,15 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
   }
 
+  /**
+   * Apply the given removal policy to this certificate.
+   *
+   * This legacy construct forwards the policy to the certificate requestor
+   * custom resource; the `RemovalPolicyOptions` are accepted for interface
+   * compatibility with `IResource` but have no effect here.
+   */
   @MethodMetadata()
-  public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
+  public applyRemovalPolicy(policy: cdk.RemovalPolicy, _options?: cdk.RemovalPolicyOptions): void {
     this.removalPolicy.set(policy);
   }
 
