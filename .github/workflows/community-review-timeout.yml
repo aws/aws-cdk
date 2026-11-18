@@ -18,6 +18,8 @@ permissions:
   contents: read
   pull-requests: write
 
+cache-mode: read
+
 jobs:
   bump-stale-community-reviews:
     runs-on: ubuntu-latest
