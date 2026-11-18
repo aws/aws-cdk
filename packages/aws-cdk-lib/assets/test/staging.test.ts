@@ -48,7 +48,7 @@ describeDeprecated('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
-      'asset.b3c1b627427e43b5b32641e9551b647d8de1862e2452e54d26f207007fea6083.tar.gz',
+      'asset.3848a2f7378138e0093547c41455b1d203391a1ef3aa3f1d9de67928c51e78a0.tar.gz',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
