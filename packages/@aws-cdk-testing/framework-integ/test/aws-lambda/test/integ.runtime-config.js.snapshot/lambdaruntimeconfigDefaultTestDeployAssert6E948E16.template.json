@@ -1,0 +1,406 @@
+{
+ "Resources": {
+  "AwsApiCallLambdagetFunctionConfiguration295984b5b606636203910be02e83e911": {
+   "Type": "Custom::DeployAssert@SdkCallLambdagetFunctionConfiguration",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "getFunctionConfiguration",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"Runtime\":\"custom\",\"RuntimeVersionConfig\":{\"RuntimeVersionArn\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputFnGetAttRuntimeVersionArnB0E88178"
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputRefCustomRuntimeFunction1AB8E55E0E027BA7"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794965533413"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "lambda:GetFunctionConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputRefCustomRuntimeFunction1AB8E55E0E027BA7"
+             }
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "lambda:GetFunctionConfiguration"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputRefCfnCustomRuntimeFunction26BE43A2"
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "bd4e6dd70616f77e03bec336060476b268ab6e40898a3f35406af904ba79f07e.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "LambdaInvoked007841a1e9cadbf778c06535d963e96": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"Hello, world!\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputRefCustomRuntimeFunction1AB8E55E0E027BA7"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794965533414"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoked007841a1e9cadbf778c06535d963e96Invoke3F88239B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputRefCustomRuntimeFunction1AB8E55E0E027BA7"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallLambdagetFunctionConfiguration4f69f4eb59ccdf4b0da3602aa3cb7b8a": {
+   "Type": "Custom::DeployAssert@SdkCallLambdagetFunctionConfiguration",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "getFunctionConfiguration",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"Runtime\":\"custom\",\"RuntimeVersionConfig\":{\"RuntimeVersionArn\":\"",
+       {
+        "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputFnGetAttRuntimeVersionArnB0E88178"
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputRefCfnCustomRuntimeFunction26BE43A2"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794965533414"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke975a4f58a659e0544f44ba860018f702": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"Hello, world!\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputRefCfnCustomRuntimeFunction26BE43A2"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794965533415"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke975a4f58a659e0544f44ba860018f702Invoke223ACE4B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "aws-cdk-lambda-runtime-config:ExportsOutputRefCfnCustomRuntimeFunction26BE43A2"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallLambdagetFunctionConfiguration295984b5b606636203910be02e83e911": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdagetFunctionConfiguration295984b5b606636203910be02e83e911",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoked007841a1e9cadbf778c06535d963e96": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoked007841a1e9cadbf778c06535d963e96",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallLambdagetFunctionConfiguration4f69f4eb59ccdf4b0da3602aa3cb7b8a": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallLambdagetFunctionConfiguration4f69f4eb59ccdf4b0da3602aa3cb7b8a",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke975a4f58a659e0544f44ba860018f702": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke975a4f58a659e0544f44ba860018f702",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

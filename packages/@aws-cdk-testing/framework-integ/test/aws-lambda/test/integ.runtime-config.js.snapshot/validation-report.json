@@ -1,0 +1,138 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3002",
+          "description": "RuntimeConfig: Additional properties are not allowed ('RuntimeConfig' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-lambda-runtime-config/CustomRuntimeFunction/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-lambda-runtime-config.template.json",
+                "logicalId": "CustomRuntimeFunction1AB8E55E",
+                "propertyPaths": [
+                  "Properties.RuntimeConfig"
+                ]
+              }
+            },
+            {
+              "constructPath": "aws-cdk-lambda-runtime-config/CfnCustomRuntimeFunction",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-lambda-runtime-config.template.json",
+                "logicalId": "CfnCustomRuntimeFunction",
+                "propertyPaths": [
+                  "Properties.RuntimeConfig"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::Runtime'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-lambda-runtime-config/Runtime",
+              "constructFqn": "aws-cdk-lib.CfnResource",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-lambda-runtime-config.template.json",
+                "logicalId": "Runtime"
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::RuntimeVersion'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-lambda-runtime-config/RuntimeVersion",
+              "constructFqn": "aws-cdk-lib.CfnResource",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-lambda-runtime-config.template.json",
+                "logicalId": "RuntimeVersion"
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Lambda::RuntimeAlias'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-lambda-runtime-config/RuntimeAlias",
+              "constructFqn": "aws-cdk-lib.CfnResource",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-lambda-runtime-config.template.json",
+                "logicalId": "RuntimeAlias"
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W3030",
+          "description": "Runtime: 'custom' is not one of ['dotnet10', 'dotnet6', 'dotnet8', 'dotnetcore1.0', 'dotnetcore2.0', 'dotnetcore2.1', 'dotnetcore3.1', 'go1.x', 'java11', 'java11.al2023', 'java17', 'java17.al2023', 'java21', 'java25', 'java8', 'java8.al2', 'java8.al2023', 'nodejs', 'nodejs10.x', 'nodejs12.x', 'nodejs14.x', 'nodejs16.x', 'nodejs18.x', 'nodejs20.x', 'nodejs22.x', 'nodejs24.x', 'nodejs26.x', 'nodejs4.3', 'nodejs4.3-edge', 'nodejs6.10', 'nodejs8.10', 'provided', 'provided.al2', 'provided.al2023', 'python2.7', 'python3.10', 'python3.11', 'python3.12', 'python3.13', 'python3.14', 'python3.15', 'python3.6', 'python3.7', 'python3.8', 'python3.9', 'ruby2.5', 'ruby2.7', 'ruby3.2', 'ruby3.3', 'ruby3.4', 'ruby4.0']",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-lambda-runtime-config/CustomRuntimeFunction/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-lambda-runtime-config.template.json",
+                "logicalId": "CustomRuntimeFunction1AB8E55E",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "aws-cdk-lambda-runtime-config/CfnCustomRuntimeFunction",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-lambda-runtime-config.template.json",
+                "logicalId": "CfnCustomRuntimeFunction",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
