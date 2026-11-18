@@ -70,25 +70,6 @@ not a fourth tier: grade it on the harm scale like any finding, competing for th
 comment budget. Never report one piece of code as both a must-fix and a design nicety —
 that double-counts it.
 
-### Worth posting
-
-Whatever its tier, post a finding only when both of these also hold:
-
-- **It asks for a specific change to the code.** If your conclusion is "this is fine", "no
-  change required", "either is defensible", or "confirm this is intentional", there is no
-  finding — do not post it.
-- **It has not already been discussed.** If this point was raised on the PR before (by you
-  or by a human), do not raise it again. If the author answered a comment, accept the answer
-  unless you have new evidence. Never ask the author to undo something an earlier review
-  comment asked for.
-
-Never suggest:
-
-- **Catching, swallowing or falling back from errors** to make code "defensive". A broken
-  invariant or a malformed input must fail loudly; hiding it is a bug.
-- **A feature flag for a change that cannot break an existing deployment.** Flags are for
-  changes that alter what deployed stacks get in a way users may depend on.
-
 ## Make each finding land
 
 A correctly-rated finding still has to be actionable. Every finding carries three things:
@@ -106,13 +87,19 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   **Verify before you cite:** never post from memory.
   - When a finding turns on how CDK code behaves (a constructor signature, what a fixture
     declares, whether a lint rule fires), read that code in the repo.
+  - When a finding turns on what a CDK guide says (`AGENTS.md`, a `docs/AGENTS_*` guide,
+    `INTEGRATION_TESTS.md`, a module README), read that section and quote it.
   - When a finding turns on how an AWS service behaves (a limit, a default, an allowed
     value), read the AWS documentation. Cite that page in `reference`.
   - Service documentation is sometimes wrong or incomplete. When the PR says the author
     tested the service's behavior, do not contradict them from documentation alone.
 - **A concrete fix** — a code example, or a question framing a specific alternative
   ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
-  out; never just point at the problem.
+  out; never just point at the problem. The fix never suggests:
+  - **Catching, swallowing or falling back from errors** to make code "defensive". A broken
+    invariant or a malformed input must fail loudly; hiding it is a bug.
+  - **A feature flag for a change that cannot break an existing deployment.** Flags are for
+    changes that alter what deployed stacks get in a way users may depend on.
 
 Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
 suggestions as questions where you can; stay direct but not harsh on blocking issues
@@ -125,9 +112,22 @@ Target **3-7 comments per review**. Keep every `BLOCKING` finding; then the high
 `RECOMMENDED` findings; add `OPTIONAL` ones only if the total stays within budget. More
 than seven dilutes the review and buries the damage under polish.
 
-A finding becomes a posted comment only when it is (1) tied to a specific line, (2)
-actionable, and (3) significant enough to stand alone. Keep high-level observations,
-positive notes, and clusters of nits in the review summary, not the posted comments.
+A finding becomes a posted comment only when all of these hold, whatever its tier:
+
+1. It is tied to a specific line.
+2. It is actionable.
+3. It is significant enough to stand alone.
+4. **It asks for a specific change in the PR** — to its code, tests, docs or description. If
+   your conclusion is "this is fine", "no change required", "either is defensible", or
+   "confirm this is intentional", there is no finding.
+5. **It has not already been discussed.** When reviewing a PR, read its existing review
+   comments and the author's replies first. If this point was raised there (by you or by a
+   human), do not raise it again. If the author answered a comment, accept the answer unless
+   you have new evidence. Never ask the author to undo something an earlier review comment
+   asked for.
+
+Keep high-level observations, positive notes, and clusters of nits in the review summary,
+not the posted comments. A point that fails (4) or (5) is dropped, not summarised.
 
 See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
 structured finding fields and how to write each one before you generate findings.
@@ -151,8 +151,8 @@ carve-outs. None is a finding, at any severity:
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
 - **Choices the guidelines leave open** — when the guidelines allow more than one shape
-  (a required or an optional physical name), or the same module already uses the author's
-  choice, the author's choice stands.
+  (a required or an optional physical name), the author's choice stands, and so does a choice
+  the same module already makes among those shapes.
 
 Each dimension skill's own `## What NOT to flag` lists only its dimension-specific
 carve-outs; it applies these in addition.

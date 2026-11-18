@@ -28,9 +28,9 @@ Work the changed surface in this order — a method, not a rigid script. Adapt i
    property, a cross-service integration, a new supported version, a Custom Resource — by the coverage they
    owe, not by how many you see. Then READ [`testing-rules.md`](references/testing-rules.md): its rows ARE
    your checklist. Before you cite an integ-test pattern, an
-   `assertions` / `integ-tests` API as misused, or a required pattern as absent, search and read the CDK
-   testing guide and the module README available to you and confirm against them rather than working from
-   memory (see `cdk-review-principles` "Verify before you cite").
+   `assertions` / `integ-tests` API as misused, or a required pattern as absent, read the code or doc the
+   fact lives in (the CDK testing guide, the module README, the API's source) and confirm against it rather
+   than working from memory (see `cdk-review-principles` "Verify before you cite").
 
 2. **Check the diff against the rules.** Walk the changed surface once per family — **Unit tests**, then
    **Integration tests**. For each behavior, ask the discharge question: **if I broke this behavior, would a

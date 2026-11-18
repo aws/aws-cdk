@@ -49,8 +49,10 @@ encodings and the `Token.asString/asList/asNumber` conversions — read the
   is stated at
   [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety).
 - **Check the manipulation actually breaks (doc-absent detail):** a string token is encoded as
-  `${Token[NAME.123]}`. An operation that leaves that text intact (splitting on whitespace, a prefix
-  check that cannot match it) is safe; read what the code does to the encoded string before flagging it.
+  `${Token[NAME.123]}`. An operation that leaves that text intact and lets the value through is safe —
+  splitting on whitespace, or `if (name.startsWith('/')) name = name.slice(1)`. A check that throws or
+  rejects when the token fails to match (`if (!arn.startsWith('arn:')) throw …`) is the finding above.
+  Read what the code does to the encoded string before flagging it.
   Accepting tokens is the goal: never suggest rejecting a token input (for example in a `from*Arn`
   importer) as the fix.
 - **Boolean-token false-positive guard (doc-absent detail):** tokens encode only as string, number, or

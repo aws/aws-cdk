@@ -100,8 +100,11 @@ which lists rejection and validation-failure as required coverage.
 
 **[TEST-UNIT-TOKEN-GUARD] (RECOMMENDED)** — The PR adds a `Token.isUnresolved()` guard (skipping a
 validation or a string manipulation for deploy-time values), and no test passes an unresolved token through
-it. Without the test, a later edit that drops the guard breaks every user passing a `Ref` or `Fn::` value.
-See [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety).
+it. See [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety) for
+the guard itself.
+- **Why the test (doc-absent detail):** the guide requires the guard, not a test of it. Without a test that
+  passes an unresolved token (for example `Token.asString({ Ref: 'P' })`), a later edit that drops the
+  guard breaks every user passing a `Ref` or `Fn::` value.
 
 **[TEST-UNIT-DOC-NAME] (OPTIONAL)** — A test name that describes nothing (`'works'`, `'test 2'`), so the
 suite fails as a specification; a merely awkward-but-descriptive title is a cosmetic, out of scope. See

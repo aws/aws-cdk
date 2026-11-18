@@ -59,13 +59,10 @@ AND name it inline in `message` so the posted comment carries its own authority.
 
 ## Filtering — what becomes a finding
 
-Emit a finding only when it is:
-
-1. **Tied to a specific code location** — it has a `file` and a `lineRange`. A
-   high-level observation with no line to anchor to belongs in the review `summary`,
-   not as a finding.
-2. **Actionable** — the contributor can make a concrete change.
-3. **Significant enough to stand alone** — worth the contributor's individual attention.
+Emit a finding only when it meets the posting conditions in `SKILL.md` "Keep the review to a
+tight, high-harm set" (authoritative). In this format, "tied to a specific line" means it has
+a `file` and a `lineRange`; a high-level observation with no line to anchor to belongs in the
+review `summary`, not as a finding.
 
 Keep these OUT of the findings (put them in the `summary` text if they matter):
 high-level design observations not tied to a line, positive feedback, clusters of

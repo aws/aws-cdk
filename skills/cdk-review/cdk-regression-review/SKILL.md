@@ -26,9 +26,9 @@ Work the changed surface rules-first — a method, not a rigid script. Adapt it 
 
 1. **Orient and load your rules.** Name the public surface the PR changes. Establish its stability tier
    first — the row sets the verdict by tier. Read [`regression-rules.md`](references/regression-rules.md):
-   its rows ARE your checklist. Then read the authoritative CDK/CloudFormation docs for the changed
-   surface: search and read the docs available to you and confirm a removed enum member, a vanished API, or
-   a binding-breaking signature against them — not from memory (see `cdk-review-principles` "Verify before you
+   its rows ARE your checklist. Then check the facts the changed surface turns on: read the code or doc
+   each fact lives in and confirm a removed enum member, a vanished API, or a binding-breaking signature
+   against it — not from memory (see `cdk-review-principles` "Verify before you
    cite").
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **Input validation**,
