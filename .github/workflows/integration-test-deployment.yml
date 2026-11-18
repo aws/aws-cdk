@@ -67,21 +67,6 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v4
 
-      # Main starts without the cache, so images that are no longer used aren't carried forward
-      - name: Load Docker images
-        id: docker-cache
-        if: ${{ !(github.event_name == 'push' && github.ref_name == 'main') }}
-        uses: actions/cache/restore@v6
-        with:
-          path: ~/.docker-images.tar
-          key: docker-images-${{ runner.os }}
-          restore-keys: |
-            docker-images-${{ runner.os }}-
-
-      - name: Restore Docker images
-        if: ${{ steps.docker-cache.outputs.cache-matched-key }}
-        run: docker image load --input ~/.docker-images.tar
-
       - name: Restore build artifacts
         uses: actions/cache/restore@v6
         with:
@@ -116,42 +101,3 @@ jobs:
           CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
           TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
           SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
-          
-      # Only pulled images are cached, to avoid public registry rate limits.
-      # Images built during the build have no repo digest and are left out.
-      - name: Find pulled Docker images
-        id: docker-images
-        if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        run: |
-          docker image list --format '{{ .Repository }}:{{ .Tag }}' | grep -v '<none>' | sort -u | while read -r image; do
-            if [ "$(docker image inspect --format '{{ len .RepoDigests }}' "$image")" != "0" ]; then
-              echo "$image"
-            fi
-          done > ~/.docker-images.txt
-          cat ~/.docker-images.txt
-          if [ -s ~/.docker-images.txt ]; then
-            hash=$(xargs docker image inspect --format '{{ .Id }}' < ~/.docker-images.txt | sort | sha256sum | cut -c1-16)
-            echo "key=docker-images-${RUNNER_OS}-${hash}" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Look up Docker image cache
-        id: docker-images-lookup
-        if: ${{ steps.docker-images.outputs.key }}
-        uses: actions/cache/restore@v6
-        with:
-          path: ~/.docker-images.tar
-          key: ${{ steps.docker-images.outputs.key }}
-          lookup-only: true
-
-      - name: Export Docker images
-        if: ${{ steps.docker-images.outputs.key && steps.docker-images-lookup.outputs.cache-hit != 'true' }}
-        run: |
-          xargs docker image save --output ~/.docker-images.tar < ~/.docker-images.txt
-          ls -lh ~/.docker-images.tar
-
-      - name: Cache Docker images
-        if: ${{ steps.docker-images.outputs.key && steps.docker-images-lookup.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v6
-        with:
-          path: ~/.docker-images.tar
-          key: ${{ steps.docker-images.outputs.key }}
