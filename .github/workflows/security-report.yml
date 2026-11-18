@@ -14,6 +14,8 @@ concurrency:
   group: security-report-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
+cache-mode: read
+
 jobs:
   # Resolve which PR triggered this run from GitHub-signed workflow_run
   # metadata, and refuse to run the report job if the PR modifies the
