@@ -1,5 +1,5 @@
 import * as path from 'path';
-import type { StackProps } from 'aws-cdk-lib';
+import type { CfnResource, StackProps } from 'aws-cdk-lib';
 import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
@@ -69,6 +69,14 @@ class TestStack extends Stack {
       mutable: false,
       addGrantsToResources: true,
     }));
+
+    // The Security Guardian rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS reads
+    // ResourcePolicy.Statement, but AWS::DynamoDB::Table nests the statements under
+    // ResourcePolicy.PolicyDocument, so the rule reports a missing property. The
+    // statement in this policy names a role ARN, not an account root principal.
+    (table.node.defaultChild as CfnResource).addMetadata('guard', {
+      SuppressedRules: ['RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS'],
+    });
 
     this.searcherFunctionNames = [searcher.functionName, policySearcher.functionName];
   }

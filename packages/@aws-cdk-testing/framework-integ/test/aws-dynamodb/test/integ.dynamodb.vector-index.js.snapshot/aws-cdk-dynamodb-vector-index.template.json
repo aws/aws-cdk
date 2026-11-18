@@ -70,7 +70,14 @@
     ]
    },
    "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS"
+     ]
+    }
+   }
   },
   "VectorSearcherServiceRole2C251AF3": {
    "Type": "AWS::IAM::Role",
