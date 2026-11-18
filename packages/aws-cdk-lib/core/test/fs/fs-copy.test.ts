@@ -99,10 +99,10 @@ describe('fs copy', () => {
     // THEN
     expect(() => FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'symlinks'), outdir, {
       follow: SymlinkFollowMode.BLOCK_EXTERNAL,
-    })).toThrow(/is an external symbolic link which is forbidden/);
+    })).toThrow(/BLOCK_EXTERNAL forbids the symbolic link/);
   });
 
-  test('BlockExternal: follow only internal symlinks', () => {
+  test('BlockExternal: copy internal symlinks', () => {
     // WHEN — 'subdir4' holds 'local-link4.txt', pointing at its sibling 'file4.txt'
     FileSystem.copyDirectory(path.join(__dirname, 'fixtures', 'test1', 'subdir4'), outdir, {
       follow: SymlinkFollowMode.BLOCK_EXTERNAL,
@@ -111,7 +111,7 @@ describe('fs copy', () => {
     // THEN — the internal link is followed, so it arrives as a regular file rather than a link
     expect(tree(outdir)).toEqual([
       'file4.txt',
-      'local-link4.txt',
+      'local-link4.txt => file4.txt',
     ]);
     expect(fs.readFileSync(path.join(outdir, 'local-link4.txt'), 'utf8'))
       .toEqual(fs.readFileSync(path.join(__dirname, 'fixtures', 'test1', 'subdir4', 'file4.txt'), 'utf8'));

@@ -405,6 +405,8 @@ export class AssetStaging extends Construct {
       };
     }
 
+    const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
+
     // Try to calculate assetHash beforehand (if we can)
     let assetHash = this.calculateHashBeforehand ? this.calculateSourceHash(bundling) : undefined;
 
@@ -428,7 +430,10 @@ export class AssetStaging extends Construct {
           validateInternalSymlinks(tempDir);
         }
       } else {
-        assetHash = this.calculateOutputHash(tempDir);
+        // Pick the asset target from the temp dir, but only for hashing purposes.
+        // That way, we hash either the single file contents or the entire directory.
+        const hashTarget = pickAssetTarget(this, tempDir, bundlingOutputType);
+        assetHash = this.calculateOutputHash(hashTarget.path);
       }
       bundleDir = this.bundlingOutputdir(assetHash);
 
@@ -437,11 +442,8 @@ export class AssetStaging extends Construct {
       fs.renameSync(tempDir, bundleDir);
     }
 
-    // Check bundling directory and determine if our actual asset is actually a file
-    // in that directory.
-    const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
+    // Pick the asset from the bundling directory
     const targetAsset = pickAssetTarget(this, bundleDir, bundlingOutputType);
-
     return {
       assetHash,
       stagedPath: targetAsset.path,
@@ -523,7 +525,7 @@ export class AssetStaging extends Construct {
    * @returns The fully resolved bundle output directory.
    */
   private bundleToTempDir(options: BundlingOptions, assetHash: string | undefined): string {
-    const tempDir = path.resolve(this.assetOutdir, (assetHash ?? this.deduplicationKey) + '-building');
+    const tempDir = path.resolve(this.assetOutdir, `asset.${assetHash ?? this.deduplicationKey}-building`);
 
     // Remove the tempDir if it exists, then recreate it
     fs.rmSync(tempDir, { recursive: true, force: true });

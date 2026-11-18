@@ -16,6 +16,8 @@ const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
 const STUB_INPUT_CP_FILE = '/tmp/docker-stub-cp.input';
 const STUB_INPUT_CP_CONCAT_FILE = '/tmp/docker-stub-cp.input.concat';
 
+const DOCKER_STUB_SUCCESS_HASH = '97bb77db984edc91b0d7ddc0949cf479cc1d7d5f25d19a66ae3a483323c9e7c3';
+
 enum DockerStubCommand {
   SUCCESS = 'DOCKER_STUB_SUCCESS',
   FAIL = 'DOCKER_STUB_FAIL',
@@ -61,6 +63,7 @@ describe('staging', () => {
       fs.unlinkSync(STUB_INPUT_CONCAT_FILE);
     }
     sinon.restore();
+    jest.restoreAllMocks();
   });
 
   test('base case', () => {
@@ -209,7 +212,7 @@ describe('staging', () => {
     // GIVEN
     const stack = new Stack();
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
-    const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const sourcePath = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 's1', { sourcePath });
@@ -272,7 +275,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const withoutExtra = new AssetStaging(stack, 'withoutExtra', { sourcePath: directory });
@@ -286,7 +289,7 @@ describe('staging', () => {
 
   test('can specify extra asset salt via context key', () => {
     // GIVEN
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -306,7 +309,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
     const processStdErrWriteSpy = sinon.spy(process.stderr, 'write');
 
     // WHEN
@@ -343,7 +346,7 @@ describe('staging', () => {
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -380,7 +383,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -423,7 +426,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
     const fingerPrintSpy = sinon.spy(FileSystem, 'fingerprint');
 
     // WHEN
@@ -456,7 +459,7 @@ describe('staging', () => {
     );
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
-      'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f',
+      `asset.${DOCKER_STUB_SUCCESS_HASH}`,
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -473,7 +476,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -522,7 +525,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -571,7 +574,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -590,10 +593,10 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const ensureDirSync = sinon.spy(fs, 'ensureDirSync');
-    const chmodSyncSpy = sinon.spy(fs, 'chmodSync');
-    const renameSyncSpy = sinon.spy(fs, 'renameSync');
+    const directory = FIXTURE_TEST1_DIR;
+    const ensureDirSync = jest.spyOn(fs, 'ensureDirSync');
+    const chmodSyncSpy = jest.spyOn(fs, 'chmodSync');
+    const renameSyncSpy = jest.spyOn(fs, 'renameSync');
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -608,12 +611,12 @@ describe('staging', () => {
     // THEN
     const assembly = app.synth();
 
-    expect(ensureDirSync.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')))).toEqual(true);
-    expect(chmodSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), 0o777)).toEqual(true);
-    expect(renameSyncSpy.calledWith(sinon.match(path.join(assembly.directory, 'bundling-temp-')), sinon.match(path.join(assembly.directory, 'asset.')))).toEqual(true);
+    expect(ensureDirSync).toHaveBeenCalledWith(expect.stringContaining('-building'));
+    expect(chmodSyncSpy).toHaveBeenCalledWith(expect.stringContaining('-building'), 0o777);
+    expect(renameSyncSpy).toHaveBeenCalledWith(expect.stringContaining('-building'), expect.stringMatching(/asset\.[a-f0-9]+$/));
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
-      'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f', // 'Asset'
+      `asset.${DOCKER_STUB_SUCCESS_HASH}`, // 'Asset'
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -627,7 +630,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -654,7 +657,7 @@ describe('staging', () => {
 
     const app = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -712,7 +715,7 @@ describe('staging', () => {
 
     // WHEN
     try {
-      execSync(`npx ts-node ${__dirname}/app-that-is-interrupted-during-staging.ts`, {
+      execSync(`npx ts-node --preferTsExts ${__dirname}/app-that-is-interrupted-during-staging.ts`, {
         env: {
           ...process.env,
           CDK_OUTDIR: TEST_OUTDIR,
@@ -750,7 +753,7 @@ describe('staging', () => {
 
     const app = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -809,7 +812,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // THEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -830,7 +833,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -847,14 +850,14 @@ describe('staging', () => {
       readDockerStubInput()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
-    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+    expect(asset.assetHash).toEqual(DOCKER_STUB_SUCCESS_HASH);
   });
 
   test('bundling with docker security option', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -872,14 +875,14 @@ describe('staging', () => {
       readDockerStubInput()).toEqual(
       `run --rm --security-opt no-new-privileges ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
-    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+    expect(asset.assetHash).toEqual(DOCKER_STUB_SUCCESS_HASH);
   });
 
   test('bundling with docker entrypoint', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -897,14 +900,14 @@ describe('staging', () => {
       readDockerStubInput()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input --entrypoint DOCKER_STUB_SUCCESS alpine DOCKER_STUB_SUCCESS`,
     );
-    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+    expect(asset.assetHash).toEqual(DOCKER_STUB_SUCCESS_HASH);
   });
 
   test('bundling with OUTPUT asset hash type', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -917,14 +920,14 @@ describe('staging', () => {
     });
 
     // THEN
-    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
+    expect(asset.assetHash).toEqual(DOCKER_STUB_SUCCESS_HASH);
   });
 
   test('custom hash', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -941,7 +944,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // THEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -959,7 +962,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // THEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -973,7 +976,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // THEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -987,7 +990,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // THEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -1001,7 +1004,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // THEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -1021,7 +1024,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     let dir: string | undefined;
@@ -1056,7 +1059,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack, 'Asset', {
@@ -1081,7 +1084,7 @@ describe('staging', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['OtherStack']);
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -1097,7 +1100,7 @@ describe('staging', () => {
     expect(asset.sourcePath).toEqual(directory);
     expect(asset.stagedPath).toEqual(directory);
     expect(asset.relativeStagedPath(stack)).toEqual(directory);
-    expect(asset.assetHash).toEqual('f66d7421aa2d044a6c1f60ddfc76dc78571fcd8bd228eb48eb394e2dbad94a5c');
+    expect(asset.assetHash).toEqual('729a2fdb899011ee9f3f226f4cfc03b1c2a83b97ff9c4105192430e6bc18bff3');
   });
 
   test('correctly skips bundling with stack under stage', () => {
@@ -1109,7 +1112,7 @@ describe('staging', () => {
 
     const stack1 = new Stack(stage, 'Stack1');
     const stack2 = new Stack(stage, 'Stack2');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     new AssetStaging(stack1, 'Asset', {
       sourcePath: directory,
@@ -1145,7 +1148,7 @@ describe('staging', () => {
 
     const stack1 = new Stack(stage, 'Stack1', { stackName: 'unrelated-stack1-name' });
     const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack1, 'Asset', {
@@ -1187,7 +1190,7 @@ describe('staging', () => {
     const stack2 = new Stack(stage, 'Stack2', { stackName: 'unrelated-stack2-name' });
     const stack2Nested = new NestedStack(stack2, 'Stack2Nest');
 
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack1Nested, 'Asset', {
@@ -1224,7 +1227,7 @@ describe('staging', () => {
 
     const stack1 = new Stack(stage, 'Stack1');
     const stack2 = new Stack(stage, 'Stack2');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack1, 'Asset', {
@@ -1262,7 +1265,7 @@ describe('staging', () => {
 
     const stack1 = new Stack(stage, 'Stack1');
     const stack2 = new Stack(stage, 'Stack2');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(stack1, 'Asset', {
@@ -1300,7 +1303,7 @@ describe('staging', () => {
 
     const middleStage = new Stage(topStack, 'MiddleStage');
     const bottomStack = new Stack(middleStage, 'BottomStack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     new AssetStaging(bottomStack, 'Asset', {
@@ -1332,7 +1335,7 @@ describe('staging', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['*Stack']);
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -1348,7 +1351,7 @@ describe('staging', () => {
       readDockerStubInput()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
-    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
+    expect(asset.assetHash).toEqual(DOCKER_STUB_SUCCESS_HASH); // hash of MyStack/Asset
   });
 
   test('bundling still occurs with a single wildcard', () => {
@@ -1356,7 +1359,7 @@ describe('staging', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     stack.node.setContext(cxapi.BUNDLING_STACKS, ['*']);
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const asset = new AssetStaging(stack, 'Asset', {
@@ -1372,14 +1375,14 @@ describe('staging', () => {
       readDockerStubInput()).toEqual(
       `run --rm ${USER_ARG} -v /input:/asset-input:${delegated} -v /output:/asset-output:${delegated} -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
-    expect(asset.assetHash).toEqual('33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
+    expect(asset.assetHash).toEqual(DOCKER_STUB_SUCCESS_HASH); // hash of MyStack/Asset
   });
 
   test('bundling that produces a single archive file is autodiscovered', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -1394,7 +1397,6 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.ab484104b6aae238176ac35262399d0db8aee2c7d385b27a10f8e0722b3512a9', // this is the bundle dir
-      'asset.ab484104b6aae238176ac35262399d0db8aee2c7d385b27a10f8e0722b3512a9.zip',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -1416,7 +1418,7 @@ describe('staging', () => {
       fs.removeSync(TEST_OUTDIR);
     }
 
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     const app1 = new App({ outdir: TEST_OUTDIR });
     const stack1 = new Stack(app1, 'Stack');
@@ -1459,7 +1461,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -1490,7 +1492,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -1507,7 +1509,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN / THEN
     expect(() => new AssetStaging(stack, 'Asset', {
@@ -1523,7 +1525,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir');
+    const directory = path.join(FIXTURE_TEST1_DIR, 'subdir');
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -1539,7 +1541,6 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.adb7bb3f9419564842d16f48e6b90468f63ec759d2775e8e40d6a87e6b8e3469',
-      'asset.adb7bb3f9419564842d16f48e6b90468f63ec759d2775e8e40d6a87e6b8e3469.txt',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -1555,7 +1556,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir');
+    const directory = path.join(FIXTURE_TEST1_DIR, 'subdir');
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -1572,7 +1573,7 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       // 'bundling-temp-0e346bd27baa32f4f2d15d1d73c8972db3293080f6c2836328b7bf77747683db', this directory gets removed and does no longer exist
-      'asset.95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df.txt',
+      'asset.a21231a7501c0fa20720b8e4c708417bf3b20a5bfe2b9b42af04917a1392a4eb',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -1588,7 +1589,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -1605,7 +1606,6 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.390ed165e2a0a8741f7c86d1c9cd5c0c5aa251e234f5785cda765b25611e1df4',
-      'asset.390ed165e2a0a8741f7c86d1c9cd5c0c5aa251e234f5785cda765b25611e1df4_noext',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -1621,7 +1621,7 @@ describe('staging', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -1639,7 +1639,6 @@ describe('staging', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.f81c5ba9e81eebb202881a8e61a83ab4b69f6bee261989eb93625c9cf5d35335',
-      'asset.f81c5ba9e81eebb202881a8e61a83ab4b69f6bee261989eb93625c9cf5d35335_noext',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -1652,7 +1651,7 @@ describe('staging', () => {
   });
 
   describe('bundling output that is a single symbolic link', () => {
-    const SYMLINK_THROW = /is an external symbolic link which is forbidden due to follow mode .*/;
+    const SYMLINK_THROW = /forbids the symbolic link/;
 
     test.each([
       [undefined], // EXTERNAL is also the default when `follow` is unset
@@ -1663,7 +1662,7 @@ describe('staging', () => {
       // GIVEN
       const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new Stack(app, 'stack');
-      const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+      const directory = FIXTURE_TEST1_DIR;
 
       // WHEN
       const staging = new AssetStaging(stack, 'Asset', {
@@ -1681,59 +1680,55 @@ describe('staging', () => {
       expect(staging.isArchive).toEqual(false);
     });
 
-    test('fails under mode BLOCK_EXTERNAL if there is a symlink in the directory being bundled and AssetHashType is Source', () => {
+    test.each([
+      [AssetHashType.SOURCE, true],
+      [AssetHashType.OUTPUT, false],
+      [AssetHashType.CUSTOM, false],
+    ])('BLOCK_EXTERNAL with an external symlink in the source directory and AssetHashType %p throws: %p', (assetHashType, expected) => {
       // GIVEN
       const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new Stack(app, 'stack');
-      const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+      const directory = FIXTURE_TEST1_DIR;
 
       // WHEN - we should throw because there is an external symlink in the /test1 fixture
-      expect(() => new AssetStaging(stack, 'Asset', {
+      const theStaging = () => new AssetStaging(stack, 'Asset', {
         sourcePath: directory,
-        assetHashType: AssetHashType.SOURCE,
+        assetHashType,
         follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+        assetHash: assetHashType === AssetHashType.CUSTOM ? 'custom-hash' : undefined,
         bundling: {
           image: DockerImage.fromRegistry('alpine'),
           command: [DockerStubCommand.SINGLE_FILE],
           outputType: BundlingOutput.SINGLE_FILE,
         },
-      })).toThrow(SYMLINK_THROW);
+      });
+
+      if (expected) {
+        expect(theStaging).toThrow(SYMLINK_THROW);
+      } else {
+        theStaging();
+        // Expecting to get here without an exception
+      }
     });
 
-    test('fails under mode BLOCK_EXTERNAL if there is a symlink in the directory being bundled and AssetHashType is Output', () => {
+    test.each([
+      AssetHashType.SOURCE,
+      AssetHashType.OUTPUT,
+      AssetHashType.CUSTOM,
+    ])('BLOCK_EXTERNAL leads to blocking external symlinks in the bundled output with AssetHashType %p', (assetHashType) => {
       // GIVEN
       const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new Stack(app, 'stack');
-      const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+      const directory = path.join(FIXTURE_TEST1_DIR, 'subdir');
 
-      // WHEN - we should throw no matter the Asset Hash Type
       expect(() => new AssetStaging(stack, 'Asset', {
         sourcePath: directory,
-        assetHashType: AssetHashType.OUTPUT,
+        assetHashType,
+        assetHash: assetHashType === AssetHashType.CUSTOM ? 'custom-hash' : undefined,
         follow: SymlinkFollowMode.BLOCK_EXTERNAL,
         bundling: {
           image: DockerImage.fromRegistry('alpine'),
-          command: [DockerStubCommand.SINGLE_FILE],
-          outputType: BundlingOutput.SINGLE_FILE,
-        },
-      })).toThrow(SYMLINK_THROW);
-    });
-
-    test('fails under mode BLOCK_EXTERNAL if there is a symlink, using more complicated directory layout', () => {
-      // GIVEN
-      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-      const stack = new Stack(app, 'stack');
-      const directory = path.join(__dirname, 'fs', 'fixtures', 'symlinks');
-
-      // WHEN - throw no matter where the external symlink is
-      expect(() => new AssetStaging(stack, 'Asset', {
-        sourcePath: directory,
-        assetHashType: AssetHashType.OUTPUT,
-        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
-        bundling: {
-          image: DockerImage.fromRegistry('alpine'),
-          command: [DockerStubCommand.SINGLE_FILE],
-          outputType: BundlingOutput.SINGLE_FILE,
+          command: [DockerStubCommand.DIR_WITH_EXTERNAL_SYMLINK],
         },
       })).toThrow(SYMLINK_THROW);
     });
@@ -1742,7 +1737,7 @@ describe('staging', () => {
       // GIVEN
       const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new Stack(app, 'stack');
-      const directory = path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir4');
+      const directory = path.join(FIXTURE_TEST1_DIR, 'subdir4');
 
       // WHEN - should be successful if we are dealing with a local symlink
       const staging = new AssetStaging(stack, 'Asset', {
@@ -1762,7 +1757,7 @@ describe('staging', () => {
       expect(staging.isArchive).toEqual(false);
 
       expect(fs.readdirSync(assembly.directory)).toEqual([
-        'asset.1e4cb66c62741f7b9a5dbb596b25efe18984ba847949c85108f1e5f661ba0152.txt',
+        'asset.96cb3cd74e6a266f73bac604d3fbd467be211facec5b06cd0ab12936112f4bf4',
         'cdk.out',
         'manifest.json',
         'stack.metadata.json',
@@ -1782,7 +1777,7 @@ describe('staging', () => {
       const app = new App();
       const stack = new Stack(app, 'stack');
       // external-link.txt -> ../symlinks/normal-file.txt (target is outside the link's directory)
-      const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1', 'external-link.txt');
+      const sourcePath = path.join(FIXTURE_TEST1_DIR, 'external-link.txt');
 
       // WHEN
       const staging = new AssetStaging(stack, 'Asset', {
@@ -1804,7 +1799,7 @@ describe('staging', () => {
       const app = new App();
       const stack = new Stack(app, 'stack');
       // local-link.txt -> file1.txt (target is inside the link's directory)
-      const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1', 'local-link.txt');
+      const sourcePath = path.join(FIXTURE_TEST1_DIR, 'local-link.txt');
 
       // WHEN
       const staging = new AssetStaging(stack, 'Asset', {
@@ -1823,11 +1818,11 @@ describe('staging', () => {
   });
 
   describe('bundling output that is a directory containing symbolic links', () => {
-    const SYMLINK_THROW = /is an external symbolic link which is forbidden due to follow mode .*/;
+    const SYMLINK_THROW = /forbids the symbolic link/;
 
     // The source directory has no symlinks of its own, so only the symlinks that bundling
     // writes into the output directory can trigger the BLOCK_EXTERNAL check.
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir');
+    const directory = path.join(FIXTURE_TEST1_DIR, 'subdir');
 
     test('fails under mode BLOCK_EXTERNAL if the bundling output contains an external symlink', () => {
       // GIVEN
@@ -1977,7 +1972,7 @@ describe('staging', () => {
   });
 
   describe('external symlinks in the source directory that are excluded from the asset', () => {
-    const SYMLINK_THROW = /is an external symbolic link which is forbidden due to follow mode .*/;
+    const SYMLINK_THROW = /forbids the symbolic link/;
 
     // An excluded symlink is never copied into the staged asset, so nothing from outside the
     // source tree ends up being packaged and there is nothing for BLOCK_EXTERNAL to block.
@@ -2003,33 +1998,6 @@ describe('staging', () => {
         'subdir2',
         'subdir4',
       ]);
-    });
-
-    test('passes under mode BLOCK_EXTERNAL if the bundling output contains an external symlink and the external link is ignored', () => {
-      // GIVEN
-      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
-      const stack = new Stack(app, 'stack');
-
-      // WHEN
-      const staging = new AssetStaging(stack, 'Asset', {
-        sourcePath: path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir'),
-        assetHashType: AssetHashType.OUTPUT,
-        follow: SymlinkFollowMode.BLOCK_EXTERNAL,
-        bundling: {
-          image: DockerImage.fromRegistry('alpine'),
-          command: [DockerStubCommand.DIR_WITH_EXTERNAL_SYMLINK],
-          outputType: BundlingOutput.NOT_ARCHIVED,
-        },
-        exclude: ['payload.zip'],
-      });
-
-      // THEN - the symlink is excluded from validation, but the bundling output is still
-      // staged as a whole, symlink intact
-      expect(fs.readdirSync(staging.absoluteStagedPath).sort()).toEqual([
-        'file2.txt',
-        'payload.zip',
-      ]);
-      expect(fs.lstatSync(path.join(staging.absoluteStagedPath, 'payload.zip')).isSymbolicLink()).toBe(true);
     });
 
     test('does not fail under mode BLOCK_EXTERNAL if the excluded symlink points to an external directory', () => {
@@ -2156,7 +2124,7 @@ describe('staging with docker cp', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -2172,7 +2140,6 @@ describe('staging with docker cp', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.c0a5fa22d478764f48802d4ff41174892273b02445015e8e8e08a9596792550c', // this is the bundle dir
-      'asset.c0a5fa22d478764f48802d4ff41174892273b02445015e8e8e08a9596792550c.zip',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -2203,7 +2170,7 @@ describe('staging with docker cp', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -2221,7 +2188,6 @@ describe('staging with docker cp', () => {
     const assembly = app.synth();
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.4697ea6b345c96a20246f80b874dfd6d640c6d0fd9c097d02ede1f45d37e1732',
-      'asset.4697ea6b345c96a20246f80b874dfd6d640c6d0fd9c097d02ede1f45d37e1732_noext',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
@@ -2237,7 +2203,7 @@ describe('staging with docker cp', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+    const directory = FIXTURE_TEST1_DIR;
 
     // WHEN
     const staging = new AssetStaging(stack, 'Asset', {
@@ -2257,7 +2223,6 @@ describe('staging with docker cp', () => {
 
     expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.53a51b4c68874a8e831e24e8982120be2a608f50b2e05edb8501143b3305baa8',
-      'asset.53a51b4c68874a8e831e24e8982120be2a608f50b2e05edb8501143b3305baa8_noext',
       'cdk.out',
       'manifest.json',
       'stack.metadata.json',
