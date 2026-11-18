@@ -78,6 +78,31 @@
     "ManagedExecution": {
      "Active": true
     },
+    "OperationPreferences": {
+     "ConcurrencyMode": "SOFT_FAILURE_TOLERANCE",
+     "FailureToleranceCount": 1,
+     "MaxConcurrentCount": 2
+    },
+    "Parameters": [
+     {
+      "ParameterKey": "referencetointegstacksettestAdminRoleD699F605RoleId",
+      "ParameterValue": {
+       "Fn::GetAtt": [
+        "AdminRole38563C57",
+        "RoleId"
+       ]
+      }
+     },
+     {
+      "ParameterKey": "referencetointegstacksettestAdminRoleD699F605Arn",
+      "ParameterValue": {
+       "Fn::GetAtt": [
+        "AdminRole38563C57",
+        "Arn"
+       ]
+      }
+     }
+    ],
     "PermissionModel": "SELF_MANAGED",
     "StackInstancesGroup": [
      {
@@ -93,7 +118,7 @@
     ],
     "StackSetName": "integ-stackset-test",
     "TemplateURL": {
-     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/eafdf37263c96be63d90688bdd6a533a50491a77b6bbc6dfa704daabff37c6bd.json"
+     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/da87d45514430d7fd05c48fd2f620eff53356f93c0e5c49e11d0f9eb322b78e9.json"
     }
    },
    "DependsOn": [

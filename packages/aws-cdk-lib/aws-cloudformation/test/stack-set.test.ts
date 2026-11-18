@@ -6,6 +6,8 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
+import * as sns from '../../aws-sns';
+import * as core from '../../core';
 import {
   Annotations as CoreAnnotations,
   App,
@@ -1242,33 +1244,6 @@ describe('StackSet asset bucket deployment dependencies', () => {
     const template = Template.fromStack(stack);
     expect(dependsOnOf(template, 'nested')).toContain(bucketDeploymentIdFor(template, 'nested-us-east-1'));
   });
-
-  function stackSetWithImportedAssetBucket() {
-    const app = new App();
-    const stack = new Stack(app);
-    new LambdaStackSet(stack, 'StackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'imported-us-east-1')],
-      assetBucketPrefix: 'imported',
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
-    });
-    return stack;
-  }
-
-  test('warns on the host stack with an acknowledgeable id when an asset bucket is referenced', () => {
-    const stack = stackSetWithImportedAssetBucket();
-
-    Annotations.fromStack(stack).hasWarning('/Default', Match.stringLikeRegexp(
-      '^Bucket Policy Permissions cannot be added to referenced Bucket.*\\[ack: @aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions\\]',
-    ));
-  });
-
-  test('the referenced asset bucket warning can be acknowledged on the host stack', () => {
-    const stack = stackSetWithImportedAssetBucket();
-
-    CoreAnnotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions');
-
-    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('Bucket Policy Permissions'));
-  });
 });
 
 describe('StackSet self managed admin role', () => {
@@ -1934,6 +1909,111 @@ describe('StackSet references to other stacks', () => {
   });
 });
 
+describe('StackSet references to resources of a stack with an environment', () => {
+  function stackWithAuditRole() {
+    const app = new App();
+    const stack = new Stack(app, 'Admin', { env: { account: '111111111111', region: 'us-east-1' } });
+    const auditRole = new iam.Role(stack, 'AuditRole', { assumedBy: new iam.AccountRootPrincipal() });
+    return { stack, auditRole };
+  }
+
+  function auditRoleResource(stack: Stack) {
+    const roles = Template.fromStack(stack).findResources('AWS::IAM::Role', { Properties: { AssumeRolePolicyDocument: Match.anyValue() } });
+    const [[logicalId, role]] = Object.entries(roles).filter(([id]) => id.startsWith('AuditRole'));
+    return { logicalId, role };
+  }
+
+  test('the ARN of a role is passed as a StackSet parameter, without a generated role name', () => {
+    const { stack, auditRole } = stackWithAuditRole();
+    const stackSet = new StackSet(stack, 'StackSet');
+    new CfnOutput(stackSet, 'AuditRoleArn', { value: auditRole.roleArn });
+
+    const template = stackSetTemplateOf(stackSet).toJSON();
+    const [parameterName] = Object.keys(template.Parameters);
+    expect(template.Outputs.AuditRoleArn.Value).toEqual({ Ref: parameterName });
+    const { logicalId, role } = auditRoleResource(stack);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      Parameters: [{ ParameterKey: parameterName, ParameterValue: { 'Fn::GetAtt': [logicalId, 'Arn'] } }],
+    });
+    expect(role.Properties.RoleName).toBeUndefined();
+  });
+
+  test('the ARN of a role is passed through the StackSet to a nested stack in it', () => {
+    const { stack, auditRole } = stackWithAuditRole();
+    const stackSet = new StackSet(stack, 'StackSet', {
+      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+    const nested = new core.NestedStack(stackSet, 'Nested');
+    new CfnOutput(nested, 'AuditRoleArn', { value: auditRole.roleArn });
+
+    const [stackSetParameter] = Object.keys(stackSetTemplateOf(stackSet).toJSON().Parameters);
+    const { logicalId, role } = auditRoleResource(stack);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      Parameters: [{ ParameterKey: stackSetParameter, ParameterValue: { 'Fn::GetAtt': [logicalId, 'Arn'] } }],
+    });
+    expect(role.Properties.RoleName).toBeUndefined();
+  });
+});
+
+describe('StackSet dependencies', () => {
+  function stackSetResourceId(template: Template, stackSetId: string): string {
+    const [logicalId] = Object.keys(template.findResources('AWS::CloudFormation::StackSet'))
+      .filter((id) => id.startsWith(stackSetId));
+    return logicalId;
+  }
+
+  test('a resource of the StackSet that depends on a resource of its containing stack makes the StackSet depend on it', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const hostTopic = new sns.Topic(stack, 'HostTopic');
+    const stackSet = new StackSet(stack, 'StackSet');
+    new sns.Topic(stackSet, 'Topic').node.addDependency(hostTopic);
+
+    const template = Template.fromStack(stack);
+    const [hostTopicId] = Object.keys(template.findResources('AWS::SNS::Topic'));
+    expect(template.toJSON().Resources[stackSetResourceId(template, 'StackSet')].DependsOn).toContain(hostTopicId);
+  });
+
+  test('a resource of the containing stack that depends on a resource of the StackSet depends on the StackSet', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSet = new StackSet(stack, 'StackSet');
+    const topic = new sns.Topic(stackSet, 'Topic');
+    new sns.Topic(stack, 'HostTopic').node.addDependency(topic);
+
+    const template = Template.fromStack(stack);
+    const [hostTopic] = Object.values(template.findResources('AWS::SNS::Topic'));
+    expect(hostTopic.DependsOn).toEqual([stackSetResourceId(template, 'StackSet')]);
+  });
+
+  test('a resource of a StackSet that depends on a resource of another StackSet makes the StackSets depend on each other', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const first = new StackSet(stack, 'First');
+    const second = new StackSet(stack, 'Second');
+    const firstTopic = new sns.Topic(first, 'Topic');
+    new sns.Topic(second, 'Topic').node.addDependency(firstTopic);
+
+    const template = Template.fromStack(stack);
+    expect(template.toJSON().Resources[stackSetResourceId(template, 'Second')].DependsOn)
+      .toContain(stackSetResourceId(template, 'First'));
+  });
+
+  test('a resource of the StackSet that depends on a resource of another stack makes the containing stack depend on it', () => {
+    const app = new App();
+    const other = new Stack(app, 'Other');
+    const otherTopic = new sns.Topic(other, 'OtherTopic');
+    const stack = new Stack(app, 'Admin');
+    const stackSet = new StackSet(stack, 'StackSet');
+    new sns.Topic(stackSet, 'Topic').node.addDependency(otherTopic);
+
+    // construct dependencies are applied when the app is synthesized
+    expect(app.synth().getStackByName('Admin').dependencies.map((d) => d.id)).toContain('Other');
+    expect(stack.dependencies).toContain(other);
+  });
+});
+
 describe('nested stacks in a StackSet', () => {
   function stackSetWithNestedStack() {
     const app = new App();
@@ -2007,7 +2087,6 @@ describe('StackSet annotations', () => {
 });
 
 describe('StackSet validation errors', () => {
-
   test.each([
     [-1, 'StackSetFailureToleranceCountInvalid', 'failure tolerance count must be an integer greater than or equal to 0, got -1', (value: number) => StackSetFailureTolerance.count(value)],
     [1.5, 'StackSetFailureToleranceCountInvalid', 'failure tolerance count must be an integer greater than or equal to 0, got 1.5', (value: number) => StackSetFailureTolerance.count(value)],
@@ -2160,10 +2239,9 @@ describe('StackSet validation errors', () => {
       assetBucketPrefix: 'prefix',
     });
 
-    expect(() => stackSet.synthesizer.addFileAsset({ sourceHash: 'hash' })).toThrow(expect.objectContaining({
+    expect(() => stackSet.synthesizer.addFileAsset({ sourceHash: 'hash', executable: ['build.sh'] })).toThrow(expect.objectContaining({
       name: 'AssetFileNameRequired',
-      message: 'asset filename is undefined',
-      constructPath: 'Default/AssetStack',
+      message: 'asset filename is required',
     }));
   });
 
@@ -2174,7 +2252,6 @@ describe('StackSet validation errors', () => {
     expect(() => stackSet.synthesizer.addDockerImageAsset({ sourceHash: 'hash', directoryName: 'dir' })).toThrow(expect.objectContaining({
       name: 'DockerAssetsNotSupported',
       message: 'docker image assets are not supported in StackSets',
-      constructPath: 'Default/AssetStack',
     }));
   });
 });

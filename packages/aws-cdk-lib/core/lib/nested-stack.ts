@@ -208,6 +208,20 @@ export class NestedStack extends Stack {
   }
 
   /**
+   * @internal
+   */
+  public get _deployingResource(): CfnResource | undefined {
+    return this.resource;
+  }
+
+  /**
+   * @internal
+   */
+  public _setTemplateParameter(name: string, value: string): void {
+    this.setParameter(name, value);
+  }
+
+  /**
    * Defines an asset at the parent stack which represents the template of this
    * nested stack.
    *

@@ -65,6 +65,7 @@ type DependencyContainer =
   | { type: 'stage'; construct: Stage } // May also be App
   | { type: 'stack'; construct: Stack }
   | { type: 'nested-stack'; construct: NestedStack }
+  | { type: 'template-stack'; construct: Stack } // a stack whose template is deployed by a resource of another stack, e.g. a StackSet
   | { type: 'construct'; construct: IConstruct }
   ;
 
@@ -118,6 +119,7 @@ function doDispatch(source: DependencyContainer, target: DependencyContainer, op
       }
       break;
     case 'nested-stack':
+    case 'template-stack':
     case 'construct':
       // L1 resource dependendencies
       for (const sourceResource of dependingResourcesFor(source)) {
@@ -143,6 +145,9 @@ function* dependingResourcesFor(construct: DependencyContainer) {
   if (construct.type === 'nested-stack' && construct.construct.nestedStackResource) {
     yield construct.construct.nestedStackResource;
   }
+  if (construct.type === 'template-stack' && construct.construct._deployingResource) {
+    yield construct.construct._deployingResource;
+  }
   if (construct.type === 'construct') {
     yield* iterateTemplateCfnResources(construct.construct);
   }
@@ -155,8 +160,10 @@ function* dependingResourcesFor(construct: DependencyContainer) {
  * relationships that the CloudFormation-based construct tree encodes.
  *
  * - A Stage contains Stacks
- * - A Stack contains resources or NestedStacks (but not other Stacks!)
- * - NestedStacks contain resources or NestedStacks (but not other Stacks!)
+ * - A Stack contains resources, NestedStacks or TemplateStacks (but not other Stacks!)
+ * - NestedStacks contain resources, NestedStacks or TemplateStacks (but not other Stacks!)
+ * - TemplateStacks are stacks whose template is deployed by a resource of another stack
+ *   (e.g. a StackSet). They contain the same things as NestedStacks.
  *
  * The reason is that a non-Nested Stack at any level just encodes a top-level
  * Stack, only contained by its enclosing Stage.
@@ -177,6 +184,8 @@ function dependencyContainerPath(start: IConstruct): DependencyContainer[] {
       candidate = { type: 'stage', construct };
     } else if (NESTED_STACK_TYPE.isMarked(construct)) {
       candidate = { type: 'nested-stack', construct };
+    } else if (STACK_TYPE.isMarked(construct) && construct._deployingResource) {
+      candidate = { type: 'template-stack', construct };
     } else if (STACK_TYPE.isMarked(construct)) {
       candidate = { type: 'stack', construct };
     } else {
@@ -201,8 +210,9 @@ function dependencyContainerPath(start: IConstruct): DependencyContainer[] {
         // Stages are only contained by stages
         return container.type == 'stage';
       case 'nested-stack':
-        // Nested Stacks are only contained by StackLikes
-        return container.type == 'nested-stack' || container.type == 'stack';
+      case 'template-stack':
+        // Nested Stacks and Template Stacks are only contained by StackLikes
+        return container.type == 'nested-stack' || container.type == 'template-stack' || container.type == 'stack';
       case 'stack':
         // Stacks are only contained by stages
         return container.type == 'stage';

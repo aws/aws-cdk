@@ -13,13 +13,12 @@ import type {
   Stack,
 } from '../../../core';
 import {
-  Annotations,
   Aws,
   FileAssetPackaging,
   Fn,
-  Resource,
   StackSynthesizer,
   Token,
+  UnscopedValidationError,
   ValidationError,
 } from '../../../core';
 import { AssumptionError } from '../../../core/lib/errors';
@@ -92,7 +91,7 @@ export class StackSetSynthesizer extends StackSynthesizer {
     }
 
     if (!asset.fileName) {
-      throw new ValidationError(lit`AssetFileNameRequired`, 'asset filename is undefined', this.boundStack);
+      throw new UnscopedValidationError(lit`AssetFileNameRequired`, 'asset filename is required');
     }
 
     const hostObjectKey = this.stageAsset(asset);
@@ -111,7 +110,7 @@ export class StackSetSynthesizer extends StackSynthesizer {
   }
 
   public addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
-    throw new ValidationError(lit`DockerAssetsNotSupported`, 'docker image assets are not supported in StackSets', this.boundStack);
+    throw new UnscopedValidationError(lit`DockerAssetsNotSupported`, 'docker image assets are not supported in StackSets');
   }
 
   public synthesize(session: ISynthesisSession): void {
@@ -145,12 +144,6 @@ export class StackSetSynthesizer extends StackSynthesizer {
       if (bucketDeployment) {
         bucketDeployment.addSource(source);
         return;
-      }
-
-      if (!Resource.isOwnedResource(assetBucket)) {
-        Annotations.of(host).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions',
-          'Bucket Policy Permissions cannot be added to' +
-            ' referenced Bucket. Please make sure your bucket has the correct permissions');
       }
 
       const newBucketDeployment = new BucketDeployment(scope, `${id}.AssetBucketDeployment${index}`, {

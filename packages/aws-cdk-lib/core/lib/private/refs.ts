@@ -32,7 +32,7 @@ import type {
   RoleReference,
 } from '../../../interfaces/generated/aws-iam-interfaces.generated';
 import { ReferenceStrength } from '../cross-stack-reference-strength';
-import { stackOf } from './core-construct-finders';
+import { outermostNestingStack, stackOf, templateHostOf } from './core-construct-finders';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -154,31 +154,28 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
   }
 
   // references between a stack and its nested stacks stay within one template deployment
-  const consumerRoot = outermostNestingStack(consumer);
-  if (consumerRoot !== outermostNestingStack(producer)) {
-    // ----------------------------------------------------------------------
-    // consumer's template parameters are set by a host stack (e.g. a StackSet)
-    // ----------------------------------------------------------------------
-
-    // resolve the reference in the host stack and pass it in as a template parameter,
-    // through the nested stacks between the consumer and the stack with the host.
-    const parameterHost = consumerRoot._parameterHost;
-    if (parameterHost && producer._supportsCrossStackReferences()) {
-      if (consumer.nestedStackParent) {
-        const parameterValue = resolveValue(consumer.nestedStackParent, reference);
-        return createNestedStackParameter(consumer, reference, parameterValue);
-      }
-      const parameterValue = resolveValue(parameterHost, reference);
-      return createTemplateParameter(consumer, reference, parameterValue, (name, value) => consumer._setParameterFromHost(name, value));
+  if (outermostNestingStack(consumer) !== outermostNestingStack(producer)) {
+    // unsupported: the template of the producer is deployed by a resource that has no outputs (e.g. a StackSet)
+    if (templateHostOf(producer)) {
+      throw new UnscopedValidationError(lit`CrossStackReferenceNotSupported`,
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": ` +
+        `the producer stack "${producer.node.path}" does not support cross-stack references`);
     }
 
-    // unsupported: stacks whose template is deployed outside of the app's own deployment
-    for (const [side, stack] of [['consumer', consumer], ['producer', producer]] as const) {
-      if (!stack._supportsCrossStackReferences()) {
-        throw new UnscopedValidationError(lit`CrossStackReferenceNotSupported`,
-          `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": ` +
-          `the ${side} stack "${stack.node.path}" does not support cross-stack references`);
+    // ----------------------------------------------------------------------
+    // consumer's template is deployed by a resource of another stack (e.g. a StackSet)
+    // ----------------------------------------------------------------------
+
+    // resolve the reference in the stack of the deploying resource and pass it in as a template
+    // parameter, through the nested stacks between the consumer and the deployed stack.
+    const templateHost = templateHostOf(consumer);
+    if (templateHost) {
+      if (consumer.nestedStackParent) {
+        const parameterValue = resolveValue(consumer.nestedStackParent, reference);
+        return createTemplateParameter(consumer, reference, parameterValue);
       }
+      const parameterValue = resolveValue(templateHost, reference);
+      return createTemplateParameter(consumer, reference, parameterValue);
     }
   }
 
@@ -191,7 +188,7 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
   // the parent stack as the consumer.
   if (consumer.nestedStackParent && isNested(consumer, producer)) {
     const parameterValue = resolveValue(consumer.nestedStackParent, reference);
-    return createNestedStackParameter(consumer, reference, parameterValue);
+    return createTemplateParameter(consumer, reference, parameterValue);
   }
 
   // ----------------------------------------------------------------------
@@ -441,7 +438,7 @@ function createCrossRegionImportValue(reference: Reference, importStack: Stack):
 
   const exported = exportWriter.exportValue(exportName, reference, importStack);
   if (importStack.nestedStackParent) {
-    return createNestedStackParameter(importStack, (exported as CfnReference), exported);
+    return createTemplateParameter(importStack, (exported as CfnReference), exported);
   }
   return exported;
 }
@@ -666,40 +663,19 @@ export function getExportable(stack: Stack, reference: Reference): Intrinsic {
 // ------------------------------------------------------------------------------------------------
 
 /**
- * Adds a CloudFormation parameter to a nested stack and assigns it with the
- * value of the reference.
+ * Adds a CloudFormation parameter to a stack whose template is deployed by a resource of another
+ * stack (e.g. a nested stack), passes the value through that resource, and returns a reference to
+ * the parameter.
  */
-function createNestedStackParameter(nested: Stack, reference: CfnReference, value: IResolvable) {
-  return createTemplateParameter(nested, reference, value, (name, parameterValue) => {
-    // Ugly little hack until we move NestedStack to this module.
-    if (!('setParameter' in nested)) {
-      throw new UnscopedValidationError(lit`NestedStackMustHaveSetParameter`, 'assertion failed: nested stack should have a "setParameter" method');
-    }
-
-    (nested as any).setParameter(name, parameterValue);
-  });
-}
-
-/**
- * Adds a CloudFormation parameter to a stack whose value is set by the stack that deploys it,
- * and returns a reference to the parameter.
- */
-function createTemplateParameter(stack: Stack, reference: CfnReference, value: IResolvable, setParameter: (name: string, value: string) => void) {
+function createTemplateParameter(stack: Stack, reference: CfnReference, value: IResolvable) {
   const paramId = generateUniqueId(stack, reference, 'reference-to-');
   let param = stack.node.tryFindChild(paramId) as CfnParameter;
   if (!param) {
     param = new CfnParameter(stack, paramId, { type: 'String' });
-    setParameter(param.logicalId, Token.asString(value));
+    stack._setTemplateParameter(param.logicalId, Token.asString(value));
   }
 
   return param.value as CfnReference;
-}
-
-/**
- * Returns the stack whose template contains the given stack, through its nested stacks
- */
-function outermostNestingStack(stack: Stack): Stack {
-  return stack.nestedStackParent ? outermostNestingStack(stack.nestedStackParent) : stack;
 }
 
 /**

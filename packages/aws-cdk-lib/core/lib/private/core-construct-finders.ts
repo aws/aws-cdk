@@ -82,3 +82,22 @@ export function appOf(construct: IConstruct): App | undefined {
 export function isCfnResource(x: any): x is CfnResource {
   return x !== null && typeof (x) === 'object' && x.cfnResourceType !== undefined;
 }
+
+/**
+ * Returns the stack whose template contains the given stack, through its nested stacks
+ */
+export function outermostNestingStack(stack: Stack): Stack {
+  return stack.nestedStackParent ? outermostNestingStack(stack.nestedStackParent) : stack;
+}
+
+/**
+ * Returns the stack that deploys the template of the given stack, if a resource of another
+ * stack deploys it (e.g. a StackSet), looking through the nested stacks in between.
+ *
+ * Nested stacks themselves are deployed as part of their parent's template, so they are not
+ * considered deployed by another stack here.
+ */
+export function templateHostOf(stack: Stack): Stack | undefined {
+  const deployingResource = outermostNestingStack(stack)._deployingResource;
+  return deployingResource ? stackOf(deployingResource) : undefined;
+}

@@ -12,21 +12,15 @@
     },
     "AdminRoleArn": {
       "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "arn:",
-            {
-              "Ref": "AWS::Partition"
-            },
-            ":iam::12345678:role/AWSCloudFormationStackSetAdministrationRole-integ-test"
-          ]
-        ]
+        "Ref": "referencetointegstacksettestAdminRoleD699F605Arn"
       }
     }
   },
   "Parameters": {
     "referencetointegstacksettestAdminRoleD699F605RoleId": {
+      "Type": "String"
+    },
+    "referencetointegstacksettestAdminRoleD699F605Arn": {
       "Type": "String"
     }
   }

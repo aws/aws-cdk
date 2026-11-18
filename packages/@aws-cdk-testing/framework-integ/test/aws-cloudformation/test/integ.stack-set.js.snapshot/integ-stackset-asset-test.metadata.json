@@ -1,32 +1,6 @@
 {
   "/integ-stackset-asset-test": [
     {
-      "type": "aws:cdk:warning",
-      "data": "Bucket Policy Permissions cannot be added to referenced Bucket. Please make sure your bucket has the correct permissions [ack: @aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions]",
-      "trace": [
-        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/private/stackset-synthesizer.js:142:47",
-        "Array.forEach (<anonymous>)",
-        "StackSetSynthesizer.stageAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/private/stackset-synthesizer.js:135:27)",
-        "StackSetSynthesizer.addFileAsset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudformation/lib/private/stackset-synthesizer.js:99:36)",
-        "new Asset (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-assets/lib/asset.js:145:44)",
-        "AssetCode.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/code.js:564:26)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:673:37)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new LambdaStackSet (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:105:9)",
-        "new AssetTestCase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:158:9)",
-        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.stack-set.js:187:23)",
-        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
-        "Object..js (node:internal/modules/cjs/loader:1913:10)",
-        "Module.load (node:internal/modules/cjs/loader:1505:32)",
-        "Function._load (node:internal/modules/cjs/loader:1309:12)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
-        "node:internal/main/run_main_module:36:49"
-      ]
-    },
-    {
       "type": "aws:cdk:templateFile",
       "data": "integ-stackset-asset-test.template.json"
     }

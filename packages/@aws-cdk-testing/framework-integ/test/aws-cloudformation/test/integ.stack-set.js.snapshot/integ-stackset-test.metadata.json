@@ -130,6 +130,12 @@
       "data": "referencetointegstacksettestAdminRoleD699F605RoleId"
     }
   ],
+  "/integ-stackset-test/StackSet/reference-to-integstacksettestAdminRoleD699F605Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetointegstacksettestAdminRoleD699F605Arn"
+    }
+  ],
   "/integ-stackset-test/AdminRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",

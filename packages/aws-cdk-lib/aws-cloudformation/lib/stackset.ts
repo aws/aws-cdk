@@ -611,11 +611,9 @@ export interface StackSetProps {
   readonly target?: StackSetTarget;
 
   /**
-   * A template defined in S3 or a local file
+   * If you already have an existing CloudFormation template that you would like to use, you can pass the template defined in S3 or a local file
    *
-   * A StackSet with a `template` must not contain any resources.
-   *
-   * @default - the template is defined by the resources of this StackSet
+   * @default - the template will be generated from the resources added to this StackSet
    */
   readonly template?: StackSetTemplate;
 
@@ -638,9 +636,6 @@ export interface StackSetProps {
    *
    * One Bucket is required per target region. The name must be `${assetBucketPrefix}-<region>`, where
    * `<region>` is the region targeted by the StackSet.
-   *
-   * The full bucket interface is required because the assets are copied with a
-   * `BucketDeployment`, which needs it. [disable-awslint:prefer-ref-interface]
    *
    * @default - No Buckets provided and Assets will not be supported.
    */
@@ -1226,28 +1221,20 @@ export class StackSet extends Stack implements IStackSet {
   }
 
   /**
-   * Other stacks can't reference the resources of a StackSet, because its template is
+   * The StackSet resource deploys the template, so values from other stacks are passed as StackSet
+   * parameters. Other stacks can't reference the resources of a StackSet, because its template is
    * deployed to many accounts and regions.
    *
    * @internal
    */
-  public _supportsCrossStackReferences(): boolean {
-    return false;
-  }
-
-  /**
-   * Values from other stacks are resolved in the host stack and passed as StackSet parameters.
-   *
-   * @internal
-   */
-  public get _parameterHost(): Stack | undefined {
-    return this.hostStack;
+  public get _deployingResource(): CfnResource | undefined {
+    return this.resource;
   }
 
   /**
    * @internal
    */
-  public _setParameterFromHost(name: string, value: string): void {
+  public _setTemplateParameter(name: string, value: string): void {
     this.templateParameters.put(name, value);
   }
 

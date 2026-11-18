@@ -8,7 +8,7 @@ import { Fact, RegionInfo } from '../../region-info';
 import type { ITaggableV2 } from '../lib';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, CrossStackReferences, ReferenceStrength, Lazy, ScopedAws, Stack, validateString,
+  CfnResource, CrossStackReferences, ReferenceStrength, Lazy, ScopedAws, Stack, validateString, PhysicalName, Resource,
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
   Aws, Fn, ResolutionTypeHint,
@@ -2322,92 +2322,61 @@ describe('stack', () => {
     }));
   });
 
-  describe('stacks that do not support cross-stack references', () => {
-    class NoCrossStackReferencesStack extends Stack {
-      public _supportsCrossStackReferences(): boolean {
-        return false;
-      }
-    }
-
-    test('fails when such a stack consumes a reference', () => {
-      const app = makeCrossStackApp();
-      const producer = new Stack(app, 'Producer');
-      const consumer = new NoCrossStackReferencesStack(app, 'Consumer');
-      const resource = new CfnResource(producer, 'Resource', { type: 'Resource::Producer' });
-      new CfnResource(consumer, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: resource.ref } });
-
-      expect(() => app.synth()).toThrow(expect.objectContaining({
-        name: 'CrossStackReferenceNotSupported',
-        message: 'Stack "Consumer" cannot reference {Producer/Resource[Ref]} in stack "Producer": the consumer stack "Consumer" ' +
-          'does not support cross-stack references',
-      }));
-    });
-
-    test('fails when such a stack produces a reference', () => {
-      const app = makeCrossStackApp();
-      const producer = new NoCrossStackReferencesStack(app, 'Producer');
-      const consumer = new Stack(app, 'Consumer');
-      const resource = new CfnResource(producer, 'Resource', { type: 'Resource::Producer' });
-      new CfnResource(consumer, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: resource.ref } });
-
-      expect(() => app.synth()).toThrow(expect.objectContaining({
-        name: 'CrossStackReferenceNotSupported',
-        message: 'Stack "Consumer" cannot reference {Producer/Resource[Ref]} in stack "Producer": the producer stack "Producer" ' +
-          'does not support cross-stack references',
-      }));
-    });
-
-    test('references within such a stack are unaffected', () => {
-      const app = makeCrossStackApp();
-      const stack = new NoCrossStackReferencesStack(app, 'Stack');
-      const resource = new CfnResource(stack, 'Resource', { type: 'Resource::Producer' });
-      new CfnResource(stack, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: resource.ref } });
-
-      expect(toCloudFormation(stack).Resources.Consumer.Properties).toEqual({ Prop: { Ref: 'Resource' } });
-    });
-  });
-
-  describe('stacks whose template parameters are set by a host stack', () => {
+  describe('stacks deployed by a resource of another stack', () => {
     /**
      * A stack whose template is deployed by a resource of its host stack (like a StackSet),
-     * which passes the values it references as template parameters.
+     * which passes the values the template references as template parameters.
      */
-    class ParameterHostedStack extends Stack {
+    class DeployedStack extends Stack {
+      public readonly deployer: CfnResource;
       private readonly parameters: Record<string, string> = {};
 
-      constructor(scope: Construct, id: string, private readonly host: Stack) {
+      constructor(scope: Construct, id: string, host: Stack) {
         super(scope, id);
-        new CfnResource(host, `${id}Deployer`, {
+        this.deployer = new CfnResource(host, `${id}Deployer`, {
           type: 'Resource::Deployer',
-          properties: { Parameters: Lazy.any({ produce: () => this.parameters }) },
+          properties: { Parameters: Lazy.uncachedAny({ produce: () => this.parameters }) },
         });
       }
 
-      public get _parameterHost(): Stack | undefined {
-        return this.host;
+      public get _deployingResource(): CfnResource | undefined {
+        return this.deployer;
       }
 
-      public _setParameterFromHost(name: string, value: string): void {
+      public _setTemplateParameter(name: string, value: string): void {
         this.parameters[name] = value;
-      }
-
-      public _supportsCrossStackReferences(): boolean {
-        return false;
       }
     }
 
-    test('a value of the host becomes a template parameter set by the host', () => {
+    /**
+     * A resource whose ARN is formatted from its physical name when referenced across environments
+     */
+    class ArnResource extends Resource {
+      public readonly arn: string;
+
+      constructor(scope: Construct, id: string) {
+        super(scope, id, { physicalName: PhysicalName.GENERATE_IF_NEEDED });
+        const resource = new CfnResource(this, 'Resource', { type: 'Resource::Producer', properties: { Name: this.physicalName } });
+        this.arn = this.getResourceArnAttribute(resource.getAtt('Arn').toString(), {
+          service: 'test',
+          resource: 'thing',
+          resourceName: this.physicalName,
+        });
+      }
+    }
+
+    test('a value of the host becomes a template parameter set by the deploying resource', () => {
       const app = makeCrossStackApp();
       const host = new Stack(app, 'Host');
-      const hosted = new ParameterHostedStack(host, 'Hosted', host);
+      const deployed = new DeployedStack(host, 'Deployed', host);
       const producer = new CfnResource(host, 'Producer', { type: 'Resource::Producer' });
-      new CfnResource(hosted, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.ref } });
+      new CfnResource(deployed, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.ref } });
 
-      const hostedTemplate = toCloudFormation(hosted);
-      const [parameterName] = Object.keys(hostedTemplate.Parameters);
-      expect(hostedTemplate.Parameters[parameterName]).toEqual({ Type: 'String' });
-      expect(hostedTemplate.Resources.Consumer.Properties).toEqual({ Prop: { Ref: parameterName } });
-      expect(toCloudFormation(host).Resources.HostedDeployer.Properties).toEqual({
+      const deployedTemplate = toCloudFormation(deployed);
+      const [parameterName] = Object.keys(deployedTemplate.Parameters);
+      expect(deployedTemplate.Parameters[parameterName]).toEqual({ Type: 'String' });
+      expect(deployedTemplate.Resources.Consumer.Properties).toEqual({ Prop: { Ref: parameterName } });
+      expect(toCloudFormation(host).Resources.DeployedDeployer.Properties).toEqual({
         Parameters: { [parameterName]: { Ref: 'Producer' } },
       });
     });
@@ -2416,12 +2385,12 @@ describe('stack', () => {
       const app = makeCrossStackApp();
       const other = new Stack(app, 'Other');
       const host = new Stack(app, 'Host');
-      const hosted = new ParameterHostedStack(host, 'Hosted', host);
+      const deployed = new DeployedStack(host, 'Deployed', host);
       const producer = new CfnResource(other, 'Producer', { type: 'Resource::Producer' });
-      new CfnResource(hosted, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.ref } });
+      new CfnResource(deployed, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.ref } });
 
       const hostTemplate = app.synth().getStackByName(host.stackName).template;
-      const [parameterValue] = Object.values(hostTemplate.Resources.HostedDeployer.Properties.Parameters);
+      const [parameterValue] = Object.values(hostTemplate.Resources.DeployedDeployer.Properties.Parameters);
       expect(parameterValue).toEqual({ 'Fn::ImportValue': expect.stringContaining('Other:ExportsOutputRefProducer') });
       expect(host.dependencies).toContain(other);
     });
@@ -2429,32 +2398,87 @@ describe('stack', () => {
     test('a nested stack inside such a stack gets the value through both stacks', () => {
       const app = makeCrossStackApp();
       const host = new Stack(app, 'Host');
-      const hosted = new ParameterHostedStack(host, 'Hosted', host);
-      const nested = new NestedStack(hosted, 'Nested');
+      const deployed = new DeployedStack(host, 'Deployed', host);
+      const nested = new NestedStack(deployed, 'Nested');
       const producer = new CfnResource(host, 'Producer', { type: 'Resource::Producer' });
       new CfnResource(nested, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.ref } });
 
-      const hostedTemplate = toCloudFormation(hosted);
-      const [hostedParameter] = Object.keys(hostedTemplate.Parameters);
-      const nestedStackResource = Object.values(hostedTemplate.Resources)
+      const deployedTemplate = toCloudFormation(deployed);
+      const [deployedParameter] = Object.keys(deployedTemplate.Parameters);
+      const nestedStackResource = Object.values(deployedTemplate.Resources)
         .find((resource: any) => resource.Type === 'AWS::CloudFormation::Stack') as any;
-      expect(Object.values(nestedStackResource.Properties.Parameters)).toEqual([{ Ref: hostedParameter }]);
-      expect(toCloudFormation(host).Resources.HostedDeployer.Properties).toEqual({
-        Parameters: { [hostedParameter]: { Ref: 'Producer' } },
+      expect(Object.values(nestedStackResource.Properties.Parameters)).toEqual([{ Ref: deployedParameter }]);
+      expect(toCloudFormation(host).Resources.DeployedDeployer.Properties).toEqual({
+        Parameters: { [deployedParameter]: { Ref: 'Producer' } },
       });
+    });
+
+    test('a resource of a host with an environment is referenced through a parameter, not by its physical name', () => {
+      const app = makeCrossStackApp();
+      const host = new Stack(app, 'Host', { env: { account: '111111111111', region: 'us-east-1' } });
+      const deployed = new DeployedStack(host, 'Deployed', host);
+      const producer = new ArnResource(host, 'Producer');
+      new CfnResource(deployed, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.arn } });
+
+      const deployedTemplate = toCloudFormation(deployed);
+      const [parameterName] = Object.keys(deployedTemplate.Parameters);
+      const hostTemplate = toCloudFormation(host);
+      expect(hostTemplate.Resources.DeployedDeployer.Properties).toEqual({
+        Parameters: { [parameterName]: { 'Fn::GetAtt': ['ProducerD8AA94EB', 'Arn'] } },
+      });
+      expect(hostTemplate.Resources.ProducerD8AA94EB.Properties?.Name).toBeUndefined();
+    });
+
+    test('a resource of such a stack referenced in the same stack is not referenced across environments', () => {
+      const app = makeCrossStackApp();
+      const host = new Stack(app, 'Host', { env: { account: '111111111111', region: 'us-east-1' } });
+      const deployed = new DeployedStack(host, 'Deployed', host);
+      const producer = new ArnResource(deployed, 'Producer');
+      new CfnResource(deployed, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.arn } });
+
+      const deployedTemplate = toCloudFormation(deployed);
+      expect(deployedTemplate.Resources.Consumer.Properties).toEqual({ Prop: { 'Fn::GetAtt': ['ProducerD8AA94EB', 'Arn'] } });
+      expect(deployedTemplate.Parameters).toBeUndefined();
     });
 
     test('fails when another stack references a resource of such a stack', () => {
       const app = makeCrossStackApp();
       const host = new Stack(app, 'Host');
-      const hosted = new ParameterHostedStack(host, 'Hosted', host);
-      const producer = new CfnResource(hosted, 'Producer', { type: 'Resource::Producer' });
+      const deployed = new DeployedStack(host, 'Deployed', host);
+      const producer = new CfnResource(deployed, 'Producer', { type: 'Resource::Producer' });
       new CfnResource(host, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.ref } });
 
       expect(() => app.synth()).toThrow(expect.objectContaining({
         name: 'CrossStackReferenceNotSupported',
-        message: expect.stringContaining('the producer stack "Host/Hosted" does not support cross-stack references'),
+        message: 'Stack "Host" cannot reference {Host/Deployed/Producer[Ref]} in stack "Host/Deployed": ' +
+          'the producer stack "Host/Deployed" does not support cross-stack references',
       }));
+    });
+
+    test('references within such a stack are unaffected', () => {
+      const app = makeCrossStackApp();
+      const host = new Stack(app, 'Host');
+      const deployed = new DeployedStack(host, 'Deployed', host);
+      const resource = new CfnResource(deployed, 'Resource', { type: 'Resource::Producer' });
+      new CfnResource(deployed, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: resource.ref } });
+
+      expect(toCloudFormation(deployed).Resources.Consumer.Properties).toEqual({ Prop: { Ref: 'Resource' } });
+    });
+
+    test('dependencies on resources of such a stack are dependencies on its deploying resource', () => {
+      const app = makeCrossStackApp();
+      const host = new Stack(app, 'Host');
+      const deployed = new DeployedStack(host, 'Deployed', host);
+      const hostResource = new CfnResource(host, 'HostResource', { type: 'Resource::Host' });
+      const deployedResource = new CfnResource(deployed, 'DeployedResource', { type: 'Resource::Deployed' });
+      const dependent = new CfnResource(host, 'Dependent', { type: 'Resource::Host' });
+      deployedResource.node.addDependency(hostResource);
+      dependent.node.addDependency(deployedResource);
+
+      const hostTemplate = toCloudFormation(host);
+      expect(hostTemplate.Resources.DeployedDeployer.DependsOn).toEqual(['HostResource']);
+      expect(hostTemplate.Resources.Dependent.DependsOn).toEqual(['DeployedDeployer']);
+      expect(toCloudFormation(deployed).Resources.DeployedResource.DependsOn).toBeUndefined();
     });
   });
 

@@ -1377,12 +1377,21 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Whether this stack's template can produce or consume cross-stack references.
+   * The resource of another stack that deploys this stack's template, if any.
+   *
+   * For example the `AWS::CloudFormation::Stack` resource of a nested stack, or the
+   * `AWS::CloudFormation::StackSet` resource of a StackSet. Dependencies on this stack
+   * are dependencies on that resource, and values that this stack references from other
+   * stacks are passed to its template as parameters, resolved in the stack of that resource.
+   *
+   * Only nested stacks pass values out of their template (through the outputs of the
+   * `AWS::CloudFormation::Stack` resource); other stacks deployed by a resource can't
+   * be referenced by other stacks.
    *
    * @internal
    */
-  public _supportsCrossStackReferences(): boolean {
-    return true;
+  public get _deployingResource(): CfnResource | undefined {
+    return undefined;
   }
 
   /**
@@ -1399,26 +1408,14 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * The stack that passes values into this stack's template as parameters, if any.
-   *
-   * Values that this stack references from other stacks are resolved in the
-   * parameter host, and passed to this stack's template as parameters.
-   *
-   * @internal
-   */
-  public get _parameterHost(): Stack | undefined {
-    return undefined;
-  }
-
-  /**
-   * Sets a template parameter of this stack from its parameter host.
+   * Sets a parameter of this stack's template, passed by its deploying resource.
    *
    * @param name the logical ID of the parameter
-   * @param value the value, resolved in the parameter host
+   * @param value the value, resolved in the stack of the deploying resource
    * @internal
    */
-  public _setParameterFromHost(_name: string, _value: string): void {
-    throw new AssumptionError(lit`StackHasNoParameterHost`, `stack "${this.node.path}" has no parameter host`);
+  public _setTemplateParameter(_name: string, _value: string): void {
+    throw new AssumptionError(lit`StackHasNoDeployingResource`, `stack "${this.node.path}" is not deployed by a resource of another stack`);
   }
 
   /**

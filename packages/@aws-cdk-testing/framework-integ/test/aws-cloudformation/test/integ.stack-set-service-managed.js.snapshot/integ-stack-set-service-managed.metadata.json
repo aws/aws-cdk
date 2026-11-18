@@ -15,6 +15,12 @@
       "data": "*"
     }
   ],
+  "/integ-stack-set-service-managed/StackSet.Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetResource"
+    }
+  ],
   "/integ-stack-set-service-managed/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -27,10 +33,16 @@
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/integ-stack-set-service-managed/StackSet/Resource": [
+  "/integ-stack-set-service-managed/StackSet/Topic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stack-set-service-managed/StackSet/Topic/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "StackSet6E6355CF"
+      "data": "TopicBFC7AF6E"
     }
   ]
 }

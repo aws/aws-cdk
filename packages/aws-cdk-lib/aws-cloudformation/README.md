@@ -35,46 +35,6 @@ new MyStackSet(stack, 'MyStackSet', {
 });
 ```
 
-### Defining the template of a StackSet
-
-StackSets allow you to deploy a single CloudFormation template across multiple AWS accounts and regions.
-Typically when creating a CDK Stack that will be deployed across multiple environments, the CDK will
-synthesize separate Stack templates for each environment (account/region combination). Because of the
-way that StackSets work, a single template is defined and synthesized for a StackSet. Any environmental
-differences must be encoded using Parameters.
-
-There are three ways to provide the template of a `StackSet`:
-
-1. Subclass `StackSet` and define its resources in the constructor, as in the example above.
-2. Add resources to a `StackSet` instance, the same way you add resources to a `Stack`:
-
-   ```ts
-   declare const stack: Stack;
-   const stackSet = new StackSet(stack, 'StackSet');
-
-   new iam.Role(stackSet, 'MyRole', {
-     assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
-   });
-   ```
-
-3. Pass a template that is not defined with CDK as `template`. A StackSet with a `template` must not
-   contain resources.
-   - `StackSetTemplate.fromUrl(url)` uses a template that is already stored in Amazon S3.
-   - `StackSetTemplate.fromAsset(path)` uses a local template file, which is uploaded as an asset of the
-     stack that contains the StackSet.
-
-   ```ts
-   declare const stack: Stack;
-
-   new StackSet(stack, 'FromUrl', {
-     template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
-   });
-
-   new StackSet(stack, 'FromAsset', {
-     template: StackSetTemplate.fromAsset(path.join(__dirname, 'template.json')),
-   });
-   ```
-
 A `StackSet` has a couple of special requirements and behaviors compared to a `Stack`:
 
 *Requirements*
@@ -84,26 +44,21 @@ A `StackSet` has a couple of special requirements and behaviors compared to a `S
   prefix (for example `MyStackSet.Resource`, which is also `stackSet.node.defaultChild`)
 
 *Behavior*
-- The template is always environment agnostic: it uses `AWS::AccountId` and `AWS::Region`, even if
-  its `Stage` has an environment, because it is deployed to the accounts and regions the StackSet targets.
-  `stackSet.account` and `stackSet.region` refer to the template, while `stackSet.env` and
-  `stackSet.stack` refer to the StackSet resource in the stack that contains it
-- The template is not deployed by itself, so a `StackSet` is not listed by `cdk list`
+- The resources of a `StackSet` are deployed to every account and region it targets, so the StackSet is
+  always environment agnostic, even if its containing `Stack` has an environment: `stackSet.account`
+  and `stackSet.region` resolve to the account and region of each stack instance (`AWS::AccountId` and
+  `AWS::Region`). `stackSet.env` and `stackSet.stack` describe the `AWS::CloudFormation::StackSet`
+  resource, which is deployed by its containing `Stack`.
+- The template is not deployed directly by CDK tooling, only as part of another stack's deployment
 - Values from other stacks that the template references are passed to it as StackSet parameters, the
-  same way a `NestedStack` gets values from its parent. Because the template is environment agnostic,
-  references to resources of a stack with an explicit environment are cross-environment references: for
-  resources that support physical names (for example the ARN of a role), CDK uses the physical name of the
-  resource, and generates one if needed
+  same way a `NestedStack` gets values from its parent
+- Other stacks can't reference the resources of a `StackSet`, because its template is deployed to many
+  accounts and regions
 - The `description` is used for the StackSet and its template, and tags of the StackSet
   (`Tags.of(stackSet).add(...)`) are tags of the StackSet resource, which CloudFormation propagates to
   every stack instance
 - Each `StackSet` has its own template. To deploy the same template with different StackSet settings,
-  create the `StackSet` class twice
-
-*Limitations*
-- Does not support Docker container assets
-- Other stacks can't reference the resources of a `StackSet`, because its template is deployed to many
-  accounts and regions
+  instantiate the `StackSet` class twice
 
 For example, the template of a StackSet can trust a role of the stack that contains it:
 
@@ -140,6 +95,47 @@ new MyStackSet(stack, 'ManagementStackSet', {
   target: StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['11111111111'] }),
 });
 ```
+
+### Defining the template of a StackSet
+
+StackSets allow you to deploy a single CloudFormation template across multiple AWS accounts and regions.
+Typically when creating a CDK Stack that will be deployed across multiple environments, the CDK will
+synthesize separate Stack templates for each environment. Because of the way that StackSets work,
+a single template is defined and synthesized for a StackSet. Any environmental differences must be
+encoded using Parameters.
+
+There are two ways to provide the template of a `StackSet`:
+
+1. Add resources to a `StackSet`, the same way you add resources to a `Stack`:
+
+   ```ts
+   class MyStackSet extends StackSet {
+     constructor(scope: Construct, id: string, props: StackSetProps) {
+       super(scope, id, props);
+
+       new iam.Role(this, 'MyRole', {
+         assumedBy: new iam.ServicePrincipal('myservice.amazonaws.com'),
+       });
+     }
+   }
+   ```
+
+2. If you already have an existing CloudFormation template that you would like to use for the stack set, you can pass the template using `StackSetTemplate`:
+   - `StackSetTemplate.fromUrl(url)` uses a template that is already stored in Amazon S3.
+   - `StackSetTemplate.fromAsset(path)` uses a local template file, which is uploaded as an asset of the
+     stack that contains the StackSet.
+
+   ```ts
+   declare const stack: Stack;
+
+   new StackSet(stack, 'FromUrl', {
+     template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
+   });
+
+   new StackSet(stack, 'FromAsset', {
+     template: StackSetTemplate.fromAsset(path.join(__dirname, 'template.json')),
+   });
+   ```
 
 ### Deploying a StackSet
 
@@ -373,64 +369,50 @@ regardless of failures.
 
 #### Using File Assets
 
-The stack that contains the StackSet facilitates the file assets of its template, for example the
-code of a Lambda function or the template of a `NestedStack` defined in the StackSet. It stages them
-like its own assets and copies them to the asset buckets using the `BucketDeployment` construct from
-the `aws_s3_deployment` module. You need to provide a list of buckets outside the scope of the CDK
-managed asset buckets and ensure you have permissions for the target accounts to pull the artifacts
-from the supplied bucket(s).
+A StackSet can use file assets, for example the code of a Lambda function, or the template of a
+`NestedStack` defined in the StackSet. Because the stack instances of a StackSet are deployed to
+other accounts and regions, they can't read these assets from the CDK bootstrap bucket. Instead:
 
-As a basic example, if using a `serviceManaged` deployment, you just need to give read
-access to the Organization. You can create the asset bucket in the stack that contains the StackSet,
-or another stack in the same app and pass the object as a prop. Or, import an existing bucket as needed.
+1. Create one bucket in each region that the StackSet deploys to, all named `${prefix}-${region}`.
+2. Allow the target accounts to read from these buckets, for example with an organization
+   principal for a service managed StackSet.
+3. Pass the buckets and the prefix as `assetBuckets` and `assetBucketPrefix`.
 
-If you create the bucket in the stack that contains the StackSet or another stack, you could define it similar to this:
+The stack that contains the StackSet copies the assets to these buckets before the StackSet is
+deployed. Docker image assets (for example `lambda.DockerImageCode.fromImageAsset()`) are not supported.
 
-```ts
-const bucket = new s3.Bucket(this, "Assets", {
-  bucketName: "prefix-us-east-1",
-});
-
-bucket.addToResourcePolicy(
-  new iam.PolicyStatement({
-    actions: ["s3:Get*", "s3:List*"],
-    resources: [bucket.arnForObjects("*"), bucket.bucketArn],
-    principals: [new iam.OrganizationPrincipal("o-xyz")],
-  })
-);
-```
-
-Then pass as a prop to the StackSet:
+Here's an example that creates the buckets in the same CDK app, with one stack per region:
 
 ```ts
-declare const stack: Stack;
-declare const bucket: s3.Bucket;
-const stackSet = new StackSet(stack, 'MyStackSet', {
-  assetBuckets: [bucket],
-  assetBucketPrefix: "prefix",
+declare const app: App;
+const regions = ['us-east-1', 'eu-west-1'];
+
+const assetBuckets = regions.map((region) => {
+  const bucketStack = new Stack(app, `StackSetAssets-${region}`, { env: { account: '111111111111', region } });
+  const bucket = new s3.Bucket(bucketStack, 'Assets', { bucketName: `my-stackset-assets-${region}` });
+  bucket.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['s3:GetObject'],
+    resources: [bucket.arnForObjects('*')],
+    principals: [new iam.OrganizationPrincipal('o-xyz')],
+  }));
+  return bucket;
+});
+
+const stack = new Stack(app, 'Admin', { env: { account: '111111111111', region: 'us-east-1' } });
+new StackSet(stack, 'MyStackSet', {
+  assetBuckets,
+  assetBucketPrefix: 'my-stackset-assets',
+  target: StackSetTarget.fromOrganizationalUnits({ regions, organizationalUnits: ['ou-1'] }),
+  deploymentType: DeploymentType.serviceManaged(),
 });
 ```
 
-To facilitate multi-region deployments, there is an `assetBucketPrefix` property. This
-gets added to the region the StackSet is deployed to. The stack synthesis for
-the StackSet would look for a bucket named `prefix-{Region}` in the example
-above. `{Region}` is whatever region you are deploying the StackSet to as
-defined in the `target` property of the StackSet. You will need to ensure the
-bucket name is correct based on what was previously created and then passed in.
+You can also pass existing buckets with `s3.Bucket.fromBucketName()` - make sure the target accounts can read from them.
 
-You can use self-managed StackSet deployments with file assets too, but you will
-need to ensure the roles in all target accounts have access to the central asset
-bucket you pass as the property.
-
-The StackSet waits for the asset copies to the buckets of its template to complete before it deploys.
-If you pass an imported bucket, the CDK cannot add the bucket policy for you and emits a warning
-on the stack that contains the StackSet. Once you have granted access yourself, acknowledge it with
-`Annotations.of(stack).acknowledgeWarning('@aws-cdk/aws-cloudformation:stackSetAssetsBucketPermissions')`.
-
-### Importing an existing StackSet
+### Referencing an existing StackSet
 
 You can reference a StackSet that was created outside of your app by its ID or by its ARN.
-Only a self managed `StackSet` has an `adminRole`; an imported StackSet and a service managed StackSet have none.
+Only a self managed `StackSet` has an `adminRole` - a referenced StackSet and a service managed StackSet don't have an `adminRole`.
 
 ```ts
 const stack = new Stack();
