@@ -111,7 +111,7 @@ export class Bundling implements CdkBundlingOptions {
       this.image = image;
     } else {
       // Build our own image to do the build in, but only if and when the asset actually needs bundling.
-      this.image = DockerImage.fromBuildOnDemand(path.join(__dirname, 'docker'), {
+      this.image = DockerImage.fromBuildV2(path.join(__dirname, 'docker'), {
         buildArgs: {
           ...props.buildArgs,
           IMAGE: runtime.bundlingImage.image,

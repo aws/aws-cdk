@@ -734,7 +734,7 @@ describe('staging', () => {
     // GIVEN
     const stack = new Stack(new App(), 'stack');
     // The Docker stub fails every command without a stub keyword, including `build`
-    const image = DockerImage.fromBuildOnDemand(FIXTURE_TEST1_DIR);
+    const image = DockerImage.fromBuildV2(FIXTURE_TEST1_DIR);
 
     // WHEN
     expect(() => new AssetStaging(stack, 'Asset', {

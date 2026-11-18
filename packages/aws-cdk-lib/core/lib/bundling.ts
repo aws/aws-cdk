@@ -262,7 +262,7 @@ export class BundlingDockerImage {
    * before you pass `image` to your own `docker` commands.
    */
   public buildImage(): void {
-    // Only images from `DockerImage.fromBuildOnDemand()` are built, see `DockerImage.buildImage()`
+    // Only images from `DockerImage.fromBuildV2()` are built, see `DockerImage.buildImage()`
   }
 
   /**
@@ -354,11 +354,10 @@ export class DockerImage extends BundlingDockerImage {
    *
    * The image is built right away, even if it is never used.
    *
-   * For images that are only used for asset bundling, prefer
-   * `DockerImage.fromBuildOnDemand()`. Assets whose bundled output already
-   * exists, or that skip bundling, then never pay for the build. Use this
-   * method if the image must exist as soon as it is created, for example
-   * because you pass its tag to your own `docker` commands.
+   * Use `DockerImage.fromBuildV2()` instead. It builds the same image under the
+   * same tag, but only when the image is first needed, so assets whose bundled
+   * output already exists, or that skip bundling, never pay for the build. If
+   * you need the image right away, call `buildImage()` on it.
    *
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
@@ -399,8 +398,8 @@ export class DockerImage extends BundlingDockerImage {
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
-  @profileFn('DockerImage.fromBuildOnDemand', { telemetry: true })
-  public static fromBuildOnDemand(path: string, options: DockerBuildOptions = {}) {
+  @profileFn('DockerImage.fromBuildV2', { telemetry: true })
+  public static fromBuildV2(path: string, options: DockerBuildOptions = {}) {
     const { tag, hash } = DockerImage.tagAndHash(path, options);
     const image = new DockerImage(tag, hash);
     onDemandBuilds.set(image, DockerImage.dockerBuild(path, tag, options));
@@ -830,7 +829,7 @@ interface DockerBuild {
 }
 
 /**
- * The `docker build` commands of images from `DockerImage.fromBuildOnDemand()`
+ * The `docker build` commands of images from `DockerImage.fromBuildV2()`
  */
 const onDemandBuilds = new WeakMap<BundlingDockerImage, DockerBuild>();
 

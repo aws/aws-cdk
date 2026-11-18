@@ -11,7 +11,7 @@ jest.spyOn(Code, 'fromAsset');
 // tests never run a real `docker build`. (The `child_process` mock below is bypassed
 // intermittently in CI.) The spies still record calls, so the assertions below are unaffected.
 jest.spyOn(DockerImage, 'fromBuild').mockReturnValue(new DockerImage('cdk-bundling-image-stub'));
-jest.spyOn(DockerImage, 'fromBuildOnDemand');
+jest.spyOn(DockerImage, 'fromBuildV2');
 const buildImage = jest.spyOn(DockerImage.prototype, 'buildImage').mockImplementation(() => {});
 
 jest.mock('child_process', () => ({
@@ -50,7 +50,7 @@ test('Bundling a function without dependencies', () => {
     }),
   }));
 
-  expect(DockerImage.fromBuildOnDemand).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-python/),
     }),
@@ -480,7 +480,7 @@ test('Bundling with custom build args', () => {
     buildArgs: { PIP_INDEX_URL: testPypi },
   });
 
-  expect(DockerImage.fromBuildOnDemand).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
     buildArgs: expect.objectContaining({
       PIP_INDEX_URL: testPypi,
     }),
@@ -620,7 +620,7 @@ test('Do not build docker image when skipping bundling', () => {
     skip: true,
   });
 
-  expect(DockerImage.fromBuildOnDemand).not.toHaveBeenCalled();
+  expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
 });
 
 test('Does not build the docker image when the bundling options are created', () => {
@@ -631,7 +631,7 @@ test('Does not build the docker image when the bundling options are created', ()
     skip: false,
   });
 
-  expect(DockerImage.fromBuildOnDemand).toHaveBeenCalled();
+  expect(DockerImage.fromBuildV2).toHaveBeenCalled();
   expect(buildImage).not.toHaveBeenCalled();
 });
 

@@ -208,7 +208,7 @@ describe('fromBuild with cached image', () => {
   });
 });
 
-describe('fromBuildOnDemand', () => {
+describe('fromBuildV2', () => {
   const originalDockerHost = process.env.DOCKER_HOST;
   afterEach(() => {
     if (originalDockerHost === undefined) {
@@ -219,7 +219,7 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('builds the image once, when it first runs', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     fakeDocker.assertNotCalled(['build', '-t', tag, 'docker-path']);
 
     image.run();
@@ -229,7 +229,7 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('builds the image before files are first copied out of it', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     fakeDocker.assertNotCalled(['build', '-t', tag, 'docker-path']);
 
     image.cp('/foo/bar', '/baz');
@@ -240,34 +240,34 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('checks for an image with the same tag only once per app', () => {
-    DockerImage.fromBuildOnDemand('docker-path').buildImage();
-    DockerImage.fromBuildOnDemand('docker-path').buildImage();
+    DockerImage.fromBuildV2('docker-path').buildImage();
+    DockerImage.fromBuildV2('docker-path').buildImage();
 
     expect(dockerCalls('image')).toHaveLength(1);
   });
 
   test('checks the Docker daemon again for images used in a new app', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     image.buildImage();
 
     new App();
     image.run();
-    DockerImage.fromBuildOnDemand('docker-path').buildImage();
+    DockerImage.fromBuildV2('docker-path').buildImage();
 
     expect(dockerCalls('image')).toHaveLength(2);
   });
 
   test('checks again for an image with the same tag on a different Docker daemon', () => {
-    DockerImage.fromBuildOnDemand('docker-path').buildImage();
+    DockerImage.fromBuildV2('docker-path').buildImage();
     process.env.DOCKER_HOST = 'tcp://other:2375';
-    DockerImage.fromBuildOnDemand('docker-path').buildImage();
+    DockerImage.fromBuildV2('docker-path').buildImage();
 
     expect(dockerCalls('image')).toHaveLength(2);
   });
 
   test('has the same tag and hash as an image from fromBuild', () => {
     const options = { buildArgs: { A: '1' }, platform: 'linux/arm64' };
-    const onDemand = DockerImage.fromBuildOnDemand('docker-path', options);
+    const onDemand = DockerImage.fromBuildV2('docker-path', options);
 
     expect(fingerprintMock).toHaveBeenLastCalledWith('docker-path', expect.objectContaining({ extraHash: JSON.stringify(options) }));
     expect(onDemand.image).toEqual(DockerImage.fromBuild('docker-path', options).image);
@@ -275,7 +275,7 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('passes its build options to docker build when it is built', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path', { buildArgs: { A: '1' }, platform: 'linux/arm64', file: 'Dockerfile.x' });
+    const image = DockerImage.fromBuildV2('docker-path', { buildArgs: { A: '1' }, platform: 'linux/arm64', file: 'Dockerfile.x' });
 
     image.buildImage();
 
@@ -289,12 +289,12 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('fails when created with an absolute Docker file path', () => {
-    expect(() => DockerImage.fromBuildOnDemand('docker-path', { file: '/abs/Dockerfile' })).toThrow(/must be relative/);
+    expect(() => DockerImage.fromBuildV2('docker-path', { file: '/abs/Dockerfile' })).toThrow(/must be relative/);
   });
 
   test('builds with the build options as they were when the image was created', () => {
     const options = { buildArgs: { VERSION: '1' } };
-    const image = DockerImage.fromBuildOnDemand('docker-path', options);
+    const image = DockerImage.fromBuildV2('docker-path', options);
     options.buildArgs.VERSION = '2';
 
     image.buildImage();
@@ -304,7 +304,7 @@ describe('fromBuildOnDemand', () => {
 
   test('fails when the image is built, not when it is created, and builds again on the next use', () => {
     fakeDocker.givenNextCommandFails(['build'], 'err-exit');
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
 
     expect(() => image.buildImage()).toThrow(/exited with status 1/);
 
@@ -316,7 +316,7 @@ describe('fromBuildOnDemand', () => {
   test('an image built eagerly is reused by later on-demand images and is not built again when it runs', () => {
     const eager = DockerImage.fromBuild('docker-path');
     eager.run();
-    DockerImage.fromBuildOnDemand('docker-path').buildImage();
+    DockerImage.fromBuildV2('docker-path').buildImage();
 
     expect(dockerCalls('image')).toHaveLength(1);
     expect(dockerCalls('build')).toHaveLength(1);
@@ -328,7 +328,7 @@ describe('fromBuildOnDemand', () => {
     ['Error: cdk-123456abcdef: image not known', true],
     ['Cannot connect to the Docker daemon at unix:///var/run/docker.sock', false],
   ])('blames a removed image only if Docker reports it as missing: %s', (stderr, expectHint) => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     image.buildImage();
     fakeDocker.reset();
     fakeDocker.spawnSync.mockImplementation((_command, args) => ({
@@ -349,7 +349,7 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('does not blame a removed image when the Docker daemon cannot be reached', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     image.buildImage();
     // Every Docker command fails, including the check whether the image exists
     fakeDocker.givenNextCommandFails([], 'docker-error');
@@ -361,7 +361,7 @@ describe('fromBuildOnDemand', () => {
 
   test('does not fingerprint the Docker file directory again when the image is built', () => {
     // For example, the directory contains the cloud assembly, which changes as assets are staged
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     fingerprintMock.mockReturnValue('changed');
 
     image.buildImage();
@@ -371,8 +371,8 @@ describe('fromBuildOnDemand', () => {
 
   test('always rebuilds images with build contexts, even if the tag was built before', () => {
     const options = { buildContexts: { ctx: '/path/to/context' } };
-    DockerImage.fromBuildOnDemand('docker-path', options).buildImage();
-    DockerImage.fromBuildOnDemand('docker-path', options).buildImage();
+    DockerImage.fromBuildV2('docker-path', options).buildImage();
+    DockerImage.fromBuildV2('docker-path', options).buildImage();
 
     expect(dockerCalls('build')).toHaveLength(2);
   });
@@ -385,7 +385,7 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('explains a failed run when the built image was removed', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     image.buildImage();
     fakeDocker.reset();
     fakeDocker.givenNextCommandFails(['run'], 'docker-error');
@@ -394,7 +394,7 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('explains a failed docker create when the built image was removed', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     image.buildImage();
     fakeDocker.reset();
     fakeDocker.givenNextCommandFails(['create'], 'docker-error');
@@ -403,7 +403,7 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('does not blame a removed image when the bundling command fails', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     image.buildImage();
     fakeDocker.reset();
     fakeDocker.givenNextCommandFails(['run'], 'err-exit');
@@ -414,7 +414,7 @@ describe('fromBuildOnDemand', () => {
   });
 
   test('does not blame a removed image when Docker fails but the image still exists', () => {
-    const image = DockerImage.fromBuildOnDemand('docker-path');
+    const image = DockerImage.fromBuildV2('docker-path');
     image.buildImage();
     fakeDocker.givenNextCommandFails(['run'], 'docker-error');
 

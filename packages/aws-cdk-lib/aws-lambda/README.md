@@ -2009,14 +2009,14 @@ image is part of the asset hash, so changing the pinned tag or digest updates th
 even if your source code is unchanged.
 
 Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
-`cdk.DockerImage.fromBuildOnDemand(path)` to build a specific image. The image is only
+`cdk.DockerImage.fromBuildV2(path)` to build a specific image. The image is only
 built when the asset is bundled:
 
 ```ts
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler', {
     bundling: {
-      image: DockerImage.fromBuildOnDemand('/path/to/dir/with/DockerFile', {
+      image: DockerImage.fromBuildV2('/path/to/dir/with/DockerFile', {
         buildArgs: {
           ARG1: 'value1',
         },
