@@ -62,8 +62,9 @@ module.exports = {
     ? [
       // Failures and totals at the end of the log
       'summary',
-      // Failure annotations on the PR, and results grouped per test file in the log
-      ['github-actions', { silent: false }],
+      // Failure annotations on the PR. Not grouped per test file, because nx
+      // already groups each package's output and GitHub can't nest groups.
+      ['github-actions', { silent: true }],
       jestJunitReporter,
     ]
     : ['default', jestJunitReporter],
