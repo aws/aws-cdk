@@ -24,22 +24,13 @@ jobs:
         id: yarn-cache-dir
         run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
 
-      - name: Look up yarn cache
-        id: yarn-cache
+      - name: Restore yarn cache
         uses: actions/cache/restore@v6
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
           key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             yarn-${{ runner.os }}-
-          lookup-only: true
-
-      - name: Restore yarn cache
-        if: ${{ steps.yarn-cache.outputs.cache-matched-key }}
-        uses: actions/cache/restore@v6
-        with:
-          path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ steps.yarn-cache.outputs.cache-matched-key }}
 
       # Cache node_modules
       - name: Cache node_modules
