@@ -53,6 +53,17 @@ describe('checkDeclarations', () => {
 
     expect(checkDeclarations(dir, ['index.d.ts'])).toEqual([]);
   });
+
+  test('ignores errors in other packages', () => {
+    const broken = NARROW_INTERFACE + 'export declare class Thing implements IThing { readonly name: string | undefined; }';
+    const dir = fixture({
+      'index.ts': 'export * as dep from \'./node_modules/dep/index.js\';\nexport * as sibling from \'../sibling/index.js\';',
+      'node_modules/dep/index.d.ts': broken,
+      '../sibling/index.d.ts': broken,
+    });
+
+    expect(checkDeclarations(dir, ['index.d.ts'])).toEqual([]);
+  });
 });
 
 describe('declarationEntryPoints', () => {
@@ -113,18 +124,20 @@ function codes(diagnostics: readonly ts.Diagnostic[]): number[] {
 let fixtureCount = 0;
 
 /**
- * A package named `fixture` with `source` as its `index.ts`, and the
- * declarations emitted next to it as jsii does.
+ * A package named `fixture` with `source` as its `index.ts`, or with the given
+ * files, and the declarations emitted next to its `.ts` files as jsii does.
  */
-function fixture(source: string): string {
+function fixture(source: string | Record<string, string>): string {
   const name = `fixture${fixtureCount++}`;
+  const files = typeof source === 'string' ? { 'index.ts': source } : source;
   bockfs({
     [`${name}/package.json`]: JSON.stringify({ name: 'fixture', main: 'index.js', exports: { '.': './index.js' } }),
-    [`${name}/index.ts`]: source,
+    ...Object.fromEntries(Object.entries(files).map(([file, contents]) => [`${name}/${file}`, contents])),
   });
   const dir = bockfs.path(name);
+  const sources = Object.keys(files).filter((f) => !f.endsWith('.d.ts'));
 
-  const program = ts.createProgram([bockfs.path(`${name}/index.ts`)], {
+  const program = ts.createProgram(sources.map((f) => bockfs.path(`${name}/${f}`)), {
     strict: true,
     declaration: true,
     emitDeclarationOnly: true,

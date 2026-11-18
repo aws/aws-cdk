@@ -38,6 +38,11 @@ function checkCurrentPackageDeclarations(timers: Timers): void {
 
   const diagnostics = timers.record('Check declarations', () => checkDeclarations(process.cwd(), entryPoints));
   if (diagnostics.length > 0) {
-    throw new Error(`Declarations do not compile with strict and exactOptionalPropertyTypes:\n${formatDiagnostics(diagnostics, process.cwd())}`);
+    throw new Error([
+      'Declarations do not compile with strict and exactOptionalPropertyTypes:',
+      formatDiagnostics(diagnostics, process.cwd()),
+      'If a class holds `undefined` for an optional member of its interface or abstract base class, declare that member as',
+      '`x?: T | undefined`. Do not change the class instead: turning a getter into a property breaks subclasses that override it (see #37996).',
+    ].join('\n'));
   }
 }
