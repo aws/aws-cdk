@@ -1,4 +1,10 @@
 {
+  "/test-bucket-deployments-too-many-sources": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "test-bucket-deployments-too-many-sources.template.json"
+    }
+  ],
   "/test-bucket-deployments-too-many-sources/Destination": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -18,6 +24,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -129,6 +136,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],

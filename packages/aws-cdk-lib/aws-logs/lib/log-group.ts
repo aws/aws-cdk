@@ -1,8 +1,8 @@
 import type { Construct } from 'constructs';
 import type { DataProtectionPolicy } from './data-protection-policy';
 import type { FieldIndexPolicy } from './field-index-policy';
+import { LogGroupGrants } from './log-group-grants';
 import { LogStream } from './log-stream';
-import { LogGroupGrants } from './logs-grants.generated';
 import type { ILogGroupRef, LogGroupReference } from './logs.generated';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -268,14 +268,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * [disable-awslint:no-grants]
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions,
-      // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
-      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
-      resourceArns: [this.logGroupArn],
-      resource: this,
-    });
+    return this.grants.actions(grantee, actions);
   }
 
   /**

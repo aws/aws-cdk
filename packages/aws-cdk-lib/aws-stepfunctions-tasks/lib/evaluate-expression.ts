@@ -2,10 +2,11 @@ import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
-import { Token, UnscopedValidationError, ValidationError } from '../../core';
+import { Annotations, FeatureFlags, Stack, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { PATH_PATTERN, pathsInsideStringLiterals } from './private/evaluate-expression-paths';
 import { lit } from '../../core/lib/private/literal-string';
-import { EvalNodejsSingletonFunction } from '../../custom-resource-handlers/dist/aws-stepfunctions-tasks/eval-nodejs-provider.generated';
+import { EvalNodejsFunction, EvalNodejsSingletonFunction } from '../../custom-resource-handlers/dist/aws-stepfunctions-tasks/eval-nodejs-provider.generated';
+import * as cxapi from '../../cx-api';
 
 /**
  * Properties for EvaluateExpression
@@ -64,6 +65,9 @@ export interface Event {
 /**
  * A Step Functions Task to evaluate an expression
  *
+ * The expression is evaluated in a Lambda function that belongs to this task, unless the
+ * `@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction` feature flag is disabled.
+ *
  * OUTPUT: the output of this task is the evaluated expression.
  *
  */
@@ -71,7 +75,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  private readonly evalFn: lambda.SingletonFunction;
+  private readonly evalFn: lambda.IFunction;
 
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
@@ -105,7 +109,16 @@ export class EvaluateExpression extends sfn.TaskStateBase {
       }
     }
 
-    this.evalFn = createEvalFn(this.props.runtime, this.props.architecture, this);
+    const isDedicatedFunction = FeatureFlags.of(this).isEnabled(cxapi.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION);
+    if (isDedicatedFunction) {
+      this.evalFn = createDedicatedEvalFn(this, this.props.runtime, this.props.architecture);
+    } else {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionSharedFunction',
+        `The feature flag '${cxapi.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION}' is disabled, so EvaluateExpression tasks ` +
+        'in this stack that use the same runtime and architecture share one Lambda function, including tasks in different state machines. ' +
+        'Remove the flag or set it to true to give each task its own function.');
+      this.evalFn = createEvalFn(this.props.runtime, this.props.architecture, this);
+    }
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -143,6 +156,9 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   }
 }
 
+/**
+ * The function shared by all tasks in the stack with the same runtime and architecture.
+ */
 function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.Architecture | undefined, scope: Construct) {
   const NO_RUNTIME = Symbol.for('no-runtime');
   const lambdaPurpose = 'Eval';
@@ -189,4 +205,33 @@ function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.
     runtime,
     architecture,
   });
+}
+
+function createDedicatedEvalFn(
+  scope: Construct,
+  runtime?: lambda.Runtime,
+  architecture?: lambda.Architecture,
+): lambda.IFunction {
+  const isNodejs = runtime?.family === lambda.RuntimeFamily.NODEJS || runtime?.name.startsWith('nodejs');
+  if (runtime && !isNodejs) {
+    throw new UnscopedValidationError(lit`RuntimeCurrentlySupported`, `The runtime ${runtime.name} is currently not supported.`);
+  }
+
+  return new EvalNodejsFunction(scope, 'EvalFunction', {
+    runtime,
+    architecture,
+    role: evalFnRole(scope),
+  });
+}
+
+/** Logs-only role shared by the dedicated functions in a stack, immutable so no task can add permissions. */
+function evalFnRole(scope: Construct): iam.IRole {
+  const stack = Stack.of(scope);
+  const id = 'EvalServiceRolef4f556a4ef7a49cd8036c5b0567376fd';
+  const existing = stack.node.tryFindChild(id) as iam.Role | undefined;
+  const role = existing ?? new iam.Role(stack, id, {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole')],
+  });
+  return role.withoutPolicyUpdates();
 }

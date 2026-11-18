@@ -1,4 +1,10 @@
 {
+  "/EvaluateExpressionDefaultTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EvaluateExpressionDefaultTestDeployAssert91679210.template.json"
+    }
+  ],
   "/EvaluateExpressionDefaultTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

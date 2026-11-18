@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.networkmonitor"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.NetworkMonitor"
+    },
+    "python": {
+      "module": "aws_cdk.aws_networkmonitor"
+    }
+  }
+}

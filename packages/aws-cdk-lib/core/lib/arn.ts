@@ -112,8 +112,8 @@ export interface ArnComponents {
   /**
    * The specific ARN format to use for this ARN value.
    *
-   * @default - uses value of `sep` as the separator for formatting,
-   *   `ArnFormat.SLASH_RESOURCE_NAME` if that property was also not provided
+   * @default - ':' when `arnFormat` is `COLON_RESOURCE_NAME`, '/' otherwise.
+   *   The deprecated `sep` property takes precedence when specified.
    */
   readonly arnFormat?: ArnFormat;
 }
@@ -222,6 +222,12 @@ export class Arn {
    * and a Token representing a dynamic CloudFormation expression
    * (in which case the returned components will also be dynamic CloudFormation expressions,
    * encoded as Tokens).
+   *
+   * Throws on a malformed ARN — a concrete string that is not a valid ARN, or
+   * an `arn:`-prefixed string (even one that embeds tokens) missing a required
+   * component — rather than returning a partial result. To handle a value that
+   * may legitimately not be an ARN, branch it away up front (`startsWith('arn:')`
+   * / `Token.isUnresolved`) instead of catching the throw.
    *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses

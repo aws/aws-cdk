@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import { debugModeEnabled } from '../debug';
 import { captureStackTrace } from '../private/stack-trace';
 import type { IResolvable, IResolveContext } from '../resolvable';
@@ -582,7 +583,7 @@ class State<A> extends ReadonlyState<A> implements IBox<A> {
       return;
     }
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
-      this.orderedTraces = [{ trace: captureStackTrace(this.set.bind(this)), seq: globalSeq++ }];
+      this.orderedTraces = [{ trace: captureStackTrace(State.prototype.set), seq: globalSeq++ }];
     }
     this.value = value;
   }
@@ -611,12 +612,12 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public push(...items: A[]): void {
     this.array.push(...items);
-    this.appendTrace(() => captureStackTrace(this.push.bind(this)));
+    this.appendTrace(() => captureStackTrace(ArrayState.prototype.push));
   }
 
   public pop(): A | undefined {
     const result = this.array.pop();
-    this.appendTrace(() => captureStackTrace(this.pop.bind(this)));
+    this.appendTrace(() => captureStackTrace(ArrayState.prototype.pop));
     return result;
   }
 
@@ -634,7 +635,7 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public splice(start: number, deleteCount: number, ...items: A[]): A[] {
     const result = this.array.splice(start, deleteCount, ...items);
-    this.appendTrace(() => captureStackTrace(this.splice.bind(this)));
+    this.appendTrace(() => captureStackTrace(ArrayState.prototype.splice));
     return result;
   }
 
@@ -681,12 +682,12 @@ class MapState<K, V> extends State<Map<K, V>> implements IMapBox<K, V> {
 
   public put(key: K, value: V): void {
     this.map.set(key, value);
-    this.appendTrace(() => captureStackTrace(this.put.bind(this)));
+    this.appendTrace(() => captureStackTrace(MapState.prototype.put));
   }
 
   public delete(key: K): boolean {
     const result = this.map.delete(key);
-    this.appendTrace(() => captureStackTrace(this.delete.bind(this)));
+    this.appendTrace(() => captureStackTrace(MapState.prototype.delete));
     return result;
   }
 
@@ -741,12 +742,12 @@ class SetState<A> extends State<Set<A>> implements ISetBox<A> {
 
   public add(value: A): void {
     this._set.add(value);
-    this.appendTrace(() => captureStackTrace(this.add.bind(this)));
+    this.appendTrace(() => captureStackTrace(SetState.prototype.add));
   }
 
   public delete(value: A): boolean {
     const result = this._set.delete(value);
-    this.appendTrace(() => captureStackTrace(this.delete.bind(this)));
+    this.appendTrace(() => captureStackTrace(SetState.prototype.delete));
     return result;
   }
 

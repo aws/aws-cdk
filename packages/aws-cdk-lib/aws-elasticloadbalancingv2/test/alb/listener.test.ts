@@ -2329,6 +2329,36 @@ describe('tests', () => {
       });
     });
   });
+
+  describe('RFC 9151 (CNSA 1.0) SSL policies', () => {
+    test.each([
+      [elbv2.SslPolicy.RFC9151_TLS13_13, 'ELBSecurityPolicy-TLS13-1-3-RFC9151-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_EXT0, 'ELBSecurityPolicy-TLS13-1-2-Ext0-RFC9151-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_INTEROP1, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP1-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_INTEROP2, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP2-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_INTEROP3, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP3-FIPS-2023-07'],
+      [elbv2.SslPolicy.RFC9151_TLS13_12_INTEROP4, 'ELBSecurityPolicy-TLS13-1-2-RFC9151-INTEROP4-FIPS-2023-07'],
+    ])('sets SslPolicy %s on an HTTPS listener', (sslPolicy, expected) => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+      // WHEN
+      lb.addListener('Listener', {
+        protocol: elbv2.ApplicationProtocol.HTTPS,
+        certificates: [importedCertificate(stack)],
+        sslPolicy,
+        defaultAction: elbv2.ListenerAction.fixedResponse(200),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+        SslPolicy: expected,
+      });
+    });
+  });
 });
 
 class ResourceWithLBDependency extends cdk.CfnResource {

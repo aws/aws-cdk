@@ -118,7 +118,10 @@ Flags come in three types:
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | 2.259.0 | new default |
 | [@aws-cdk/core:validateAgainstDefaultRules](#aws-cdkcorevalidateagainstdefaultrules) | Treat CloudFormation Validate findings as errors | 2.262.0 | config |
-| [@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty](#aws-cdkaws-s3eventbridgenotificationviacfnproperty) | When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource | V2NEXT | fix |
+| [@aws-cdk/aws-ecs:removeEmptyLoadBalancers](#aws-cdkaws-ecsremoveemptyloadbalancers) | Render an empty `LoadBalancers` array on an ECS service that has no target groups | 2.269.0 | fix |
+| [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
+| [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 
 <!-- END table -->
 
@@ -133,12 +136,14 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
     "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
     "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": true,
     "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
     "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
+    "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
@@ -160,6 +165,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
     "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
     "@aws-cdk/aws-eks:defaultToAL2023": true,
@@ -191,7 +197,6 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
     "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
-    "@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty": true,
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
@@ -270,6 +275,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
 | [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | new default |  | `false` | `true` |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-stack references are strong, weak, or both | config |  | `false` | `"strong"` |
+| [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | fix |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -2553,40 +2559,108 @@ fail synthesis. When unconfigured, violations are reported as warnings only.
 | 2.262.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty
+### @aws-cdk/aws-ecs:removeEmptyLoadBalancers
 
-*When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource*
+*Render an empty `LoadBalancers` array on an ECS service that has no target groups*
 
 Flag type: Backwards incompatible bugfix
 
-Enabling EventBridge notifications on a bucket (via the `eventBridgeEnabled` prop or
-`enableEventBridgeNotification()`) currently routes through the stack-singleton
-`BucketNotificationsHandler` custom resource. That handler accumulates one IAM policy
-statement per bucket, so stacks with many EventBridge-enabled buckets can exceed the
-10,240 byte IAM role policy size limit at deploy time.
+CloudFormation distinguishes between an absent `LoadBalancers` property, which leaves the live
+service configuration untouched, and an empty array, which removes the existing load balancer
+registrations. Without this flag the CDK omits the property when a service has no target groups,
+so removing the last target group from a service never reaches the deployed service: it keeps
+serving traffic from the target groups it was registered in, and a later deployment can fail with
+`The target group with targetGroupArn ... does not have an associated load balancer`.
 
-EventBridge enablement is a simple boolean on the bucket and, unlike Lambda/SQS/SNS
-notification targets, has no circular-dependency reason to go through the custom resource.
+When this flag is enabled, a service with no target groups renders `LoadBalancers: []` and
+CloudFormation removes the registrations.
 
-When this feature flag is enabled, EventBridge notifications for buckets created in the
-current stack are set directly on the `AWS::S3::Bucket` resource's
-`NotificationConfiguration.EventBridgeConfiguration` property. A bucket that only enables
-EventBridge no longer creates the custom resource or its per-bucket IAM policy. Buckets that
-also have Lambda/SQS/SNS notifications continue to use the custom resource, which keeps
-rendering the EventBridge configuration so it is not lost. Imported buckets are unaffected
-and continue to use the custom resource.
-
-This flag does not change EventBridge behavior for stacks that have already deployed with the
-flag disabled; leave it disabled for those stacks to avoid moving the configuration between
-the custom resource and the bucket resource in a single deployment.
+Enabling this adds `LoadBalancers: []` to every ECS service that has no target groups, including
+services that never had any. Amazon ECS starts a new deployment when a load balancer configuration
+is added, updated or removed, so expect a one-time deployment of those services.
 
 
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.269.0 | `false` | `true` |
 
-**Compatibility with old behavior:** Disable the feature flag to keep routing EventBridge notifications through the notifications custom resource.
+**Compatibility with old behavior:** Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers '[]'` instead.
+
+
+### @aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps
+
+*Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS*
+
+Flag type: New default behavior
+
+When enabled, cache behaviors on a `Distribution` that do not specify an explicit
+`viewerProtocolPolicy` default to `ViewerProtocolPolicy.REDIRECT_TO_HTTPS` instead of
+`ViewerProtocolPolicy.ALLOW_ALL`, so viewers are redirected from HTTP to HTTPS rather
+than being served over plaintext HTTP.
+
+This applies to the default behavior, to `additionalBehaviors`, and to behaviors added
+later with `addBehavior()`. An explicitly specified `viewerProtocolPolicy` always wins,
+regardless of this flag.
+
+Note that `REDIRECT_TO_HTTPS` answers an HTTP request with an HTTP 301 redirect, which the
+viewer then follows with a second request. That additional request is billable.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.273.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.
+
+
+### @aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard
+
+*Render the API Gateway access log destination ARN without the trailing `:*`*
+
+Flag type: Backwards incompatible bugfix
+
+API Gateway stores the access log destination ARN without the trailing `:*` that
+`LogGroup.logGroupArn` carries. When the CDK renders the log group `Arn` attribute,
+CloudFormation drift detection reports the stage as `MODIFIED` on every run, even
+though the access logging configuration has not changed.
+
+When this flag is enabled, `LogGroupLogDestination` rebuilds the ARN from the log
+group name, so the synthesized template matches the value stored by the service and
+drift detection reports the stage as `IN_SYNC`.
+
+When disabled, the destination ARN keeps using the log group `Arn` attribute.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.274.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this flag to keep using the log group `Arn` attribute as the destination ARN.
+
+
+### @aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction
+
+*When enabled, each EvaluateExpression task gets its own Lambda function*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, each `EvaluateExpression` task creates its own Lambda function.
+When this feature flag is disabled, all `EvaluateExpression` tasks in a stack that use the same runtime and
+architecture share one Lambda function, even across state machines.
+
+Enabling this flag replaces the shared function with one function per task on the next deployment, so let
+running executions finish first.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.275.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
 
 
 <!-- END details -->

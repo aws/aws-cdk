@@ -1,4 +1,10 @@
 {
+  "/lambda-layer-awscli-integ-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "lambda-layer-awscli-integ-stack.template.json"
+    }
+  ],
   "/lambda-layer-awscli-integ-stack/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
