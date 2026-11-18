@@ -12,6 +12,7 @@ import { FileSystem, SymlinkFollowMode, IgnoreStrategy } from './fs';
 import { clearLargeFileFingerprintCache } from './fs/fingerprint';
 import { Names } from './names';
 import { AssetBundlingVolumeCopy, AssetBundlingBindMount } from './private/asset-staging';
+import { clearKnownDockerImages } from './private/bundling';
 import { Cache } from './private/cache';
 import { stackOf, stageOf } from './private/core-construct-finders';
 import { lit } from './private/literal-string';
@@ -94,6 +95,7 @@ export class AssetStaging extends Construct {
   public static clearAssetHashCache() {
     this.assetCache.clear();
     clearLargeFileFingerprintCache();
+    clearKnownDockerImages();
   }
 
   /**
@@ -483,6 +485,9 @@ export class AssetStaging extends Construct {
 
       localBundling = options.local?.tryBundle(tempDir, options);
       if (!localBundling) {
+        // Running the image would also build it, but building first keeps the build time out of the container run time
+        options.image.buildImage?.();
+
         const assetStagingOptions = {
           sourcePath: this.sourcePath,
           bundleDir: tempDir,
@@ -746,3 +751,4 @@ function bundlingSourceFromOptions(x: any): string | undefined {
   const value = x[PERF_BUNDLING_SRC_SYM];
   return typeof value === 'string' ? value : undefined;
 }
+

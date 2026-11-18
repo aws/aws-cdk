@@ -10,6 +10,7 @@ import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
+import { profileFn } from '../../core/lib/private/perf';
 
 /**
  * How Lambda manages the storage of your code package.
@@ -153,6 +154,7 @@ export abstract class Code {
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
+  @profileFn('Code.fromDockerBuild', { telemetry: true })
   public static fromDockerBuild(path: string, options: DockerBuildAssetOptions = {}): AssetCode {
     let imagePath = options.imagePath ?? '/asset/.';
 
