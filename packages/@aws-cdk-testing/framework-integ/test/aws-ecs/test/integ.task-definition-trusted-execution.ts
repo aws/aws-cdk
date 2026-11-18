@@ -4,8 +4,6 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-task-definition-trusted-execution');
-// TODO: Remove this acknowledge once the bundled CFN validation schema includes TrustedExecutionConfiguration
-cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'TrustedExecutionConfiguration is a newly launched property not yet in the bundled schema' });
 
 // Task definitions only: registering them launches no instances and no tasks.
 const isolated = new ecs.TaskDefinition(stack, 'IsolatedSandboxTaskDef', {

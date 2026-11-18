@@ -4,12 +4,12 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
           "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
+          "description": "Resources: Resources section must exist and be non-empty",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Structure"
@@ -21,34 +21,6 @@
               "libraryVersion": "0.0.0"
             }
           ]
-        }
-      ],
-      "suppressedViolations": [
-        {
-          "ruleName": "F3002",
-          "description": "TrustedExecutionConfiguration: Additional properties are not allowed ('TrustedExecutionConfiguration' was unexpected)",
-          "severity": "warning",
-          "ruleMetadata": {
-            "category": "Schema"
-          },
-          "violatingConstructs": [
-            {
-              "constructPath": "integ-task-definition-trusted-execution/IsolatedSandboxTaskDef/Resource",
-              "constructFqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
-              "libraryVersion": "0.0.0",
-              "cloudFormationResource": {
-                "templatePath": "integ-task-definition-trusted-execution.template.json",
-                "logicalId": "IsolatedSandboxTaskDefB3E6B0F0",
-                "propertyPaths": [
-                  "Properties.TrustedExecutionConfiguration"
-                ]
-              }
-            }
-          ],
-          "acknowledgedId": "CloudFormation-Validate::F3002",
-          "reason": "TrustedExecutionConfiguration is a newly launched property not yet in the bundled schema",
-          "acknowledgedAt": "integ-task-definition-trusted-execution",
-          "acknowledgedStackTrace": "    at Validations.acknowledge (/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at <anonymous> (/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/integ.task-definition-trusted-execution.js:42:27)\n    ...node internals..."
         }
       ]
     }

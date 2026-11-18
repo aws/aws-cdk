@@ -1116,8 +1116,6 @@ describe('trusted execution configuration', () => {
   function newStack() {
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
-    // TODO: Remove this acknowledge once the bundled CFN validation schema includes TrustedExecutionConfiguration
-    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'TrustedExecutionConfiguration is a newly launched property not yet in the bundled schema' });
     return stack;
   }
 

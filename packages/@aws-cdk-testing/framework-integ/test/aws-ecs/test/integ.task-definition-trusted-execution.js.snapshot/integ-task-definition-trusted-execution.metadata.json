@@ -1,17 +1,6 @@
 {
   "/integ-task-definition-trusted-execution": [
     {
-      "type": "aws:cdk:acknowledged-rules",
-      "data": {
-        "CloudFormation-Validate::F3002": "TrustedExecutionConfiguration is a newly launched property not yet in the bundled schema"
-      },
-      "trace": [
-        "    at Validations.acknowledge (/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
-        "    at <anonymous> (/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/integ.task-definition-trusted-execution.js:42:27)",
-        "    ...node internals..."
-      ]
-    },
-    {
       "type": "aws:cdk:templateFile",
       "data": "integ-task-definition-trusted-execution.template.json"
     }
