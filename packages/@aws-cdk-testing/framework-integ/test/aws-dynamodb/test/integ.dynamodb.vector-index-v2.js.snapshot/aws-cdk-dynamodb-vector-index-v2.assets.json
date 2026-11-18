@@ -1,18 +1,31 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
-    "81fd2e1c90b3496709de846780979d06fb7725b7475bd6471d82d6f57815895c": {
+    "dac145d63308af0fa5bc49e2c97fb4233359b619a543fa5772d64816331d3546": {
+      "displayName": "VectorSearcher/Code",
+      "source": {
+        "path": "asset.dac145d63308af0fa5bc49e2c97fb4233359b619a543fa5772d64816331d3546",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-d9663818": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "dac145d63308af0fa5bc49e2c97fb4233359b619a543fa5772d64816331d3546.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "873db173184cafa314ebc4c74e39ab70dd589c4b5cafd40d415dd6e3a483aedf": {
       "displayName": "aws-cdk-dynamodb-vector-index-v2 Template",
       "source": {
         "path": "aws-cdk-dynamodb-vector-index-v2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-north-1-6893426b": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-north-1",
-          "objectKey": "81fd2e1c90b3496709de846780979d06fb7725b7475bd6471d82d6f57815895c.json",
-          "region": "eu-north-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-north-1"
+        "current_account-current_region-0867ae8d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "873db173184cafa314ebc4c74e39ab70dd589c4b5cafd40d415dd6e3a483aedf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     }

@@ -1,13 +1,18 @@
+import * as path from 'path';
 import type { StackProps } from 'aws-cdk-lib';
-import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 
+const indexName = 'SimilarItems';
+const dimensions = 128;
+
 class TestStack extends Stack {
-  public readonly tableName: string;
+  public readonly searcherFunctionName: string;
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -19,9 +24,9 @@ class TestStack extends Stack {
     });
 
     table.addVectorIndex({
-      indexName: 'SimilarItems',
+      indexName,
       vectorAttribute: 'embedding',
-      dimensions: 128,
+      dimensions,
       distanceFunction: dynamodb.VectorDistanceFunction.COSINE,
       searchSchema: [
         { attribute: { name: 'category', type: dynamodb.AttributeType.STRING }, type: dynamodb.SearchSchemaElementType.HASH },
@@ -30,23 +35,40 @@ class TestStack extends Stack {
       projectionType: dynamodb.ProjectionType.ALL,
     });
 
-    this.tableName = table.tableName;
+    // The function gets SearchVectors only through grants.vectorSearch().
+    const searcher = new lambda.Function(this, 'VectorSearcher', {
+      runtime: lambda.Runtime.PYTHON_3_14,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, 'vector-search-handler')),
+      timeout: Duration.seconds(30),
+      environment: {
+        TABLE_NAME: table.tableName,
+        INDEX_NAME: indexName,
+        DIMENSIONS: String(dimensions),
+        HASH_ATTRIBUTE: 'category',
+        HASH_VALUE: 'books',
+      },
+    });
+    table.grants.vectorSearch(searcher);
+
+    this.searcherFunctionName = searcher.functionName;
   }
 }
 
-const stack = new TestStack(app, 'aws-cdk-dynamodb-vector-index-v2', {
-  env: { region: 'eu-north-1' },
-});
+const stack = new TestStack(app, 'aws-cdk-dynamodb-vector-index-v2');
 
 const integ = new IntegTest(app, 'dynamodb-vector-index-v2-test', {
   testCases: [stack],
 });
 
-// Verify the global table (with its vector index) was created and is ACTIVE.
-integ.assertions.awsApiCall('DynamoDB', 'describeTable', {
-  TableName: stack.tableName,
+// SearchVectors fails if the grant is missing, or if the vector index does
+// not exist or is not ACTIVE. The invoke is retried for up to 5 minutes in
+// case the index becomes ACTIVE after the stack finishes deploying.
+integ.assertions.invokeFunction({
+  functionName: stack.searcherFunctionName,
 }).expect(ExpectedResult.objectLike({
-  Table: {
-    TableStatus: 'ACTIVE',
-  },
-}));
+  Payload: Match.serializedJson({ status_code: 200 }),
+})).waitForAssertions({
+  totalTimeout: Duration.minutes(5),
+  interval: Duration.seconds(15),
+});
