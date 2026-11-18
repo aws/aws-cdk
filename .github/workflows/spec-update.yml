@@ -167,17 +167,16 @@ jobs:
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
 
-      # Save the number of the pull request this run created or updated, so a workflow that reacts to
-      # this run's completion can find it. A workflow_run event lists no pull request for a run on main.
+      # Save the number of the pull request this run created or updated, empty when it made none, so a
+      # workflow that reacts to this run's completion can find it. A workflow_run event lists no pull
+      # request for a run on main.
       - name: Save PR number
-        if: steps.create-pr.outputs.pull-request-number != ''
         env:
           PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
         run: |
           mkdir -p ${{ runner.temp }}/pr
-          echo $PR_NUMBER > ${{ runner.temp }}/pr/pr_number
+          echo "$PR_NUMBER" > ${{ runner.temp }}/pr/pr_number
       - name: Upload PR number
-        if: steps.create-pr.outputs.pull-request-number != ''
         uses: actions/upload-artifact@v7
         with:
           name: pr_info
