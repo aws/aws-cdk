@@ -55,7 +55,7 @@ module.exports = {
     'cobertura', // for codecov. see https://docs.codecov.com/docs/code-coverage-with-javascript
     'html' // for local deep dive
   ],
-  coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/'],
+  coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/', '/analytics-data-source/'],
   reporters: [
     'default',
     ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage', suiteNameTemplate: '{filepath}', classNameTemplate: '{classname}', titleTemplate: '{title}' }]],

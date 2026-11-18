@@ -3,6 +3,8 @@ name: Integration Test deployment
 permissions:
   id-token: write # This is required for requesting the OIDC JWT ID token
 
+cache-mode: read
+
 on:
   workflow_dispatch: {}
   merge_group: {}
@@ -49,9 +51,18 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "24"
-          cache: "yarn"
-          cache-dependency-path: |
-            yarn.lock
+
+      - name: Locate yarn cache
+        id: yarn-cache-dir
+        run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore yarn cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v4
@@ -68,8 +79,8 @@ jobs:
         if: ${{ steps.docker-cache.outputs.cache-hit }}
         run: docker image load --input ~/.docker-images.tar
 
-      - name: Cache build artifacts
-        uses: actions/cache@v6
+      - name: Restore build artifacts
+        uses: actions/cache/restore@v6
         with:
           path: |
             ~/.s3buildcache

@@ -5,6 +5,8 @@ on:
   pull_request_target:
     types: [opened]
 
+cache-mode: read
+
 jobs:
   issue-triage-manager:
     permissions:
