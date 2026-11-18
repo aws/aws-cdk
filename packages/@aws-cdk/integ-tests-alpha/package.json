@@ -74,7 +74,7 @@
     "@aws-sdk/client-ec2": "3.632.0",
     "@aws-sdk/client-s3": "3.632.0",
     "@aws-sdk/client-sfn": "3.632.0",
-    "@smithy/types": "3.7.2",
+    "@smithy/types": "4.20.0",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.5.14",
     "aws-sdk-client-mock": "4.1.0",

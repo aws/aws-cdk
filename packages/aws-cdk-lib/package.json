@@ -162,7 +162,7 @@
     "@aws-sdk/client-sts": "3.632.0",
     "@aws-sdk/credential-providers": "3.632.0",
     "@smithy/node-http-handler": "3.3.3",
-    "@smithy/types": "3.7.2",
+    "@smithy/types": "4.20.0",
     "@smithy/util-stream": "3.3.4",
     "@types/aws-lambda": "^8.10.164",
     "@types/jest": "^29.5.14",
