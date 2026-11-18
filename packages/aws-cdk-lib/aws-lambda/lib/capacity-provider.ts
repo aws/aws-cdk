@@ -10,6 +10,7 @@ import type * as kms from '../../aws-kms';
 import type * as logs from '../../aws-logs';
 import type { IResource } from '../../core';
 import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -268,10 +269,31 @@ export class TargetTrackingScalingPolicy {
   /**
    * Creates a target tracking scaling policy for CPU utilization.
    *
-   * @param targetCpuUtilization The target value for CPU utilization. The capacity provider will scale resources to maintain this target value.
+   * @param targetCpuUtilization The target CPU utilization as a percentage, e.g. `50` for 50%. The capacity provider will scale resources to maintain this target value.
    */
   public static cpuUtilization(targetCpuUtilization: number): TargetTrackingScalingPolicy {
+    TargetTrackingScalingPolicy.validateTargetPercentage(targetCpuUtilization, 'targetCpuUtilization');
     return new TargetTrackingScalingPolicy('LambdaCapacityProviderAverageCPUUtilization', targetCpuUtilization);
+  }
+
+  /**
+   * Creates a target tracking scaling policy for GPU utilization.
+   *
+   * @param targetGpuUtilization The target GPU utilization as a percentage, e.g. `50` for 50%. The capacity provider will scale resources to maintain this target value.
+   */
+  public static gpuUtilization(targetGpuUtilization: number): TargetTrackingScalingPolicy {
+    TargetTrackingScalingPolicy.validateTargetPercentage(targetGpuUtilization, 'targetGpuUtilization');
+    return new TargetTrackingScalingPolicy('LambdaCapacityProviderAverageGPUUtilization', targetGpuUtilization);
+  }
+
+  /**
+   * Validates a target utilization percentage. The service handler rejects a `TargetValue`
+   * outside `0..100` at deploy, so we reject out-of-range values at synth. Skips tokens.
+   */
+  private static validateTargetPercentage(value: number, name: string): void {
+    if (!Token.isUnresolved(value) && (value < 0 || value > 100)) {
+      throw new UnscopedValidationError(lit`ScalingTargetPercentageOutOfRange`, `${name} must be between 0 and 100, got ${value}`);
+    }
   }
 
   /**
@@ -339,7 +361,7 @@ export interface CapacityProviderFunctionOptions {
   /**
    * Specifies the maximum number of concurrent invokes a single execution environment can handle.
    *
-   * @default Maximum is set to 10
+   * @default - not set; the Lambda service applies its default
    */
   readonly perExecutionEnvironmentMaxConcurrency?: number;
 
@@ -620,7 +642,7 @@ export class CapacityProvider extends CapacityProviderBase {
    */
   @MethodMetadata()
   public addFunction(func: IFunction, options?: CapacityProviderFunctionOptions): void {
-    Annotations.of(func).addInfoV2('aws-lambda:Function.CapacityProviderConfiguration', 'Capacity provider configuration cannot be removed from a function, only modified.');
+    Annotations.of(func).addInfoV2('aws-lambda:Function.CapacityProviderConfiguration', 'Capacity provider configuration cannot be removed from a function once added, only modified.');
 
     const cfnFunction = func.node.defaultChild as CfnFunction;
 

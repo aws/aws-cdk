@@ -939,6 +939,37 @@ Note that once you use a capacity provider in a function, it cannot be removed, 
 | minExecutionEnvironments | number | No | Minimum execution environments for $LATEST.PUBLISHED version. |
 | maxExecutionEnvironments | number | No | Maximum execution environments for $LATEST.PUBLISHED version. |
 
+### Lambda with Accelerator Configuration
+
+Lambda functions using [Capacity Providers](#capacity-providers) can be configured with accelerator resources,
+such as GPUs. The `acceleratorConfig` property specifies the amount of accelerator memory to provision for the function.
+
+```ts
+declare const capacityProvider: lambda.CapacityProvider;
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.FROM_IMAGE,
+  handler: lambda.Handler.FROM_IMAGE,
+  code: lambda.Code.fromAssetImage(path.join(__dirname, 'lambda-handler')),
+  memorySize: 2048,
+  acceleratorConfig: {
+    acceleratorMemorySize: lambda.AcceleratorMemorySize.GIB_24,
+  },
+});
+
+capacityProvider.addFunction(fn);
+```
+
+**Important considerations:**
+
+* **Requires Capacity Provider**: Accelerator configuration is only supported for functions using a capacity provider. Use `capacityProvider.addFunction(fn)` to attach the function.
+* **Valid accelerator memory sizes**: 3, 6, 12, 16, 24, 48 GiB.
+* **Minimum memory size**: `memorySize` must be at least 2048 MiB when `acceleratorConfig` is set.
+* **Image package type only**: Only container image functions (`Runtime.FROM_IMAGE`) are supported.
+* **x86_64 only**: ARM64 architecture is not supported for GPU functions.
+* **Ephemeral storage**: LMI functions with accelerator configuration can support up to 32 GiB ephemeral storage (vs 10 GiB for LMI function without the configuration).
+* **Create-only property**: Changing `acceleratorConfig` after creation replaces the function (CloudFormation resource replacement).
+
 ### Capacity Provider Versions
 
 When publishing Lambda versions that use capacity providers, you can configure scaling settings specific to each version.
