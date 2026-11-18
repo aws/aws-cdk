@@ -41,7 +41,7 @@ jobs:
         id: yarn-cache-dir
         run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
 
-      - name: Restore yarn cache
+      - name: Look up yarn cache
         id: yarn-cache
         uses: actions/cache/restore@v6
         with:
@@ -49,6 +49,14 @@ jobs:
           key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             yarn-${{ runner.os }}-
+          lookup-only: true
+
+      - name: Restore yarn cache
+        if: ${{ steps.yarn-cache.outputs.cache-matched-key }}
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: ${{ steps.yarn-cache.outputs.cache-matched-key }}
 
       - name: Set up Docker
         uses: docker/setup-buildx-action@v4
