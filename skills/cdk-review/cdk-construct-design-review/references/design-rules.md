@@ -129,7 +129,7 @@ affordance where the service supports it. See
 [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
 and the sections following it for the signatures.
 - **Facades (doc-absent detail):** grants and metrics exposed through a facade property (`foo.grants`,
-  `foo.metrics`) are the current pattern for new L2s; do not ask to move them onto the construct.
+  `foo.metrics`) are an accepted pattern for new L2s; do not ask to move them onto the construct.
 - **Auto-wired affordances (doc-absent detail):** before flagging an absence, confirm the framework
   doesn't already provide it — tagging works through `Tags.of(x).add(...)` wherever the L1 is taggable, and
   `removalPolicy`, dependencies, and metadata come from `cdk.Resource`; flagging one of these as missing is

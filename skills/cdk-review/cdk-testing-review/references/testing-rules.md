@@ -72,7 +72,7 @@ synth-time validation and a negative-case test.
   with the suite green.
 
 **[TEST-UNIT-EDGE-NEGATIVE] (RECOMMENDED)** — The happy path is tested but the boundary value, invalid
-input, failure/error path, or token input the code handles is not — where regressions hide. A branch that
+input, or failure/error path the code handles is not — where regressions hide. A branch that
 emits a diagnostic (`addWarningV2` / `addError` / `addInfo`) instead of throwing is also a reject arm: it
 owes a `hasWarning`/`hasError` assertion, because a "does not throw" test passes while the warning silently
 regresses. See
@@ -85,9 +85,8 @@ which lists rejection and validation-failure as required coverage.
 - **Conditional (doc-absent detail):** up-tier BLOCKING when the diagnostic / reject arm is a security- or
   correctness-critical guardrail the change adds.
 - **Detection method (doc-absent detail):** for each new validation / bound / failure path, look for the
-  negative case (`test.each([0, -1, 256])(...)`, an error test asserting the **specific** message). Token
-  inputs matter where the production code guards with `Token.isUnresolved` — that guard needs a test
-  passing an unresolved token. The warning branch is the reject arm most often missed:
+  negative case (`test.each([0, -1, 256])(...)`, an error test asserting the **specific** message). The
+  warning branch is the reject arm most often missed:
 
   ```ts
   // GAP: the open-CIDR branch calls addWarningV2, but the test only asserts not.toThrow()

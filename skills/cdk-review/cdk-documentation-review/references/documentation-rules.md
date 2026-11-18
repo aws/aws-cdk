@@ -28,9 +28,10 @@ for the ⚠️ NOTE on not-yet-built dependencies (the false-positive guard belo
 - **False-positive guard (doc-absent detail):** flag a snippet that is *structurally* non-compilable — it
   fails regardless of build state. Don't flag an inability to compile that stems purely from a
   not-yet-built local dependency (the ⚠️ NOTE pointer above covers why). Before flagging, read the
-  fixture the snippet uses (`packages/aws-cdk-lib/rosetta/<module>/default.ts-fixture`, or the alpha
-  package's `rosetta/default.ts-fixture`, unless `fixture=` names another; most extend `Stack`, so
-  `this.region` resolves) and the definition of every API you say does not exist.
+  fixture the snippet uses and the definition of every API you say does not exist. The fixture is
+  `packages/aws-cdk-lib/rosetta/<module>/default.ts-fixture`, or the alpha package's
+  `rosetta/default.ts-fixture`, unless `fixture=` names another. Most fixtures extend `Stack`, so
+  `this.region` resolves.
 
 **[DOC-README-STALE-SNIPPET] (RECOMMENDED)** — A public API changed (prop/method/construct
 added/renamed, signature changed) but the module README not updated to match. See

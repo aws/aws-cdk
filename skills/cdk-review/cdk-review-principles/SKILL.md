@@ -58,7 +58,21 @@ The tier is right only if you rate the harm honestly. Four ways it slips:
 - **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
   *new* harm → not a finding. Rate what the diff adds, not the posture it inherited.
 
-Whatever the tier, post a finding only when both of these also hold:
+When the finding is that the change violates a rule in the aws-cdk repo's own guides
+(`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
+harm set the tier: a rule naming data loss or an open boundary is damage → BLOCKING; a
+rule stated as a preference is decay → RECOMMENDED. Cite the rule by file + section and
+quote it, so the author sees the authority.
+
+Keep **baseline** harm (correctness, security, compliance — must fix) separate from
+**excellence** framing (design that takes a change from correct to better). Excellence is
+not a fourth tier: grade it on the harm scale like any finding, competing for the same
+comment budget. Never report one piece of code as both a must-fix and a design nicety —
+that double-counts it.
+
+### Worth posting
+
+Whatever its tier, post a finding only when both of these also hold:
 
 - **It asks for a specific change to the code.** If your conclusion is "this is fine", "no
   change required", "either is defensible", or "confirm this is intentional", there is no
@@ -75,18 +89,6 @@ Never suggest:
 - **A feature flag for a change that cannot break an existing deployment.** Flags are for
   changes that alter what deployed stacks get in a way users may depend on.
 
-When the finding is that the change violates a rule in the aws-cdk repo's own guides
-(`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
-harm set the tier: a rule naming data loss or an open boundary is damage → BLOCKING; a
-rule stated as a preference is decay → RECOMMENDED. Cite the rule by file + section and
-quote it, so the author sees the authority.
-
-Keep **baseline** harm (correctness, security, compliance — must fix) separate from
-**excellence** framing (design that takes a change from correct to better). Excellence is
-not a fourth tier: grade it on the harm scale like any finding, competing for the same
-comment budget. Never report one piece of code as both a must-fix and a design nicety —
-that double-counts it.
-
 ## Make each finding land
 
 A correctly-rated finding still has to be actionable. Every finding carries three things:
@@ -102,12 +104,12 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   discussion (customer context) → existing tests (behavioral expectations). Skip a citation
   only for pure style, an obvious typo or unused import, or a genuine question.
   **Verify before you cite:** never post from memory.
-  When a finding turns on how CDK code behaves (a constructor signature, what
-  `addWarningV2` renders, what a fixture declares, whether a lint rule fires), read that
-  code in the repo. When it turns on how an AWS service behaves (a limit, a default, an
-  allowed value), read the AWS documentation and cite the page in `reference`. Service
-  documentation is sometimes wrong or incomplete; when the PR says the author tested the
-  service's behavior, do not contradict them from documentation alone.
+  - When a finding turns on how CDK code behaves (a constructor signature, what a fixture
+    declares, whether a lint rule fires), read that code in the repo.
+  - When a finding turns on how an AWS service behaves (a limit, a default, an allowed
+    value), read the AWS documentation. Cite that page in `reference`.
+  - Service documentation is sometimes wrong or incomplete. When the PR says the author
+    tested the service's behavior, do not contradict them from documentation alone.
 - **A concrete fix** — a code example, or a question framing a specific alternative
   ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
   out; never just point at the problem.
@@ -149,8 +151,8 @@ carve-outs. None is a finding, at any severity:
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
 - **Choices the guidelines leave open** — when the guidelines allow more than one shape
-  (an enum or an enum-like class, a required or an optional physical name), or the same
-  module already uses the author's choice, the author's choice stands.
+  (a required or an optional physical name), or the same module already uses the author's
+  choice, the author's choice stands.
 
 Each dimension skill's own `## What NOT to flag` lists only its dimension-specific
 carve-outs; it applies these in addition.
