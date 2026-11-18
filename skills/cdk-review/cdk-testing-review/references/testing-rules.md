@@ -21,7 +21,9 @@ for the patch bar.
 - **Detection method (doc-absent detail):** ask **if I broke the behavior this test covers, would this
   test turn red?** If not, it is a non-asserting test — it raised the Codecov number without proving anything.
   Close it by asserting the specific property/value with `Match.objectLike` (or `objectEquals` /
-  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts.
+  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts. Before calling
+  an assertion vacuous, read what it actually compares against: for example, `addWarningV2` appends
+  `[ack: <id>]` to the message, so matching on the id is a real assertion.
 
   ```ts
   // NON-ASSERTING: runs the new prop path, asserts nothing that would catch a wrong value
@@ -96,6 +98,11 @@ which lists rejection and validation-failure as required coverage.
     Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('.*0\\.0\\.0\\.0/0.*'));
   });
   ```
+
+**[TEST-UNIT-TOKEN-GUARD] (RECOMMENDED)** — The PR adds a `Token.isUnresolved()` guard (skipping a
+validation or a string manipulation for deploy-time values), and no test passes an unresolved token through
+it. Without the test, a later edit that drops the guard breaks every user passing a `Ref` or `Fn::` value.
+See [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety).
 
 **[TEST-UNIT-DOC-NAME] (OPTIONAL)** — A test name that describes nothing (`'works'`, `'test 2'`), so the
 suite fails as a specification; a merely awkward-but-descriptive title is a cosmetic, out of scope. See

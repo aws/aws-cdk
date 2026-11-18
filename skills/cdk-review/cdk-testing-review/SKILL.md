@@ -36,7 +36,8 @@ Work the changed surface in this order — a method, not a rigid script. Adapt i
    **Integration tests**. For each behavior, ask the discharge question: **if I broke this behavior, would a
    test in THIS PR turn red?** Presence is not discharge — a test can run the path yet assert nothing, cover
    only the happy path, or test one of two owed states. Check both directions: the test that
-   runs-but-asserts-nothing, and the owed test that is simply MISSING.
+   runs-but-asserts-nothing, and the owed test that is simply MISSING. Before reporting a test as missing,
+   search the test files for it.
 
 3. **Rate by harm and stop.** Rate each finding by the harm if the untested behavior regresses, per
    `cdk-review-principles` — never demote a concrete gap to OPTIONAL out of uncertainty it fires. Raise ONE
@@ -69,8 +70,9 @@ PR incurs. When a defect is outside your scope, leave it.
 Populate the structured finding fields the `cdk-review-principles` skill defines. Write
 `message` as the complete posted comment (observation, impact, concrete fix, guideline cited inline). This
 dimension's `category` is one of: Non-asserting test, Missing regression-catching coverage, Missing edge &
-negative cases, Untested feature-flag state, Tests-as-documentation, Missing required integration test,
-Dangerous snapshot diff, IntegTest construct misuse, Weak or missing assertions, Redundant coverage, Stale integration snapshot. The
+negative cases, Untested feature-flag state, Untested token handling, Tests-as-documentation, Missing
+required integration test, Dangerous snapshot diff, IntegTest construct misuse, Weak or missing
+assertions, Redundant coverage, Stale integration snapshot. The
 `suggestedFix` (folded into `message`) shows the test or snapshot snippet demonstrating the gap and the
 assertion, case, or test to add.
 

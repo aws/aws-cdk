@@ -48,6 +48,11 @@ encodings and the `Token.asString/asList/asNumber` conversions — read the
   opaque-value `Fn.select`/`Fn.join` manipulation pattern, and the tokenized-list `.length === 1` gotcha —
   is stated at
   [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety).
+- **Check the manipulation actually breaks (doc-absent detail):** a string token is encoded as
+  `${Token[NAME.123]}`. An operation that leaves that text intact (splitting on whitespace, a prefix
+  check that cannot match it) is safe; read what the code does to the encoded string before flagging it.
+  Accepting tokens is the goal: never suggest rejecting a token input (for example in a `from*Arn`
+  importer) as the fix.
 - **Boolean-token false-positive guard (doc-absent detail):** tokens encode only as string, number, or
   string-list (`Token.asString`/`asNumber`/`asList` — there is no `asBoolean`), so a `boolean`-typed value
   can never be an unresolved token. Do NOT flag a missing `Token.isUnresolved()` guard on a boolean prop,

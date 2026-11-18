@@ -112,8 +112,9 @@ for the `exclude` mechanism.
 - **Escalate to BLOCKING when the suppressed rule backs a MUST-level guideline (doc-absent detail):** the
   suppression there silences the exact floor the design and regression lenses trust.
 
-**[CD-ENUMS] (RECOMMENDED)** — Model a closed known set as an `enum`, an open set as an enum-like class.
-See
+**[CD-ENUMS] (RECOMMENDED)** — A prop or attribute typed as a bare `string` (or `number`) whose values
+are a known set the service defines: model it as an `enum` or an enum-like class. Either is acceptable;
+do not flag the choice between the two. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Enums & Enum-Like Classes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#enums--enum-like-classes).
 
 **[CD-STATIC-TYPE-CHECK] (RECOMMENDED)** — Prefer a static `isFoo` over `instanceof`. See
@@ -127,6 +128,8 @@ and prefer extending an existing method over adding a new one. See
 affordance where the service supports it. See
 [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
 and the sections following it for the signatures.
+- **Facades (doc-absent detail):** grants and metrics exposed through a facade property (`foo.grants`,
+  `foo.metrics`) are the current pattern for new L2s; do not ask to move them onto the construct.
 - **Auto-wired affordances (doc-absent detail):** before flagging an absence, confirm the framework
   doesn't already provide it — tagging works through `Tags.of(x).add(...)` wherever the L1 is taggable, and
   `removalPolicy`, dependencies, and metadata come from `cdk.Resource`; flagging one of these as missing is

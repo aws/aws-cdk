@@ -58,6 +58,23 @@ The tier is right only if you rate the harm honestly. Four ways it slips:
 - **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
   *new* harm → not a finding. Rate what the diff adds, not the posture it inherited.
 
+Whatever the tier, post a finding only when both of these also hold:
+
+- **It asks for a specific change to the code.** If your conclusion is "this is fine", "no
+  change required", "either is defensible", or "confirm this is intentional", there is no
+  finding — do not post it.
+- **It has not already been discussed.** If this point was raised on the PR before (by you
+  or by a human), do not raise it again. If the author answered a comment, accept the answer
+  unless you have new evidence. Never ask the author to undo something an earlier review
+  comment asked for.
+
+Never suggest:
+
+- **Catching, swallowing or falling back from errors** to make code "defensive". A broken
+  invariant or a malformed input must fail loudly; hiding it is a bug.
+- **A feature flag for a change that cannot break an existing deployment.** Flags are for
+  changes that alter what deployed stacks get in a way users may depend on.
+
 When the finding is that the change violates a rule in the aws-cdk repo's own guides
 (`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
 harm set the tier: a rule naming data loss or an open boundary is damage → BLOCKING; a
@@ -82,14 +99,15 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   linked by file + line) → CDK design guidelines (`docs/DESIGN_GUIDELINES.md`,
   `docs/AGENTS_CONSTRUCT_DESIGN.md`, `docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) →
   CloudFormation resource specification (property/enum correctness) → linked issue / PR
-  discussion (customer context) → existing tests (behavioral expectations). Prefer AWS
-  documentation when sources disagree. Skip a citation only for pure style, an obvious
-  typo or unused import, or a genuine question. **Verify before you cite:** when a finding
-  turns on whether an attribute, mode, default, enum value, or a service/CDK behavior is
-  REAL — or on what CDK's own API, testing, or README guidance says — you MUST search and
-  read the authoritative AWS and CDK documentation available to you and confirm the fact
-  against it before posting; never post from memory. An unverified "X isn't supported" or
-  "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
+  discussion (customer context) → existing tests (behavioral expectations). Skip a citation
+  only for pure style, an obvious typo or unused import, or a genuine question.
+  **Verify before you cite:** never post from memory.
+  When a finding turns on how CDK code behaves (a constructor signature, what
+  `addWarningV2` renders, what a fixture declares, whether a lint rule fires), read that
+  code in the repo. When it turns on how an AWS service behaves (a limit, a default, an
+  allowed value), read the AWS documentation and cite the page in `reference`. Service
+  documentation is sometimes wrong or incomplete; when the PR says the author tested the
+  service's behavior, do not contradict them from documentation alone.
 - **A concrete fix** — a code example, or a question framing a specific alternative
   ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
   out; never just point at the problem.
@@ -114,7 +132,7 @@ structured finding fields and how to write each one before you generate findings
 
 ## What NOT to flag — the shared exclusions
 
-Every dimension skill applies these five exclusions on top of its own dimension-specific
+Every dimension skill applies these exclusions on top of its own dimension-specific
 carve-outs. None is a finding, at any severity:
 
 - **Pre-existing / not introduced by this PR** — if the diff did not add or change it, the
@@ -130,9 +148,12 @@ carve-outs. None is a finding, at any severity:
 - **Release-tooling / monorepo markers** — `0.0.0` workspace or alpha versions, `V2NEXT`
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
+- **Choices the guidelines leave open** — when the guidelines allow more than one shape
+  (an enum or an enum-like class, a required or an optional physical name), or the same
+  module already uses the author's choice, the author's choice stands.
 
 Each dimension skill's own `## What NOT to flag` lists only its dimension-specific
-carve-outs; it applies these five in addition.
+carve-outs; it applies these in addition.
 
 ## Rules-lookup convention
 
