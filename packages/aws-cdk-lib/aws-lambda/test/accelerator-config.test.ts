@@ -7,11 +7,17 @@ import * as lambda from '../lib';
 
 const dockerLambdaHandlerPath = path.join(__dirname, 'docker-lambda-handler');
 
+function newStack(): cdk.Stack {
+  const stack = new cdk.Stack(new cdk.App(), 'stack');
+  // TODO: Remove this acknowledge once the bundled CFN validation schema includes AcceleratorConfig
+  cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'AcceleratorConfig is a newly launched property not yet in the bundled schema' });
+  return stack;
+}
+
 describe('accelerator config', () => {
   describe('synthesis', () => {
     test('produces correct CFN output when configured with capacity provider', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
       const capacityProvider = new lambda.CapacityProvider(stack, 'CP', {
@@ -64,8 +70,7 @@ describe('accelerator config', () => {
         /acceleratorConfig is only supported for x86_64 functions/,
       ],
     ])('throws for %s', (_, overrides, expectedError) => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
 
       expect(() => new lambda.Function(stack, 'Lambda', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
@@ -78,8 +83,7 @@ describe('accelerator config', () => {
     });
 
     test('skips validation when values are tokens', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
       const tokenMemSize = cdk.Token.asNumber(cdk.Fn.ref('AccelMemParam'));
       const tokenMemorySize = cdk.Token.asNumber(cdk.Fn.ref('MemSizeParam'));
 
@@ -103,8 +107,7 @@ describe('accelerator config', () => {
     });
 
     test('accepts an accelerator memory size supplied via .of()', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
       const capacityProvider = new lambda.CapacityProvider(stack, 'CP', {
@@ -150,8 +153,7 @@ describe('accelerator config', () => {
       lambda.AcceleratorMemorySize.GIB_24,
       lambda.AcceleratorMemorySize.GIB_48,
     ])('accepts valid accelerator memory size %p', (acceleratorMemorySize) => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
 
       expect(() => new lambda.Function(stack, 'Lambda', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
@@ -165,8 +167,7 @@ describe('accelerator config', () => {
 
   describe('ephemeral storage', () => {
     test('allows up to 32768 MB when acceleratorConfig is set', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
       const capacityProvider = new lambda.CapacityProvider(stack, 'CP', {
@@ -201,8 +202,7 @@ describe('accelerator config', () => {
         /Ephemeral storage size must be between 512 and 10240 MB/,
       ],
     ])('throws when ephemeralStorageSize %s', (_, overrides, expectedError) => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
 
       expect(() => new lambda.Function(stack, 'Lambda', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
@@ -214,8 +214,7 @@ describe('accelerator config', () => {
     });
 
     test('reports the accelerator disqualifier, not the elevated ceiling, when the config does not qualify', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
 
       // ARM_64 disqualifies the function from an accelerator, so it never gets the 32 GiB ceiling.
       // The first error must therefore be the architecture, not an ephemeral-storage message quoting
@@ -234,8 +233,7 @@ describe('accelerator config', () => {
 
   describe('deferred validation', () => {
     test('fails when no capacity provider is attached', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
 
       const fn = new lambda.Function(stack, 'Lambda', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
@@ -255,8 +253,7 @@ describe('accelerator config', () => {
     });
 
     test('passes when a capacity provider is attached via addFunction', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
       const capacityProvider = new lambda.CapacityProvider(stack, 'CP', {
@@ -277,8 +274,7 @@ describe('accelerator config', () => {
     });
 
     test('passes when a capacity provider is attached via the L1 capacityProviderConfig escape hatch', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
 
       const fn = new lambda.Function(stack, 'Lambda', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
@@ -302,8 +298,7 @@ describe('accelerator config', () => {
     });
 
     test('passes when a capacity provider is attached via capacityProvider.addFunction()', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
       const capacityProvider = new lambda.CapacityProvider(stack, 'CP', {
@@ -336,8 +331,7 @@ describe('accelerator config', () => {
     });
 
     test('last write wins when a second, different capacity provider attaches the function', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
       const capacityProvider1 = new lambda.CapacityProvider(stack, 'CP1', {
@@ -377,8 +371,7 @@ describe('accelerator config', () => {
     });
 
     test('is idempotent when the same capacity provider is attached twice via addFunction()', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
+      const stack = newStack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
       const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
       const capacityProvider = new lambda.CapacityProvider(stack, 'CP', {
