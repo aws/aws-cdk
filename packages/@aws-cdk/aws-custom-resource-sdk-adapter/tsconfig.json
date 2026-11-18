@@ -21,7 +21,8 @@
     "composite": true,
     "incremental": true,
     "types": [
-      "jest"
+      "jest",
+      "node"
     ],
     "noUncheckedSideEffectImports": true
   },
