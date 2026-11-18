@@ -18,7 +18,7 @@
     "check-snapshots": "node -e \"require('./lib/utils').getChangedSnapshots().then(s => { console.log(JSON.stringify(s)); process.exit(s.length > 0 ? 0 : 1); })\""
   },
   "dependencies": {
-    "@aws-sdk/client-sts": "3.1171.0",
+    "@aws-sdk/client-sts": "3.1105.0",
     "@cdklabs/cdk-atmosphere-client": "^0.0.127"
   },
   "devDependencies": {
