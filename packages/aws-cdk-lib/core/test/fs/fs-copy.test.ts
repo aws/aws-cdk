@@ -108,7 +108,7 @@ describe('fs copy', () => {
       follow: SymlinkFollowMode.BLOCK_EXTERNAL,
     });
 
-    // THEN — the internal link is followed, so it arrives as a regular file rather than a link
+    // THEN
     expect(tree(outdir)).toEqual([
       'file4.txt',
       'local-link4.txt => file4.txt',

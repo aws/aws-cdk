@@ -128,6 +128,15 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  *
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
+ *
+ * ## Security notes on BLOCK_EXTERNAL symlinks
+ *
+ * If a bundled asset is being reused from the `cdk.out` cache, the BLOCK_EXTERNAL
+ * symlink check is not re-run, and on an asset hash collission (made more likely
+ * in the case of a chosen `CUSTOM` hash) external symlinks left over from a
+ * previous unchecked synth can persist. This is unlikely to be a problem in
+ * practice, but to prevent this from happening to you, delete the `cdk.out`
+ * directory whenever you switch from non-`BLOCK_EXTERNAL` to `BLOCK_EXTERNAL` follow mode.
  */
 export class AssetStaging extends Construct {
   /**
@@ -283,10 +292,12 @@ export class AssetStaging extends Construct {
       bundling: props.bundling,
       assetHashType: this.hashType,
       customFingerprint: this.customSourceFingerprint,
-      extraHash: props.extraHash,
+      extraHash: this.fingerprintOptions.extraHash,
       exclude: props.exclude,
       ignoreMode: props.ignoreMode,
+      follow: props.follow,
       skip,
+      stagingDisabled: this.stagingDisabled,
     });
 
     let staged: StagedAsset;

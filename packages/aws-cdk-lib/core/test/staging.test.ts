@@ -3,11 +3,12 @@ import { spawnSync, execSync } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import fs from 'fs-extra';
 import sinon from 'sinon';
 import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import type { BundlingOptions } from '../lib';
+import type { AssetStagingProps, BundlingOptions } from '../lib';
 import { App, AssetHashType, AssetStaging, DockerImage, BundlingOutput, FileSystem, IgnoreMode, Stack, NestedStack, Stage, BundlingFileAccess, SymlinkFollowMode } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
@@ -1712,10 +1713,13 @@ describe('staging', () => {
     });
 
     test.each([
-      AssetHashType.SOURCE,
-      AssetHashType.OUTPUT,
-      AssetHashType.CUSTOM,
-    ])('BLOCK_EXTERNAL leads to blocking external symlinks in the bundled output with AssetHashType %p', (assetHashType) => {
+      [AssetHashType.SOURCE, false],
+      [AssetHashType.OUTPUT, false],
+      [AssetHashType.CUSTOM, false],
+      [AssetHashType.SOURCE, true],
+      [AssetHashType.OUTPUT, true],
+      [AssetHashType.CUSTOM, true],
+    ])('BLOCK_EXTERNAL leads to blocking external symlinks in the bundled output with AssetHashType %p, event with exludes %p', (assetHashType, useExcludes) => {
       // GIVEN
       const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new Stack(app, 'stack');
@@ -1726,6 +1730,7 @@ describe('staging', () => {
         assetHashType,
         assetHash: assetHashType === AssetHashType.CUSTOM ? 'custom-hash' : undefined,
         follow: SymlinkFollowMode.BLOCK_EXTERNAL,
+        exclude: useExcludes ? ['*'] : undefined,
         bundling: {
           image: DockerImage.fromRegistry('alpine'),
           command: [DockerStubCommand.DIR_WITH_EXTERNAL_SYMLINK],
@@ -2095,6 +2100,92 @@ describe('staging', () => {
         'normal-dir',
         'normal-file.txt',
       ]);
+    });
+  });
+
+  // Check that the AssetStaging deduplication key includes every relevant property
+  describe('deduplication key includes every property', () => {
+    // A cache miss is observable as a call to the (private) staging function
+    function countStagings(build: (stack: Stack, id: string) => void, buildOther: (stack: Stack, id: string) => void) {
+      AssetStaging.clearAssetHashCache();
+      const spies = [
+        jest.spyOn(AssetStaging.prototype as any, 'stageByBundling'),
+        jest.spyOn(AssetStaging.prototype as any, 'stageByCopying'),
+      ];
+      const stack = new Stack(new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } }), 'stack');
+      build(stack, 'Base');
+      buildOther(stack, 'Variant');
+      return spies.reduce((n, s) => n + s.mock.calls.length, 0);
+    }
+
+    const BUNDLING: BundlingOptions = {
+      image: DockerImage.fromRegistry('alpine'),
+      command: [DockerStubCommand.SUCCESS],
+    };
+    const BASE: AssetStagingProps = { sourcePath: path.join(FIXTURE_TEST1_DIR, 'subdir'), bundling: BUNDLING };
+
+    /**
+     * One entry per prop; the compiler rejects this object if a prop is missing.
+     * `base` is merged into BASE for both assets, `other` only into the variant.
+     */
+    type Variation = { base?: Partial<AssetStagingProps>; other: Partial<AssetStagingProps> };
+    const PROP_VARIATIONS: { [K in keyof Required<AssetStagingProps>]: Variation } = {
+      sourcePath: { other: { sourcePath: path.join(FIXTURE_TEST1_DIR, 'subdir2') } },
+      exclude: { other: { exclude: ['file1.txt'] } },
+      ignoreMode: { base: { exclude: ['file1.txt'] }, other: { ignoreMode: IgnoreMode.DOCKER } },
+      follow: { other: { follow: SymlinkFollowMode.BLOCK_EXTERNAL } },
+      extraHash: { other: { extraHash: 'extra' } },
+      assetHashType: { other: { assetHashType: AssetHashType.OUTPUT } },
+      assetHash: { base: { assetHashType: AssetHashType.CUSTOM, assetHash: 'one' }, other: { assetHash: 'two' } },
+      bundling: { other: { bundling: undefined } },
+    };
+
+    const BUNDLING_VARIATIONS: { [K in keyof Required<BundlingOptions>]: Partial<BundlingOptions> } = {
+      image: { image: DockerImage.fromRegistry('busybox') },
+      entrypoint: { entrypoint: ['DOCKER_STUB_SUCCESS'] },
+      command: { command: [DockerStubCommand.SUCCESS, 'extra-arg'] },
+      volumes: { volumes: [{ hostPath: '/tmp', containerPath: '/x' }] },
+      volumesFrom: { volumesFrom: ['other'] },
+      environment: { environment: { A: 'b' } },
+      workingDirectory: { workingDirectory: '/x' },
+      user: { user: '1000:1000' },
+      local: { local: { tryBundle: (dir) => { fs.writeFileSync(path.join(dir, 'other.txt'), 'x'); return true; } } },
+      outputType: { outputType: BundlingOutput.NOT_ARCHIVED },
+      securityOpt: { securityOpt: 'no-new-privileges' },
+      network: { network: 'host' },
+      bundlingFileAccess: { bundlingFileAccess: BundlingFileAccess.BIND_MOUNT },
+      platform: { platform: 'linux/arm64' },
+    };
+
+    test.each(Object.entries(PROP_VARIATIONS))('prop %s', (_, { base, other }) => {
+      const baseProps = { ...BASE, ...base };
+      expect(countStagings(
+        (s, id) => new AssetStaging(s, id, baseProps),
+        (s, id) => new AssetStaging(s, id, { ...baseProps, ...other }),
+      )).toEqual(2);
+    });
+
+    test.each(Object.entries(BUNDLING_VARIATIONS))('bundling.%s', (_, other) => {
+      expect(countStagings(
+        (s, id) => new AssetStaging(s, id, BASE),
+        (s, id) => new AssetStaging(s, id, { ...BASE, bundling: { ...BUNDLING, ...other } }),
+      )).toEqual(2);
+    });
+
+    // Not props, but inputs that change the result; the compiler can't enforce this list
+    test.each([
+      ['asset salt', '@aws-cdk/core:assetHashSalt', 'salty'],
+      ['staging disabled', cxapi.DISABLE_ASSET_STAGING_CONTEXT, true],
+    ])('context: %s', (_, key, value) => {
+      expect(countStagings(
+        (s, id) => new AssetStaging(s, id, BASE),
+        (s, id) => { const scope = new Construct(s, `${id}Scope`); scope.node.setContext(key, value); new AssetStaging(scope, id, BASE); },
+      )).toEqual(2);
+    });
+
+    // Control: without a difference, it must be 1, otherwise every case above passes trivially
+    test('identical props are deduplicated', () => {
+      expect(countStagings((s, id) => new AssetStaging(s, id, BASE), (s, id) => new AssetStaging(s, id, BASE))).toEqual(1);
     });
   });
 });
