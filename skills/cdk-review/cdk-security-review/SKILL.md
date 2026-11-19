@@ -34,7 +34,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    IAM policy/grant, a trust policy, a KMS key policy, a resource/network policy, a default, a
    secret-shaped prop — and its KIND. The kind tells you which controls it owes and what to scan. Then
    read [`security-rules.md`](references/security-rules.md): its rows ARE your checklist. Before you flag what
-   an action allows, a service's real default posture, or whether a condition key applies, you MUST
+   an action allows, a service's real default posture, or whether a condition key applies,
    search and read the authoritative AWS IAM/service / CloudFormation documentation available to you and
    confirm the fact there, not from memory (see `cdk-review-principles` "Verify before you cite").
 

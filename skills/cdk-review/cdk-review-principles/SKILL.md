@@ -79,7 +79,7 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   only for pure style, an obvious typo or unused import, or a genuine question. **Verify
   before you cite:** when a finding
   turns on whether an attribute, mode, default, enum value, or a service behavior is
-  REAL, you MUST search and read the authoritative AWS documentation available to you and
+  REAL, search and read the authoritative AWS documentation available to you and
   confirm the fact against it before posting; confirm what CDK's own API does by reading
   that code, and what CDK's testing or README guidance says by reading that guide; never
   post from memory. An unverified "X isn't supported" or
