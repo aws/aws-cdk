@@ -20,7 +20,12 @@
   "/test-condition-with-ref/MyRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
     }
   ],
   "/test-condition-with-ref/BootstrapVersion": [

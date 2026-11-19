@@ -4,7 +4,7 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "codepipeline-source-code-scan-action/Pipeline/Source/CodeStarConnectionsSourceAction/CodePipelineActionRole/DefaultPolicy/Resource",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.8.1",
+              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+              "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "codepipeline-source-code-scan-action.template.json",
                 "logicalId": "PipelineSourceCodeStarConnectionsSourceActionCodePipelineActionRoleDefaultPolicyF5116984",

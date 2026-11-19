@@ -4,12 +4,12 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
           "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
+          "description": "Resources: Resources section must exist and be non-empty",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Structure"
@@ -17,13 +17,13 @@
           "violatingConstructs": [
             {
               "constructPath": "PipelinesFileSystemLocations/Beta/Stack1",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.8.1"
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
             },
             {
               "constructPath": "cdk-integ-codepipeline-with-file-system-locations/DefaultTest/DeployAssert",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.8.1"
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
             }
           ]
         }

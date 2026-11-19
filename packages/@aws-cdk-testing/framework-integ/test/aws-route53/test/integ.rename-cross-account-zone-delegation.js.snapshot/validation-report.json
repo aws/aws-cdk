@@ -4,7 +4,7 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "parent-stack",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.8.1"
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
             }
           ]
         },
@@ -32,8 +32,8 @@
           "violatingConstructs": [
             {
               "constructPath": "child-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E/Resource",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.8.1",
+              "constructFqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+              "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "child-stack.template.json",
                 "logicalId": "delegatecrossaccountzonedelegationhandlerrolePolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E86169197",

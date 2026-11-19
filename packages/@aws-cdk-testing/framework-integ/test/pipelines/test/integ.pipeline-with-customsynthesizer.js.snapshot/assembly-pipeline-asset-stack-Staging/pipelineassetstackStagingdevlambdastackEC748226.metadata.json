@@ -8,7 +8,11 @@
   "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
     }
   ],
   "/pipeline-asset-stack/Staging/dev-lambda-stack/BootstrapVersion": [
@@ -26,7 +30,17 @@
   "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     }
   ],
   "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/Resource": [
@@ -38,7 +52,9 @@
   "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/ServiceRole/Resource": [

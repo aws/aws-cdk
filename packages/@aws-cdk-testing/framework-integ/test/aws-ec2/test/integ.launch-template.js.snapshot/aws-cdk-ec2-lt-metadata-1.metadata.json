@@ -6,10 +6,10 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:106:18)",
-        "    at Stack._silenceLiteralAzWarning (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1383:47)",
-        "    at get availabilityZones (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:756:18)",
-        "    at new Vpc (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:788:48)",
+        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
         "    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.launch-template.js:41:13)",
         "    ...node internals..."
       ]
@@ -22,7 +22,10 @@
   "/aws-cdk-ec2-lt-metadata-1/MyVpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "vpcName": "*",
+        "subnetConfiguration": []
+      }
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
@@ -34,29 +37,53 @@
   "/aws-cdk-ec2-lt-metadata-1/sg1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "vpc": "*"
+      }
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/LT": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "versionDescription": "*",
+        "httpEndpoint": true,
+        "httpProtocolIpv6": true,
+        "httpPutResponseHopLimit": "*",
+        "httpTokens": "required",
+        "instanceMetadataTags": true,
+        "securityGroup": "*",
+        "blockDevices": [
+          {
+            "deviceName": "*",
+            "volume": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addSecurityGroup": [
+          "*"
+        ]
+      }
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/sg2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "vpc": "*"
+      }
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/LTWithMachineImage": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "machineImage": "*"
+      }
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -68,19 +95,26 @@
   "/aws-cdk-ec2-lt-metadata-1/pg": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {}
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "placementGroup": "*"
+      }
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/LTWithCpuOptions": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "cpuOptions": {
+          "coreCount": "*",
+          "threadsPerCore": "*"
+        }
+      }
     }
   ],
   "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [

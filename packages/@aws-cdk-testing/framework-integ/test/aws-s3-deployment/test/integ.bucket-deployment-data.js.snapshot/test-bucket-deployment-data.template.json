@@ -117,7 +117,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -182,7 +182,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
+     "S3Key": "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -223,6 +223,9 @@
      },
      {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      }
     ],
     "SourceObjectKeys": [
@@ -234,7 +237,8 @@
      "1175d01d4ddecbd7be39bdc306dabe248b6ada0281089ae680473c5ca7e13e67.zip",
      "c3f91ed893cc759513d80ebd56bcaae5061b08bff3dd8ad10daeb62558bac52e.zip",
      "10cb9bf43614add407e699e4af8e1ba4a9789363f48fa816662b15885c354e1a.zip",
-     "8de7dc173740857dd772ca214c7ac8381483f7ee406d94fb9ff9e95ad407d876.zip"
+     "8de7dc173740857dd772ca214c7ac8381483f7ee406d94fb9ff9e95ad407d876.zip",
+     "f0ef426300f40613ae2fc959429e8a99a3d07850fca820b4f3fabc47777e8820.zip"
     ],
     "SourceMarkers": [
      {},
@@ -292,6 +296,13 @@
         "Value"
        ]
       }
+     },
+     {},
+     {},
+     {
+      "<<marker:0xbaba:0>>": {
+       "Ref": "NumbersParam"
+      }
      }
     ],
     "SourceMarkersConfig": [
@@ -319,6 +330,12 @@
      {},
      {
       "jsonEscape": true
+     },
+     {
+      "jsonEscape": true,
+      "markerEncodings": {
+       "<<marker:0xbaba:0>>": "JSON_VALUE"
+      }
      }
     ],
     "DestinationBucketName": {
@@ -468,7 +485,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
+     "S3Key": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip"
     },
     "Environment": {
      "Variables": {
@@ -524,6 +541,10 @@
   }
  },
  "Parameters": {
+  "NumbersParam": {
+   "Type": "List<Number>",
+   "Default": "80,443"
+  },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",

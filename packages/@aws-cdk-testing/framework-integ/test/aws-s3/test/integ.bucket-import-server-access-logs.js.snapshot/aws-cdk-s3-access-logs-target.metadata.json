@@ -8,7 +8,15 @@
   "/aws-cdk-s3-access-logs-target/TargetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "autoDeleteObjects": true,
+        "removalPolicy": "destroy",
+        "blockPublicAccess": "*",
+        "enforceSSL": true,
+        "objectOwnership": "BucketOwnerEnforced",
+        "encryption": "S3_MANAGED",
+        "accessControl": "BucketOwnerFullControl"
+      }
     },
     {
       "type": "aws:cdk:acknowledged-rules",
@@ -16,9 +24,9 @@
         "CloudFormation-Validate::W3045": "accessControl is deprecated, but we are still using it for historical reasons."
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:106:18)",
-        "    at PropertyInjectable.acknowledgeAccessControl (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1317:45)",
-        "    at new Bucket (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1231:18)",
+        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at PropertyInjectable.acknowledgeAccessControl (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1557:47)",
+        "    at new Bucket (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1471:18)",
         "    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-import-server-access-logs.js:46:22)",
         "    ...node internals..."
       ]
@@ -50,14 +58,16 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
       }
     }
   ],
   "/aws-cdk-s3-access-logs-target/TargetBucket/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "bucket": "*"
+      }
     }
   ],
   "/aws-cdk-s3-access-logs-target/TargetBucket/AutoDeleteObjectsCustomResource": [
@@ -92,7 +102,7 @@
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
       }
     }
   ],
