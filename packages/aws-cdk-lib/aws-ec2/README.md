@@ -2643,10 +2643,19 @@ new ec2.Instance(this, 'Instance', {
 });
 ```
 
-EC2Launch v2 allows each task only once in user data, so tasks run in the order they were first added. Scripts added
-with `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()` are inputs of the `executeScript`
-task, like the commands added with `addCommands()`, and adding `executeProgram` again appends to the inputs of the
-existing task. Tasks without a factory method in `Ec2LaunchV2Task` can be added with `Ec2LaunchV2Task.custom()`.
+EC2Launch v2 [allows each task only once](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-settings.html#ec2launch-v2-schema-user-data)
+in user data. Tasks run in the order they were first added, with two exceptions:
+
+* Once commands have been added with `addCommands()` or the other `add*Command()` methods, the `executeScript` task
+  runs after all other tasks. Those commands form a single PowerShell script, the last input of that task, so a
+  CloudFormation signal added with `addSignalOnExitCommand()` is sent after all other tasks have run, as with
+  `UserData.forWindows()`. This also holds for tasks added after passing `init` to an `Instance`.
+* EC2Launch v2 always runs `sysprep` last.
+
+Scripts added with `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()` are inputs of the
+`executeScript` task, and adding `executeProgram` again appends to the inputs of the existing task. Adding any other
+task with inputs twice is an error. Tasks without a factory method in `Ec2LaunchV2Task` can be added with
+`Ec2LaunchV2Task.custom()`.
 
 There is no factory method for the `writeFile` task: although it is documented for user data, EC2Launch v2
 (tested with version 2.5.2) does not load user data that contains it. Use `Set-Content` in `addCommands()`

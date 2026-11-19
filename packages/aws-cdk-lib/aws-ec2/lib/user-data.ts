@@ -2,7 +2,7 @@ import * as YAML from 'yaml';
 import { OperatingSystemType } from './machine-image';
 import type { IBucketRef } from '../../aws-s3';
 import type { Resource, CfnResource } from '../../core';
-import { Fn, Stack, Token, UnscopedValidationError } from '../../core';
+import { Fn, Stack, Token, Tokenization, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -820,7 +820,7 @@ export class Ec2LaunchV2Task {
 
   private constructor(taskName: string, inputs: any) {
     this.taskName = taskName;
-    this._inputs = inputs;
+    this._inputs = normalizeEc2LaunchV2Value(inputs);
   }
 }
 
@@ -839,13 +839,20 @@ function renderEc2LaunchV2Script(options: Ec2LaunchV2ScriptOptions, type: 'power
 }
 
 /**
+ * The EC2Launch v2 task that runs the commands added with `addCommands()`
+ */
+const COMMAND_SCRIPT_TASK = 'executeScript';
+
+/**
  * Windows Instance User Data in the EC2Launch v2 YAML format
  *
- * EC2Launch v2 only allows each task to appear once, so tasks run in the order
- * they were first added. Adding `executeScript` or `executeProgram` again
- * appends to the inputs of the existing task. The commands added with
- * `addCommands()` and the other `add*Command()` methods form a single
- * PowerShell input of the `executeScript` task.
+ * EC2Launch v2 allows each task only once in user data. Tasks run in the order
+ * they were first added, except that the `executeScript` task runs after all
+ * other tasks once commands have been added with `addCommands()` or the other
+ * `add*Command()` methods. Those commands form a single PowerShell script, the
+ * last input of that task, so a CloudFormation signal added with
+ * `addSignalOnExitCommand()` is sent after all other tasks have run, as with
+ * `UserData.forWindows()`. EC2Launch v2 always runs `sysprep` last.
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-settings.html#ec2launch-v2-schema-user-data
  */
@@ -853,10 +860,7 @@ export class Ec2LaunchV2UserData extends UserData {
   private readonly lines: string[] = [];
   private readonly onExitLines: string[] = [];
   /**
-   * Task inputs by task name, in the order the tasks were first added.
-   *
-   * List inputs may contain functions, which produce an input at render time
-   * (or `undefined` to omit it).
+   * Task inputs by task name, in the order the tasks were first added
    */
   private readonly tasks = new Map<string, any>();
   private hasCommandScript = false;
@@ -867,6 +871,10 @@ export class Ec2LaunchV2UserData extends UserData {
 
   /**
    * Add an EC2Launch v2 task to the user data
+   *
+   * Adding a task whose inputs are a list (`executeScript`, `executeProgram`)
+   * again appends to its inputs. Adding a task without inputs again has no
+   * effect. Adding any other task again throws an error.
    */
   public addTask(task: Ec2LaunchV2Task): void {
     this.mergeTask(task.taskName, task._inputs);
@@ -884,15 +892,24 @@ export class Ec2LaunchV2UserData extends UserData {
 
   public render(): string {
     const tasks: any[] = [];
-    for (const [task, inputs] of this.tasks) {
+    const addRendered = (task: string, inputs: any) => {
       if (Array.isArray(inputs)) {
-        const rendered = inputs.map(input => typeof input === 'function' ? input() : input).filter(input => input !== undefined);
+        const rendered = inputs.filter(input => input !== undefined);
         if (rendered.length > 0) {
           tasks.push({ task, inputs: rendered });
         }
       } else {
         tasks.push(inputs === undefined ? { task } : { task, inputs });
       }
+    };
+    for (const [task, inputs] of this.tasks) {
+      if (!(this.hasCommandScript && task === COMMAND_SCRIPT_TASK)) {
+        addRendered(task, inputs);
+      }
+    }
+    // The command script, which may send the CloudFormation signal, runs last
+    if (this.hasCommandScript) {
+      addRendered(COMMAND_SCRIPT_TASK, [...this.tasks.get(COMMAND_SCRIPT_TASK), this.renderCommandScript()]);
     }
     return renderEc2LaunchV2Yaml({ version: 1.1, tasks });
   }
@@ -913,7 +930,8 @@ export class Ec2LaunchV2UserData extends UserData {
 
   private ensureCommandScript() {
     if (!this.hasCommandScript) {
-      this.mergeTask('executeScript', [() => this.renderCommandScript()]);
+      // Registers the task, or fails if it was added with inputs that are not a list
+      this.mergeTask(COMMAND_SCRIPT_TASK, []);
       this.hasCommandScript = true;
     }
   }
@@ -971,17 +989,35 @@ export class Ec2LaunchV2UserData extends UserData {
  */
 function renderEc2LaunchV2Yaml(value: any): string {
   const doc = new YAML.Document({ version: '1.1' });
-  doc.contents = YAML.createNode(removeUndefined(value)) as any;
+  doc.contents = YAML.createNode(normalizeEc2LaunchV2Value(value)) as any;
   useLiteralBlocks(doc.contents);
   return doc.toString();
 }
 
-function removeUndefined(value: any): any {
+/**
+ * Prepare a value for rendering into an EC2Launch v2 document
+ *
+ * Removes `undefined` properties, and turns tokens that are not strings into
+ * string tokens, so that they are substituted into the document. Lists cannot
+ * be substituted into a YAML document, so list tokens are rejected.
+ */
+function normalizeEc2LaunchV2Value(value: any): any {
+  if (Tokenization.isResolvable(value)) {
+    return Token.asString(value);
+  }
+  if (typeof value === 'number' && Token.isUnresolved(value)) {
+    return Tokenization.stringifyNumber(value);
+  }
   if (Array.isArray(value)) {
-    return value.map(removeUndefined);
+    if (Token.isUnresolved(value)) {
+      throw new UnscopedValidationError(lit`Ec2LaunchV2ListToken`, 'lists in EC2Launch v2 task inputs cannot be tokens, pass a list of values instead');
+    }
+    return value.map(normalizeEc2LaunchV2Value);
   }
   if (value !== null && typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).map(([k, v]) => [k, removeUndefined(v)]));
+    return Object.fromEntries(Object.entries(value)
+      .filter(([, v]) => v !== undefined)
+      .map(([k, v]) => [k, normalizeEc2LaunchV2Value(v)]));
   }
   return value;
 }

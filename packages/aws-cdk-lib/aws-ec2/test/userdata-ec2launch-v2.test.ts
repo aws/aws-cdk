@@ -1,8 +1,7 @@
 import * as YAML from 'yaml';
 import { Template } from '../../assertions';
 import { Bucket } from '../../aws-s3';
-import type { CfnResource } from '../../core';
-import { Aws, Fn, Lazy, Stack } from '../../core';
+import { Aws, CfnResource, Fn, Lazy, Stack, Token } from '../../core';
 import * as ec2 from '../lib';
 
 function parse(userData: ec2.UserData) {
@@ -210,6 +209,50 @@ describe('EC2Launch v2 user data', () => {
     });
   });
 
+  test('substitutes a token object in custom task inputs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const resource = new CfnResource(stack, 'Resource', { type: 'Test::Resource' });
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.custom('futureTask', { id: resource.getAtt('Id') }));
+
+    // THEN
+    expect(stack.resolve(userData.render())).toEqual({
+      'Fn::Join': ['', [
+        'version: 1.1\ntasks:\n  - task: futureTask\n    inputs:\n      id: |-\n        ',
+        { 'Fn::GetAtt': ['Resource', 'Id'] },
+        '\n',
+      ]],
+    });
+  });
+
+  test('substitutes a number token in custom task inputs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.custom('futureTask', { count: Token.asNumber(Fn.ref('Count')) }));
+
+    // THEN
+    expect(stack.resolve(userData.render())).toEqual({
+      'Fn::Join': ['', [
+        'version: 1.1\ntasks:\n  - task: futureTask\n    inputs:\n      count: |-\n        ',
+        { Ref: 'Count' },
+        '\n',
+      ]],
+    });
+  });
+
+  test('fails for a list token in task inputs', () => {
+    expect(() => ec2.Ec2LaunchV2Task.executeProgram({ path: 'C:\\a.exe', arguments: Fn.split(',', Aws.STACK_NAME) }))
+      .toThrow(/lists in EC2Launch v2 task inputs cannot be tokens/);
+    expect(() => ec2.Ec2LaunchV2Task.custom('futureTask', { values: Fn.split(',', Aws.STACK_NAME) }))
+      .toThrow(/lists in EC2Launch v2 task inputs cannot be tokens/);
+  });
+
   test('can be used as instance user data', () => {
     // GIVEN
     const stack = new Stack();
@@ -255,11 +298,35 @@ describe('EC2Launch v2 user data', () => {
       {
         task: 'executeScript',
         inputs: [
-          { frequency: 'once', type: 'powershell', runAs: 'localSystem', content: 'command1\ncommand2' },
           { frequency: 'once', type: 'powershell', runAs: 'localSystem', content: 'script2' },
+          { frequency: 'once', type: 'powershell', runAs: 'localSystem', content: 'command1\ncommand2' },
         ],
       },
     ]);
+  });
+
+  test('runs the commands, and so the signal, after tasks added later', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    const instance = new ec2.Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.medium'),
+      machineImage: ec2.MachineImage.genericWindows({ 'us-east-1': 'ami-12345678' }),
+      userData,
+    });
+
+    // WHEN
+    userData.addSignalOnExitCommand(instance);
+    userData.addCommands('command1');
+    userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume());
+    userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: 'script2' }));
+
+    // THEN
+    const tasks = parse(userData).tasks;
+    expect(tasks.map((t: any) => t.task)).toEqual(['initializeVolume', 'executeScript']);
+    expect(tasks[1].inputs.map((i: any) => i.content.split('\n')[0])).toEqual(['script2', '$success = $true']);
   });
 
   test('can add a PowerShell script', () => {
