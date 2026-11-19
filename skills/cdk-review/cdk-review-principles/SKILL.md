@@ -5,9 +5,6 @@ description: "Shared foundation every CDK review-dimension skill applies — the
 
 # Review Principles
 
-Every CDK review-dimension skill (`cdk-regression-review`, `cdk-security-review`,
-`cdk-testing-review`, `cdk-documentation-review`, `cdk-construct-design-review`) applies these rules.
-
 ## Severity — rate by the harm it does when it triggers
 
 Ask one question of every finding: **if this ships and the code path is reached, what
