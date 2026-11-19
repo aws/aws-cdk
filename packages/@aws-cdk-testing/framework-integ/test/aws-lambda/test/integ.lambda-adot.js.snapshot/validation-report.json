@@ -1,0 +1,134 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources: Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "IntegTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'python3.9' was deprecated on '2025-12-15'. Creation will be disabled on '2027-07-29', and updates will be disabled on '2027-08-31'. Please consider updating to 'python3.14'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "Stack1/MyFunc2/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "Stack1.template.json",
+                "logicalId": "MyFunc242557A97",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "Stack1/MyFunc3/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "Stack1.template.json",
+                "logicalId": "MyFunc3666B7A2F",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "Stack1/MyFunc4/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "Stack1.template.json",
+                "logicalId": "MyFunc4B88F85C6",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "Stack1/MyFunc5/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "Stack1.template.json",
+                "logicalId": "MyFunc586573B53",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "Stack2/MyFunc2/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "Stack2.template.json",
+                "logicalId": "MyFunc242557A97",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "Stack2/MyFunc3/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "Stack2.template.json",
+                "logicalId": "MyFunc3666B7A2F",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "Stack2/MyFunc4/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "Stack2.template.json",
+                "logicalId": "MyFunc4B88F85C6",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "Stack2/MyFunc5/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "Stack2.template.json",
+                "logicalId": "MyFunc586573B53",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
