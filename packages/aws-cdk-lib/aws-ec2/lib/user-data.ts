@@ -1,7 +1,8 @@
+import * as YAML from 'yaml';
 import { OperatingSystemType } from './machine-image';
 import type { IBucketRef } from '../../aws-s3';
 import type { Resource, CfnResource } from '../../core';
-import { Fn, Stack, UnscopedValidationError } from '../../core';
+import { Fn, Stack, Token, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -100,6 +101,25 @@ export abstract class UserData {
    */
   public static forWindows(options: WindowsUserDataOptions = {}): UserData {
     return new WindowsUserData(options);
+  }
+
+  /**
+   * Create a userdata object for Windows hosts using the EC2Launch v2 YAML format
+   *
+   * Commands added with `addCommands()` and the other `add*Command()` methods
+   * are run as a single PowerShell script. Other EC2Launch v2 tasks can be
+   * added with `addTask()`.
+   *
+   * Requires an AMI that runs the EC2Launch v2 agent, version 2.0.1245 or
+   * later. AWS Windows Server 2022 and later AMIs include it by default; for
+   * Windows Server 2016 and 2019 use the AMIs whose names start with
+   * `EC2LaunchV2-Windows_Server-`. Launch agents older than EC2Launch v2
+   * do not understand this format and ignore the user data.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-settings.html#ec2launch-v2-schema-user-data
+   */
+  public static forWindowsEc2LaunchV2(options: Ec2LaunchV2UserDataOptions = {}): Ec2LaunchV2UserData {
+    return new Ec2LaunchV2UserData(options);
   }
 
   /**
@@ -237,26 +257,17 @@ class WindowsUserData extends UserData {
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
-    const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
-    this.addCommands(
-      `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketRef.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
-    );
-    return localPath;
+    const download = powershellS3DownloadCommands(params);
+    this.addCommands(...download.commands);
+    return download.localPath;
   }
 
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
-    this.addCommands(
-      `&'${params.filePath}' ${params.arguments ?? ''}`.trim(),
-      `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`,
-    );
+    this.addCommands(...powershellExecuteFileCommands(params));
   }
 
   public addSignalOnExitCommand( resource: Resource ): void {
-    const stack = Stack.of(resource);
-    const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
-
-    this.addOnExitCommands(`cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`);
+    this.addOnExitCommands(powershellSignalCommand(resource));
   }
 
   private renderOnExitLines(): string[] {
@@ -265,6 +276,39 @@ class WindowsUserData extends UserData {
     }
     return [];
   }
+}
+
+/**
+ * PowerShell commands that download a file from S3, shared by the Windows user data flavors
+ */
+function powershellS3DownloadCommands(params: S3DownloadOptions): { localPath: string; commands: string[] } {
+  const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
+  return {
+    localPath,
+    commands: [
+      `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
+      `Read-S3Object -BucketName '${params.bucket.bucketRef.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
+    ],
+  };
+}
+
+/**
+ * PowerShell commands that execute a file, shared by the Windows user data flavors
+ */
+function powershellExecuteFileCommands(params: ExecuteFileOptions): string[] {
+  return [
+    `&'${params.filePath}' ${params.arguments ?? ''}`.trim(),
+    `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`,
+  ];
+}
+
+/**
+ * PowerShell command that sends a CloudFormation signal based on the `$success` variable
+ */
+function powershellSignalCommand(resource: Resource): string {
+  const stack = Stack.of(resource);
+  const resourceID = (resource.node.defaultChild as CfnResource).logicalId;
+  return `cfn-signal --stack ${stack.stackName} --resource ${resourceID} --region ${stack.region} --success ($success.ToString().ToLower())`;
 }
 
 /**
@@ -299,6 +343,651 @@ class CustomUserData extends UserData {
 
   public addSignalOnExitCommand(): void {
     throw new UnscopedValidationError(lit`CustomUserDataDoesNotSupportAddSignalOnExitCommand`, 'CustomUserData does not support addSignalOnExitCommand, use UserData.forLinux() or UserData.forWindows() instead.');
+  }
+}
+
+/**
+ * How often an EC2Launch v2 task runs
+ */
+export enum Ec2LaunchV2Frequency {
+  /**
+   * Run only on the first boot of the instance
+   */
+  ONCE = 'once',
+
+  /**
+   * Run on every boot of the instance
+   */
+  ALWAYS = 'always',
+}
+
+/**
+ * The account that EC2Launch v2 runs a script as
+ */
+export enum Ec2LaunchV2RunAs {
+  /**
+   * The local system account
+   */
+  LOCAL_SYSTEM = 'localSystem',
+
+  /**
+   * The local administrator account
+   */
+  ADMIN = 'admin',
+}
+
+/**
+ * The type of script that an EC2Launch v2 `executeScript` task runs
+ */
+export enum Ec2LaunchV2ScriptType {
+  /**
+   * A PowerShell script
+   */
+  POWERSHELL = 'powershell',
+
+  /**
+   * A batch (cmd.exe) script
+   */
+  BATCH = 'batch',
+}
+
+/**
+ * The partition type that the EC2Launch v2 `initializeVolume` task creates
+ */
+export enum Ec2LaunchV2PartitionType {
+  /**
+   * Master boot record
+   */
+  MBR = 'mbr',
+
+  /**
+   * GUID partition table
+   */
+  GPT = 'gpt',
+}
+
+/**
+ * An instance attribute that the EC2Launch v2 `setWallpaper` task can display
+ */
+export enum Ec2LaunchV2WallpaperAttribute {
+  /** The processor architecture */
+  ARCHITECTURE = 'architecture',
+  /** The Availability Zone */
+  AVAILABILITY_ZONE = 'availabilityZone',
+  /** The host name */
+  HOST_NAME = 'hostName',
+  /** The instance ID */
+  INSTANCE_ID = 'instanceId',
+  /** The instance size */
+  INSTANCE_SIZE = 'instanceSize',
+  /** The private IPv4 address */
+  PRIVATE_IP_ADDRESS = 'privateIpAddress',
+  /** The public IPv4 address */
+  PUBLIC_IP_ADDRESS = 'publicIpAddress',
+  /** The IPv6 address */
+  IPV6_ADDRESS = 'ipv6Address',
+}
+
+/**
+ * Options for how EC2Launch v2 runs a script
+ */
+export interface Ec2LaunchV2ScriptOptions {
+  /**
+   * How often the script runs
+   *
+   * @default Ec2LaunchV2Frequency.ONCE
+   */
+  readonly frequency?: Ec2LaunchV2Frequency;
+
+  /**
+   * The account the script runs as
+   *
+   * @default Ec2LaunchV2RunAs.LOCAL_SYSTEM
+   */
+  readonly runAs?: Ec2LaunchV2RunAs;
+
+  /**
+   * Whether to run the script concurrently with other tasks
+   *
+   * When `true`, the exit code of the script (including `3010`, which
+   * requests a reboot) is ignored.
+   *
+   * @default false
+   */
+  readonly detach?: boolean;
+
+  /**
+   * Arguments passed to the shell that runs the script (not to the script itself)
+   *
+   * Only supported for PowerShell scripts.
+   *
+   * @default - EC2Launch v2 passes `-ExecutionPolicy Unrestricted`
+   */
+  readonly arguments?: string[];
+}
+
+/**
+ * Options when constructing UserData for Windows using the EC2Launch v2 format
+ *
+ * These options apply to the PowerShell script made up of the commands added
+ * with `addCommands()` and the other `add*Command()` methods.
+ */
+export interface Ec2LaunchV2UserDataOptions extends Ec2LaunchV2ScriptOptions {
+}
+
+/**
+ * Options for the EC2Launch v2 `executeScript` task
+ */
+export interface Ec2LaunchV2ExecuteScriptOptions extends Ec2LaunchV2ScriptOptions {
+  /**
+   * The content of the script
+   */
+  readonly content: string;
+
+  /**
+   * The type of the script
+   *
+   * @default Ec2LaunchV2ScriptType.POWERSHELL
+   */
+  readonly type?: Ec2LaunchV2ScriptType;
+}
+
+/**
+ * Options for the EC2Launch v2 `executeProgram` task
+ */
+export interface Ec2LaunchV2ExecuteProgramOptions {
+  /**
+   * The path of the executable to run
+   */
+  readonly path: string;
+
+  /**
+   * Arguments passed to the program
+   *
+   * @default - no arguments
+   */
+  readonly arguments?: string[];
+
+  /**
+   * How often the program runs
+   *
+   * @default Ec2LaunchV2Frequency.ONCE
+   */
+  readonly frequency?: Ec2LaunchV2Frequency;
+}
+
+/**
+ * A device for the EC2Launch v2 `initializeVolume` task to initialize
+ */
+export interface Ec2LaunchV2VolumeDevice {
+  /**
+   * The device name, as specified when the volume was attached
+   *
+   * For example `xvdb`, `xvdf` or `/dev/nvme0n1`.
+   */
+  readonly device: string;
+
+  /**
+   * The drive letter to assign to the volume
+   *
+   * @default - Windows assigns a drive letter
+   */
+  readonly letter?: string;
+
+  /**
+   * The volume label
+   *
+   * @default - no label, or `Temporary Storage Z` for instance store volumes
+   */
+  readonly name?: string;
+
+  /**
+   * The partition type to create
+   *
+   * @default - MBR for volumes smaller than 2 TB, GPT otherwise
+   */
+  readonly partition?: Ec2LaunchV2PartitionType;
+}
+
+/**
+ * Options for the EC2Launch v2 `initializeVolume` task
+ */
+export interface Ec2LaunchV2InitializeVolumeOptions {
+  /**
+   * The devices to initialize
+   *
+   * @default - all empty volumes attached to the instance are initialized
+   */
+  readonly devices?: Ec2LaunchV2VolumeDevice[];
+}
+
+/**
+ * Options for the EC2Launch v2 `setHostName` task
+ */
+export interface Ec2LaunchV2HostNameOptions {
+  /**
+   * The host name to set
+   *
+   * At most 15 characters, containing only letters, digits and hyphens,
+   * and not only digits.
+   *
+   * @default - a host name derived from the private IPv4 address
+   */
+  readonly hostName?: string;
+
+  /**
+   * Whether the instance may reboot when the host name is changed
+   *
+   * @default false
+   */
+  readonly reboot?: boolean;
+}
+
+/**
+ * The instance tags that the EC2Launch v2 `setWallpaper` task displays
+ */
+export class Ec2LaunchV2WallpaperTags {
+  /**
+   * Display all instance tags
+   */
+  public static all(): Ec2LaunchV2WallpaperTags {
+    return new Ec2LaunchV2WallpaperTags('AllTags');
+  }
+
+  /**
+   * Display the instance tags with the given names
+   */
+  public static of(...tagNames: string[]): Ec2LaunchV2WallpaperTags {
+    if (tagNames.length === 0) {
+      throw new UnscopedValidationError(lit`Ec2LaunchV2WallpaperTagsEmpty`, 'at least one tag name must be given, use Ec2LaunchV2WallpaperTags.all() to display all tags');
+    }
+    return new Ec2LaunchV2WallpaperTags(tagNames);
+  }
+
+  /** @internal */
+  public readonly _value: string | string[];
+
+  private constructor(value: string | string[]) {
+    this._value = value;
+  }
+}
+
+/**
+ * Options for the EC2Launch v2 `setWallpaper` task
+ */
+export interface Ec2LaunchV2WallpaperOptions {
+  /**
+   * The path of a local .jpg file to use as wallpaper background
+   *
+   * @default 'C:\\ProgramData\\Amazon\\EC2Launch\\wallpaper\\Ec2Wallpaper.jpg'
+   */
+  readonly path?: string;
+
+  /**
+   * The instance attributes to display on the wallpaper
+   *
+   * @default - no attributes
+   */
+  readonly attributes?: Ec2LaunchV2WallpaperAttribute[];
+
+  /**
+   * The instance tags to display on the wallpaper
+   *
+   * Requires instance tags in instance metadata to be enabled.
+   *
+   * @default - no tags
+   */
+  readonly instanceTags?: Ec2LaunchV2WallpaperTags;
+}
+
+/**
+ * Options for the EC2Launch v2 `sysprep` task
+ */
+export interface Ec2LaunchV2SysprepOptions {
+  /**
+   * Whether to clean the instance logs before running Sysprep
+   *
+   * @default false
+   */
+  readonly clean?: boolean;
+
+  /**
+   * Whether to shut down the instance after running Sysprep
+   *
+   * @default false
+   */
+  readonly shutdown?: boolean;
+}
+
+/**
+ * A task for EC2Launch v2 to run as part of user data
+ *
+ * Only the tasks that EC2Launch v2 allows in the `UserData` stage are provided
+ * as factory methods. Use `Ec2LaunchV2Task.custom()` for tasks not covered here.
+ *
+ * The `writeFile` task is not provided: although documented for user data,
+ * EC2Launch v2 (version 2.5.2) does not load user data that contains it. Use
+ * `Set-Content` in `addCommands()` to write files instead.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html
+ */
+export class Ec2LaunchV2Task {
+  /**
+   * Run a PowerShell or batch script
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-executescript
+   */
+  public static executeScript(options: Ec2LaunchV2ExecuteScriptOptions): Ec2LaunchV2Task {
+    const type = options.type ?? Ec2LaunchV2ScriptType.POWERSHELL;
+    return new Ec2LaunchV2Task('executeScript', [renderEc2LaunchV2Script(options, type, options.content)]);
+  }
+
+  /**
+   * Run an executable
+   *
+   * The program always runs as the local system account.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-executeprogram
+   */
+  public static executeProgram(options: Ec2LaunchV2ExecuteProgramOptions): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('executeProgram', [{
+      frequency: options.frequency ?? Ec2LaunchV2Frequency.ONCE,
+      path: options.path,
+      arguments: options.arguments,
+      runAs: Ec2LaunchV2RunAs.LOCAL_SYSTEM,
+    }]);
+  }
+
+  /**
+   * Initialize, partition and format empty volumes attached to the instance
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-initializevolume
+   */
+  public static initializeVolume(options: Ec2LaunchV2InitializeVolumeOptions = {}): Ec2LaunchV2Task {
+    const devices = options.devices;
+    if (devices === undefined) {
+      return new Ec2LaunchV2Task('initializeVolume', { initialize: 'all' });
+    }
+    if (!Token.isUnresolved(devices) && devices.length === 0) {
+      throw new UnscopedValidationError(lit`Ec2LaunchV2InitializeVolumeNoDevices`, 'devices must not be empty, omit devices to initialize all empty volumes');
+    }
+    for (const device of devices) {
+      if (device.letter !== undefined && !Token.isUnresolved(device.letter) && !/^[A-Za-z]$/.test(device.letter)) {
+        throw new UnscopedValidationError(lit`Ec2LaunchV2InvalidDriveLetter`, `drive letter must be a single letter, got ${JSON.stringify(device.letter)}`);
+      }
+    }
+    return new Ec2LaunchV2Task('initializeVolume', {
+      initialize: 'devices',
+      devices: devices.map(d => ({ device: d.device, name: d.name, letter: d.letter, partition: d.partition })),
+    });
+  }
+
+  /**
+   * Set the host name of the instance (the `setHostName` task)
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-sethostname
+   */
+  public static hostName(options: Ec2LaunchV2HostNameOptions = {}): Ec2LaunchV2Task {
+    const hostName = options.hostName;
+    if (hostName !== undefined && !Token.isUnresolved(hostName)
+      && (hostName.length > 15 || !/^[A-Za-z0-9-]+$/.test(hostName) || /^[0-9]+$/.test(hostName))) {
+      throw new UnscopedValidationError(lit`Ec2LaunchV2InvalidHostName`, `host name must be at most 15 characters, contain only letters, digits and hyphens, and not only digits, got ${JSON.stringify(hostName)}`);
+    }
+    return new Ec2LaunchV2Task('setHostName', { hostName, reboot: options.reboot ?? false });
+  }
+
+  /**
+   * Set a wallpaper that displays instance information (the `setWallpaper` task)
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-setwallpaper
+   */
+  public static wallpaper(options: Ec2LaunchV2WallpaperOptions = {}): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('setWallpaper', {
+      path: options.path ?? 'C:\\ProgramData\\Amazon\\EC2Launch\\wallpaper\\Ec2Wallpaper.jpg',
+      attributes: options.attributes,
+      instanceTags: options.instanceTags?._value,
+    });
+  }
+
+  /**
+   * Run Sysprep after all other tasks have completed
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-task-sysprep
+   */
+  public static sysprep(options: Ec2LaunchV2SysprepOptions = {}): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('sysprep', { clean: options.clean ?? false, shutdown: options.shutdown ?? false });
+  }
+
+  /**
+   * Enable jumbo frames (9001 MTU) on the network adapter
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-enablejumboframes
+   */
+  public static enableJumboFrames(): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('enableJumboFrames', undefined);
+  }
+
+  /**
+   * Enable OpenSSH and add the instance key pair's public key to the authorized keys
+   *
+   * Requires Windows Server 2019 or later.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-enableopenssh
+   */
+  public static enableOpenSsh(): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('enableOpenSsh', undefined);
+  }
+
+  /**
+   * Optimize ENA settings for the instance type
+   *
+   * This might reboot the instance.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-optimizeena
+   */
+  public static optimizeEna(): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('optimizeEna', undefined);
+  }
+
+  /**
+   * Start the Systems Manager agent service
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-startssm
+   */
+  public static startSsm(): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('startSsm', undefined);
+  }
+
+  /**
+   * A task not otherwise supported by this class
+   *
+   * `inputs` is rendered as-is. If it is a list, adding the same task again
+   * appends to that list, like `executeScript` and `executeProgram`.
+   *
+   * @param taskName the name of the task, for example `executeScript`
+   * @param inputs the inputs of the task
+   */
+  public static custom(taskName: string, inputs?: any): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task(taskName, inputs);
+  }
+
+  /**
+   * The name of the task
+   */
+  public readonly taskName: string;
+
+  /** @internal */
+  public readonly _inputs: any;
+
+  private constructor(taskName: string, inputs: any) {
+    this.taskName = taskName;
+    this._inputs = inputs;
+  }
+}
+
+/**
+ * Render a single `executeScript` input
+ */
+function renderEc2LaunchV2Script(options: Ec2LaunchV2ScriptOptions, type: Ec2LaunchV2ScriptType, content: string) {
+  if (type === Ec2LaunchV2ScriptType.BATCH && options.arguments !== undefined) {
+    throw new UnscopedValidationError(lit`Ec2LaunchV2BatchScriptArguments`, 'arguments are not supported for batch scripts, remove arguments or use Ec2LaunchV2ScriptType.POWERSHELL');
+  }
+  return {
+    frequency: options.frequency ?? Ec2LaunchV2Frequency.ONCE,
+    type,
+    runAs: options.runAs ?? Ec2LaunchV2RunAs.LOCAL_SYSTEM,
+    detach: options.detach,
+    arguments: options.arguments,
+    content,
+  };
+}
+
+/**
+ * Windows Instance User Data in the EC2Launch v2 YAML format
+ *
+ * EC2Launch v2 only allows each task to appear once, so tasks run in the order
+ * they were first added. Adding `executeScript` or `executeProgram` again
+ * appends to the inputs of the existing task. The commands added with
+ * `addCommands()` and the other `add*Command()` methods form a single
+ * PowerShell input of the `executeScript` task.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-settings.html#ec2launch-v2-schema-user-data
+ */
+export class Ec2LaunchV2UserData extends UserData {
+  private readonly lines: string[] = [];
+  private readonly onExitLines: string[] = [];
+  /**
+   * Task inputs by task name, in the order the tasks were first added.
+   *
+   * List inputs may contain functions, which produce an input at render time
+   * (or `undefined` to omit it).
+   */
+  private readonly tasks = new Map<string, any>();
+  private hasCommandScript = false;
+
+  constructor(private readonly options: Ec2LaunchV2UserDataOptions = {}) {
+    super();
+    // Validate eagerly, so errors point at the call site
+    renderEc2LaunchV2Script(options, Ec2LaunchV2ScriptType.POWERSHELL, '');
+  }
+
+  /**
+   * Add an EC2Launch v2 task to the user data
+   */
+  public addTask(task: Ec2LaunchV2Task): void {
+    this.mergeTask(task.taskName, task._inputs);
+  }
+
+  public addCommands(...commands: string[]): void {
+    this.ensureCommandScript();
+    this.lines.push(...commands);
+  }
+
+  public addOnExitCommands(...commands: string[]): void {
+    this.ensureCommandScript();
+    this.onExitLines.push(...commands);
+  }
+
+  public render(): string {
+    const tasks: any[] = [];
+    for (const [task, inputs] of this.tasks) {
+      if (Array.isArray(inputs)) {
+        const rendered = inputs.map(input => typeof input === 'function' ? input() : input).filter(input => input !== undefined);
+        if (rendered.length > 0) {
+          tasks.push({ task, inputs: rendered });
+        }
+      } else {
+        tasks.push(inputs === undefined ? { task } : { task, inputs });
+      }
+    }
+    return renderEc2LaunchV2Yaml({ version: 1.1, tasks });
+  }
+
+  public addS3DownloadCommand(params: S3DownloadOptions): string {
+    const download = powershellS3DownloadCommands(params);
+    this.addCommands(...download.commands);
+    return download.localPath;
+  }
+
+  public addExecuteFileCommand(params: ExecuteFileOptions): void {
+    this.addCommands(...powershellExecuteFileCommands(params));
+  }
+
+  public addSignalOnExitCommand(resource: Resource): void {
+    this.addOnExitCommands(powershellSignalCommand(resource));
+  }
+
+  private ensureCommandScript() {
+    if (!this.hasCommandScript) {
+      this.mergeTask('executeScript', [() => this.renderCommandScript()]);
+      this.hasCommandScript = true;
+    }
+  }
+
+  private renderCommandScript() {
+    if (this.lines.length === 0 && this.onExitLines.length === 0) {
+      return undefined;
+    }
+    const content = this.onExitLines.length === 0
+      ? this.lines
+      : [
+        '$success = $true',
+        'try {',
+        ...this.lines,
+        '} catch {',
+        '$success = $false',
+        'throw',
+        '} finally {',
+        ...this.onExitLines,
+        '}',
+      ];
+    return renderEc2LaunchV2Script(this.options, Ec2LaunchV2ScriptType.POWERSHELL, content.join('\n'));
+  }
+
+  private mergeTask(task: string, inputs: any) {
+    if (!this.tasks.has(task)) {
+      this.tasks.set(task, Array.isArray(inputs) ? [...inputs] : inputs);
+      return;
+    }
+    const existing = this.tasks.get(task);
+    if (Array.isArray(existing) && Array.isArray(inputs)) {
+      existing.push(...inputs);
+    } else if (existing !== undefined || inputs !== undefined) {
+      throw new UnscopedValidationError(lit`Ec2LaunchV2DuplicateTask`, `task ${JSON.stringify(task)} has already been added, EC2Launch v2 allows each task only once in user data`);
+    }
+  }
+}
+
+/**
+ * Render an EC2Launch v2 user data document
+ *
+ * Uses YAML 1.1 rules, so strings such as `yes` or `on` are quoted, and
+ * literal block scalars for multi-line strings, so scripts stay readable and
+ * values substituted into them by CloudFormation need no escaping.
+ */
+function renderEc2LaunchV2Yaml(value: any): string {
+  const doc = new YAML.Document({ version: '1.1' });
+  doc.contents = YAML.createNode(removeUndefined(value)) as any;
+  useLiteralBlocks(doc.contents);
+  return doc.toString();
+}
+
+function removeUndefined(value: any): any {
+  if (Array.isArray(value)) {
+    return value.map(removeUndefined);
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).map(([k, v]) => [k, removeUndefined(v)]));
+  }
+  return value;
+}
+
+function useLiteralBlocks(node: any) {
+  if (node?.items) {
+    // Maps contain pairs, sequences contain nodes
+    node.items.forEach((item: any) => useLiteralBlocks(item?.value !== undefined && item?.key !== undefined ? item.value : item));
+  } else if (typeof node?.value === 'string' && node.value.includes('\n')) {
+    node.type = 'BLOCK_LITERAL';
   }
 }
 

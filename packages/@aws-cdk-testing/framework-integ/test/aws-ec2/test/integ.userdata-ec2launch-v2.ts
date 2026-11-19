@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+
+/*
+ * The instance only signals CloudFormation once EC2Launch v2 has parsed the
+ * YAML user data, run the executeProgram task, and the PowerShell commands
+ * have verified its result. Deployment fails if any of that does not happen.
+ */
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'integ-userdata-ec2launch-v2');
+
+const vpc = new ec2.Vpc(stack, 'Vpc', {
+  maxAzs: 1,
+  natGateways: 0,
+  subnetConfiguration: [{ name: 'Public', subnetType: ec2.SubnetType.PUBLIC }],
+  restrictDefaultSecurityGroup: false,
+});
+
+const createdDir = 'C:\\cdk-integ-execute-program';
+const userData = ec2.UserData.forWindowsEc2LaunchV2();
+userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({
+  path: 'C:\\Windows\\System32\\cmd.exe',
+  arguments: ['/c', 'mkdir', createdDir],
+}));
+userData.addCommands(
+  `if (-not (Test-Path -Path '${createdDir}' -PathType Container)) { throw 'executeProgram task did not run' }`,
+);
+
+const instance = new ec2.Instance(stack, 'Instance', {
+  vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  machineImage: ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE),
+  userData,
+  resourceSignalTimeout: cdk.Duration.minutes(30),
+});
+userData.addSignalOnExitCommand(instance);
+
+new integ.IntegTest(app, 'UserDataEc2LaunchV2', {
+  testCases: [stack],
+});

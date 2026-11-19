@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "UserDataEc2LaunchV2/DefaultTest": {
+      "stacks": [
+        "integ-userdata-ec2launch-v2"
+      ],
+      "assertionStack": "UserDataEc2LaunchV2/DefaultTest/DeployAssert",
+      "assertionStackName": "UserDataEc2LaunchV2DefaultTestDeployAssert708A6AAF"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

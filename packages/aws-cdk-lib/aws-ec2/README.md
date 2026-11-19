@@ -2614,6 +2614,68 @@ const windowsUserData = ec2.UserData.forWindows({ persist: true });
 For a Linux instance, this can be accomplished by using a Multipart user data to configure cloud-config as detailed
 in: https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2/
 
+### Windows user data for EC2Launch v2
+
+`UserData.forWindows()` produces the XML (`<powershell>`) format that every Windows launch agent understands.
+Instances running the [EC2Launch v2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2.html) agent
+also accept a YAML document listing [tasks](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html)
+to run, which gives more control: for example, initializing volumes, setting the host name, running programs, or running
+scripts as a specific account. Use `UserData.forWindowsEc2LaunchV2()` to produce this format.
+
+Commands added with `addCommands()` and the other `add*Command()` methods are run as a single PowerShell script, and
+other tasks can be added with `addTask()`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const userData = ec2.UserData.forWindowsEc2LaunchV2();
+userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({
+  devices: [{ device: 'xvdf', letter: 'D', name: 'Data' }],
+}));
+userData.addTask(ec2.Ec2LaunchV2Task.hostName({ hostName: 'web-01', reboot: true }));
+userData.addCommands('Install-WindowsFeature -Name Web-Server');
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
+  machineImage: ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE),
+  userData,
+});
+```
+
+EC2Launch v2 allows each task only once in user data, so tasks run in the order they were first added. Adding an
+`executeScript` or `executeProgram` task again appends to the inputs of the existing task, and the commands added
+with `addCommands()` are one input of the `executeScript` task. Tasks without a factory method in `Ec2LaunchV2Task`
+can be added with `Ec2LaunchV2Task.custom()`.
+
+There is no factory method for the `writeFile` task: although it is documented for user data, EC2Launch v2 does not
+load user data that contains it. Use `Set-Content` in `addCommands()` to write files instead.
+
+AWS Windows Server 2022 and later AMIs run EC2Launch v2 by default. For Windows Server 2016 and 2019, use the AMIs whose
+names start with `EC2LaunchV2-Windows_Server-`:
+
+```ts
+const machineImage = ec2.MachineImage.lookup({
+  name: 'EC2LaunchV2-Windows_Server-2019-English-Full-Base-*',
+  windows: true,
+});
+```
+
+Earlier launch agents (EC2Launch v1 and EC2Config) do not understand this format.
+
+#### Moving from `UserData.forWindows()`
+
+* Commands, `addS3DownloadCommand()`, `addExecuteFileCommand()` and `addSignalOnExitCommand()` produce the same
+  PowerShell commands as with `UserData.forWindows()`.
+* Instead of `persist: true`, use `frequency: ec2.Ec2LaunchV2Frequency.ALWAYS`.
+* The script runs as the local system account by default. Use `runAs: ec2.Ec2LaunchV2RunAs.ADMIN` to run it as the
+  local administrator instead.
+* Commands added with `addOnExitCommands()` run in a `finally` block, so they also run when the script calls `exit`. This
+  includes `exit 3010`, which EC2Launch v2 uses to reboot the instance and run the script again, so a signal added with
+  `addSignalOnExitCommand()` is sent before such a reboot.
+* Switching an existing instance to the new format is a user data change like any other: the instance is not
+  replaced unless `userDataCausesReplacement` is set, and a script with frequency `once` does not run again on it.
+
 ### Multipart user data
 
 In addition, to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
