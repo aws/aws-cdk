@@ -162,7 +162,7 @@ export interface FileCopyOptions extends FileOptions {
    *
    * ## Without bundling
    *
-   * When used without the `bundling` property the asset is just a regular file
+   * When used without the `bundling` property, the asset is just a regular file
    * copy operation. In that case, symlinks are materialized or blocked with respect
    * to the source path root as they are being copied.
    *
