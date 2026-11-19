@@ -7,8 +7,8 @@ BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-seve
 `(doc-absent detail)` marker, and links referencing `main`).
 
 Severity across these rows is set by shipped-doc consumer impact, not by whether the build breaks: a
-doc that is *wrong* or *absent* is BLOCKING; one documented but *thin* on a required facet is
-RECOMMENDED.
+doc that is *wrong*, or a new L2 with no usage example at all, is BLOCKING; a single member with no
+JSDoc, or a doc *thin* on a required facet, is RECOMMENDED.
 
 ## Example compilation
 
@@ -71,13 +71,6 @@ a real behavioral surprise).
 
 ## Public-API doc completeness
 
-**[DOC-PUBLIC-API-UNDOCUMENTED] (BLOCKING)** — A new public class, method, or prop the PR adds with NO
-JSDoc at all, where the guidelines require docs (`awslint:docs-public-apis`). See
-[`AGENTS.md § Documentation › JSDoc`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#jsdoc).
-- **Out-of-scope guard (doc-absent detail):** a missing doc on an override/implementation is NOT this
-  gap — the reference docs auto-copy the base doc (`awslint:docs-no-duplicates`), so flagging it is itself
-  an error.
-
 **[DOC-README-MISSING-EXAMPLE] (BLOCKING)** — A new L2 construct (or substantial new feature) with no
 README usage example — the README requirement, distinct from the `awslint:docs-public-apis` JSDoc gate
 (a fully-JSDoc'd L2 still owes a README example). See
@@ -85,6 +78,16 @@ README usage example — the README requirement, distinct from the `awslint:docs
 - **Conditional severity (doc-absent detail):** BLOCKING for a brand-new public L2 with zero usage docs.
   Down to RECOMMENDED for a new prop on an existing construct with no README mention; a new mixin with no
   `## Mixins` README entry is a RECOMMENDED completeness gap.
+
+**[DOC-PUBLIC-API-UNDOCUMENTED] (RECOMMENDED)** — A new public class, method, property or interface the PR
+adds with NO JSDoc at all (`awslint:docs-public-apis`). See
+[`AGENTS.md § Documentation › JSDoc`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#jsdoc). The guide
+names no harm beyond the missing doc, so RECOMMENDED; a doc that misstates behavior is `DOC-DEFAULT-WRONG`.
+- **Out-of-scope guard (doc-absent detail):** a missing doc on an override/implementation is NOT this
+  gap — the reference docs auto-copy the base doc (`awslint:docs-no-duplicates`), so flagging it is itself
+  an error.
+- **Not this gap either (doc-absent detail):** a constructor or a `protected` member, which the guide's
+  list does not name and `awslint:docs-public-apis` skips.
 
 **[DOC-ATTRIBUTE-MISSING] (RECOMMENDED)** — A new resource-attribute property missing its `@attribute`
 tag (`awslint:attribute-tag`; attribute names must begin with the type name, `bucketArn` not `arn`). See

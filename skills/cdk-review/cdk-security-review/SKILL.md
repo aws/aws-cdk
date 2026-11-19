@@ -87,7 +87,5 @@ resource access, Secrets & credentials, Secure defaults.
 ## Apply cdk-review-principles
 
 Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED/OPTIONAL scale, the
-baseline-vs-excellence distinction, the evidence and citation authority order, the `file:line`
-discipline, the finding format, and the comment budget. Do NOT redefine the severity vocabulary here;
-the security exposure discriminator on top of it lives per-rule in
-[`security-rules.md`](references/security-rules.md).
+baseline-vs-excellence distinction, the evidence and citation authority order, the `file:line` discipline,
+the finding format, and the bar a finding must meet.

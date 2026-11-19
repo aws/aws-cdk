@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, the concrete-fix rule, the 3-7 comment budget, review tone, the shared what-NOT-to-flag exclusions, the finding-output contract (ruleId + reference fields), and the rules-lookup convention. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, the concrete-fix rule, the bar a finding must meet to be posted, review tone, the shared what-NOT-to-flag exclusions, the finding-output contract (ruleId + reference fields), and the rules-lookup convention. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -66,9 +66,8 @@ quote it, so the author sees the authority.
 
 Keep **baseline** harm (correctness, security, compliance — must fix) separate from
 **excellence** framing (design that takes a change from correct to better). Excellence is
-not a fourth tier: grade it on the harm scale like any finding, competing for the same
-comment budget. Never report one piece of code as both a must-fix and a design nicety —
-that double-counts it.
+not a fourth tier: grade it on the harm scale like any finding, against the same bar. Never
+report one piece of code as both a must-fix and a design nicety — that double-counts it.
 
 ## Make each finding land
 
@@ -82,9 +81,10 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   linked by file + line) → CDK design guidelines (`docs/DESIGN_GUIDELINES.md`,
   `docs/AGENTS_CONSTRUCT_DESIGN.md`, `docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) →
   CloudFormation resource specification (property/enum correctness) → linked issue / PR
-  discussion (customer context) → existing tests (behavioral expectations). Prefer AWS
-  documentation when sources disagree. Skip a citation only for pure style, an obvious
-  typo or unused import, or a genuine question. **Verify before you cite:** when a finding
+  discussion (customer context) → existing tests (behavioral expectations). When these
+  references disagree with each other, cite AWS documentation first. Skip a citation only for
+  pure style, an obvious typo or unused import, or a genuine question. **Verify before you
+  cite:** when a finding
   turns on whether an attribute, mode, default, enum value, or a service/CDK behavior is
   REAL — or on what CDK's own API, testing, or README guidance says — you MUST search and
   read the authoritative AWS and CDK documentation available to you and confirm the fact
@@ -112,11 +112,12 @@ suggestions as questions where you can; stay direct but not harsh on blocking is
 ("this needs to change because…", not "this is wrong"); acknowledge good work; and drop
 "obviously" and "simply".
 
-## Keep the review to a tight, high-harm set
+## Findings must meet the bar
 
-Target **3-7 comments per review**. Keep every `BLOCKING` finding; then the highest-harm
-`RECOMMENDED` findings; add `OPTIONAL` ones only if the total stays within budget. More
-than seven dilutes the review and buries the damage under polish.
+A finding is posted, at its tier, when it meets the posting conditions below, and only then.
+The number of findings is not a target: there is none to reach and none to stay under, and
+zero comments is the right result for a PR with nothing wrong. A count would choose findings
+by number rather than by merit.
 
 A finding becomes a posted comment only when all of these hold, whatever its tier:
 

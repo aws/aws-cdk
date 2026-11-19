@@ -59,8 +59,9 @@ Work the changed docs in this order — a method, not a rigid script. Adapt to w
    consumer, unspecified API — per `cdk-review-principles` (its BLOCKING/RECOMMENDED/OPTIONAL scale,
    "Confidence is not severity"); never demote a real defect to OPTIONAL out of uncertainty a reader
    reaches the line. When one location has
-   more than one doc defect, classify under the most severe type and describe them in one finding. Stop
-   once you can name the defect and cite its rule and guideline section.
+   more than one doc defect, describe them in one finding with the `ruleId`, `category` and `severity` of
+   the most severe one, since each field takes one value. Stop once you can name the defect and cite its
+   rule and guideline section.
 
 ## What NOT to flag
 
@@ -92,5 +93,5 @@ snippet as written and its corrected form.
 ## Apply cdk-review-principles
 
 Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED/OPTIONAL scale, the
-evidence/citation authority order, the `file:line` discipline, the finding format, and the comment budget.
-Do not redefine the severity vocabulary here.
+evidence/citation authority order, the `file:line` discipline, the finding format, and the bar a
+finding must meet.

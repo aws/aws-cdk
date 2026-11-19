@@ -1,4 +1,4 @@
-# Test coverage rules — the lookup
+# Test review rules — the lookup
 
 Rows are grouped by family — unit tests, then integration tests. See the `cdk-review-principles`
 skill for the shared lookup convention: the
@@ -10,48 +10,16 @@ BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-seve
 **[TEST-UNIT-NO-ASSERTION] (BLOCKING)** — A non-asserting test — the path runs but nothing asserts the outcome that matters:
 no assertion, `Match.anyValue()`, a whole-template snapshot, a bare "does not throw", a return-value-only
 (`statementAdded === false`) or count-only assertion, a `toContain` on a shared prefix, a no-op statement
-(`tablePolicy;`), or a test named for a behavior it never exercises. A merged PR already covers ≥95% of its changed lines, so a green Codecov
-check proves the lines *ran*, never that anything *asserted* their outcome. See
+(`tablePolicy;`), or a test named for a behavior it never exercises. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the `Match`
-rules and
-[`CONTRIBUTING.md § Addressing Code Coverage Gaps`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#addressing-code-coverage-gaps)
-for the patch bar.
+rules.
 - **Conditional (doc-absent detail):** down-tier RECOMMENDED when the core outcome is asserted elsewhere
   and only a facet is loose.
 - **Detection method (doc-absent detail):** ask **if I broke the behavior this test covers, would this
-  test turn red?** If not, it is a non-asserting test — it raised the Codecov number without proving anything.
+  test turn red?** If not, it is a non-asserting test.
   Close it by asserting the specific property/value with `Match.objectLike` (or `objectEquals` /
   `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts. `addWarningV2`
   appends `[ack: <id>]` to the message, so a `hasWarning` that matches the id asserts the id.
-
-  ```ts
-  // NON-ASSERTING: runs the new prop path, asserts nothing that would catch a wrong value
-  test('supports versioning', () => {
-    new Bucket(stack, 'B', { versioned: true });
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      VersioningConfiguration: Match.anyValue(),   // passes even if Status is wrong / absent
-    });
-  });
-  // MEANINGFUL: asserts the exact outcome the change is responsible for
-  test('versioning sets Status=Enabled', () => {
-    new Bucket(stack, 'B', { versioned: true });
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
-      VersioningConfiguration: { Status: 'Enabled' },
-    });
-  });
-  ```
-
-**[TEST-UNIT-MISSING-REGRESSION] (BLOCKING)** — A new behavior or branch this PR adds ships with no test
-that would fail if it regressed: the path exists but nothing locks it in. Applied at branch granularity —
-every new `if`/`else` arm, default value, or computed property owes a test whose assertion depends on that
-outcome. See
-[`CONTRIBUTING.md § Step 3: Work your Magic`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-3-work-your-magic).
-- **Detection method (doc-absent detail):** enumerate the branches and observable outcomes the diff
-  introduces; for each, find the test whose assertion depends on that outcome — a branch with no such test
-  is the gap. For a subtle branch (which policy a `grant*` writes for a same-stack role vs an imported
-  cross-stack principal — an **identity/IAM policy** for the same-stack principal but an
-  **imported/resource policy** for the imported or cross-stack one, scoping the ARN differently), consult
-  the source of the method under test and a neighboring test covering the analogous branch, and compare.
 
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
 optional prop that changes a default with no backward-compat test locking the old default in. Both
@@ -61,7 +29,7 @@ ships with the suite still green. See
 flag mechanics and
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for the backward-compat-validation rule: input that previously deployed successfully MUST gate behind a
-flag — both states then owe coverage; synth-accepted-but-always-deploy-failing input owes fail-fast
+flag — both states then owe a test; synth-accepted-but-always-deploy-failing input owes fail-fast
 synth-time validation and a negative-case test.
 - **Conditional (doc-absent detail):** down-tier RECOMMENDED when only the new state is untested and the
   preserved old default IS covered.
@@ -69,6 +37,18 @@ synth-time validation and a negative-case test.
   adds a flag in `cx-api`, two behaviors are reachable (flag on / flag off) and both need a test. BLOCKING
   when the untested state is the one existing apps depend on — a regression there breaks deployed stacks
   with the suite green.
+
+**[TEST-UNIT-MISSING-REGRESSION] (RECOMMENDED)** — A behavior the PR adds that a user relies on has no test
+that would fail if it broke. See
+[`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for how to assert
+the outcome.
+- **Conditional (doc-absent detail):** up-tier BLOCKING when the untested behavior is a security- or
+  correctness-critical guardrail the change adds. Such a guardrail is a check the change adds whose silent
+  failure would let a security exposure or a wrong deployment through, for example a validation that
+  rejects a configuration which would otherwise deploy and be exposed or wrong. A check whose silent
+  failure would only surface as a synthesis or deployment error, such as a bound on a value the service
+  itself rejects, is not a guardrail: losing it delays an error the user gets anyway. Neither is any other
+  behavior, however important; its missing test stays RECOMMENDED.
 
 **[TEST-UNIT-EDGE-NEGATIVE] (RECOMMENDED)** — The happy path is tested but the boundary value, invalid
 input, or failure/error path the code handles is not — where regressions hide. A branch that
@@ -80,29 +60,16 @@ regresses. See
 [`assertions/README.md § Asserting Annotations`](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/assertions/README.md#asserting-annotations)
 for the `hasWarning`/`hasNoWarning`/`hasError` API, and
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Mixin Testing`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#mixin-testing),
-which lists rejection and validation-failure as required coverage.
+which lists rejection and validation-failure as required tests.
 - **Conditional (doc-absent detail):** up-tier BLOCKING when the diagnostic / reject arm is a security- or
-  correctness-critical guardrail the change adds.
-- **Detection method (doc-absent detail):** for each new validation / bound / failure path, look for the
-  negative case (`test.each([0, -1, 256])(...)`, an error test asserting the **specific** message). The
-  warning branch is the reject arm most often missed:
-
-  ```ts
-  // GAP: the open-CIDR branch calls addWarningV2, but the test only asserts not.toThrow()
-  test('accepts a CIDR', () => { expect(() => makeThing({ cidr: '0.0.0.0/0' })).not.toThrow(); });
-  // CLOSE IT: assert the warning actually fires for the discouraged input
-  test('warns on an open CIDR', () => {
-    makeThing(stack, { cidr: '0.0.0.0/0' });
-    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('.*0\\.0\\.0\\.0/0.*'));
-  });
-  ```
+  correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
 
 **[TEST-UNIT-TOKEN-GUARD] (RECOMMENDED)** — The PR adds a `Token.isUnresolved()` guard (skipping a
 validation or a string manipulation for deploy-time values), and no test passes an unresolved token through
 it. See [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety) for
 the guard itself.
 - **Conditional (doc-absent detail):** up-tier BLOCKING when the guard skips a security- or
-  correctness-critical validation the change adds.
+  correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
 - **Why the test (doc-absent detail):** the guide requires the guard, not a test of it. Without a test that
   passes an unresolved token (for example `Token.asString({ Ref: 'P' })`), a later edit can drop the
   guard unnoticed. The check or manipulation then runs on the encoded token, and rejects or corrupts
@@ -131,7 +98,7 @@ the exempt terminal.
   previously-unused or untested CFN property is NOT exempt; that case requires a test and takes precedence
   over the pass-through intuition.
 - **Conditional (doc-absent detail):** down-tier RECOMMENDED when a unit test already asserts the change's
-  synthesized-template effect and only the owed integ test is absent (a coverage-depth gap, not shipped
+  synthesized-template effect and only the owed integ test is absent (a gap in test depth, not shipped
   damage — ask for the integ test or the exempt label, do not block).
 
 **[TEST-INTEG-DANGEROUS-SNAPSHOT] (BLOCKING)** — The committed `*.snapshot` change hides a dangerous
@@ -212,12 +179,12 @@ for the assertion-owed cases and the `awsApiCall` → `ExpectedResult` API. Also
   a deploy-time assertion — a successful deploy validates it, and demanding one there is the noise-cannon.
 
 **[TEST-INTEG-REDUNDANT] (OPTIONAL)** — N resources created to exercise N enum values when one reconfigured
-resource, or the enum threaded through, gives the same synthesized-template coverage. One resource usually
+resource, or the enum threaded through, tests the same synthesized template. One resource usually
 suffices to prove the enum renders. See
 [`INTEGRATION_TESTS.md § New L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#new-l2-constructs)
 and
 [`§ Existing L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#existing-l2-constructs)
-for the coverage shape a new/existing L2 owes.
+for the tests a new/existing L2 owes.
 - **Conditional (doc-absent detail):** up-tier RECOMMENDED when the multiplication is large.
 - **Module-norm technique (doc-absent detail):** when judging over-/under-testing, compare against 2-3
   similar integ tests in the same module (stable in

@@ -7,16 +7,6 @@ encoding, the `(doc-absent detail)` marker, and links referencing `main`).
 
 ## Feature placement & abstraction
 
-**[CD-FEATURE-PLACEMENT] (BLOCKING)** — Implement a new feature as a building block (Mixin /
-CfnPropsMixin / Facade / Trait) first, and only as an L2 method if none fits. See
-[`AGENTS_CONSTRUCT_DESIGN.md § Feature Placement Decision`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#feature-placement-decision)
-for the first-match-wins table and
-[`AGENTS.md § L2 Building Blocks`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#l2-building-blocks)
-for each block.
-- **Detection cue (doc-absent detail):** the "feature" to place is feature *logic* — input validation,
-  auxiliary-resource creation, or computed behavior — living in L2 glue code, or a grant/metric/event
-  helper implemented as a bare method rather than a building block.
-
 **[CD-IFOO-NO-FEATURE-METHODS] (BLOCKING)** — A feature method or config-mutation method added to the
 resource interface `IFoo` is a MUST violation; features belong on Facades. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo)
@@ -29,6 +19,18 @@ and [`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/
 provide an escape hatch to the L1, and expose the full service surface (no hard-coded choice the service
 exposes). See
 [`AGENTS.md § Architecture — The Layer Model`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#architecture--the-layer-model).
+
+**[CD-FEATURE-PLACEMENT] (RECOMMENDED)** — Implement a new feature as a building block (Mixin /
+CfnPropsMixin / Facade / Trait) first, and only as an L2 method if none fits. See
+[`AGENTS_CONSTRUCT_DESIGN.md § Feature Placement Decision`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#feature-placement-decision)
+for the first-match-wins table and
+[`AGENTS.md § L2 Building Blocks`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#l2-building-blocks)
+for each block.
+- **Tier (doc-absent detail):** the guide names no damage: a feature in L2 code still works for that L2's
+  users and only reuse is lost, so RECOMMENDED. A feature method on `IFoo` is `CD-IFOO-NO-FEATURE-METHODS`.
+- **Detection cue (doc-absent detail):** the "feature" to place is feature *logic* — input validation,
+  auxiliary-resource creation, or computed behavior — living in L2 glue code, or a grant/metric/event
+  helper implemented as a bare method rather than a building block.
 
 **[CD-README-DRIVEN] (RECOMMENDED)** — A new or significantly-changed L2 shipping with no README usage
 example is a design miss. See
@@ -75,22 +77,6 @@ the identifier. See
 `removalPolicy?` prop. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy).
 
-**[CD-STATEFUL-REPLACEMENT-FOOTGUN] (BLOCKING)** — A new L2 prop mapping to a CloudFormation property whose
-`UpdateType` is `Immutable` (or `Conditional`) is a replacement footgun: setting it later triggers a
-CloudFormation replacement. On a stateful resource — database, table, bucket, EFS, DynamoDB, OpenSearch, EBS
-volume, Secret, KMS key — that replacement destroys the user's data, so the L2 should guard the prop:
-validate it, warn on change, or document the replacement risk. Verify the update behavior against the
-CloudFormation resource specification before you flag. See
-[CloudFormation § Update behaviors — Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
-for the update-behavior classes and
-[`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy)
-for the stateful classification.
-- **Down-tier to RECOMMENDED for a stateless resource (doc-absent detail):** replacement there costs
-  downtime and a new physical name/ARN, not data — a hardening gap, not damage.
-- **Scope split (doc-absent detail):** flag only the *new* surface a future user mutates. A break in an
-  *existing* consumer's synthesis, and the committed snapshot diff of this PR's own synth, are outside
-  construct-design's scope.
-
 **[CD-NO-L2-TAGGABLE] (BLOCKING)** — An L2 implementing `ITaggable`/`ITaggableV2` or exposing a
 `TagManager` is a MUST NOT; the mandated shape is an optional `tags` prop wired to the L1 default child.
 See [`AGENTS_CONSTRUCT_DESIGN.md § Tags`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#tags).
@@ -100,6 +86,24 @@ See [`AGENTS_CONSTRUCT_DESIGN.md § Tags`](https://github.com/aws/aws-cdk/blob/m
 deprecate-and-add (`FooV2`), not mutate. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
 - **Scope split (doc-absent detail):** classifying an *existing-surface* break is outside construct-design's scope.
+
+**[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop mapping to a CloudFormation property whose
+`UpdateType` is `Immutable` (or `Conditional`) is a replacement footgun: setting it later triggers a
+CloudFormation replacement. On a stateful resource — database, table, bucket, EFS, DynamoDB, OpenSearch, EBS
+volume, Secret, KMS key — that replacement destroys the user's data, so the L2 should guard the prop:
+validate it, warn on change, or document the replacement risk. Verify the update behavior against the
+CloudFormation resource specification before you flag. See
+[CloudFormation § Update behaviors — Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+for the update-behavior classes and
+[`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy)
+for the stateful classification.
+- **Tier (doc-absent detail):** RECOMMENDED when the user sets the value, since only the user's own later
+  change replaces the resource. Up-tier BLOCKING when the L2 computes the value, so a change elsewhere
+  replaces a stateful resource. A stateless resource is not up-tiered: replacement costs downtime and a new
+  name, not data.
+- **Scope split (doc-absent detail):** flag only the *new* surface a future user mutates. A break in an
+  *existing* consumer's synthesis, and the committed snapshot diff of this PR's own synth, are outside
+  construct-design's scope.
 
 **[CD-AWSLINT-SUPPRESSION] (RECOMMENDED)** — Flag every `awslint.exclude` entry the diff adds or broadens,
 and ask for a stated justification in the PR description or an adjacent comment. A suppression turns off an

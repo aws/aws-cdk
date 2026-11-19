@@ -1,9 +1,9 @@
 # Finding & Comment Format Reference
 
-This is the disclosed detail behind "Keep the review to a tight, high-harm set"
+This is the disclosed detail behind "Findings must meet the bar"
 in the `cdk-review-principles` `SKILL.md`. Read it before generating any findings.
 Produce **structured findings**, not hand-authored markdown. This file defines the
-output shape, how to write each field, and how to filter findings down to the budget.
+output shape, how to write each field, and which candidates become findings.
 
 ## The structured finding contract
 
@@ -59,8 +59,8 @@ AND name it inline in `message` so the posted comment carries its own authority.
 
 ## Filtering — what becomes a finding
 
-Emit a finding only when it meets the posting conditions in `SKILL.md` "Keep the review to a
-tight, high-harm set" (authoritative). In this format, "tied to a specific line" means it has
+Emit a finding only when it meets the posting conditions in `SKILL.md` "Findings must meet the
+bar" (authoritative). In this format, "tied to a specific line" means it has
 a `file` and a `lineRange`; a high-level observation with no line to anchor to belongs in the
 review `summary`, not as a finding.
 
@@ -70,24 +70,13 @@ related nits (consolidate into one finding on the first occurrence), findings al
 surfaced by automated PR analysis (unless you add new context), and philosophical
 questions.
 
-### Severity-based filtering
+### Every tier
 
-| Severity | Emit as a finding? | Rule |
-|----------|--------------------|------|
-| `BLOCKING` | Always, when it meets the posting conditions | Every blocking issue that meets them becomes a finding. |
-| `RECOMMENDED` | Usually | Emit when tied to specific code; consolidate related ones. |
-| `OPTIONAL` | Sparingly | Only if it is a quick fix and the total count is low. |
+A candidate that meets the posting conditions becomes a finding at its tier (`SKILL.md`
+"Findings must meet the bar", authoritative). Consolidate related findings on
+one cause into one.
 
-### Budget rule
-
-Target **3-7 findings** per review. With more than 7 candidates:
-
-1. Keep all `BLOCKING` findings (non-negotiable).
-2. Keep the highest-impact `RECOMMENDED` findings.
-3. Drop `OPTIONAL` findings unless the total is still under 7.
-
-Let the review `summary` carry the broader picture; the findings are the curated,
-actionable subset.
+Let the review `summary` carry the broader picture.
 
 ## Tone Rules
 

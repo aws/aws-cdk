@@ -68,7 +68,8 @@ encodings and the `Token.asString/asList/asNumber` conversions — read the
 
 ## JSII cross-language compatibility
 
-Every rule here is BLOCKING — the public surface MUST transpile cleanly to Python, Java, C#, and Go. For
+Every rule here but `REG-JSII-NO-FLUENT` is BLOCKING — the public surface MUST transpile cleanly to
+Python, Java, C#, and Go. For
 the *why*, see the
 [jsii TypeScript restrictions guide](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/).
 A change that compiles in TypeScript can still break another language's bindings, so do NOT clear a
@@ -102,10 +103,6 @@ properties). See
 props, or factory methods. See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
-**[REG-JSII-NO-FLUENT] (BLOCKING)** — No fluent / method-chaining APIs that return `this` — the pattern
-does not survive transpilation. See
-[`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
-
 **[REG-JSII-UNSUPPORTED-TS] (BLOCKING)** — No unsupported TypeScript in the public surface: an index
 signature, a generic/parameterized type, `Pick`/`Omit`, a mapped/conditional type, or a type alias — these
 are unsupported or de-sugared in the target languages. See
@@ -133,6 +130,11 @@ and [`§ Member Visibility`](https://aws.github.io/jsii/user-guides/lib-author/t
 (`bundleDependencies`); a bundled-dependency type MUST NOT be exposed in the public API; a file with
 non-jsii imports MUST NOT be exported from the main entry point. See
 [`jsii § non-jsii dependencies`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#non-jsii-dependencies).
+
+**[REG-JSII-NO-FLUENT] (RECOMMENDED)** — A public method that returns `this` for chaining.
+[`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
+calls it "a consistency rule, not a jsii limitation" and asks to raise it "as a warning, not as a blocking
+issue". Ask for the props-based shape, or for the written justification the guide requires.
 
 ## Undefined runtime behavior
 

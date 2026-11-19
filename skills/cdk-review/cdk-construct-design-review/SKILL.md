@@ -42,8 +42,9 @@ Work the changed surface in this order — a method, not a rigid script; adapt t
 3. **Rate by harm and stop.** Rate every finding by the cost of shipping the shape, per `cdk-review-principles`
    ("Confidence is not severity"); never demote a wrong abstraction, an L1 leak, or a footgun to OPTIONAL
    out of uncertainty. When several defects share one code cause,
-   classify under the most fitting family and give one finding. Stop once you can name the defect and cite
-   its rule — file + section — with the concrete fix.
+   give one finding with the `ruleId`, `category` and `severity` of its most severe defect, since each field
+   takes one value. Stop once you can name the defect and cite its rule — file + section — with the concrete
+   fix.
 
 ## What NOT to flag
 
@@ -71,5 +72,5 @@ quality.
 ## Apply cdk-review-principles
 
 Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED/OPTIONAL scale, the
-baseline-vs-excellence distinction, the citation authority order, the `file:line` discipline, the
-finding format, and the comment budget. Don't redefine the severity vocabulary here.
+baseline-vs-excellence distinction, the citation authority order, the `file:line` discipline, the finding
+format, and the bar a finding must meet.
