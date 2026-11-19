@@ -1,4 +1,4 @@
-# Regression & breaking-change rules — the lookup
+# Regression & breaking-change rules
 
 Rows group by defect family (input validation, token handling, JSII cross-language compatibility,
 undefined runtime behavior, library stability & breaking changes). See the `cdk-review-principles`

@@ -1,4 +1,4 @@
-# Test review rules — the lookup
+# Test review rules
 
 Rows are grouped by family — unit tests, then integration tests. See the `cdk-review-principles`
 skill for the shared lookup convention: the

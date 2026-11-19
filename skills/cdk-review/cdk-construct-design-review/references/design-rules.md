@@ -1,4 +1,4 @@
-# Construct design rules — the lookup
+# Construct design rules
 
 Rows are grouped by defect family (feature placement & abstraction, Design Guidelines conformance,
 ages-well anti-patterns). See the `cdk-review-principles` skill for the shared

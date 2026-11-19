@@ -1,4 +1,4 @@
-# Documentation review rules — the lookup
+# Documentation review rules
 
 Rows group by defect family — the four `category` values (README examples, `@default` accuracy,
 public-API doc completeness, migration notes). See

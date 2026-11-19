@@ -1,4 +1,4 @@
-# Security rules — the lookup
+# Security rules
 
 Rows are grouped by defect family (IAM least-privilege, network & resource access, secrets &
 credentials, secure defaults). See the `cdk-review-principles` skill for the
