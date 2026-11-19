@@ -78,11 +78,11 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   and the AWS documentation disagree, report the disagreement and cite both. Skip a citation
   only for pure style, an obvious typo or unused import, or a genuine question. **Verify
   before you cite:** when a finding
-  turns on whether an attribute, mode, default, enum value, or a service behavior is
-  real, search and read the authoritative AWS documentation available to you and
-  confirm the fact against it before posting; confirm what CDK's own API does by reading
-  that code, and what CDK's testing or README guidance says by reading that guide; never
-  post from memory. An unverified "X isn't supported" or
+  turns on whether an attribute, mode, default or enum value is real for the service, or
+  how the service behaves, search and read the authoritative AWS documentation available
+  to you and confirm the fact against it before posting; confirm what CDK's own API does
+  by reading that code, and what CDK's testing or README guidance says by reading that
+  guide; never post from memory. An unverified "X isn't supported" or
   "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
 - **A concrete fix** — a code example, or a question framing a specific alternative
   ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
