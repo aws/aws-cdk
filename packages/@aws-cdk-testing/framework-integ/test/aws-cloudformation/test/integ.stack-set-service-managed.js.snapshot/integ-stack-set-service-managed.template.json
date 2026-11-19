@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "StackSet6E6355CF": {
+  "StackSetResource": {
    "Type": "AWS::CloudFormation::StackSet",
    "Properties": {
     "AutoDeployment": {
@@ -30,7 +30,7 @@
     ],
     "StackSetName": "integstacksetservicemanagedStackSetD2FEE8CA",
     "TemplateURL": {
-     "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03018d41d7b55bfa16b4ee40ee7568f6a8641222586c56a4b4c35154594f8fe0.json"
+     "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/16f1ffefb2f874862a98804c59463b25121fb92dca494578417cffeb680580e4.json"
     }
    }
   }

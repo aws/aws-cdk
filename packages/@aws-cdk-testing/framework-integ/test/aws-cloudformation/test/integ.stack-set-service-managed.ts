@@ -24,9 +24,9 @@ const targetRegion = process.env.INTEG_TARGET_REGION ?? 'us-east-1';
 
 const app = new App();
 
-class TopicStackSet extends cfn.StackSetStack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+class TopicStackSet extends cfn.StackSet {
+  constructor(scope: Construct, id: string, props: cfn.StackSetProps) {
+    super(scope, id, props);
 
     new sns.Topic(this, 'Topic');
   }
@@ -36,14 +36,13 @@ class TestCase extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new cfn.StackSet(this, 'StackSet', {
+    new TopicStackSet(this, 'StackSet', {
       target: cfn.StackSetTarget.fromOrganizationalUnits({
         organizationalUnits: [targetOu],
         regions: [targetRegion],
         accountFilter: cfn.StackSetAccountFilter.intersection([targetAccount]),
       }),
       deploymentType: cfn.DeploymentType.serviceManaged(),
-      template: cfn.StackSetTemplate.fromStackSetStack(new TopicStackSet(this, 'integ-stack-set-service-managed-template')),
     });
   }
 }

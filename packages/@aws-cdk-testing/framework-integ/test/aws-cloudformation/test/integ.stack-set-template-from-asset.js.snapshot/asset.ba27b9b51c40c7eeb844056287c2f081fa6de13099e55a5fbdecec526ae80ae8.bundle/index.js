@@ -79127,6 +79127,26 @@ function resolveValue(consumer, reference, strengthOverride) {
   if (producer.node.root !== consumer.node.root) {
     throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, "Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.");
   }
+  const consumerRoot = outermostNestingStack(consumer);
+  if (consumerRoot !== outermostNestingStack(producer)) {
+    const parameterHost = consumerRoot._parameterHost;
+    if (parameterHost && producer._supportsCrossStackReferences()) {
+      if (consumer.nestedStackParent) {
+        const parameterValue2 = resolveValue(consumer.nestedStackParent, reference);
+        return createNestedStackParameter(consumer, reference, parameterValue2);
+      }
+      const parameterValue = resolveValue(parameterHost, reference);
+      return createTemplateParameter(consumer, reference, parameterValue, (name, value) => consumer._setParameterFromHost(name, value));
+    }
+    for (const [side, stack] of [["consumer", consumer], ["producer", producer]]) {
+      if (!stack._supportsCrossStackReferences()) {
+        throw new UnscopedValidationError(
+          lit`CrossStackReferenceNotSupported`,
+          `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": the ${side} stack "${stack.node.path}" does not support cross-stack references`
+        );
+      }
+    }
+  }
   if (consumer.nestedStackParent && isNested(consumer, producer)) {
     const parameterValue = resolveValue(consumer.nestedStackParent, reference);
     return createNestedStackParameter(consumer, reference, parameterValue);
@@ -79445,16 +79465,24 @@ function getExportable(stack, reference) {
   return referenceNestedStackValueInParent(reference, stack);
 }
 function createNestedStackParameter(nested, reference, value) {
-  const paramId = generateUniqueId(nested, reference, "reference-to-");
-  let param = nested.node.tryFindChild(paramId);
-  if (!param) {
-    param = new CfnParameter(nested, paramId, { type: "String" });
+  return createTemplateParameter(nested, reference, value, (name, parameterValue) => {
     if (!("setParameter" in nested)) {
       throw new UnscopedValidationError(lit`NestedStackMustHaveSetParameter`, 'assertion failed: nested stack should have a "setParameter" method');
     }
-    nested.setParameter(param.logicalId, Token.asString(value));
+    nested.setParameter(name, parameterValue);
+  });
+}
+function createTemplateParameter(stack, reference, value, setParameter) {
+  const paramId = generateUniqueId(stack, reference, "reference-to-");
+  let param = stack.node.tryFindChild(paramId);
+  if (!param) {
+    param = new CfnParameter(stack, paramId, { type: "String" });
+    setParameter(param.logicalId, Token.asString(value));
   }
   return param.value;
+}
+function outermostNestingStack(stack) {
+  return stack.nestedStackParent ? outermostNestingStack(stack.nestedStackParent) : stack;
 }
 function createNestedStackOutput(producer, reference) {
   const outputId = generateUniqueId(producer, reference);
@@ -79736,25 +79764,21 @@ function prepareApp(root) {
   reifyConstructDependencies(root);
   resolveReferences(root);
   writePropertyAssignmentMetadata(root);
-  const nestedStacks = findAllNestedStacks(root);
-  if (nestedStacks.length > 0) {
-    for (const nested of nestedStacks) {
-      defineNestedStackAsset(nested);
+  const templateAssetConsumers = new Array();
+  for (const stack of findAllStacks(root)) {
+    const consumer = stack._prepareTemplateAsset();
+    if (consumer) {
+      templateAssetConsumers.push(consumer);
     }
-    resolveReferencesInElements(nestedStacks.map((s) => s.nestedStackResource));
+  }
+  if (templateAssetConsumers.length > 0) {
+    resolveReferencesInElements(templateAssetConsumers);
   }
 }
-function defineNestedStackAsset(nestedStack) {
-  const nested = nestedStack;
-  nested._prepareTemplateAsset();
-}
-function findAllNestedStacks(root) {
+function findAllStacks(root) {
   const result = new Array();
   const includeStack = (stack) => {
     if (!STACK_TYPE.isMarked(stack)) {
-      return false;
-    }
-    if (!stack.nested) {
       return false;
     }
     if (!stageOf(stack)) {
@@ -86603,6 +86627,47 @@ var init_stack = __esm({
        */
       get _isTopLevelStack() {
         return true;
+      }
+      /**
+       * Whether this stack's template can produce or consume cross-stack references.
+       *
+       * @internal
+       */
+      _supportsCrossStackReferences() {
+        return true;
+      }
+      /**
+       * Registers this stack's template as an asset of the stack that deploys it.
+       *
+       * Called while the app is prepared, children first, so a template is registered
+       * before the templates of the stacks that contain it are hashed.
+       *
+       * @returns the resource that consumes the template asset, if any
+       * @internal
+       */
+      _prepareTemplateAsset() {
+        return void 0;
+      }
+      /**
+       * The stack that passes values into this stack's template as parameters, if any.
+       *
+       * Values that this stack references from other stacks are resolved in the
+       * parameter host, and passed to this stack's template as parameters.
+       *
+       * @internal
+       */
+      get _parameterHost() {
+        return void 0;
+      }
+      /**
+       * Sets a template parameter of this stack from its parameter host.
+       *
+       * @param name the logical ID of the parameter
+       * @param value the value, resolved in the parameter host
+       * @internal
+       */
+      _setParameterFromHost(_name, _value) {
+        throw new AssumptionError(lit`StackHasNoParameterHost`, `stack "${this.node.path}" has no parameter host`);
       }
       /**
        * Returns the naming scheme used to allocate logical IDs. By default, uses

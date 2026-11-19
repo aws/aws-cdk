@@ -11,7 +11,7 @@ import { Box } from './helpers-internal';
 import { memoizedGetter } from './helpers-internal/memoize';
 import type { IStringProducer } from './lazy';
 import { Lazy } from './lazy';
-import { stackOf } from './private/core-construct-finders';
+import { outermostNestingStack, stackOf, templateHostOf } from './private/core-construct-finders';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
 import type { RemovalPolicy } from './removal-policy';
@@ -278,7 +278,7 @@ export abstract class Resource extends Construct implements IResource {
   protected getResourceNameAttribute(nameAttr: string) {
     return mimicReference(nameAttr, {
       produce: (context: IResolveContext) => {
-        const consumingStack = stackOf(context.scope);
+        const consumingStack = referenceResolvingStack(stackOf(context.scope), this.stack);
 
         if (this.stack.account !== consumingStack.account ||
           (this.stack.region !== consumingStack.region &&
@@ -312,7 +312,7 @@ export abstract class Resource extends Construct implements IResource {
   protected getResourceArnAttribute(arnAttr: string, arnComponents: ArnComponents) {
     return mimicReference(arnAttr, {
       produce: (context: IResolveContext) => {
-        const consumingStack = stackOf(context.scope);
+        const consumingStack = referenceResolvingStack(stackOf(context.scope), this.stack);
         if (this.stack.account !== consumingStack.account ||
           (this.stack.region !== consumingStack.region &&
             !consumingStack._crossRegionReferences)) {
@@ -350,4 +350,19 @@ function mimicReference(refSource: any, producer: IStringProducer): string {
       return producer.produce(context);
     }
   }(reference, reference.target, reference.displayName));
+}
+
+/**
+ * The stack in which a reference from the consumer to the producer is resolved.
+ *
+ * References consumed by a stack whose template is deployed by a resource of another stack
+ * (e.g. a StackSet) are passed to it as template parameters, resolved in that other stack,
+ * unless the producer is part of the same template deployment.
+ */
+function referenceResolvingStack(consumer: Stack, producer: Stack): Stack {
+  if (outermostNestingStack(consumer) === outermostNestingStack(producer)) {
+    return consumer;
+  }
+  const templateHost = templateHostOf(consumer);
+  return templateHost ? referenceResolvingStack(templateHost, producer) : consumer;
 }

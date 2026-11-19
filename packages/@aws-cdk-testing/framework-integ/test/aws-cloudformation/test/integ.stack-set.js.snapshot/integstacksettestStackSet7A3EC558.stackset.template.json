@@ -1,0 +1,27 @@
+{
+  "Resources": {
+    "IntegStackSetSNSTopic360B333E": {
+      "Type": "AWS::SNS::Topic"
+    }
+  },
+  "Outputs": {
+    "AdminRoleId": {
+      "Value": {
+        "Ref": "referencetointegstacksettestAdminRoleD699F605RoleId"
+      }
+    },
+    "AdminRoleArn": {
+      "Value": {
+        "Ref": "referencetointegstacksettestAdminRoleD699F605Arn"
+      }
+    }
+  },
+  "Parameters": {
+    "referencetointegstacksettestAdminRoleD699F605RoleId": {
+      "Type": "String"
+    },
+    "referencetointegstacksettestAdminRoleD699F605Arn": {
+      "Type": "String"
+    }
+  }
+}
