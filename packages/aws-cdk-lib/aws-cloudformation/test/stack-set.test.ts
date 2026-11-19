@@ -1254,8 +1254,8 @@ describe('StackSet self managed admin role', () => {
     const stackSet = new StackSet(stack, 'StackSet');
 
     expect(stackSet.adminRole).toBeDefined();
-    expect(stackSet.node.tryFindChild('StackSet.AdminRole')).toBe(stackSet.adminRole);
-    expect(stack.node.tryFindChild('AdminRole')).toBeUndefined();
+    expect(stack.node.tryFindChild('StackSet.AdminRole')).toBe(stackSet.adminRole);
+    expect(stackSet.node.tryFindChild('AdminRole')).toBeUndefined();
   });
 
   test('adminRole is the supplied admin role', () => {
