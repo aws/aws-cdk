@@ -1,0 +1,16 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.lambda.mixins"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Lambda.Mixins"
+    },
+    "python": {
+      "module": "aws_cdk.aws_lambda.mixins"
+    },
+    "go": {
+      "packageName": "awslambdamixins"
+    }
+  }
+}

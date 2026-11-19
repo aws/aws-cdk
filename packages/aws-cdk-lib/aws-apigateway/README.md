@@ -782,6 +782,53 @@ const proxy = resource.addProxy({
 });
 ```
 
+### Automatic Path Parameter Configuration
+
+When creating proxy resources, you typically need to configure path parameters in two places:
+the method request and the integration request. The `autoConfigurePathParameter` option
+simplifies this by automatically configuring both:
+
+```ts
+declare const resource: apigateway.Resource;
+
+// Without auto-configuration (manual setup required)
+resource.addProxy({
+  defaultIntegration: new apigateway.HttpIntegration('http://example.com/api/{proxy}', {
+    options: {
+      requestParameters: {
+        'integration.request.path.proxy': 'method.request.path.proxy'
+      }
+    }
+  }),
+  defaultMethodOptions: {
+    requestParameters: {
+      'method.request.path.proxy': true
+    }
+  }
+});
+
+// With auto-configuration (simpler)
+resource.addProxy({
+  autoConfigurePathParameter: true,
+  defaultIntegration: new apigateway.HttpIntegration('http://example.com/api/{proxy}')
+});
+```
+
+When `autoConfigurePathParameter` is set to `true`, the proxy resource automatically:
+- Adds `method.request.path.proxy: true` to method request parameters
+- Adds `integration.request.path.proxy: 'method.request.path.proxy'` to integration request parameters
+
+This matches the behavior of the AWS Console when creating proxy resources and ensures
+that requests like `/api/foo/bar` are correctly forwarded to the backend with the full path.
+
+This option is meant for integrations whose URI uses `{proxy}`, such as HTTP integrations.
+Lambda proxy (`AWS_PROXY`) integrations do not need it, as Lambda already receives the full
+request path. The mapping is added even when the integration URI has no `{proxy}`.
+
+Mock integrations, such as the ones created for CORS preflight requests, are left unchanged.
+When the proxy is added to the root resource (`api.root.addProxy()`), the method that is also
+added to the root resource has no `{proxy}` path parameter, so it is not configured.
+
 ## Authorizers
 
 API Gateway [supports several different authorization types](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html)

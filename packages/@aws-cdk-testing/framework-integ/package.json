@@ -55,7 +55,7 @@
     "@aws-cdk/lambda-layer-kubectl-v37": "^2.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "aws-cdk-lib": "0.0.0",
-    "cdk8s": "2.70.122",
+    "cdk8s": "2.70.126",
     "cdk8s-plus-27": "2.9.5",
     "constructs": "^10.5.0"
   },
