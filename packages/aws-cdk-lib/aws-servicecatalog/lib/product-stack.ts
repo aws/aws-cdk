@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import type { Construct } from 'constructs';
+import * as cxapi from '../../cx-api';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 import type { ProductStackHistory } from './product-stack-history';
 import type { IBucket } from '../../aws-s3';
@@ -151,6 +152,7 @@ export class ProductStack extends cdk.Stack {
   public _synthesizeTemplate(session: cdk.ISynthesisSession): void {
     const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
+    this.node.addMetadata(cxapi.CDK_TEMPLATE_FILE_KEY, this.templateFile);
 
     this._templateUrl.set(this._parentStack.synthesizer.addFileAsset({
       packaging: cdk.FileAssetPackaging.FILE,
@@ -164,6 +166,15 @@ export class ProductStack extends cdk.Stack {
     }
 
     fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
+  }
+
+  /**
+   * Not a true top-level stack.
+   *
+   * @internal
+   */
+  public get _isTopLevelStack(): boolean {
+    return false;
   }
 }
 

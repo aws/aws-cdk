@@ -2,7 +2,7 @@ import type { Construct } from 'constructs';
 import { CustomResourceProviderBase } from './custom-resource-provider-base';
 import type { CustomResourceProviderOptions } from './shared';
 import { FactName } from '../../../region-info';
-import { Stack } from '../stack';
+import { stackOf } from '../private/core-construct-finders';
 
 /**
  * Initialization properties for `CustomResourceProvider`.
@@ -125,7 +125,7 @@ export class CustomResourceProvider extends CustomResourceProviderBase {
    */
   public static getOrCreateProvider(scope: Construct, uniqueid: string, props: CustomResourceProviderProps) {
     const id = `${uniqueid}CustomResourceProvider`;
-    const stack = Stack.of(scope);
+    const stack = stackOf(scope);
     const provider = stack.node.tryFindChild(id) as CustomResourceProvider
       ?? new CustomResourceProvider(stack, id, props);
     return provider;
@@ -163,5 +163,5 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
  * The name of the latest Lambda node runtime available by AWS region.
  */
 export function determineLatestNodeRuntimeName(scope: Construct): string {
-  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs24.x');
+  return stackOf(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs24.x');
 }

@@ -24,6 +24,7 @@
     "tools/@aws-cdk/project-sync",
     "tools/@aws-cdk/integration-test-deployment",
     "tools/@aws-cdk/enum-updater",
+    "tools/@aws-cdk/graduate-module",
     "scripts/@aws-cdk/script-tests"
   ],
   "rejectCycles": true,

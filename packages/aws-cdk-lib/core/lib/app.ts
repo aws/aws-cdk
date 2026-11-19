@@ -1,8 +1,9 @@
 import { performance } from 'perf_hooks';
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
-import { GIT_SOURCE_CONTEXT } from './git-source';
-import { readPerfCounters, TELEMETRY_FIELD } from './helpers-internal';
+import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
+import { iterateDfsPreorder } from './private/construct-iteration';
+import { appOf, APP_TYPE, STACK_TYPE } from './private/core-construct-finders';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
@@ -15,7 +16,12 @@ import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 import type * as public_cxapi from '../../cx-api';
 
-const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
+/**
+ * Can hold a function to globally initialize Apps.
+ *
+ * Intended for testing, no stability guarantees on this behavior.
+ */
+const APP_INIT_HOOK_SYMBOL = Symbol.for('@aws-cdk/core.App#initHook');
 
 /**
  * Report performance counters if synthesis time exceeds this
@@ -132,22 +138,29 @@ export interface AppProps {
   readonly postCliContext?: { [key: string]: any };
 
   /**
-   * Include git source information (repository URL and commit hash) in the
-   * template metadata of all Stacks in this App.
-   *
-   * When enabled, the synthesized CloudFormation template will include an
-   * `AWS::CDK::Source` metadata entry with the repository and commit.
-   *
-   * @default false
-   */
-  readonly trackSourceCommit?: boolean;
-
-  /**
    * Include construct tree metadata as part of the Cloud Assembly.
    *
    * @default true
    */
   readonly treeMetadata?: boolean;
+
+  /**
+   * Whether to enable built-in CloudFormation template validation.
+   *
+   * CDK ships with a CloudFormation template validation plugin that
+   * is enabled by default (see `CloudFormationValidationPlugin`).
+   *
+   * To disable the built-in validation, you can do one of these things:
+   *
+   * - Set this property to `false`.
+   * - Run `cdk synth --no-validation`.
+   * - Set `CDK_VALIDATION=false` in your environment.
+   * - Register a custom configured instance of `CloudFormationValidationPlugin`
+   *   on the `app` object.
+   *
+   * @default true
+   */
+  readonly builtinCloudFormationValidation?: boolean;
 
   /**
    * The stack synthesizer to use by default for all Stacks in the App
@@ -173,6 +186,22 @@ export interface AppProps {
    * @default - no PropertyInjectors
    */
   readonly propertyInjectors?: IPropertyInjector[];
+
+  /**
+   * Confirm that validation plugins treat the assembly directory as read-only
+   *
+   * Validation plugins should only read files in the `cdk.out` directory, and not modify or
+   * delete any.
+   *
+   * If this is set to `true`, the CDK will calculate a hash of all files in the
+   * assembly directory before running validation plugins and verify that the
+   * hashes match afterwards, to ensure no files got deleted or modified. You
+   * only need to set this if you do not trust your validation plugins to have
+   * been implemented correctly.
+   *
+   * @default false
+   */
+  readonly confirmValidationPluginsDoNotMutate?: boolean;
 }
 
 /**
@@ -193,11 +222,11 @@ export interface AppProps {
 export class App extends Stage {
   /**
    * Return the app that is the root of the construct tree, if available.
-   *
    */
   public static of(construct: IConstruct): Stage | undefined {
-    const root = construct.node.root;
-    return App.isApp(root) ? root : undefined;
+    // This cannot return `App` because we inherit this method from `Stage` and jsii doesn't allow us
+    // to change the return type (even though it is static T_T)
+    return appOf(construct);
   }
 
   /**
@@ -206,7 +235,7 @@ export class App extends Stage {
    * @param obj The object to evaluate
    */
   public static isApp(obj: any): obj is App {
-    return APP_SYMBOL in obj;
+    return APP_TYPE.isMarked(obj);
   }
 
   /**
@@ -215,6 +244,20 @@ export class App extends Stage {
    * @internal
    */
   public readonly _treeMetadata: boolean;
+
+  /**
+   * The setting of `confirmValidationPluginsDoNotMutate` from the app's initialization properties.
+   *
+   * @internal
+   */
+  public readonly _confirmValidationPluginsDoNotMutate: boolean;
+
+  /**
+   * The flag indicating whether the built-in CloudFormation validation is enabled.
+   *
+   * @internal
+   */
+  public readonly _builtinCloudFormationValidation: boolean;
 
   private readonly initMark: number;
   private readonly performanceReporting: boolean;
@@ -230,13 +273,15 @@ export class App extends Stage {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
     });
 
+    this._confirmValidationPluginsDoNotMutate = props.confirmValidationPluginsDoNotMutate ?? false;
     this.initMark = performance.now();
+    this._builtinCloudFormationValidation = props.builtinCloudFormationValidation ?? true;
     if (!PERF_STATE.loadTimeMeasured) {
       // Measure the load time of the application -- up until the construction of the first App
       // object is considered "Load Time" (executing all require()s).
-      performance.measure('phase:Load', {
-        end: this.initMark,
-        detail: { [TELEMETRY_FIELD]: true },
+      recordPerformanceEntry('phase:Load', {
+        durationMs: this.initMark,
+        telemetry: true,
       });
       PERF_STATE.loadTimeMeasured = true;
     }
@@ -250,16 +295,12 @@ export class App extends Stage {
       this._addValidationPlugins(...props.policyValidationBeta1);
     }
 
-    Object.defineProperty(this, APP_SYMBOL, { value: true });
+    APP_TYPE.mark(this);
 
     this.loadContext(props.context, props.postCliContext);
 
     if (props.stackTraces === false) {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
-    }
-
-    if (props.trackSourceCommit !== undefined) {
-      this.node.setContext(GIT_SOURCE_CONTEXT, props.trackSourceCommit);
     }
 
     if (props.defaultStackSynthesizer) {
@@ -282,9 +323,13 @@ export class App extends Stage {
     this._treeMetadata = props.treeMetadata ?? true;
 
     this.performanceReporting = props.performanceReporting ?? this.node.tryGetContext(cxapi.PERFORMANCE_REPORTING_ENABLED_CONTEXT) ?? true;
+
+    if ((globalThis as any)[APP_INIT_HOOK_SYMBOL]) {
+      (globalThis as any)[APP_INIT_HOOK_SYMBOL](this);
+    }
   }
 
-  private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {
+  private loadContext(defaults: { [key: string]: string } = {}, final: { [key: string]: string } = {}) {
     // prime with defaults passed through constructor
     for (const [k, v] of Object.entries(defaults)) {
       this.node.setContext(k, v);
@@ -312,7 +357,7 @@ export class App extends Stage {
    * Once an assembly has been synthesized, it cannot be modified. Subsequent
    * calls will return the same assembly.
    */
-  public synth(options: StageSynthesisOptions = { }): public_cxapi.CloudAssembly {
+  public synth(options: StageSynthesisOptions = {}): public_cxapi.CloudAssembly {
     // Synth may be called multiple times, we do not emit performance counters the
     // second time. super.synth() already does caching.
     if (this.alreadySynthed) {
@@ -321,25 +366,36 @@ export class App extends Stage {
     this.alreadySynthed = true;
 
     const startSynthMark = performance.now();
-    performance.measure('phase:Construction', {
-      start: this.initMark,
-      end: startSynthMark,
-      detail: { [TELEMETRY_FIELD]: true },
+
+    recordPerformanceEntry('phase:Construction', {
+      durationMs: startSynthMark - this.initMark,
+      telemetry: true,
     });
-
     const ret = super.synth(options);
-
-    performance.measure('phase:Synthesis', {
-      start: startSynthMark,
-      detail: { [TELEMETRY_FIELD]: true },
+    recordPerformanceEntry('phase:Synthesis', {
+      durationMs: performance.now() - startSynthMark,
+      telemetry: true,
     });
 
     const totalAppTimeMs = performance.now() - this.initMark;
-    const stackCount = ret.stacksRecursively.length;
+
+    // Record how many constructs we had to iterate over to synthesize the app, to get a sense for
+    // how synthesis time scales with number of constructs. This used to be implemented
+    // using `assembly.stackRecursively`, but that reloads every nested assembly from disk.
+    // This iterates the construct tree which gives NEARLY the same answers, except it counts
+    // Nested Stacks as Stacks which the previous implementation did not. Arguably, this is more
+    // correct.
+    const { constructCount, stackCount } = countTree(this);
+    recordPerformanceEntry('count:Constructs', {
+      count: constructCount,
+      durationMs: 0,
+      telemetry: true,
+    });
+
     if (this.shouldReportSlowSynth(totalAppTimeMs / stackCount)) {
       emitPerformanceCountersFile();
     }
-    performance.clearMeasures();
+    resetCounters();
 
     return ret;
   }
@@ -361,6 +417,18 @@ export class App extends Stage {
     const threshold = parseAsNumber(this.node.tryGetContext(SLOW_SYNTH_THRESHOLD_CTX)) ?? DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS;
     return perStackTime >= threshold;
   }
+}
+
+function countTree(construct: IConstruct): { constructCount: number; stackCount: number } {
+  let constructCount = 0;
+  let stackCount = 0;
+  for (const c of iterateDfsPreorder(construct)) {
+    constructCount++;
+    if (STACK_TYPE.isMarked(c)) {
+      stackCount++;
+    }
+  }
+  return { constructCount, stackCount };
 }
 
 /**

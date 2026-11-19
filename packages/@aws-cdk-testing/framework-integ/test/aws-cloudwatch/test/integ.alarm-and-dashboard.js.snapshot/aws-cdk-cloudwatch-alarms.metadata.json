@@ -1,0 +1,278 @@
+{
+  "/aws-cdk-cloudwatch-alarms/queue": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "queue"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarms/Alarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "alarmName": "*",
+        "alarmDescription": "*",
+        "comparisonOperator": "*",
+        "datapointsToAlarm": "*",
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "evaluateLowSampleCountPercentile": "*",
+        "treatMissingData": "*",
+        "actionsEnabled": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "toAnnotation": []
+      }
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarms/Dash": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "dashboardName": "*",
+        "start": "*",
+        "end": "*",
+        "periodOverride": "inherit"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          },
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarms/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarms/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarms/Alarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm7103F465"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarms/Dash/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DashCCD7F836"
+    }
+  ]
+}

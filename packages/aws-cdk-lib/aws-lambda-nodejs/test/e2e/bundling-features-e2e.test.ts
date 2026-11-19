@@ -89,7 +89,7 @@ describeDockerSuite((forceDockerBundling) => {
     // Add tsconfig.json
     fs.writeFileSync(path.join(project.dir, 'tsconfig.json'), JSON.stringify({
       compilerOptions: {
-        target: 'ES2022',
+        target: 'ES2020',
         module: 'CommonJS',
         strict: true,
         outDir: './',

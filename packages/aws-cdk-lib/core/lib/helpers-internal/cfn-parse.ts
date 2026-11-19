@@ -6,6 +6,9 @@ import type { CfnMapping } from '../cfn-mapping';
 import { Aws } from '../cfn-pseudo';
 import type { CfnResource } from '../cfn-resource';
 import type {
+  CfnAutoScalingInstanceRefresh,
+  CfnAutoScalingInstanceRefreshAlarmSpecification,
+  CfnAutoScalingInstanceRefreshPreferences,
   CfnAutoScalingReplacingUpdate,
   CfnAutoScalingRollingUpdate,
   CfnAutoScalingScheduledAction,
@@ -21,10 +24,11 @@ import { UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import { Lazy } from '../lazy';
 import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
+import { stackOf } from '../private/core-construct-finders';
 import { lit } from '../private/literal-string';
 import type { IResolvable } from '../resolvable';
 import type { Validator } from '../runtime';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { isResolvableObject, Token } from '../token';
 import { undefinedIfAllValuesAreEmpty } from '../util';
 
@@ -363,7 +367,7 @@ export class CfnParser {
 
   public handleAttributes(resource: CfnResource, resourceAttributes: any, logicalId: string): void {
     const cfnOptions = resource.cfnOptions;
-    this.stack = Stack.of(resource);
+    this.stack = stackOf(resource);
 
     const creationPolicy = this.parseCreationPolicy(resourceAttributes.CreationPolicy, logicalId);
     const updatePolicy = this.parseUpdatePolicy(resourceAttributes.UpdatePolicy, logicalId);
@@ -443,6 +447,7 @@ export class CfnParser {
     const uppol = new ObjectParser<CfnUpdatePolicy>(this.parseValue(policy));
     uppol.parseCase('autoScalingReplacingUpdate', parseAutoScalingReplacingUpdate);
     uppol.parseCase('autoScalingRollingUpdate', parseAutoScalingRollingUpdate);
+    uppol.parseCase('autoScalingInstanceRefresh', parseAutoScalingInstanceRefresh);
     uppol.parseCase('autoScalingScheduledAction', parseAutoScalingScheduledAction);
     uppol.parseCase('codeDeployLambdaAliasUpdate', parseCodeDeployLambdaAliasUpdate);
     uppol.parseCase('enableVersionUpgrade', (x) => FromCloudFormation.getBoolean(x) as any);
@@ -471,6 +476,43 @@ export class CfnParser {
       rollUp.parseCase('suspendProcesses', FromCloudFormation.getStringArray);
       rollUp.parseCase('waitOnResourceSignals', FromCloudFormation.getBoolean);
       return rollUp.toResult();
+    }
+
+    function parseAutoScalingInstanceRefresh(p: any): FromCloudFormationResult<CfnAutoScalingInstanceRefresh | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
+
+      const irUp = new ObjectParser<CfnAutoScalingInstanceRefresh>(p);
+      irUp.parseCase('strategy', FromCloudFormation.getString);
+      irUp.parseCase('preferences', parseInstanceRefreshPreferences);
+      return irUp.toResult();
+    }
+
+    function parseInstanceRefreshPreferences(p: any): FromCloudFormationResult<CfnAutoScalingInstanceRefreshPreferences | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
+
+      const prefs = new ObjectParser<CfnAutoScalingInstanceRefreshPreferences>(p);
+      prefs.parseCase('minHealthyPercentage', FromCloudFormation.getNumber);
+      prefs.parseCase('maxHealthyPercentage', FromCloudFormation.getNumber);
+      prefs.parseCase('instanceWarmup', FromCloudFormation.getNumber);
+      prefs.parseCase('skipMatching', FromCloudFormation.getBoolean);
+      prefs.parseCase('checkpointPercentages', FromCloudFormation.getArray(FromCloudFormation.getNumber));
+      prefs.parseCase('checkpointDelay', FromCloudFormation.getNumber);
+      prefs.parseCase('bakeTime', FromCloudFormation.getNumber);
+      prefs.parseCase('alarmSpecification', parseAlarmSpecification);
+      prefs.parseCase('scaleInProtectedInstances', FromCloudFormation.getString);
+      prefs.parseCase('standbyInstances', FromCloudFormation.getString);
+      return prefs.toResult();
+    }
+
+    function parseAlarmSpecification(p: any): FromCloudFormationResult<CfnAutoScalingInstanceRefreshAlarmSpecification | undefined> {
+      if (typeof p !== 'object') { return new FromCloudFormationResult(undefined); }
+      self.throwIfIsIntrinsic(p, logicalId);
+
+      const alarm = new ObjectParser<CfnAutoScalingInstanceRefreshAlarmSpecification>(p);
+      alarm.parseCase('alarms', FromCloudFormation.getStringArray);
+      return alarm.toResult();
     }
 
     function parseCodeDeployLambdaAliasUpdate(p: any): FromCloudFormationResult<CfnCodeDeployLambdaAliasUpdate | undefined> {

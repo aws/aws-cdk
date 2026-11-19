@@ -152,11 +152,11 @@ describe('resource', () => {
     const dependent = new CfnResource(stack, 'Dependent', { type: 'R' });
 
     // WHEN
-    dependent.addDependency(r1);
-    dependent.addDependency(r1);
-    dependent.addDependency(r1);
-    dependent.addDependency(r1);
-    dependent.addDependency(r1);
+    dependent.addResourceDependency(r1);
+    dependent.addResourceDependency(r1);
+    dependent.addResourceDependency(r1);
+    dependent.addResourceDependency(r1);
+    dependent.addResourceDependency(r1);
 
     // THEN
     expect(toCloudFormation(stack)).toEqual({

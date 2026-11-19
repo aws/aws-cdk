@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "WebFunctionEndpointsTest/DefaultTest": {
+      "stacks": [
+        "WebFunctionEndpointsStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "WebFunctionEndpointsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "WebFunctionEndpointsTestDefaultTestDeployAssert8F720653"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

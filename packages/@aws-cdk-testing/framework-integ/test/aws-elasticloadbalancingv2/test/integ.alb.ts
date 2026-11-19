@@ -14,6 +14,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
   vpc,
   internetFacing: true,
+  dropInvalidHeaderFields: false,
 });
 
 const listener = lb.addListener('Listener', {

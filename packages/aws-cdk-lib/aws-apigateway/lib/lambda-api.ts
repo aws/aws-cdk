@@ -16,7 +16,7 @@ export interface LambdaRestApiProps extends RestApiProps {
   /**
    * The default Lambda function that handles all requests from this API.
    *
-   * This handler will be used as a the default integration for all methods in
+   * This handler will be used as the default integration for all methods in
    * this API, unless specified otherwise in `addMethod`.
    */
   readonly handler: lambda.IFunction;

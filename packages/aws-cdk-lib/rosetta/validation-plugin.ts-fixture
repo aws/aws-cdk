@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { App, IPolicyValidationPlugin, Stage, IPolicyValidationContext, PolicyValidationPluginReport, Validations } from 'aws-cdk-lib';
+import { App, IPolicyValidationPlugin, Stage, IPolicyValidationContext, PolicyValidationPluginReport, Validations, CloudFormationValidatePlugin } from 'aws-cdk-lib';
 
 declare class ThirdPartyPluginX implements IPolicyValidationPlugin {
   public readonly name: string;

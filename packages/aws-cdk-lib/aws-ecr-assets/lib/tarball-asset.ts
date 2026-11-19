@@ -105,10 +105,16 @@ export class TarballImageAsset extends Construct implements IAsset {
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
       sourceHash: stagedTarball.assetHash,
+      // The tarball path is passed as a positional argument ($1) rather than
+      // interpolated into the script, so that a path containing shell
+      // metacharacters (e.g. `$(...)`, `;`, backticks) is treated as literal
+      // data and cannot result in command injection.
       executable: [
         'sh',
         '-c',
-        `${process.env.CDK_DOCKER ?? 'docker'} load -i ${relativePathInOutDir} | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        `${process.env.CDK_DOCKER ?? 'docker'} load -i "$1" | tail -n 1 | sed "${DOCKER_LOAD_OUTPUT_REGEX}"`,
+        'cdk-tarball-image-asset',
+        relativePathInOutDir,
       ],
       displayName: props.displayName ?? Names.stackRelativeConstructPath(this),
     });

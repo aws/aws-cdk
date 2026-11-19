@@ -1,0 +1,169 @@
+{
+  "/aws-cdk-iam-grant-resource-policy-conditions": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-iam-grant-resource-policy-conditions.template.json"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/ServicePrincipalQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/PrincipalAndResourceQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "SQS_MANAGED"
+      }
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/ServicePrincipalQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServicePrincipalQueue52127C16"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/ServicePrincipalQueue/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/PrincipalAndResourceQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrincipalAndResourceQueueFE589206"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/PrincipalAndResourceQueue/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Role1ABCC5F0"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/Exports/Output{\"Ref\":\"ServicePrincipalQueue52127C16\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefServicePrincipalQueue52127C168A31709C"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/Exports/Output{\"Ref\":\"PrincipalAndResourceQueueFE589206\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPrincipalAndResourceQueueFE589206D6DAB762"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/ServicePrincipalQueue/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServicePrincipalQueuePolicyEC9710CB"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/PrincipalAndResourceQueue/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrincipalAndResourceQueuePolicyBD4F1F3F"
+    }
+  ],
+  "/aws-cdk-iam-grant-resource-policy-conditions/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RoleDefaultPolicy5FFB7DAB"
+    }
+  ]
+}

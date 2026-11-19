@@ -47,8 +47,8 @@ const app = new App({
 
 const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
 
-new RedshiftEnv(stack, 'redshift-exclude-characters-integ');
+const redshiftEnv = new RedshiftEnv(stack, 'redshift-exclude-characters-integ');
 
 new integ.IntegTest(app, 'ExcludeCharactersInteg', {
-  testCases: [stack],
+  testCases: [redshiftEnv],
 });

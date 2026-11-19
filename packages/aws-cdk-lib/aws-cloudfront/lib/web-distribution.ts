@@ -546,7 +546,7 @@ export class ViewerCertificate {
     } = options;
 
     return new ViewerCertificate({
-      acmCertificateArn: certificate.certificateRef.certificateId, sslSupportMethod, minimumProtocolVersion,
+      acmCertificateArn: certificate.certificateRef.certificateArn, sslSupportMethod, minimumProtocolVersion,
     }, aliases);
   }
 
@@ -624,7 +624,7 @@ export interface CloudFrontWebDistributionProps {
   readonly enableIpV6?: boolean;
 
   /**
-   * The max supported HTTP Versions.
+   * The HTTP version(s) to enable for viewers communicating with CloudFront.
    *
    * @default HttpVersion.HTTP2
    */

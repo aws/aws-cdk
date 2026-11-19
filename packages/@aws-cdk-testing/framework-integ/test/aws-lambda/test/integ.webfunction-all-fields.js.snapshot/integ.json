@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "WebFunctionAllFieldsTest/DefaultTest": {
+      "stacks": [
+        "WebFunctionAllFieldsStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "WebFunctionAllFieldsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "WebFunctionAllFieldsTestDefaultTestDeployAssert71A00EAB"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

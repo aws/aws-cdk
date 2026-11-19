@@ -1007,7 +1007,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/719ec4472b5c98af50defcab667afee84d08e830d3bcc7ea3e7479145855e980.json"
+       "/96077daf294f58c5c0f107fa4964fa8f3093aa7f19c8232715eb0d99aa51f592.json"
       ]
      ]
     }
@@ -1057,7 +1057,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/2d58e2e7ce8ccb38e2681dd90cfc59579a1087756610d55c3782b35e61317104.json"
+       "/67699745972b774c12e09134eef12d17786605a1c160fac52070c91694e60334.json"
       ]
      ]
     }
@@ -1227,6 +1227,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":states:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stateMachine:*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"

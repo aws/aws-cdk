@@ -148,42 +148,23 @@ export class ClusterResourceHandler extends ResourceHandler {
       try {
         // Describe the cluster to get the ARN for tagging APIs and to make sure Cluster exists
         const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
-        if (this.oldProps.tags) {
-          if (this.newProps.tags) {
-            // This means there are old tags as well as new tags so get the difference
-            // Update existing tag keys and add newly added tags
-            const tagsToAdd = getTagsToUpdate(this.oldProps.tags, this.newProps.tags);
-            if (tagsToAdd) {
-              const tagConfig: EKS.TagResourceCommandInput = {
-                resourceArn: cluster?.arn,
-                tags: tagsToAdd,
-              };
-              await this.eks.tagResource(tagConfig);
-            }
-            // Remove the tags that were removed in newProps
-            const tagsToRemove = getTagsToRemove(this.oldProps.tags, this.newProps.tags);
-            if (tagsToRemove.length > 0 ) {
-              const config: EKS.UntagResourceCommandInput = {
-                resourceArn: cluster?.arn,
-                tagKeys: tagsToRemove,
-              };
-              await this.eks.untagResource(config);
-            }
-          } else {
-            // This means newProps.tags is empty hence remove all tags
-            const config: EKS.UntagResourceCommandInput = {
-              resourceArn: cluster?.arn,
-              tagKeys: Object.keys(this.oldProps.tags),
-            };
-            await this.eks.untagResource(config);
-          }
-        } else {
-          // This means oldProps.tags was empty hence add all tags from newProps.tags
-          const config: EKS.TagResourceCommandInput = {
+        const oldTags = this.oldProps.tags ?? {};
+        const newTags = this.newProps.tags ?? {};
+        const tagsToAdd = getTagsToUpdate(oldTags, newTags);
+        if (Object.keys(tagsToAdd).length > 0) {
+          const tagConfig: EKS.TagResourceCommandInput = {
             resourceArn: cluster?.arn,
-            tags: this.newProps.tags,
+            tags: tagsToAdd,
           };
-          await this.eks.tagResource(config);
+          await this.eks.tagResource(tagConfig);
+        }
+        const tagsToRemove = getTagsToRemove(oldTags, newTags);
+        if (tagsToRemove.length > 0) {
+          const config: EKS.UntagResourceCommandInput = {
+            resourceArn: cluster?.arn,
+            tagKeys: tagsToRemove,
+          };
+          await this.eks.untagResource(config);
         }
       } catch (e: any) {
         throw e;
@@ -199,7 +180,8 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode || updates.updateDeletionProtection) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode ||
+      updates.updateDeletionProtection || updates.updateControlPlaneScalingConfig) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -268,6 +250,12 @@ export class ClusterResourceHandler extends ResourceHandler {
 
       if (updates.updateDeletionProtection) {
         (config as any).deletionProtection = (this.newProps as any).deletionProtection;
+      }
+
+      if (updates.updateControlPlaneScalingConfig) {
+        // removing the configuration means falling back to the default tier, so we
+        // have to send it explicitly - omitting it would leave the cluster untouched.
+        (config as any).controlPlaneScalingConfig = { tier: controlPlaneScalingTierOf(this.newProps) };
       }
 
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -441,6 +429,23 @@ interface UpdateMap {
   updateTags: boolean; // tags
   updateBootstrapSelfManagedAddons: boolean; // cluster with default networking add-ons
   updateDeletionProtection: boolean; // deletionProtection
+  updateControlPlaneScalingConfig: boolean; // controlPlaneScalingConfig.tier
+}
+
+/**
+ * The control plane scaling tier a cluster runs on when no explicit tier is configured.
+ */
+const DEFAULT_CONTROL_PLANE_SCALING_TIER = 'standard';
+
+/**
+ * Returns the control plane scaling tier the given props resolve to.
+ *
+ * `controlPlaneScalingConfig` is not yet in the SDK types, so it is read off the
+ * parsed props explicitly. An absent configuration means the cluster runs on the
+ * default tier.
+ */
+function controlPlaneScalingTierOf(props: Partial<EKS.CreateClusterCommandInput>): string {
+  return (props as any).controlPlaneScalingConfig?.tier ?? DEFAULT_CONTROL_PLANE_SCALING_TIER;
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -486,6 +491,9 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
       oldProps.bootstrapSelfManagedAddons,
     ),
     updateDeletionProtection: (newProps as any).deletionProtection !== (oldProps as any).deletionProtection,
+    // an absent configuration is equivalent to the default tier, so switching between
+    // the two is not an actual change and must not trigger an update.
+    updateControlPlaneScalingConfig: controlPlaneScalingTierOf(newProps) !== controlPlaneScalingTierOf(oldProps),
   };
 }
 

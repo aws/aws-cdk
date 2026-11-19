@@ -5,7 +5,7 @@
 [![NPM version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
 [![PyPI version](https://badge.fury.io/py/aws-cdk-lib.svg)](https://badge.fury.io/py/aws-cdk-lib)
 [![NuGet version](https://badge.fury.io/nu/Amazon.CDK.Lib.svg)](https://badge.fury.io/nu/Amazon.CDK.Lib)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/aws-cdk-lib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/aws-cdk-lib)
+[![Maven Central](https://img.shields.io/maven-central/v/software.amazon.awscdk/aws-cdk-lib)](https://central.sonatype.com/artifact/software.amazon.awscdk/aws-cdk-lib)
 [![Go Reference](https://pkg.go.dev/badge/github.com/aws/aws-cdk-go/awscdk/v2.svg)](https://pkg.go.dev/github.com/aws/aws-cdk-go/awscdk/v2)
 
 [![View on Construct Hub](https://constructs.dev/badge?package=aws-cdk-lib)](https://constructs.dev/packages/aws-cdk-lib)
@@ -37,7 +37,6 @@ Jump To:
 [Getting Help](#getting-help) |
 [Contributing](#contributing) |
 [RFCs](https://github.com/aws/aws-cdk-rfcs) |
-[Roadmap](https://github.com/aws/aws-cdk/blob/main/ROADMAP.md) |
 [More Resources](#more-resources)
 
 -------
@@ -137,10 +136,6 @@ You may also find help on these community resources:
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
 
-## Roadmap
-
-The AWS CDK Roadmap lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/main/ROADMAP.md) for more information and FAQs.
-
 ## Contributing
 
 We welcome community contributions and pull requests. See
@@ -152,31 +147,6 @@ environment and submit code.
 This solution collects anonymous operational metrics to help AWS improve the
 quality and features of the CDK. For more information, including how to disable
 this capability, please see the [developer guide](https://docs.aws.amazon.com/cdk/v2/guide/cdktelemetry.html).
-
-## Git source metadata
-
-The CDK can record the git repository URL and commit hash in your synthesized CloudFormation
-templates. This is disabled by default. To enable it, set `trackSourceCommit` in your
-CDK app:
-
-```ts
-new App({
-  trackSourceCommit: true,
-});
-```
-
-Or use the `@aws-cdk/core:trackSourceCommit` context key in your `cdk.json`:
-
-```json
-{
-  "context": {
-    "@aws-cdk/core:trackSourceCommit": true
-  }
-}
-```
-
-When enabled, the git remote URL and current commit hash are added as `AWS::CDK::Source` metadata to
-the template of each stack that has this feature enabled.
 
 ## More Resources
 

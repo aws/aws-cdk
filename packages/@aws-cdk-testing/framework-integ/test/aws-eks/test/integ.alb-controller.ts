@@ -62,7 +62,7 @@ class EksClusterAlbControllerStack extends Stack {
     });
 
     // the pinger must wait for the ingress and echoServer to be deployed.
-    pinger.node.addDependency(ingress, echoServer);
+    pinger.node.addDependency(echoServer);
 
     // this should display the 'hello' text we gave to the server
     new CfnOutput(this, 'IngressPingerResponse', {

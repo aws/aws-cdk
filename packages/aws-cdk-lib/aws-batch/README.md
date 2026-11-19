@@ -818,3 +818,77 @@ const queue = new batch.JobQueue(this, 'JobQueue', {
 const user = new iam.User(this, 'MyUser');
 ecsJob.grantSubmitJob(user, queue);
 ```
+
+### Managing Consumable Resources
+
+Consumable resources are finite resources that are consumed by jobs, such as third-party software licenses or API rate limits. AWS Batch tracks the usage of these resources and ensures that jobs only run when the required resources are available.
+
+There are two types of consumable resources:
+
+* **REPLENISHABLE**: Resources that can be re-used after a job completes (e.g., software licenses)
+* **NON_REPLENISHABLE**: Resources that cannot be re-used after a job completes (e.g., API rate limits)
+
+#### Creating Consumable Resources
+
+You can create consumable resources to track and manage finite resources in your Batch workflows:
+
+```ts
+// Create a replenishable consumable resource (e.g., software licenses)
+const licenseResource = new batch.ConsumableResource(this, 'LicenseResource', {
+  consumableResourceName: 'my-software-license',
+  resourceType: batch.ConsumableResourceType.REPLENISHABLE,
+  totalQuantity: 100,
+});
+
+// Create a non-replenishable consumable resource (e.g., API rate limits)
+const apiRateLimitResource = new batch.ConsumableResource(this, 'ApiRateLimitResource', {
+  consumableResourceName: 'api-rate-limit',
+  resourceType: batch.ConsumableResourceType.NON_REPLENISHABLE,
+  totalQuantity: 1000,
+});
+```
+
+`resourceType` defaults to `REPLENISHABLE`, matching the AWS Batch API, and `totalQuantity` must be
+a non-negative integer. Both `consumableResourceName` and `resourceType` replace the resource when
+changed, so changing the type of a resource that has an explicit name also requires a new name.
+
+Tags can be passed directly to the resource:
+
+```ts
+const taggedResource = new batch.ConsumableResource(this, 'TaggedResource', {
+  totalQuantity: 100,
+  tags: {
+    Team: 'batch',
+  },
+});
+```
+
+#### Granting Access to Consumable Resources
+
+Use the `grants` property to give an identity permission to inspect or update a consumable resource:
+
+```ts
+const licenseResource = new batch.ConsumableResource(this, 'LicenseResource', {
+  totalQuantity: 100,
+});
+
+const user = new iam.User(this, 'MyUser');
+
+// Describe the resource and list the jobs that use it
+licenseResource.grants.read(user);
+
+// Change the total quantity, e.g. to replenish a NON_REPLENISHABLE pool
+licenseResource.grants.update(user);
+```
+
+#### Importing Existing Consumable Resources
+
+You can import existing consumable resources by their ARN:
+
+```ts
+const importedResource = batch.ConsumableResource.fromConsumableResourceArn(
+  this,
+  'ImportedResource',
+  'arn:aws:batch:us-east-1:123456789012:consumable-resource/my-resource'
+);
+```

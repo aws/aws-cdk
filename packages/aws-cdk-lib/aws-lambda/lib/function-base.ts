@@ -49,7 +49,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable, 
   /**
    * Whether or not this Lambda function was bound to a VPC
    *
-   * If this is is `false`, trying to access the `connections` object will fail.
+   * If this is `false`, trying to access the `connections` object will fail.
    */
   readonly isBoundToVpc: boolean;
 
@@ -490,7 +490,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   /**
    * Whether or not this Lambda function was bound to a VPC
    *
-   * If this is is `false`, trying to access the `connections` object will fail.
+   * If this is `false`, trying to access the `connections` object will fail.
    */
   public get isBoundToVpc(): boolean {
     return !!this._connections;
@@ -554,11 +554,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._invocationGrants[identifier];
     if (!grant) {
-      let resouceArns = [`${this.functionArn}:${version.version}`];
+      let resourceArns = [`${this.functionArn}:${version.version}`];
       if (version == this.latestVersion) {
-        resouceArns.push(this.functionArn);
+        resourceArns.push(this.functionArn);
       }
-      grant = this.grant(grantee, identifier, 'lambda:InvokeFunction', resouceArns);
+      grant = this.grant(grantee, identifier, 'lambda:InvokeFunction', resourceArns);
       this._invocationGrants[identifier] = grant;
     }
     return grant;

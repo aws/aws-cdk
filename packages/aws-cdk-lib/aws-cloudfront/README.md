@@ -517,6 +517,48 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### Viewer Protocol Policy
+
+Each behavior controls whether viewers may reach it over plaintext HTTP through its
+`viewerProtocolPolicy`. By default a behavior uses `ViewerProtocolPolicy.ALLOW_ALL`, which
+accepts both HTTP and HTTPS.
+
+AWS recommends redirecting viewers to HTTPS, and AWS Security Hub control
+[CloudFront.3](https://docs.aws.amazon.com/securityhub/latest/userguide/cloudfront-controls.html)
+fails a distribution when the default behavior or any additional behavior uses `allow-all`.
+Enable the `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature flag to
+default every behavior to `ViewerProtocolPolicy.REDIRECT_TO_HTTPS` instead:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true
+  }
+}
+```
+
+The flag applies to the default behavior, to `additionalBehaviors`, and to behaviors added
+later with `addBehavior()`. Projects created by `cdk init` enable it automatically; existing
+apps keep `ALLOW_ALL` until they opt in.
+
+An explicit `viewerProtocolPolicy` always wins over the flag, so an individual behavior can opt
+back out:
+
+```ts
+declare const myBucket: s3.Bucket;
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: origins.S3BucketOrigin.withOriginAccessControl(myBucket),
+    // Keeps accepting plaintext HTTP even when the feature flag is enabled.
+    viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.ALLOW_ALL,
+  },
+});
+```
+
+Note that `REDIRECT_TO_HTTPS` answers an HTTP request with an HTTP 301 redirect, which the
+viewer then follows with a second request; that additional request is billable. To reject
+plaintext HTTP outright rather than redirecting it, use `ViewerProtocolPolicy.HTTPS_ONLY`.
+
 ### Attaching WAF Web Acls
 
 You can attach the AWS WAF web ACL to a CloudFront distribution.
@@ -1159,7 +1201,7 @@ configuration properties have been changed:
 | `viewerCertificate`    | `certificate`; use `domainNames` for aliases                                                   |
 | `errorConfigurations`  | `errorResponses`                                                                               |
 | `loggingConfig`        | `enableLogging`; configure with `logBucket` `logFilePrefix` and `logIncludesCookies`           |
-| `viewerProtocolPolicy` | removed; set on each behavior instead. default changed from `REDIRECT_TO_HTTPS` to `ALLOW_ALL` |
+| `viewerProtocolPolicy` | removed; set on each behavior instead. default changed from `REDIRECT_TO_HTTPS` to `ALLOW_ALL`, but the `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature flag restores `REDIRECT_TO_HTTPS` |
 
 After switching constructs, you need to maintain the same logical ID for the underlying [CfnDistribution](https://docs.aws.amazon.com/cdk/api/v1/docs/@aws-cdk_aws-cloudfront.CfnDistribution.html) if you wish to avoid the deletion and recreation of your distribution.
 To do this, use [escape hatches](https://docs.aws.amazon.com/cdk/v2/guide/cfn_layer.html) to override the logical ID created by the new Distribution construct with the logical ID created by the old construct.

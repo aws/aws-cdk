@@ -187,7 +187,6 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
           name: this.strategyName,
           description: this.description,
           namespaces: this.namespaces,
-          type: this.strategyType,
         },
       };
     }
@@ -200,7 +199,6 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
           name: this.strategyName,
           description: this.description,
           namespaces: this.namespaces,
-          type: this.strategyType,
           reflectionConfiguration: { namespaces: this.reflectionConfiguration.namespaces },
         },
       };
@@ -221,7 +219,6 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
         name: this.strategyName,
         description: this.description,
         namespaces: this.namespaces,
-        type: this.strategyType,
         configuration: {
           [strategyKey]: {
             ...(this.consolidationOverride && {

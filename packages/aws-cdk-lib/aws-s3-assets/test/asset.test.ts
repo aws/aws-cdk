@@ -335,6 +335,13 @@ test('nested assemblies share assets: default synth edition', () => {
 });
 
 describe('staging', () => {
+  // These tests chdir into a temp dir. Jest reuses the worker process across test
+  // files, so restore cwd or later files (e.g. aws-s3/test/validation.test.ts,
+  // which renders paths relative to cwd) fail depending on scheduling.
+  let originalCwd: string;
+  beforeEach(() => { originalCwd = process.cwd(); });
+  afterEach(() => { process.chdir(originalCwd); });
+
   test('copy file assets under <outdir>/${fingerprint}.ext', () => {
     const tempdir = mkdtempSync();
     process.chdir(tempdir); // change current directory to somewhere in /tmp

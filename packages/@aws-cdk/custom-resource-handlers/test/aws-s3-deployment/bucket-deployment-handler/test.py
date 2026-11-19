@@ -29,14 +29,23 @@ class TestHandler(unittest.TestCase):
     def test_error_logger(self):
         with patch.object(self.logger, 'error') as error_logger_mock:
             invoke_handler("Create", {}, expected_status="FAILED")
-            error_logger_mock.assert_called_once_with('| cfn_error: b"missing request resource property \'SourceBucketNames\'. props: {}"')
+            error_logger_mock.assert_called_once_with("| cfn_error: missing%20request%20resource%20property%20%27SourceBucketNames%27.%20props%3A%20%7B%7D")
 
     def test_error_logger_encoding_input(self):
         with patch.object(self.logger, 'error') as error_logger_mock:
             invoke_handler("Create", {
                 "Test": "random%0D%0A%5BINFO%5D%20hacking"
             }, expected_status="FAILED")
-            error_logger_mock.assert_called_once_with('| cfn_error: b"missing request resource property \'SourceBucketNames\'. props: {\'Test\': \'random%0D%0A%5BINFO%5D%20hacking\'}"')
+            error_logger_mock.assert_called_once_with("| cfn_error: missing%20request%20resource%20property%20%27SourceBucketNames%27.%20props%3A%20%7B%27Test%27%3A%20%27random%250D%250A%255BINFO%255D%2520hacking%27%7D")
+
+    def test_error_logger_crlf_injection(self):
+        with patch.object(self.logger, 'error') as error_logger_mock:
+            invoke_handler("Create", {
+                "Test": "value\r\n[INFO] injected log line"
+            }, expected_status="FAILED")
+            call_args = error_logger_mock.call_args[0][0]
+            self.assertNotIn('\r', call_args)
+            self.assertNotIn('\n', call_args)
 
     
     def test_cloudfront_waiter_error_message(self):
@@ -82,9 +91,31 @@ class TestHandler(unittest.TestCase):
 
     def test_sanitize_message(self):
         sanitized = index.sanitize_message("twenty-one\r\n%0a%0aINFO:+User+logged+out%3dbadguy")
-        
+
         # Expect the output sanitized string to remove newline characters and enforce double URL encoding
         self.assertEqual(sanitized, 'twenty-one%250a%250aINFO%3A%2BUser%2Blogged%2Bout%253dbadguy')
+
+    def test_sanitize_message_non_string(self):
+        sanitized = index.sanitize_message({"key": "value\r\ninjected"})
+        # Non-string input should be converted to string and sanitized
+        self.assertNotIn('\r', sanitized)
+        self.assertNotIn('\n', sanitized)
+
+    def test_sanitize_message_none(self):
+        self.assertIsNone(index.sanitize_message(None))
+
+    def test_aws_command_log_crlf_injection(self):
+        # CRLF injected via aws_command arguments must be neutralized in the
+        # "| aws ..." log line, verifying sanitization on a real logging path
+        # (not just sanitize_message() in isolation).
+        with patch.object(self.logger, 'info') as info_logger_mock, \
+                patch('subprocess.check_call'):
+            index.aws_command("s3", "cp", "s3://bucket/key\r\n[INFO] injected log line", "/tmp/dest")
+            info_logger_mock.assert_called_once()
+            logged = info_logger_mock.call_args[0][0]
+            self.assertTrue(logged.startswith("| aws "))
+            self.assertNotIn('\r', logged)
+            self.assertNotIn('\n', logged)
 
     def test_create_update(self):
         invoke_handler("Create", {
@@ -751,6 +782,165 @@ class TestHandler(unittest.TestCase):
         with open(os.path.join(workdir, "subfolder", "boom.txt"), "r") as file:
             self.assertEqual(file.read().rstrip(), "Another value1-source2 file with _marker2_ hey!\nLine 2 with value1-source2 again :-)")
 
+
+    def test_output_object_version_ids(self):
+        # extract=false, flag on: handler head_objects the destination key and returns its VersionId
+        head_calls = []
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                head_calls.append(kwarg)
+                return {'VersionId': '<version-id>'}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], ["<version-id>"])
+        self.assertEqual(len(head_calls), 1)
+        self.assertEqual(head_calls[0]["Bucket"], "<dest-bucket-name>")
+        self.assertEqual(head_calls[0]["Key"], "<source-object-key>")
+
+    def test_output_object_version_ids_with_prefix(self):
+        # destination key is "<prefix>/<basename(source key)>" (prefix already has a trailing slash)
+        head_calls = []
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                head_calls.append(kwarg)
+                return {'VersionId': '<version-id>'}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["some/path/object.zip"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DestinationBucketKeyPrefix": "my-prefix/",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], ["<version-id>"])
+        self.assertEqual(head_calls[0]["Key"], "my-prefix/object.zip")
+
+    def test_output_object_version_ids_prefix_without_trailing_slash(self):
+        # `aws s3 sync <dir> s3://bucket/my-prefix` writes objects at "my-prefix/<name>", so the
+        # handler must insert the "/" it would otherwise be missing (regression guard).
+        head_calls = []
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                head_calls.append(kwarg)
+                return {'VersionId': '<version-id>'}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["some/path/object.zip"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DestinationBucketKeyPrefix": "my-prefix",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], ["<version-id>"])
+        self.assertEqual(head_calls[0]["Key"], "my-prefix/object.zip")
+
+    def test_output_object_version_ids_multiple_sources(self):
+        # positionally matches SourceObjectKeys
+        versions = {"<key1>": "<v1>", "<key2>": "<v2>"}
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                return {'VersionId': versions[kwarg["Key"]]}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket1>", "<source-bucket2>"],
+                "SourceObjectKeys": ["<key1>", "<key2>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], ["<v1>", "<v2>"])
+
+    def test_output_object_version_ids_unversioned_bucket_returns_empty(self):
+        # head_object on an unversioned bucket returns no VersionId -> empty string
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                return {}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], [""])
+
+    def test_output_object_version_ids_missing_object_returns_empty(self):
+        # a filtered-out (absent) destination object 404s on head_object -> empty string, no failure
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'HeadObject':
+                raise ClientError({'Error': {'Code': '404', 'Message': 'Not Found'}}, operation_name)
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+            })
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], [""])
+
+    def test_no_object_version_ids_when_flag_absent(self):
+        # default: no HeadObject calls are made and the attribute is not returned
+        def mock_make_api_call(self, operation_name, kwarg):
+            raise Exception("no S3 API call should be made when OutputObjectVersionIds is not set, got %s" % operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Create", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+            })
+
+        self.assertNotIn("SourceObjectVersionIds", resp["Data"])
+
+    def test_object_version_ids_on_delete_returns_empty(self):
+        # on delete the objects are gone; when requested the attribute is present as []
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                return {'TagSet': [{'Key': 'random-key', 'Value': '<logical-resource-id>'}]}
+            if operation_name == 'HeadObject':
+                raise Exception("HeadObject should not be called on delete")
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "Extract": "false",
+                "OutputObjectVersionIds": "true",
+                "RetainOnDelete": "false",
+            }, physical_id="<physicalid>")
+
+        self.assertEqual(resp["Data"]["SourceObjectVersionIds"], [])
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):

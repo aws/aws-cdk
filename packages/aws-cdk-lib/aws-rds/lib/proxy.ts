@@ -596,19 +596,19 @@ export class DatabaseProxy extends DatabaseProxyBase
       cluster.node.children.forEach((child) => {
         // Legacy case using the `instanceProps` property of `DatabaseCluster`.
         if (child instanceof CfnDBInstance) {
-          proxyTargetGroup.addDependency(child);
+          proxyTargetGroup.addResourceDependency(child);
         }
         // The case of `AuroraClusterInstance` constructs passed via the `writer` and `readers` properties of `DatabaseCluster`.
         // We can't use the `AuroraClusterInstance` class to check the type with `instanceof` because the class is not exported.
         // The `defaultChild` that the construct has should be a `CfnDBInstance`, so check it.
         const resource = child.node.defaultChild;
         if (resource instanceof CfnDBInstance) {
-          proxyTargetGroup.addDependency(resource);
+          proxyTargetGroup.addResourceDependency(resource);
         }
       });
       const clusterResource = cluster.node.defaultChild as cdk.CfnResource;
       if (clusterResource && cdk.CfnResource.isCfnResource(clusterResource)) {
-        proxyTargetGroup.addDependency(clusterResource);
+        proxyTargetGroup.addResourceDependency(clusterResource);
       }
     });
   }

@@ -1,0 +1,28 @@
+{
+  "/CloudFormationValidatePluginStack/MyBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/CloudFormationValidatePluginStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CloudFormationValidatePluginStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CloudFormationValidatePluginStack/MyBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketF68F3FF0"
+    }
+  ]
+}

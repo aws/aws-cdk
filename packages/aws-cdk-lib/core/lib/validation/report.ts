@@ -50,8 +50,10 @@ export interface PolicyViolatingResource {
   /**
    * The logical ID of the resource in the CloudFormation template.
    *
-   * Required for plugin-sourced violations that operate on CloudFormation
-   * templates. Mutually exclusive with `constructPath`.
+   * Intended for plugin-sourced violations that operate on CloudFormation
+   * templates.
+   *
+   * If set, the `constructPath` will be added later.
    *
    * @default - no resource logical ID
    */
@@ -72,6 +74,11 @@ export interface PolicyViolatingResource {
 
   /**
    * The locations in the CloudFormation template that pose the violations.
+   *
+   * This is a location in the CloudFormation template, relative to the resource that
+   * this violation is about. For example, if the violation is about a property of a resource,
+   * this will contain something like `Properties.MyProperty`. If the violation is about the Stack
+   * itself, it will contain something like `Parameters.MyParameter`.
    */
   readonly locations: string[];
 

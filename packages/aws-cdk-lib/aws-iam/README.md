@@ -720,7 +720,7 @@ user identities. For more information about this scenario, see [About Web
 Identity Federation] and the relevant documentation in the [Amazon Cognito
 Identity Pools Developer Guide].
 
-[OpenID Connect]: http://openid.net/connect
+[OpenID Connect]: https://openid.net/connect
 [About Web Identity Federation]: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
 [Amazon Cognito Identity Pools Developer Guide]: https://docs.aws.amazon.com/cognito/latest/developerguide/open-id.html
 
@@ -985,4 +985,4 @@ const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, 
 * Policy names are not required - the CDK logical ID will be used and ensured to be unique.
 * Policies are validated during synthesis to ensure that they have actions, and that policies
   attached to IAM principals specify relevant resources, while policies attached to resources
-  specify which IAM principals they apply to.
+  specify both which IAM principals they apply to and which resources they govern.

@@ -11,11 +11,12 @@ import { Box } from './helpers-internal';
 import { memoizedGetter } from './helpers-internal/memoize';
 import type { IStringProducer } from './lazy';
 import { Lazy } from './lazy';
+import { stackOf } from './private/core-construct-finders';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
 import type { RemovalPolicy } from './removal-policy';
 import type { IResolveContext } from './resolvable';
-import { Stack } from './stack';
+import type { Stack } from './stack';
 import { Token, Tokenization } from './token';
 import type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
 import { withMixins } from './mixins/private/mixin-metadata';
@@ -162,7 +163,7 @@ export abstract class Resource extends Construct implements IResource {
 
   @memoizedGetter
   public get stack(): Stack {
-    return Stack.of(this);
+    return stackOf(this);
   }
 
   @memoizedGetter
@@ -277,7 +278,7 @@ export abstract class Resource extends Construct implements IResource {
   protected getResourceNameAttribute(nameAttr: string) {
     return mimicReference(nameAttr, {
       produce: (context: IResolveContext) => {
-        const consumingStack = Stack.of(context.scope);
+        const consumingStack = stackOf(context.scope);
 
         if (this.stack.account !== consumingStack.account ||
           (this.stack.region !== consumingStack.region &&
@@ -311,7 +312,7 @@ export abstract class Resource extends Construct implements IResource {
   protected getResourceArnAttribute(arnAttr: string, arnComponents: ArnComponents) {
     return mimicReference(arnAttr, {
       produce: (context: IResolveContext) => {
-        const consumingStack = Stack.of(context.scope);
+        const consumingStack = stackOf(context.scope);
         if (this.stack.account !== consumingStack.account ||
           (this.stack.region !== consumingStack.region &&
             !consumingStack._crossRegionReferences)) {
