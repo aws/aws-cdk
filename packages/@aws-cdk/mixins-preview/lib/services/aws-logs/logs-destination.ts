@@ -1,5 +1,5 @@
 import type { IEnvironmentAware } from 'aws-cdk-lib/core';
-import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Annotations, Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { Construct, IConstruct } from 'constructs';
@@ -152,14 +152,15 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
       return;
     }
 
-    const account = this.sourceAccount ? this.sourceAccount : this.bucket.env.account;
+    const account = this.sourceAccount ? this.sourceAccount : encryptionKey?.env.account || keyOnbucket?.env.account;
+    const region = encryptionKey?.env.region || keyOnbucket?.env.region;
     const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
     const principal = new PrincipalWithConditions(new ServicePrincipal('delivery.logs.amazonaws.com'), {
       StringEquals: {
         'aws:SourceAccount': [account],
       },
       ArnLike: {
-        'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${this.bucket.env.region}:${account}:${sourceArnPostfix}`],
+        'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${region}:${account}:${sourceArnPostfix}`],
       },
     });
     const actions = this.sourceAccount
@@ -167,7 +168,11 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
       : ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'];
 
     if (encryptionKey) {
-      KeyGrants.fromKey(encryptionKey).actions(principal, ...actions);
+      const grant = KeyGrants.fromKey(encryptionKey).actions(principal, ...actions);
+      if (!grant) {
+         Annotations.of(this).addWarningV2('@aws-cdk/mixins-preview:logsDeliveryKeyPolicyNotUpdated',
+          `could not add policy to the provided encryption key, ${encryptionKey.keyRef.keyId}. Add a statement to allow log delivery manually.`);
+      }
     } else {
       keyOnbucket?.grantOnKey(principal, ...actions);
     }

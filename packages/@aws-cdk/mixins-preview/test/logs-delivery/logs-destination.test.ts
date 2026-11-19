@@ -1014,12 +1014,29 @@ describe('S3 Destination', () => {
     });
   });
 
+  // A bare IBucketRef carries no encryption information, so no key is discoverable.
   test('grants no key permissions when neither a provided nor a discoverable key exists', () => {
+    const unrelatedKey = new Key(stack, 'UnrelatedKey');
+    const bucket = CfnBucket.fromBucketName(stack, 'RefBucket', 'imported-bucket');
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket });
+
+    expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
+    // guards against the assertion above passing because no key exists to be found
+    expect(Object.keys(Template.fromStack(stack).findResources('AWS::KMS::Key')))
+      .toEqual([stack.getLogicalId(unrelatedKey.node.defaultChild as CfnKey)]);
+  });
+
+  // An IBucket is always a discoverable encrypted resource, but resolves to no key without a CMK.
+  test('grants no key permissions when an imported bucket has no customer managed key', () => {
+    const unrelatedKey = new Key(stack, 'UnrelatedKey');
     const bucket = Bucket.fromBucketName(stack, 'ImportedBucket', 'imported-bucket');
 
     new S3DeliveryDestination(bucket, 'S3Dest', { bucket });
 
-    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+    expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
+    expect(Object.keys(Template.fromStack(stack).findResources('AWS::KMS::Key')))
+      .toEqual([stack.getLogicalId(unrelatedKey.node.defaultChild as CfnKey)]);
   });
 
   test('uses outputFormat when provided', () => {
@@ -1101,3 +1118,19 @@ describe('XRay Destination', () => {
     expect(deliveryDestinations[deliveryDestinationLogicalId].DependsOn).toContain(xrayPolicyLogicalId);
   });
 });
+
+/**
+ * Finds every KMS key in the stack whose key policy grants the log delivery service.
+ */
+function findKeysGrantingDelivery(stack: Stack) {
+  return Template.fromStack(stack).findResources('AWS::KMS::Key', {
+    Properties: {
+      KeyPolicy: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Effect: 'Allow',
+          Principal: { Service: 'delivery.logs.amazonaws.com' },
+        })]),
+      },
+    },
+  });
+}

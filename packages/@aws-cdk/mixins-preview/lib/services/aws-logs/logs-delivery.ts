@@ -46,11 +46,13 @@ export interface RecordFieldDeliveryProps {
   /**
    * RecordFields the user wants to include in log delivery (mandatory fields will always be included)
    *
-   * @default - only mandatory fields associated with a log type will be involved in a delivery
+   * @default - no fields are provided to perform log delivery, if this log type has mandatory fields
+   * they will be included in the log delivery
    */
   readonly providedFields?: string[];
   /**
    * Any recordFields that are mandatory to be included in a log delivery of a certain log type
+   * These will be included whether fields were specified to be included or not
    *
    * @default - log type has no mandatory fields
    */
@@ -74,7 +76,7 @@ export interface DeliveryProps extends RecordFieldDeliveryProps {
  */
 export enum S3LogsDeliveryPermissionsVersion {
   /**
-   * V1 Permissions require s3:GetBucketAcl and s3:PutObject on the Delivery Destination Bucket
+   * V1 Permissions require s3:GetBucketAcl, s3:ListBucket, and s3:PutObject on the Delivery Destination Bucket
    */
   V1 = 'V1',
   /**
@@ -96,8 +98,10 @@ export interface S3LogsDeliveryProps extends DeliveryProps {
    */
   readonly permissionsVersion?: S3LogsDeliveryPermissionsVersion;
   /**
-   * KMS key to use for encrypting logs in the S3 bucket.
-   * When provided, grants the logs delivery service permissions to use the key.
+   * The KMS key that is used to encrypt the bucket used for log delivery
+   * 
+   * Grants permissions required for log delivery when provided. Does not change
+   * the bucket's encryption configuration.
    *
    * @default - No encryption key is configured
    */
