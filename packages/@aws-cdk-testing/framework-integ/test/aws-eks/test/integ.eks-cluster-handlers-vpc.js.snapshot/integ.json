@@ -10,6 +10,5 @@
       "assertionStackName": "awscdkekshandlersinvpcDefaultTestDeployAssert40766711"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1146.0"
+  "enableLookups": true
 }

@@ -9,6 +9,5 @@
       "assertionStackName": "lambdaruntimeinlinecodeDefaultTestDeployAssert2C40D679"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }

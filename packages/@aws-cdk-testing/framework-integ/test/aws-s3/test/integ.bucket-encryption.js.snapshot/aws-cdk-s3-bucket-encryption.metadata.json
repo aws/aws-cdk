@@ -8,25 +8,40 @@
   "/aws-cdk-s3-bucket-encryption/MyDSSEBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryption": "DSSE_MANAGED",
+        "removalPolicy": "destroy"
+      }
     }
   ],
   "/aws-cdk-s3-bucket-encryption/MySSES3Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryption": "S3_MANAGED",
+        "bucketKeyEnabled": true,
+        "removalPolicy": "destroy"
+      }
     }
   ],
   "/aws-cdk-s3-bucket-encryption/MyKMSBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryption": "KMS",
+        "blockedEncryptionTypes": "*",
+        "removalPolicy": "destroy"
+      }
     }
   ],
   "/aws-cdk-s3-bucket-encryption/MySSECBlockedBucket": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "encryption": "S3_MANAGED",
+        "blockedEncryptionTypes": "*",
+        "removalPolicy": "destroy"
+      }
     }
   ],
   "/aws-cdk-s3-bucket-encryption/BootstrapVersion": [

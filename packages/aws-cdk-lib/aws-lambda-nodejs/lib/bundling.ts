@@ -13,7 +13,7 @@ import * as cdk from '../../core';
 import { AssumptionError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import { profileFn, profileSpan } from '../../core/lib/private/perf';
-import { posixShellEscape } from '../../core/lib/private/shell-escape';
+import { posixShellEscape, powershellEscape } from '../../core/lib/private/shell-escape';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -665,7 +665,10 @@ class OsCommand {
   }
 
   public changeDirectory(dir: string): string {
-    return `cd "${dir}"`;
+    if (this.osPlatform === 'win32') {
+      return `cd "${dir}"`;
+    }
+    return `cd ${posixShellEscape(dir)}`;
   }
 
   public remove(filePath: string, force: boolean = false): string {
@@ -674,7 +677,7 @@ class OsCommand {
     }
 
     const opts = force ? ['-f'] : [];
-    return `rm ${opts.join(' ')} "${filePath}"`;
+    return `rm ${opts.join(' ')} ${posixShellEscape(filePath)}`;
   }
 
   public removeDir(dir: string): string {
@@ -682,7 +685,7 @@ class OsCommand {
       return `rmdir /s /q "${dir}"`;
     }
 
-    return `rm -rf "${dir}"`;
+    return `rm -rf ${posixShellEscape(dir)}`;
   }
 }
 
@@ -694,10 +697,6 @@ class OsCommand {
  */
 function preparePosixShellCommand(argv: string[]): string {
   return argv.map(posixShellEscape).join(' ');
-}
-
-function powershellEscape(arg: string): string {
-  return "'" + arg.replace(/'/g, "''") + "'";
 }
 
 /**

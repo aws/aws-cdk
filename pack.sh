@@ -43,8 +43,10 @@ echo "Running aws-cdk-lib pre-package"
 npx lerna run --scope aws-cdk-lib package -- --pre-only
 
 # Jsii packaging (all at once using jsii-pacmak)
+# jsii-pacmak loads every assembly and its translations into one process. With about 28,000 types
+# in @aws-cdk/mixins-preview, that needs more than the 8 GB set above.
 echo "Packaging jsii modules" >&2
-$PACMAK \
+NODE_OPTIONS="${NODE_OPTIONS} --max-old-space-size=32768" $PACMAK \
   --verbose \
   $(cat $TMPDIR/jsii.txt)
 

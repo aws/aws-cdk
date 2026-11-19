@@ -1,6 +1,7 @@
 import type { BootstrapOptions, ICluster } from './cluster';
 import type * as autoscaling from '../../aws-autoscaling';
 import { Stack } from '../../core';
+import { posixShellEscape, posixShellEscapeMinimal } from '../../core/lib/private/shell-escape';
 
 // eslint-disable-next-line max-len
 export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
@@ -16,8 +17,8 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
     const clusterEndpoint = cluster.clusterEndpoint;
     const clusterCertificateAuthorityData =
       cluster.clusterCertificateAuthorityData;
-    extraArgs.push(`--apiserver-endpoint '${clusterEndpoint}'`);
-    extraArgs.push(`--b64-cluster-ca '${clusterCertificateAuthorityData}'`);
+    extraArgs.push(`--apiserver-endpoint ${posixShellEscape(clusterEndpoint)}`);
+    extraArgs.push(`--b64-cluster-ca ${posixShellEscape(clusterCertificateAuthorityData)}`);
   } catch (e) {
     /**
      * Errors are ignored here.
@@ -39,11 +40,11 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
   }
 
   if (options.dockerConfigJson) {
-    extraArgs.push(`--docker-config-json '${options.dockerConfigJson}'`);
+    extraArgs.push(`--docker-config-json ${posixShellEscapeMinimal(options.dockerConfigJson)}`);
   }
 
   if (options.dnsClusterIp) {
-    extraArgs.push(`--dns-cluster-ip ${options.dnsClusterIp}`);
+    extraArgs.push(`--dns-cluster-ip ${posixShellEscapeMinimal(options.dnsClusterIp)}`);
   }
 
   if (options.additionalArgs) {

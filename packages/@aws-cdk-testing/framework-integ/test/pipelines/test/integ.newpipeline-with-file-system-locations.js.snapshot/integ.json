@@ -10,6 +10,5 @@
       "assertionStackName": "cdkintegcodepipelinewithfilesystemlocationsDefaultTestDeployAssert3E26E748"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }
