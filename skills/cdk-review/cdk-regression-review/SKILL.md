@@ -12,9 +12,8 @@ side effects) and **breaking change** (an API-surface or behavior break gated by
 change can be both — a signature change is a JSII regression and an API-surface break.
 
 **Scope gate — review only risks this PR introduces.** Point to the changed line that creates the risk.
-A finding on a pre-existing problem is noise, not review. Judge the
-implementation, not the intent: a well-meant bug fix, added validation, or optimization can still
-introduce a regression or a break.
+Judge the implementation: a well-meant bug fix, added validation, or optimization can still introduce a
+regression or a break.
 
 **You own regression + breaking-change, including JSII.** A public type moved between files, an interface
 renamed, or a signature changed so it breaks a non-TypeScript binding is yours — it breaks the existing
@@ -38,8 +37,8 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
    change owes; flag each owed item that is absent.
 
 3. **Rate by harm and stop.** Rate every finding by the harm when its mechanism triggers, per
-   `cdk-review-principles` (its severity scale, "Confidence is not severity") — never demote a concrete
-   regression or break to OPTIONAL out of doubt it fires. Stop once you can name the mechanism and cite its
+   `cdk-review-principles` (its severity scale, "Confidence is not severity") — rate a concrete regression
+   or break at that harm even when you doubt it fires. Stop once you can name the mechanism and cite its
    rule.
 
 ## What not to flag

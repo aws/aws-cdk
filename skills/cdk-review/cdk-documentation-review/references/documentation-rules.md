@@ -6,9 +6,8 @@ the `cdk-review-principles` skill for the shared lookup convention (the
 BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-severity encoding, the
 `(doc-absent detail)` marker, and links referencing `main`).
 
-Severity across these rows is set by shipped-doc consumer impact, not by whether the build breaks: a
-doc that is *wrong*, or a new L2 with no usage example at all, is BLOCKING; a doc *thin* on a required
-facet is RECOMMENDED.
+Severity across these rows is set by shipped-doc consumer impact: a doc that is *wrong*, or a new L2
+with no usage example at all, is BLOCKING; a doc *thin* on a required facet is RECOMMENDED.
 
 ## README examples
 
@@ -28,7 +27,7 @@ PR adds, or hides the feature in a fixture, so it documents nothing the PR intro
 
 **[DOC-DEFAULT-WRONG] (BLOCKING)** — A `@default` whose stated value or behavior contradicts what the
 code actually does when the prop is omitted (e.g. `@default false` on a prop the constructor defaults to
-`true`). This ships a false statement about real behavior to every consumer, not a wording nit. See
+`true`). This ships a false statement about real behavior to every consumer. See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design) for the
 `@default` format rule and
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior)

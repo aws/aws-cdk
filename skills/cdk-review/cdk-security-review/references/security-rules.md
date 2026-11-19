@@ -48,7 +48,7 @@ requiring the prop. See
 
 **[SEC-IAM-WILDCARD-ACTION-SERVICE] (RECOMMENDED)** — A full-service action wildcard (`service:*`) on an
 otherwise correctly-scoped resource is a hardening gap, not an open door. Suffix wildcards
-(`s3:GetObject*`) are acceptable — **do not flag them.** See
+(`s3:GetObject*`) are acceptable. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
 **[SEC-IAM-HANDROLLED-POLICY] (RECOMMENDED)** *(conditional — BLOCKING when it grants a wildcard or a
@@ -71,9 +71,8 @@ reachable)* — Missing `sts:ExternalId` condition on cross-*account* trust to a
 (external) account — an `assumedBy` `AccountPrincipal`/`ArnPrincipal` for an account outside your org.
 `ExternalId` (or an inline comment stating why none is needed) is the third-party control. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
-- **Doc-absent detail:** do not flag same-org / internal-Amazon cross-account trust — inside the org
-  boundary the two accounts share a trust domain and `ExternalId` is not required, so flagging it floods
-  false positives.
+- **Doc-absent detail:** inside the org boundary (same-org / internal-Amazon cross-account trust) the two
+  accounts share a trust domain and `ExternalId` is not required.
 
 **[SEC-KMS-VIASERVICE] (RECOMMENDED)** — Missing `kms:ViaService` on an otherwise-scoped KMS grant
 (defense-in-depth gap). See
@@ -86,15 +85,14 @@ re-permission other roles; a `permissionsBoundary` caps what those minted roles 
 (privilege-escalation containment). See
 [`AGENTS_CONSTRUCT_DESIGN.md § IAM Role Integration`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#iam-role-integration).
 - **Doc-absent detail:** gate on the IAM-mutating action set — this fires only when the role grants one
-  of those actions, not on ordinary roles (S3, DynamoDB, etc.), so it does not flood every role.
+  of those actions.
 
 **[SEC-IAM-ABAC-TAGWRITE] (RECOMMENDED)** — Tag-based access control (ABAC) without tag-write
 separation. When a `PolicyStatement` gates access on `aws:ResourceTag`/`aws:PrincipalTag`/
 `aws:RequestTag`, an adjacent grant of `Tag*`/`Untag*` on the tagged resource lets the same principal
 rewrite the governing tag and self-grant. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
-- **Doc-absent detail:** RECOMMENDED-only (defense-in-depth) — fire only when both halves are present; a
-  benign tag-gated policy with no adjacent tag-write grant is not a finding.
+- **Doc-absent detail:** RECOMMENDED-only (defense-in-depth) — fire only when both halves are present.
 
 **[SEC-IAM-OVERBROAD-PRINCIPAL] (RECOMMENDED)** *(conditional — BLOCKING when it opens access)* — A role
 `assumedBy` an `AccountRootPrincipal()` (or a cross-account root) where a specific `ServicePrincipal`
@@ -151,7 +149,7 @@ policy downgraded, a secure-private default now defaulting to public/open, or a 
 **[SEC-DEFAULT-FLAG-LOOSENS] (BLOCKING)** *(conditional — RECOMMENDED when the loosening is bounded)* — A
 new/changed feature flag whose enabled behavior *loosens* trust or permissions (widens a policy, opens
 access, weakens a default) is a *Secure defaults* finding here — even though the flag mechanism is
-otherwise a breaking-change concern outside this dimension. A flag that *tightens* is not a finding. See
+otherwise a breaking-change concern outside this dimension. See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
 - **Doc-absent detail:** suspect a flag whose `unconfiguredBehavesLike`/`recommendedValue` defaults
   existing apps to the *looser* behavior rather than the old (tighter) one.

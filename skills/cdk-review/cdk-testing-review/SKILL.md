@@ -11,12 +11,11 @@ runtime what only shows once deployed, not only that the stack deploys. Two erro
 missing a test the change owes, and demanding one it does not (the noise-cannon). Weigh each against both.
 
 **Scope gate — judge only the tests this PR owes:** the behavior it adds or changes, and the tests it
-adds or modifies. A pre-existing untested path the PR never touched is not its debt. A finding on
-untouched code is noise, not review.
+adds or modifies.
 
-**You own test adequacy, not correctness.** Judge whether the tests would catch a bug, not whether the
-code has one. An exposure the *snapshot diff* reveals (an IAM widening, a public resource) is yours to
-flag as a dangerous snapshot; IAM *design* in production code is outside your scope.
+**You own test adequacy, not correctness.** Judge whether the tests would catch a bug. An exposure the
+*snapshot diff* reveals (an IAM widening, a public resource) is yours to flag as a dangerous snapshot; IAM
+*design* in production code is outside your scope.
 
 ## The review process
 
@@ -34,10 +33,10 @@ Work the changed surface in this order. Adapt it to what the diff touches.
    judge the integ tests and snapshots it adds or changes by the integration rows.
 
 3. **Rate by harm and stop.** Rate each finding by the harm if the untested behavior regresses, per
-   `cdk-review-principles` — never demote a concrete gap to OPTIONAL out of uncertainty it fires. When
+   `cdk-review-principles` — rate a concrete gap at that harm even when you are unsure it fires. When
    several gaps stem from one test, classify under the best-fitting rule and describe them together. When
-   the tests would catch a break, or no test is owed, raise nothing; demanding a test the change does not
-   owe is the noise-cannon. Stop once you can name the gap and cite its rule.
+   the tests would catch a break, or no test is owed, raise nothing. Stop once you can name the gap and cite
+   its rule.
 
 Before you cite an integ-test pattern, an `assertions` / `integ-tests` API as misused, or a required
 pattern as absent, search and read the CDK testing guide and the module README available to you and

@@ -12,8 +12,7 @@ resource interface `IFoo` is a MUST violation; features belong on Facades. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo)
 and [`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#configuration-mutation).
 - **False-positive guard (doc-absent detail):** `grant*` methods, `from*` importers, and `add{Bar}`
-  factories SHOULD be on the interface; flagging one is a false BLOCKING against a conformant design — do
-  not report it.
+  factories SHOULD be on the interface; flagging one is a false BLOCKING against a conformant design.
 
 **[CD-LAYER-MODEL] (BLOCKING)** — An L2 MUST hide CloudFormation (no `Cfn*`/`Token` in its surface),
 provide an escape hatch to the L1, and expose the full service surface (no hard-coded choice the service
@@ -133,8 +132,7 @@ affordance where the service supports it. See
 and the sections following it for the signatures.
 - **Auto-wired affordances (doc-absent detail):** before flagging an absence, confirm the framework
   doesn't already provide it — tagging works through `Tags.of(x).add(...)` wherever the L1 is taggable, and
-  `removalPolicy`, dependencies, and metadata come from `cdk.Resource`; flagging one of these as missing is
-  a false positive.
+  `removalPolicy`, dependencies, and metadata come from `cdk.Resource`.
 
 **[CD-POLYMORPHISM-OVER-BOOLEAN] (RECOMMENDED)** — Model behavioral variation through polymorphism, not a
 boolean flag. See

@@ -10,14 +10,11 @@ placed at the right abstraction, conformant to the CDK design guidelines, clear,
 it ages well? You apply the severity and design judgment a mechanical linter cannot.
 
 **Scope gate — review only the surface this PR adds or changes.** Judge the new/changed prop, method,
-attribute, interface, enum, or L2; leave the pre-existing design the diff didn't touch. A finding on
-untouched design is noise, not review.
+attribute, interface, enum, or L2.
 
-**You own design, not correctness.** A missing implementation, logic bug, or broken path is baseline
-correctness, not a design finding — outside your scope. You own the excellence
-layer: abstraction, naming, interface shape, and how the API reads and ages. A perfectly correct change
-can still be a finding here — placed wrong, leaks the L1, or paints the service into a corner.
-(`cdk-review-principles` defines the baseline-vs-excellence line.)
+**You own design, not correctness.** You own the excellence layer: abstraction, naming, interface shape, and
+how the API reads and ages. A perfectly correct change can still be a finding here — placed wrong, leaks the
+L1, or paints the service into a corner. (`cdk-review-principles` defines the baseline-vs-excellence line.)
 
 ## The review process
 
@@ -32,17 +29,16 @@ Work the changed surface in this order; adapt to what the diff touches.
    [`design-rules.md`](references/design-rules.md): its rows are your checklist.
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **Feature placement**,
-   **Abstraction / L1 leak**, **Conformance**, **Footgun / ages-well** — judging the shape it produces, not
-   the intent. For each rule check both directions: what is present and violating, and what the kind owes but
-   the diff omits. Before flagging an absence, confirm the service supports the affordance in the
-   authoritative AWS docs, and confirm the CDK framework doesn't already auto-wire it — flagging an
-   auto-wired affordance as missing is a false positive. Rate a missing affordance exactly as a declared
-   defect.
+   **Abstraction / L1 leak**, **Conformance**, **Footgun / ages-well** — judging the shape it produces. For
+   each rule check both directions: what is present and violating, and what the kind owes but the diff
+   omits. Before flagging an absence, confirm the service supports the affordance in the authoritative AWS
+   docs, and confirm the CDK framework doesn't already auto-wire it. Rate a missing affordance exactly as a
+   declared defect.
 
-3. **Rate by harm and stop.** Rate every finding by the cost of shipping the shape, per `cdk-review-principles`
-   ("Confidence is not severity"); never demote a wrong abstraction, an L1 leak, or a footgun to OPTIONAL
-   out of uncertainty. When several defects share one code cause,
-   give one finding with the `ruleId`, `category` and `severity` of its most severe defect, since each field
+3. **Rate by harm and stop.** Rate every finding by the cost of shipping the shape, per
+   `cdk-review-principles` ("Confidence is not severity"); rate a wrong abstraction, an L1 leak, or a
+   footgun at that cost even when you are unsure it fires. When several defects share one code cause, give
+   one finding with the `ruleId`, `category` and `severity` of its most severe defect, since each field
    takes one value. Stop once you can name the defect and cite its rule — file + section — with the concrete
    fix.
 

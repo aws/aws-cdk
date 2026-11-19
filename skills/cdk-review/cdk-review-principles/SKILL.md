@@ -8,8 +8,8 @@ description: "Shared foundation every CDK review-dimension skill applies — the
 ## Severity — rate by the harm it does when it triggers
 
 Ask one question of every finding: **if this ships and the code path is reached, what
-breaks, and how badly?** That answer sets the tier — not the wording, not how confident
-you are it triggers. Three tiers, keyed to the *kind* of harm:
+breaks, and how badly?** That answer sets the tier. Three tiers, keyed to the *kind* of
+harm:
 
 - **BLOCKING** — the harm is **damage**. Something concretely breaks: data is lost, a
   security boundary opens, a customer's stack fails or silently does the wrong thing.
@@ -31,25 +31,22 @@ you are it triggers. Three tiers, keyed to the *kind* of harm:
   grouping with identical effect.
 
 A finding's `severity` field takes exactly one of these three words —
-`BLOCKING` / `RECOMMENDED` / `OPTIONAL` — and there is no second vocabulary.
+`BLOCKING` / `RECOMMENDED` / `OPTIONAL`.
 
 ### Calibrate the harm honestly
 
 The tier is right only if you rate the harm honestly. Four ways it slips:
 
-- **Confidence is not severity.** Rate by the harm *when* the path is reached, not by how
-  sure you are it is reached. A concrete failure mechanism is BLOCKING or RECOMMENDED by
-  its blast radius — never demoted to OPTIONAL "to be safe." OPTIONAL means genuinely
-  negligible harm, not a hedge for a real defect you are unsure fires.
+- **Confidence is not severity.** Rate by the harm *when* the path is reached, however sure
+  you are that it is reached. A concrete failure mechanism is BLOCKING or RECOMMENDED by
+  its blast radius. OPTIONAL means genuinely negligible harm.
 - **Politeness is not severity.** A blocking issue raised as a gentle question — "Can we
-  scope this to a specific ARN?" — still blocks. Rate the harm the change asserts, not its
-  interrogative surface.
-- **No harm, no finding.** Clean code reports nothing — do not manufacture a nit. A change
-  that merely *mentions* IAM, encryption, or a secret is not a finding; a concrete new harm
-  is. Inventing a low-severity finding out of a non-finding is the most common way a review
-  inflates.
+  scope this to a specific ARN?" — still blocks. Rate the harm the change asserts.
+- **No harm, no finding.** Clean code reports nothing. A change that merely *mentions* IAM,
+  encryption, or a secret is not a finding; a concrete new harm is. Inventing a low-severity
+  finding out of a non-finding is the most common way a review inflates.
 - **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
-  *new* harm → not a finding. Rate what the diff adds, not the posture it inherited.
+  *new* harm → not a finding. Rate what the diff adds.
 
 When the finding is that the change violates a rule in the aws-cdk repo's own guides
 (`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
@@ -58,9 +55,9 @@ rule stated as a preference is decay → RECOMMENDED. Cite the rule by file + se
 quote it, so the author sees the authority.
 
 Keep **baseline** harm (correctness, security, compliance — must fix) separate from
-**excellence** framing (design that takes a change from correct to better). Excellence is
-not a fourth tier: grade it on the harm scale like any finding, against the same bar. Never
-report one piece of code as both a must-fix and a design nicety — that double-counts it.
+**excellence** framing (design that takes a change from correct to better). Grade
+excellence on the harm scale like any finding, against the same bar. Report one piece of
+code once, as a must-fix or as a design nicety; reporting it as both double-counts it.
 
 ## Make each finding land
 
@@ -82,17 +79,15 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   how the service behaves, search and read the authoritative AWS documentation available
   to you and confirm the fact against it before posting; confirm what CDK's own API does
   by reading that code, and what CDK's testing or README guidance says by reading that
-  guide; never post from memory. An unverified "X isn't supported" or
+  guide; post only what you have read. An unverified "X isn't supported" or
   "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
-- **A concrete fix** — a code example, or a question framing a specific alternative
-  ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
-  out; never just point at the problem. A fix you suggest follows the same guides as the
-  code under review.
+- **A concrete fix** — a code example, or a question framing a specific alternative ("What
+  do you think about scoping this to the bucket ARN?"). Always offer a direction out. A fix
+  you suggest follows the same guides as the code under review.
 
 Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
-suggestions as questions where you can; stay direct but not harsh on blocking issues
-("this needs to change because…", not "this is wrong"); acknowledge good work; and drop
-"obviously" and "simply".
+suggestions as questions where you can; stay direct and constructive on blocking issues
+("this needs to change because…"); acknowledge good work; and drop "obviously" and "simply".
 
 ## Findings must meet the bar
 
@@ -103,7 +98,7 @@ by number rather than by merit.
 
 A finding becomes a posted comment only when it is (1) tied to a specific line, (2)
 actionable, and (3) significant enough to stand alone. Keep high-level observations,
-positive notes, and clusters of nits in the review summary, not the posted comments.
+positive notes, and clusters of nits in the review summary.
 
 See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
 structured finding fields and how to write each one before you generate findings.

@@ -61,8 +61,7 @@ Every rule here but `REG-JSII-NO-FLUENT` is BLOCKING — the public surface MUST
 Python, Java, C#, and Go. For
 the *why*, see the
 [jsii TypeScript restrictions guide](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/).
-A change that compiles in TypeScript can still break another language's bindings, so do not clear a
-signature change just because TypeScript accepts it.
+A change that compiles in TypeScript can still break another language's bindings.
 
 **[REG-JSII-SIGNATURE-CHANGE] (BLOCKING)** — For every changed signature of a public function, method, or
 constructor, enumerate the before→after parameter delta (count, order, types, optionality, and whether any
@@ -156,7 +155,7 @@ for the enumerated compile-break cases and the `allowed-breaking-changes.txt` ex
   stable API, and removing an enum member. (Moving a public member between files is its own rule —
   [REG-JSII-TYPE-MOVE].)
 - **✅ Non-breaking guard (doc-absent detail):** adding optional input props, new methods/classes, and
-  return props is additive — do not flag it.
+  return props is additive.
 
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
 error: an update that cannot be applied, a change that causes service interruption or data loss
@@ -168,7 +167,7 @@ for the definitional test of which template changes are breaking.
 - **Also breaking, not enumerated by the doc (doc-absent detail):** a `@default` change that alters an
   existing stack's synthesized template, and a noop→real-policy change without a feature flag.
 - **✅ Non-breaking guard (doc-absent detail):** an update that applies cleanly with no replacement and only
-  additive template changes is safe — do not flag it.
+  additive template changes is safe.
 
 **[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
 breaking change still requires an explicit `BREAKING CHANGE:` callout in the PR body (before the `---`

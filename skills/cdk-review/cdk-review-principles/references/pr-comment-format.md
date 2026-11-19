@@ -1,6 +1,6 @@
 # Finding & Comment Format Reference
 
-Produce **structured findings**, not hand-authored markdown.
+Produce **structured findings**.
 
 ## The structured finding contract
 
@@ -25,8 +25,7 @@ The review as a whole also carries a `summary` with its `text`.
 ## `message` — write it complete and standalone
 
 Treat `message` as the text the reader sees on its own: it must stand alone as a
-complete comment, not lean on the other fields shown alongside it. Write it as a
-self-contained review comment:
+complete comment. Write it as a self-contained review comment:
 
 - **Observation** — what the issue is, specific, referencing the code (1-2 sentences).
 - **Impact** — why it matters, what happens if it is not addressed.
@@ -36,14 +35,14 @@ self-contained review comment:
 Populate `evidence`, `reference`, and `suggestedFix` as structured fields too, and fold
 their essentials into the `message` prose so it stands alone. Write it in a reviewer's
 voice (see "Tone Rules"). `ruleId` is the exception: a structured metadata field for
-debug/tracing, not reader-facing prose — do not fold it into `message` (though a finding
-may still cite the rule inline where that aids the author).
+debug/tracing that stays in its own field (though a finding may still cite the rule inline
+where that aids the author).
 
 ## Severity vocabulary
 
 The `severity` field takes one of `BLOCKING` / `RECOMMENDED` / `OPTIONAL`. Their harm
-definitions, and the rule that there is no second vocabulary, live in `SKILL.md` "Severity —
-rate by the harm it does when it triggers" (authoritative).
+definitions live in `SKILL.md` "Severity — rate by the harm it does when it triggers"
+(authoritative).
 
 ## Evidence & References
 
@@ -58,9 +57,9 @@ carries its own authority.
 Emit a finding only when it meets the posting conditions in `SKILL.md` "Findings must meet the
 bar" (authoritative). In this format, "tied to a specific line" means it has
 a `file` and a `lineRange`; a high-level observation with no line to anchor to belongs in the
-review `summary`, not as a finding.
+review `summary`.
 
-Keep these out of the findings (put them in the `summary` text if they matter):
+Put these in the `summary` text if they matter:
 high-level design observations not tied to a line, positive feedback, clusters of
 related nits (consolidate into one finding on the first occurrence), findings already
 surfaced by automated PR analysis (unless you add new context), and philosophical
