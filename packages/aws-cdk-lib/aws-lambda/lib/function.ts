@@ -586,9 +586,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * Accelerator configuration for the function.
    *
-   * Configures GPU or other accelerator resources. Only supported for functions
-   * using a capacity provider (Lambda Managed Instances).
+   * Configures the accelerator resource settings for the execution environment, including
+   * the amount of accelerator memory to allocate. The function must be attached to a
+   * capacity provider (`capacityProvider.addFunction(fn)`), use a container image
+   * (`Runtime.FROM_IMAGE`) on x86_64, and set `memorySize` to at least 2048 MiB.
+   * When set, `ephemeralStorageSize` may be up to 32 GiB.
    *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-lambda-function-acceleratorconfig.html
    * @default - No accelerator configuration
    */
   readonly acceleratorConfig?: AcceleratorConfig;
@@ -1132,6 +1136,7 @@ export class Function extends FunctionBase {
 
     // Ephemeral storage is capped at 10 GiB for an ordinary function and at 32 GiB for one with an
     // accelerator attached, so the ceiling depends on whether acceleratorConfig is set.
+    // See https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances-gpu.html#lambda-managed-instances-gpu-limits
     const MAX_EPHEMERAL_STORAGE_GPU_MIB = 32768;
     const MAX_EPHEMERAL_STORAGE_MIB = 10240;
     const MIN_EPHEMERAL_STORAGE_MIB = 512;
@@ -1760,7 +1765,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // The deferred capacity-provider-attachment validator is registered in the constructor (see
     // where acceleratorConfig is wired), matching how ECS Ec2Service / DynamoDB Table / Batch
     // JobQueue register their node validations. This method only validates-and-renders.
-    Annotations.of(this).addInfoV2('aws-lambda:Function.AcceleratorConfig', 'Modifying acceleratorConfig on an existing function will trigger a resource replacement');
+    Annotations.of(this).addInfoV2('aws-lambda:Function.AcceleratorConfig', 'Modifying acceleratorConfig on an existing function causes some interruption during the update');
 
     // LMI Functions with AcceleratorConfig require memorySize >= 2048 MiB. This is a service-side constraint (the
     // CFN schema puts no minimum on MemorySize), and the function default of 128 MiB would be

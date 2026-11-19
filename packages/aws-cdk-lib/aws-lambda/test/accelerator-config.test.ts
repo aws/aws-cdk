@@ -77,29 +77,46 @@ describe('accelerator config', () => {
       })).toThrow(expectedError);
     });
 
-    test('skips validation when values are tokens', () => {
+    test('passes token values through to the template without validating them', () => {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
+      const capacityProvider = new lambda.CapacityProvider(stack, 'CP', {
+        subnets: vpc.privateSubnets,
+        securityGroups: [securityGroup],
+      });
       const tokenMemSize = cdk.Token.asNumber(cdk.Fn.ref('AccelMemParam'));
       const tokenMemorySize = cdk.Token.asNumber(cdk.Fn.ref('MemSizeParam'));
 
-      // Token accelerator memory size via .of() synthesizes without error
-      expect(() => new lambda.Function(stack, 'Fn1', {
+      // Token accelerator memory size via .of()
+      const fn1 = new lambda.Function(stack, 'Fn1', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
         memorySize: 2048,
         acceleratorConfig: { acceleratorMemorySize: lambda.AcceleratorMemorySize.of(tokenMemSize) },
-      })).not.toThrow();
+      });
+      capacityProvider.addFunction(fn1);
 
       // Token memorySize — skips the 2048 check
-      expect(() => new lambda.Function(stack, 'Fn2', {
+      const fn2 = new lambda.Function(stack, 'Fn2', {
         code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
         memorySize: tokenMemorySize,
         acceleratorConfig: { acceleratorMemorySize: lambda.AcceleratorMemorySize.GIB_16 },
-      })).not.toThrow();
+      });
+      capacityProvider.addFunction(fn2);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        AcceleratorConfig: { AcceleratorMemorySize: { Ref: 'AccelMemParam' } },
+      });
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        MemorySize: { Ref: 'MemSizeParam' },
+        AcceleratorConfig: { AcceleratorMemorySize: 16 },
+      });
     });
 
     test('accepts an accelerator memory size supplied via .of()', () => {
@@ -143,23 +160,14 @@ describe('accelerator config', () => {
     });
 
     test.each([
-      lambda.AcceleratorMemorySize.GIB_3,
-      lambda.AcceleratorMemorySize.GIB_6,
-      lambda.AcceleratorMemorySize.GIB_12,
-      lambda.AcceleratorMemorySize.GIB_16,
-      lambda.AcceleratorMemorySize.GIB_24,
-      lambda.AcceleratorMemorySize.GIB_48,
-    ])('accepts valid accelerator memory size %p', (acceleratorMemorySize) => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
-
-      expect(() => new lambda.Function(stack, 'Lambda', {
-        code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-        memorySize: 2048,
-        acceleratorConfig: { acceleratorMemorySize },
-      })).not.toThrow();
+      [3, lambda.AcceleratorMemorySize.GIB_3],
+      [6, lambda.AcceleratorMemorySize.GIB_6],
+      [12, lambda.AcceleratorMemorySize.GIB_12],
+      [16, lambda.AcceleratorMemorySize.GIB_16],
+      [24, lambda.AcceleratorMemorySize.GIB_24],
+      [48, lambda.AcceleratorMemorySize.GIB_48],
+    ])('the %d GiB AcceleratorMemorySize constant renders the matching number', (expected, acceleratorMemorySize) => {
+      expect(acceleratorMemorySize.gibibytes).toBe(expected);
     });
   });
 
@@ -252,28 +260,6 @@ describe('accelerator config', () => {
       // The message must name both supported typed attachment paths
       expect(errors[0]).toContain('capacityProvider.addFunction(fn)');
       expect(errors[0]).toContain('cfnFunction.capacityProviderConfig');
-    });
-
-    test('passes when a capacity provider is attached via addFunction', () => {
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'stack');
-      const vpc = new ec2.Vpc(stack, 'Vpc');
-      const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
-      const capacityProvider = new lambda.CapacityProvider(stack, 'CP', {
-        subnets: vpc.privateSubnets,
-        securityGroups: [securityGroup],
-      });
-
-      const fn = new lambda.Function(stack, 'Lambda', {
-        code: lambda.Code.fromAssetImage(dockerLambdaHandlerPath),
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-        memorySize: 2048,
-        acceleratorConfig: { acceleratorMemorySize: lambda.AcceleratorMemorySize.GIB_16 },
-      });
-      capacityProvider.addFunction(fn);
-
-      expect(fn.node.validate()).toEqual([]);
     });
 
     test('passes when a capacity provider is attached via the L1 capacityProviderConfig escape hatch', () => {

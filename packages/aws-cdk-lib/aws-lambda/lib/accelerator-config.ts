@@ -3,8 +3,9 @@ import { UnscopedValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
- * The amount of accelerator memory to provision for a Lambda Managed Instance
- * (LMI) function, in gibibytes (GiB).
+ * The minimum amount of memory, in gibibytes (GiB), of each accelerator device
+ * exposed to a Lambda Managed Instance (LMI) function's execution environment.
+ * Lambda might allocate more, depending on the accelerator instance types available.
  *
  * Use one of the predefined values (`AcceleratorMemorySize.GIB_24`, etc.). If the
  * service adds a size that is not yet listed here, use `AcceleratorMemorySize.of()`
@@ -58,7 +59,9 @@ export class AcceleratorMemorySize {
  */
 export interface AcceleratorConfig {
   /**
-   * The amount of accelerator memory to provision.
+   * The minimum amount of memory of each accelerator device exposed to the execution environment.
+   *
+   * Lambda might allocate more, depending on the accelerator instance types available.
    */
   readonly acceleratorMemorySize: AcceleratorMemorySize;
 }

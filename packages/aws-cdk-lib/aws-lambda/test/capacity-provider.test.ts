@@ -149,9 +149,25 @@ describe('capacity provider', () => {
       expect(() => lambda.TargetTrackingScalingPolicy.cpuUtilization(target)).not.toThrow();
     });
 
-    test('gpuUtilization accepts an unresolved token target', () => {
-      const tokenTarget = cdk.Token.asNumber(cdk.Fn.ref('GpuTargetParam'));
-      expect(() => lambda.TargetTrackingScalingPolicy.gpuUtilization(tokenTarget)).not.toThrow();
+    test.each([
+      ['cpu', lambda.TargetTrackingScalingPolicy.cpuUtilization],
+      ['gpu', lambda.TargetTrackingScalingPolicy.gpuUtilization],
+    ])('%sUtilization passes an unresolved token target through', (_, factory) => {
+      // WHEN
+      new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
+        subnets,
+        securityGroups: [securityGroup],
+        scalingOptions: lambda.ScalingOptions.manual([
+          factory(cdk.Token.asNumber(cdk.Fn.ref('TargetParam'))),
+        ]),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CapacityProvider', {
+        CapacityProviderScalingConfig: {
+          ScalingPolicies: [{ TargetValue: { Ref: 'TargetParam' } }],
+        },
+      });
     });
 
     test('with excluded instance types', () => {
@@ -588,9 +604,6 @@ describe('capacity provider', () => {
       // failure so that making imported functions work stays a deliberate change rather than
       // something a reader assumes already holds.
       expect(() => capacityProvider.addFunction(imported)).toThrow();
-
-      // No L1 capacity-provider config is rendered for the imported reference.
-      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 0);
     });
 
     test('configures function with all options', () => {

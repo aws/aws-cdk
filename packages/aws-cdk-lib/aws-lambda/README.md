@@ -810,7 +810,7 @@ By default, permissions are granted to the capacity provider to manage instances
 
 ### Configuring Scaling Policies
 
-You can configure target tracking scaling policies to automatically scale your capacity provider based on CPU utilization:
+You can configure target tracking scaling policies to automatically scale your capacity provider based on CPU utilization, or on GPU utilization for GPU instance types (`TargetTrackingScalingPolicy.gpuUtilization()`, see [Lambda with Accelerator Configuration](#lambda-with-accelerator-configuration)):
 
 ```ts
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -942,10 +942,28 @@ Note that once you use a capacity provider in a function, it cannot be removed, 
 ### Lambda with Accelerator Configuration
 
 Lambda functions using [Capacity Providers](#capacity-providers) can be configured with accelerator resources,
-such as GPUs. The `acceleratorConfig` property specifies the amount of accelerator memory to provision for the function.
+such as GPUs. The `acceleratorConfig` property specifies the minimum amount of memory of each accelerator device
+exposed to the execution environment. Lambda might allocate more, depending on the accelerator instance types available.
+
+The capacity provider must allow GPU instance types on x86_64. It can scale on GPU utilization:
 
 ```ts
-declare const capacityProvider: lambda.CapacityProvider;
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+const gpuCapacityProvider = new lambda.CapacityProvider(this, 'GpuCapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  architectures: [lambda.Architecture.X86_64],
+  instanceTypeFilter: lambda.InstanceTypeFilter.allow([
+    ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE),
+  ]),
+  scalingOptions: lambda.ScalingOptions.manual([
+    lambda.TargetTrackingScalingPolicy.gpuUtilization(60),
+  ]),
+});
 
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.FROM_IMAGE,
@@ -957,7 +975,7 @@ const fn = new lambda.Function(this, 'MyFunction', {
   },
 });
 
-capacityProvider.addFunction(fn);
+gpuCapacityProvider.addFunction(fn);
 ```
 
 **Important considerations:**
@@ -968,7 +986,7 @@ capacityProvider.addFunction(fn);
 * **Image package type only**: Only container image functions (`Runtime.FROM_IMAGE`) are supported.
 * **x86_64 only**: ARM64 architecture is not supported for GPU functions.
 * **Ephemeral storage**: LMI functions with accelerator configuration can support up to 32 GiB ephemeral storage (vs 10 GiB for LMI function without the configuration).
-* **Create-only property**: Changing `acceleratorConfig` after creation replaces the function (CloudFormation resource replacement).
+* **Updates cause interruption**: Changing `acceleratorConfig` on an existing function updates it in place with some interruption.
 
 ### Capacity Provider Versions
 
