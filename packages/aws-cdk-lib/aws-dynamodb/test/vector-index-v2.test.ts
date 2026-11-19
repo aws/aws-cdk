@@ -76,7 +76,7 @@ test('vector indexes can be provided via props', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', SearchSchema: Match.absent() })],
+    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', Projection: { ProjectionType: 'ALL' }, SearchSchema: Match.absent() })],
   });
 });
 
@@ -335,7 +335,7 @@ test('vector index without a search schema on the imperative path renders no Sea
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
-    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', SearchSchema: Match.absent() })],
+    VectorIndexes: [Match.objectLike({ IndexName: 'vectorIndex', Projection: { ProjectionType: 'KEYS_ONLY' }, SearchSchema: Match.absent() })],
   });
 });
 
@@ -842,6 +842,29 @@ describe('grants.vectorSearch', () => {
     });
 
     expect(() => table.grants.vectorSearch(grantee)).toThrow(/condition key "dynamodb:LeadingKeys"/);
+  });
+
+  test('accepts a grantee whose condition block is a token', () => {
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+    });
+    table.addVectorIndex({
+      indexName: 'vectorIndex',
+      vectorAttribute: 'embedding',
+      dimensions: 128,
+      distanceFunction: VectorDistanceFunction.COSINE,
+    });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+
+    table.grants.vectorSearch(new iam.PrincipalWithConditions(role, {
+      StringEquals: Lazy.any({ produce: () => ({ 'aws:SourceVpc': 'vpc-12345678' }) }),
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({ Action: 'dynamodb:SearchVectors' })]),
+      },
+    });
   });
 
   test('accepts a grantee whose conditions name no fine-grained access control key', () => {
