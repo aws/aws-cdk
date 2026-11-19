@@ -1,0 +1,22 @@
+{
+  "Description": "IAM_NO_OVERLY_PERMISSIVE_PASSROLE passes: the policy allows iam:PassRole on one role",
+  "Resources": {
+    "PassOneRolePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "PassOneRole",
+        "Roles": ["ExampleRole"],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "iam:PassRole",
+              "Resource": "arn:aws:iam::123456789012:role/ExampleServiceRole"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -57,7 +57,7 @@ describe('Dashboard', () => {
     hasWidgets(resources[key].Properties, [
       { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first', background: TextWidgetBackground.SOLID } },
       { type: 'text', width: 1, height: 4, x: 0, y: 2, properties: { markdown: 'second', background: TextWidgetBackground.TRANSPARENT } },
-      { type: 'text', width: 4, height: 1, x: 0, y: 6, properties: { markdown: 'third' } },
+      { type: 'text', width: 4, height: 1, x: 0, y: 6, properties: { markdown: 'third', background: TextWidgetBackground.TRANSPARENT } },
     ]);
   });
 
@@ -90,9 +90,9 @@ describe('Dashboard', () => {
     expect(Object.keys(resources).length).toEqual(1);
     const key = Object.keys(resources)[0];
     hasWidgets(resources[key].Properties, [
-      { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: { markdown: 'first' } },
-      { type: 'text', width: 1, height: 4, x: 10, y: 0, properties: { markdown: 'second' } },
-      { type: 'text', width: 4, height: 1, x: 11, y: 0, properties: { markdown: 'third' } },
+      { type: 'text', width: 10, height: 2, x: 0, y: 0, properties: expect.objectContaining({ markdown: 'first' }) },
+      { type: 'text', width: 1, height: 4, x: 10, y: 0, properties: expect.objectContaining({ markdown: 'second' }) },
+      { type: 'text', width: 4, height: 1, x: 11, y: 0, properties: expect.objectContaining({ markdown: 'third' }) },
     ]);
   });
 

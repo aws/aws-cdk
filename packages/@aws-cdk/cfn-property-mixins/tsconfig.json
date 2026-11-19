@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": ".",
     "declarationMap": false,
     "inlineSourceMap": false,
     "alwaysStrict": true,

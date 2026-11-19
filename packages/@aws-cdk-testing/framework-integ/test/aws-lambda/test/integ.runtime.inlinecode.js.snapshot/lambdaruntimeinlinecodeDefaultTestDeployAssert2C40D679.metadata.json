@@ -1,0 +1,20 @@
+{
+  "/lambda-runtime-inlinecode/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "lambdaruntimeinlinecodeDefaultTestDeployAssert2C40D679.template.json"
+    }
+  ],
+  "/lambda-runtime-inlinecode/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-runtime-inlinecode/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

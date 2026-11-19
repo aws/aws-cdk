@@ -3,6 +3,8 @@ name: issue-regression-label
 on:
   issues:
     types: [opened, edited]
+cache-mode: read
+
 jobs:
   add-regression-label:
     runs-on: ubuntu-latest

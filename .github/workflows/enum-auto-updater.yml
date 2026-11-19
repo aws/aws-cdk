@@ -4,6 +4,8 @@ on:
   schedule: # Runs every Monday at 1pm PT
     - cron: '0 13 * * 1'
 
+cache-mode: read
+
 jobs:
   update-l2-enums:
     if: github.repository == 'aws/aws-cdk'
@@ -18,7 +20,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: "*"
+          node-version: "24"
         env:
           NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 

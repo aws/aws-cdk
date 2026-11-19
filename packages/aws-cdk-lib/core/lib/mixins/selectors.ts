@@ -1,4 +1,4 @@
-import type { IConstruct, Node } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { CfnResource } from '../cfn-resource';
 
 /**
@@ -103,7 +103,7 @@ class ResourceTypeSelector implements IConstructSelector {
 const { minimatch } = require('minimatch');
 
 class IdPatternSelector implements IConstructSelector {
-  constructor(private readonly pattern: string, private field: keyof Node) {}
+  constructor(private readonly pattern: string, private field: 'id' | 'path') {}
 
   select(scope: IConstruct): IConstruct[] {
     const result: IConstruct[] = [];

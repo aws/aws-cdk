@@ -3,8 +3,8 @@ import { resolveReferences, resolveReferencesInElements } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { debugModeEnabled } from '../debug';
 import type { Stack } from '../stack';
-import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
-import { STACK_TYPE, stageOf } from './core-construct-finders';
+import { iterateDfsPostorderStopAtStage, iterateDfsPreorder } from './construct-iteration';
+import { STACK_TYPE, STAGE_TYPE, stageOf } from './core-construct-finders';
 import { reifyConstructDependencies } from './deps';
 import { writePropertyAssignmentMetadataForConstruct } from './resolve';
 
@@ -82,19 +82,18 @@ function defineNestedStackAsset(nestedStack: Stack) {
 function findAllNestedStacks(root: IConstruct) {
   const result = new Array<Stack>();
 
+  // Preserve legacy behavior: when synthesizing a bare Stack that lives inside a
+  // Stage/App, the Stage owns nested stack assets, not us.
+  if (!STAGE_TYPE.isMarked(root) && stageOf(root)) { return result; }
+
   const includeStack = (stack: IConstruct): stack is Stack => {
     if (!STACK_TYPE.isMarked(stack)) { return false; }
-    if (!stack.nested) { return false; }
-
-    // test: if we are not within a stage, then include it.
-    if (!stageOf(stack)) { return true; }
-
-    return stageOf(stack) === root;
+    return stack.nested;
   };
 
   // create a list of all nested stacks in depth-first post order this means
   // that we first prepare the leaves and then work our way up.
-  for (const node of iterateDfsPostorder(root)) { /* <== important to use postorder */
+  for (const node of iterateDfsPostorderStopAtStage(root)) { /* <== important to use postorder */
     if (includeStack(node)) {
       result.push(node);
     }

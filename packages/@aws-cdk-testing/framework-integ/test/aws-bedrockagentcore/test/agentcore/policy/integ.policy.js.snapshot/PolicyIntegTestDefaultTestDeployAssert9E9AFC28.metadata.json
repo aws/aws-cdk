@@ -1,4 +1,10 @@
 {
+  "/PolicyIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PolicyIntegTestDefaultTestDeployAssert9E9AFC28.template.json"
+    }
+  ],
   "/PolicyIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
