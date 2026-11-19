@@ -77,6 +77,11 @@ export enum NodeType {
   RA3_16XLARGE = 'ra3.16xlarge',
 
   /**
+   * rg.large
+   */
+  RG_LARGE = 'rg.large',
+
+  /**
    * rg.xlarge
    */
   RG_XLARGE = 'rg.xlarge',
@@ -85,6 +90,11 @@ export enum NodeType {
    * rg.4xlarge
    */
   RG_4XLARGE = 'rg.4xlarge',
+
+  /**
+   * rg.12xlarge
+   */
+  RG_12XLARGE = 'rg.12xlarge',
 }
 
 /**
@@ -667,10 +677,12 @@ export class Cluster extends ClusterBase {
     }
 
     const nodeType = props.nodeType || NodeType.RA3_LARGE;
+    // Multi-AZ and availability zone relocation are only supported on RA3 and RG node types
+    const isRa3OrRgNodeType = nodeType.startsWith('ra3') || nodeType.startsWith('rg');
 
     if (props.multiAz) {
-      if (!nodeType.startsWith('ra3')) {
-        throw new ValidationError(lit`MultiAzUnsupportedNodeType`, `Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`, this);
+      if (!isRa3OrRgNodeType) {
+        throw new ValidationError(lit`MultiAzUnsupportedNodeType`, `Multi-AZ cluster is only supported for RA3 and RG node types, got: ${props.nodeType}`, this);
       }
       if (clusterType === ClusterType.SINGLE_NODE) {
         throw new ValidationError(lit`MultiAzUnsupportedClusterType`, 'Multi-AZ cluster is not supported for `clusterType` single-node', this);
@@ -680,8 +692,8 @@ export class Cluster extends ClusterBase {
     if (props.resourceAction === ResourceAction.FAILOVER_PRIMARY_COMPUTE && !props.multiAz) {
       throw new ValidationError(lit`FailoverRequiresMultiAz`, 'ResourceAction.FAILOVER_PRIMARY_COMPUTE can only be used with multi-AZ clusters.', this);
     }
-    if (props.availabilityZoneRelocation && !nodeType.startsWith('ra3')) {
-      throw new ValidationError(lit`AvailabilityZoneRelocationUnsupportedNodeType`, `Availability zone relocation is supported for only RA3 node types, got: ${props.nodeType}`, this);
+    if (props.availabilityZoneRelocation && !isRa3OrRgNodeType) {
+      throw new ValidationError(lit`AvailabilityZoneRelocationUnsupportedNodeType`, `Availability zone relocation is supported for only RA3 and RG node types, got: ${props.nodeType}`, this);
     }
 
     this.cluster = new CfnCluster(this, 'Resource', {
