@@ -847,9 +847,9 @@ const COMMAND_SCRIPT_TASK = 'executeScript';
  * Windows Instance User Data in the EC2Launch v2 YAML format
  *
  * EC2Launch v2 allows each task only once in user data. Tasks run in the order
- * they were first added, except that the `executeScript` task runs after all
- * other tasks once commands have been added with `addCommands()` or the other
- * `add*Command()` methods. Those commands form a single PowerShell script, the
+ * they were first added, except that the `executeScript` task, which runs all
+ * scripts, runs after all other tasks. The commands added with `addCommands()`
+ * and the other `add*Command()` methods form a single PowerShell script, the
  * last input of that task, so a CloudFormation signal added with
  * `addSignalOnExitCommand()` is sent after all other tasks have run, as with
  * `UserData.forWindows()`. EC2Launch v2 always runs `sysprep` last.
@@ -903,13 +903,17 @@ export class Ec2LaunchV2UserData extends UserData {
       }
     };
     for (const [task, inputs] of this.tasks) {
-      if (!(this.hasCommandScript && task === COMMAND_SCRIPT_TASK)) {
+      if (task !== COMMAND_SCRIPT_TASK) {
         addRendered(task, inputs);
       }
     }
-    // The command script, which may send the CloudFormation signal, runs last
-    if (this.hasCommandScript) {
-      addRendered(COMMAND_SCRIPT_TASK, [...this.tasks.get(COMMAND_SCRIPT_TASK), this.renderCommandScript()]);
+    // Scripts run after all other tasks, and the command script, which may
+    // send the CloudFormation signal, is the last of them
+    if (this.tasks.has(COMMAND_SCRIPT_TASK)) {
+      const scripts = this.tasks.get(COMMAND_SCRIPT_TASK);
+      addRendered(COMMAND_SCRIPT_TASK, Array.isArray(scripts)
+        ? [...scripts, ...(this.hasCommandScript ? [this.renderCommandScript()] : [])]
+        : scripts);
     }
     return renderEc2LaunchV2Yaml({ version: 1.1, tasks });
   }
@@ -991,7 +995,37 @@ function renderEc2LaunchV2Yaml(value: any): string {
   const doc = new YAML.Document({ version: '1.1' });
   doc.contents = YAML.createNode(normalizeEc2LaunchV2Value(value)) as any;
   useLiteralBlocks(doc.contents);
-  return doc.toString();
+  return withoutFolding(() => doc.toString());
+}
+
+/**
+ * Run a function with line folding of the yaml library disabled
+ *
+ * Folding is a global option of the yaml library, so it is restored afterwards.
+ */
+function withoutFolding<T>(fn: () => T): T {
+  const fold = YAML.scalarOptions.str.fold;
+  const lineWidth = fold.lineWidth;
+  fold.lineWidth = 0;
+  try {
+    return fn();
+  } finally {
+    fold.lineWidth = lineWidth;
+  }
+}
+
+/**
+ * Whether the yaml library renders a string as a literal block scalar
+ *
+ * It falls back to a double-quoted scalar for strings that a literal block
+ * cannot represent, for example strings containing carriage returns.
+ */
+function rendersAsLiteralBlock(value: string): boolean {
+  const doc = new YAML.Document({ version: '1.1' });
+  const node = YAML.createNode(value) as any;
+  node.type = 'BLOCK_LITERAL';
+  doc.contents = node;
+  return withoutFolding(() => doc.toString()).startsWith('|');
 }
 
 /**
@@ -1026,8 +1060,15 @@ function useLiteralBlocks(node: any) {
   if (node?.items) {
     // Maps contain pairs, sequences contain nodes
     node.items.forEach((item: any) => useLiteralBlocks(item?.value !== undefined && item?.key !== undefined ? item.value : item));
-  } else if (typeof node?.value === 'string' && (node.value.includes('\n') || Token.isUnresolved(node.value))) {
-    node.type = 'BLOCK_LITERAL';
+  } else if (typeof node?.value === 'string') {
+    const hasToken = Token.isUnresolved(node.value);
+    if (hasToken && !rendersAsLiteralBlock(node.value)) {
+      // In a quoted scalar, CloudFormation would substitute the value unescaped
+      throw new UnscopedValidationError(lit`Ec2LaunchV2TokenNotLiteral`, `values containing tokens must not contain carriage returns or other control characters, or end with a line of only whitespace, got ${JSON.stringify(node.value)}`);
+    }
+    if (hasToken || node.value.includes('\n')) {
+      node.type = 'BLOCK_LITERAL';
+    }
   }
 }
 

@@ -209,6 +209,63 @@ describe('EC2Launch v2 user data', () => {
     });
   });
 
+  test('renders tokens in list items as literal blocks', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: 'C:\\a.exe', arguments: ['/x', Aws.STACK_NAME] }));
+
+    // THEN
+    expect(stack.resolve(userData.render())).toEqual({
+      'Fn::Join': ['', [
+        'version: 1.1\ntasks:\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: C:\\a.exe\n        arguments:\n          - /x\n          - |-\n            ',
+        { Ref: 'AWS::StackName' },
+        '\n        runAs: localSystem\n',
+      ]],
+    });
+  });
+
+  test('does not fold long lines', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    const command = `Write-Host ${'word '.repeat(30)}end`;
+
+    // WHEN
+    userData.addCommands(command);
+    userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: `C:\\${'long-directory-name\\'.repeat(5)}a.exe` }));
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toContain(`        content: ${command}\n`);
+    expect(rendered).toContain(`        path: C:\\${'long-directory-name\\'.repeat(5)}a.exe\n`);
+  });
+
+  test('keeps carriage returns in strings without tokens', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.executeBatch({ content: 'echo a\r\necho b\r\n' }));
+
+    // THEN
+    expect(parse(userData).tasks[0].inputs[0].content).toEqual('echo a\r\necho b\r\n');
+  });
+
+  test.each([
+    ['a carriage return', `echo ${Aws.STACK_NAME}\r\necho b`],
+    ['a control character', `echo ${Aws.STACK_NAME}\u0007`],
+    ['a last line of only whitespace', `echo ${Aws.STACK_NAME}\n  `],
+  ])('fails for a string with a token and %s', (_, content) => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content }));
+
+    // THEN
+    expect(() => userData.render()).toThrow(/values containing tokens must not contain carriage returns/);
+  });
+
   test('substitutes a token object in custom task inputs', () => {
     // GIVEN
     const stack = new Stack();
@@ -303,6 +360,18 @@ describe('EC2Launch v2 user data', () => {
         ],
       },
     ]);
+  });
+
+  test('runs scripts after other tasks, also without commands', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: 'New-Item -ItemType Directory C:\\setup' }));
+    userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: 'C:\\setup\\install.exe' }));
+
+    // THEN
+    expect(parse(userData).tasks.map((t: any) => t.task)).toEqual(['executeProgram', 'executeScript']);
   });
 
   test('runs the commands, and so the signal, after tasks added later', () => {

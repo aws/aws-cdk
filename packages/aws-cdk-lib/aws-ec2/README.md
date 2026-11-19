@@ -2646,23 +2646,24 @@ new ec2.Instance(this, 'Instance', {
 EC2Launch v2 [allows each task only once](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-settings.html#ec2launch-v2-schema-user-data)
 in user data. Tasks run in the order they were first added, with two exceptions:
 
-* Once commands have been added with `addCommands()` or the other `add*Command()` methods, the `executeScript` task
-  runs after all other tasks. Those commands form a single PowerShell script, the last input of that task, so a
-  CloudFormation signal added with `addSignalOnExitCommand()` is sent after all other tasks have run, as with
-  `UserData.forWindows()`. This also holds for tasks added after passing `init` to an `Instance`.
+* The `executeScript` task, which runs all scripts, runs after all other tasks. Scripts added with
+  `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()` run in the order they were added, followed
+  by the commands added with `addCommands()` and the other `add*Command()` methods, which form a single PowerShell
+  script. So a CloudFormation signal added with `addSignalOnExitCommand()` is sent after all other tasks have run, as
+  with `UserData.forWindows()`, also for tasks added after passing `init` to an `Instance`.
 * EC2Launch v2 always runs `sysprep` last.
 
-Scripts added with `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()` are inputs of the
-`executeScript` task, and adding `executeProgram` again appends to the inputs of the existing task. Adding any other
-task with inputs twice is an error. Tasks without a factory method in `Ec2LaunchV2Task` can be added with
-`Ec2LaunchV2Task.custom()`.
+Adding `executeProgram`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again appends to the
+inputs of the existing task. Adding any other task with inputs twice is an error. Tasks without a factory method in
+`Ec2LaunchV2Task` can be added with `Ec2LaunchV2Task.custom()`.
 
 There is no factory method for the `writeFile` task: although it is documented for user data, EC2Launch v2
 (tested with version 2.5.2) does not load user data that contains it. Use `Set-Content` in `addCommands()`
 to write files instead, or `Ec2LaunchV2Task.custom('writeFile', [...])` on agent versions that support it.
 
 Values that CloudFormation substitutes into the document, such as parameters or resource attributes, must be single
-line: a multi-line value cannot be indented to fit the YAML document.
+line: a multi-line value cannot be indented to fit the YAML document. A string that contains such a value must not
+contain carriage returns or other control characters, so use LF line endings in scripts that contain them.
 
 AWS Windows Server 2022 and later AMIs run EC2Launch v2 by default. For Windows Server 2016 and 2019, use the AMIs whose
 names start with `EC2LaunchV2-Windows_Server-`:
@@ -2687,8 +2688,9 @@ Earlier launch agents (EC2Launch v1 and EC2Config) do not understand this format
   commands complete or throw an error, but not when the script calls `exit`. After `exit 3010`, which EC2Launch v2 uses
   to reboot the instance and run the script again, they run at the end of the run after the reboot. After any other
   `exit`, no signal is sent, as with `UserData.forWindows()`.
-* Switching an existing instance to the new format is a user data change like any other: the instance is not
-  replaced unless `userDataCausesReplacement` is set, and a script with frequency `once` does not run again on it.
+* Switching an existing instance to the new format is a user data change like any other: the instance is
+  replaced if `userDataCausesReplacement` is `true`, which is the default when `initOptions` is passed to the
+  `Instance`. Otherwise it is updated in place, and a script with frequency `once` does not run again on it.
 
 ### Multipart user data
 
