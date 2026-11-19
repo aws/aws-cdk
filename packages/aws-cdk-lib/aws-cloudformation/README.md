@@ -289,9 +289,7 @@ By default a service managed StackSet is created from a delegated administrator 
 account instead.
 
 ```ts
-const app = new App();
-const stack = new Stack(app, 'Admin');
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromOrganizationalUnits({
@@ -302,7 +300,6 @@ new StackSet(stack, 'StackSet', {
     autoDeployment: StackSetAutoDeployment.enabled({ retainStacksOnAccountRemoval: false }),
     callAs: StackSetCallAs.SELF,
   }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
 });
 ```
 
@@ -343,16 +340,13 @@ regions. Give the failure tolerance and the maximum concurrency either as a numb
 percentage of accounts, and choose how failures affect the concurrency with `concurrencyMode`.
 
 ```ts
-const app = new App();
-const stack = new Stack(app, 'Admin');
-const stackSetStack = new StackSetStack(stack, 'MyStackSet');
+declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
   target: StackSetTarget.fromAccounts({
     regions: ['us-east-1', 'eu-west-1'],
     accounts: ['111111111111', '222222222222'],
   }),
-  template: StackSetTemplate.fromStackSetStack(stackSetStack),
   operationPreferences: {
     failureTolerance: StackSetFailureTolerance.count(1),
     maxConcurrency: StackSetMaxConcurrency.percentage(50),

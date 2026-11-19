@@ -12,7 +12,6 @@ import {
   StackSetMaxConcurrency,
   StackSetAutoDeployment,
   StackSetCallAs,
-  StackSetStack,
   StackSetProps,
   StackSetTarget,
   StackSetTemplate,
