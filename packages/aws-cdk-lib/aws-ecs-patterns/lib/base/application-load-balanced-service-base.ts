@@ -12,15 +12,14 @@ import {
 import type {
   ApplicationListener, ApplicationProtocolVersion, ApplicationTargetGroup,
   IApplicationLoadBalancer, AddApplicationTargetsProps, SslPolicy,
-  IpAddressType,
   ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
-import { ApplicationLoadBalancer, ApplicationProtocol, ListenerCertificate, ListenerAction } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, IpAddressType, ListenerCertificate, ListenerAction } from '../../../aws-elasticloadbalancingv2';
 import type { IRole } from '../../../aws-iam';
 import type { IHostedZone } from '../../../aws-route53';
 import { ARecord, AaaaRecord, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
+import { Annotations, CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
 
@@ -44,6 +43,7 @@ export enum ApplicationLoadBalancedServiceRecordType {
    * Create Route 53 A and AAAA alias records.
    *
    * This option creates DNS records only. It does not configure the load balancer for IPv6.
+   * Set `ipAddressType` to a dual-stack type so that IPv6 clients can reach the service.
    */
   ALIAS_DUAL_STACK,
 }
@@ -597,6 +597,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           const aliasRecord = new ARecord(this, 'DNS', aliasProps);
           if (recordType === ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK) {
             new AaaaRecord(this, 'DNSAAAA', aliasProps);
+            if (props.loadBalancer === undefined && (props.ipAddressType ?? IpAddressType.IPV4) === IpAddressType.IPV4) {
+              Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:aliasDualStackWithIpv4LoadBalancer',
+                'recordType ALIAS_DUAL_STACK creates an AAAA alias record, but the load balancer IP address type is IPV4, so IPv6 clients cannot reach the service. Set ipAddressType to IpAddressType.DUAL_STACK or IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4.');
+            }
           }
           domainName = aliasRecord.domainName;
           break;
