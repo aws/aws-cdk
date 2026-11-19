@@ -1,5 +1,5 @@
 import * as YAML from 'yaml';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Bucket } from '../../aws-s3';
 import { Aws, CfnResource, Fn, Lazy, Stack, Token } from '../../core';
 import * as ec2 from '../lib';
@@ -118,6 +118,37 @@ describe('EC2Launch v2 user data', () => {
       '}',
       '}',
     ].join('\n'));
+  });
+
+  test('renders the on-exit wrapper when only on-exit commands were added', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.startSsm());
+    userData.addOnExitCommands('onexit1');
+
+    // THEN
+    expect(parse(userData).tasks[1]).toEqual({
+      task: 'executeScript',
+      inputs: [expect.objectContaining({
+        content: [
+          '$success = $true',
+          '$finished = $false',
+          'try {',
+          '$finished = $true',
+          '} catch {',
+          '$success = $false',
+          '$finished = $true',
+          'throw',
+          '} finally {',
+          'if ($finished) {',
+          'onexit1',
+          '}',
+          '}',
+        ].join('\n'),
+      })],
+    });
   });
 
   test('can add a signal command', () => {
@@ -242,6 +273,24 @@ describe('EC2Launch v2 user data', () => {
     expect(rendered).toContain(`        path: C:\\${'long-directory-name\\'.repeat(5)}a.exe\n`);
   });
 
+  test('restores the global yaml line width after rendering', () => {
+    // GIVEN
+    const before = YAML.scalarOptions.str.fold.lineWidth;
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    userData.addCommands('command1');
+    const failing = ec2.UserData.forWindowsEc2LaunchV2();
+    failing.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: `echo ${Aws.STACK_NAME}\r\n` }));
+
+    // WHEN
+    userData.render();
+    const afterRender = YAML.scalarOptions.str.fold.lineWidth;
+    expect(() => failing.render()).toThrow(/values containing tokens/);
+
+    // THEN
+    expect(afterRender).toEqual(before);
+    expect(YAML.scalarOptions.str.fold.lineWidth).toEqual(before);
+  });
+
   test('keeps carriage returns in strings without tokens', () => {
     // GIVEN
     const userData = ec2.UserData.forWindowsEc2LaunchV2();
@@ -360,6 +409,38 @@ describe('EC2Launch v2 user data', () => {
         ],
       },
     ]);
+  });
+
+  test('runs cfn-init commands after tasks added after init is attached', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    new ec2.Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.medium'),
+      machineImage: ec2.MachineImage.genericWindows({ 'us-east-1': 'ami-12345678' }),
+      userData,
+      init: ec2.CloudFormationInit.fromElements(ec2.InitCommand.shellCommand('echo hi')),
+    });
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume());
+
+    // THEN
+    const tasks = parse(userData).tasks;
+    expect(tasks.map((t: any) => t.task)).toEqual(['initializeVolume', 'executeScript']);
+    expect(tasks[1].inputs[0].content).toMatch(/^# fingerprint: .*\ncfn-init\.exe -v .*\ncfn-signal\.exe -e \$LASTEXITCODE /);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      UserData: {
+        'Fn::Base64': {
+          'Fn::Join': ['', Match.arrayWith([
+            Match.stringLikeRegexp('^version: 1\\.1\ntasks:\n  - task: initializeVolume\n'),
+            { Ref: 'AWS::Region' },
+          ])],
+        },
+      },
+    });
   });
 
   test('runs scripts after other tasks, also without commands', () => {

@@ -435,7 +435,8 @@ export interface Ec2LaunchV2ScriptOptions {
    * Whether to run the script concurrently with other tasks
    *
    * When `true`, the exit code of the script (including `3010`, which
-   * requests a reboot) is ignored.
+   * requests a reboot) is ignored, and later scripts, including the one that
+   * sends a signal added with `addSignalOnExitCommand()`, do not wait for it.
    *
    * @default false
    */
@@ -852,7 +853,9 @@ const COMMAND_SCRIPT_TASK = 'executeScript';
  * and the other `add*Command()` methods form a single PowerShell script, the
  * last input of that task, so a CloudFormation signal added with
  * `addSignalOnExitCommand()` is sent after all other tasks have run, as with
- * `UserData.forWindows()`. EC2Launch v2 always runs `sysprep` last.
+ * `UserData.forWindows()`. Scripts added with `detach: true` are the
+ * exception: they run concurrently, so the signal does not wait for them to
+ * finish. EC2Launch v2 always runs `sysprep` last.
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-settings.html#ec2launch-v2-schema-user-data
  */

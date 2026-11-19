@@ -5,9 +5,9 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 
 /*
  * The instance only signals CloudFormation once EC2Launch v2 has parsed the
- * YAML user data, run the initializeVolume and executeProgram tasks, and the
- * PowerShell commands have verified their results. Deployment fails if any of
- * that does not happen.
+ * YAML user data, run the initializeVolume and executeProgram tasks and the
+ * batch and PowerShell scripts in order, and the PowerShell commands have
+ * verified their results. Deployment fails if any of that does not happen.
  *
  * The other tasks that do not shut down, reboot or reconfigure the network of
  * the instance are included to verify that EC2Launch v2 loads them.
@@ -36,8 +36,17 @@ userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({
   path: 'C:\\Windows\\System32\\cmd.exe',
   arguments: ['/c', 'mkdir', createdDir],
 }));
+userData.addTask(ec2.Ec2LaunchV2Task.executeBatch({ content: 'echo batch> C:\\cdk-integ-batch.txt' }));
+userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({
+  content: [
+    'if (-not (Test-Path -Path \'C:\\cdk-integ-batch.txt\')) { throw \'batch script did not run first\' }',
+    'Set-Content -Path \'C:\\cdk-integ-powershell.txt\' -Value powershell',
+  ].join('\n'),
+  runAs: ec2.Ec2LaunchV2RunAs.ADMIN,
+}));
 userData.addCommands(
   'if (-not (Test-Path -Path \'D:\\\')) { throw \'initializeVolume task did not run\' }',
+  'if (-not (Test-Path -Path \'C:\\cdk-integ-powershell.txt\')) { throw \'PowerShell script did not run before the commands\' }',
   `if (-not (Test-Path -Path '${createdDir}' -PathType Container)) { throw 'executeProgram task did not run' }`,
 );
 

@@ -2650,7 +2650,8 @@ in user data. Tasks run in the order they were first added, with two exceptions:
   `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()` run in the order they were added, followed
   by the commands added with `addCommands()` and the other `add*Command()` methods, which form a single PowerShell
   script. So a CloudFormation signal added with `addSignalOnExitCommand()` is sent after all other tasks have run, as
-  with `UserData.forWindows()`, also for tasks added after passing `init` to an `Instance`.
+  with `UserData.forWindows()`, also for tasks added after passing `init` to an `Instance`. Scripts added with
+  `detach: true` are the exception: they run concurrently, so the signal does not wait for them to finish.
 * EC2Launch v2 always runs `sysprep` last.
 
 Adding `executeProgram`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again appends to the
