@@ -74,10 +74,9 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   linked by file + line) → CDK design guidelines (`docs/DESIGN_GUIDELINES.md`,
   `docs/AGENTS_CONSTRUCT_DESIGN.md`, `docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) →
   CloudFormation resource specification (property/enum correctness) → linked issue / PR
-  discussion (customer context) → existing tests (behavioral expectations). When these
-  references disagree with each other, cite AWS documentation first. Skip a citation only for
-  pure style, an obvious typo or unused import, or a genuine question. **Verify before you
-  cite:** when a finding
+  discussion (customer context) → existing tests (behavioral expectations). Skip a citation
+  only for pure style, an obvious typo or unused import, or a genuine question. **Verify
+  before you cite:** when a finding
   turns on whether an attribute, mode, default, enum value, or a service/CDK behavior is
   REAL — or on what CDK's own API, testing, or README guidance says — you MUST search and
   read the authoritative AWS and CDK documentation available to you and confirm the fact
