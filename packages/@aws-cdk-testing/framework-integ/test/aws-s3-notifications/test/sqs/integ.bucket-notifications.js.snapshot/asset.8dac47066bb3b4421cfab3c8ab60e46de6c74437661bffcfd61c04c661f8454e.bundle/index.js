@@ -2560,6 +2560,33 @@ var require_constants = __commonJS({
     9007199254740991;
     var MAX_SAFE_COMPONENT_LENGTH = 16;
     var MAX_SAFE_BUILD_LENGTH = MAX_LENGTH - 6;
+    var WHITESPACE_CHARACTERS = [
+      "	",
+      "\n",
+      "\v",
+      "\f",
+      "\r",
+      " ",
+      "\xA0",
+      "\u1680",
+      "\u2000",
+      "\u2001",
+      "\u2002",
+      "\u2003",
+      "\u2004",
+      "\u2005",
+      "\u2006",
+      "\u2007",
+      "\u2008",
+      "\u2009",
+      "\u200A",
+      "\u2028",
+      "\u2029",
+      "\u202F",
+      "\u205F",
+      "\u3000",
+      "\uFEFF"
+    ];
     var RELEASE_TYPES = [
       "major",
       "premajor",
@@ -2574,6 +2601,7 @@ var require_constants = __commonJS({
       MAX_SAFE_COMPONENT_LENGTH,
       MAX_SAFE_BUILD_LENGTH,
       MAX_SAFE_INTEGER,
+      WHITESPACE_CHARACTERS,
       RELEASE_TYPES,
       SEMVER_SPEC_VERSION,
       FLAG_INCLUDE_PRERELEASE: 1,
@@ -3474,6 +3502,197 @@ var require_lrucache = __commonJS({
   }
 });
 
+// ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/node_modules/semver/internal/trim-comparator-whitespace.js
+var require_trim_comparator_whitespace = __commonJS({
+  "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/node_modules/semver/internal/trim-comparator-whitespace.js"(exports2, module2) {
+    "use strict";
+    var {
+      MAX_LENGTH,
+      MAX_SAFE_BUILD_LENGTH,
+      WHITESPACE_CHARACTERS
+    } = require_constants();
+    var whitespace = new Uint8Array(65536);
+    for (const char of WHITESPACE_CHARACTERS) {
+      whitespace[char.charCodeAt(0)] = 1;
+    }
+    var isWhitespace = (char) => char !== void 0 && whitespace[char.charCodeAt(0)] === 1;
+    var isVersionPrefix = (char) => char === "v" || char === "=" || isWhitespace(char);
+    var isDigit = (char) => char !== void 0 && char >= "0" && char <= "9";
+    var isLetter = (char) => char !== void 0 && (char >= "a" && char <= "z" || char >= "A" && char <= "Z");
+    var isIdentifierCharacter = (char) => isDigit(char) || isLetter(char) || char === "-";
+    var isVersionStart = (char) => isDigit(char) || char === "x" || char === "X" || char === "*";
+    var findDigitsEndIndex = (range4, start, limit, digitRuns) => {
+      if (!isDigit(range4[start])) {
+        return start;
+      }
+      if (start >= digitRuns.start && start < digitRuns.end) {
+        return Math.min(start + limit, digitRuns.end);
+      }
+      if (start >= digitRuns.previousStart && start < digitRuns.previousEnd) {
+        return Math.min(start + limit, digitRuns.previousEnd);
+      }
+      let end = start + 1;
+      while (isDigit(range4[end])) {
+        end++;
+      }
+      digitRuns.previousStart = digitRuns.start;
+      digitRuns.previousEnd = digitRuns.end;
+      digitRuns.start = start;
+      digitRuns.end = end;
+      return Math.min(start + limit, end);
+    };
+    var findVersionNumberEndIndex = (range4, start, loose, digitRuns) => {
+      if (!loose && range4[start] === "0") {
+        return start + 1;
+      }
+      return findDigitsEndIndex(range4, start, loose ? MAX_LENGTH : MAX_LENGTH + 1, digitRuns);
+    };
+    var findPrereleaseIdentifierEndIndex = (range4, start, loose, digitRuns) => {
+      const digitsEnd = findDigitsEndIndex(range4, start, MAX_LENGTH, digitRuns);
+      if (isLetter(range4[digitsEnd]) || range4[digitsEnd] === "-") {
+        let end = digitsEnd + 1;
+        const limit = end + MAX_SAFE_BUILD_LENGTH;
+        while (end < limit && isIdentifierCharacter(range4[end])) {
+          end++;
+        }
+        return end;
+      }
+      return findVersionNumberEndIndex(range4, start, loose, digitRuns);
+    };
+    var findPrereleaseEndIndex = (range4, start, loose, digitRuns) => {
+      const hyphen = range4[start] === "-";
+      if (!loose && !hyphen) {
+        return start;
+      }
+      const identifierStart = start + (hyphen ? 1 : 0);
+      let end = findPrereleaseIdentifierEndIndex(range4, identifierStart, loose, digitRuns);
+      if (end === identifierStart) {
+        if (!loose || !hyphen) {
+          return start;
+        }
+        end = findPrereleaseIdentifierEndIndex(range4, start, loose, digitRuns);
+      }
+      while (range4[end] === ".") {
+        const next = findPrereleaseIdentifierEndIndex(range4, end + 1, loose, digitRuns);
+        if (next === end + 1) {
+          break;
+        }
+        end = next;
+      }
+      return end;
+    };
+    var findBuildIdentifierEndIndex = (range4, start) => {
+      let end = start;
+      while (end - start < MAX_SAFE_BUILD_LENGTH && isIdentifierCharacter(range4[end])) {
+        end++;
+      }
+      return end;
+    };
+    var findBuildEndIndex = (range4, start) => {
+      if (range4[start] !== "+") {
+        return start;
+      }
+      let end = findBuildIdentifierEndIndex(range4, start + 1);
+      if (end === start + 1) {
+        return start;
+      }
+      while (range4[end] === ".") {
+        const next = findBuildIdentifierEndIndex(range4, end + 1);
+        if (next === end + 1) {
+          break;
+        }
+        end = next;
+      }
+      return end;
+    };
+    var findLooseFullVersionEndIndex = (range4, start, digitRuns) => {
+      let end = start;
+      for (let component = 0; component < 3; component++) {
+        const next = findVersionNumberEndIndex(range4, end, true, digitRuns);
+        if (next === end) {
+          return start;
+        }
+        end = next;
+        if (component < 2) {
+          if (range4[end] !== ".") {
+            return start;
+          }
+          end++;
+        }
+      }
+      const prereleaseEnd = findPrereleaseEndIndex(range4, end, true, digitRuns);
+      return findBuildEndIndex(range4, prereleaseEnd);
+    };
+    var findPartialVersionComponentEndIndex = (range4, start, digitRuns) => {
+      if (isDigit(range4[start])) {
+        return findVersionNumberEndIndex(range4, start, false, digitRuns);
+      }
+      return isVersionStart(range4[start]) ? start + 1 : start;
+    };
+    var findPartialVersionEndIndex = (range4, start, digitRuns) => {
+      let end = findPartialVersionComponentEndIndex(range4, start, digitRuns);
+      for (let component = 0; component < 2; component++) {
+        if (range4[end] !== ".") {
+          return end;
+        }
+        const next = findPartialVersionComponentEndIndex(range4, end + 1, digitRuns);
+        if (next === end + 1) {
+          return end;
+        }
+        end = next;
+      }
+      const prereleaseEnd = findPrereleaseEndIndex(range4, end, false, digitRuns);
+      return findBuildEndIndex(range4, prereleaseEnd);
+    };
+    var findVersionEndIndex = (range4, start, digitRuns) => {
+      const fullVersionEnd = findLooseFullVersionEndIndex(range4, start, digitRuns);
+      return fullVersionEnd !== start ? fullVersionEnd : findPartialVersionEndIndex(range4, start, digitRuns);
+    };
+    var findRemovableWhitespaceIndex = (range4, matchStart) => {
+      let position = matchStart;
+      if (isWhitespace(range4[position])) {
+        position++;
+      }
+      if (range4[position] === "<" || range4[position] === ">") {
+        position++;
+      }
+      if (range4[position] === "=") {
+        position++;
+      }
+      return isWhitespace(range4[position]) ? position : -1;
+    };
+    var trimComparatorWhitespace = (range4) => {
+      let result = "";
+      let copyFrom = 0;
+      let cursor = 0;
+      const digitRuns = { start: -1, end: -1, previousStart: -1, previousEnd: -1 };
+      while (cursor < range4.length) {
+        const matchStart = cursor;
+        if (range4[cursor] === "<" || range4[cursor] === ">") {
+          cursor++;
+        } else if (!isVersionPrefix(range4[cursor]) && !isVersionStart(range4[cursor])) {
+          cursor++;
+          continue;
+        }
+        while (cursor < range4.length && isVersionPrefix(range4[cursor])) {
+          cursor++;
+        }
+        if (!isVersionStart(range4[cursor])) {
+          continue;
+        }
+        const whitespacePosition = findRemovableWhitespaceIndex(range4, matchStart);
+        if (whitespacePosition !== -1) {
+          result += range4.slice(copyFrom, whitespacePosition);
+          copyFrom = whitespacePosition + 1;
+        }
+        cursor = findVersionEndIndex(range4, cursor, digitRuns);
+      }
+      return result + range4.slice(copyFrom);
+    };
+    module2.exports = trimComparatorWhitespace;
+  }
+});
+
 // ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/node_modules/semver/classes/range.js
 var require_range = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/node_modules/semver/classes/range.js"(exports2, module2) {
@@ -3555,7 +3774,7 @@ var require_range = __commonJS({
         const hr = loose ? re[t.HYPHENRANGELOOSE] : re[t.HYPHENRANGE];
         range4 = range4.replace(hr, hyphenReplace(this.options.includePrerelease));
         debug("hyphen replace", range4);
-        range4 = range4.replace(re[t.COMPARATORTRIM], comparatorTrimReplace);
+        range4 = trimComparatorWhitespace(range4);
         debug("comparator trim", range4);
         range4 = range4.replace(re[t.TILDETRIM], tildeTrimReplace);
         debug("tilde trim", range4);
@@ -3625,11 +3844,11 @@ var require_range = __commonJS({
     var Comparator = require_comparator();
     var debug = require_debug();
     var SemVer = require_semver();
+    var trimComparatorWhitespace = require_trim_comparator_whitespace();
     var {
       safeRe: re,
       src,
       t,
-      comparatorTrimReplace,
       tildeTrimReplace,
       caretTrimReplace
     } = require_re();
@@ -10171,7 +10390,7 @@ function futureFlagDefault(flag) {
   }
   return value;
 }
-var ENABLE_STACK_NAME_DUPLICATES_CONTEXT, ENABLE_DIFF_NO_FAIL_CONTEXT, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, STACK_RELATIVE_EXPORTS_CONTEXT, DOCKER_IGNORE_SUPPORT, SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME, KMS_DEFAULT_KEY_POLICIES, S3_GRANT_WRITE_WITHOUT_ACL, ECS_REMOVE_DEFAULT_DESIRED_COUNT, RDS_LOWERCASE_DB_IDENTIFIER, APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID, EFS_DEFAULT_ENCRYPTION_AT_REST, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_RECOGNIZE_LAYER_VERSION, CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021, CHECK_SECRET_USAGE, TARGET_PARTITIONS, ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME, IAM_MINIMIZE_POLICIES, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, VALIDATE_SNAPSHOT_REMOVAL_POLICY, CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME, S3_CREATE_DEFAULT_LOGGING_POLICY, SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY, APIGATEWAY_DISABLE_CLOUDWATCH_ROLE, ENABLE_PARTITION_LITERALS, EVENTS_TARGET_QUEUE_SAME_ACCOUNT, ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY, ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION, AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT, DATABASE_PROXY_UNIQUE_RESOURCE_NAME, CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP, APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID, EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY, REDSHIFT_COLUMN_ID, ENABLE_EMR_SERVICE_POLICY_V2, EC2_RESTRICT_DEFAULT_SECURITY_GROUP, APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION, KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, EFS_DENY_ANONYMOUS_ACCESS, EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID, AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, LAMBDA_NODEJS_USE_LATEST_RUNTIME, RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION, CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE, PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, EKS_NODEGROUP_NAME, EKS_USE_NATIVE_OIDC_PROVIDER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID, EBS_DEFAULT_GP3, ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM, LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT, S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK, EXPLICIT_STACK_TAGS, REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS, DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA, EC2_SUM_TIMEOUT_ENABLED, APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION, USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY, CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, ASPECT_STABILIZATION, SIGNER_PROFILE_NAME_PASSED_TO_CFN, USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, ENABLE_ADDITIONAL_METADATA_COLLECTION, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY, SET_UNIQUE_REPLICATION_ROLE_NAME, PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE, EVENTBUS_POLICY_SID_REQUIRED, ASPECT_PRIORITIES_MUTATING, DYNAMODB_TABLE_RETAIN_TABLE_REPLICA, LOG_USER_POOL_CLIENT_SECRET_VALUE, PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE, S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, USE_RESOURCEID_FOR_VPCV2_MIGRATION, S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT, USE_CDK_MANAGED_LAMBDA_LOGGROUP, NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT, STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT, CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0, ELB_USE_POST_QUANTUM_TLS_POLICY, AUTOMATIC_L1_TRAITS, BATCH_DEFAULT_AL2023, EKS_DEFAULT_AL2023, ANNOTATIONS_IN_VALIDATION_REPORT, DEFAULT_CROSS_STACK_REFERENCES, VALIDATE_AGAINST_DEFAULT_RULES, ECS_REMOVE_EMPTY_LOAD_BALANCERS, CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS, STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION, FLAGS, CURRENT_MV, CURRENT_VERSION_EXPIRED_FLAGS, CURRENTLY_RECOMMENDED_FLAGS, CURRENT_VERSION_FLAG_DEFAULTS, FUTURE_FLAGS, NEW_PROJECT_DEFAULT_CONTEXT;
+var ENABLE_STACK_NAME_DUPLICATES_CONTEXT, ENABLE_DIFF_NO_FAIL_CONTEXT, NEW_STYLE_STACK_SYNTHESIS_CONTEXT, STACK_RELATIVE_EXPORTS_CONTEXT, DOCKER_IGNORE_SUPPORT, SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME, KMS_DEFAULT_KEY_POLICIES, S3_GRANT_WRITE_WITHOUT_ACL, ECS_REMOVE_DEFAULT_DESIRED_COUNT, RDS_LOWERCASE_DB_IDENTIFIER, APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID, EFS_DEFAULT_ENCRYPTION_AT_REST, LAMBDA_RECOGNIZE_VERSION_PROPS, LAMBDA_RECOGNIZE_LAYER_VERSION, CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021, CHECK_SECRET_USAGE, TARGET_PARTITIONS, ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME, IAM_MINIMIZE_POLICIES, IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME, VALIDATE_SNAPSHOT_REMOVAL_POLICY, CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME, S3_CREATE_DEFAULT_LOGGING_POLICY, SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY, APIGATEWAY_DISABLE_CLOUDWATCH_ROLE, ENABLE_PARTITION_LITERALS, EVENTS_TARGET_QUEUE_SAME_ACCOUNT, ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER, ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, S3_SERVER_ACCESS_LOGS_USE_BUCKET_POLICY, ROUTE53_PATTERNS_USE_CERTIFICATE, ROUTE53_PATTERNS_USE_DISTRIBUTION, AWS_CUSTOM_RESOURCE_LATEST_SDK_DEFAULT, DATABASE_PROXY_UNIQUE_RESOURCE_NAME, CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP, APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID, EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA, SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY, REDSHIFT_COLUMN_ID, ENABLE_EMR_SERVICE_POLICY_V2, EC2_RESTRICT_DEFAULT_SECURITY_GROUP, APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID, APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD, INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION, KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, EFS_DENY_ANONYMOUS_ACCESS, EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID, AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY, LAMBDA_NODEJS_USE_LATEST_RUNTIME, RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS, AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS, APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION, CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION, CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE, PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, EKS_NODEGROUP_NAME, EKS_USE_NATIVE_OIDC_PROVIDER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID, EBS_DEFAULT_GP3, ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM, LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT, S3_KEEP_NOTIFICATION_IN_IMPORTED_BUCKET, USE_NEW_S3URI_PARAMETERS_FOR_BEDROCK_INVOKE_MODEL_TASK, EXPLICIT_STACK_TAGS, REDUCE_EC2_FARGATE_CLOUDWATCH_PERMISSIONS, DYNAMODB_TABLEV2_RESOURCE_POLICY_PER_REPLICA, EC2_SUM_TIMEOUT_ENABLED, APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION, USE_CORRECT_VALUE_FOR_INSTANCE_RESOURCE_ID_PROPERTY, CFN_INCLUDE_REJECT_COMPLEX_RESOURCE_UPDATE_CREATE_POLICY_INTRINSICS, LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES, STEPFUNCTIONS_TASKS_FIX_RUN_ECS_TASK_POLICY, STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2, BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT, ASPECT_STABILIZATION, SIGNER_PROFILE_NAME_PASSED_TO_CFN, USER_POOL_DOMAIN_NAME_METHOD_WITHOUT_CUSTOM_RESOURCE, ALB_DUALSTACK_WITHOUT_PUBLIC_IPV4_SECURITY_GROUP_RULES_DEFAULT, IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS, ENABLE_ADDITIONAL_METADATA_COLLECTION, LAMBDA_CREATE_NEW_POLICIES_WITH_ADDTOROLEPOLICY, SET_UNIQUE_REPLICATION_ROLE_NAME, PIPELINE_REDUCE_STAGE_ROLE_TRUST_SCOPE, EVENTBUS_POLICY_SID_REQUIRED, ASPECT_PRIORITIES_MUTATING, DYNAMODB_TABLE_RETAIN_TABLE_REPLICA, LOG_USER_POOL_CLIENT_SECRET_VALUE, PIPELINE_REDUCE_CROSS_ACCOUNT_ACTION_ROLE_TRUST_SCOPE, S3_TRUST_KEY_POLICY_FOR_SNS_SUBSCRIPTIONS, EC2_REQUIRE_PRIVATE_SUBNETS_FOR_EGRESSONLYINTERNETGATEWAY, USE_RESOURCEID_FOR_VPCV2_MIGRATION, S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT, USE_CDK_MANAGED_LAMBDA_LOGGROUP, NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT, STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT, CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0, ELB_USE_POST_QUANTUM_TLS_POLICY, AUTOMATIC_L1_TRAITS, BATCH_DEFAULT_AL2023, EKS_DEFAULT_AL2023, ANNOTATIONS_IN_VALIDATION_REPORT, DEFAULT_CROSS_STACK_REFERENCES, VALIDATE_AGAINST_DEFAULT_RULES, ECS_REMOVE_EMPTY_LOAD_BALANCERS, CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS, STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION, IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME, FLAGS, CURRENT_MV, CURRENT_VERSION_EXPIRED_FLAGS, CURRENTLY_RECOMMENDED_FLAGS, CURRENT_VERSION_FLAG_DEFAULTS, FUTURE_FLAGS, NEW_PROJECT_DEFAULT_CONTEXT;
 var init_features = __esm({
   "../../aws-cdk-lib/cx-api/lib/features.ts"() {
     "use strict";
@@ -10289,6 +10508,7 @@ var init_features = __esm({
     ECS_REMOVE_EMPTY_LOAD_BALANCERS = "@aws-cdk/aws-ecs:removeEmptyLoadBalancers";
     CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps";
     STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = "@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction";
+    IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME = "@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName";
     FLAGS = {
       //////////////////////////////////////////////////////////////////////
       [SIGNER_PROFILE_NAME_PASSED_TO_CFN]: {
@@ -11246,7 +11466,7 @@ var init_features = __esm({
         type: 0 /* ApiDefault */,
         summary: "When enabled, the default volume type of the EBS volume will be GP3",
         detailsMd: `
-      When this featuer flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
+      When this feature flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
     `,
         introducedIn: { v2: "2.140.0" },
         recommendedValue: true,
@@ -12034,6 +12254,26 @@ var init_features = __esm({
         recommendedValue: true,
         unconfiguredBehavesLike: { v2: true },
         compatibilityWithOldBehaviorMd: "Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack."
+      },
+      //////////////////////////////////////////////////////////////////////
+      [IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: {
+        type: 1 /* BugFix */,
+        summary: "When enabled, the default policy of an imported user or group gets a name that includes the stack name",
+        detailsMd: `
+      An imported user or group puts the permissions granted to it in a default inline policy. Without this flag, the
+      name of that policy only depends on the construct path inside the stack, so stacks that import the same user or
+      group under the same construct id use the same inline policy name on the same principal, and their deployments
+      conflict.
+
+      When this flag is enabled, the policy name also includes the stack name, so each stack gets an inline policy of
+      its own. The logical ID of the policy does not change, so CloudFormation renames the existing policy in place.
+
+      Deploy all stacks that import the same user or group after enabling this flag. The first of them to rename its
+      policy removes the inline policy under the old shared name, which may hold the permissions of another stack until
+      that stack is deployed too.`,
+        introducedIn: { v2: "V2NEXT" },
+        recommendedValue: true,
+        unconfiguredBehavesLike: { v2: false }
       }
     };
     CURRENT_MV = "v2";
@@ -56606,14 +56846,14 @@ var require_commonjs2 = __commonJS({
   "../../aws-cdk-lib/node_modules/brace-expansion/dist/commonjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.EXPANSION_MAX_REWRITES = exports2.EXPANSION_MAX_DEPTH = exports2.EXPANSION_MAX_LENGTH = exports2.EXPANSION_MAX = void 0;
+    exports2.EXPANSION_MAX_STEPS = exports2.EXPANSION_MAX_REWRITES = exports2.EXPANSION_MAX_DEPTH = exports2.EXPANSION_MAX_LENGTH = exports2.EXPANSION_MAX = void 0;
     exports2.expand = expand;
     var balanced_match_1 = require_commonjs();
-    var escSlash = "\0SLASH" + Math.random() + "\0";
-    var escOpen = "\0OPEN" + Math.random() + "\0";
-    var escClose = "\0CLOSE" + Math.random() + "\0";
-    var escComma = "\0COMMA" + Math.random() + "\0";
-    var escPeriod = "\0PERIOD" + Math.random() + "\0";
+    var escSlash = "\0SLASH" + Math.random().toFixed(16) + "\0";
+    var escOpen = "\0OPEN" + Math.random().toFixed(16) + "\0";
+    var escClose = "\0CLOSE" + Math.random().toFixed(16) + "\0";
+    var escComma = "\0COMMA" + Math.random().toFixed(16) + "\0";
+    var escPeriod = "\0PERIOD" + Math.random().toFixed(16) + "\0";
     var escSlashPattern = new RegExp(escSlash, "g");
     var escOpenPattern = new RegExp(escOpen, "g");
     var escClosePattern = new RegExp(escClose, "g");
@@ -56628,6 +56868,8 @@ var require_commonjs2 = __commonJS({
     exports2.EXPANSION_MAX_LENGTH = 4e6;
     exports2.EXPANSION_MAX_DEPTH = 1e3;
     exports2.EXPANSION_MAX_REWRITES = 1e3;
+    exports2.EXPANSION_MAX_STEPS = 2e7;
+    var CALL_STEPS = 16;
     function numeric(str) {
       return !isNaN(str) ? parseInt(str, 10) : str.charCodeAt(0);
     }
@@ -56642,11 +56884,70 @@ var require_commonjs2 = __commonJS({
         target.push(items[i]);
       }
     }
-    function parseCommaParts(str) {
+    function balancedWithBudget(str, masked, budget) {
+      if (budget.remaining < 0) {
+        return void 0;
+      }
+      const r = (0, balanced_match_1.range)("{", "}", masked);
+      const unmatched = r !== void 0 && masked.indexOf("{") < r[0];
+      budget.remaining -= r && !unmatched ? r[1] + 1 : str.length;
+      if (!r || budget.remaining < 0) {
+        return void 0;
+      }
+      return {
+        end: r[1],
+        pre: str.slice(0, r[0]),
+        body: str.slice(r[0] + 1, r[1]),
+        post: str.slice(r[1] + 1),
+        unmatched
+      };
+    }
+    function maskUnmatchedOpens(masked, budget) {
+      budget.remaining -= masked.length;
+      const open = [];
+      for (let i = 0; i < masked.length; i++) {
+        const c = masked.charCodeAt(i);
+        if (c === 123) {
+          open.push(i);
+        } else if (c === 125 && open.length) {
+          open.pop();
+        }
+      }
+      let out = "";
+      let last2 = 0;
+      for (let i = 0; i < open.length; i++) {
+        const at = open[i];
+        out += masked.slice(last2, at) + "\0";
+        last2 = at + 1;
+      }
+      return out + masked.slice(last2);
+    }
+    function commaSetFollows(str, budget) {
+      budget.remaining -= str.length;
+      if (budget.remaining < 0) {
+        return false;
+      }
+      let close = false;
+      for (let i = str.length - 1; i >= 0; i--) {
+        const c = str.charCodeAt(i);
+        if (c === 125) {
+          close = true;
+        } else if (c === 10 || c === 13 || c === 8232 || c === 8233) {
+          close = false;
+        } else if (c === 44 && close && str.charCodeAt(i + 1) !== 44) {
+          return true;
+        }
+      }
+      return false;
+    }
+    function parseCommaParts(str, budget) {
       const parts = [];
       let carry = "";
       for (; ; ) {
-        const m = (0, balanced_match_1.balanced)("{", "}", str);
+        const m = balancedWithBudget(str, str, budget);
+        if (budget.remaining < 0) {
+          return void 0;
+        }
         if (!m) {
           const tail = str.split(",");
           tail[0] = carry + tail[0];
@@ -56666,15 +56967,22 @@ var require_commonjs2 = __commonJS({
         str = post;
       }
     }
+    function bound(value, fallback) {
+      return value === void 0 || isNaN(value) ? fallback : value;
+    }
     function expand(str, options = {}) {
       if (!str) {
         return [];
       }
-      const { max = exports2.EXPANSION_MAX, maxLength = exports2.EXPANSION_MAX_LENGTH, maxDepth = exports2.EXPANSION_MAX_DEPTH, maxRewrites = exports2.EXPANSION_MAX_REWRITES } = options;
+      const max = bound(options.max, exports2.EXPANSION_MAX);
+      const maxLength = bound(options.maxLength, exports2.EXPANSION_MAX_LENGTH);
+      const maxDepth = bound(options.maxDepth, exports2.EXPANSION_MAX_DEPTH);
+      const maxRewrites = bound(options.maxRewrites, exports2.EXPANSION_MAX_REWRITES);
+      const maxSteps = bound(options.maxSteps, exports2.EXPANSION_MAX_STEPS);
       if (str.slice(0, 2) === "{}") {
         str = "\\{\\}" + str.slice(2);
       }
-      return expand_(escapeBraces(str), max, maxLength, maxDepth, 0, maxRewrites, true).map(unescapeBraces);
+      return expand_(escapeBraces(str), max, maxLength, maxDepth, 0, maxRewrites, { remaining: maxSteps }, true).map(unescapeBraces);
     }
     function embrace(str) {
       return "{" + str + "}";
@@ -56688,25 +56996,32 @@ var require_commonjs2 = __commonJS({
     function gte(i, y) {
       return i >= y;
     }
-    function combine(acc, pre, values, max, maxLength, dropEmpties) {
+    function combine(acc, pre, values, max, maxLength, dropEmpties, budget) {
       const out = [];
       let length = 0;
-      for (let a = 0; a < acc.length; a++) {
-        for (let v = 0; v < values.length; v++) {
+      let nonEmpty;
+      outer: for (let a = 0; a < acc.length; a++) {
+        const prefix = acc[a] + pre;
+        let vs = values;
+        if (dropEmpties && !prefix) {
+          if (!nonEmpty)
+            nonEmpty = values.filter((v) => v);
+          vs = nonEmpty;
+        }
+        for (let v = 0; v < vs.length; v++) {
           if (out.length >= max)
-            return out;
-          const expansion = acc[a] + pre + values[v];
-          if (dropEmpties && !expansion)
-            continue;
+            break outer;
+          const expansion = prefix + vs[v];
           if (length + expansion.length > maxLength)
-            return out;
+            break outer;
           out.push(expansion);
           length += expansion.length;
         }
       }
+      budget.remaining -= out.length;
       return out;
     }
-    function expandSequence(body, isAlphaSequence, max, maxLength) {
+    function expandSequence(body, isAlphaSequence, max, maxLength, budget) {
       const n = body.split(/\.\./);
       const N = [];
       if (n[0] === void 0 || n[1] === void 0) {
@@ -56723,8 +57038,13 @@ var require_commonjs2 = __commonJS({
         test = gte;
       }
       const pad = n.some(isPadded);
+      const cost = pad ? width : 1;
       let length = 0;
       for (let i = x; test(i, y) && N.length < max; i += incr) {
+        budget.remaining -= cost;
+        if (budget.remaining < 0) {
+          return void 0;
+        }
         let c;
         if (isAlphaSequence) {
           c = String.fromCharCode(i);
@@ -56752,7 +57072,8 @@ var require_commonjs2 = __commonJS({
       }
       return N;
     }
-    function expand_(str, max, maxLength, maxDepth, depth, maxRewrites, isTop) {
+    function expand_(str, max, maxLength, maxDepth, depth, maxRewrites, budget, isTop) {
+      budget.remaining -= CALL_STEPS;
       if (depth > maxDepth) {
         return [str];
       }
@@ -56760,18 +57081,24 @@ var require_commonjs2 = __commonJS({
       let rewrites = 0;
       let dropEmpties = false;
       let firstGroup = true;
+      let masked = str;
       for (; ; ) {
-        const m = (0, balanced_match_1.balanced)("{", "}", str);
+        const m = balancedWithBudget(str, masked, budget);
         if (!m) {
-          return combine(acc, str, [""], max, maxLength, dropEmpties);
+          return combine(acc, str, [""], max, maxLength, dropEmpties, budget);
+        }
+        if (m.unmatched) {
+          masked = maskUnmatchedOpens(masked, budget);
         }
         const pre = m.pre;
+        const literal = () => combine(acc, pre + "{" + m.body + "}" + m.post, [""], max, maxLength, dropEmpties, budget);
         if (/\$$/.test(pre)) {
-          acc = combine(acc, pre + "{" + m.body + "}", [""], max, maxLength, dropEmpties && !m.post.length);
+          acc = combine(acc, pre + "{" + m.body + "}", [""], max, maxLength, dropEmpties && !m.post.length, budget);
           firstGroup = false;
           if (!m.post.length)
             break;
           str = m.post;
+          masked = masked.slice(m.end + 1);
           continue;
         }
         const isNumericSequence = /^-?\d+\.\.-?\d+(?:\.\.-?\d+)?$/.test(m.body);
@@ -56779,13 +57106,14 @@ var require_commonjs2 = __commonJS({
         const isSequence = isNumericSequence || isAlphaSequence;
         const isOptions = m.body.indexOf(",") >= 0;
         if (!isSequence && !isOptions) {
-          if (rewrites < maxRewrites && m.post.match(/,(?!,).*\}/)) {
+          if (rewrites < maxRewrites && commaSetFollows(m.post, budget)) {
             rewrites++;
             str = m.pre + "{" + m.body + escClose + m.post;
+            masked = masked.slice(0, m.end) + escClose + masked.slice(m.end + 1);
             isTop = true;
             continue;
           }
-          return combine(acc, pre + "{" + m.body + "}" + m.post, [""], max, maxLength, dropEmpties);
+          return literal();
         }
         if (firstGroup) {
           dropEmpties = isTop && !isSequence;
@@ -56793,16 +57121,30 @@ var require_commonjs2 = __commonJS({
         }
         let values;
         if (isSequence) {
-          values = expandSequence(m.body, isAlphaSequence, max, maxLength);
+          values = expandSequence(m.body, isAlphaSequence, max, maxLength, budget);
+          if (!values) {
+            return literal();
+          }
         } else {
-          let n = parseCommaParts(m.body);
+          let n = parseCommaParts(m.body, budget);
+          if (!n) {
+            return literal();
+          }
           if (n.length === 1 && n[0] !== void 0) {
-            n = expand_(n[0], max, maxLength, maxDepth, depth + 1, maxRewrites, false).map(embrace);
+            n = expand_(n[0], max, maxLength, maxDepth, depth + 1, maxRewrites, budget, false).map(embrace);
+            if (budget.remaining < 0) {
+              return literal();
+            }
             if (n.length === 1) {
-              acc = combine(acc, pre + n[0], [""], max, maxLength, dropEmpties && !m.post.length);
+              const next2 = combine(acc, pre + n[0], [""], max, maxLength, dropEmpties && !m.post.length, budget);
+              if (budget.remaining < 0) {
+                return literal();
+              }
+              acc = next2;
               if (!m.post.length)
                 break;
               str = m.post;
+              masked = masked.slice(m.end + 1);
               continue;
             }
           }
@@ -56815,7 +57157,10 @@ var require_commonjs2 = __commonJS({
           values = [];
           let valuesLength = 0;
           outer: for (let j = 0; j < n.length; j++) {
-            const expanded = expand_(n[j], max, maxLength, maxDepth, depth + 1, maxRewrites, false);
+            const expanded = expand_(n[j], max, maxLength, maxDepth, depth + 1, maxRewrites, budget, false);
+            if (budget.remaining < 0) {
+              return literal();
+            }
             for (let k = 0; k < expanded.length; k++) {
               const v = expanded[k];
               if (dropsEmpties && !v)
@@ -56828,13 +57173,880 @@ var require_commonjs2 = __commonJS({
             }
           }
         }
-        acc = combine(acc, pre, values, max, maxLength, dropEmpties && !m.post.length);
+        const next = combine(acc, pre, values, max, maxLength, dropEmpties && !m.post.length, budget);
+        if (budget.remaining < 0) {
+          return literal();
+        }
+        acc = next;
         if (!m.post.length)
           break;
         str = m.post;
+        masked = masked.slice(m.end + 1);
       }
       return acc;
     }
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@isaacs/nonrecursive-glob-match/dist/commonjs/numeric-range.js
+var require_numeric_range = __commonJS({
+  "../../aws-cdk-lib/node_modules/@isaacs/nonrecursive-glob-match/dist/commonjs/numeric-range.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.numericRange = void 0;
+    var digit = (a, b) => a === b ? { t: "lit", ch: String(a) } : { t: "class", re: new RegExp(`^[${a}-${b}]$`) };
+    var prefix = (d, alts) => alts.map((s) => [digit(d, d), ...s]);
+    var fixed = (a, b) => {
+      if (!a)
+        return [[]];
+      let lo = +a[0];
+      let hi = +b[0];
+      const ra = a.slice(1);
+      const rb = b.slice(1);
+      if (lo === hi)
+        return prefix(lo, fixed(ra, rb));
+      const zeros = "0".repeat(ra.length);
+      const nines = "9".repeat(ra.length);
+      const out = [];
+      if (ra !== zeros)
+        out.push(...prefix(lo++, fixed(ra, nines)));
+      const last2 = rb === nines ? [] : prefix(hi--, fixed(zeros, rb));
+      if (lo <= hi) {
+        out.push([digit(lo, hi), ...Array.from(ra, () => digit(0, 9))]);
+      }
+      out.push(...last2);
+      return out;
+    };
+    var nonneg = (a, b, width) => {
+      if (width) {
+        return fixed(String(a).padStart(width, "0"), String(b).padStart(width, "0"));
+      }
+      const out = [];
+      for (let len = String(a).length; len <= String(b).length; len++) {
+        const lo = Math.max(a, len === 1 ? 0 : 10 ** (len - 1));
+        const hi = Math.min(b, 10 ** len - 1);
+        out.push(...fixed(String(lo), String(hi)));
+      }
+      return out;
+    };
+    var numericRange = (loStr, hiStr) => {
+      let lo = Number(loStr);
+      let hi = Number(hiStr);
+      if (!Number.isSafeInteger(lo) || !Number.isSafeInteger(hi))
+        return;
+      if (lo > hi)
+        [lo, hi] = [hi, lo];
+      const padded = /^-?0\d/.test(loStr) || /^-?0\d/.test(hiStr);
+      const width = padded ? Math.max(loStr.length, hiStr.length) : 0;
+      const out = [];
+      if (lo < 0) {
+        const neg = nonneg(Math.max(-hi, 1), -lo, width && width - 1);
+        out.push(...neg.map((s) => [{ t: "lit", ch: "-" }, ...s]));
+      }
+      if (hi >= 0)
+        out.push(...nonneg(Math.max(lo, 0), hi, width));
+      return out;
+    };
+    exports2.numericRange = numericRange;
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@isaacs/nonrecursive-glob-match/dist/commonjs/parse-class.js
+var require_parse_class = __commonJS({
+  "../../aws-cdk-lib/node_modules/@isaacs/nonrecursive-glob-match/dist/commonjs/parse-class.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.parseClass = void 0;
+    var posixClasses = {
+      "[:alnum:]": ["\\p{L}\\p{Nl}\\p{Nd}"],
+      "[:alpha:]": ["\\p{L}\\p{Nl}"],
+      "[:ascii:]": ["\\x00-\\x7f"],
+      "[:blank:]": ["\\p{Zs}\\t"],
+      "[:cntrl:]": ["\\p{Cc}"],
+      "[:digit:]": ["\\p{Nd}"],
+      "[:graph:]": ["\\p{Z}\\p{C}", true],
+      "[:lower:]": ["\\p{Ll}"],
+      "[:print:]": ["\\p{C}", true],
+      "[:punct:]": ["\\p{P}\\p{S}"],
+      "[:space:]": ["\\p{Z}\\t\\r\\n\\v\\f"],
+      "[:upper:]": ["\\p{Lu}"],
+      "[:word:]": ["\\p{L}\\p{Nl}\\p{Nd}\\p{Pc}"],
+      "[:xdigit:]": ["A-Fa-f0-9"]
+    };
+    var braceEscape = (s) => s.replace(/[[\]\\-]/g, "\\$&");
+    var noMatch = /$./;
+    var parseClass = (glob2, position, nocase = false, form) => {
+      const norm = (c) => {
+        const n = form ? c.normalize(form) : c;
+        return [...n].length === 1 ? n : c;
+      };
+      const pos = position;
+      if (glob2.charAt(pos) !== "[") {
+        throw new Error("not in a brace expression");
+      }
+      const ranges = [];
+      const negs = [];
+      let i = pos + 1;
+      let sawStart = false;
+      let escaping = false;
+      let negate = false;
+      let endPos = pos;
+      let rangeStart = "";
+      WHILE: while (i < glob2.length) {
+        const c = String.fromCodePoint(glob2.codePointAt(i));
+        if ((c === "!" || c === "^") && i === pos + 1) {
+          negate = true;
+          i++;
+          continue;
+        }
+        if (c === "]" && sawStart && !escaping) {
+          endPos = i + 1;
+          break;
+        }
+        sawStart = true;
+        if (c === "\\") {
+          if (!escaping) {
+            escaping = true;
+            i++;
+            continue;
+          }
+        }
+        if (c === "[" && !escaping) {
+          for (const [cls, [unip, neg]] of Object.entries(posixClasses)) {
+            if (glob2.startsWith(cls, i)) {
+              if (rangeStart) {
+                return [noMatch, glob2.length - pos];
+              }
+              i += cls.length;
+              if (neg)
+                negs.push(unip);
+              else
+                ranges.push(unip);
+              continue WHILE;
+            }
+          }
+        }
+        escaping = false;
+        const n = norm(c);
+        if (rangeStart) {
+          if (n.codePointAt(0) > rangeStart.codePointAt(0)) {
+            ranges.push(braceEscape(rangeStart) + "-" + braceEscape(n));
+          } else if (n === rangeStart) {
+            ranges.push(braceEscape(n));
+          }
+          rangeStart = "";
+          i += c.length;
+          continue;
+        }
+        if (glob2.startsWith("-]", i + c.length)) {
+          ranges.push(braceEscape(n + "-"));
+          i += c.length + 1;
+          continue;
+        }
+        if (glob2.startsWith("-", i + c.length)) {
+          rangeStart = n;
+          i += c.length + 1;
+          continue;
+        }
+        ranges.push(braceEscape(n));
+        i += c.length;
+      }
+      if (endPos < i) {
+        return [noMatch, 0];
+      }
+      if (!ranges.length && !negs.length) {
+        return [noMatch, glob2.length - pos];
+      }
+      const sranges = "[" + (negate ? "^" : "") + ranges.join("") + "]";
+      const snegs = "[" + (negate ? "" : "^") + negs.join("") + "]";
+      const comb = "^" + (ranges.length && negs.length ? "(" + sranges + "|" + snegs + ")" : ranges.length ? sranges : snegs);
+      return [new RegExp(comb, nocase ? "iu" : "u"), endPos - pos];
+    };
+    exports2.parseClass = parseClass;
+  }
+});
+
+// ../../aws-cdk-lib/node_modules/@isaacs/nonrecursive-glob-match/dist/commonjs/index.js
+var require_commonjs3 = __commonJS({
+  "../../aws-cdk-lib/node_modules/@isaacs/nonrecursive-glob-match/dist/commonjs/index.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.Matcher = void 0;
+    var numeric_range_js_1 = require_numeric_range();
+    var parse_class_js_1 = require_parse_class();
+    var MATCH = { t: "match", id: 0 };
+    var extTypes = "!?+*@";
+    var lit2 = (ch) => ({ t: "lit", ch });
+    var reEscape = (s) => s.replace(/[\\^$.*+?()[\]{}|/]/g, "\\$&");
+    var newFoldRe = (s) => new RegExp(`^${reEscape(s)}$`, "iu");
+    var foldCache = /* @__PURE__ */ new Map();
+    var foldRe = (ch) => {
+      let re = foldCache.get(ch);
+      if (!re) {
+        re = newFoldRe(ch);
+        if (foldCache.size >= 1e3)
+          foldCache.clear();
+        foldCache.set(ch, re);
+      }
+      return re;
+    };
+    var litMatch = (l, c) => {
+      if (c === l.ch)
+        return true;
+      if (!l.re)
+        return false;
+      const code = c.charCodeAt(0);
+      if (code >= 128)
+        return l.re.test(c);
+      const ascii = l.ascii ??= new Uint8Array(128);
+      ascii[code] ||= l.re.test(c) ? 1 : 2;
+      return ascii[code] === 1;
+    };
+    var tokenize = (p, nocase, noext, form, mark) => {
+      const toks = [];
+      for (let i = 0; i < p.length; ) {
+        const c = String.fromCodePoint(p.codePointAt(i));
+        if (mark) {
+          const m = c === "\\" && p.startsWith(mark, i + 1) ? 1 : 0;
+          if (m || c === mark) {
+            const start = i + m + mark.length;
+            const end = p.indexOf(mark, start);
+            const r = /^(-?\d+)\.\.(-?\d+)$/.exec(p.slice(start, end));
+            const alts = end !== -1 && r && (0, numeric_range_js_1.numericRange)(r[1], r[2]);
+            if (alts) {
+              toks.push({ t: "ext", type: "@", alts });
+              i = end + mark.length;
+              continue;
+            }
+          }
+        }
+        if (c === "\\") {
+          const e = p.codePointAt(i + 1);
+          const ch = e === void 0 ? c : String.fromCodePoint(e);
+          toks.push(lit2(ch));
+          i += 1 + ch.length;
+          continue;
+        }
+        if (c === "[") {
+          const [re, consumed] = (0, parse_class_js_1.parseClass)(p, i, nocase, form);
+          if (consumed) {
+            toks.push({ t: "class", re });
+            i += consumed;
+            continue;
+          }
+        }
+        if (!noext && extTypes.includes(c) && p[i + 1] === "(") {
+          toks.push({ t: "open", type: c });
+          i += 2;
+          continue;
+        }
+        toks.push(!noext && c === "|" ? { t: "bar" } : !noext && c === ")" ? { t: "close" } : c === "*" ? { t: "star" } : c === "?" ? { t: "any" } : lit2(c));
+        i += c.length;
+      }
+      return toks;
+    };
+    var pair = (toks) => {
+      const pairs = /* @__PURE__ */ new Map();
+      const stack = [];
+      toks.forEach((tok, i) => {
+        if (tok.t === "open")
+          stack.push(i);
+        else if (tok.t === "close" && stack.length)
+          pairs.set(stack.pop(), i);
+      });
+      return pairs;
+    };
+    var build = (toks, pairs, start, end, top) => {
+      let seq = [];
+      const alts = [seq];
+      for (let i = start; i < end; i++) {
+        const tok = toks[i];
+        const close = pairs.get(i);
+        if (tok.t === "open" && close !== void 0) {
+          const sub = build(toks, pairs, i + 1, close, false);
+          seq.push({ t: "ext", type: tok.type, alts: sub });
+          i = close;
+        } else if (tok.t === "bar" && !top) {
+          alts.push(seq = []);
+        } else if (tok.t === "open") {
+          seq.push(lit2(tok.type), lit2("("));
+        } else if (tok.t === "bar") {
+          seq.push(lit2("|"));
+        } else if (tok.t === "close") {
+          seq.push(lit2(")"));
+        } else {
+          seq.push(tok);
+        }
+      }
+      return alts;
+    };
+    var normalize = (items, form) => {
+      const out = [];
+      let run = "";
+      const flush = () => {
+        for (const ch of run.normalize(form))
+          out.push(lit2(ch));
+        run = "";
+      };
+      for (const it of items) {
+        if (it.t === "lit") {
+          run += it.ch;
+          continue;
+        }
+        flush();
+        out.push(it.t === "ext" ? { ...it, alts: it.alts.map((a) => normalize(a, form)) } : it);
+      }
+      flush();
+      return out;
+    };
+    var compile = (items, nocase) => {
+      let id = 1;
+      const split = (out) => ({ t: "split", id: id++, out });
+      const seq = (items2, next) => items2.reduceRight((next2, it) => item(it, next2), next);
+      const item = (it, next) => {
+        switch (it.t) {
+          case "lit":
+            const re = nocase ? foldRe(it.ch) : void 0;
+            return { t: "lit", id: id++, ch: it.ch, re, next };
+          case "any":
+          case "star":
+            return { t: it.t, id: id++, next };
+          case "class":
+            return { t: "class", id: id++, re: it.re, next };
+        }
+        const alts = (next2) => it.alts.map((a) => seq(a, next2));
+        switch (it.type) {
+          case "@":
+            return split(alts(next));
+          case "?":
+            return split([next, ...alts(next)]);
+          case "!":
+            return { t: "neg", id: id++, sub: split(alts(MATCH)), next };
+        }
+        const after = split([]);
+        const entry = split(alts(after));
+        after.out.push(next, entry);
+        return it.type === "*" ? after : entry;
+      };
+      const start = seq(items, MATCH);
+      return [start, id];
+    };
+    var show = (start) => {
+      const lines = [];
+      const seen = /* @__PURE__ */ new Set();
+      const ref = (n) => n.t === "match" ? "match" : String(n.id);
+      const walk = (n, indent) => {
+        if (n.t === "match" || seen.has(n))
+          return;
+        seen.add(n);
+        const line = (desc) => lines.push(`${indent}${n.id}: ${desc}`);
+        switch (n.t) {
+          case "split":
+            line(`split -> ${n.out.map(ref).join(", ")}`);
+            for (const o of n.out)
+              walk(o, indent);
+            return;
+          case "neg":
+            line(`!(${ref(n.sub)}) -> ${ref(n.next)}`);
+            walk(n.sub, indent + "  ");
+            return walk(n.next, indent);
+          case "lit":
+            line(`${JSON.stringify(n.ch)} -> ${ref(n.next)}`);
+            break;
+          case "class":
+            line(`${n.re} -> ${ref(n.next)}`);
+            break;
+          default:
+            line(`${n.t === "any" ? "?" : "*"} -> ${ref(n.next)}`);
+        }
+        walk(n.next, indent);
+      };
+      walk(start, "");
+      return [`start -> ${ref(start)}`, ...lines].join("\n");
+    };
+    var State2 = class {
+      // set by the Sim, to mark the nodes that this state has
+      gen;
+      threads = [];
+      match = false;
+      runs = [];
+      // the sorted ids of the threads, with 0 for a match, once the
+      // state is done
+      ids = [];
+      constructor(gen) {
+        this.gen = gen;
+      }
+      // no threads, so nothing more can match
+      get dead() {
+        return !this.threads.length && !this.match && !this.runs.length;
+      }
+    };
+    var sameState = (a, b) => {
+      if (a.ids.length !== b.ids.length)
+        return false;
+      if (a.runs.length !== b.runs.length)
+        return false;
+      if (a.ids.some((id, i) => id !== b.ids[i]))
+        return false;
+      return a.runs.every((r) => b.runs.some((o) => o.neg === r.neg && sameState(o.state, r.state)));
+    };
+    var marks = (size) => ({
+      has: new Float64Array(size),
+      seen: new Float64Array(size),
+      gen: 0
+    });
+    var Sim = class {
+      // `.` and `..` only match literal dots, even with `dot:true`
+      dots;
+      // the string starts with `.`, and `dot:true` is not set
+      dotStart;
+      #marks;
+      constructor(dots, dotStart, marks2) {
+        this.dots = dots;
+        this.dotStart = dotStart;
+        this.#marks = marks2;
+      }
+      state() {
+        return new State2(++this.#marks.gen);
+      }
+      // sort the ids of a state, once it has all of its threads
+      done(state) {
+        state.ids = state.threads.map((n) => n.id).sort((a, b) => a - b);
+        if (state.match)
+          state.ids.unshift(MATCH.id);
+        return state;
+      }
+      // true the first time that the state walks through the node, so
+      // that loops in the graph stop
+      #visit(state, node) {
+        const { seen } = this.#marks;
+        if (seen[node.id] === state.gen)
+          return false;
+        seen[node.id] = state.gen;
+        return true;
+      }
+      #addThread(state, node) {
+        const { has } = this.#marks;
+        if (has[node.id] === state.gen)
+          return false;
+        has[node.id] = state.gen;
+        state.threads.push(node);
+        return true;
+      }
+      // wildcards only match a leading dot if `dot:true`. In a negated
+      // sub-pattern, this does not apply, because the negation itself
+      // can not match a leading dot.
+      restricted(i, top) {
+        return top && (this.dots || this.dotStart && i === 0);
+      }
+      add(state, node, i, top) {
+        switch (node.t) {
+          case "split":
+            if (!this.#visit(state, node))
+              return;
+            for (const o of node.out)
+              this.add(state, o, i, top);
+            return;
+          case "neg":
+            if (!this.#visit(state, node))
+              return;
+            const sub = this.state();
+            this.add(sub, node.sub, i, false);
+            this.done(sub);
+            return this.addRun(state, { t: "run", neg: node, state: sub }, i, top);
+          case "star":
+            if (this.restricted(i, top))
+              return;
+            if (this.#addThread(state, node))
+              this.add(state, node.next, i, top);
+            return;
+          case "match":
+            state.match = true;
+            return;
+          default:
+            this.#addThread(state, node);
+        }
+      }
+      addRun(state, run, i, top) {
+        for (const r of state.runs) {
+          if (r.neg === run.neg && sameState(r.state, run.state))
+            return;
+        }
+        state.runs.push(run);
+        if (!run.state.match) {
+          this.add(state, run.neg.next, i, top);
+        }
+      }
+      // the threads after char `c`, at index `i`
+      step(state, c, i, top) {
+        const next = this.state();
+        for (const th of state.threads) {
+          switch (th.t) {
+            case "lit":
+              if (litMatch(th, c)) {
+                this.add(next, th.next, i + 1, top);
+              }
+              break;
+            case "any":
+              if (!this.restricted(i, top))
+                this.add(next, th.next, i + 1, top);
+              break;
+            case "class":
+              if (!this.restricted(i, top) && th.re.test(c)) {
+                this.add(next, th.next, i + 1, top);
+              }
+              break;
+            case "star":
+              if (!this.restricted(i, top))
+                this.add(next, th, i + 1, top);
+          }
+        }
+        if (!this.restricted(i, top)) {
+          for (const run of state.runs) {
+            if (run.state.dead) {
+              this.addRun(next, run, i + 1, top);
+              continue;
+            }
+            const sub = this.step(run.state, c, i, false);
+            this.addRun(next, { t: "run", neg: run.neg, state: sub }, i + 1, top);
+          }
+        }
+        return this.done(next);
+      }
+    };
+    var stateKey = (state) => {
+      const ids = state.ids.join();
+      if (!state.runs.length)
+        return ids;
+      const runs = state.runs.map((r) => `${r.neg.id}(${stateKey(r.state)})`);
+      return `${ids}|${runs.sort().join("|")}`;
+    };
+    var DFA_BUDGET = 1 << 18;
+    var Dfa = class {
+      #start;
+      #states = /* @__PURE__ */ new Map();
+      #size = 0;
+      #plain;
+      #dotStart;
+      #sim;
+      #dotSim;
+      constructor(start, marks2) {
+        this.#start = start;
+        this.#sim = new Sim(false, false, marks2);
+        this.#dotSim = new Sim(false, true, marks2);
+      }
+      #make(state) {
+        return {
+          state,
+          match: state.match,
+          dead: state.dead,
+          next: /* @__PURE__ */ new Map()
+        };
+      }
+      #intern(state) {
+        const key = stateKey(state);
+        const found = this.#states.get(key);
+        if (found)
+          return found;
+        if (this.#size > DFA_BUDGET)
+          this.#clear();
+        const d = this.#make(state);
+        this.#states.set(key, d);
+        this.#size += key.length + 1;
+        return d;
+      }
+      #clear() {
+        this.#states.clear();
+        this.#size = 0;
+        this.#plain = void 0;
+        this.#dotStart = void 0;
+      }
+      start(dotStart) {
+        if (dotStart) {
+          if (this.#dotStart)
+            return this.#dotStart;
+          const state2 = this.#dotSim.state();
+          this.#dotSim.add(state2, this.#start, 0, true);
+          return this.#dotStart = this.#make(this.#dotSim.done(state2));
+        }
+        if (this.#plain)
+          return this.#plain;
+        const state = this.#sim.state();
+        this.#sim.add(state, this.#start, 0, true);
+        return this.#plain = this.#intern(this.#sim.done(state));
+      }
+      // the next state, after a miss in `d.ascii`
+      next(d, c) {
+        const code = c.charCodeAt(0);
+        const found = code < 128 ? void 0 : d.next.get(c);
+        if (found)
+          return found;
+        const n = d === this.#dotStart ? this.#intern(this.#dotSim.step(d.state, c, 0, true)) : this.#intern(this.#sim.step(d.state, c, 1, true));
+        if (code < 128) {
+          if (!d.ascii) {
+            d.ascii = new Array(128);
+            this.#size += 128;
+          }
+          d.ascii[code] = n;
+        } else {
+          d.next.set(c, n);
+        }
+        this.#size++;
+        return n;
+      }
+    };
+    var linear = (start) => {
+      const nodes = [];
+      for (let n = start; n.t !== "match"; n = n.next) {
+        if (n.t === "split" || n.t === "neg")
+          return void 0;
+        nodes.push(n);
+      }
+      return nodes;
+    };
+    var testLinear = (nodes, chars, start, end) => {
+      let ni = 0;
+      let ci = start;
+      let starNi = -1;
+      let starCi = 0;
+      while (ci < end) {
+        const n = nodes[ni];
+        if (n?.t === "star") {
+          starNi = ni++;
+          starCi = ci;
+          continue;
+        }
+        const c = chars[ci];
+        if (n && (n.t === "any" || n.t === "lit" && litMatch(n, c) || n.t === "class" && n.re.test(c))) {
+          ni++;
+          ci++;
+          continue;
+        }
+        if (starNi === -1)
+          return false;
+        ni = starNi + 1;
+        ci = ++starCi;
+      }
+      while (nodes[ni]?.t === "star")
+        ni++;
+      return ni === nodes.length;
+    };
+    var lengths = (items) => {
+      let min = 0;
+      let max = 0;
+      for (const it of items) {
+        const [lo, hi] = itemLengths(it);
+        min += lo;
+        max += hi;
+      }
+      return [min, max];
+    };
+    var itemLengths = (it) => {
+      if (it.t === "star")
+        return [0, Infinity];
+      if (it.t !== "ext")
+        return [1, 1];
+      if (it.type === "!")
+        return [0, Infinity];
+      const alts = it.alts.map(lengths);
+      const min = Math.min(...alts.map((a) => a[0]));
+      const max = Math.max(...alts.map((a) => a[1]));
+      const loop = max === 0 ? 0 : Infinity;
+      return it.type === "@" ? [min, max] : it.type === "?" ? [0, max] : it.type === "*" ? [0, loop] : [min, loop];
+    };
+    var hasAffix = (lits, chars, start) => {
+      for (let j = 0; j < lits.length; j++) {
+        if (!litMatch(lits[j], chars[start + j]))
+          return false;
+      }
+      return true;
+    };
+    var slashOrSurrogate = /[/\ud800-\udfff]/;
+    var surrogate = /[\ud800-\udfff]/;
+    var codePoints = (s) => surrogate.test(s) ? [...s] : s;
+    var noSlash = (s) => {
+      if (s.includes("/")) {
+        throw new Error("can only match a single path portion, got: " + s);
+      }
+    };
+    var Matcher3 = class {
+      pattern;
+      options;
+      #start;
+      // the number of node ids
+      #size;
+      #marks;
+      // the Sim for strings that are only `.` or `..`
+      #dotsSim;
+      // the string to compare, if the pattern has no magic. With
+      // `nocase:true`, the RegExp that folds case is made when it is
+      // first used.
+      #literal;
+      #literalFold = false;
+      #literalRe;
+      // the nodes between the prefix and suffix, if the graph is a
+      // single chain
+      #linear;
+      // the linear nodes are only `*` and `?`, so the length bounds and
+      // the prefix and suffix decide the match
+      #wild = false;
+      // the least and most chars that a match can have
+      #min = 0;
+      #max = Infinity;
+      // the literals that a match must start and end with. Each one
+      // matches exactly one char, and they are distinct items in the
+      // pattern, so a string that does not have them can not match.
+      #prefix = [];
+      #suffix = [];
+      // the prefix and suffix as strings, if they do not fold case
+      #prefixStr;
+      #suffixStr;
+      // there is a prefix or suffix to check
+      #affix = false;
+      #dfa;
+      #form;
+      constructor(pattern, options = {}) {
+        if (pattern.includes("/")) {
+          throw new Error("can only match a single path portion, got pattern: " + pattern);
+        }
+        this.pattern = pattern;
+        this.options = options;
+        const { nocase = false, noext = false, normalize: n } = options;
+        this.#form = n === true ? "NFC" : n || void 0;
+        const literal = /^[?*+@]\(\)$/.test(pattern);
+        const toks = tokenize(pattern, nocase, noext || literal, this.#form, options.rangeMark);
+        let [items] = build(toks, pair(toks), 0, toks.length, true);
+        if (this.#form)
+          items = normalize(items, this.#form);
+        const [start, size] = compile(items, nocase);
+        this.#start = start;
+        this.#size = size;
+        if (items.every((it) => it.t === "lit")) {
+          this.#literal = items.map((it) => it.ch).join("");
+          this.#literalFold = nocase;
+        } else {
+          const lit3 = (it) => it.t !== "lit" ? void 0 : nocase ? { ch: it.ch, re: foldRe(it.ch) } : { ch: it.ch };
+          for (const it of items) {
+            const l = lit3(it);
+            if (!l)
+              break;
+            this.#prefix.push(l);
+          }
+          for (let j = items.length - 1; j >= 0; j--) {
+            const l = lit3(items[j]);
+            if (!l)
+              break;
+            this.#suffix.unshift(l);
+          }
+          this.#affix = !!(this.#prefix.length || this.#suffix.length);
+          if (!nocase) {
+            this.#prefixStr = this.#prefix.map((l) => l.ch).join("");
+            this.#suffixStr = this.#suffix.map((l) => l.ch).join("");
+          }
+          this.#linear = linear(this.#start)?.slice(this.#prefix.length, -this.#suffix.length || void 0);
+          this.#wild = !!this.#linear?.every((n2) => n2.t === "star" || n2.t === "any");
+          const [min, max] = lengths(items);
+          this.#min = min;
+          this.#max = max;
+        }
+      }
+      test(s) {
+        if (this.#form) {
+          noSlash(s);
+          return this.#test(s.normalize(this.#form));
+        }
+        if (slashOrSurrogate.test(s)) {
+          noSlash(s);
+          return this.#test(s, [...s]);
+        }
+        return this.#test(s, s);
+      }
+      /**
+       * The same as {@link Matcher#test}, but the string is not checked
+       * for `/` chars, so the result for a string that has one is not
+       * defined. Only use it for a string that is known to be one path
+       * portion, such as a part of a path that was split on `/`. It can
+       * be faster, because some patterns do not need to look at each char
+       * of the string.
+       */
+      testUnchecked(s) {
+        return this.#test(this.#form ? s.normalize(this.#form) : s);
+      }
+      // Test a string that has no `/`. `chars` indexes it by code point.
+      // If it is not given, it is only found if a step needs it.
+      #test(s, chars) {
+        if (this.#literal !== void 0) {
+          return this.#literalFold ? (this.#literalRe ??= newFoldRe(this.#literal)).test(s) : s === this.#literal;
+        }
+        const min = this.#min;
+        const max = this.#max;
+        if (chars === void 0) {
+          const most = s.length;
+          const least = most + 1 >> 1;
+          if (most < min || least > max)
+            return false;
+          if (least < min || most > max)
+            chars = codePoints(s);
+        }
+        if (chars !== void 0 && (chars.length < min || chars.length > max)) {
+          return false;
+        }
+        const prefix = this.#prefix.length;
+        if (this.#affix) {
+          if (this.#prefixStr !== void 0 && this.#suffixStr !== void 0) {
+            if (!s.startsWith(this.#prefixStr) || !s.endsWith(this.#suffixStr)) {
+              return false;
+            }
+          } else {
+            chars ??= codePoints(s);
+            const end = chars.length - this.#suffix.length;
+            if (!hasAffix(this.#prefix, chars, 0) || !hasAffix(this.#suffix, chars, end)) {
+              return false;
+            }
+          }
+        }
+        const dotStart = !this.options.dot && s.startsWith(".");
+        if (this.#linear) {
+          if (s === "." || s === "..")
+            return false;
+          if (dotStart && !prefix)
+            return false;
+          if (this.#wild)
+            return true;
+          chars ??= codePoints(s);
+          const end = chars.length - this.#suffix.length;
+          return testLinear(this.#linear, chars, prefix, end);
+        }
+        chars ??= codePoints(s);
+        if (s === "." || s === "..") {
+          this.#marks ??= marks(this.#size);
+          const sim = this.#dotsSim ??= new Sim(true, false, this.#marks);
+          const start = sim.state();
+          sim.add(start, this.#start, 0, true);
+          let state = sim.done(start);
+          for (let i = 0; i < chars.length; i++) {
+            state = sim.step(state, chars[i], i, true);
+          }
+          return state.match;
+        }
+        this.#marks ??= marks(this.#size);
+        const dfa = this.#dfa ??= new Dfa(this.#start, this.#marks);
+        let d = dfa.start(dotStart);
+        const str = chars === s;
+        for (let i = 0; i < chars.length; i++) {
+          if (d.dead)
+            return false;
+          const code = str ? s.charCodeAt(i) : chars[i].charCodeAt(0);
+          d = d.ascii?.[code] ?? dfa.next(d, chars[i]);
+        }
+        return d.match;
+      }
+      /** a readable listing of the state machine */
+      toString() {
+        return show(this.#start);
+      }
+    };
+    exports2.Matcher = Matcher3;
   }
 });
 
@@ -56857,120 +58069,24 @@ var require_assert_valid_pattern = __commonJS({
   }
 });
 
-// ../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/brace-expressions.js
-var require_brace_expressions = __commonJS({
-  "../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/brace-expressions.js"(exports2) {
+// ../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/escape.js
+var require_escape = __commonJS({
+  "../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/escape.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.parseClass = void 0;
-    var posixClasses = {
-      "[:alnum:]": ["\\p{L}\\p{Nl}\\p{Nd}", true],
-      "[:alpha:]": ["\\p{L}\\p{Nl}", true],
-      "[:ascii:]": ["\\x00-\\x7f", false],
-      "[:blank:]": ["\\p{Zs}\\t", true],
-      "[:cntrl:]": ["\\p{Cc}", true],
-      "[:digit:]": ["\\p{Nd}", true],
-      "[:graph:]": ["\\p{Z}\\p{C}", true, true],
-      "[:lower:]": ["\\p{Ll}", true],
-      "[:print:]": ["\\p{C}", true],
-      "[:punct:]": ["\\p{P}", true],
-      "[:space:]": ["\\p{Z}\\t\\r\\n\\v\\f", true],
-      "[:upper:]": ["\\p{Lu}", true],
-      "[:word:]": ["\\p{L}\\p{Nl}\\p{Nd}\\p{Pc}", true],
-      "[:xdigit:]": ["A-Fa-f0-9", false]
+    exports2.escape = void 0;
+    var escape = (s, { windowsPathsNoEscape = false, magicalBraces = false } = {}) => {
+      const e = magicalBraces ? windowsPathsNoEscape ? s.replace(/[?*()[\]{}]/g, "[$&]") : s.replace(/[?*()[\]\\{}]/g, "\\$&") : windowsPathsNoEscape ? s.replace(/[?*()[\]]/g, "[$&]") : s.replace(/[?*()[\]\\]/g, "\\$&");
+      const c = e.charAt(0);
+      if (c === "#") {
+        return (windowsPathsNoEscape ? "[#]" : "\\#") + e.slice(1);
+      }
+      if (c === "!") {
+        return (windowsPathsNoEscape ? "@(!)" : "\\!") + e.slice(1);
+      }
+      return e;
     };
-    var braceEscape = (s) => s.replace(/[[\]\\-]/g, "\\$&");
-    var regexpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    var rangesToString = (ranges) => ranges.join("");
-    var parseClass = (glob2, position) => {
-      const pos = position;
-      if (glob2.charAt(pos) !== "[") {
-        throw new Error("not in a brace expression");
-      }
-      const ranges = [];
-      const negs = [];
-      let i = pos + 1;
-      let sawStart = false;
-      let uflag = false;
-      let escaping = false;
-      let negate = false;
-      let endPos = pos;
-      let rangeStart = "";
-      WHILE: while (i < glob2.length) {
-        const c = glob2.charAt(i);
-        if ((c === "!" || c === "^") && i === pos + 1) {
-          negate = true;
-          i++;
-          continue;
-        }
-        if (c === "]" && sawStart && !escaping) {
-          endPos = i + 1;
-          break;
-        }
-        sawStart = true;
-        if (c === "\\") {
-          if (!escaping) {
-            escaping = true;
-            i++;
-            continue;
-          }
-        }
-        if (c === "[" && !escaping) {
-          for (const [cls, [unip, u, neg]] of Object.entries(posixClasses)) {
-            if (glob2.startsWith(cls, i)) {
-              if (rangeStart) {
-                return ["$.", false, glob2.length - pos, true];
-              }
-              i += cls.length;
-              if (neg)
-                negs.push(unip);
-              else
-                ranges.push(unip);
-              uflag = uflag || u;
-              continue WHILE;
-            }
-          }
-        }
-        escaping = false;
-        if (rangeStart) {
-          if (c > rangeStart) {
-            ranges.push(braceEscape(rangeStart) + "-" + braceEscape(c));
-          } else if (c === rangeStart) {
-            ranges.push(braceEscape(c));
-          }
-          rangeStart = "";
-          i++;
-          continue;
-        }
-        if (glob2.startsWith("-]", i + 1)) {
-          ranges.push(braceEscape(c + "-"));
-          i += 2;
-          continue;
-        }
-        if (glob2.startsWith("-", i + 1)) {
-          rangeStart = c;
-          i += 2;
-          continue;
-        }
-        ranges.push(braceEscape(c));
-        i++;
-      }
-      if (endPos < i) {
-        return ["", false, 0, false];
-      }
-      if (!ranges.length && !negs.length) {
-        return ["$.", false, glob2.length - pos, true];
-      }
-      if (negs.length === 0 && ranges.length === 1 && /^\\?.$/.test(ranges[0]) && !negate) {
-        const r = ranges[0].length === 2 ? ranges[0].slice(-1) : ranges[0];
-        return [regexpEscape(r), false, endPos - pos, false];
-      }
-      const sranges = "[" + (negate ? "^" : "") + rangesToString(ranges) + "]";
-      const snegs = "[" + (negate ? "" : "^") + rangesToString(negs) + "]";
-      const comb = ranges.length && negs.length ? "(" + sranges + "|" + snegs + ")" : ranges.length ? sranges : snegs;
-      return [comb, uflag, endPos - pos, true];
-    };
-    exports2.parseClass = parseClass;
+    exports2.escape = escape;
   }
 });
 
@@ -56981,6 +58097,9 @@ var require_unescape = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.unescape = void 0;
     var unescape2 = (s, { windowsPathsNoEscape = false, magicalBraces = true } = {}) => {
+      if (windowsPathsNoEscape && s.startsWith("@(!)")) {
+        return "!" + (0, exports2.unescape)(s.slice(4), { windowsPathsNoEscape, magicalBraces });
+      }
       if (magicalBraces) {
         return windowsPathsNoEscape ? s.replace(/\[([^/\\])\]/g, "$1") : s.replace(/((?!\\).|^)\[([^/\\])\]/g, "$1$2").replace(/\\([^/])/g, "$1");
       }
@@ -56990,746 +58109,146 @@ var require_unescape = __commonJS({
   }
 });
 
-// ../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/ast.js
-var require_ast = __commonJS({
-  "../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/ast.js"(exports2) {
-    "use strict";
-    var _a7;
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AST = void 0;
-    var brace_expressions_js_1 = require_brace_expressions();
-    var unescape_js_1 = require_unescape();
-    var types2 = /* @__PURE__ */ new Set(["!", "?", "+", "*", "@"]);
-    var isExtglobType = (c) => types2.has(c);
-    var isExtglobAST = (c) => isExtglobType(c.type);
-    var adoptionMap = /* @__PURE__ */ new Map([
-      ["!", ["@"]],
-      ["?", ["?", "@"]],
-      ["@", ["@"]],
-      ["*", ["*", "+", "?", "@"]],
-      ["+", ["+", "@"]]
-    ]);
-    var adoptionWithSpaceMap = /* @__PURE__ */ new Map([
-      ["!", ["?"]],
-      ["@", ["?"]],
-      ["+", ["?", "*"]]
-    ]);
-    var adoptionAnyMap = /* @__PURE__ */ new Map([
-      ["!", ["?", "@"]],
-      ["?", ["?", "@"]],
-      ["@", ["?", "@"]],
-      ["*", ["*", "+", "?", "@"]],
-      ["+", ["+", "@", "?", "*"]]
-    ]);
-    var usurpMap = /* @__PURE__ */ new Map([
-      ["!", /* @__PURE__ */ new Map([["!", "@"]])],
-      [
-        "?",
-        /* @__PURE__ */ new Map([
-          ["*", "*"],
-          ["+", "*"]
-        ])
-      ],
-      [
-        "@",
-        /* @__PURE__ */ new Map([
-          ["!", "!"],
-          ["?", "?"],
-          ["@", "@"],
-          ["*", "*"],
-          ["+", "+"]
-        ])
-      ],
-      [
-        "+",
-        /* @__PURE__ */ new Map([
-          ["?", "*"],
-          ["*", "*"]
-        ])
-      ]
-    ]);
-    var startNoTraversal = "(?!(?:^|/)\\.\\.?(?:$|/))";
-    var startNoDot = "(?!\\.)";
-    var addPatternStart = /* @__PURE__ */ new Set(["[", "."]);
-    var justDots = /* @__PURE__ */ new Set(["..", "."]);
-    var reSpecials = new Set("().*{}+?[]^$\\!");
-    var regExpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    var qmark = "[^/]";
-    var star = qmark + "*?";
-    var starNoEmpty = qmark + "+?";
-    var ID = 0;
-    var AST = class {
-      type;
-      #root;
-      #hasMagic;
-      #uflag = false;
-      #parts = [];
-      #parent;
-      #parentIndex;
-      #negs;
-      #filledNegs = false;
-      #options;
-      #toString;
-      // set to true if it's an extglob with no children
-      // (which really means one child of '')
-      #emptyExt = false;
-      id = ++ID;
-      get depth() {
-        return (this.#parent?.depth ?? -1) + 1;
-      }
-      [/* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom")]() {
-        return {
-          "@@type": "AST",
-          id: this.id,
-          type: this.type,
-          root: this.#root.id,
-          parent: this.#parent?.id,
-          depth: this.depth,
-          partsLength: this.#parts.length,
-          parts: this.#parts
-        };
-      }
-      constructor(type, parent, options = {}) {
-        this.type = type;
-        if (type)
-          this.#hasMagic = true;
-        this.#parent = parent;
-        this.#root = this.#parent ? this.#parent.#root : this;
-        this.#options = this.#root === this ? options : this.#root.#options;
-        this.#negs = this.#root === this ? [] : this.#root.#negs;
-        if (type === "!" && !this.#root.#filledNegs)
-          this.#negs.push(this);
-        this.#parentIndex = this.#parent ? this.#parent.#parts.length : 0;
-      }
-      get hasMagic() {
-        if (this.#hasMagic !== void 0)
-          return this.#hasMagic;
-        for (const p of this.#parts) {
-          if (typeof p === "string")
-            continue;
-          if (p.type || p.hasMagic)
-            return this.#hasMagic = true;
-        }
-        return this.#hasMagic;
-      }
-      // reconstructs the pattern
-      toString() {
-        return this.#toString !== void 0 ? this.#toString : !this.type ? this.#toString = this.#parts.map((p) => String(p)).join("") : this.#toString = this.type + "(" + this.#parts.map((p) => String(p)).join("|") + ")";
-      }
-      #fillNegs() {
-        if (this !== this.#root)
-          throw new Error("should only call on root");
-        if (this.#filledNegs)
-          return this;
-        this.toString();
-        this.#filledNegs = true;
-        let n;
-        while (n = this.#negs.pop()) {
-          if (n.type !== "!")
-            continue;
-          let p = n;
-          let pp = p.#parent;
-          while (pp) {
-            for (let i = p.#parentIndex + 1; !pp.type && i < pp.#parts.length; i++) {
-              for (const part of n.#parts) {
-                if (typeof part === "string") {
-                  throw new Error("string part in extglob AST??");
-                }
-                part.copyIn(pp.#parts[i]);
-              }
-            }
-            p = pp;
-            pp = p.#parent;
-          }
-        }
-        return this;
-      }
-      push(...parts) {
-        for (const p of parts) {
-          if (p === "")
-            continue;
-          if (typeof p !== "string" && !(p instanceof _a7 && p.#parent === this)) {
-            throw new Error("invalid part: " + p);
-          }
-          this.#parts.push(p);
-        }
-      }
-      toJSON() {
-        const ret = this.type === null ? this.#parts.slice().map((p) => typeof p === "string" ? p : p.toJSON()) : [this.type, ...this.#parts.map((p) => p.toJSON())];
-        if (this.isStart() && !this.type)
-          ret.unshift([]);
-        if (this.isEnd() && (this === this.#root || this.#root.#filledNegs && this.#parent?.type === "!")) {
-          ret.push({});
-        }
-        return ret;
-      }
-      isStart() {
-        if (this.#root === this)
-          return true;
-        if (!this.#parent?.isStart())
-          return false;
-        if (this.#parentIndex === 0)
-          return true;
-        const p = this.#parent;
-        for (let i = 0; i < this.#parentIndex; i++) {
-          const pp = p.#parts[i];
-          if (!(pp instanceof _a7 && pp.type === "!")) {
-            return false;
-          }
-        }
-        return true;
-      }
-      isEnd() {
-        if (this.#root === this)
-          return true;
-        if (this.#parent?.type === "!")
-          return true;
-        if (!this.#parent?.isEnd())
-          return false;
-        if (!this.type)
-          return this.#parent?.isEnd();
-        const pl = this.#parent ? this.#parent.#parts.length : 0;
-        return this.#parentIndex === pl - 1;
-      }
-      copyIn(part) {
-        if (typeof part === "string")
-          this.push(part);
-        else
-          this.push(part.clone(this));
-      }
-      clone(parent) {
-        const c = new _a7(this.type, parent);
-        for (const p of this.#parts) {
-          c.copyIn(p);
-        }
-        return c;
-      }
-      static #parseAST(str, ast, pos, opt, extDepth) {
-        const maxDepth = opt.maxExtglobRecursion ?? 2;
-        let escaping = false;
-        let inBrace = false;
-        let braceStart = -1;
-        let braceNeg = false;
-        if (ast.type === null) {
-          let i2 = pos;
-          let acc2 = "";
-          while (i2 < str.length) {
-            const c = str.charAt(i2++);
-            if (escaping || c === "\\") {
-              escaping = !escaping;
-              acc2 += c;
-              continue;
-            }
-            if (inBrace) {
-              if (i2 === braceStart + 1) {
-                if (c === "^" || c === "!") {
-                  braceNeg = true;
-                }
-              } else if (c === "]" && !(i2 === braceStart + 2 && braceNeg)) {
-                inBrace = false;
-              }
-              acc2 += c;
-              continue;
-            } else if (c === "[") {
-              inBrace = true;
-              braceStart = i2;
-              braceNeg = false;
-              acc2 += c;
-              continue;
-            }
-            const doRecurse = !opt.noext && isExtglobType(c) && str.charAt(i2) === "(" && extDepth <= maxDepth;
-            if (doRecurse) {
-              ast.push(acc2);
-              acc2 = "";
-              const ext = new _a7(c, ast);
-              i2 = _a7.#parseAST(str, ext, i2, opt, extDepth + 1);
-              ast.push(ext);
-              continue;
-            }
-            acc2 += c;
-          }
-          ast.push(acc2);
-          return i2;
-        }
-        let i = pos + 1;
-        let part = new _a7(null, ast);
-        const parts = [];
-        let acc = "";
-        while (i < str.length) {
-          const c = str.charAt(i++);
-          if (escaping || c === "\\") {
-            escaping = !escaping;
-            acc += c;
-            continue;
-          }
-          if (inBrace) {
-            if (i === braceStart + 1) {
-              if (c === "^" || c === "!") {
-                braceNeg = true;
-              }
-            } else if (c === "]" && !(i === braceStart + 2 && braceNeg)) {
-              inBrace = false;
-            }
-            acc += c;
-            continue;
-          } else if (c === "[") {
-            inBrace = true;
-            braceStart = i;
-            braceNeg = false;
-            acc += c;
-            continue;
-          }
-          const doRecurse = !opt.noext && isExtglobType(c) && str.charAt(i) === "(" && /* c8 ignore start - the maxDepth is sufficient here */
-          (extDepth <= maxDepth || ast && ast.#canAdoptType(c));
-          if (doRecurse) {
-            const depthAdd = ast && ast.#canAdoptType(c) ? 0 : 1;
-            part.push(acc);
-            acc = "";
-            const ext = new _a7(c, part);
-            part.push(ext);
-            i = _a7.#parseAST(str, ext, i, opt, extDepth + depthAdd);
-            continue;
-          }
-          if (c === "|") {
-            part.push(acc);
-            acc = "";
-            parts.push(part);
-            part = new _a7(null, ast);
-            continue;
-          }
-          if (c === ")") {
-            if (acc === "" && ast.#parts.length === 0) {
-              ast.#emptyExt = true;
-            }
-            part.push(acc);
-            acc = "";
-            ast.push(...parts, part);
-            return i;
-          }
-          acc += c;
-        }
-        ast.type = null;
-        ast.#hasMagic = void 0;
-        ast.#parts = [str.substring(pos - 1)];
-        return i;
-      }
-      #canAdoptWithSpace(child) {
-        return this.#canAdopt(child, adoptionWithSpaceMap);
-      }
-      #canAdopt(child, map = adoptionMap) {
-        if (!child || typeof child !== "object" || child.type !== null || child.#parts.length !== 1 || this.type === null) {
-          return false;
-        }
-        const gc = child.#parts[0];
-        if (!gc || typeof gc !== "object" || gc.type === null) {
-          return false;
-        }
-        return this.#canAdoptType(gc.type, map);
-      }
-      #canAdoptType(c, map = adoptionAnyMap) {
-        return !!map.get(this.type)?.includes(c);
-      }
-      #adoptWithSpace(child, index) {
-        const gc = child.#parts[0];
-        const blank = new _a7(null, gc, this.options);
-        blank.#parts.push("");
-        gc.push(blank);
-        this.#adopt(child, index);
-      }
-      #adopt(child, index) {
-        const gc = child.#parts[0];
-        this.#parts.splice(index, 1, ...gc.#parts);
-        for (const p of gc.#parts) {
-          if (typeof p === "object")
-            p.#parent = this;
-        }
-        this.#toString = void 0;
-      }
-      #canUsurpType(c) {
-        const m = usurpMap.get(this.type);
-        return !!m?.has(c);
-      }
-      #canUsurp(child) {
-        if (!child || typeof child !== "object" || child.type !== null || child.#parts.length !== 1 || this.type === null || this.#parts.length !== 1) {
-          return false;
-        }
-        const gc = child.#parts[0];
-        if (!gc || typeof gc !== "object" || gc.type === null) {
-          return false;
-        }
-        return this.#canUsurpType(gc.type);
-      }
-      #usurp(child) {
-        const m = usurpMap.get(this.type);
-        const gc = child.#parts[0];
-        const nt = m?.get(gc.type);
-        if (!nt)
-          return false;
-        this.#parts = gc.#parts;
-        for (const p of this.#parts) {
-          if (typeof p === "object") {
-            p.#parent = this;
-          }
-        }
-        this.type = nt;
-        this.#toString = void 0;
-        this.#emptyExt = false;
-      }
-      static fromGlob(pattern, options = {}) {
-        const ast = new _a7(null, void 0, options);
-        _a7.#parseAST(pattern, ast, 0, options, 0);
-        return ast;
-      }
-      // returns the regular expression if there's magic, or the unescaped
-      // string if not.
-      toMMPattern() {
-        if (this !== this.#root)
-          return this.#root.toMMPattern();
-        const glob2 = this.toString();
-        const [re, body, hasMagic, uflag] = this.toRegExpSource();
-        const anyMagic = hasMagic || this.#hasMagic || this.#options.nocase && !this.#options.nocaseMagicOnly && glob2.toUpperCase() !== glob2.toLowerCase();
-        if (!anyMagic) {
-          return body;
-        }
-        const flags = (this.#options.nocase ? "i" : "") + (uflag ? "u" : "");
-        return Object.assign(new RegExp(`^${re}$`, flags), {
-          _src: re,
-          _glob: glob2
-        });
-      }
-      get options() {
-        return this.#options;
-      }
-      // returns the string match, the regexp source, whether there's magic
-      // in the regexp (so a regular expression is required) and whether or
-      // not the uflag is needed for the regular expression (for posix classes)
-      // TODO: instead of injecting the start/end at this point, just return
-      // the BODY of the regexp, along with the start/end portions suitable
-      // for binding the start/end in either a joined full-path makeRe context
-      // (where we bind to (^|/), or a standalone matchPart context (where
-      // we bind to ^, and not /).  Otherwise slashes get duped!
-      //
-      // In part-matching mode, the start is:
-      // - if not isStart: nothing
-      // - if traversal possible, but not allowed: ^(?!\.\.?$)
-      // - if dots allowed or not possible: ^
-      // - if dots possible and not allowed: ^(?!\.)
-      // end is:
-      // - if not isEnd(): nothing
-      // - else: $
-      //
-      // In full-path matching mode, we put the slash at the START of the
-      // pattern, so start is:
-      // - if first pattern: same as part-matching mode
-      // - if not isStart(): nothing
-      // - if traversal possible, but not allowed: /(?!\.\.?(?:$|/))
-      // - if dots allowed or not possible: /
-      // - if dots possible and not allowed: /(?!\.)
-      // end is:
-      // - if last pattern, same as part-matching mode
-      // - else nothing
-      //
-      // Always put the (?:$|/) on negated tails, though, because that has to be
-      // there to bind the end of the negated pattern portion, and it's easier to
-      // just stick it in now rather than try to inject it later in the middle of
-      // the pattern.
-      //
-      // We can just always return the same end, and leave it up to the caller
-      // to know whether it's going to be used joined or in parts.
-      // And, if the start is adjusted slightly, can do the same there:
-      // - if not isStart: nothing
-      // - if traversal possible, but not allowed: (?:/|^)(?!\.\.?$)
-      // - if dots allowed or not possible: (?:/|^)
-      // - if dots possible and not allowed: (?:/|^)(?!\.)
-      //
-      // But it's better to have a simpler binding without a conditional, for
-      // performance, so probably better to return both start options.
-      //
-      // Then the caller just ignores the end if it's not the first pattern,
-      // and the start always gets applied.
-      //
-      // But that's always going to be $ if it's the ending pattern, or nothing,
-      // so the caller can just attach $ at the end of the pattern when building.
-      //
-      // So the todo is:
-      // - better detect what kind of start is needed
-      // - return both flavors of starting pattern
-      // - attach $ at the end of the pattern when creating the actual RegExp
-      //
-      // Ah, but wait, no, that all only applies to the root when the first pattern
-      // is not an extglob. If the first pattern IS an extglob, then we need all
-      // that dot prevention biz to live in the extglob portions, because eg
-      // +(*|.x*) can match .xy but not .yx.
-      //
-      // So, return the two flavors if it's #root and the first child is not an
-      // AST, otherwise leave it to the child AST to handle it, and there,
-      // use the (?:^|/) style of start binding.
-      //
-      // Even simplified further:
-      // - Since the start for a join is eg /(?!\.) and the start for a part
-      // is ^(?!\.), we can just prepend (?!\.) to the pattern (either root
-      // or start or whatever) and prepend ^ or / at the Regexp construction.
-      toRegExpSource(allowDot) {
-        const dot = allowDot ?? !!this.#options.dot;
-        if (this.#root === this) {
-          this.#flatten();
-          this.#fillNegs();
-        }
-        if (!isExtglobAST(this)) {
-          const noEmpty = this.isStart() && this.isEnd() && !this.#parts.some((s) => typeof s !== "string");
-          const src = this.#parts.map((p) => {
-            const [re, _, hasMagic, uflag] = typeof p === "string" ? _a7.#parseGlob(p, this.#hasMagic, noEmpty) : p.toRegExpSource(allowDot);
-            this.#hasMagic = this.#hasMagic || hasMagic;
-            this.#uflag = this.#uflag || uflag;
-            return re;
-          }).join("");
-          let start2 = "";
-          if (this.isStart()) {
-            if (typeof this.#parts[0] === "string") {
-              const dotTravAllowed = this.#parts.length === 1 && justDots.has(this.#parts[0]);
-              if (!dotTravAllowed) {
-                const aps = addPatternStart;
-                const needNoTrav = (
-                  // dots are allowed, and the pattern starts with [ or .
-                  dot && aps.has(src.charAt(0)) || // the pattern starts with \., and then [ or .
-                  src.startsWith("\\.") && aps.has(src.charAt(2)) || // the pattern starts with \.\., and then [ or .
-                  src.startsWith("\\.\\.") && aps.has(src.charAt(4))
-                );
-                const needNoDot = !dot && !allowDot && aps.has(src.charAt(0));
-                start2 = needNoTrav ? startNoTraversal : needNoDot ? startNoDot : "";
-              }
-            }
-          }
-          let end = "";
-          if (this.isEnd() && this.#root.#filledNegs && this.#parent?.type === "!") {
-            end = "(?:$|\\/)";
-          }
-          const final2 = start2 + src + end;
-          return [
-            final2,
-            (0, unescape_js_1.unescape)(src),
-            this.#hasMagic = !!this.#hasMagic,
-            this.#uflag
-          ];
-        }
-        const repeated = this.type === "*" || this.type === "+";
-        const start = this.type === "!" ? "(?:(?!(?:" : "(?:";
-        let body = this.#partsToRegExp(dot);
-        if (this.isStart() && this.isEnd() && !body && this.type !== "!") {
-          const s = this.toString();
-          const me = this;
-          me.#parts = [s];
-          me.type = null;
-          me.#hasMagic = void 0;
-          return [s, (0, unescape_js_1.unescape)(this.toString()), false, false];
-        }
-        let bodyDotAllowed = !repeated || allowDot || dot || !startNoDot ? "" : this.#partsToRegExp(true);
-        if (bodyDotAllowed === body) {
-          bodyDotAllowed = "";
-        }
-        if (bodyDotAllowed) {
-          body = `(?:${body})(?:${bodyDotAllowed})*?`;
-        }
-        let final = "";
-        if (this.type === "!" && this.#emptyExt) {
-          final = (this.isStart() && !dot ? startNoDot : "") + starNoEmpty;
-        } else {
-          const close = this.type === "!" ? (
-            // !() must match something,but !(x) can match ''
-            "))" + (this.isStart() && !dot && !allowDot ? startNoDot : "") + star + ")"
-          ) : this.type === "@" ? ")" : this.type === "?" ? ")?" : this.type === "+" && bodyDotAllowed ? ")" : this.type === "*" && bodyDotAllowed ? `)?` : `)${this.type}`;
-          final = start + body + close;
-        }
-        return [
-          final,
-          (0, unescape_js_1.unescape)(body),
-          this.#hasMagic = !!this.#hasMagic,
-          this.#uflag
-        ];
-      }
-      #flatten() {
-        if (!isExtglobAST(this)) {
-          for (const p of this.#parts) {
-            if (typeof p === "object") {
-              p.#flatten();
-            }
-          }
-        } else {
-          let iterations = 0;
-          let done = false;
-          do {
-            done = true;
-            for (let i = 0; i < this.#parts.length; i++) {
-              const c = this.#parts[i];
-              if (typeof c === "object") {
-                c.#flatten();
-                if (this.#canAdopt(c)) {
-                  done = false;
-                  this.#adopt(c, i);
-                } else if (this.#canAdoptWithSpace(c)) {
-                  done = false;
-                  this.#adoptWithSpace(c, i);
-                } else if (this.#canUsurp(c)) {
-                  done = false;
-                  this.#usurp(c);
-                }
-              }
-            }
-          } while (!done && ++iterations < 10);
-        }
-        this.#toString = void 0;
-      }
-      #partsToRegExp(dot) {
-        return this.#parts.map((p) => {
-          if (typeof p === "string") {
-            throw new Error("string type in extglob ast??");
-          }
-          const [re, _, _hasMagic, uflag] = p.toRegExpSource(dot);
-          this.#uflag = this.#uflag || uflag;
-          return re;
-        }).filter((p) => !(this.isStart() && this.isEnd()) || !!p).join("|");
-      }
-      static #parseGlob(glob2, hasMagic, noEmpty = false) {
-        let escaping = false;
-        let re = "";
-        let uflag = false;
-        let inStar = false;
-        for (let i = 0; i < glob2.length; i++) {
-          const c = glob2.charAt(i);
-          if (escaping) {
-            escaping = false;
-            re += (reSpecials.has(c) ? "\\" : "") + c;
-            continue;
-          }
-          if (c === "*") {
-            if (inStar)
-              continue;
-            inStar = true;
-            re += noEmpty && /^[*]+$/.test(glob2) ? starNoEmpty : star;
-            hasMagic = true;
-            continue;
-          } else {
-            inStar = false;
-          }
-          if (c === "\\") {
-            if (i === glob2.length - 1) {
-              re += "\\\\";
-            } else {
-              escaping = true;
-            }
-            continue;
-          }
-          if (c === "[") {
-            const [src, needUflag, consumed, magic] = (0, brace_expressions_js_1.parseClass)(glob2, i);
-            if (consumed) {
-              re += src;
-              uflag = uflag || needUflag;
-              i += consumed - 1;
-              hasMagic = hasMagic || magic;
-              continue;
-            }
-          }
-          if (c === "?") {
-            re += qmark;
-            hasMagic = true;
-            continue;
-          }
-          re += regExpEscape(c);
-        }
-        return [re, (0, unescape_js_1.unescape)(glob2), !!hasMagic, uflag];
-      }
-    };
-    exports2.AST = AST;
-    _a7 = AST;
-  }
-});
-
-// ../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/escape.js
-var require_escape = __commonJS({
-  "../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/escape.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.escape = void 0;
-    var escape = (s, { windowsPathsNoEscape = false, magicalBraces = false } = {}) => {
-      if (magicalBraces) {
-        return windowsPathsNoEscape ? s.replace(/[?*()[\]{}]/g, "[$&]") : s.replace(/[?*()[\]\\{}]/g, "\\$&");
-      }
-      return windowsPathsNoEscape ? s.replace(/[?*()[\]]/g, "[$&]") : s.replace(/[?*()[\]\\]/g, "\\$&");
-    };
-    exports2.escape = escape;
-  }
-});
-
 // ../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/index.js
-var require_commonjs3 = __commonJS({
+var require_commonjs4 = __commonJS({
   "../../aws-cdk-lib/node_modules/minimatch/dist/commonjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.unescape = exports2.escape = exports2.AST = exports2.Minimatch = exports2.match = exports2.makeRe = exports2.braceExpand = exports2.defaults = exports2.filter = exports2.GLOBSTAR = exports2.sep = exports2.minimatch = void 0;
+    exports2.unescape = exports2.escape = exports2.Minimatch = exports2.match = exports2.braceExpand = exports2.defaults = exports2.filter = exports2.GLOBSTAR = exports2.sep = exports2.minimatch = void 0;
     var brace_expansion_1 = require_commonjs2();
+    var nonrecursive_glob_match_1 = require_commonjs3();
     var assert_valid_pattern_js_1 = require_assert_valid_pattern();
-    var ast_js_1 = require_ast();
     var escape_js_1 = require_escape();
     var unescape_js_1 = require_unescape();
-    var minimatch4 = (p, pattern, options = {}) => {
+    var DEFAULT_BRACE_EXPAND_MAX = 1e5;
+    var DEFAULT_GLOB_STAR_RECURSION_MAX = 200;
+    var AWE_KEY = "allowWindowsEscape";
+    var minimatch4 = (p, pattern, options) => {
       (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
-      if (!options.nocomment && pattern.charAt(0) === "#") {
+      if (!options?.nocomment && pattern.charAt(0) === "#") {
         return false;
       }
-      return new Minimatch(pattern, options).match(p);
+      return cachedMinimatch(pattern, options).match(p);
     };
     exports2.minimatch = minimatch4;
-    var starDotExtRE = /^\*+([^+@!?*[(]*)$/;
-    var starDotExtTest = (ext2) => (f) => !f.startsWith(".") && f.endsWith(ext2);
-    var starDotExtTestDot = (ext2) => (f) => f.endsWith(ext2);
-    var starDotExtTestNocase = (ext2) => {
-      ext2 = ext2.toLowerCase();
-      return (f) => !f.startsWith(".") && f.toLowerCase().endsWith(ext2);
+    var cache = /* @__PURE__ */ new Map();
+    var oldCache = /* @__PURE__ */ new Map();
+    var cacheSize = 0;
+    var cacheTotalWeight = 0;
+    var cacheMax = 256;
+    var cacheMaxWeight = 1 << 15;
+    var cacheMaxEntryWeight = 1 << 12;
+    var cacheWeight = (mm) => {
+      let w = mm.pattern.length;
+      for (const s of mm.globSet) {
+        w += s.length + 1;
+        if (w > cacheMaxEntryWeight)
+          break;
+      }
+      return w;
     };
-    var starDotExtTestNocaseDot = (ext2) => {
-      ext2 = ext2.toLowerCase();
-      return (f) => f.toLowerCase().endsWith(ext2);
+    var tri = (v) => v === void 0 ? 0 : v ? 2 : 1;
+    var booleanWeights = new Map(Object.keys({
+      nobrace: 0,
+      nocomment: 0,
+      nonegate: 0,
+      noglobstar: 0,
+      noext: 0,
+      nonull: 0,
+      partial: 0,
+      dot: 0,
+      nocase: 0,
+      nocaseMagicOnly: 0,
+      magicalBraces: 0,
+      matchBase: 0,
+      flipNegate: 0,
+      preserveMultipleSlashes: 0,
+      windowsNoMagicRoot: 0
+    }).map((k, i) => [k, 24 * 3 ** i]));
+    var optionsKey = (o) => {
+      let n = 0;
+      let wpe = false;
+      for (const k in o) {
+        const v = o[k];
+        switch (k) {
+          // the same test as the Minimatch constructor
+          case "windowsPathsNoEscape":
+            if (v)
+              wpe = true;
+            break;
+          case AWE_KEY:
+            if (v === false)
+              wpe = true;
+            break;
+          case "platform": {
+            const p = v || defaultPlatform;
+            if (p === defaultPlatform)
+              break;
+            if (p === "darwin")
+              n += 3;
+            else if (p === "win32")
+              n += 6;
+            else if (p === "linux")
+              n += 9;
+            else
+              return JSON.stringify(o);
+            break;
+          }
+          case "optimizationLevel":
+            if (v === void 0)
+              break;
+            n += v >= 2 ? 1 : v >= 1 ? 0 : 2;
+            break;
+          case "braceExpandMax":
+            if (v !== void 0 && v !== DEFAULT_BRACE_EXPAND_MAX) {
+              return JSON.stringify(o);
+            }
+            break;
+          case "maxGlobstarRecursion":
+            if (v !== void 0 && v !== DEFAULT_GLOB_STAR_RECURSION_MAX) {
+              return JSON.stringify(o);
+            }
+            break;
+          case "normalize":
+            if (v !== void 0)
+              return JSON.stringify(o);
+            break;
+          default:
+            n += (booleanWeights.get(k) ?? 0) * tri(v);
+        }
+      }
+      return wpe ? n + 12 : n;
     };
-    var starDotStarRE = /^\*+\.\*+$/;
-    var starDotStarTest = (f) => !f.startsWith(".") && f.includes(".");
-    var starDotStarTestDot = (f) => f !== "." && f !== ".." && f.includes(".");
-    var dotStarRE = /^\.\*+$/;
-    var dotStarTest = (f) => f !== "." && f !== ".." && f.startsWith(".");
-    var starRE = /^\*+$/;
-    var starTest = (f) => f.length !== 0 && !f.startsWith(".");
-    var starTestDot = (f) => f.length !== 0 && f !== "." && f !== "..";
-    var qmarksRE = /^\?+([^+@!?*[(]*)?$/;
-    var qmarksTestNocase = ([$0, ext2 = ""]) => {
-      const noext = qmarksTestNoExt([$0]);
-      if (!ext2)
-        return noext;
-      ext2 = ext2.toLowerCase();
-      return (f) => noext(f) && f.toLowerCase().endsWith(ext2);
+    var copyOptions = (o) => {
+      const copy = {};
+      for (const k in o)
+        copy[k] = o[k];
+      return copy;
     };
-    var qmarksTestNocaseDot = ([$0, ext2 = ""]) => {
-      const noext = qmarksTestNoExtDot([$0]);
-      if (!ext2)
-        return noext;
-      ext2 = ext2.toLowerCase();
-      return (f) => noext(f) && f.toLowerCase().endsWith(ext2);
+    var cachedMinimatch = (pattern, options) => {
+      const key = options ? optionsKey(options) : 0;
+      let mm = cache.get(key)?.get(pattern);
+      if (mm)
+        return mm;
+      mm = oldCache.get(key)?.get(pattern) ?? new Minimatch(pattern, copyOptions(options));
+      const weight = cacheWeight(mm);
+      if (weight > cacheMaxEntryWeight)
+        return mm;
+      if (cacheSize >= cacheMax || cacheTotalWeight + weight > cacheMaxWeight) {
+        oldCache = cache;
+        cache = /* @__PURE__ */ new Map();
+        cacheSize = 0;
+        cacheTotalWeight = 0;
+      }
+      let byPattern = cache.get(key);
+      if (!byPattern)
+        cache.set(key, byPattern = /* @__PURE__ */ new Map());
+      byPattern.set(pattern, mm);
+      cacheSize++;
+      cacheTotalWeight += weight;
+      return mm;
     };
-    var qmarksTestDot = ([$0, ext2 = ""]) => {
-      const noext = qmarksTestNoExtDot([$0]);
-      return !ext2 ? noext : (f) => noext(f) && f.endsWith(ext2);
-    };
-    var qmarksTest = ([$0, ext2 = ""]) => {
-      const noext = qmarksTestNoExt([$0]);
-      return !ext2 ? noext : (f) => noext(f) && f.endsWith(ext2);
-    };
-    var qmarksTestNoExt = ([$0]) => {
-      const len = $0.length;
-      return (f) => f.length === len && !f.startsWith(".");
-    };
-    var qmarksTestNoExtDot = ([$0]) => {
-      const len = $0.length;
-      return (f) => f.length === len && f !== "." && f !== "..";
-    };
-    var defaultPlatform = typeof process === "object" && process ? typeof process.env === "object" && process.env && process.env.__MINIMATCH_TESTING_PLATFORM__ || process.platform : "posix";
+    var defaultPlatform = typeof process === "object" && process ? process.env?.__MINIMATCH_TESTING_PLATFORM__ || process.platform : "posix";
     var path22 = {
       win32: { sep: "\\" },
       posix: { sep: "/" }
@@ -57738,11 +58257,10 @@ var require_commonjs3 = __commonJS({
     exports2.minimatch.sep = exports2.sep;
     exports2.GLOBSTAR = /* @__PURE__ */ Symbol("globstar **");
     exports2.minimatch.GLOBSTAR = exports2.GLOBSTAR;
-    var qmark = "[^/]";
-    var star = qmark + "*?";
-    var twoStarDot = "(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?";
-    var twoStarNoDot = "(?:(?!(?:\\/|^)\\.).)*?";
-    var filter = (pattern, options = {}) => (p) => (0, exports2.minimatch)(p, pattern, options);
+    var filter = (pattern, options) => {
+      let mm;
+      return (p) => (mm ??= cachedMinimatch(pattern, options)).match(p);
+    };
     exports2.filter = filter;
     exports2.minimatch.filter = exports2.filter;
     var ext = (a, b = {}) => Object.assign({}, a, b);
@@ -57761,21 +58279,10 @@ var require_commonjs3 = __commonJS({
             return orig.defaults(ext(def, options)).Minimatch;
           }
         },
-        AST: class AST extends orig.AST {
-          /* c8 ignore start */
-          constructor(type, parent, options = {}) {
-            super(type, parent, ext(def, options));
-          }
-          /* c8 ignore stop */
-          static fromGlob(pattern, options = {}) {
-            return orig.AST.fromGlob(pattern, ext(def, options));
-          }
-        },
         unescape: (s, options = {}) => orig.unescape(s, ext(def, options)),
         escape: (s, options = {}) => orig.escape(s, ext(def, options)),
         filter: (pattern, options = {}) => orig.filter(pattern, ext(def, options)),
         defaults: (options) => orig.defaults(ext(def, options)),
-        makeRe: (pattern, options = {}) => orig.makeRe(pattern, ext(def, options)),
         braceExpand: (pattern, options = {}) => orig.braceExpand(pattern, ext(def, options)),
         match: (list, pattern, options = {}) => orig.match(list, pattern, ext(def, options)),
         sep: orig.sep,
@@ -57789,13 +58296,16 @@ var require_commonjs3 = __commonJS({
       if (options.nobrace || !/\{(?:(?!\{).)*\}/.test(pattern)) {
         return [pattern];
       }
-      return (0, brace_expansion_1.expand)(pattern, { max: options.braceExpandMax });
+      let p = pattern.replace(/\\\\/g, "\\\\\\\\");
+      if (options.windowsPathsNoEscape || options[AWE_KEY] === false) {
+        p = p.replace(/\[([{}])\]/g, "[\\$1]");
+      }
+      return (0, brace_expansion_1.expand)(p, { max: options.braceExpandMax });
     };
     exports2.braceExpand = braceExpand;
     exports2.minimatch.braceExpand = exports2.braceExpand;
-    var makeRe = (pattern, options = {}) => new Minimatch(pattern, options).makeRe();
-    exports2.makeRe = makeRe;
-    exports2.minimatch.makeRe = exports2.makeRe;
+    var RANGE_MIN = 100;
+    var rangeRe = /(?<![\\$])\{(-?\d+)\.\.(-?\d+)\}/g;
     var match = (list, pattern, options = {}) => {
       const mm = new Minimatch(pattern, options);
       list = list.filter((f) => mm.match(f));
@@ -57807,7 +58317,141 @@ var require_commonjs3 = __commonJS({
     exports2.match = match;
     exports2.minimatch.match = exports2.match;
     var globMagic = /[?*]|[+@!]\(.*?\)|\[|\]/;
-    var regExpEscape = (s) => s.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    var classEnd = (pattern, start) => {
+      let i = start + 1;
+      if (pattern.charAt(i) === "!" || pattern.charAt(i) === "^")
+        i++;
+      let sawStart = false;
+      for (; i < pattern.length; i++) {
+        const c = pattern.charAt(i);
+        if (c === "]" && sawStart)
+          return i;
+        sawStart = true;
+        if (c === "\\")
+          i++;
+      }
+      return -1;
+    };
+    var literal = (pattern, noext) => {
+      if (!noext && (pattern === "+()" || pattern === "@()"))
+        return pattern;
+      let lit2 = "";
+      for (let i = 0; i < pattern.length; i++) {
+        const c = pattern.charAt(i);
+        if (c === "\\") {
+          lit2 += pattern.charAt(++i) || c;
+        } else if (c === "*" || c === "?") {
+          return void 0;
+        } else if (c === "[") {
+          const close = classEnd(pattern, i);
+          if (close === -1) {
+            lit2 += c;
+            continue;
+          }
+          let body = pattern.slice(i + 1, close);
+          if (body.startsWith("\\"))
+            body = body.slice(1);
+          if ([...body].length !== 1 || "!^".includes(pattern.charAt(i + 1))) {
+            return void 0;
+          }
+          lit2 += body;
+          i = close;
+        } else if (!noext && "+@!".includes(c) && pattern.charAt(i + 1) === "(" && pattern.includes(")", i + 2)) {
+          return void 0;
+        } else {
+          lit2 += c;
+        }
+      }
+      return lit2;
+    };
+    var MAX_EXTGLOBS = 256;
+    var extglobCount = (pattern) => {
+      let n = 0;
+      for (let i = 0; i < pattern.length - 1; i++) {
+        const c = pattern.charAt(i);
+        if (c === "\\") {
+          i++;
+        } else if ("+@!?*".includes(c) && pattern.charAt(i + 1) === "(") {
+          n++;
+          i++;
+        }
+      }
+      return n;
+    };
+    var assertValidExtglobs = (pattern) => {
+      if (extglobCount(pattern) > MAX_EXTGLOBS) {
+        throw new TypeError("pattern has too many extglobs");
+      }
+    };
+    var extSafe = (pattern) => {
+      if (/^[?*+@]\(\)$/.test(pattern) || pattern.includes("[:"))
+        return false;
+      let depth = 0;
+      for (let i = 0; i < pattern.length; i++) {
+        const c = pattern.charAt(i);
+        if (c === "\\") {
+          if (++i === pattern.length)
+            return false;
+        } else if (c === "[") {
+          const close = classEnd(pattern, i);
+          if (close !== -1)
+            i = close;
+        } else if ("+@!?*".includes(c) && pattern.charAt(i + 1) === "(") {
+          depth++;
+          i++;
+        } else if (c === ")") {
+          if (!depth--)
+            return false;
+        } else if (c === "|" && !depth) {
+          return false;
+        }
+      }
+      return !depth;
+    };
+    var lastSplit;
+    var lastChecked;
+    var portionMatch = (p, f) => typeof p === "string" ? f === p : f !== "" && p.testUnchecked(f);
+    var endIndex = (p, last2, lastStart, prev, prevStart) => portionMatch(p, last2) ? lastStart : prev !== void 0 && portionMatch(p, prev) ? prevStart : -1;
+    var isDots = (p) => p === "." || p === "..";
+    var isDrive = (p) => typeof p === "string" && /^[a-z]:$/i.test(p);
+    var isLongUNC = (p) => typeof p === "string" && /^unc$/i.test(p);
+    var uncHost = (p) => {
+      if (p[0] !== "" || p[1] !== "")
+        return -1;
+      const h = p[2] !== "?" ? 2 : isLongUNC(p[3]) ? 4 : -1;
+      const host = p[h];
+      const share = p[h + 1];
+      return h !== -1 && host !== void 0 && host !== "" && host !== exports2.GLOBSTAR && share !== void 0 && share !== "" && share !== exports2.GLOBSTAR ? h : -1;
+    };
+    var walkable = (p, dot) => !isDots(p) && (dot || !p.startsWith("."));
+    var dotPortion = (f, start, end, dot, sep3) => {
+      for (let k = start; k < end; ) {
+        if (f.charCodeAt(k) === 46) {
+          if (!dot)
+            return true;
+          const n = f.charCodeAt(k + 1) === 46 ? k + 2 : k + 1;
+          if (n >= end || isSep(f.charCodeAt(n), sep3))
+            return true;
+        }
+        const s = nextSep(f, k, sep3);
+        if (s === -1)
+          return false;
+        k = s + 1;
+        while (k < end && isSep(f.charCodeAt(k), sep3))
+          k++;
+      }
+      return false;
+    };
+    var isSep = (c, sep3) => sep3 === "/" ? c === 47 : sep3 === "\\" ? c === 92 : c === 47 || c === 92;
+    var nextSep = (f, from, sep3) => {
+      if (sep3 !== "both")
+        return f.indexOf(sep3, from);
+      const s = f.indexOf("/", from);
+      const b = f.indexOf("\\", from);
+      return s === -1 ? b : b === -1 ? s : Math.min(s, b);
+    };
+    var lastSep = (f, from, sep3) => sep3 !== "both" ? f.lastIndexOf(sep3, from) : Math.max(f.lastIndexOf("/", from), f.lastIndexOf("\\", from));
+    var PENDING = {};
     var Minimatch = class {
       options;
       set;
@@ -57826,22 +58470,42 @@ var require_commonjs3 = __commonJS({
       platform;
       windowsNoMagicRoot;
       maxGlobstarRecursion;
-      regexp;
+      // the path can be checked against the last portion, and the string
+      // portions, of each row before it is split. See #canMatch.
+      #endCheck;
+      #literalCheck;
+      // level 2 resolves `.` and `..` portions in the path
+      #level2;
+      // the unicode normalization form, if any
+      #form;
+      // the string portions of each row in the set
+      #literals = [];
+      // the rows that #canMatch can match without splitting the path
+      #shapes = [];
+      // the rows whose last portion can be checked against the path's
+      #endRows = [];
+      // brace expansion can make the same portion in many rows, so they
+      // share one Matcher, and the states that it caches
+      #matchers = /* @__PURE__ */ new Map();
+      // parse() returns PENDING in place of a Matcher
+      #pending = false;
+      // the char that marks numeric ranges in globSet, if any
+      #rangeMark;
+      // the GlobstarParts of each pattern row, by start index and partial
+      #globstarParts = /* @__PURE__ */ new WeakMap();
       constructor(pattern, options = {}) {
         (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
         options = options || {};
         this.options = options;
-        this.maxGlobstarRecursion = options.maxGlobstarRecursion ?? 200;
+        this.maxGlobstarRecursion = options.maxGlobstarRecursion ?? DEFAULT_GLOB_STAR_RECURSION_MAX;
         this.pattern = pattern;
         this.platform = options.platform || defaultPlatform;
         this.isWindows = this.platform === "win32";
-        const awe = "allowWindowsEscape";
-        this.windowsPathsNoEscape = !!options.windowsPathsNoEscape || options[awe] === false;
+        this.windowsPathsNoEscape = !!options.windowsPathsNoEscape || options[AWE_KEY] === false;
         if (this.windowsPathsNoEscape) {
           this.pattern = this.pattern.replace(/\\/g, "/");
         }
         this.preserveMultipleSlashes = !!options.preserveMultipleSlashes;
-        this.regexp = null;
         this.negate = false;
         this.nonegate = !!options.nonegate;
         this.comment = false;
@@ -57852,7 +58516,58 @@ var require_commonjs3 = __commonJS({
         this.globSet = [];
         this.globParts = [];
         this.set = [];
+        this.#endCheck = !this.preserveMultipleSlashes;
+        this.#level2 = (options.optimizationLevel ?? 1) >= 2;
+        const n = options.normalize;
+        this.#form = n === true ? "NFC" : n || void 0;
         this.make();
+        const drives = this.set.map((row) => this.#rootIndex(row));
+        this.#endRows = this.set.map((row, r) => this.#endCheck && row.length - 1 > drives[r]);
+        this.#literals = this.set.map((row, r) => {
+          const end = this.#endRows[r] ? row.length - 1 : row.length;
+          const lits = row.slice(drives[r] + 1, end).filter((p) => typeof p === "string" && !!p);
+          return [...new Set(lits)];
+        });
+        this.#literalCheck = this.#literals.some((l) => l.length);
+        this.#shapes = this.set.map((row, r) => {
+          const [p0, p1, p2] = row;
+          if (this.#endRows[r] && row.length === 2) {
+            if (p0 === exports2.GLOBSTAR && p1 !== exports2.GLOBSTAR)
+              return "tail";
+          }
+          if (this.#endRows[r] && options.matchBase && row.length === 1 && p0 !== exports2.GLOBSTAR && p0 !== "") {
+            return "base";
+          }
+          if (!this.#endCheck || drives[r] !== -1)
+            return void 0;
+          if (row.length === 3 && p0 === exports2.GLOBSTAR && p2 === exports2.GLOBSTAR && p1 !== exports2.GLOBSTAR && p1 !== "" && // the portion between is only matched below this limit
+          this.maxGlobstarRecursion > 0) {
+            return "mid";
+          }
+          if (row.length === 2 && p1 === exports2.GLOBSTAR && p0 !== exports2.GLOBSTAR && p0 !== "") {
+            return "head";
+          }
+          return void 0;
+        });
+      }
+      // a string portion of a pattern, normalized if the option is set
+      #norm(p) {
+        return this.#form ? p.normalize(this.#form) : p;
+      }
+      // On Windows, the index of the last root portion of a row, as
+      // #matchRow finds it: 0 for `c:/...`, 3 for `//?/c:/...` and
+      // `//host/share/...`, and 5 for `//?/UNC/host/share/...`. Otherwise
+      // -1.
+      #rootIndex(row) {
+        if (!this.isWindows)
+          return -1;
+        if (isDrive(row[0]))
+          return 0;
+        const uncDrive = row[0] === "" && row[1] === "" && row[2] === "?" && isDrive(row[3]);
+        if (uncDrive)
+          return 3;
+        const h = uncHost(row);
+        return h === -1 ? -1 : h + 1;
       }
       hasMagic() {
         if (this.options.magicalBraces && this.set.length > 1) {
@@ -57866,8 +58581,6 @@ var require_commonjs3 = __commonJS({
         }
         return false;
       }
-      debug(..._) {
-      }
       make() {
         const pattern = this.pattern;
         const options = this.options;
@@ -57880,40 +58593,149 @@ var require_commonjs3 = __commonJS({
           return;
         }
         this.parseNegate();
-        this.globSet = [...new Set(this.braceExpand())];
-        if (options.debug) {
-          this.debug = (...args) => console.error(...args);
-        }
-        this.debug(this.pattern, this.globSet);
-        const rawGlobParts = this.globSet.map((s) => this.slashSplit(s));
+        this.globSet = [...new Set(this.#expandBraces())];
+        const rawGlobParts = this.globSet.map((s) => this.#slashSplit(s));
         this.globParts = this.preprocess(rawGlobParts);
-        this.debug(this.pattern, this.globParts);
+        this.#pending = true;
         let set = this.globParts.map((s, _, __) => {
           if (this.isWindows && this.windowsNoMagicRoot) {
-            const isUNC = s[0] === "" && s[1] === "" && (s[2] === "?" || !globMagic.test(s[2])) && !globMagic.test(s[3]);
-            const isDrive = /^[a-z]:/i.test(s[0]);
+            const n = s[2] === "?" && isLongUNC(s[3]) ? 6 : 4;
+            const isUNC = s[0] === "" && s[1] === "" && (s[2] === "?" || !globMagic.test(s[2])) && s.slice(3, n).every((p) => !globMagic.test(p));
+            const isDrive2 = /^[a-z]:/i.test(s[0]);
             if (isUNC) {
               return [
-                ...s.slice(0, 4),
-                ...s.slice(4).map((ss) => this.parse(ss))
+                ...s.slice(0, n).map((p) => this.#norm(p)),
+                ...s.slice(n).map((ss) => this.parse(ss))
               ];
-            } else if (isDrive) {
-              return [s[0], ...s.slice(1).map((ss) => this.parse(ss))];
+            } else if (isDrive2) {
+              return [
+                this.#norm(s[0]),
+                ...s.slice(1).map((ss) => this.parse(ss))
+              ];
             }
           }
           return s.map((ss) => this.parse(ss));
         });
-        this.debug(this.pattern, set);
         this.set = set.filter((s) => s.indexOf(false) === -1);
         if (this.isWindows) {
           for (let i = 0; i < this.set.length; i++) {
             const p = this.set[i];
-            if (p[0] === "" && p[1] === "" && this.globParts[i][2] === "?" && typeof p[3] === "string" && /^[a-z]:$/i.test(p[3])) {
+            if (p[0] === "" && p[1] === "" && this.globParts[i][2] === "?" && (isDrive(p[3]) || isLongUNC(this.globParts[i][3]))) {
+              if (isLongUNC(this.globParts[i][3]))
+                p[3] = "UNC";
               p[2] = "?";
             }
           }
         }
-        this.debug(this.pattern, this.set);
+        if (!options.noext)
+          this.mergeRows();
+        this.#pending = false;
+        this.set.forEach((row, i) => {
+          for (let k = 0; k < row.length; k++) {
+            if (row[k] === PENDING) {
+              row[k] = this.parse(this.globParts[i][k]);
+            }
+          }
+        });
+      }
+      // Merge rows that only differ in one portion, where each of them
+      // is a Matcher, into one row that matches any of them with
+      // `@(a|b|...)`. Then a path is only walked once for all of them,
+      // for example with `**/*.{js,ts}`.
+      mergeRows() {
+        let merged = true;
+        while (merged) {
+          merged = false;
+          if (this.set.length < 2)
+            return;
+          let keys = this.#mergeKeys();
+          const len = Math.max(0, ...this.set.map((r) => r.length));
+          for (let k = 0; k < len; k++) {
+            const groups = /* @__PURE__ */ new Map();
+            const R = this.set.length + 1;
+            this.set.forEach((row, i) => {
+              if (!(row[k] instanceof nonrecursive_glob_match_1.Matcher || row[k] === PENDING) || !extSafe(this.globParts[i][k])) {
+                return;
+              }
+              const { pre, suf } = keys[i];
+              const key = pre[k] * R + suf[k + 1];
+              const g = groups.get(key);
+              if (g)
+                g.push(i);
+              else
+                groups.set(key, [i]);
+            });
+            const drop = /* @__PURE__ */ new Set();
+            for (const g of groups.values()) {
+              if (g.length < 2)
+                continue;
+              const [first, ...rest] = g;
+              const alts = g.map((i) => this.globParts[i][k]);
+              const glob2 = `@(${alts.join("|")})`;
+              if (extglobCount(glob2) > MAX_EXTGLOBS)
+                continue;
+              this.globParts[first][k] = glob2;
+              this.set[first][k] = this.parse(glob2);
+              for (const i of rest)
+                drop.add(i);
+            }
+            if (drop.size) {
+              merged = true;
+              this.set = this.set.filter((_, i) => !drop.has(i));
+              this.globParts = this.globParts.filter((_, i) => !drop.has(i));
+              if (this.set.length < 2)
+                return;
+              keys = this.#mergeKeys();
+            }
+          }
+        }
+      }
+      // For each row, number ids for its prefixes and suffixes, such that
+      // pre[k] identifies parts[0..k) and suf[k] identifies parts[k..n).
+      // Two rows are the same other than at portion k exactly when they
+      // have the same pre[k] and suf[k + 1]. This is linear in the size of
+      // the rows, where joining the whole row for every k was quadratic.
+      #mergeKeys() {
+        const partIds = /* @__PURE__ */ new Map();
+        const ids = this.globParts.map((parts) => parts.map((s) => {
+          let id = partIds.get(s);
+          if (id === void 0)
+            partIds.set(s, id = partIds.size);
+          return id;
+        }));
+        const P = partIds.size;
+        const len = Math.max(0, ...ids.map((r) => r.length));
+        const keys = ids.map((r) => ({
+          pre: [0],
+          suf: new Array(r.length + 1).fill(0)
+        }));
+        for (let k = 0; k < len; k++) {
+          const m = /* @__PURE__ */ new Map();
+          ids.forEach((r, i) => {
+            if (k >= r.length)
+              return;
+            const { pre } = keys[i];
+            const key = pre[k] * P + r[k];
+            let id = m.get(key);
+            if (id === void 0)
+              m.set(key, id = m.size + 1);
+            pre.push(id);
+          });
+        }
+        for (let k = len - 1; k >= 0; k--) {
+          const m = /* @__PURE__ */ new Map();
+          ids.forEach((r, i) => {
+            if (k >= r.length)
+              return;
+            const { suf } = keys[i];
+            const key = suf[k + 1] * P + r[k];
+            let id = m.get(key);
+            if (id === void 0)
+              m.set(key, id = m.size + 1);
+            suf[k] = id;
+          });
+        }
+        return keys;
       }
       // various transforms to equivalent pattern sets that are
       // faster to process in a filesystem walk.  The goal is to
@@ -57960,13 +58782,14 @@ var require_commonjs3 = __commonJS({
       // get rid of adjascent ** and resolve .. portions
       levelOneOptimize(globParts) {
         return globParts.map((parts) => {
+          const root = this.#rootIndex(parts) + 1;
           parts = parts.reduce((set, part) => {
             const prev = set[set.length - 1];
             if (part === "**" && prev === "**") {
               return set;
             }
             if (part === "..") {
-              if (prev && prev !== ".." && prev !== "." && prev !== "**") {
+              if (set.length > root && prev && prev !== ".." && prev !== "." && prev !== "**") {
                 set.pop();
                 return set;
               }
@@ -57977,10 +58800,188 @@ var require_commonjs3 = __commonJS({
           return parts.length === 0 ? [""] : parts;
         });
       }
-      levelTwoFileOptimize(parts) {
-        if (!Array.isArray(parts)) {
-          parts = this.slashSplit(parts);
+      // Check the path against each row before it is split. 'no' if no
+      // row can match, so it does not need to be split. 'yes' if a row of
+      // `**` and one more portion matches. 'maybe' if it must be split to
+      // know. None of this applies with partial, where the path can end
+      // before the row does.
+      //
+      // On Windows, `\` is a separator in the path too, and the portions of
+      // a row up to its drive letter or UNC share are not checked (see
+      // #rootIndex).
+      //
+      // Each string portion of a row must be a portion of the path, so the
+      // path must contain it. Level 2 can only take portions out of the
+      // path, so this is still true then.
+      //
+      // The last portion of a row must match the last portion of the path,
+      // or the one before a trailing `/` (as a/* and a/**/* match a/b/).
+      // This does not apply to rows that end in **, rows that end in a
+      // root, or preserveMultipleSlashes (which can leave more
+      // than one '' at the end). At level 2, it does not apply if that
+      // portion is `.` or `..`, which can be
+      // resolved away. Level 2 only takes other portions out of the
+      // middle of the path.
+      //
+      // A row of `**/x` then matches if the ** can walk the portions
+      // before the one that x matches, the same as #matchGlobstar. At
+      // level 2, this is only known if none of them are `.` or `..`, so
+      // that the path does not change when it is resolved.
+      #canMatch(f) {
+        const sep3 = !this.isWindows || !f.includes("\\") ? "/" : f.includes("/") ? "both" : "\\";
+        let ends = this.#endCheck ? 0 : -1;
+        let last2 = "";
+        let lastStart = 0;
+        let prev;
+        let prevStart = 0;
+        const dot = !!this.options.dot;
+        ROWS: for (let r = 0; r < this.set.length; r++) {
+          const row = this.set[r];
+          const p = row[row.length - 1];
+          let end = ends !== -1 && this.#endRows[r] && p !== exports2.GLOBSTAR;
+          if (end && ends === 0) {
+            const i = lastSep(f, f.length, sep3);
+            lastStart = i + 1;
+            last2 = f.slice(lastStart);
+            if (last2 === "" && i >= 0) {
+              let j = i;
+              while (j > 0 && isSep(f.charCodeAt(j - 1), sep3))
+                j--;
+              prevStart = j === 0 ? 0 : lastSep(f, j - 1, sep3) + 1;
+              prev = f.slice(prevStart, j);
+            }
+            const resolves = this.#level2 && (isDots(last2) || last2 === "" && prev !== void 0 && isDots(prev));
+            ends = resolves ? -1 : 1;
+            end = !resolves;
+          }
+          let tailStart = -1;
+          if (end && typeof p === "string") {
+            tailStart = endIndex(p, last2, lastStart, prev, prevStart);
+            if (tailStart === -1)
+              continue;
+          }
+          if (this.#literalCheck) {
+            for (const l of this.#literals[r]) {
+              if (!f.includes(l))
+                continue ROWS;
+            }
+          }
+          if (end && typeof p === "object") {
+            tailStart = endIndex(p, last2, lastStart, prev, prevStart);
+            if (tailStart === -1)
+              continue;
+          }
+          const shape = this.#shapes[r];
+          if (shape === "base" && end)
+            return "yes";
+          if (shape === "tail" && end) {
+            if (this.#level2 && dotPortion(f, 0, tailStart, true, sep3)) {
+              return "maybe";
+            }
+            if (!dotPortion(f, 0, tailStart, dot, sep3))
+              return "yes";
+            continue;
+          }
+          if (shape === "mid" || shape === "head") {
+            const m = this.#walk(f, row, shape === "head", dot, sep3);
+            if (m !== "no")
+              return m;
+            continue;
+          }
+          return "maybe";
         }
+        return "no";
+      }
+      // Match a row of a known shape against the split path, the same as
+      // #matchGlobstar and #matchGlobStarBodySections do. None of these
+      // rows have a drive letter, so they start at the first portion.
+      #matchShape(file, row, shape) {
+        const dot = !!this.options.dot;
+        const n = file.length;
+        if (shape === "head") {
+          if (n < 2 || !portionMatch(row[0], file[0])) {
+            return false;
+          }
+          for (let i = 1; i < n; i++)
+            if (!walkable(file[i], dot))
+              return false;
+          return true;
+        }
+        const x = row[1];
+        if (shape === "tail") {
+          let t = n - 1;
+          if (!portionMatch(x, file[t])) {
+            if (file[t] !== "" || n === 1 || !portionMatch(x, file[--t])) {
+              return false;
+            }
+          }
+          for (let i = 0; i < t; i++)
+            if (!walkable(file[i], dot))
+              return false;
+          return true;
+        }
+        for (let k = 0; k < n; k++) {
+          if (portionMatch(x, file[k]) && k + 1 < n) {
+            let i = k + 1;
+            while (i < n && walkable(file[i], dot))
+              i++;
+            if (i === n)
+              return true;
+          }
+          if (!walkable(file[k], dot))
+            return false;
+        }
+        return false;
+      }
+      // Match a row of `**/x/**` or `x/**` against the path, the same as
+      // #matchGlobstar and #matchGlobStarBodySections do once it is split.
+      // x must match a portion (the first one, for `x/**`), the ** before
+      // it must be able to walk the portions before that one, and there
+      // must be a portion after it, which the ** after it can walk. At
+      // level 2, this is only known if no portion is `.` or `..`.
+      #walk(f, row, head, dot, sep3) {
+        if (this.#level2 && dotPortion(f, 0, f.length, true, sep3))
+          return "maybe";
+        const x = row[head ? 0 : 1];
+        let s = 0;
+        for (let e = nextSep(f, s, sep3); e !== -1; e = nextSep(f, s, sep3)) {
+          let next = e + 1;
+          while (next < f.length && isSep(f.charCodeAt(next), sep3))
+            next++;
+          const hit = typeof x === "string" ? e - s === x.length && f.startsWith(x, s) : e > s && x.testUnchecked(f.slice(s, e));
+          if (hit && !dotPortion(f, next, f.length, dot, sep3))
+            return "yes";
+          if (head || dotPortion(f, s, next, dot, sep3))
+            return "no";
+          s = next;
+        }
+        return "no";
+      }
+      // the last split, if it was the same path with the same split
+      // settings
+      #cachedSplit(f) {
+        const last2 = lastSplit;
+        return last2?.f === f && last2.isWindows === this.isWindows && last2.preserveMultipleSlashes === this.preserveMultipleSlashes && last2.normalize === this.#form ? last2 : void 0;
+      }
+      // split a path for match(), and keep the parts for the next call
+      #split(f) {
+        const { isWindows, preserveMultipleSlashes } = this;
+        let parts = this.#slashSplit(isWindows ? f.split("\\").join("/") : f);
+        const normalize = this.#form;
+        if (normalize)
+          parts = parts.map((p) => p.normalize(normalize));
+        lastSplit = {
+          f,
+          isWindows,
+          preserveMultipleSlashes,
+          normalize,
+          parts
+        };
+        return lastSplit;
+      }
+      // resolve `.` and `..` portions of a path, for level 2
+      #levelTwoFileOptimize(file) {
+        const parts = [...file];
         let didSomething = false;
         do {
           didSomething = false;
@@ -58000,13 +59001,14 @@ var require_commonjs3 = __commonJS({
               parts.pop();
             }
           }
-          let dd = 0;
+          const root = this.#rootIndex(parts) + 1;
+          let dd = root;
           while (-1 !== (dd = parts.indexOf("..", dd + 1))) {
             const p = parts[dd - 1];
-            if (p && p !== "." && p !== ".." && p !== "**" && !(this.isWindows && /^[a-z]:$/i.test(p))) {
+            if (p && p !== "." && p !== ".." && p !== "**") {
               didSomething = true;
               parts.splice(dd - 1, 2);
-              dd -= 2;
+              dd = Math.max(dd - 2, root);
             }
           }
         } while (didSomething);
@@ -58031,6 +59033,9 @@ var require_commonjs3 = __commonJS({
       // **/*/<rest> -> */**/<rest> <== not valid because ** doesn't follow
       // this WOULD be allowed if ** did follow symlinks, or * didn't
       firstPhasePreProcess(globParts) {
+        const { braceExpandMax = DEFAULT_BRACE_EXPAND_MAX } = this.options;
+        let splitCells = 0;
+        const maxSplitCells = 1e6;
         let didSomething = false;
         do {
           didSomething = false;
@@ -58052,10 +59057,15 @@ var require_commonjs3 = __commonJS({
               if (!p || p === "." || p === ".." || !p2 || p2 === "." || p2 === "..") {
                 continue;
               }
+              const addedCells = parts.length - 1;
+              if (globParts.length >= braceExpandMax || splitCells + addedCells > maxSplitCells) {
+                throw new RangeError(`optimizationLevel 2: too many patterns from '**/..'`);
+              }
               didSomething = true;
               parts.splice(gs, 1);
               const other = parts.slice(0);
               other[gs] = "**";
+              splitCells += addedCells;
               globParts.push(other);
               gs--;
             }
@@ -58075,7 +59085,8 @@ var require_commonjs3 = __commonJS({
                 parts.pop();
               }
             }
-            let dd = 0;
+            const root = this.#rootIndex(parts) + 1;
+            let dd = root;
             while (-1 !== (dd = parts.indexOf("..", dd + 1))) {
               const p = parts[dd - 1];
               if (p && p !== "." && p !== ".." && p !== "**") {
@@ -58085,7 +59096,7 @@ var require_commonjs3 = __commonJS({
                 parts.splice(dd - 1, 2, ...splin);
                 if (parts.length === 0)
                   parts.push("");
-                dd -= 2;
+                dd = Math.max(dd - 2, root);
               }
             }
           }
@@ -58093,60 +59104,53 @@ var require_commonjs3 = __commonJS({
         return globParts;
       }
       // second phase: multi-pattern dedupes
-      // {<pre>/*/<rest>,<pre>/<p>/<rest>} -> <pre>/*/<rest>
       // {<pre>/<rest>,<pre>/<rest>} -> <pre>/<rest>
-      // {<pre>/**/<rest>,<pre>/<rest>} -> <pre>/**/<rest>
-      //
-      // {<pre>/**/<rest>,<pre>/**/<p>/<rest>} -> <pre>/**/<rest>
-      // ^-- not valid because ** doens't follow symlinks
+      // {<pre>/*/<rest>,<pre>/<p>/<rest>} -> <pre>/*/<rest>
       secondPhasePreProcess(globParts) {
-        for (let i = 0; i < globParts.length - 1; i++) {
-          for (let j = i + 1; j < globParts.length; j++) {
-            const matched = this.partsMatch(globParts[i], globParts[j], !this.preserveMultipleSlashes);
-            if (matched) {
-              globParts[i] = [];
-              globParts[j] = matched;
-              break;
-            }
-          }
-        }
-        return globParts.filter((gs) => gs.length);
-      }
-      partsMatch(a, b, emptyGSMatch = false) {
-        let ai = 0;
-        let bi = 0;
-        let result = [];
-        let which = "";
-        while (ai < a.length && bi < b.length) {
-          if (a[ai] === b[bi]) {
-            result.push(which === "b" ? b[bi] : a[ai]);
-            ai++;
-            bi++;
-          } else if (emptyGSMatch && a[ai] === "**" && b[bi] === a[ai + 1]) {
-            result.push(a[ai]);
-            ai++;
-          } else if (emptyGSMatch && b[bi] === "**" && a[ai] === b[bi + 1]) {
-            result.push(b[bi]);
-            bi++;
-          } else if (a[ai] === "*" && b[bi] && (this.options.dot || !b[bi].startsWith(".")) && b[bi] !== "**") {
-            if (which === "b")
-              return false;
-            which = "a";
-            result.push(a[ai]);
-            ai++;
-            bi++;
-          } else if (b[bi] === "*" && a[ai] && (this.options.dot || !a[ai].startsWith(".")) && a[ai] !== "**") {
-            if (which === "a")
-              return false;
-            which = "b";
-            result.push(b[bi]);
-            ai++;
-            bi++;
-          } else {
+        const keys = /* @__PURE__ */ new Set();
+        const rows = globParts.filter((parts) => {
+          const key = parts.join("/");
+          if (keys.has(key))
             return false;
+          keys.add(key);
+          return true;
+        });
+        const stars = /* @__PURE__ */ new Map();
+        for (const parts of rows) {
+          const s = [];
+          for (let i = 0; i < parts.length; i++) {
+            if (parts[i] === "*")
+              s.push(i);
           }
+          if (s.length)
+            stars.set(s.join(","), s);
         }
-        return a.length === b.length && result;
+        if (!stars.size || rows.length * stars.size > 1e5)
+          return rows;
+        const { dot } = this.options;
+        return rows.filter((parts) => {
+          for (const s of stars.values()) {
+            if (s[s.length - 1] >= parts.length)
+              continue;
+            const c = [...parts];
+            let ok = true;
+            let changed = false;
+            for (const i of s) {
+              const p = parts[i];
+              if (p === "*")
+                continue;
+              if (!p || p === "**" || !dot && p.startsWith(".")) {
+                ok = false;
+                break;
+              }
+              c[i] = "*";
+              changed = true;
+            }
+            if (ok && changed && keys.has(c.join("/")))
+              return false;
+          }
+          return true;
+        });
       }
       parseNegate() {
         if (this.nonegate)
@@ -58162,15 +59166,28 @@ var require_commonjs3 = __commonJS({
           this.pattern = pattern.slice(negateOffset);
         this.negate = negate;
       }
-      // set partial to true to test if, for example,
-      // "/a/b" matches the start of "/*/b/*/d"
-      // Partial means, if you run out of file before you run
-      // out of pattern, then that's fine, as long as all
-      // the parts match.
-      matchOne(file, pattern, partial = false) {
+      // Match the parts of a path against one row of the set. `resolved`
+      // is the parts after level 2 resolves `.` and `..` in them, or the
+      // same parts below level 2. Set partial to true to test if, for
+      // example, "/a/b" matches the start of "/*/b/*/d". Partial means, if
+      // you run out of file before you run out of pattern, then that's
+      // fine, as long as all the parts match.
+      #matchRow(file, resolved, pattern, partial) {
         let fileStartIndex = 0;
         let patternStartIndex = 0;
-        if (this.isWindows) {
+        const fh = this.isWindows ? uncHost(resolved) : -1;
+        const ph = fh === -1 ? -1 : uncHost(pattern);
+        if (ph !== -1) {
+          const host = pattern[ph];
+          const share = pattern[ph + 1];
+          if (typeof host !== "string" || typeof share !== "string") {
+            fileStartIndex = fh;
+            patternStartIndex = ph;
+          } else if (resolved[fh].toLowerCase() === host.toLowerCase() && resolved[fh + 1].toLowerCase() === share.toLowerCase()) {
+            fileStartIndex = fh + 2;
+            patternStartIndex = ph + 2;
+          }
+        } else if (this.isWindows) {
           const fileDrive = typeof file[0] === "string" && /^[a-z]:$/i.test(file[0]);
           const fileUNC = !fileDrive && file[0] === "" && file[1] === "" && file[2] === "?" && /^[a-z]:$/i.test(file[3]);
           const patternDrive = typeof pattern[0] === "string" && /^[a-z]:$/i.test(pattern[0]);
@@ -58183,36 +59200,22 @@ var require_commonjs3 = __commonJS({
               pattern[pdi]
             ];
             if (fd.toLowerCase() === pd.toLowerCase()) {
-              pattern[pdi] = fd;
-              patternStartIndex = pdi;
-              fileStartIndex = fdi;
+              patternStartIndex = pdi + 1;
+              fileStartIndex = fdi + 1;
             }
           }
         }
-        const { optimizationLevel = 1 } = this.options;
-        if (optimizationLevel >= 2) {
-          file = this.levelTwoFileOptimize(file);
-        }
+        file = resolved;
         if (pattern.includes(exports2.GLOBSTAR)) {
           return this.#matchGlobstar(file, pattern, partial, fileStartIndex, patternStartIndex);
         }
         return this.#matchOne(file, pattern, partial, fileStartIndex, patternStartIndex);
       }
       #matchGlobstar(file, pattern, partial, fileIndex, patternIndex) {
-        const firstgs = pattern.indexOf(exports2.GLOBSTAR, patternIndex);
-        const lastgs = pattern.lastIndexOf(exports2.GLOBSTAR);
-        const [head, body, tail] = partial ? [
-          pattern.slice(patternIndex, firstgs),
-          pattern.slice(firstgs + 1),
-          []
-        ] : [
-          pattern.slice(patternIndex, firstgs),
-          pattern.slice(firstgs + 1, lastgs),
-          pattern.slice(lastgs + 1)
-        ];
+        const { head, body, tail, segments } = this.#getGlobstarParts(pattern, partial, patternIndex);
         if (head.length) {
-          const fileHead = file.slice(fileIndex, fileIndex + head.length);
-          if (!this.#matchOne(fileHead, head, partial, 0, 0)) {
+          const headEnd = fileIndex + head.length;
+          if (!this.#matchOne(file, head, partial, fileIndex, 0, headEnd)) {
             return false;
           }
           fileIndex += head.length;
@@ -58238,8 +59241,8 @@ var require_commonjs3 = __commonJS({
         }
         if (!body.length) {
           let sawSome = !!fileTailMatch;
-          for (let i2 = fileIndex; i2 < file.length - fileTailMatch; i2++) {
-            const f = String(file[i2]);
+          for (let i = fileIndex; i < file.length - fileTailMatch; i++) {
+            const f = String(file[i]);
             sawSome = true;
             if (f === "." || f === ".." || !this.options.dot && f.startsWith(".")) {
               return false;
@@ -58247,33 +59250,57 @@ var require_commonjs3 = __commonJS({
           }
           return partial || sawSome;
         }
-        const bodySegments = [[[], 0]];
-        let currentBody = bodySegments[0];
+        return !!this.#matchGlobStarBodySections(file, segments, file.length - fileTailMatch, fileIndex, 0, partial, 0, !!fileTailMatch, /* @__PURE__ */ new Set());
+      }
+      // Split the pattern into head, tail, and middle of ** delimited
+      // parts. The tail has to be at the end, and the others just have to
+      // be found in order from the head. These only depend on the pattern
+      // row, so they are kept for the next path.
+      #getGlobstarParts(pattern, partial, patternIndex) {
+        let byStart = this.#globstarParts.get(pattern);
+        if (!byStart) {
+          byStart = [];
+          this.#globstarParts.set(pattern, byStart);
+        }
+        const key = patternIndex * 2 + (partial ? 1 : 0);
+        const found = byStart[key];
+        if (found)
+          return found;
+        const firstgs = pattern.indexOf(exports2.GLOBSTAR, patternIndex);
+        const lastgs = pattern.lastIndexOf(exports2.GLOBSTAR);
+        const head = pattern.slice(patternIndex, firstgs);
+        const body = pattern.slice(firstgs + 1, partial ? void 0 : lastgs);
+        const tail = partial ? [] : pattern.slice(lastgs + 1);
+        const segments = [[[], 0]];
+        let current = segments[0];
         let nonGsParts = 0;
         const nonGsPartsSums = [0];
         for (const b of body) {
           if (b === exports2.GLOBSTAR) {
             nonGsPartsSums.push(nonGsParts);
-            currentBody = [[], 0];
-            bodySegments.push(currentBody);
+            current = [[], 0];
+            segments.push(current);
           } else {
-            currentBody[0].push(b);
+            current[0].push(b);
             nonGsParts++;
           }
         }
-        let i = bodySegments.length - 1;
-        const fileLength = file.length - fileTailMatch;
-        for (const b of bodySegments) {
-          b[1] = fileLength - (nonGsPartsSums[i--] + b[0].length);
-        }
-        return !!this.#matchGlobStarBodySections(file, bodySegments, fileIndex, 0, partial, 0, !!fileTailMatch);
+        segments.forEach((b, i) => {
+          b[1] = nonGsParts - nonGsPartsSums[i];
+        });
+        const parts = { head, body, tail, segments };
+        byStart[key] = parts;
+        return parts;
       }
       // return false for "nope, not matching"
       // return null for "not matching, cannot keep trying"
-      #matchGlobStarBodySections(file, bodySegments, fileIndex, bodyIndex, partial, globStarDepth, sawTail) {
+      #matchGlobStarBodySections(file, bodySegments, fileLength, fileIndex, bodyIndex, partial, globStarDepth, sawTail, tried) {
         const bs = bodySegments[bodyIndex];
         if (!bs) {
-          for (let i = fileIndex; i < file.length; i++) {
+          if (partial) {
+            return fileIndex >= fileLength || fileIndex === fileLength - 1 && file[fileIndex] === "";
+          }
+          for (let i = fileIndex; i < fileLength; i++) {
             sawTail = true;
             const f = file[i];
             if (f === "." || f === ".." || !this.options.dot && f.startsWith(".")) {
@@ -58282,15 +59309,22 @@ var require_commonjs3 = __commonJS({
           }
           return sawTail;
         }
-        const [body, after] = bs;
+        const [body, need] = bs;
+        const after = partial ? fileLength : fileLength - need;
         while (fileIndex <= after) {
-          const m = this.#matchOne(file.slice(0, fileIndex + body.length), body, partial, fileIndex, 0);
+          const key = bodyIndex * (file.length + 1) + fileIndex;
+          if (tried.has(key))
+            return false;
+          tried.add(key);
+          const m = this.#matchOne(file, body, partial, fileIndex, 0, fileIndex + body.length);
           if (m && globStarDepth < this.maxGlobstarRecursion) {
-            const sub = this.#matchGlobStarBodySections(file, bodySegments, fileIndex + body.length, bodyIndex + 1, partial, globStarDepth + 1, sawTail);
+            const sub = this.#matchGlobStarBodySections(file, bodySegments, fileLength, fileIndex + body.length, bodyIndex + 1, partial, globStarDepth + 1, sawTail, tried);
             if (sub !== false) {
               return sub;
             }
           }
+          if (fileIndex === after)
+            break;
           const f = file[fileIndex];
           if (f === "." || f === ".." || !this.options.dot && f.startsWith(".")) {
             return false;
@@ -58299,28 +59333,18 @@ var require_commonjs3 = __commonJS({
         }
         return partial || null;
       }
-      #matchOne(file, pattern, partial, fileIndex, patternIndex) {
+      #matchOne(file, pattern, partial, fileIndex, patternIndex, fileEnd = file.length) {
         let fi;
         let pi;
         let pl;
         let fl;
-        for (fi = fileIndex, pi = patternIndex, fl = file.length, pl = pattern.length; fi < fl && pi < pl; fi++, pi++) {
-          this.debug("matchOne loop");
+        for (fi = fileIndex, pi = patternIndex, fl = Math.min(fileEnd, file.length), pl = pattern.length; fi < fl && pi < pl; fi++, pi++) {
           let p = pattern[pi];
           let f = file[fi];
-          this.debug(pattern, p, f);
           if (p === false || p === exports2.GLOBSTAR) {
             return false;
           }
-          let hit;
-          if (typeof p === "string") {
-            hit = f === p;
-            this.debug("string match", p, f, hit);
-          } else {
-            hit = p.test(f);
-            this.debug("pattern match", p, f, hit);
-          }
-          if (!hit)
+          if (!portionMatch(p, f))
             return false;
         }
         if (fi === fl && pi === pl) {
@@ -58336,6 +59360,44 @@ var require_commonjs3 = __commonJS({
       braceExpand() {
         return (0, exports2.braceExpand)(this.pattern, this.options);
       }
+      // Expand braces, except numeric ranges such as {0..999} with at
+      // least RANGE_MIN values. Each of those stays in its pattern as
+      // `<mark>0..999<mark>`, for the Matcher to test. If a range might
+      // be inside a [...] class, expand all of them instead.
+      #expandBraces() {
+        const { pattern } = this;
+        if (this.options.nobrace)
+          return this.braceExpand();
+        let code = 57344;
+        while (pattern.includes(String.fromCharCode(code))) {
+          if (++code > 63743)
+            return this.braceExpand();
+        }
+        const mark = String.fromCharCode(code);
+        let found = false;
+        const marked = pattern.replace(rangeRe, (m, lo, hi) => {
+          const a = Number(lo);
+          const b = Number(hi);
+          if (!Number.isSafeInteger(a) || !Number.isSafeInteger(b) || Math.abs(a - b) + 1 < RANGE_MIN) {
+            return m;
+          }
+          found = true;
+          return `${mark}${lo}..${hi}${mark}`;
+        });
+        if (!found)
+          return this.braceExpand();
+        const set = (0, exports2.braceExpand)(marked, this.options);
+        for (const p of set) {
+          for (const portion of p.split("/")) {
+            const c = portion.indexOf("[");
+            if (c !== -1 && c < portion.lastIndexOf(mark)) {
+              return this.braceExpand();
+            }
+          }
+        }
+        this.#rangeMark = mark;
+        return set;
+      }
       parse(pattern) {
         (0, assert_valid_pattern_js_1.assertValidPattern)(pattern);
         const options = this.options;
@@ -58343,88 +59405,30 @@ var require_commonjs3 = __commonJS({
           return exports2.GLOBSTAR;
         if (pattern === "")
           return "";
-        let m;
-        let fastTest = null;
-        if (m = pattern.match(starRE)) {
-          fastTest = options.dot ? starTestDot : starTest;
-        } else if (m = pattern.match(starDotExtRE)) {
-          fastTest = (options.nocase ? options.dot ? starDotExtTestNocaseDot : starDotExtTestNocase : options.dot ? starDotExtTestDot : starDotExtTest)(m[1]);
-        } else if (m = pattern.match(qmarksRE)) {
-          fastTest = (options.nocase ? options.dot ? qmarksTestNocaseDot : qmarksTestNocase : options.dot ? qmarksTestDot : qmarksTest)(m);
-        } else if (m = pattern.match(starDotStarRE)) {
-          fastTest = options.dot ? starDotStarTestDot : starDotStarTest;
-        } else if (m = pattern.match(dotStarRE)) {
-          fastTest = dotStarTest;
+        const { nocase, nocaseMagicOnly, noext = false, dot, normalize } = options;
+        const rangeMark = this.#rangeMark;
+        const lit2 = rangeMark && pattern.includes(rangeMark) ? void 0 : literal(pattern, noext);
+        if (lit2 !== void 0 && !(nocase && !nocaseMagicOnly && pattern.toUpperCase() !== pattern.toLowerCase())) {
+          return this.#norm(lit2);
         }
-        const re = ast_js_1.AST.fromGlob(pattern, this.options).toMMPattern();
-        if (fastTest && typeof re === "object") {
-          Reflect.defineProperty(re, "test", { value: fastTest });
-        }
-        return re;
-      }
-      makeRe() {
-        if (this.regexp || this.regexp === false)
-          return this.regexp;
-        const set = this.set;
-        if (!set.length) {
-          this.regexp = false;
-          return this.regexp;
-        }
-        const options = this.options;
-        const twoStar = options.noglobstar ? star : options.dot ? twoStarDot : twoStarNoDot;
-        const flags = new Set(options.nocase ? ["i"] : []);
-        let re = set.map((pattern) => {
-          const pp = pattern.map((p) => {
-            if (p instanceof RegExp) {
-              for (const f of p.flags.split(""))
-                flags.add(f);
-            }
-            return typeof p === "string" ? regExpEscape(p) : p === exports2.GLOBSTAR ? exports2.GLOBSTAR : p._src;
+        if (this.#pending)
+          return PENDING;
+        let m = this.#matchers.get(pattern);
+        if (!m) {
+          if (!noext)
+            assertValidExtglobs(pattern);
+          m = new nonrecursive_glob_match_1.Matcher(pattern, {
+            nocase,
+            noext,
+            dot,
+            normalize,
+            ...rangeMark && { rangeMark }
           });
-          pp.forEach((p, i) => {
-            const next = pp[i + 1];
-            const prev = pp[i - 1];
-            if (p !== exports2.GLOBSTAR || prev === exports2.GLOBSTAR) {
-              return;
-            }
-            if (prev === void 0) {
-              if (next !== void 0 && next !== exports2.GLOBSTAR) {
-                pp[i + 1] = "(?:\\/|" + twoStar + "\\/)?" + next;
-              } else {
-                pp[i] = twoStar;
-              }
-            } else if (next === void 0) {
-              pp[i - 1] = prev + "(?:\\/|\\/" + twoStar + ")?";
-            } else if (next !== exports2.GLOBSTAR) {
-              pp[i - 1] = prev + "(?:\\/|\\/" + twoStar + "\\/)" + next;
-              pp[i + 1] = exports2.GLOBSTAR;
-            }
-          });
-          const filtered = pp.filter((p) => p !== exports2.GLOBSTAR);
-          if (this.partial && filtered.length >= 1) {
-            const prefixes = [];
-            for (let i = 1; i <= filtered.length; i++) {
-              prefixes.push(filtered.slice(0, i).join("/"));
-            }
-            return "(?:" + prefixes.join("|") + ")";
-          }
-          return filtered.join("/");
-        }).join("|");
-        const [open, close] = set.length > 1 ? ["(?:", ")"] : ["", ""];
-        re = "^" + open + re + close + "$";
-        if (this.partial) {
-          re = "^(?:\\/|" + open + re.slice(1, -1) + close + ")$";
+          this.#matchers.set(pattern, m);
         }
-        if (this.negate)
-          re = "^(?!" + re + ").+$";
-        try {
-          this.regexp = new RegExp(re, [...flags].join(""));
-        } catch {
-          this.regexp = false;
-        }
-        return this.regexp;
+        return m;
       }
-      slashSplit(p) {
+      #slashSplit(p) {
         if (this.preserveMultipleSlashes) {
           return p.split("/");
         } else if (this.isWindows && /^\/\/[^/]+/.test(p)) {
@@ -58434,7 +59438,6 @@ var require_commonjs3 = __commonJS({
         }
       }
       match(f, partial = this.partial) {
-        this.debug("match", f, this.pattern);
         if (this.comment) {
           return false;
         }
@@ -58445,25 +59448,31 @@ var require_commonjs3 = __commonJS({
           return true;
         }
         const options = this.options;
-        if (this.isWindows) {
-          f = f.split("\\").join("/");
+        let split = this.#cachedSplit(f);
+        if (!split) {
+          if (!partial && !this.#form && (this.#endCheck || this.#literalCheck) && lastChecked !== f) {
+            lastChecked = f;
+            const can = this.#canMatch(f);
+            if (can === "no")
+              return options.flipNegate ? false : this.negate;
+            if (can === "yes")
+              return options.flipNegate ? true : !this.negate;
+          }
+          split = this.#split(f);
         }
-        const ff = this.slashSplit(f);
-        this.debug(this.pattern, "split", ff);
+        const ff = split.parts;
+        const resolved = this.#level2 ? split.resolved ??= this.#levelTwoFileOptimize(ff) : ff;
         const set = this.set;
-        this.debug(this.pattern, "set", set);
         let filename = ff[ff.length - 1];
         if (!filename) {
           for (let i = ff.length - 2; !filename && i >= 0; i--) {
             filename = ff[i];
           }
         }
-        for (const pattern of set) {
-          let file = ff;
-          if (options.matchBase && pattern.length === 1) {
-            file = [filename];
-          }
-          const hit = this.matchOne(file, pattern, partial);
+        for (let r = 0; r < set.length; r++) {
+          const pattern = set[r];
+          const shape = partial ? void 0 : this.#shapes[r];
+          const hit = shape === "base" ? portionMatch(pattern[0], filename) : shape ? this.#matchShape(resolved, pattern, shape) : options.matchBase && pattern.length === 1 ? this.#matchRow([filename], [filename], pattern, partial) : this.#matchRow(ff, resolved, pattern, partial);
           if (hit) {
             if (options.flipNegate) {
               return true;
@@ -58481,10 +59490,6 @@ var require_commonjs3 = __commonJS({
       }
     };
     exports2.Minimatch = Minimatch;
-    var ast_js_2 = require_ast();
-    Object.defineProperty(exports2, "AST", { enumerable: true, get: function() {
-      return ast_js_2.AST;
-    } });
     var escape_js_2 = require_escape();
     Object.defineProperty(exports2, "escape", { enumerable: true, get: function() {
       return escape_js_2.escape;
@@ -58493,7 +59498,6 @@ var require_commonjs3 = __commonJS({
     Object.defineProperty(exports2, "unescape", { enumerable: true, get: function() {
       return unescape_js_2.unescape;
     } });
-    exports2.minimatch.AST = ast_js_1.AST;
     exports2.minimatch.Minimatch = Minimatch;
     exports2.minimatch.escape = escape_js_1.escape;
     exports2.minimatch.unescape = unescape_js_1.unescape;
@@ -58511,7 +59515,7 @@ var init_ignore = __esm({
     init_options();
     init_errors();
     init_literal_string();
-    ({ minimatch } = require_commonjs3());
+    ({ minimatch } = require_commonjs4());
     IgnoreStrategy = class {
       /**
        * Ignores file paths based on simple glob patterns.
@@ -59312,6 +60316,16 @@ var init_fs = __esm({
   }
 });
 
+// ../../aws-cdk-lib/core/lib/private/shell-escape.ts
+function posixShellEscape(arg) {
+  return "'" + arg.replace(/'/g, "'\\''") + "'";
+}
+var init_shell_escape = __esm({
+  "../../aws-cdk-lib/core/lib/private/shell-escape.ts"() {
+    "use strict";
+  }
+});
+
 // ../../aws-cdk-lib/core/lib/private/asset-staging.ts
 function dockerExec(args, options) {
   const prog = process.env.CDK_DOCKER ?? "docker";
@@ -59361,6 +60375,7 @@ var init_asset_staging = __esm({
     init_errors();
     init_literal_string();
     init_perf();
+    init_shell_escape();
     AssetBundlingBase = class {
       options;
       constructor(options) {
@@ -59464,7 +60479,7 @@ var init_asset_staging = __esm({
           "public.ecr.aws/docker/library/alpine",
           "sh",
           "-c",
-          `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`
+          `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${posixShellEscape(user)} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${posixShellEscape(user)} ${AssetStaging.BUNDLING_INPUT_DIR}`
         ]);
       }
       /**
@@ -78957,7 +79972,12 @@ function collectAnnotationReport(root) {
 function splitDescriptionAndId(message) {
   const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
   if (ackMatch) {
-    return { message: message.replace(ackMatch[0], "").trim(), ruleName: ackMatch[1] };
+    const annotationPrefix = ackMatch[1].startsWith("Annotation::") ? "Annotation::" : "";
+    const ruleName = ackMatch[1].slice(annotationPrefix.length).replace(/::/g, "_");
+    return {
+      message: message.replace(ackMatch[0], "").trim(),
+      ruleName: `${annotationPrefix}${ruleName}`
+    };
   }
   const idMatch = message.match(/\(([^()]+::[^()]+)\)$/);
   if (idMatch) {
@@ -82935,13 +83955,6 @@ var init_cfn_props_mixin = __esm({
   }
 });
 
-// ../../aws-cdk-lib/core/lib/private/shell-escape.ts
-var init_shell_escape = __esm({
-  "../../aws-cdk-lib/core/lib/private/shell-escape.ts"() {
-    "use strict";
-  }
-});
-
 // ../../aws-cdk-lib/core/lib/helpers-internal/index.ts
 var init_helpers_internal = __esm({
   "../../aws-cdk-lib/core/lib/helpers-internal/index.ts"() {
@@ -84802,7 +85815,7 @@ var init_stack = __esm({
     init_core_construct_finders();
     init_deps();
     init_validation2();
-    ({ minimatch: minimatch2 } = require_commonjs3());
+    ({ minimatch: minimatch2 } = require_commonjs4());
     STACK_RESOURCE_LIMIT_CONTEXT = "@aws-cdk/core:stackResourceLimit";
     SUPPRESS_TEMPLATE_INDENTATION_CONTEXT = "@aws-cdk/core:suppressTemplateIndentation";
     TEMPLATE_BODY_MAXIMUM_SIZE = 1e6;
@@ -85304,7 +86317,15 @@ var init_stack = __esm({
         return new ScopedAws(this).stackId;
       }
       /**
-       * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
+       * The `AWS::NotificationARNs` pseudo parameter for this stack.
+       *
+       * This is a list token that CloudFormation resolves at deployment time to the
+       * notification Amazon Resource Names (ARNs) of the stack. During synthesis it
+       * does not contain the ARNs passed in the `notificationArns` property.
+       *
+       * To configure notification ARNs, set the `notificationArns` property when
+       * creating the stack. Adding elements to the returned list does not configure
+       * notifications, and causes a synthesis error if the list is used afterwards.
        */
       get notificationArns() {
         return new ScopedAws(this).notificationArns;
@@ -87219,7 +88240,7 @@ var init_selectors = __esm({
         return result;
       }
     };
-    ({ minimatch: minimatch3 } = require_commonjs3());
+    ({ minimatch: minimatch3 } = require_commonjs4());
     IdPatternSelector = class {
       constructor(pattern, field) {
         this.pattern = pattern;
@@ -87246,6 +88267,19 @@ var init_selectors = __esm({
         return [scope];
       }
     };
+  }
+});
+
+// ../../aws-cdk-lib/core/lib/metadata-context.ts
+var init_metadata_context = __esm({
+  "../../aws-cdk-lib/core/lib/metadata-context.ts"() {
+    "use strict";
+    init_aspect();
+    init_cfn_resource();
+    init_errors();
+    init_selectors();
+    init_literal_string();
+    init_token();
   }
 });
 
@@ -88576,6 +89610,7 @@ var init_lib3 = __esm({
     "use strict";
     init_aspect();
     init_tag_aspect();
+    init_metadata_context();
     init_mixins2();
     init_token();
     init_resolvable();

@@ -489,7 +489,6 @@
             "explanation": "When enabled, CDK will automatically generate a unique role name that is used for s3 object replication."
           },
           "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
-            "userValue": false,
             "recommendedValue": true,
             "explanation": "Remove the root account principal from Stage addActions trust policy",
             "unconfiguredBehavesLike": {
@@ -632,6 +631,10 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName": {
+            "recommendedValue": true,
+            "explanation": "When enabled, the default policy of an imported user or group gets a name that includes the stack name"
           }
         }
       }

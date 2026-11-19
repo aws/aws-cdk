@@ -37,6 +37,7 @@ beforeEach(() => {
 
   jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
+    buildImage: () => { },
     cp: () => 'dest-path',
     run: () => { },
     toJSON: () => 'built-image',

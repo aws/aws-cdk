@@ -2,6 +2,7 @@ import { performance } from 'perf_hooks';
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { readPerfCounters, recordPerformanceEntry, resetCounters } from './helpers-internal';
+import { clearKnownDockerImages } from './private/bundling';
 import { iterateDfsPreorder } from './private/construct-iteration';
 import { appOf, APP_TYPE, STACK_TYPE } from './private/core-construct-finders';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
@@ -275,6 +276,8 @@ export class App extends Stage {
 
     this._confirmValidationPluginsDoNotMutate = props.confirmValidationPluginsDoNotMutate ?? false;
     this.initMark = performance.now();
+    // Every app checks the local Docker daemon again for the images it builds on demand
+    clearKnownDockerImages();
     this._builtinCloudFormationValidation = props.builtinCloudFormationValidation ?? true;
     if (!PERF_STATE.loadTimeMeasured) {
       // Measure the load time of the application -- up until the construction of the first App

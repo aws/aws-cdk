@@ -1,4 +1,10 @@
 {
+  "/cdk-route53-ebs-token-endpoint-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkroute53ebstokenendpointintegtestDefaultTestDeployAssertEE10A2D8.template.json"
+    }
+  ],
   "/cdk-route53-ebs-token-endpoint-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

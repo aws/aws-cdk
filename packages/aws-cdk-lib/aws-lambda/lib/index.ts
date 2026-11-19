@@ -36,6 +36,7 @@ export * from './webfunction-endpoint';
 export * from './webfunction-endpoint-grants';
 export * from './network-connector';
 export * from './webfunction-runtime';
+export * as mixins from './mixins';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';
