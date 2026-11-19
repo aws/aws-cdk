@@ -1,9 +1,6 @@
 # Finding & Comment Format Reference
 
-This is the disclosed detail behind "Findings must meet the bar"
-in the `cdk-review-principles` `SKILL.md`. Read it before generating any findings.
-Produce **structured findings**, not hand-authored markdown. This file defines the
-output shape, how to write each field, and which candidates become findings.
+Produce **structured findings**, not hand-authored markdown.
 
 ## The structured finding contract
 
@@ -46,16 +43,16 @@ may still cite the rule inline where that aids the author).
 ## Severity vocabulary
 
 The `severity` field takes one of `BLOCKING` / `RECOMMENDED` / `OPTIONAL`. Their harm
-definitions, and the rule that any ported High/Medium/Low or P0/P1/P2 palette maps onto
-these three (there is no second vocabulary), live in `SKILL.md` "Severity — rate by the
-harm it does when it triggers" (authoritative).
+definitions, and the rule that there is no second vocabulary, live in `SKILL.md` "Severity —
+rate by the harm it does when it triggers" (authoritative).
 
 ## Evidence & References
 
-The citation authority order, when a citation may be skipped, and how an aws-cdk rule's
-own stated harm sets the severity all live in `SKILL.md` "Make each finding land"
-(authoritative). The format contract this adds: put the citation in `reference`/`evidence`
-AND name it inline in `message` so the posted comment carries its own authority.
+The citation authority order and when a citation may be skipped live in `SKILL.md` "Make
+each finding land", and how an aws-cdk rule's own stated harm sets the severity lives in
+"Calibrate the harm honestly" (both authoritative). The format contract this adds: put the
+citation in `reference`/`evidence` AND name it inline in `message` so the posted comment
+carries its own authority.
 
 ## Filtering — what becomes a finding
 

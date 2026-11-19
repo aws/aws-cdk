@@ -5,10 +5,8 @@ description: "Shared foundation every CDK review-dimension skill applies — the
 
 # Review Principles
 
-The shared base every CDK review-dimension skill (`cdk-regression-review`,
-`cdk-security-review`, `cdk-testing-review`, `cdk-documentation-review`, `cdk-construct-design-review`) applies, so
-these rules never drift. A dimension skill decides *what* it flags and how to calibrate
-it; it never redefines anything below.
+Every CDK review-dimension skill (`cdk-regression-review`, `cdk-security-review`,
+`cdk-testing-review`, `cdk-documentation-review`, `cdk-construct-design-review`) applies these rules.
 
 ## Severity — rate by the harm it does when it triggers
 
@@ -36,9 +34,7 @@ you are it triggers. Three tiers, keyed to the *kind* of harm:
   grouping with identical effect.
 
 A finding's `severity` field takes exactly one of these three words —
-`BLOCKING` / `RECOMMENDED` / `OPTIONAL` — and there is no second vocabulary. If a source
-you ported used a High/Medium/Low, Critical/Major/Minor, or P0/P1/P2 palette, map it onto
-these three by harm and drop the palette.
+`BLOCKING` / `RECOMMENDED` / `OPTIONAL` — and there is no second vocabulary.
 
 ### Calibrate the harm honestly
 
@@ -153,9 +149,6 @@ carve-outs. None is a finding, at any severity:
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
 
-Each dimension skill's own `## What NOT to flag` lists only its dimension-specific
-carve-outs; it applies these five in addition.
-
 ## Rules-lookup convention
 
 Each dimension skill keeps its detailed rules in a `references/*-rules.md` lookup. Every
@@ -167,10 +160,10 @@ doc does not state, kept in full. All aws/aws-cdk links reference `main`.
 
 ## Sources
 
-Public aws/aws-cdk `main` guidance these principles cite:
+Public aws/aws-cdk `main` guidance:
 
 - [`AGENTS.md`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md) — the agent-facing
-  repo guide; its rules name their own harm (quoted in the severity worked examples above).
+  repo guide; its rules name their own harm.
 - [`CONTRIBUTING.md`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) — PR
   conventions and breaking-change guidance.
 - [`docs/DESIGN_GUIDELINES.md`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md),

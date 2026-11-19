@@ -11,8 +11,8 @@ runtime what only shows once deployed, not only that the stack deploys. Two erro
 missing a test the change owes, and demanding one it does not (the noise-cannon). Weigh each against both.
 
 **Scope gate — judge only the tests THIS PR owes:** the behavior it adds or changes, and the tests it
-adds or modifies. A pre-existing untested path the PR never touched is not its debt. This is the
-precision lever — a finding on untouched code is noise, not review.
+adds or modifies. A pre-existing untested path the PR never touched is not its debt. A finding on
+untouched code is noise, not review.
 
 **You own test adequacy, not correctness.** Judge whether the tests would CATCH a bug, not whether the
 code has one. An exposure the *snapshot diff* reveals (an IAM widening, a public resource) is yours to
@@ -20,7 +20,7 @@ flag as a dangerous snapshot; IAM *design* in production code is outside your sc
 
 ## The review process
 
-Work the changed surface in this order — a method, not a rigid script. Adapt it to what the diff touches.
+Work the changed surface in this order. Adapt it to what the diff touches.
 
 1. **Unit tests.** State what the PR adds or changes for a user, read the tests it adds or changes, and
    ask: if that broke, would a test fail? A test can run the code and still assert nothing, cover only the

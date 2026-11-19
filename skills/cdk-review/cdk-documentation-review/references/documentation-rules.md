@@ -1,6 +1,6 @@
 # Documentation review rules — the lookup
 
-Rows group by defect family — the four `category` values (example compilation, `@default` accuracy,
+Rows group by defect family — the four `category` values (README examples, `@default` accuracy,
 public-API doc completeness, migration notes). See
 the `cdk-review-principles` skill for the shared lookup convention (the
 BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-severity encoding, the
@@ -10,37 +10,11 @@ Severity across these rows is set by shipped-doc consumer impact, not by whether
 doc that is *wrong*, or a new L2 with no usage example at all, is BLOCKING; a single member with no
 JSDoc, or a doc *thin* on a required facet, is RECOMMENDED.
 
-## Example compilation
-
-**[DOC-EXAMPLE-COMPILE] (BLOCKING)** — A README `ts` snippet, a `*.ts-fixture`, or a JSDoc `@example`
-the PR adds or changes that will not compile. See
-[`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes) for the
-must-compile rule (`ts` code blocks verified by Rosetta); [`CONTRIBUTING.md § Documentation › Rosetta`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#rosetta)
-for the ⚠️ NOTE on not-yet-built dependencies (the false-positive guard below).
-- **Detection signals (doc-absent detail):** flag it when (1) an **undeclared / unimported identifier** —
-  a variable, type, or module (`bucket`, `s3`, `pipeline`) neither declared in the snippet, provided by
-  the named fixture, nor imported, so rosetta cannot resolve it; (2) a **missing / wrong fixture** — a
-  `fixture=` name with no matching `<name>.ts-fixture` in the module's fixture directory or in
-  `rosetta/` itself (the false-positive guard below says where), a fixture the PR edited that no longer
-  defines the variables its snippet consumes, or one that lost its `/// here` marker; (3) a **call to a
-  non-existent / changed API** — a method, prop, or type that does not exist, or whose signature the PR
-  changed, so the assembled file won't type-check; (4) a **stale API shape** — the PR changes an API but
-  leaves an example on the old shape.
-- **False-positive guard (doc-absent detail):** flag a snippet that is *structurally* non-compilable — it
-  fails regardless of build state. Don't flag an inability to compile that stems purely from a
-  not-yet-built local dependency (the ⚠️ NOTE pointer above covers why). In aws-cdk-lib, the fixtures for
-  `aws-s3/README.md` are in `packages/aws-cdk-lib/rosetta/aws_s3/` (the module name with underscores;
-  core uses `rosetta/` itself). In an alpha package they are in its `rosetta/`. A snippet uses
-  `default.ts-fixture` there (or in `rosetta/` itself when the module has none), or `<name>.ts-fixture`
-  when it says `fixture=<name>`. Most module fixtures place the snippet in the constructor of a `Stack`
-  subclass, so `this.region` resolves. The root `rosetta/default.ts-fixture`, which core and modules
-  without their own default use, places it in a `Construct`, which has no `region`.
+## README examples
 
 **[DOC-README-STALE-SNIPPET] (RECOMMENDED)** — A public API changed (prop/method/construct
 added/renamed, signature changed) but the module README not updated to match. See
 [`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes).
-- **Escalation (doc-absent detail):** up to BLOCKING when the stale README now shows a non-compiling
-  snippet — that reclassifies as an Example-compilation defect (`DOC-EXAMPLE-COMPILE`).
 
 **[DOC-EXAMPLE-COMPILES-NO-DEMO] (RECOMMENDED)** — A snippet that compiles but never sets the prop the
 PR adds, or hides the feature in a fixture, so it documents nothing the PR introduced. See

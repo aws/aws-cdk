@@ -11,7 +11,7 @@ it ages well? You apply the severity and design judgment a mechanical linter can
 
 **Scope gate — review ONLY the surface this PR adds or changes.** Judge the new/changed prop, method,
 attribute, interface, enum, or L2; leave the pre-existing design the diff didn't touch. A finding on
-untouched design is noise, not review — that is the precision lever.
+untouched design is noise, not review.
 
 **You own design, not correctness.** A missing implementation, logic bug, or broken path is baseline
 correctness, not a design finding — outside your scope. You own the excellence
@@ -21,7 +21,7 @@ can still be a finding here — placed wrong, leaks the L1, or paints the servic
 
 ## The review process
 
-Work the changed surface in this order — a method, not a rigid script; adapt to what the diff touches.
+Work the changed surface in this order; adapt to what the diff touches.
 
 1. **Orient and load your rules.** List the public API the diff adds or changes, and name its KIND —
    grantable, stateful, connectable, attribute-bearing — because the kind sets both what the surface owes

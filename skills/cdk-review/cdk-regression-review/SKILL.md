@@ -12,7 +12,7 @@ side effects) and **breaking change** (an API-surface or behavior break gated by
 change can be both — a signature change is a JSII regression AND an API-surface break.
 
 **Scope gate — review ONLY risks this PR introduces.** Point to the changed line that creates the risk.
-A finding on a pre-existing problem is noise, not review — this is the precision lever. Judge the
+A finding on a pre-existing problem is noise, not review. Judge the
 IMPLEMENTATION, not the INTENT: a well-meant bug fix, added validation, or optimization can still
 introduce a regression or a break.
 
@@ -22,7 +22,7 @@ cross-language surface. (A defect in another dimension is outside your scope —
 
 ## The review process
 
-Work the changed surface rules-first — a method, not a rigid script. Adapt it to what the diff touches.
+Work the changed surface rules-first. Adapt it to what the diff touches.
 
 1. **Orient and load your rules.** Name the public surface the PR changes. Establish its stability tier
    first — the row sets the verdict by tier. Read [`regression-rules.md`](references/regression-rules.md):

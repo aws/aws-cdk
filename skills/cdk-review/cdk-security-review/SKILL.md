@@ -11,14 +11,14 @@ secrets/credentials, and secure-by-default. Do not re-audit the pre-existing pos
 change widens, weakens, or leaks for users of the CDK.
 
 Security is a **baseline** dimension: a real exposure must be fixed before merge (see
-`cdk-review-principles` "Baseline vs excellence"), so this dimension's calibration skews toward BLOCKING
+`cdk-review-principles` "Calibrate the harm honestly"), so this dimension's calibration skews toward BLOCKING
 for a concrete exposure.
 
 **Scope gate — review ONLY security exposure introduced BY this PR.** Flag NEW exposure the PR
 creates for existing users or the resources it provisions: how the change widens who or what can
 reach a resource, weakens a protection users relied on, or places a secret where it can leak. A
-wildcard that already existed and the PR merely moved is not a finding. This is the precision
-lever: a finding on pre-existing posture the diff did not change is noise, not review.
+wildcard that already existed and the PR merely moved is not a finding. A finding on pre-existing
+posture the diff did not change is noise, not review.
 
 **You own exposure, not correctness or design.**
 - A flag whose *enabled behavior loosens* security is yours as a *Secure defaults* finding; the flag
@@ -28,7 +28,7 @@ lever: a finding on pre-existing posture the diff did not change is noise, not r
 
 ## The review process
 
-Work the changed surface in this order — a method, not a rigid script; adapt to what the diff touches.
+Work the changed surface in this order; adapt to what the diff touches.
 
 1. **Orient and load your rules.** Name the security-sensitive surface the diff adds or changes — an
    IAM policy/grant, a trust policy, a KMS key policy, a resource/network policy, a default, a
@@ -63,7 +63,7 @@ your scope.
   feature flag that *loosens* security is in scope here as a *Secure defaults* finding, even though
   the flag mechanism itself is outside your scope.
 - **General security advice not tied to a diff line** — a finding without a `file:line` is not a
-  posted comment (see `cdk-review-principles` "Record exact `file:line`").
+  posted comment (see `cdk-review-principles` "Findings must meet the bar").
 - **Suffix-wildcard actions** (`s3:GetObject*`) — acceptable per the repo Security Rules; the
   full-service `s3:*` is the finding.
 - **An already-scoped `grant*` helper**, and any permission/default the PR did not change.

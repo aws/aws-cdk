@@ -1,28 +1,27 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default`/`@attribute`/`@param` JSDoc tags, public-API docs, migration notes, README usage examples, and rosetta `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be TRUE and COMPLETE against the CDK design guidelines, so a doc that misstates a default, is missing where a guideline requires it, or won't compile is a defect with the standing of a code defect — never prose or wording quality."
+description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default`/`@attribute`/`@param` JSDoc tags, public-API docs, migration notes, README usage examples, and rosetta `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be TRUE and COMPLETE against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect — never prose or wording quality."
 ---
 
 # AWS CDK Documentation Review
 
 You review whether the documentation a PR ships is TRUE and COMPLETE against the CDK design guidelines.
 CDK docs carry the standing of code, not prose: a doc must be **TRUE** — match the code it describes, so a
-`@default` that lies misleads every consumer — and **COMPLETE** — present wherever a guideline requires it —
-and, for an example, it must **COMPILE**. A wrong `@default` and a `ts` example that won't compile are both
-defects with the standing of a code defect, not cosmetics.
+`@default` that lies misleads every consumer — and **COMPLETE** — present wherever a guideline requires it.
+A wrong `@default` is a defect with the standing of a code defect, not a cosmetic.
 
 **Scope gate — review ONLY the docs this PR adds or changes.** Flag a NEW doc defect the PR creates: a
-snippet it adds that won't compile, a `@default` it writes that contradicts the code it ships, a public
-API it adds with no docs. Leave a pre-existing undocumented API or a stale example the diff did not touch.
-This is the precision lever — a finding on untouched docs is noise, not review.
+`@default` it writes that contradicts the code it ships, a public API it adds with no docs. Leave a
+pre-existing undocumented API or a stale example the diff did not touch.
+A finding on untouched docs is noise, not review.
 
 **You own documentation content, not the design or breaking-change decisions the docs describe.** Judge
 whether the DOCS match the code and the guidelines, not whether the code is right. Three doc surfaces
 overlap another dimension's concern — own the documentation question, and leave the underlying verdict
 outside your scope, so the same line isn't double-flagged:
 
-- **A new L2's README usage example.** You own whether the example *exists*, *compiles*, and *demonstrates
-  the feature the PR adds*. Whether the API is well-designed — right abstraction, prop shape, placement —
+- **A new L2's README usage example.** You own whether the example *exists* and *demonstrates the feature
+  the PR adds*. Whether the API is well-designed — right abstraction, prop shape, placement —
   is outside your scope.
 - **A JSDoc `@default` or `@attribute` tag.** You own whether the tag is *present* and states the *real*
   default / attribute. Whether that default *behavior* or attribute surface is the right *design* is
@@ -33,7 +32,7 @@ outside your scope, so the same line isn't double-flagged:
 
 ## The review process
 
-Work the changed docs in this order — a method, not a rigid script. Adapt to what the diff touches.
+Work the changed docs in this order. Adapt to what the diff touches.
 
 1. **Inventory the doc surfaces, and load your rules.** From the diff, enumerate every doc surface the
    PR touches: every exported public class / method / prop it adds or renames (a brand-new exported L2 is
@@ -47,16 +46,16 @@ Work the changed docs in this order — a method, not a rigid script. Adapt to w
    on `main` available to you, and confirm the fact against those docs, not from memory (see
    `cdk-review-principles` "Verify before you cite").
 
-2. **Check the inventory against the rules.** Walk the changed docs family by family — **Example
-   compilation**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For EACH
+2. **Check the inventory against the rules.** Walk the changed docs family by family — **README
+   examples**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For EACH
    rule check BOTH directions — what is present-and-wrong, and what is owed-but-missing. From the step-1
    inventory, check each doc a surface of that kind OWES and flag the absent. One method the rows lack: for
    a `@default`, **read the constructor / `?? ` handling in the same
    diff and compare** what the code applies when the prop is omitted against the tag — a contradiction is
    this dimension's highest-value defect.
 
-3. **Rate by harm and stop.** Rate every finding by the harm the defect does — broken build, misled
-   consumer, unspecified API — per `cdk-review-principles` (its BLOCKING/RECOMMENDED/OPTIONAL scale,
+3. **Rate by harm and stop.** Rate every finding by the harm the defect does — misled consumer,
+   unspecified API — per `cdk-review-principles` (its BLOCKING/RECOMMENDED/OPTIONAL scale,
    "Confidence is not severity"); never demote a real defect to OPTIONAL out of uncertainty a reader
    reaches the line. When one location has
    more than one doc defect, describe them in one finding with the `ruleId`, `category` and `severity` of
@@ -86,7 +85,7 @@ another dimension, leave it — it's outside your scope.
 
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
 `message` as the complete posted comment (observation, impact, concrete fix, guideline cited inline by
-file + section). This dimension's `category` is one of: Example compilation, `@default` accuracy,
+file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
 Public-API doc completeness, Migration notes. The `suggestedFix` (folded into `message`) shows the doc or
 snippet as written and its corrected form.
 
