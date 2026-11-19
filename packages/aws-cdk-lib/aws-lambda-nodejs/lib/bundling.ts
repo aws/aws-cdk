@@ -336,6 +336,7 @@ export class Bundling implements cdk.BundlingOptions {
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
         isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '',
+        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.pnpm-workspace-state-v1.json'), true) : '',
         isBun ? osCommand.removeDir(pathJoin(options.outputDir, 'node_modules', '.cache')) : '',
       ])],
     }];
@@ -371,6 +372,10 @@ export class Bundling implements cdk.BundlingOptions {
           const modulesYaml = path.join(outputDir, 'node_modules', '.modules.yaml');
           if (fs.existsSync(modulesYaml)) {
             fs.rmSync(modulesYaml, { force: true });
+          }
+          const workspaceState = path.join(outputDir, 'node_modules', '.pnpm-workspace-state-v1.json');
+          if (fs.existsSync(workspaceState)) {
+            fs.rmSync(workspaceState, { force: true });
           }
         },
       });

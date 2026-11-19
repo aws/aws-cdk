@@ -680,7 +680,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml" && rm -f "\/asset-output\/node_modules\/.pnpm-workspace-state-v1.json"/),
       ]),
     }),
   });
@@ -1756,7 +1756,7 @@ test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {
   // Mock existsSync to return true only for cleanup paths
   const originalExistsSync = fs.existsSync;
   const existsSyncMock = jest.spyOn(fs, 'existsSync').mockImplementation((p) => {
-    if (typeof p === 'string' && (p.includes('.modules.yaml') || p.includes('.cache'))) {
+    if (typeof p === 'string' && (p.includes('.modules.yaml') || p.includes('.pnpm-workspace-state-v1.json') || p.includes('.cache'))) {
       return true;
     }
     return originalExistsSync(p);
@@ -1769,6 +1769,11 @@ test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {
   // .modules.yaml is cleaned up
   expect(rmSyncMock).toHaveBeenCalledWith(
     '/outdir/node_modules/.modules.yaml',
+    expect.objectContaining({ force: true }),
+  );
+  // .pnpm-workspace-state-v1.json is cleaned up
+  expect(rmSyncMock).toHaveBeenCalledWith(
+    '/outdir/node_modules/.pnpm-workspace-state-v1.json',
     expect.objectContaining({ force: true }),
   );
   // Install via direct spawn
