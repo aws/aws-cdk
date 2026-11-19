@@ -1,5 +1,5 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "files": {
     "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "3ec6e6ded71c454bea93b0989ec4cc376caa2ba0223569d2125ba23d2b2c46b0": {
+    "f571be41857cdb25ba7dbf7c40ff483db07ac86e1c764b333ee26098bdded835": {
       "displayName": "albFargateServiceTestDefaultTestDeployAssert11CD2C41 Template",
       "source": {
         "path": "albFargateServiceTestDefaultTestDeployAssert11CD2C41.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-58cdf4bb": {
+        "current_account-current_region-68607e4b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3ec6e6ded71c454bea93b0989ec4cc376caa2ba0223569d2125ba23d2b2c46b0.json",
+          "objectKey": "f571be41857cdb25ba7dbf7c40ff483db07ac86e1c764b333ee26098bdded835.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

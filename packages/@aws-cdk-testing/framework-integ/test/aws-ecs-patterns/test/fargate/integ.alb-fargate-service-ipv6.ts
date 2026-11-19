@@ -2,6 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import type { CfnResource } from 'aws-cdk-lib';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import {
@@ -31,6 +32,14 @@ const service = new ApplicationLoadBalancedFargateService(stack, 'myService', {
   domainName: 'service.test.public',
   domainZone: hostedZone,
   recordType: ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK,
+});
+
+// Suppress security guardian rule - intentionally allowing public access for load balancer testing
+service.loadBalancer.connections.securityGroups.forEach(sg => {
+  const cfnSg = sg.node.defaultChild as CfnResource;
+  cfnSg.addMetadata('guard', {
+    SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+  });
 });
 
 const integ = new IntegTest(app, 'albFargateServiceTest', {

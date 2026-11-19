@@ -692,6 +692,13 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "myServiceLBSecurityGrouptoawsecsintegalbfgipv6myServiceSecurityGroup28B87E3980254A6B84": {
