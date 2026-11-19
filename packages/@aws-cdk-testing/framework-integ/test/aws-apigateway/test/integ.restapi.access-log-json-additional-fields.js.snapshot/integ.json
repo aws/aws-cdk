@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "apigateway-access-log-json-additional-fields/DefaultTest": {
+      "stacks": [
+        "test-apigateway-access-log-json-additional-fields"
+      ],
+      "assertionStack": "apigateway-access-log-json-additional-fields/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewayaccesslogjsonadditionalfieldsDefaultTestDeployAssert164427DD"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

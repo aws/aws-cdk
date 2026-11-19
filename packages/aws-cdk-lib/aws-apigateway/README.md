@@ -1434,6 +1434,26 @@ new apigateway.Stage(this, 'dev', {
 });
 ```
 
+Standard fields you do not list stay on, so you only name the ones you want to turn off. To add fields of your own to the standard JSON, use `additionalFields`: each key becomes a field name and each value is the format string for it, usually one of the `AccessLogField` helpers.
+
+```ts
+const logGroup = new logs.LogGroup(this, "ApiGatewayAccessLogs");
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields({
+      additionalFields: {
+        path: apigateway.AccessLogField.contextPath(),
+        errorMessage: apigateway.AccessLogField.contextErrorMessage(),
+        sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
+      },
+    }),
+  },
+});
+```
+
+An additional field cannot reuse the name `requestId` or the name of a standard field that is still turned on. Turn the standard field off first if you want to replace it.
+
 The following code will generate the access log in the [CLF format](https://en.wikipedia.org/wiki/Common_Log_Format).
 
 ```ts
