@@ -126,6 +126,10 @@ Reference: https://docs.astral.sh/uv/concepts/projects/layout/
 
 You can exclude files from being copied using the optional bundling string array parameter `assetExcludes`:
 
+These exclusions also apply when source assets are staged without bundling, such as for
+unselected stacks when using `--exclusively`. Selected stacks still use the normal
+bundling process; their asset hashes are unaffected by this staging behavior.
+
 ```ts
 new python.PythonFunction(this, 'function', {
   entry: '/path/to/poetry-function',
