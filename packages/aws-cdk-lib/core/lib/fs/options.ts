@@ -77,14 +77,14 @@ interface FileOptions {
    *
    * ## Without bundling
    *
-   * When used without the `bundling` property the asset is just a regular file
+   * When used without the `bundling` property, the asset is just a regular file
    * copy operation. In that case, this controls the files that will be included
    * in the copy. Files matching the `exclude` patterns will not be included in
    * the copy.
    *
    * ## With bundling
    *
-   * When used with the `bundling` property the asset is produced by a
+   * When used with the `bundling` property, the asset is produced by a
    * bundling operation. In that case, the value of `exclude` is only meaningful
    * if the `assetHashType` is set to `AssetHashType.SOURCE`, and ignored for
    * other asset hash types. The `exclude` patterns will be used to determine
@@ -105,7 +105,7 @@ interface FileOptions {
   /**
    * What syntax the `exclude` patterns are written in.
    *
-   * @default IgnoreMode.GLOB for file assets, `IgnoreMode.DOCKER` for image assets (requires that the `@aws-cdk/aws-ecr-assets:dockerIgnoreSupport` feature flag is set, which is recommended)
+   * @default - IgnoreMode.GLOB for file assets, `IgnoreMode.DOCKER` for image assets (requires that the `@aws-cdk/aws-ecr-assets:dockerIgnoreSupport` feature flag is set, which is recommended)
    */
   readonly ignoreMode?: IgnoreMode;
 }
@@ -123,13 +123,13 @@ export interface CopyOptions extends FileOptions {
    *
    * ## Without bundling
    *
-   * When used without the `bundling` property the asset is just a regular file
+   * When used without the `bundling` property, the asset is just a regular file
    * copy operation. In that case, symlinks are materialized or blocked with respect
    * to the source path root as they are being copied.
    *
    * ## With bundling
    *
-   * When used with the `bundling` property the asset is produced by a
+   * When used with the `bundling` property, the asset is produced by a
    * bundling operation. In that case, the bundling command is fully
    * in charge of producing a set of files in an output directory, and
    * the `AssetStaging` construct will never affect symlink materialization.
@@ -162,13 +162,13 @@ export interface FileCopyOptions extends FileOptions {
    *
    * ## Without bundling
    *
-   * When used without the `bundling` property the asset is just a regular file
+   * When used without the `bundling` property, the asset is just a regular file
    * copy operation. In that case, symlinks are materialized or blocked with respect
-   * to the source path root as they are being copied.
+   * to the `sourcePath` directory as they are being copied.
    *
    * ## With bundling
    *
-   * When used with the `bundling` property the asset is produced by a
+   * When used with the `bundling` property, the asset is produced by a
    * bundling operation. In that case, the bundling command is fully
    * in charge of producing a set of files in an output directory, and
    * the `AssetStaging` construct will never affect symlink materialization.

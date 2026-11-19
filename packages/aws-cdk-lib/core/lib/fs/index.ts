@@ -30,7 +30,7 @@ export class FileSystem {
    * Copies an entire directory structure.
    *
    * Protects against interruption by copying to a temporary directory first and then renaming the directory into place.
-   * Both the target directory and the temporary directory will be clobbered if they already exist.
+   * Both the target directory and the temporary directory will be overwritten if they already exist.
    *
    * The temporary directory is deleted if an error occurs.
    */

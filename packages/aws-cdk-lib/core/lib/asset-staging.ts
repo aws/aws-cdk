@@ -74,7 +74,7 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  *
  * ## Without bundling
  *
- * Without the `bundling` property the asset is just a regular file copy
+ * Without the `bundling` property, the asset is just a regular file copy
  * operation.
  *
  * - `exclude` and `ignoreMode` control which files are excluded from the copy operation.
@@ -94,8 +94,8 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  *
  * ## With bundling
  *
- * With `bundling` property the transformation of source files to a final asset
- * is done through bundling operation, specified in the `bundling` property.
+ * With the `bundling` property, the transformation of source files to a final asset
+ * is done through bundling operation specified in the `bundling` property.
  *
  * The behavior of the construct depends on the `assetHashType` selected:
  *
