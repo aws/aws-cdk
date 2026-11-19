@@ -133,36 +133,33 @@ async function main() {
     for (const diag of results) {
       const suppressionKey = `${diag.rule.code}:${diag.scope}`;
 
+      let show = false;
       let color;
       switch (diag.level) {
         case DiagnosticLevel.Success:
-          if (args.verbose) {
-            color = chalk.gray;
-          }
+          show = args.verbose;
+          color = chalk.gray;
           break;
         case DiagnosticLevel.Error:
           errors++;
+          show = true;
           color = chalk.red;
           if (args.save) {
             excludesToSave.push(suppressionKey);
           }
           break;
         case DiagnosticLevel.Warning:
-          if (!args.quiet) {
-            color = chalk.yellow;
-          }
+          show = !args.quiet;
+          color = chalk.yellow;
           break;
         case DiagnosticLevel.Skipped:
-          if (!args.quiet) {
-            color = chalk.blue;
-          }
+          show = !args.quiet;
+          color = chalk.blue;
           break;
       }
 
-      if (color) {
+      if (show) {
         console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: [${chalk.bold(`awslint:${diag.rule.code}`)}:${chalk.bold(diag.scope)}] ${diag.message}`));
-      } else {
-        console.error(`${DiagnosticLevel[diag.level].toLowerCase()}: [${`awslint:${diag.rule.code}`}:${diag.scope}] ${diag.message}`);
       }
     }
 

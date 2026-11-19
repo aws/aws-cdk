@@ -547,6 +547,7 @@ describe('code', () => {
     beforeEach(() => {
       cpMock = jest.fn().mockReturnValue(path.join(__dirname, 'docker-build-lambda'));
       fromBuildMock = jest.spyOn(cdk.DockerImage, 'fromBuild').mockImplementation(() => ({
+        buildImage: jest.fn(),
         cp: cpMock,
         image: 'tag',
         run: jest.fn(),

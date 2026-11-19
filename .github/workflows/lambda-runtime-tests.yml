@@ -4,6 +4,8 @@ on:
     paths:
       - "packages/aws-cdk-lib/aws-lambda/lib/runtime.ts"
 
+cache-mode: read
+
 jobs:
   update-lambda-tests:
     if: github.repository == 'aws/aws-cdk' && github.actor == 'aws-cdk-automation'
