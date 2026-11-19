@@ -2249,8 +2249,13 @@ describe('NetworkLoadBalancedFargateService', () => {
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::Route53::RecordSet', 1);
     template.hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: 'fakeId',
       Name: 'test.domain.com.',
       Type: 'A',
+      AliasTarget: {
+        HostedZoneId: { 'Fn::GetAtt': ['FargateNlbServiceLBC7004B25', 'CanonicalHostedZoneID'] },
+        DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['FargateNlbServiceLBC7004B25', 'DNSName'] }]] },
+      },
     });
   });
 
