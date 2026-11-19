@@ -1588,6 +1588,46 @@ result in CloudFormation deployment errors. Modifying the parameters within `dur
 after which the stack update or deletion will timeout. If you have functions that are stuck deleting, please check if there
 are any running executions for the function.
 
+Lambda encrypts durable execution data at rest by default. To use a
+customer managed key instead, pass it through `durableConfig.kmsKey`:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const kmsKey = new kms.Key(this, 'MyKey');
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  durableConfig: { executionTimeout: Duration.hours(1), retentionPeriod: Duration.days(30), kmsKey },
+});
+```
+
+The key must be a symmetric encryption key in the function's Region, not an alias. For a key defined
+in your app, CDK adds the statements from
+[Encrypting Lambda durable execution data](https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html)
+to the key policy, and nothing to the execution role's identity policy. The function author and
+operator statements use the account principal, so they defer to IAM.
+
+Set `functionName` to a literal string to scope the statements to the function. Without it, they
+match every function in the account and Region, and CDK emits a warning.
+
+CDK emits a warning and skips a statement it cannot add safely, so add it to the key policy yourself
+when:
+
+- The key is imported, or is a `kms.CfnKey` whose `keyPolicy` is not a JSON object.
+- The key is in another stack, and the execution role has no literal `roleName`. Referencing the role
+  could create a circular dependency. Pass a role with a literal `roleName`, or define the key in the
+  function's stack.
+- The key is in another account, which also needs IAM permissions in the function's account.
+
+If the key policy names a role that itself depends on the key, CloudFormation reports a circular
+dependency. Give that role a literal `roleName`.
+
+A durable execution keeps the key it started with. Before you remove or switch `kmsKey`, keep the old
+key's statements until executions on it finish and their retention ends. Each function adds about
+1.5 KB to the key policy, which is limited to 32 KB.
+
 ## AutoScaling
 
 You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
