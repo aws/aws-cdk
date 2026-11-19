@@ -377,21 +377,6 @@ export enum Ec2LaunchV2RunAs {
 }
 
 /**
- * The type of script that an EC2Launch v2 `executeScript` task runs
- */
-export enum Ec2LaunchV2ScriptType {
-  /**
-   * A PowerShell script
-   */
-  POWERSHELL = 'powershell',
-
-  /**
-   * A batch (cmd.exe) script
-   */
-  BATCH = 'batch',
-}
-
-/**
  * The partition type that the EC2Launch v2 `initializeVolume` task creates
  */
 export enum Ec2LaunchV2PartitionType {
@@ -455,11 +440,14 @@ export interface Ec2LaunchV2ScriptOptions {
    * @default false
    */
   readonly detach?: boolean;
+}
 
+/**
+ * Options for how EC2Launch v2 runs a PowerShell script
+ */
+export interface Ec2LaunchV2PowerShellOptions extends Ec2LaunchV2ScriptOptions {
   /**
-   * Arguments passed to the shell that runs the script (not to the script itself)
-   *
-   * Only supported for PowerShell scripts.
+   * Arguments passed to PowerShell (not to the script itself)
    *
    * @default - EC2Launch v2 passes `-ExecutionPolicy Unrestricted`
    */
@@ -472,24 +460,27 @@ export interface Ec2LaunchV2ScriptOptions {
  * These options apply to the PowerShell script made up of the commands added
  * with `addCommands()` and the other `add*Command()` methods.
  */
-export interface Ec2LaunchV2UserDataOptions extends Ec2LaunchV2ScriptOptions {
+export interface Ec2LaunchV2UserDataOptions extends Ec2LaunchV2PowerShellOptions {
 }
 
 /**
- * Options for the EC2Launch v2 `executeScript` task
+ * Options for a PowerShell script run by the EC2Launch v2 `executeScript` task
  */
-export interface Ec2LaunchV2ExecuteScriptOptions extends Ec2LaunchV2ScriptOptions {
+export interface Ec2LaunchV2PowerShellScriptOptions extends Ec2LaunchV2PowerShellOptions {
   /**
    * The content of the script
    */
   readonly content: string;
+}
 
+/**
+ * Options for a batch script run by the EC2Launch v2 `executeScript` task
+ */
+export interface Ec2LaunchV2BatchScriptOptions extends Ec2LaunchV2ScriptOptions {
   /**
-   * The type of the script
-   *
-   * @default Ec2LaunchV2ScriptType.POWERSHELL
+   * The content of the script
    */
-  readonly type?: Ec2LaunchV2ScriptType;
+  readonly content: string;
 }
 
 /**
@@ -673,13 +664,21 @@ export interface Ec2LaunchV2SysprepOptions {
  */
 export class Ec2LaunchV2Task {
   /**
-   * Run a PowerShell or batch script
+   * Run a PowerShell script (the `executeScript` task)
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-executescript
    */
-  public static executeScript(options: Ec2LaunchV2ExecuteScriptOptions): Ec2LaunchV2Task {
-    const type = options.type ?? Ec2LaunchV2ScriptType.POWERSHELL;
-    return new Ec2LaunchV2Task('executeScript', [renderEc2LaunchV2Script(options, type, options.content)]);
+  public static executePowerShell(options: Ec2LaunchV2PowerShellScriptOptions): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('executeScript', [renderEc2LaunchV2Script(options, 'powershell', options.content, options.arguments)]);
+  }
+
+  /**
+   * Run a batch (cmd.exe) script (the `executeScript` task)
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2launch-v2-executescript
+   */
+  public static executeBatch(options: Ec2LaunchV2BatchScriptOptions): Ec2LaunchV2Task {
+    return new Ec2LaunchV2Task('executeScript', [renderEc2LaunchV2Script(options, 'batch', options.content, undefined)]);
   }
 
   /**
@@ -708,7 +707,7 @@ export class Ec2LaunchV2Task {
     if (devices === undefined) {
       return new Ec2LaunchV2Task('initializeVolume', { initialize: 'all' });
     }
-    if (!Token.isUnresolved(devices) && devices.length === 0) {
+    if (devices.length === 0) {
       throw new UnscopedValidationError(lit`Ec2LaunchV2InitializeVolumeNoDevices`, 'devices must not be empty, omit devices to initialize all empty volumes');
     }
     for (const device of devices) {
@@ -828,16 +827,13 @@ export class Ec2LaunchV2Task {
 /**
  * Render a single `executeScript` input
  */
-function renderEc2LaunchV2Script(options: Ec2LaunchV2ScriptOptions, type: Ec2LaunchV2ScriptType, content: string) {
-  if (type === Ec2LaunchV2ScriptType.BATCH && options.arguments !== undefined) {
-    throw new UnscopedValidationError(lit`Ec2LaunchV2BatchScriptArguments`, 'arguments are not supported for batch scripts, remove arguments or use Ec2LaunchV2ScriptType.POWERSHELL');
-  }
+function renderEc2LaunchV2Script(options: Ec2LaunchV2ScriptOptions, type: 'powershell' | 'batch', content: string, args: string[] | undefined) {
   return {
     frequency: options.frequency ?? Ec2LaunchV2Frequency.ONCE,
     type,
     runAs: options.runAs ?? Ec2LaunchV2RunAs.LOCAL_SYSTEM,
     detach: options.detach,
-    arguments: options.arguments,
+    arguments: args,
     content,
   };
 }
@@ -867,8 +863,6 @@ export class Ec2LaunchV2UserData extends UserData {
 
   constructor(private readonly options: Ec2LaunchV2UserDataOptions = {}) {
     super();
-    // Validate eagerly, so errors point at the call site
-    renderEc2LaunchV2Script(options, Ec2LaunchV2ScriptType.POWERSHELL, '');
   }
 
   /**
@@ -928,20 +922,28 @@ export class Ec2LaunchV2UserData extends UserData {
     if (this.lines.length === 0 && this.onExitLines.length === 0) {
       return undefined;
     }
+    // On-exit commands run when the commands complete or throw, but not on an
+    // explicit `exit`: that may be a failure, or `exit 3010`, which makes
+    // EC2Launch v2 reboot and run the script again.
     const content = this.onExitLines.length === 0
       ? this.lines
       : [
         '$success = $true',
+        '$finished = $false',
         'try {',
         ...this.lines,
+        '$finished = $true',
         '} catch {',
         '$success = $false',
+        '$finished = $true',
         'throw',
         '} finally {',
+        'if ($finished) {',
         ...this.onExitLines,
         '}',
+        '}',
       ];
-    return renderEc2LaunchV2Script(this.options, Ec2LaunchV2ScriptType.POWERSHELL, content.join('\n'));
+    return renderEc2LaunchV2Script(this.options, 'powershell', content.join('\n'), this.options.arguments);
   }
 
   private mergeTask(task: string, inputs: any) {
@@ -962,8 +964,10 @@ export class Ec2LaunchV2UserData extends UserData {
  * Render an EC2Launch v2 user data document
  *
  * Uses YAML 1.1 rules, so strings such as `yes` or `on` are quoted, and
- * literal block scalars for multi-line strings, so scripts stay readable and
- * values substituted into them by CloudFormation need no escaping.
+ * literal block scalars for multi-line strings and strings containing tokens,
+ * so scripts stay readable and single-line values substituted by
+ * CloudFormation need no escaping. Multi-line substituted values cannot be
+ * indented to fit the block, so they are not supported.
  */
 function renderEc2LaunchV2Yaml(value: any): string {
   const doc = new YAML.Document({ version: '1.1' });
@@ -986,7 +990,7 @@ function useLiteralBlocks(node: any) {
   if (node?.items) {
     // Maps contain pairs, sequences contain nodes
     node.items.forEach((item: any) => useLiteralBlocks(item?.value !== undefined && item?.key !== undefined ? item.value : item));
-  } else if (typeof node?.value === 'string' && node.value.includes('\n')) {
+  } else if (typeof node?.value === 'string' && (node.value.includes('\n') || Token.isUnresolved(node.value))) {
     node.type = 'BLOCK_LITERAL';
   }
 }

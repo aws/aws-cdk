@@ -175,6 +175,14 @@
       }
      ]
     },
+    "BlockDeviceMappings": [
+     {
+      "DeviceName": "xvdf",
+      "Ebs": {
+       "VolumeSize": 1
+      }
+     }
+    ],
     "IamInstanceProfile": {
      "Ref": "InstanceInstanceProfileAB5AEF02"
     },
@@ -204,11 +212,11 @@
       "Fn::Join": [
        "",
        [
-        "version: 1.1\ntasks:\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: C:\\Windows\\System32\\cmd.exe\n        arguments:\n          - /c\n          - mkdir\n          - C:\\cdk-integ-execute-program\n        runAs: localSystem\n  - task: executeScript\n    inputs:\n      - frequency: once\n        type: powershell\n        runAs: localSystem\n        content: |-\n          $success = $true\n          try {\n          if (-not (Test-Path -Path 'C:\\cdk-integ-execute-program' -PathType Container)) { throw 'executeProgram task did not run' }\n          } catch {\n          $success = $false\n          throw\n          } finally {\n          cfn-signal --stack integ-userdata-ec2launch-v2 --resource InstanceC1063A87 --region ",
+        "version: 1.1\ntasks:\n  - task: initializeVolume\n    inputs:\n      initialize: devices\n      devices:\n        - device: xvdf\n          name: Data\n          letter: D\n  - task: setHostName\n    inputs:\n      hostName: cdk-integ\n      reboot: false\n  - task: setWallpaper\n    inputs:\n      path: C:\\ProgramData\\Amazon\\EC2Launch\\wallpaper\\Ec2Wallpaper.jpg\n      attributes:\n        - instanceId\n      instanceTags: AllTags\n  - task: startSsm\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: C:\\Windows\\System32\\cmd.exe\n        arguments:\n          - /c\n          - mkdir\n          - C:\\cdk-integ-execute-program\n        runAs: localSystem\n  - task: executeScript\n    inputs:\n      - frequency: once\n        type: powershell\n        runAs: localSystem\n        content: |-\n          $success = $true\n          $finished = $false\n          try {\n          if (-not (Test-Path -Path 'D:\\')) { throw 'initializeVolume task did not run' }\n          if (-not (Test-Path -Path 'C:\\cdk-integ-execute-program' -PathType Container)) { throw 'executeProgram task did not run' }\n          $finished = $true\n          } catch {\n          $success = $false\n          $finished = $true\n          throw\n          } finally {\n          if ($finished) {\n          cfn-signal --stack integ-userdata-ec2launch-v2 --resource InstanceC1063A87 --region ",
         {
          "Ref": "AWS::Region"
         },
-        " --success ($success.ToString().ToLower())\n          }\n"
+        " --success ($success.ToString().ToLower())\n          }\n          }\n"
        ]
       ]
      }

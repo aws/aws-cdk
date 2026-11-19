@@ -39,6 +39,33 @@ describe('EC2Launch v2 user data', () => {
     expect(parse(userData)).toEqual({ version: 1.1, tasks: [] });
   });
 
+  test('omits the command script when no commands were added', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addCommands();
+    userData.addTask(ec2.Ec2LaunchV2Task.startSsm());
+
+    // THEN
+    expect(parse(userData)).toEqual({ version: 1.1, tasks: [{ task: 'startSsm' }] });
+  });
+
+  test('keeps a user executeScript input when the command script is empty', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addCommands();
+    userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: 'script' }));
+
+    // THEN
+    expect(parse(userData).tasks).toEqual([{
+      task: 'executeScript',
+      inputs: [{ frequency: 'once', type: 'powershell', runAs: 'localSystem', content: 'script' }],
+    }]);
+  });
+
   test('applies script options to the commands', () => {
     // GIVEN
     const userData = ec2.UserData.forWindowsEc2LaunchV2({
@@ -65,7 +92,7 @@ describe('EC2Launch v2 user data', () => {
     }]);
   });
 
-  test('wraps commands in try/finally when there are commands on exit', () => {
+  test('runs commands on exit when the commands complete or throw, but not on exit', () => {
     // GIVEN
     const userData = ec2.UserData.forWindowsEc2LaunchV2();
 
@@ -76,15 +103,20 @@ describe('EC2Launch v2 user data', () => {
     // THEN
     expect(parse(userData).tasks[0].inputs[0].content).toEqual([
       '$success = $true',
+      '$finished = $false',
       'try {',
       'command1',
       'command2',
+      '$finished = $true',
       '} catch {',
       '$success = $false',
+      '$finished = $true',
       'throw',
       '} finally {',
+      'if ($finished) {',
       'onexit1',
       'onexit2',
+      '}',
       '}',
     ].join('\n'));
   });
@@ -104,13 +136,18 @@ describe('EC2Launch v2 user data', () => {
     const content = parse(userData).tasks[0].inputs[0].content;
     expect(stack.resolve(content)).toEqual([
       '$success = $true',
+      '$finished = $false',
       'try {',
       'command1',
+      '$finished = $true',
       '} catch {',
       '$success = $false',
+      '$finished = $true',
       'throw',
       '} finally {',
+      'if ($finished) {',
       `cfn-signal --stack Default --resource ${stack.resolve(logicalId)} --region us-east-1 --success ($success.ToString().ToLower())`,
+      '}',
       '}',
     ].join('\n'));
   });
@@ -163,7 +200,7 @@ describe('EC2Launch v2 user data', () => {
         UserData: {
           'Fn::Base64': {
             'Fn::Join': ['', [
-              'version: 1.1\ntasks:\n  - task: executeScript\n    inputs:\n      - frequency: once\n        type: powershell\n        runAs: localSystem\n        content: Write-Host ',
+              'version: 1.1\ntasks:\n  - task: executeScript\n    inputs:\n      - frequency: once\n        type: powershell\n        runAs: localSystem\n        content: |-\n          Write-Host ',
               { Ref: 'AWS::Region' },
               ' yes\n',
             ]],
@@ -202,7 +239,7 @@ describe('EC2Launch v2 user data', () => {
     // WHEN
     userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: 'C:\\a.exe' }));
     userData.addCommands('command1');
-    userData.addTask(ec2.Ec2LaunchV2Task.executeScript({ content: 'script2' }));
+    userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: 'script2' }));
     userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: 'C:\\b.exe', frequency: ec2.Ec2LaunchV2Frequency.ALWAYS }));
     userData.addCommands('command2');
 
@@ -225,14 +262,32 @@ describe('EC2Launch v2 user data', () => {
     ]);
   });
 
-  test('can add a batch executeScript task', () => {
+  test('can add a PowerShell script', () => {
     // GIVEN
     const userData = ec2.UserData.forWindowsEc2LaunchV2();
 
     // WHEN
-    userData.addTask(ec2.Ec2LaunchV2Task.executeScript({
+    userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({
+      content: 'Get-Process',
+      runAs: ec2.Ec2LaunchV2RunAs.ADMIN,
+      detach: true,
+      arguments: ['-NoProfile'],
+    }));
+
+    // THEN
+    expect(parse(userData).tasks).toEqual([{
+      task: 'executeScript',
+      inputs: [{ frequency: 'once', type: 'powershell', runAs: 'admin', detach: true, arguments: ['-NoProfile'], content: 'Get-Process' }],
+    }]);
+  });
+
+  test('can add a batch script', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.executeBatch({
       content: 'systeminfo',
-      type: ec2.Ec2LaunchV2ScriptType.BATCH,
       runAs: ec2.Ec2LaunchV2RunAs.ADMIN,
       frequency: ec2.Ec2LaunchV2Frequency.ALWAYS,
       detach: false,
@@ -245,12 +300,22 @@ describe('EC2Launch v2 user data', () => {
     }]);
   });
 
-  test('fails for batch scripts with arguments', () => {
-    expect(() => ec2.Ec2LaunchV2Task.executeScript({
-      content: 'systeminfo',
-      type: ec2.Ec2LaunchV2ScriptType.BATCH,
-      arguments: ['/c'],
-    })).toThrow(/arguments are not supported for batch scripts/);
+  test('renders strings containing tokens in task inputs as literal blocks', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: `C:\\${Aws.STACK_NAME}.exe` }));
+
+    // THEN
+    expect(stack.resolve(userData.render())).toEqual({
+      'Fn::Join': ['', [
+        'version: 1.1\ntasks:\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: |-\n          C:\\',
+        { Ref: 'AWS::StackName' },
+        '.exe\n        runAs: localSystem\n',
+      ]],
+    });
   });
 
   test('can add an executeProgram task', () => {
@@ -317,6 +382,11 @@ describe('EC2Launch v2 user data', () => {
       .toThrow(/drive letter must be a single letter/);
   });
 
+  test('does not validate a tokenized drive letter', () => {
+    const letter = Lazy.string({ produce: () => 'DE' });
+    expect(() => ec2.Ec2LaunchV2Task.initializeVolume({ devices: [{ device: 'xvdb', letter }] })).not.toThrow();
+  });
+
   test('can set the host name', () => {
     // GIVEN
     const userData = ec2.UserData.forWindowsEc2LaunchV2();
@@ -339,9 +409,13 @@ describe('EC2Launch v2 user data', () => {
     expect(parse(userData).tasks).toEqual([{ task: 'setHostName', inputs: { reboot: false } }]);
   });
 
-  test.each(['a-very-long-hostname', 'web_01', '12345', ''])('fails for invalid host name %j', (hostName) => {
+  test.each(['a-very-long-hostname', 'abcdefghijklmnop', 'web_01', '12345', ''])('fails for invalid host name %j', (hostName) => {
     expect(() => ec2.Ec2LaunchV2Task.hostName({ hostName }))
       .toThrow(/host name must be at most 15 characters/);
+  });
+
+  test.each(['abcdefghijklmno', '1web'])('accepts host name %j', (hostName) => {
+    expect(() => ec2.Ec2LaunchV2Task.hostName({ hostName })).not.toThrow();
   });
 
   test('does not validate a tokenized host name', () => {
@@ -450,6 +524,19 @@ describe('EC2Launch v2 user data', () => {
     // THEN
     expect(() => userData.addTask(ec2.Ec2LaunchV2Task.hostName({ reboot: true })))
       .toThrow(/task "setHostName" has already been added/);
+  });
+
+  test.each([
+    ['no inputs, then inputs', () => ec2.Ec2LaunchV2Task.startSsm(), () => ec2.Ec2LaunchV2Task.custom('startSsm', { x: 1 })],
+    ['inputs, then no inputs', () => ec2.Ec2LaunchV2Task.custom('startSsm', { x: 1 }), () => ec2.Ec2LaunchV2Task.startSsm()],
+    ['list inputs, then map inputs', () => ec2.Ec2LaunchV2Task.executeProgram({ path: 'a.exe' }), () => ec2.Ec2LaunchV2Task.custom('executeProgram', { path: 'b.exe' })],
+  ])('fails to merge incompatible inputs for the same task: %s', (_, first, second) => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    userData.addTask(first());
+
+    // THEN
+    expect(() => userData.addTask(second())).toThrow(/has already been added/);
   });
 
   test('fails to add commands after a custom executeScript task without a list of inputs', () => {
