@@ -1,0 +1,374 @@
+{
+ "Resources": {
+  "AllowRuntimeImagePull6C7D2AD3": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"ECR\",\"action\":\"setRepositoryPolicy\",\"parameters\":{\"repositoryName\":\"cdk-integ-lambda-runtime-config\",\"policyText\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"ecr:BatchGetImage\\\",\\\"ecr:GetDownloadUrlForLayer\\\"],\\\"Condition\\\":{\\\"StringEquals\\\":{\\\"aws:SourceAccount\\\":\\\"",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\\\"},\\\"ArnLike\\\":{\\\"aws:SourceArn\\\":\\\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":lambda:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":runtime/cdk-integ-*\\\"}},\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"lambda.amazonaws.com\\\"}}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"cdk-integ-lambda-runtime-config\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "AllowRuntimeImagePullCustomResourcePolicy5238C4A0"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AllowRuntimeImagePullCustomResourcePolicy5238C4A0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ecr:SetRepositoryPolicy",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/cdk-integ-lambda-runtime-config"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AllowRuntimeImagePullCustomResourcePolicy5238C4A0",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+   ]
+  },
+  "Runtime": {
+   "Type": "AWS::Lambda::Runtime",
+   "Properties": {
+    "Name": {
+     "Fn::Join": [
+      "-",
+      [
+       "cdk-integ",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Ref": "AWS::StackId"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "RuntimeVersion": {
+   "Type": "AWS::Lambda::RuntimeVersion",
+   "Properties": {
+    "RuntimeName": {
+     "Fn::Join": [
+      "-",
+      [
+       "cdk-integ",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Ref": "AWS::StackId"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    "Name": "v1",
+    "ImageUri": {
+     "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-integ-lambda-runtime-config:c7965e57e08119011d67566f9842f92b2aeb5755b2a52fccebd95f156e4051ce"
+    }
+   },
+   "DependsOn": [
+    "AllowRuntimeImagePullCustomResourcePolicy5238C4A0",
+    "AllowRuntimeImagePull6C7D2AD3",
+    "Runtime"
+   ]
+  },
+  "RuntimeAlias": {
+   "Type": "AWS::Lambda::RuntimeAlias",
+   "Properties": {
+    "RuntimeName": {
+     "Fn::Join": [
+      "-",
+      [
+       "cdk-integ",
+       {
+        "Fn::Select": [
+         2,
+         {
+          "Fn::Split": [
+           "/",
+           {
+            "Ref": "AWS::StackId"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    "Name": "live",
+    "RuntimeVersion": "v1"
+   },
+   "DependsOn": [
+    "RuntimeVersion"
+   ]
+  },
+  "CustomRuntimeFunctionServiceRoleF3189E8F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "RuntimeAlias"
+   ]
+  },
+  "CustomRuntimeFunction1AB8E55E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232.zip"
+    },
+    "Handler": "index.main",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomRuntimeFunctionServiceRoleF3189E8F",
+      "Arn"
+     ]
+    },
+    "Runtime": "custom",
+    "RuntimeConfig": {
+     "RuntimeAlias": "live",
+     "RuntimeArn": {
+      "Fn::GetAtt": [
+       "Runtime",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "CustomRuntimeFunctionServiceRoleF3189E8F",
+    "RuntimeAlias"
+   ]
+  },
+  "CfnCustomRuntimeFunctionRole88C539C3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CfnCustomRuntimeFunction": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232.zip"
+    },
+    "Handler": "index.main",
+    "Role": {
+     "Fn::GetAtt": [
+      "CfnCustomRuntimeFunctionRole88C539C3",
+      "Arn"
+     ]
+    },
+    "Runtime": "custom",
+    "RuntimeConfig": {
+     "RuntimeAlias": "live",
+     "RuntimeArn": {
+      "Fn::GetAtt": [
+       "Runtime",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "RuntimeAlias"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttRuntimeVersionArnB0E88178": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RuntimeVersion",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-runtime-config:ExportsOutputFnGetAttRuntimeVersionArnB0E88178"
+   }
+  },
+  "ExportsOutputRefCustomRuntimeFunction1AB8E55E0E027BA7": {
+   "Value": {
+    "Ref": "CustomRuntimeFunction1AB8E55E"
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-runtime-config:ExportsOutputRefCustomRuntimeFunction1AB8E55E0E027BA7"
+   }
+  },
+  "ExportsOutputRefCfnCustomRuntimeFunction26BE43A2": {
+   "Value": {
+    "Ref": "CfnCustomRuntimeFunction"
+   },
+   "Export": {
+    "Name": "aws-cdk-lambda-runtime-config:ExportsOutputRefCfnCustomRuntimeFunction26BE43A2"
+   }
+  }
+ }
+}

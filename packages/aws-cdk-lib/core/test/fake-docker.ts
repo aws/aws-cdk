@@ -1,7 +1,14 @@
 import type { SpawnSyncOptions, SpawnSyncReturns } from 'child_process';
 import child_process from 'child_process';
 
-export type FailureType = 'err-exit' | 'failed-to-start';
+/**
+ * How a faked Docker command fails
+ *
+ * - `err-exit`: the command exits with status 1, like a failing command inside a container
+ * - `docker-error`: the command exits with status 125, like Docker failing to create a container
+ * - `failed-to-start`: the Docker CLI can't be started at all
+ */
+export type FailureType = 'err-exit' | 'docker-error' | 'failed-to-start';
 
 /**
  * A mock for spawnSync that emulates a real Docker with respect to the 'inspect' command
@@ -66,13 +73,17 @@ export class FakeDocker {
           }
         }
         if (prefixMatch) {
-          return this.failureType === 'err-exit' ? failureResult() : { ...successResult(), error: new Error('UnknownError') };
+          switch (this.failureType) {
+            case 'err-exit': return failureResult();
+            case 'docker-error': return failureResult(125);
+            case 'failed-to-start': return { ...successResult(), error: new Error('UnknownError') };
+          }
         }
       }
 
       if (args[0] === 'image' && args[1] === 'inspect') {
         const image = args[2];
-        return this.builtImages.has(image) ? successResult() : failureResult();
+        return this.builtImages.has(image) ? successResult() : failureResult(1, `Error response from daemon: No such image: ${image}`);
       }
       if (args[0] === 'build') {
         const image = opt(args, '-t');
@@ -117,10 +128,10 @@ function successResult(stdout = 'stdout'): child_process.SpawnSyncReturns<NonSha
   };
 }
 
-function failureResult(): child_process.SpawnSyncReturns<NonSharedBuffer> {
+function failureResult(status = 1, stderr = ''): child_process.SpawnSyncReturns<NonSharedBuffer> {
   return {
-    status: 1,
-    stderr: Buffer.from(''),
+    status,
+    stderr: Buffer.from(stderr),
     stdout: Buffer.from(''),
     pid: 123,
     output: [Buffer.from(''), Buffer.from('')],

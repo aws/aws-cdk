@@ -102,7 +102,7 @@ export class EcrSourceAction extends Action {
         detail: {
           'result': ['SUCCESS'],
           'repository-name': [this.props.repository.repositoryRef.repositoryName],
-          'image-tag': [this.props.imageTag === '' ? undefined : (this.props.imageTag ?? 'latest')],
+          'image-tag': this.props.imageTag === '' ? undefined : [this.props.imageTag ?? 'latest'],
           'action-type': ['PUSH'],
         },
       },

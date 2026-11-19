@@ -172,8 +172,6 @@ export class Signing {
   /**
    * Sign all origin requests using the AWS Signature Version 4 signing protocol,
    * and pass the viewer's Authorization header to the origin unchanged.
-   *
-   * Use with regional AWS Lambda Web Function endpoints.
    */
   public static readonly SIGV4_ALWAYS_AMZ_AUTH = new Signing(SigningProtocol.SIGV4, SigningBehavior.ALWAYS_AMZ_AUTH);
 
@@ -187,6 +185,12 @@ export class Signing {
    * Sign all origin requests using the AWS Signature Version 4A signing protocol.
    */
   public static readonly SIGV4A_ALWAYS = new Signing(SigningProtocol.SIGV4A, SigningBehavior.ALWAYS);
+
+  /**
+   * Sign all origin requests using the AWS Signature Version 4A signing protocol,
+   * and pass the viewer's Authorization header to the origin unchanged.
+   */
+  public static readonly SIGV4A_ALWAYS_AMZ_AUTH = new Signing(SigningProtocol.SIGV4A, SigningBehavior.ALWAYS_AMZ_AUTH);
 
   /**
    * Do not sign any origin requests.

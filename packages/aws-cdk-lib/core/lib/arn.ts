@@ -223,6 +223,12 @@ export class Arn {
    * (in which case the returned components will also be dynamic CloudFormation expressions,
    * encoded as Tokens).
    *
+   * Throws on a malformed ARN — a concrete string that is not a valid ARN, or
+   * an `arn:`-prefixed string (even one that embeds tokens) missing a required
+   * component — rather than returning a partial result. To handle a value that
+   * may legitimately not be an ARN, branch it away up front (`startsWith('arn:')`
+   * / `Token.isUnresolved`) instead of catching the throw.
+   *
    * @param arn the ARN to split into its components
    * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
    */

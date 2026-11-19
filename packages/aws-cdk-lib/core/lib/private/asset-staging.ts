@@ -7,6 +7,7 @@ import { type BundlingOptions } from '../bundling';
 import { ExecutionError } from '../errors';
 import { lit } from './literal-string';
 import { profileFn } from './perf';
+import { posixShellEscape } from './shell-escape';
 
 /**
  * Options for Docker based bundling of assets
@@ -138,7 +139,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
       'public.ecr.aws/docker/library/alpine',
       'sh',
       '-c',
-      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${user} ${AssetStaging.BUNDLING_INPUT_DIR}`,
+      `mkdir -p ${AssetStaging.BUNDLING_INPUT_DIR} && chown -R ${posixShellEscape(user)} ${AssetStaging.BUNDLING_OUTPUT_DIR} && chown -R ${posixShellEscape(user)} ${AssetStaging.BUNDLING_INPUT_DIR}`,
     ]);
   }
 
@@ -205,7 +206,13 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
   }
 }
 
-export function dockerExec(args: string[], options?: SpawnSyncOptions) {
+/**
+ * Run a Docker command and throw if it fails
+ *
+ * `failureHint` is only evaluated if the command fails, and its result is added
+ * to the error message.
+ */
+export function dockerExec(args: string[], options?: SpawnSyncOptions, failureHint?: (status: number | null) => string | undefined) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
   const proc = spawnSync(prog, args, options ?? {
     encoding: 'utf-8',
@@ -234,11 +241,13 @@ export function dockerExec(args: string[], options?: SpawnSyncOptions) {
       return text.toString('utf-8').split('\n').map((line, idx) => `${idx === 0 ? firstLine : padding}${line}`);
     }
 
+    const hint = failureHint?.(proc.status);
     throw new ExecutionError(lit`CommandExecutionFailed`, [
       `${prog} exited with ${reason}`,
       ...prependLines('--> STDOUT:  ', proc.stdout ) ?? [],
       ...prependLines('--> STDERR:  ', proc.stderr ) ?? [],
       `--> Command: ${command}`,
+      ...hint ? [hint] : [],
     ].join('\n'));
   }
 

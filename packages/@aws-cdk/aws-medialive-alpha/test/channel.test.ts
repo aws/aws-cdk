@@ -2703,6 +2703,110 @@ describe('CMAF Ingest output group', () => {
       ],
     })).toThrow(/must end with '\/'/);
   });
+
+  test.each([
+    ['ttml', CaptionDestination.ttml()],
+    ['webvtt', CaptionDestination.webvtt()],
+  ])('out-of-band %s caption is the primary encode of its own output', (captionName, destination) => {
+    const video = EncodeConfiguration.video({ name: 'video', width: 1920, height: 1080, codec: VideoCodecSettings.h264() });
+    const caption = EncodeConfiguration.caption({
+      name: captionName,
+      captionSelectorName: 'cc',
+      destination,
+    });
+
+    new Channel(stack, 'CmafChannel', {
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.cmafIngest({
+          name: 'cmaf',
+          destinations: [OutputDestination.url('https://ingest.example.com/v1/channel/')],
+          outputs: [
+            { outputName: 'cmaf_video', nameModifier: '_video', encode: video },
+            { outputName: 'cmaf_captions', nameModifier: '_captions', encode: caption },
+          ],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        OutputGroups: [Match.objectLike({
+          Outputs: [
+            Match.objectLike({ OutputName: 'cmaf_video', VideoDescriptionName: 'video' }),
+            {
+              OutputName: 'cmaf_captions',
+              CaptionDescriptionNames: [captionName],
+              VideoDescriptionName: Match.absent(),
+              AudioDescriptionNames: Match.absent(),
+              OutputSettings: { CmafIngestOutputSettings: { NameModifier: '_captions' } },
+            },
+          ],
+        })],
+      }),
+    });
+  });
+
+  // MediaLive rejects this: "Outputs must have at least one associated Video Description when
+  // using packaged caption destinations."
+  test.each([
+    ['burn-in', CaptionDestination.burnIn()],
+    ['embedded', CaptionDestination.embedded()],
+  ])('fails when an in-band %s caption is the primary encode', (captionName, destination) => {
+    const caption = EncodeConfiguration.caption({
+      name: captionName,
+      captionSelectorName: 'cc',
+      destination,
+    });
+
+    expect(() => {
+      new Channel(stack, 'CmafChannel', {
+        inputs: [{ input: defaultInput }],
+        outputGroups: [
+          OutputGroupConfiguration.cmafIngest({
+            name: 'cmaf',
+            destinations: [OutputDestination.url('https://ingest.example.com/v1/channel/')],
+            outputs: [{ outputName: 'cmaf_captions', nameModifier: '_captions', encode: caption }],
+          }),
+        ],
+      });
+      Template.fromStack(stack);
+    }).toThrow(/uses an in-band destination/);
+  });
+
+  // MediaLive rejects this: "An output with only caption descriptions cannot have more than one
+  // associated."
+  test('fails when a caption-only output also has captions', () => {
+    const ttml = EncodeConfiguration.caption({
+      name: 'ttml',
+      captionSelectorName: 'cc',
+      destination: CaptionDestination.ttml(),
+    });
+    const burnIn = EncodeConfiguration.caption({
+      name: 'burn-in',
+      captionSelectorName: 'cc',
+      destination: CaptionDestination.burnIn(),
+    });
+
+    expect(() => {
+      new Channel(stack, 'CmafChannel', {
+        inputs: [{ input: defaultInput }],
+        outputGroups: [
+          OutputGroupConfiguration.cmafIngest({
+            name: 'cmaf',
+            destinations: [OutputDestination.url('https://ingest.example.com/v1/channel/')],
+            outputs: [{
+              outputName: 'cmaf_captions',
+              nameModifier: '_captions',
+              encode: ttml,
+              captions: [burnIn],
+            }],
+          }),
+        ],
+      });
+      Template.fromStack(stack);
+    }).toThrow(/'captions' must be empty when 'encode' is a caption/);
+  });
 });
 
 describe('Per-output settings', () => {
@@ -3260,7 +3364,7 @@ describe('Caption descriptions', () => {
   });
 });
 
-describe('MediaPackage V2 in-band captions', () => {
+describe('MediaPackage V2 captions', () => {
   test('video output with burn-in caption in captions prop', () => {
     const video = EncodeConfiguration.video({
       name: 'v',
@@ -3421,11 +3525,69 @@ describe('MediaPackage V2 in-band captions', () => {
     }).toThrow(/only one embedded caption/);
   });
 
-  test('fails when caption is the primary encode', () => {
-    const webvtt = EncodeConfiguration.caption({
-      name: 'webvtt',
+  test.each([
+    ['ttml', CaptionDestination.ttml()],
+    ['webvtt', CaptionDestination.webvtt()],
+  ])('out-of-band %s caption is the primary encode of its own output', (captionName, destination) => {
+    const video = EncodeConfiguration.video({
+      name: 'v',
+      width: 1920,
+      height: 1080,
+      codec: VideoCodecSettings.h264({ framerate: Framerate.FPS_29_97 }),
+    });
+    const caption = EncodeConfiguration.caption({
+      name: captionName,
       captionSelectorName: 'cc',
-      destination: CaptionDestination.webvtt(),
+      destination,
+    });
+
+    new Channel(stack, 'Ch', {
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.mediaPackageV2({
+          name: 'emp',
+          channel: empChannel,
+          outputs: [
+            { encode: video, outputName: 'hd' },
+            { encode: caption, outputName: 'captions' },
+          ],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        OutputGroups: [Match.objectLike({
+          Outputs: [
+            Match.objectLike({ OutputName: 'hd', VideoDescriptionName: 'v' }),
+            {
+              OutputName: 'captions',
+              CaptionDescriptionNames: [captionName],
+              VideoDescriptionName: Match.absent(),
+              AudioDescriptionNames: Match.absent(),
+              OutputSettings: {
+                MediaPackageOutputSettings: {
+                  MediaPackageV2DestinationSettings: {
+                    HlsAutoSelect: 'OMIT',
+                    HlsDefault: 'OMIT',
+                  },
+                },
+              },
+            },
+          ],
+        })],
+      }),
+    });
+  });
+
+  test.each([
+    ['burn-in', CaptionDestination.burnIn()],
+    ['embedded', CaptionDestination.embedded()],
+  ])('fails when an in-band %s caption is the primary encode', (captionName, destination) => {
+    const caption = EncodeConfiguration.caption({
+      name: captionName,
+      captionSelectorName: 'cc',
+      destination,
     });
 
     expect(() => {
@@ -3435,12 +3597,69 @@ describe('MediaPackage V2 in-band captions', () => {
           OutputGroupConfiguration.mediaPackageV2({
             name: 'emp',
             channel: empChannel,
-            outputs: [{ encode: webvtt, outputName: 'cap_out' }],
+            outputs: [{ encode: caption, outputName: 'cap_out' }],
           }),
         ],
       });
       Template.fromStack(stack);
-    }).toThrow(/must be a video or audio encode/);
+    }).toThrow(/uses an in-band destination/);
+  });
+
+  test('fails when a caption-only output also has captions', () => {
+    const webvtt = EncodeConfiguration.caption({
+      name: 'webvtt',
+      captionSelectorName: 'cc',
+      destination: CaptionDestination.webvtt(),
+    });
+    const burnIn = EncodeConfiguration.caption({
+      name: 'burn-in',
+      captionSelectorName: 'cc',
+      destination: CaptionDestination.burnIn(),
+    });
+
+    expect(() => {
+      new Channel(stack, 'Ch', {
+        inputs: [{ input: defaultInput }],
+        outputGroups: [
+          OutputGroupConfiguration.mediaPackageV2({
+            name: 'emp',
+            channel: empChannel,
+            outputs: [{ encode: webvtt, captions: [burnIn], outputName: 'cap_out' }],
+          }),
+        ],
+      });
+      Template.fromStack(stack);
+    }).toThrow(/'captions' must be empty when 'encode' is a caption/);
+  });
+
+  test('an empty captions array is allowed on a caption-only output', () => {
+    const ttml = EncodeConfiguration.caption({
+      name: 'ttml',
+      captionSelectorName: 'cc',
+      destination: CaptionDestination.ttml(),
+    });
+
+    new Channel(stack, 'Ch', {
+      inputs: [{ input: defaultInput }],
+      outputGroups: [
+        OutputGroupConfiguration.mediaPackageV2({
+          name: 'emp',
+          channel: empChannel,
+          outputs: [{ encode: ttml, captions: [], outputName: 'cap_out' }],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::MediaLive::Channel', {
+      EncoderSettings: Match.objectLike({
+        OutputGroups: [Match.objectLike({
+          Outputs: [Match.objectLike({
+            OutputName: 'cap_out',
+            CaptionDescriptionNames: ['ttml'],
+          })],
+        })],
+      }),
+    });
   });
 });
 

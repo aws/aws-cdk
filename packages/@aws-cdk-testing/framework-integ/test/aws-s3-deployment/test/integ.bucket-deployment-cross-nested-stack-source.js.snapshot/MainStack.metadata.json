@@ -1,0 +1,351 @@
+{
+  "/MainStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MainStack.template.json"
+    }
+  ],
+  "/MainStack/ResourceNestedStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MainStackResourceNestedStack3536D4FD.nested.template.json"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MainStackDeploymentNestedStack458135C1.nested.template.json"
+    }
+  ],
+  "/MainStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MainStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MainStack/ResourceNestedStack/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MainStack/ResourceNestedStack/MainStackResourceNestedStackUserPoolEB3BCBB9Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+    }
+  ],
+  "/MainStack/ResourceNestedStack.NestedStack/ResourceNestedStack.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BF"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "architecture": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/reference-to-MainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputs.MainStackResourceNestedStackUserPoolEB3BCBB9Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/MainStackDeploymentNestedStackBucket171013D4Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MainStackDeploymentNestedStackBucket171013D4Ref"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack.NestedStack/DeploymentNestedStack.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4"
+    }
+  ],
+  "/MainStack/Exports/Output{\"Fn::GetAtt\":[\"ResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BF\",\"Outputs.MainStackResourceNestedStackUserPoolEB3BCBB9Ref\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttResourceNestedStackNestedStackResourceNestedStackNestedStackResourceCDDDB2BFOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref75ED0C95"
+    }
+  ],
+  "/MainStack/Exports/Output{\"Fn::GetAtt\":[\"DeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4\",\"Outputs.MainStackDeploymentNestedStackBucket171013D4Ref\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDeploymentNestedStackNestedStackDeploymentNestedStackNestedStackResource3980C4F4OutputsMainStackDeploymentNestedStackBucket171013D4Ref5463A51D"
+    }
+  ],
+  "/MainStack/ResourceNestedStack/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPool6BA7E5F2"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "architecture": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/CustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployWithCrossNestedStackSourceAwsCliLayer1F4C151B"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/Asset1/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/CustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeployWithCrossNestedStackSourceCustomResource74A727EA"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/DeployWithCrossNestedStackSource/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MainStack/DeploymentNestedStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+    }
+  ]
+}
