@@ -10,6 +10,5 @@
       "assertionStackName": "codepipelinepipelinetypev2bydefaulttestDefaultTestDeployAssert9B55D727"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }

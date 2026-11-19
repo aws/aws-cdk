@@ -6,13 +6,13 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at EksAllHandlersInVpcStack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
-        "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new Cluster (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/aws-eks/lib/cluster.js:935:37)",
-        "    at new EksAllHandlersInVpcStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-handlers-vpc.js:46:9)",
-        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-handlers-vpc.js:58:15)",
+        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at EksAllHandlersInVpcStack._silenceLiteralAzWarning (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new Cluster (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:935:37)",
+        "    at new EksAllHandlersInVpcStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-handlers-vpc.js:48:25)",
+        "    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-handlers-vpc.js:65:15)",
         "    ...node internals..."
       ]
     },
@@ -33,6 +33,7 @@
       "data": {
         "version": "*",
         "kubectlLayer": "*",
+        "defaultCapacity": "*",
         "placeClusterHandlerInVpc": true
       }
     },
@@ -42,7 +43,8 @@
         "addNodegroupCapacity": [
           "*",
           {
-            "minSize": "*"
+            "minSize": "*",
+            "amiType": "AL2023_x86_64_STANDARD"
           }
         ]
       }
@@ -202,8 +204,8 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "cluster": "*",
-        "instanceTypes": "*",
-        "minSize": "*"
+        "minSize": "*",
+        "amiType": "AL2023_x86_64_STANDARD"
       }
     }
   ],

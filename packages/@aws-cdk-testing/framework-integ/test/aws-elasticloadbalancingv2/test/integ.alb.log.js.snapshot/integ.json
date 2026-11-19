@@ -10,6 +10,5 @@
       "assertionStackName": "cdkintegalblogDefaultTestDeployAssert0863986A"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }

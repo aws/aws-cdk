@@ -129,7 +129,12 @@ var __callDispose = (stack, error, hasError) => {
   return next();
 };
 
-// ../../aws-cdk-lib/matching/lib/matcher.ts
+// ../../aws-cdk-lib/assertions/lib/matcher.ts
+var matcher_exports = {};
+__export(matcher_exports, {
+  MatchResult: () => MatchResult,
+  Matcher: () => Matcher
+});
 function* range(n) {
   for (let i = 0; i < n; i++) {
     yield i;
@@ -144,7 +149,7 @@ function* enumFirst(xs) {
 }
 var Matcher, MatchResult;
 var init_matcher = __esm({
-  "../../aws-cdk-lib/matching/lib/matcher.ts"() {
+  "../../aws-cdk-lib/assertions/lib/matcher.ts"() {
     "use strict";
     Matcher = class _Matcher {
       /**
@@ -412,10 +417,10 @@ ${indents.join("")}`));
   }
 });
 
-// ../../aws-cdk-lib/matching/lib/private/error.ts
+// ../../aws-cdk-lib/assertions/lib/private/error.ts
 var ASSERTION_ERROR_SYMBOL, AssertionError;
 var init_error = __esm({
-  "../../aws-cdk-lib/matching/lib/private/error.ts"() {
+  "../../aws-cdk-lib/assertions/lib/private/error.ts"() {
     "use strict";
     ASSERTION_ERROR_SYMBOL = /* @__PURE__ */ Symbol.for("@aws-cdk/assertions.AssertionError");
     AssertionError = class _AssertionError extends Error {
@@ -440,10 +445,10 @@ var init_error = __esm({
   }
 });
 
-// ../../aws-cdk-lib/matching/lib/private/matchers/absent.ts
+// ../../aws-cdk-lib/assertions/lib/private/matchers/absent.ts
 var AbsentMatch;
 var init_absent = __esm({
-  "../../aws-cdk-lib/matching/lib/private/matchers/absent.ts"() {
+  "../../aws-cdk-lib/assertions/lib/private/matchers/absent.ts"() {
     "use strict";
     init_matcher();
     AbsentMatch = class extends Matcher {
@@ -467,7 +472,7 @@ var init_absent = __esm({
   }
 });
 
-// ../../aws-cdk-lib/matching/lib/private/sorting.ts
+// ../../aws-cdk-lib/assertions/lib/private/sorting.ts
 function sortKeyComparator(keyFn) {
   return (a, b) => {
     const ak = keyFn(a);
@@ -489,15 +494,15 @@ function sortKeyComparator(keyFn) {
   };
 }
 var init_sorting = __esm({
-  "../../aws-cdk-lib/matching/lib/private/sorting.ts"() {
+  "../../aws-cdk-lib/assertions/lib/private/sorting.ts"() {
     "use strict";
   }
 });
 
-// ../../aws-cdk-lib/matching/lib/private/sparse-matrix.ts
+// ../../aws-cdk-lib/assertions/lib/private/sparse-matrix.ts
 var SparseMatrix;
 var init_sparse_matrix = __esm({
-  "../../aws-cdk-lib/matching/lib/private/sparse-matrix.ts"() {
+  "../../aws-cdk-lib/assertions/lib/private/sparse-matrix.ts"() {
     "use strict";
     SparseMatrix = class {
       matrix = /* @__PURE__ */ new Map();
@@ -519,20 +524,24 @@ var init_sparse_matrix = __esm({
   }
 });
 
-// ../../aws-cdk-lib/matching/lib/private/type.ts
+// ../../aws-cdk-lib/assertions/lib/private/type.ts
 function getType(obj) {
   return Array.isArray(obj) ? "array" : typeof obj;
 }
 var init_type = __esm({
-  "../../aws-cdk-lib/matching/lib/private/type.ts"() {
+  "../../aws-cdk-lib/assertions/lib/private/type.ts"() {
     "use strict";
   }
 });
 
-// ../../aws-cdk-lib/matching/lib/match.ts
+// ../../aws-cdk-lib/assertions/lib/match.ts
+var match_exports = {};
+__export(match_exports, {
+  Match: () => Match
+});
 var Match, LiteralMatch, ArrayMatch, ObjectMatch, SerializedJson, NotMatch, AnyMatch, StringLikeRegexpMatch;
 var init_match = __esm({
-  "../../aws-cdk-lib/matching/lib/match.ts"() {
+  "../../aws-cdk-lib/assertions/lib/match.ts"() {
     "use strict";
     init_matcher();
     init_error();
@@ -916,31 +925,6 @@ var init_match = __esm({
   }
 });
 
-// ../../aws-cdk-lib/assertions/lib/match.ts
-var match_exports = {};
-__export(match_exports, {
-  Match: () => Match
-});
-var init_match2 = __esm({
-  "../../aws-cdk-lib/assertions/lib/match.ts"() {
-    "use strict";
-    init_match();
-  }
-});
-
-// ../../aws-cdk-lib/assertions/lib/matcher.ts
-var matcher_exports = {};
-__export(matcher_exports, {
-  MatchResult: () => MatchResult,
-  Matcher: () => Matcher
-});
-var init_matcher2 = __esm({
-  "../../aws-cdk-lib/assertions/lib/matcher.ts"() {
-    "use strict";
-    init_matcher();
-  }
-});
-
 // ../../aws-cdk-lib/core/lib/private/literal-string.ts
 function lit(x) {
   if (x.length !== 1) {
@@ -1085,7 +1069,7 @@ var require_metadata_schema = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/lib/cloud-assembly/metadata-schema.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.CFN_RESOURCE_PROPS_ATTRIBUTE = exports2.CFN_RESOURCE_LOGICAL_ID_ATTRIBUTE = exports2.CFN_RESOURCE_TYPE_ATTRIBUTE = exports2.ArtifactMetadataEntryType = void 0;
+    exports2.CFN_RESOURCE_PROPS_ATTRIBUTE = exports2.CFN_RESOURCE_TYPE_ATTRIBUTE = exports2.ArtifactMetadataEntryType = void 0;
     var ArtifactMetadataEntryType9;
     (function(ArtifactMetadataEntryType10) {
       ArtifactMetadataEntryType10["ASSET"] = "aws:cdk:asset";
@@ -1099,7 +1083,6 @@ var require_metadata_schema = __commonJS({
       ArtifactMetadataEntryType10["PROPERTY_ASSIGNMENT"] = "aws:cdk:propertyAssignment";
     })(ArtifactMetadataEntryType9 || (exports2.ArtifactMetadataEntryType = ArtifactMetadataEntryType9 = {}));
     exports2.CFN_RESOURCE_TYPE_ATTRIBUTE = "aws:cdk:cloudformation:type";
-    exports2.CFN_RESOURCE_LOGICAL_ID_ATTRIBUTE = "aws:cdk:cloudformation:logicalId";
     exports2.CFN_RESOURCE_PROPS_ATTRIBUTE = "aws:cdk:cloudformation:props";
   }
 });
@@ -4783,7 +4766,7 @@ var require_semver2 = __commonJS({
 // ../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/cli-version.json
 var require_cli_version = __commonJS({
   "../../aws-cdk-lib/node_modules/@aws-cdk/cloud-assembly-schema/cli-version.json"(exports2, module2) {
-    module2.exports = { version: "2.1148.2" };
+    module2.exports = { version: "2.1146.1" };
   }
 });
 
@@ -7123,7 +7106,7 @@ var require_manifest = __commonJS({
     var VALIDATION_REPORT_SCHEMA = require_validation_report_schema2();
     var SCHEMA_VERSION = require_version();
     var Manifest2 = class _Manifest {
-      static [JSII_RTTI_SYMBOL_1] = { fqn: "@aws-cdk/cloud-assembly-schema.Manifest", version: "55.6.0" };
+      static [JSII_RTTI_SYMBOL_1] = { fqn: "@aws-cdk/cloud-assembly-schema.Manifest", version: "55.2.0" };
       /**
        * Validates and saves the cloud assembly manifest to file.
        *
@@ -12673,32 +12656,27 @@ var init_core_construct_finders = __esm({
 });
 
 // ../../aws-cdk-lib/core/lib/annotations.ts
-function removeWarningDeep(construct, id, where) {
+function removeWarningDeep(construct, id) {
   const stack = [construct];
   while (stack.length > 0) {
     const next = stack.pop();
-    removeWarning(next, id, where);
+    removeWarning(next, id);
     stack.push(...next.node.children);
   }
 }
-function removeWarning(construct, id, where) {
+function removeWarning(construct, id) {
   const meta = construct.node._metadata;
   if (!meta) {
     return;
   }
-  const hasFilter = where !== void 0 && Object.keys(where).length > 0;
   let i = 0;
   while (i < meta.length) {
     const m = meta[i];
     if (m.type === cloud_assembly_schema_exports.ArtifactMetadataEntryType.WARN && m.data.includes(ackTag(id))) {
-      const recordedContext = WarningContexts.of(construct).get(construct, m.data) ?? {};
-      const remove = !hasFilter || Match.objectLike(where).test(recordedContext).isSuccess;
-      if (remove) {
-        meta.splice(i, 1);
-        continue;
-      }
+      meta.splice(i, 1);
+    } else {
+      i += 1;
     }
-    i += 1;
   }
 }
 function removeInfoDeep(construct, id) {
@@ -12727,13 +12705,7 @@ function removeInfo(construct, id) {
 function ackTag(id) {
   return `[ack: ${id}]`;
 }
-function ackRecordMatches(record, context) {
-  if (!record.where || Object.keys(record.where).length === 0) {
-    return true;
-  }
-  return Match.objectLike(record.where).test(context).isSuccess;
-}
-var Annotations, Acknowledgements, WarningContexts;
+var Annotations, Acknowledgements;
 var init_annotations = __esm({
   "../../aws-cdk-lib/core/lib/annotations.ts"() {
     "use strict";
@@ -12742,7 +12714,6 @@ var init_annotations = __esm({
     init_cx_api();
     init_core_construct_finders();
     init_literal_string();
-    init_match();
     Annotations = class _Annotations {
       constructor(scope) {
         this.scope = scope;
@@ -12772,24 +12743,9 @@ var init_annotations = __esm({
        * @param message optional message to explain the reason for acknowledgement
        */
       acknowledgeWarning(id, message) {
-        this._acknowledgeWarning(id, void 0, message);
-      }
-      /**
-       * Acknowledge a warning, optionally only the occurrences whose call-site
-       * context matches the given `where` filter.
-       *
-       * When `where` is omitted, all warnings with the id are acknowledged (the
-       * behavior of the public `acknowledgeWarning`). When `where` is provided it is
-       * treated as an `objectLike` partial match against each occurrence's context:
-       * only occurrences whose context is a superset of `where` are suppressed, and
-       * other occurrences of the same id continue to warn.
-       *
-       * @internal
-       */
-      _acknowledgeWarning(id, where, message) {
-        Acknowledgements.of(this.scope).add(this.scope, id, where);
+        Acknowledgements.of(this.scope).add(this.scope, id);
         void message;
-        removeWarningDeep(this.scope, id, where);
+        removeWarningDeep(this.scope, id);
       }
       /**
        * Adds an acknowledgeable warning metadata entry to this construct.
@@ -12808,19 +12764,10 @@ var init_annotations = __esm({
        *
        * @param id the unique identifier for the warning. This can be used to acknowledge the warning
        * @param message The warning message.
-       * @param options optional settings, including structured `context` describing this
-       * occurrence. A `Validations.acknowledge({ where })` filter is matched against that
-       * context (as an objectLike partial match) to selectively suppress a subset of the
-       * occurrences of this id.
        */
-      addWarningV2(id, message, options) {
-        const context = options?.context;
-        if (!Acknowledgements.of(this.scope).has(this.scope, id, context)) {
-          const data = `${message} ${ackTag(id)}`;
-          this.addMessage(cloud_assembly_schema_exports.ArtifactMetadataEntryType.WARN, data);
-          if (context && Object.keys(context).length > 0) {
-            WarningContexts.of(this.scope).record(this.scope, data, context);
-          }
+      addWarningV2(id, message) {
+        if (!Acknowledgements.of(this.scope).has(this.scope, id)) {
+          this.addMessage(cloud_assembly_schema_exports.ArtifactMetadataEntryType.WARN, `${message} ${ackTag(id)}`);
         }
       }
       /**
@@ -12965,32 +12912,21 @@ var init_annotations = __esm({
         return fresh;
       }
       static ACKNOWLEDGEMENTS_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/core.Acknowledgements");
-      // path -> ack id -> list of acknowledgement records (one per acknowledge call).
-      // An undefined/empty `where` means "suppress all occurrences of this id"
-      // (backwards-compatible behavior). A warning is suppressed if ANY record for
-      // the id matches its context.
       acks = /* @__PURE__ */ new Map();
       constructor() {
       }
-      add(node, ack, where) {
+      add(node, ack) {
         const nodePath = this.nodePath(node);
-        let byId = this.acks.get(nodePath);
-        if (!byId) {
-          byId = /* @__PURE__ */ new Map();
-          this.acks.set(nodePath, byId);
+        let arr = this.acks.get(nodePath);
+        if (!arr) {
+          arr = /* @__PURE__ */ new Set();
+          this.acks.set(nodePath, arr);
         }
-        let records = byId.get(ack);
-        if (!records) {
-          records = [];
-          byId.set(ack, records);
-        }
-        records.push({ where });
+        arr.add(ack);
       }
-      has(node, ack, context) {
-        const ctx = context ?? {};
+      has(node, ack) {
         for (const candidate of this.searchPaths(this.nodePath(node))) {
-          const records = this.acks.get(candidate)?.get(ack);
-          if (records && records.some((r) => ackRecordMatches(r, ctx))) {
+          if (this.acks.get(candidate)?.has(ack)) {
             return true;
           }
         }
@@ -13016,41 +12952,6 @@ var init_annotations = __esm({
         }
         ret.push(path22);
         return ret.reverse();
-      }
-    };
-    WarningContexts = class _WarningContexts {
-      static of(scope) {
-        const app = appOf(scope);
-        if (!app) {
-          return new _WarningContexts();
-        }
-        const existing = app[_WarningContexts.WARNING_CONTEXTS_SYM];
-        if (existing) {
-          return existing;
-        }
-        const fresh = new _WarningContexts();
-        app[_WarningContexts.WARNING_CONTEXTS_SYM] = fresh;
-        return fresh;
-      }
-      static WARNING_CONTEXTS_SYM = /* @__PURE__ */ Symbol.for("@aws-cdk/core.WarningContexts");
-      // construct path -> full warning message -> context
-      contexts = /* @__PURE__ */ new Map();
-      constructor() {
-      }
-      record(node, data, context) {
-        const nodePath = this.nodePath(node);
-        let byData = this.contexts.get(nodePath);
-        if (!byData) {
-          byData = /* @__PURE__ */ new Map();
-          this.contexts.set(nodePath, byData);
-        }
-        byData.set(data, context);
-      }
-      get(node, data) {
-        return this.contexts.get(this.nodePath(node))?.get(data);
-      }
-      nodePath(node) {
-        return node.node.path.replace(/^\//, "");
       }
     };
   }
@@ -61735,7 +61636,7 @@ function allStorageUnits() {
 }
 function convert2(amount, fromUnit, toUnit, options = {}) {
   const rounding = options.rounding ?? 0 /* FAIL */;
-  if (fromUnit.inBytes === toUnit.inBytes && (options.rounding === void 0 || rounding === 2 /* NONE */)) {
+  if (fromUnit.inBytes === toUnit.inBytes) {
     return amount;
   }
   if (Token.isUnresolved(amount)) {
@@ -62288,10 +62189,8 @@ var init_aws_entities = __esm({
       // Asia Pacific (New Zealand)
       "us-isof-south-1",
       // US ISOF SOUTH
-      "us-isof-east-1",
+      "us-isof-east-1"
       // US ISOF EAST
-      "me-west-1"
-      // Middle East (Saudi Arabia)
     ];
     AWS_REGIONS = AWS_REGIONS_AND_RULES.filter((x) => typeof x === "string").sort();
     PARTITION_MAP = {
@@ -83444,11 +83343,10 @@ var init_validations = __esm({
        *
        * @param id unique identifier for the warning, used for acknowledgement
        * @param message the warning message
-       * @param options optional settings, including structured `context` for selective acknowledgement
        */
-      addWarning(id, message, options) {
+      addWarning(id, message) {
         id = normalizeValidationIdForAnnotations(id);
-        Annotations.of(this.scope).addWarningV2(id, message, options);
+        Annotations.of(this.scope).addWarningV2(id, message);
       }
       /**
        * Adds an error metadata entry to this construct.
@@ -83485,10 +83383,10 @@ var init_validations = __esm({
           const parsed = parseValidationId(rule.id);
           const qualifiedId = normalizeValidationIdForAnnotations(parsed);
           this.recordAcknowledgment(qualifiedId, rule.reason);
-          Annotations.of(this.scope)._acknowledgeWarning(qualifiedId, rule.where);
+          Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
           if (qualifiedId.startsWith(`${ANNOTATION_PLUGIN_NAMESPACE}::`)) {
             const annotationId = qualifiedId.substring(`${ANNOTATION_PLUGIN_NAMESPACE}::`.length);
-            Annotations.of(this.scope)._acknowledgeWarning(annotationId, rule.where);
+            Annotations.of(this.scope).acknowledgeWarning(annotationId);
           }
         }
       }
@@ -89787,14 +89685,6 @@ var init_core = __esm({
   }
 });
 
-// ../../aws-cdk-lib/assertions/lib/private/error.ts
-var init_error2 = __esm({
-  "../../aws-cdk-lib/assertions/lib/private/error.ts"() {
-    "use strict";
-    init_error();
-  }
-});
-
 // ../../aws-cdk-lib/assertions/lib/helpers-internal/assembly-validation-report.ts
 var assembly_validation_report_exports = {};
 __export(assembly_validation_report_exports, {
@@ -89814,8 +89704,8 @@ var init_assembly_validation_report = __esm({
     init_core();
     init_literal_string();
     init_cx_api();
-    init_match2();
-    init_error2();
+    init_match();
+    init_error();
     AssemblyValidationReport = class _AssemblyValidationReport {
       constructor(report) {
         this.report = report;
@@ -89915,19 +89805,19 @@ var require_helpers_internal = __commonJS({
     var _noFold;
     exports2.Match = void 0;
     Object.defineProperty(exports2, _noFold = "Match", { enumerable: true, configurable: true, get: () => {
-      var value = (init_match2(), __toCommonJS(match_exports)).Match;
+      var value = (init_match(), __toCommonJS(match_exports)).Match;
       Object.defineProperty(exports2, _noFold = "Match", { enumerable: true, configurable: true, value });
       return value;
     } });
     exports2.Matcher = void 0;
     Object.defineProperty(exports2, _noFold = "Matcher", { enumerable: true, configurable: true, get: () => {
-      var value = (init_matcher2(), __toCommonJS(matcher_exports)).Matcher;
+      var value = (init_matcher(), __toCommonJS(matcher_exports)).Matcher;
       Object.defineProperty(exports2, _noFold = "Matcher", { enumerable: true, configurable: true, value });
       return value;
     } });
     exports2.MatchResult = void 0;
     Object.defineProperty(exports2, _noFold = "MatchResult", { enumerable: true, configurable: true, get: () => {
-      var value = (init_matcher2(), __toCommonJS(matcher_exports)).MatchResult;
+      var value = (init_matcher(), __toCommonJS(matcher_exports)).MatchResult;
       Object.defineProperty(exports2, _noFold = "MatchResult", { enumerable: true, configurable: true, value });
       return value;
     } });
@@ -101161,17 +101051,8 @@ function __disposeResources(env2) {
   }
   return next();
 }
-function __rewriteRelativeImportExtension(path22, preserveJsx, extraExtensions, ignoreCase) {
+function __rewriteRelativeImportExtension(path22, preserveJsx) {
   if (typeof path22 === "string" && /^\.\.?\//.test(path22)) {
-    if (extraExtensions) {
-      for (var extension in extraExtensions) {
-        var suffix = path22.slice(-extension.length);
-        if (suffix === extension || ignoreCase && suffix.toLowerCase() === extension.toLowerCase()) {
-          var output = extraExtensions[extension];
-          return output === extension ? path22 : path22.slice(0, -extension.length) + output;
-        }
-      }
-    }
     return path22.replace(/\.(tsx)$|((?:\.d)?)((?:\.[^./]+?)?)\.([cm]?)ts$/i, function(m, tsx, d, ext, cm) {
       return tsx ? preserveJsx ? ".jsx" : ".js" : d && (!ext || !cm) ? m : d + ext + "." + cm.toLowerCase() + "js";
     });
