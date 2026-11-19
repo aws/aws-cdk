@@ -686,11 +686,9 @@ a threshold, and evaluation periods. Log alarms have a different model:
 ### Creating a Log Alarm
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 
 declare const logGroup: logs.LogGroup;
-declare const queryRole: iam.IRole;
 
 new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
   threshold: 5,
@@ -701,7 +699,29 @@ new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
     queryString: 'fields @message | filter @message like /ERROR/',
     aggregationExpression: 'count(*)',
     logGroups: [logGroup],
-    scheduledQueryRole: queryRole,
+    schedule: {
+      rate: Duration.minutes(5),
+      startTimeOffset: Duration.minutes(5),
+    },
+  },
+});
+```
+
+The construct creates the scheduled query role and grants it query access to `logGroups`. Pass `scheduledQueryRole` to supply your own role instead. That role must trust `logs.amazonaws.com`.
+
+### Selecting Log Groups in the Query
+
+Omit `logGroups` when the query selects its own log groups with a `SOURCE` command. The construct cannot know those log groups at synthesis time, so it grants query access to every log group in the alarm's account and region. It emits a synthesis-time warning for each role that receives that grant.
+
+```ts
+new cloudwatch.LogAlarm(this, 'SourceQueryAlarm', {
+  threshold: 5,
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+  queryResultsToEvaluate: 3,
+  queryResultsToAlarm: 2,
+  scheduledQueryConfiguration: {
+    queryString: "SOURCE logGroups(namePrefix: ['/aws/lambda/']) | fields @message | filter @message like /ERROR/",
+    aggregationExpression: 'count(*)',
     schedule: {
       rate: Duration.minutes(5),
       startTimeOffset: Duration.minutes(5),
@@ -740,12 +760,9 @@ Mask sensitive data with CloudWatch Logs data protection.
 Restrict and encrypt the targets.
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 
 declare const logGroup: logs.LogGroup;
-declare const queryRole: iam.IRole;
-declare const logLineRole: iam.IRole;
 
 new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
   threshold: 5,
@@ -754,13 +771,11 @@ new cloudwatch.LogAlarm(this, 'ErrorRateAlarm', {
   queryResultsToAlarm: 2,
   actionLogLines: {
     count: 10,
-    role: logLineRole,
   },
   scheduledQueryConfiguration: {
     queryString: 'fields @message | filter @message like /ERROR/',
     aggregationExpression: 'count(*)',
     logGroups: [logGroup],
-    scheduledQueryRole: queryRole,
     schedule: {
       rate: Duration.minutes(5),
       startTimeOffset: Duration.minutes(5),

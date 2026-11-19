@@ -61,7 +61,7 @@
     },
     {
       "type": "aws:cdk:warning",
-      "data": "logGroups is not set, so the scheduled query role is granted query permissions on every log group in the account and region; set logGroups to scope them [ack: aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedQueryPermissions]"
+      "data": "logGroups is not set, so the scheduled query role is granted query permissions on every log group in the account and region; set logGroups to scope them [ack: Annotation::aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedQueryPermissions]"
     }
   ],
   "/cdk-integ-log-alarm/BootstrapVersion": [

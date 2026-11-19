@@ -7,7 +7,7 @@ import { CfnLogAlarm } from './cloudwatch.generated';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
 import type { IRole } from '../../aws-iam';
 import { Grant, Role, ServicePrincipal } from '../../aws-iam';
-import { Annotations, ArnFormat, CfnCondition, Fn, Stack, Token, Tokenization, ValidationError, Validations } from '../../core';
+import { ArnFormat, CfnCondition, CfnElement, CfnResource, Fn, Stack, Token, Tokenization, ValidationError, Validations } from '../../core';
 import type { ArnComponents, Duration } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -22,12 +22,13 @@ import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interface
  *
  * An SNS topic ARN has no resource type, so a topic is an ARN with nothing after its
  * name; a subscription ARN carries a trailing identifier. Lambda actions are functions,
- * optionally qualified by version or alias, and Systems Manager actions are OpsItems.
+ * optionally qualified by version or alias, and Systems Manager actions are OpsItems,
+ * which only alarm actions can create.
  */
-const DISPATCHABLE_ACTIONS: { [service: string]: (arn: ArnComponents) => boolean } = {
+const DISPATCHABLE_ACTIONS: { [service: string]: (arn: ArnComponents, propName: string) => boolean } = {
   sns: arn => arn.resourceName === undefined,
   lambda: arn => arn.resource === 'function',
-  ssm: arn => arn.resource === 'opsitem',
+  ssm: (arn, propName) => arn.resource === 'opsitem' && propName === 'alarmActions',
 };
 
 /**
@@ -42,7 +43,9 @@ export interface LogAlarmScheduledQuerySchedule {
    * days, hours, or minutes.
    *
    * A rate whose amount is only known at deploy time must be given in minutes,
-   * hours, or days, and is rendered in that unit.
+   * hours, or days, and is rendered in that unit. Its amount must reference a
+   * `CfnParameter` or a pseudo parameter, because a CloudFormation condition chooses
+   * between the singular and plural unit.
    */
   readonly rate: Duration;
 
@@ -100,9 +103,6 @@ export interface LogAlarmScheduledQueryConfiguration {
    * A query that selects log groups outside this list fails at run time with an
    * access-denied error. The permissions only cover the log groups named here.
    *
-   * The list itself must be resolvable at synthesis time, because each log group in it is
-   * rendered and granted individually. Individual log groups in it may be unresolved.
-   *
    * Log groups defined outside the current app can be referenced with
    * `LogGroup.fromLogGroupName()` or `LogGroup.fromLogGroupArn()`. A log group in another
    * account must be referenced by ARN, because only an ARN carries the account. Set up
@@ -125,8 +125,10 @@ export interface LogAlarmScheduledQueryConfiguration {
    * additions silently, and the query then fails at runtime; attach the permissions
    * to such a role yourself.
    *
-   * Typed as `IRole` rather than `IRoleRef` because adding to the policy requires
-   * `addToPrincipalPolicy`.
+   * Typed as `IRole` rather than `IRoleRef & IGrantable` because the role, including the
+   * one this construct creates, is exposed as a public property that callers extend, for
+   * example with `addManagedPolicy()` or a grant. jsii allows intersection types only as
+   * inputs, so exposing it requires the full `IRole`.
    *
    * [disable-awslint:prefer-ref-interface]
    *
@@ -222,7 +224,7 @@ export interface LogAlarmProps {
   /**
    * How the alarm treats missing query results.
    *
-   * @default - the service default of MISSING
+   * @default TreatMissingData.Missing
    */
   readonly treatMissingData?: TreatMissingData;
 
@@ -332,8 +334,10 @@ export interface LogAlarmActionLogLines {
    * mutable. A role imported with `Role.fromRoleArn(..., { mutable: false })`
    * discards that addition silently.
    *
-   * Typed as `IRole` rather than `IRoleRef` because adding to the policy requires
-   * `addToPrincipalPolicy`.
+   * Typed as `IRole` rather than `IRoleRef & IGrantable` because the role, including the
+   * one this construct creates, is exposed as a public property that callers extend, for
+   * example with `addManagedPolicy()` or a grant. jsii allows intersection types only as
+   * inputs, so exposing it requires the full `IRole`.
    *
    * [disable-awslint:prefer-ref-interface]
    *
@@ -454,12 +458,8 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     // The scheduled query service requires between 1 and 50 log groups when the
     // property is present; an empty array is rejected at deploy time.
     const logGroups = sqc.logGroups;
-    if (logGroups !== undefined && !Token.isUnresolved(logGroups) && (logGroups.length < 1 || logGroups.length > 50)) {
+    if (logGroups !== undefined && (logGroups.length < 1 || logGroups.length > 50)) {
       throw new ValidationError(lit`InvalidLogGroups`, `logGroups must contain between 1 and 50 entries, got ${logGroups.length}`, this);
-    }
-
-    if (logGroups !== undefined && Token.isUnresolved(logGroups)) {
-      throw new ValidationError(lit`UnresolvedLogGroups`, 'logGroups must be a resolved list because each log group is rendered and granted individually, got an unresolved list; pass the log groups individually or omit logGroups and select them in queryString', this);
     }
 
     if (!Token.isUnresolved(sqc.queryString) && (sqc.queryString.length < 1 || sqc.queryString.length > 10000)) {
@@ -496,7 +496,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       ?? this.createServiceRole('ScheduledQueryRole', 'logs.amazonaws.com', 'logs', 'scheduled-query');
     this.grantRunQuery(this.scheduledQueryRole, sqc.logGroups);
     if (sqc.logGroups === undefined) {
-      Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedQueryPermissions',
+      Validations.of(this).addWarning('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedQueryPermissions',
         'logGroups is not set, so the scheduled query role is granted query permissions on every log group in the account and region; set logGroups to scope them');
     }
 
@@ -507,7 +507,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     if (this.actionLogLineRole !== undefined) {
       this.grantReadLogLines(this.actionLogLineRole, sqc.logGroups);
       if (sqc.logGroups === undefined) {
-        Annotations.of(this).addWarningV2('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedLogLinePermissions',
+        Validations.of(this).addWarning('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedLogLinePermissions',
           'logGroups is not set, so the log line role is granted logs:GetQueryResults on every log group in the account and region; set logGroups to scope it');
       }
     }
@@ -602,14 +602,14 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     if (arns.length + actions.length > 5) {
       throw new ValidationError(lit`TooManyAlarmActions`, `${propName} can contain at most 5 actions, got ${arns.length + actions.length}`, this);
     }
-    arns.push(...actions.map(a => this.bindAndWarn(a)));
+    arns.push(...actions.map(a => this.bindAndWarn(a, propName)));
   }
 
-  private bindAndWarn(action: IAlarmAction): string {
+  private bindAndWarn(action: IAlarmAction, propName: string): string {
     const arn = action.bind(this, this).alarmActionArn;
     const components = this.actionArnComponents(arn);
     const dispatches = components && DISPATCHABLE_ACTIONS[components.service];
-    if (components !== undefined && (dispatches === undefined || !dispatches(components))) {
+    if (components !== undefined && (dispatches === undefined || !dispatches(components, propName))) {
       Validations.of(this).addWarning('aws-cdk-lib/aws-cloudwatch:logAlarmUnsupportedAction',
         `log alarms do not dispatch this action type. Got ${JSON.stringify(arn)}`,
         { context: { service: components.service, resource: components.resource } });
@@ -762,14 +762,11 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    *
    * The scheduled query accepts a log group name or ARN, and only an ARN carries an
    * account, so the ARN is always passed through to keep cross-account queries working.
-   * The trailing `:*` that `logGroupArn` carries is rejected here, so it is removed. An
-   * ARN that is still a token has the suffix removed at deploy time instead.
+   * The trailing `:*` that `logGroupArn` carries is rejected here, so it is removed, at
+   * deploy time when the ARN is still a token.
    */
   private renderLogGroupIdentifiers(logGroups?: ILogGroupRef[]): string[] | undefined {
-    return logGroups?.map(logGroup => {
-      const arn = logGroup.logGroupRef.logGroupArn;
-      return Token.isUnresolved(arn) ? Fn.select(0, Fn.split(':*', arn)) : arn.replace(/:\*$/, '');
-    });
+    return logGroups?.map(logGroup => Fn.select(0, Fn.split(':*', logGroup.logGroupRef.logGroupArn)));
   }
 
   /**
@@ -784,6 +781,22 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       return [Stack.of(this).formatArn({ service: 'logs', resource: 'log-group', resourceName: '*', arnFormat: ArnFormat.COLON_RESOURCE_NAME })];
     }
     return logGroups.map(logGroup => logGroup.logGroupRef.logGroupArn);
+  }
+
+  /**
+   * Whether a tokenized amount is a `Ref` to a parameter of this stack or to a pseudo
+   * parameter, the only references a CloudFormation condition may contain besides
+   * mappings and other conditions.
+   */
+  private referencesParameter(amount: number): boolean {
+    const stack = Stack.of(this);
+    const resolved = stack.resolve(amount);
+    const ref = resolved !== null && typeof resolved === 'object' && Object.keys(resolved).length === 1 ? resolved.Ref : undefined;
+    if (typeof ref !== 'string') {
+      return false;
+    }
+    return ref.startsWith('AWS::') || stack.node.findAll().some(c =>
+      CfnElement.isCfnElement(c) && !CfnResource.isCfnResource(c) && Stack.of(c) === stack && stack.resolve(c.logicalId) === ref);
   }
 
   /**
@@ -804,11 +817,14 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
         : unit === 'hours'
           ? rate.toHours({ integral: false })
           : rate.toDays({ integral: false });
+      if (!this.referencesParameter(amount)) {
+        throw new ValidationError(lit`UnsupportedScheduleRateToken`, `schedule rate must reference a CfnParameter or a pseudo parameter when its amount comes from a token, because a CloudFormation condition chooses its unit, got ${JSON.stringify(Stack.of(this).resolve(amount))}`, this);
+      }
       const amountToken = Tokenization.stringifyNumber(amount);
-      const rateUnitIsOne = new CfnCondition(this, 'ScheduleRateUnitIsOne', {
+      const rateAmountIsOne = new CfnCondition(this, 'ScheduleRateAmountIsOne', {
         expression: Fn.conditionEquals(amountToken, '1'),
       });
-      const scheduleUnit = Fn.conditionIf(rateUnitIsOne.logicalId, unit.slice(0, -1), unit).toString();
+      const scheduleUnit = Fn.conditionIf(rateAmountIsOne.logicalId, unit.slice(0, -1), unit).toString();
       return `rate(${amountToken} ${scheduleUnit})`;
     }
     const minutes = rate.toMinutes({ integral: false });

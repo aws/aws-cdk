@@ -3,7 +3,7 @@ import { LambdaAction } from '../../aws-cloudwatch-actions/lib';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { LogGroup } from '../../aws-logs';
-import { Duration, Fn, Stack, Token, Validations } from '../../core';
+import { CfnParameter, CfnResource, Duration, Fn, Stack, Token, Validations } from '../../core';
 import type { IAlarmAction } from '../lib';
 import { ComparisonOperator, LogAlarm, TreatMissingData } from '../lib';
 
@@ -298,6 +298,18 @@ describe('LogAlarm', () => {
       Match.stringLikeRegexp('do not dispatch'));
   });
 
+  test.each([
+    ['OK', (alarm: LogAlarm, action: IAlarmAction) => alarm.addOkAction(action)],
+    ['insufficient-data', (alarm: LogAlarm, action: IAlarmAction) => alarm.addInsufficientDataAction(action)],
+  ])('warns for a Systems Manager OpsItem added as an %s action', (_state, add) => {
+    const alarm = new LogAlarm(stack, 'Alarm', baseProps());
+
+    add(alarm, { bind: () => ({ alarmActionArn: 'arn:aws:ssm:us-east-1:123456789012:opsitem:3#CATEGORY=Availability' }) });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Alarm',
+      Match.stringLikeRegexp('log alarms do not dispatch this action type'));
+  });
+
   test('renders action arns given through props into each state array', () => {
     const action = (alarmActionArn: string): IAlarmAction => ({ bind: () => ({ alarmActionArn }) });
     new LogAlarm(stack, 'Alarm', {
@@ -360,17 +372,6 @@ describe('LogAlarm', () => {
     const alarm = new LogAlarm(stack, 'Alarm', baseProps());
 
     expect(() => alarm.addAlarmAction({ bind: () => ({ alarmActionArn }) })).toThrow(/ARN/);
-  });
-
-  test('fails for an unresolved logGroups list', () => {
-    const props = baseProps();
-    expect(() => new LogAlarm(stack, 'Alarm', {
-      ...props,
-      scheduledQueryConfiguration: {
-        ...props.scheduledQueryConfiguration,
-        logGroups: Token.asList({ Ref: 'LogGroupList' }) as unknown as LogGroup[],
-      },
-    })).toThrow(/logGroups must be a resolved list/);
   });
 
   test('renders the arn for a log group imported by arn, without the trailing wildcard', () => {
@@ -575,23 +576,24 @@ describe('LogAlarm', () => {
   });
 
   test.each([
-    ['minutes', Duration.minutes(Token.asNumber({ Ref: 'RateParam' })), 'minutes'],
-    ['hours', Duration.hours(Token.asNumber({ Ref: 'RateParam' })), 'hours'],
-    ['days', Duration.days(Token.asNumber({ Ref: 'RateParam' })), 'days'],
-  ])('renders a tokenized rate given in %s, singularising the unit at deploy time', (_name, rate, unit) => {
+    ['minutes', (amount: number) => Duration.minutes(amount)],
+    ['hours', (amount: number) => Duration.hours(amount)],
+    ['days', (amount: number) => Duration.days(amount)],
+  ])('renders a tokenized rate given in %s, singularising the unit at deploy time', (unit, toRate) => {
+    const rateParam = new CfnParameter(stack, 'RateParam', { type: 'Number' });
     const props = baseProps();
     new LogAlarm(stack, 'Alarm', {
       ...props,
       scheduledQueryConfiguration: {
         ...props.scheduledQueryConfiguration,
-        schedule: { rate, startTimeOffset: Duration.minutes(5) },
+        schedule: { rate: toRate(rateParam.valueAsNumber), startTimeOffset: Duration.minutes(5) },
       },
     });
 
     const template = Template.fromStack(stack);
     const conditions = template.findConditions('*', { 'Fn::Equals': [{ Ref: 'RateParam' }, '1'] });
     const conditionId = Object.keys(conditions)[0];
-    expect(conditionId).toMatch(/^AlarmScheduleRateUnitIsOne/);
+    expect(conditionId).toMatch(/^AlarmScheduleRateAmountIsOne/);
     template.hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       ScheduledQueryConfiguration: Match.objectLike({
         ScheduleConfiguration: Match.objectLike({
@@ -601,6 +603,20 @@ describe('LogAlarm', () => {
         }),
       }),
     });
+  });
+
+  test.each([
+    ['a resource attribute', () => Token.asNumber(new CfnResource(stack, 'RateSource', { type: 'Custom::RateSource' }).getAtt('Rate'))],
+    ['an imported value', () => Token.asNumber(Fn.importValue('ScheduleRate'))],
+  ])('fails for a tokenized rate taken from %s', (_name, amount) => {
+    const props = baseProps();
+    expect(() => new LogAlarm(stack, 'Alarm', {
+      ...props,
+      scheduledQueryConfiguration: {
+        ...props.scheduledQueryConfiguration,
+        schedule: { rate: Duration.minutes(amount()), startTimeOffset: Duration.minutes(5) },
+      },
+    })).toThrow(/schedule rate must reference a CfnParameter or a pseudo parameter when its amount comes from a token/);
   });
 
   test.each([
@@ -742,15 +758,22 @@ describe('LogAlarm', () => {
           Action: 'sts:AssumeRole',
           Principal: { Service: 'cloudwatch.amazonaws.com' },
           Condition: {
-            StringEquals: { 'aws:SourceAccount': Match.anyValue() },
-            ArnLike: { 'aws:SourceArn': Match.objectLike({ 'Fn::Join': Match.arrayWith([Match.arrayWith([Match.stringLikeRegexp(':cloudwatch:')])]) }) },
+            StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+            ArnLike: {
+              'aws:SourceArn': {
+                'Fn::Join': ['', [
+                  'arn:', { Ref: 'AWS::Partition' }, ':cloudwatch:', { Ref: 'AWS::Region' }, ':',
+                  { Ref: 'AWS::AccountId' }, ':alarm:*',
+                ]],
+              },
+            },
           },
         })],
       },
     });
     template.hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       ActionLogLineCount: 10,
-      ActionLogLineRoleArn: Match.anyValue(),
+      ActionLogLineRoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('^AlarmLogLineRole'), 'Arn'] },
     });
   });
 
@@ -921,8 +944,15 @@ describe('LogAlarm', () => {
           Action: 'sts:AssumeRole',
           Principal: { Service: 'logs.amazonaws.com' },
           Condition: {
-            StringEquals: { 'aws:SourceAccount': Match.anyValue() },
-            ArnLike: { 'aws:SourceArn': Match.objectLike({ 'Fn::Join': Match.arrayWith([Match.arrayWith([Match.stringLikeRegexp(':logs:')])]) }) },
+            StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+            ArnLike: {
+              'aws:SourceArn': {
+                'Fn::Join': ['', [
+                  'arn:', { Ref: 'AWS::Partition' }, ':logs:', { Ref: 'AWS::Region' }, ':',
+                  { Ref: 'AWS::AccountId' }, ':scheduled-query:*',
+                ]],
+              },
+            },
           },
         })],
       },
