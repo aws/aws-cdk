@@ -7,18 +7,18 @@ import type {
 import {
   AwsLogDriver, Cluster,
 } from '../../../aws-ecs';
-import type { IListenerCertificate, INetworkLoadBalancer, IpAddressType, NetworkListener, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
-import { NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
+import type { IListenerCertificate, INetworkLoadBalancer, NetworkListener, NetworkLoadBalancerProps, NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
+import { IpAddressType, NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
 import type { IRole } from '../../../aws-iam';
 import type { IHostedZone } from '../../../aws-route53';
-import { ARecord, CnameRecord, RecordTarget } from '../../../aws-route53';
+import { ARecord, AaaaRecord, CnameRecord, RecordTarget } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 
 /**
- * Describes the type of DNS record the service should create
+ * Describes the type of DNS record the service should create.
  */
 export enum NetworkLoadBalancedServiceRecordType {
   /**
@@ -33,6 +33,15 @@ export enum NetworkLoadBalancedServiceRecordType {
    * Do not create any DNS records
    */
   NONE,
+  /**
+   * Create Route 53 A and AAAA alias records.
+   *
+   * This option creates DNS records only. It does not configure the load balancer for IPv6.
+   * If the pattern creates the load balancer, set `ipAddressType` to `IpAddressType.DUAL_STACK`
+   * so that IPv6 clients can reach the service. If you provide your own `loadBalancer`,
+   * `ipAddressType` is ignored; configure that load balancer with a dual-stack IP address type instead.
+   */
+  ALIAS_DUAL_STACK,
 }
 
 /**
@@ -176,7 +185,8 @@ export interface NetworkLoadBalancedServiceBaseProps {
   readonly cloudMapOptions?: CloudMapOptions;
 
   /**
-   * Specifies whether the Route53 record should be a CNAME, an A record using the Alias feature or no record at all.
+   * Specifies whether the Route 53 record should be a CNAME, an A record using the Alias feature,
+   * an A and AAAA record using the Alias feature, or no record at all.
    * This is useful if you need to work with DNS systems that do not support alias records.
    *
    * @default NetworkLoadBalancedServiceRecordType.ALIAS
@@ -402,14 +412,25 @@ export abstract class NetworkLoadBalancedServiceBase extends Construct {
         throw new ValidationError(lit`RouteHostedDomainZoneName`, 'A Route53 hosted domain zone name is required to configure the specified domain name', this);
       }
 
-      switch (props.recordType ?? NetworkLoadBalancedServiceRecordType.ALIAS) {
+      const recordType = props.recordType ?? NetworkLoadBalancedServiceRecordType.ALIAS;
+      switch (recordType) {
         case NetworkLoadBalancedServiceRecordType.ALIAS:
-          new ARecord(this, 'DNS', {
+        case NetworkLoadBalancedServiceRecordType.ALIAS_DUAL_STACK: {
+          const aliasProps = {
             zone: props.domainZone,
             recordName: props.domainName,
             target: RecordTarget.fromAlias(new LoadBalancerTarget(loadBalancer)),
-          });
+          };
+          new ARecord(this, 'DNS', aliasProps);
+          if (recordType === NetworkLoadBalancedServiceRecordType.ALIAS_DUAL_STACK) {
+            new AaaaRecord(this, 'DNSAAAA', aliasProps);
+            if (loadBalancer.ipAddressType === IpAddressType.IPV4) {
+              cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:aliasDualStackWithIpv4LoadBalancer',
+                'recordType ALIAS_DUAL_STACK creates an AAAA alias record, but the load balancer IP address type is IPV4, so IPv6 clients cannot reach the service. Configure the load balancer with IpAddressType.DUAL_STACK.');
+            }
+          }
           break;
+        }
         case NetworkLoadBalancedServiceRecordType.CNAME:
           new CnameRecord(this, 'DNS', {
             zone: props.domainZone,
