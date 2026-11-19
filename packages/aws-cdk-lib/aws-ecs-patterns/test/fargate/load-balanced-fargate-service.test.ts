@@ -461,7 +461,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  const DUAL_STACK_ALIAS_WARNING = 'recordType ALIAS_DUAL_STACK creates an AAAA alias record, but the load balancer IP address type is IPV4, so IPv6 clients cannot reach the service. Set ipAddressType to IpAddressType.DUAL_STACK or IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4. [ack: @aws-cdk/aws-ecs-patterns:aliasDualStackWithIpv4LoadBalancer]';
+  const DUAL_STACK_ALIAS_WARNING = 'recordType ALIAS_DUAL_STACK creates an AAAA alias record, but the load balancer IP address type is IPV4, so IPv6 clients cannot reach the service. Configure the load balancer with IpAddressType.DUAL_STACK or IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4. [ack: @aws-cdk/aws-ecs-patterns:aliasDualStackWithIpv4LoadBalancer]';
 
   function createDualStackAliasService(stack: cdk.Stack, props: Partial<ecsPatterns.ApplicationLoadBalancedFargateServiceProps> = {}) {
     const vpc = props.cluster?.vpc ?? new ec2.Vpc(stack, 'VPC');
@@ -522,13 +522,53 @@ describe('ApplicationLoadBalancedFargateService', () => {
     Annotations.fromStack(stack).hasNoWarning('/Default/FargateAlbService', Match.stringLikeRegexp('aliasDualStackWithIpv4LoadBalancer'));
   });
 
-  test('dual-stack alias option does not warn when a load balancer is provided', () => {
+  test('dual-stack alias option warns when a provided load balancer uses the default IPv4 address type', () => {
     // GIVEN
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
     const loadBalancer = new ApplicationLoadBalancer(stack, 'LoadBalancer', { vpc, internetFacing: true });
+
+    // WHEN
+    createDualStackAliasService(stack, { cluster, loadBalancer });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/FargateAlbService', DUAL_STACK_ALIAS_WARNING);
+  });
+
+  test('dual-stack alias option does not warn when a provided load balancer is dual-stack', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC', { ipProtocol: ec2.IpProtocol.DUAL_STACK });
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const loadBalancer = new ApplicationLoadBalancer(stack, 'LoadBalancer', {
+      vpc,
+      internetFacing: true,
+      ipAddressType: IpAddressType.DUAL_STACK,
+    });
+
+    // WHEN
+    createDualStackAliasService(stack, { cluster, loadBalancer });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/FargateAlbService', Match.stringLikeRegexp('aliasDualStackWithIpv4LoadBalancer'));
+  });
+
+  test('dual-stack alias option does not warn when the provided load balancer address type is unknown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const loadBalancer = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ImportedLoadBalancer', {
+      loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188',
+      loadBalancerCanonicalHostedZoneId: 'Z35SXDOTRQ7X7K',
+      loadBalancerDnsName: 'my-load-balancer-1234567890.us-west-2.elb.amazonaws.com',
+      securityGroupId: 'sg-12345678',
+      vpc,
+    });
 
     // WHEN
     createDualStackAliasService(stack, { cluster, loadBalancer });

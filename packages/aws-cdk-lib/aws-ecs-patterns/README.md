@@ -1234,9 +1234,10 @@ To use dualstack IP address type, you must have associated IPv6 CIDR blocks with
 
 You can use dualstack Application Load Balancer for Fargate and EC2 services.
 For a custom domain on either pattern, set `recordType` to `ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK`
-to create both A and AAAA alias records. Also set `ipAddressType` to a dual-stack type; if the pattern creates
-the load balancer with the default `IpAddressType.IPV4`, CDK emits a synth-time warning because IPv6 clients
-cannot reach the service.
+to create both A and AAAA alias records. The load balancer must also use a dual-stack IP address type: set
+`ipAddressType` when the pattern creates the load balancer, or configure your own `loadBalancer` accordingly.
+If the load balancer uses `IpAddressType.IPV4`, CDK emits a synth-time warning because IPv6 clients cannot
+reach the service.
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';

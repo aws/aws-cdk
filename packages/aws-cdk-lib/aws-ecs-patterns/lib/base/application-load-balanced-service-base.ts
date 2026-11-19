@@ -43,7 +43,9 @@ export enum ApplicationLoadBalancedServiceRecordType {
    * Create Route 53 A and AAAA alias records.
    *
    * This option creates DNS records only. It does not configure the load balancer for IPv6.
-   * Set `ipAddressType` to a dual-stack type so that IPv6 clients can reach the service.
+   * If the pattern creates the load balancer, set `ipAddressType` to a dual-stack type so that
+   * IPv6 clients can reach the service. If you provide your own `loadBalancer`, `ipAddressType`
+   * is ignored; configure that load balancer with a dual-stack IP address type instead.
    */
   ALIAS_DUAL_STACK,
 }
@@ -597,9 +599,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           const aliasRecord = new ARecord(this, 'DNS', aliasProps);
           if (recordType === ApplicationLoadBalancedServiceRecordType.ALIAS_DUAL_STACK) {
             new AaaaRecord(this, 'DNSAAAA', aliasProps);
-            if (props.loadBalancer === undefined && (props.ipAddressType ?? IpAddressType.IPV4) === IpAddressType.IPV4) {
+            if (loadBalancer.ipAddressType === IpAddressType.IPV4) {
               Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:aliasDualStackWithIpv4LoadBalancer',
-                'recordType ALIAS_DUAL_STACK creates an AAAA alias record, but the load balancer IP address type is IPV4, so IPv6 clients cannot reach the service. Set ipAddressType to IpAddressType.DUAL_STACK or IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4.');
+                'recordType ALIAS_DUAL_STACK creates an AAAA alias record, but the load balancer IP address type is IPV4, so IPv6 clients cannot reach the service. Configure the load balancer with IpAddressType.DUAL_STACK or IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4.');
             }
           }
           domainName = aliasRecord.domainName;
