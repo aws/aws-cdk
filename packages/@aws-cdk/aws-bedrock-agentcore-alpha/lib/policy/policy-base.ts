@@ -30,6 +30,7 @@ import type { PolicyValidationMode } from './policy-types';
 /**
  * Minimal reference interface for Policy resources.
  * Used for resource identification and ARN construction.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IPolicy extends IResource, IPolicyRef, iam.IGrantable {
   /**
@@ -118,6 +119,7 @@ export interface IPolicy extends IResource, IPolicyRef, iam.IGrantable {
 
 /**
  * Attributes for importing an existing Policy
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface PolicyAttributes {
   /**
@@ -139,6 +141,7 @@ export interface PolicyAttributes {
 /**
  * Abstract base class for a Policy.
  * Contains methods and attributes valid for Policies either created with CDK or imported.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class PolicyBase extends Resource implements IPolicy {
   public abstract readonly policyArn: string;
