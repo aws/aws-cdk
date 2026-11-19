@@ -113,9 +113,9 @@ for the breaking-change rule.
 - **Mechanical churn is out of scope (doc-absent detail):** tooling-driven, no semantic template change —
   asset hashes, CDK version strings / `aws:cdk:version` metadata, bootstrap/synthesizer boilerplate
   (`CDKMetadata`, `BootstrapVersion` SSM lookups), pure metadata / ordering churn (`aws:cdk:path`,
-  key-order, `Rules`/`Parameters` reshuffles with no property change). Rule of thumb: if no resource's type,
-  logical ID, or real property value changed, the diff is mechanical; and do not wave one through because
-  "snapshots always change."
+  key-order, `Rules`/`Parameters` reshuffles with no property change). Rule of thumb: if no resource's
+  type, logical ID, or real property value changed, the diff is mechanical — do not flag it, and do not
+  wave one through because "snapshots always change."
 
 **[TEST-INTEG-STALE-SNAPSHOT] (BLOCKING)** — The diff shows a changed `integ.*.ts` and its companion
 `*.snapshot/`, but the snapshot does not reflect the test change (or a brand-new `integ.*.ts` arrives with

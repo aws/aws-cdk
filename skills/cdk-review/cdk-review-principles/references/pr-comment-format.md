@@ -59,7 +59,7 @@ bar" (authoritative). In this format, "tied to a specific line" means it has
 a `file` and a `lineRange`; a high-level observation with no line to anchor to belongs in the
 review `summary`.
 
-Put these in the `summary` text if they matter:
+Keep these out of the findings (put them in the `summary` text if they matter):
 high-level design observations not tied to a line, positive feedback, clusters of
 related nits (consolidate into one finding on the first occurrence), findings already
 surfaced by automated PR analysis (unless you add new context), and philosophical
