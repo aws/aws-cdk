@@ -13,6 +13,8 @@ on:
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   cli-changes:
     runs-on: ubuntu-latest

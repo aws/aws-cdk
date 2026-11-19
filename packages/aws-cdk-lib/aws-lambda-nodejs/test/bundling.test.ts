@@ -37,6 +37,7 @@ beforeEach(() => {
 
   jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
+    buildImage: () => { },
     cp: () => 'dest-path',
     run: () => { },
     toJSON: () => 'built-image',
@@ -206,7 +207,7 @@ test('esbuild bundling with externals and dependencies', () => {
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
           "cp '/asset-input/package-lock.json' '/asset-output/package-lock.json'",
-          'cd "/asset-output"',
+          "cd '/asset-output'",
           'npm ci',
         ].join(' && '),
       ],
@@ -679,7 +680,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f '\/asset-output\/node_modules\/.modules.yaml'/),
       ]),
     }),
   });
@@ -928,7 +929,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
           `'esbuild' '--bundle' '/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
           "cp '/asset-input/common/package-lock.json' '/asset-output/package-lock.json'",
-          'cd "/asset-output"',
+          "cd '/asset-output'",
           'npm ci',
         ].join(' && '),
       ],
@@ -1850,3 +1851,67 @@ function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 
 
   throw new Error(`No \`package.json\` file found within ${depth} parent directories`);
 }
+
+test('repeated esbuild arguments use separate shell-escaped Docker arguments', () => {
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+    esbuildArgs: {
+      '--alias': ['first=./path with spaces', "second=./it's second"],
+      '--pure': ['console.log', 'console.debug'],
+      '--supported': ['bigint=true', 'top-level-await=false'],
+      '--conditions': 'first,second',
+      '--drop': [],
+      '--minify': true,
+      '--splitting': false,
+    },
+  });
+
+  const command = bundler.command[2];
+  expect(command).toContain("'--alias:first=./path with spaces'");
+  expect(command).toContain("'--alias:second=./it'\\''s second'");
+  expect(command).toContain("'--pure:console.log' '--pure:console.debug'");
+  expect(command).toContain("'--supported:bigint=true' '--supported:top-level-await=false'");
+  expect(command).toContain("'--conditions=first,second'");
+  expect(command).not.toContain('--drop');
+  expect(command).toContain("'--minify'");
+  expect(command).not.toContain('--splitting');
+});
+
+test('repeated esbuild arguments are individual values in local spawn', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    esbuildArgs: {
+      '--alias': ['first=./path with spaces', "second=./it's second"],
+      '--pure': ['console.log', 'console.debug'],
+      '--supported': ['bigint=true', 'top-level-await=false'],
+      '--conditions': 'first,second',
+      '--drop': [],
+    },
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const esbuildCall = spawnSyncMock.mock.calls.find(c => c[1]?.includes('--bundle'));
+  const args = esbuildCall![1] as string[];
+  expect(args).toEqual(expect.arrayContaining([
+    '--alias:first=./path with spaces',
+    "--alias:second=./it's second",
+    '--pure:console.log',
+    '--pure:console.debug',
+    '--supported:bigint=true',
+    '--supported:top-level-await=false',
+    '--conditions=first,second',
+  ]));
+  expect(args.some(arg => arg.startsWith('--drop'))).toBe(false);
+});

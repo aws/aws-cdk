@@ -1,4 +1,26 @@
 {
+  "/aws-cdk-eks-handlers-in-vpc-test": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at EksAllHandlersInVpcStack._silenceLiteralAzWarning (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new Cluster (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:935:37)",
+        "    at new EksAllHandlersInVpcStack (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-handlers-vpc.js:48:25)",
+        "    at <anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-handlers-vpc.js:65:15)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-eks-handlers-in-vpc-test.template.json"
+    }
+  ],
   "/aws-cdk-eks-handlers-in-vpc-test/KubectlLayer": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -11,6 +33,7 @@
       "data": {
         "version": "*",
         "kubectlLayer": "*",
+        "defaultCapacity": "*",
         "placeClusterHandlerInVpc": true
       }
     },
@@ -20,10 +43,23 @@
         "addNodegroupCapacity": [
           "*",
           {
-            "minSize": "*"
+            "minSize": "*",
+            "amiType": "AL2023_x86_64_STANDARD"
           }
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.ClusterResourceProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkekshandlersinvpctestawscdkawseksClusterResourceProvider9260AB35.nested.template.json"
+    }
+  ],
+  "/aws-cdk-eks-handlers-in-vpc-test/@aws-cdk--aws-eks.KubectlProvider": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkekshandlersinvpctestawscdkawseksKubectlProvider72227111.nested.template.json"
     }
   ],
   "/aws-cdk-eks-handlers-in-vpc-test/BootstrapVersion": [
@@ -168,8 +204,8 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "cluster": "*",
-        "instanceTypes": "*",
-        "minSize": "*"
+        "minSize": "*",
+        "amiType": "AL2023_x86_64_STANDARD"
       }
     }
   ],
@@ -456,7 +492,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -492,7 +531,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }

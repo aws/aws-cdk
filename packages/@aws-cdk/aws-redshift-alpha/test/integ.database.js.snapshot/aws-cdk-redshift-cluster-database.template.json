@@ -888,7 +888,7 @@
     "tablePrivileges": [
      {
       "tableId": "Table",
-      "tableName": "IntegTable",
+      "tableName": "public.IntegTable",
       "actions": [
        "INSERT",
        "DELETE",
@@ -990,7 +990,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1059b90e57a48954f8a33d230b215487e398f194970a210a0058cd736093929b.zip"
+     "S3Key": "afffdfe08646fe3b5f18451fb874449a6fa77b349a85f9ac4adf75dce47edef6.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -1199,7 +1199,7 @@
     },
     "databaseName": "my_db",
     "tableName": {
-     "prefix": "IntegTable",
+     "prefix": "public.IntegTable",
      "generateSuffix": "false"
     },
     "tableColumns": [
@@ -1381,6 +1381,188 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "PrivilegeQueryServiceRoleF3B61091": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PrivilegeQueryServiceRoleDefaultPolicy980E8E1E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ClusterSecretAttachment769E6258"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PrivilegeQueryServiceRoleDefaultPolicy980E8E1E",
+    "Roles": [
+     {
+      "Ref": "PrivilegeQueryServiceRoleF3B61091"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PrivilegeQueryF353D69A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\nconst { RedshiftDataClient, ExecuteStatementCommand, DescribeStatementCommand, GetStatementResultCommand } = require('@aws-sdk/client-redshift-data');\nconst client = new RedshiftDataClient();\nexports.handler = async () => {\n  const { Id } = await client.send(new ExecuteStatementCommand({\n    ClusterIdentifier: process.env.CLUSTER_NAME,\n    Database: process.env.DATABASE_NAME,\n    SecretArn: process.env.SECRET_ARN,\n    Sql: \"SELECT has_table_privilege(:grantee, 'public.integtable', 'INSERT'), has_table_privilege(:grantee, 'public.integtable', 'DELETE')\",\n    Parameters: [{ name: 'grantee', value: process.env.USER_NAME }],\n  }));\n  for (;;) {\n    const statement = await client.send(new DescribeStatementCommand({ Id }));\n    if (statement.Status === 'FINISHED') break;\n    if (statement.Status === 'FAILED' || statement.Status === 'ABORTED') throw new Error(statement.Status + ': ' + statement.Error);\n    await new Promise((resolve) => setTimeout(resolve, 1000));\n  }\n  const { Records } = await client.send(new GetStatementResultCommand({ Id }));\n  return Records.map((row) => row.map((field) => field.booleanValue));\n};\n"
+    },
+    "Environment": {
+     "Variables": {
+      "CLUSTER_NAME": {
+       "Ref": "ClusterEB0386A7"
+      },
+      "DATABASE_NAME": "my_db",
+      "SECRET_ARN": {
+       "Ref": "ClusterSecretAttachment769E6258"
+      },
+      "USER_NAME": {
+       "Fn::GetAtt": [
+        "UserFDDCDD17",
+        "username"
+       ]
+      }
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "PrivilegeQueryServiceRoleF3B61091",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 60
+   },
+   "DependsOn": [
+    "PrivilegeQueryServiceRoleDefaultPolicy980E8E1E",
+    "PrivilegeQueryServiceRoleF3B61091"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PrivilegeQueryinlinePolicyAddedToExecutionRole0E6324767": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "redshift-data:ExecuteStatement",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":redshift:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":cluster:",
+          {
+           "Ref": "ClusterEB0386A7"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PrivilegeQueryinlinePolicyAddedToExecutionRole0E6324767",
+    "Roles": [
+     {
+      "Ref": "PrivilegeQueryServiceRoleF3B61091"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PrivilegeQueryinlinePolicyAddedToExecutionRole152A66CCC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "redshift-data:DescribeStatement",
+        "redshift-data:GetStatementResult"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PrivilegeQueryinlinePolicyAddedToExecutionRole152A66CCC",
+    "Roles": [
+     {
+      "Ref": "PrivilegeQueryServiceRoleF3B61091"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefPrivilegeQueryF353D69AA6DB0176": {
+   "Value": {
+    "Ref": "PrivilegeQueryF353D69A"
+   },
+   "Export": {
+    "Name": "aws-cdk-redshift-cluster-database:ExportsOutputRefPrivilegeQueryF353D69AA6DB0176"
+   }
   }
  },
  "Parameters": {

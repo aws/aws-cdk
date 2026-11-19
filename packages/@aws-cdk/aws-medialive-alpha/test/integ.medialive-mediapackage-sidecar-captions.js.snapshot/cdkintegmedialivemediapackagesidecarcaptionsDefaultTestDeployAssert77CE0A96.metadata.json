@@ -1,0 +1,20 @@
+{
+  "/cdk-integ-medialive-mediapackage-sidecar-captions/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegmedialivemediapackagesidecarcaptionsDefaultTestDeployAssert77CE0A96.template.json"
+    }
+  ],
+  "/cdk-integ-medialive-mediapackage-sidecar-captions/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-medialive-mediapackage-sidecar-captions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -7,14 +7,15 @@ import { Policy } from './policy';
 import type { PolicyStatement } from './policy-statement';
 import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ArnPrincipal } from './principals';
-import { AttachedPolicies } from './private/util';
+import { AttachedPolicies, importedDefaultPolicyName } from './private/util';
 import type { IUser } from './user';
-import { Annotations, ArnFormat, Resource, Stack, Token } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Resource, Stack, Token } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 
 /**
  * Represents an IAM Group.
@@ -122,7 +123,7 @@ abstract class GroupBase extends Resource implements IGroup {
    */
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
-      this.defaultPolicy = new Policy(this, 'DefaultPolicy');
+      this.defaultPolicy = new Policy(this, 'DefaultPolicy', { policyName: this._defaultPolicyName() });
       this.defaultPolicy.attachToGroup(this);
     }
 
@@ -132,6 +133,16 @@ abstract class GroupBase extends Resource implements IGroup {
 
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.addToPrincipalPolicy(statement).statementAdded;
+  }
+
+  /**
+   * The physical name of the default policy.
+   *
+   * @returns `undefined` to let the policy generate its own name
+   * @internal
+   */
+  protected _defaultPolicyName(): string | undefined {
+    return undefined;
   }
 }
 
@@ -170,6 +181,12 @@ export class Group extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
       public principalAccount = arnComponents.account;
+
+      /** @internal */
+      protected _defaultPolicyName(): string | undefined {
+        const isStackSafe = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME);
+        return isStackSafe ? importedDefaultPolicyName(this, 'DefaultPolicy') : undefined;
+      }
     }
 
     return new Import(scope, id);

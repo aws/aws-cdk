@@ -133,6 +133,10 @@ test('SSM Incident alarm action with full stack including replication set and re
 
   // GIVEN
   const stack = new Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3697',
+    reason: 'SSM Incident Manager is in maintenance mode and is intentionally exercised by this unit test',
+  });
   const responsePlanName = 'test-response-plan';
 
   const key = new kms.Key(stack, 'Key', {

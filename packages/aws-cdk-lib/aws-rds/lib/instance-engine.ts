@@ -2968,7 +2968,10 @@ export class SqlServerEngineVersion {
    */
   public static readonly VER_12_00_6449_1_V1 = SqlServerEngineVersion.of('12.00.6449.1.v1', '12.00');
 
-  /** Version "13.00" (only a major version, without a specific minor version). */
+  /**
+   * Version "13.00" (only a major version, without a specific minor version).
+   * @deprecated SQL Server 13.00 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13 = SqlServerEngineVersion.of('13.00', '13.00');
   /**
    * Version "13.00.2164.0.v1".
@@ -3035,28 +3038,66 @@ export class SqlServerEngineVersion {
    * @deprecated SQL Server 13.00.5882.1.v1 is no longer supported by Amazon RDS.
    */
   public static readonly VER_13_00_5882_1_V1 = SqlServerEngineVersion.of('13.00.5882.1.v1', '13.00');
-  /** Version "13.00.6300.2.v1". */
+  /**
+   * Version "13.00.6300.2.v1".
+   * @deprecated SQL Server 13.00.6300.2.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6300_2_V1 = SqlServerEngineVersion.of('13.00.6300.2.v1', '13.00');
-  /** Version "13.00.6419.1.v1". */
+  /**
+   * Version "13.00.6419.1.v1".
+   * @deprecated SQL Server 13.00.6419.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6419_1_V1 = SqlServerEngineVersion.of('13.00.6419.1.v1', '13.00');
-  /** Version "13.00.6430.49.v1". */
+  /**
+   * Version "13.00.6430.49.v1".
+   * @deprecated SQL Server 13.00.6430.49.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6430_49_V1 = SqlServerEngineVersion.of('13.00.6430.49.v1', '13.00');
-  /** Version "13.00.6435.1.v1". */
+  /**
+   * Version "13.00.6435.1.v1".
+   * @deprecated SQL Server 13.00.6435.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6435_1_V1 = SqlServerEngineVersion.of('13.00.6435.1.v1', '13.00');
-  /** Version "13.00.6441.1.v1". */
+  /**
+   * Version "13.00.6441.1.v1".
+   * @deprecated SQL Server 13.00.6441.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6441_1_V1 = SqlServerEngineVersion.of('13.00.6441.1.v1', '13.00');
-  /** Version "13.00.6445.1.v1". */
+  /**
+   * Version "13.00.6445.1.v1".
+   * @deprecated SQL Server 13.00.6445.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6445_1_V1 = SqlServerEngineVersion.of('13.00.6445.1.v1', '13.00');
-  /** Version "13.00.6450.1.v1". */
+  /**
+   * Version "13.00.6450.1.v1".
+   * @deprecated SQL Server 13.00.6450.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6450_1_V1 = SqlServerEngineVersion.of('13.00.6450.1.v1', '13.00');
-  /** Version "13.00.6455.2.v1". */
+  /**
+   * Version "13.00.6455.2.v1".
+   * @deprecated SQL Server 13.00.6455.2.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6455_2_V1 = SqlServerEngineVersion.of('13.00.6455.2.v1', '13.00');
-  /** Version "13.00.6460.7.v1". */
+  /**
+   * Version "13.00.6460.7.v1".
+   * @deprecated SQL Server 13.00.6460.7.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6460_7_V1 = SqlServerEngineVersion.of('13.00.6460.7.v1', '13.00');
-  /** Version "13.00.6465.1.v1". */
+  /**
+   * Version "13.00.6465.1.v1".
+   * @deprecated SQL Server 13.00.6465.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6465_1_V1 = SqlServerEngineVersion.of('13.00.6465.1.v1', '13.00');
-  /** Version "13.00.6470.1.v1". */
+  /**
+   * Version "13.00.6470.1.v1".
+   * @deprecated SQL Server 13.00.6470.1.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_13_00_6470_1_V1 = SqlServerEngineVersion.of('13.00.6470.1.v1', '13.00');
+  /**
+   * Version "13.00.6475.1.v1".
+   * @deprecated SQL Server 13.00.6475.1.v1 is no longer supported by Amazon RDS.
+   */
+  public static readonly VER_13_00_6475_1_V1 = SqlServerEngineVersion.of('13.00.6475.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -3122,6 +3163,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3500_1_V1 = SqlServerEngineVersion.of('14.00.3500.1.v1', '14.00');
   /** Version "14.00.3505.1.v1". */
   public static readonly VER_14_00_3505_1_V1 = SqlServerEngineVersion.of('14.00.3505.1.v1', '14.00');
+  /** Version "14.00.3515.1.v1". */
+  public static readonly VER_14_00_3515_1_V1 = SqlServerEngineVersion.of('14.00.3515.1.v1', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');

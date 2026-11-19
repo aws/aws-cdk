@@ -8,6 +8,8 @@ on:
       - edited
       - reopened
 
+cache-mode: read
+
 jobs:
   auto-approve:
     if: github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'dependabot-preview[bot]'

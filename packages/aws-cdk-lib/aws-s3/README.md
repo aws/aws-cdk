@@ -40,6 +40,9 @@ const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
 
 // you can access the encryption key:
 assert(bucket.encryptionKey instanceof kms.Key);
+
+// and inspect the effective encryption mode:
+assert(bucket.encryption === s3.BucketEncryption.KMS);
 ```
 
 You can also supply your own key:
@@ -72,7 +75,10 @@ const bucket = new s3.Bucket(this, 'Buck', {
 });
 
 assert(bucket.encryptionKey == null);
+assert(bucket.encryption === s3.BucketEncryption.KMS_MANAGED);
 ```
+
+The `encryption` property reports the default encryption mode that S3 applies to new objects in the bucket. For buckets defined in the CDK app it is read from the typed `bucketEncryption` property of the underlying `CfnBucket`, so it includes changes made by assigning that property through an escape hatch (`cfnBucket.bucketEncryption = { ... }`). Raw overrides made with `addPropertyOverride()` or `addOverride()` are merged into the template only when it is rendered, so they are not reflected in `encryption`. S3 applies SSE-S3 to every bucket that has no default encryption rule ([docs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-encryption.html)), so such a bucket reports `S3_MANAGED` and `UNENCRYPTED` is never returned. A KMS or DSSE rule without a key ID uses the AWS managed key `aws/s3` and reports `KMS_MANAGED` or `DSSE_MANAGED`. The property is `undefined` when the configuration is unresolved at synthesis time, uses an algorithm CDK does not model, or belongs to an imported bucket that does not specify `BucketAttributes.encryption`.
 
 Enable DSSE encryption:
 

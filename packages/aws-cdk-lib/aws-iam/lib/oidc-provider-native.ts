@@ -131,7 +131,7 @@ export interface OidcProviderNativeProps {
  * requires access to AWS resources, but you don't want to create custom sign-in
  * code or manage your own user identities.
  *
- * @see http://openid.net/connect
+ * @see https://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
  * @resource AWS::IAM::OIDCProvider
