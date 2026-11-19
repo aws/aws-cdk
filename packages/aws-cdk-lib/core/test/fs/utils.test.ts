@@ -4,6 +4,8 @@ import path from 'path';
 import { IgnoreStrategy, SymlinkFollowMode } from '../../lib/fs';
 import * as util from '../../lib/fs/utils';
 
+const FORBIDDEN_SYMLINK = /BLOCK_EXTERNAL forbids the symbolic link/;
+
 describe('utils', () => {
   describe('isInternalPath', () => {
     const root = path.resolve(path.join('source', 'root'));
@@ -109,6 +111,11 @@ describe('utils', () => {
       fs.symlinkSync('../outside/referent.txt', path.join(root, 'external-link'));
     }
 
+    function writeInternalLink() {
+      fs.writeFileSync(path.join(root, 'file.txt'), 'inside');
+      fs.symlinkSync('file.txt', path.join(root, 'internal-link'));
+    }
+
     describe('follow modes', () => {
       test('ALWAYS follows both internal and external links', () => {
         writeLinks();
@@ -128,14 +135,19 @@ describe('utils', () => {
         expect(walked.symlinks).toEqual(['internal-link => file.txt']);
       });
 
-      test('BLOCK_EXTERNAL follows the internal link and reports the external one as external', () => {
+      test('BLOCK_EXTERNAL throws on external links', () => {
         writeLinks();
+
+        expect(() => record({ follow: SymlinkFollowMode.BLOCK_EXTERNAL })).toThrow(FORBIDDEN_SYMLINK);
+      });
+
+      test('BLOCK_EXTERNAL keeps internal links as links', () => {
+        writeInternalLink();
 
         const walked = record({ follow: SymlinkFollowMode.BLOCK_EXTERNAL });
 
-        expect(walked.files).toEqual(['file.txt', 'internal-link']);
-        // Reported rather than rejected: refusing an external link is the caller's policy.
-        expect(walked.symlinks).toEqual(['external-link => ../outside/referent.txt (external)']);
+        expect(walked.files).toEqual(['file.txt']);
+        expect(walked.symlinks).toEqual(['internal-link => file.txt']);
       });
 
       test('NEVER keeps both links', () => {
@@ -182,13 +194,6 @@ describe('utils', () => {
         expect(walked.files).toEqual(['sibling-link']);
         expect(walked.symlinks).toEqual([]);
       });
-
-      test('is reported as external under mode BLOCK_EXTERNAL', () => {
-        const walked = record({ follow: SymlinkFollowMode.BLOCK_EXTERNAL });
-
-        expect(walked.files).toEqual([]);
-        expect(walked.symlinks).toEqual(['sibling-link => ../root-sibling/referent.txt (external)']);
-      });
     });
 
     // Where a link points is decided after resolving the symlinks in the directories leading
@@ -205,9 +210,7 @@ describe('utils', () => {
 
         // Followed under EXTERNAL, which only follows what is outside the tree.
         expect(record({ follow: SymlinkFollowMode.EXTERNAL }).files).toContain('nested/via-symdir');
-        expect(record({ follow: SymlinkFollowMode.BLOCK_EXTERNAL }).symlinks).toContain(
-          'nested/via-symdir => ../symdir/referent.txt (external)',
-        );
+        expect(() => record({ follow: SymlinkFollowMode.BLOCK_EXTERNAL })).toThrow(FORBIDDEN_SYMLINK);
       });
 
       test('makes a link internal when the directory it goes through comes back into the tree', () => {
