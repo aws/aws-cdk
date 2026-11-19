@@ -124,12 +124,12 @@ no `*.snapshot/` at all). The snapshot is the synthesized template, so a test ch
 must change the snapshot too; when it does not, the committed snapshot no longer proves the test deploys.
 
 ```
-# FLAG only when the .ts change alters synthesis (new or changed resources, props or stacks)
+# Flag only when the .ts change alters synthesis (new or changed resources, props or stacks)
 # and the snapshot the diff shows does not reflect it
 packages/.../test/integ.my-feature.ts           (changed)
 packages/.../test/integ.my-feature.js.snapshot/  (unchanged — no companion update)
 
-# DO NOT FLAG a .ts edit that cannot alter synthesis (comment, rename, reorder,
+# Do not flag a .ts edit that cannot alter synthesis (comment, rename, reorder,
 # import or formatting change) — it correctly produces a byte-identical snapshot
 ```
 
