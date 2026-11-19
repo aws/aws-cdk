@@ -1,8 +1,8 @@
 import type { IConstruct, IMixin } from 'constructs';
 import { ValidationError } from '../errors';
+import { memoizedGetter } from '../helpers-internal';
 import { applyMixin } from './private/mixin-metadata';
 import { ConstructSelector, type IConstructSelector } from './selectors';
-import { memoizedGetter } from '../helpers-internal';
 import { lit } from '../private/literal-string';
 
 /**
