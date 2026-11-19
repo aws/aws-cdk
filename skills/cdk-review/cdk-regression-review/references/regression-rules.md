@@ -135,7 +135,7 @@ stack's update. doc-absent detail — a runtime-logic heuristic no single AWS do
 
 ## Library stability & breaking changes
 
-**[REG-STABILITY-GATE] (BLOCKING)** — A breaking change to a **stable** library (`aws-cdk-lib`) is NEVER
+**[REG-STABILITY-GATE] (BLOCKING)** — A breaking change to a **stable** library (`aws-cdk-lib`) is never
 allowed. In an **experimental** library (an `-alpha` suffix and `"stability": "experimental"` in
 `package.json`) a breaking change is permitted but needs an explicit `BREAKING CHANGE:` callout. The one
 legitimate stable break is an existing API that was a bug *blocking* the feature (nobody could use it),
