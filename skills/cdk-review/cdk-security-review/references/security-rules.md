@@ -137,8 +137,7 @@ recoverable via `cloudformation:GetTemplate` / `lambda:GetFunctionConfiguration`
   value via `SecretValue.secretsManager(...)` / SSM `ssmSecure` so plaintext never enters the template.
 
 **[SEC-SECRET-TYPE] (RECOMMENDED)** — A secret-shaped prop (`password`, `*token*`) typed as a plain
-`string` instead of `SecretValue` signals that embedding the secret in code/template is acceptable
-(`awslint:secret-password`, `awslint:secret-token`). See
+`string` instead of `SecretValue` signals that embedding the secret in code/template is acceptable. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 
 ## Secure defaults

@@ -88,20 +88,8 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
 - **A concrete fix** — a code example, or a question framing a specific alternative
   ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
-  out; never just point at the problem. The fix never suggests:
-  - **Catching, swallowing or falling back from errors** to make code "defensive". A malformed
-    input fails fast ([`AGENTS.md § Error Handling`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#error-handling));
-    do not hide it behind a `catch` or a pre-check that returns `undefined`. This does not cover
-    auto-correcting configuration the user did not contradict, or a fallback kept so existing
-    apps do not break.
-  - **A feature flag for a change that cannot break an existing deployment.** Flags are for
-    changes to existing behavior that an existing app would notice: a template change that
-    replaces resources or breaks what users relied on
-    ([`CONTRIBUTING.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#feature-flags)),
-    or new validation that rejects input which used to deploy
-    ([`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)).
-    Validation of input that always failed at deploy time needs no flag, and a new API element
-    is preferred to a flag where it works.
+  out; never just point at the problem. A fix you suggest follows the same guides as the
+  code under review.
 
 Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
 suggestions as questions where you can; stay direct but not harsh on blocking issues
@@ -115,17 +103,9 @@ The number of findings is not a target: there is none to reach and none to stay 
 zero comments is the right result for a PR with nothing wrong. A count would choose findings
 by number rather than by merit.
 
-A finding becomes a posted comment only when all of these hold, whatever its tier:
-
-1. It is tied to a specific line.
-2. It is actionable.
-3. It is significant enough to stand alone.
-4. **It asks for a specific change in the PR** — to its code, tests, docs, title or description. If
-   your conclusion is "this is fine", "no change required", "either is defensible", or
-   "confirm this is intentional", there is no finding.
-
-Keep high-level observations, positive notes, and clusters of nits in the review summary,
-not the posted comments. A point that fails (4) is dropped, not summarised.
+A finding becomes a posted comment only when it is (1) tied to a specific line, (2)
+actionable, and (3) significant enough to stand alone. Keep high-level observations,
+positive notes, and clusters of nits in the review summary, not the posted comments.
 
 See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
 structured finding fields and how to write each one before you generate findings.

@@ -66,9 +66,9 @@ this PR owes. When a defect is outside your scope, leave it.
 Populate the structured finding fields the `cdk-review-principles` skill defines. Write
 `message` as the complete posted comment (observation, impact, concrete fix, guideline cited inline). This
 dimension's `category` is one of: Non-asserting test, Missing regression-catching test, Missing edge &
-negative cases, Untested feature-flag state, Untested token handling, Tests-as-documentation, Missing
-required integration test, Dangerous snapshot diff, IntegTest construct misuse, Weak or missing
-assertions, Redundant tests, Stale integration snapshot. The
+negative cases, Untested feature-flag state, Tests-as-documentation, Missing required integration test,
+Dangerous snapshot diff, IntegTest construct misuse, Weak or missing assertions, Redundant tests, Stale
+integration snapshot. The
 `suggestedFix` (folded into `message`) shows the test or snapshot snippet demonstrating the gap and the
 assertion, case, or test to add.
 

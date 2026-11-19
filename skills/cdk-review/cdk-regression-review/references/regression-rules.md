@@ -48,17 +48,6 @@ encodings and the `Token.asString/asList/asNumber` conversions — read the
   opaque-value `Fn.select`/`Fn.join` manipulation pattern, and the tokenized-list `.length === 1` gotcha —
   is stated at
   [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety).
-- **Check the manipulation actually breaks (doc-absent detail):** a string token is encoded as
-  `${Token[NAME.123]}`. An operation that leaves that text intact and lets the value through does not
-  corrupt the token or throw — splitting on whitespace, or `if (name.startsWith('/')) name =
-  name.slice(1)`. A check that throws or rejects when the token fails to match (`if
-  (!arn.startsWith('arn:')) throw …`) is the finding above. Prefer accepting tokens: do not suggest
-  rejecting a token input when the code can pass it through or build the value with CloudFormation
-  functions. Rejecting an unresolved token is correct where synthesis needs the concrete value, for
-  example a name that CloudFormation cannot split out of an ARN (`ecr.Repository.fromRepositoryArn`);
-  [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Import Method Implementation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#import-method-implementation)
-  requires `from*` methods to check for unresolved tokens before parsing; most importers then parse with
-  CloudFormation functions, as `s3.Bucket.fromBucketArn` does through `Arn.split`.
 - **Boolean-token false-positive guard (doc-absent detail):** tokens encode only as string, number, or
   string-list (`Token.asString`/`asNumber`/`asList` — there is no `asBoolean`), so a `boolean`-typed value
   can never be an unresolved token. Do NOT flag a missing `Token.isUnresolved()` guard on a boolean prop,

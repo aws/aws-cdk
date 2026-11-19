@@ -18,8 +18,7 @@ rules.
 - **Detection method (doc-absent detail):** ask **if I broke the behavior this test covers, would this
   test turn red?** If not, it is a non-asserting test.
   Close it by asserting the specific property/value with `Match.objectLike` (or `objectEquals` /
-  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts. `addWarningV2`
-  appends `[ack: <id>]` to the message, so a `hasWarning` that matches the id asserts the id.
+  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts.
 
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
 optional prop that changes a default with no backward-compat test locking the old default in. Both
@@ -51,7 +50,7 @@ the outcome.
   behavior, however important; its missing test stays RECOMMENDED.
 
 **[TEST-UNIT-EDGE-NEGATIVE] (RECOMMENDED)** — The happy path is tested but the boundary value, invalid
-input, or failure/error path the code handles is not — where regressions hide. A branch that
+input, failure/error path, or token input the code handles is not — where regressions hide. A branch that
 emits a diagnostic (`addWarningV2` / `addError` / `addInfo`) instead of throwing is also a reject arm: it
 owes a `hasWarning`/`hasError` assertion, because a "does not throw" test passes while the warning silently
 regresses. See
@@ -63,18 +62,6 @@ for the `hasWarning`/`hasNoWarning`/`hasError` API, and
 which lists rejection and validation-failure as required tests.
 - **Conditional (doc-absent detail):** up-tier BLOCKING when the diagnostic / reject arm is a security- or
   correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
-
-**[TEST-UNIT-TOKEN-GUARD] (RECOMMENDED)** — The PR adds a `Token.isUnresolved()` guard (skipping a
-validation or a string manipulation for deploy-time values), and no test passes an unresolved token through
-it. See [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety) for
-the guard itself.
-- **Conditional (doc-absent detail):** up-tier BLOCKING when the guard skips a security- or
-  correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
-- **Why the test (doc-absent detail):** the guide requires the guard, not a test of it. Without a test that
-  passes an unresolved token (for example `Token.asString({ Ref: 'P' })`), a later edit can drop the
-  guard unnoticed. The check or manipulation then runs on the encoded token, and rejects or corrupts
-  deploy-time values (a `CfnParameter`, an imported value, a resource attribute) whenever the encoding
-  fails it.
 
 **[TEST-UNIT-DOC-NAME] (OPTIONAL)** — A test name that describes nothing (`'works'`, `'test 2'`), so the
 suite fails as a specification; a merely awkward-but-descriptive title is a cosmetic, out of scope. See
