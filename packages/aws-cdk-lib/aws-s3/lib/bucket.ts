@@ -660,6 +660,27 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
 
   private notifications?: BucketNotifications;
 
+  /**
+   * Whether EventBridge notifications have been enabled on this bucket.
+   *
+   * Tracked on the base class so that, regardless of whether EventBridge is
+   * rendered on the bucket resource or through the notifications custom resource,
+   * a custom resource created later for other targets also configures EventBridge.
+   *
+   * @internal
+   */
+  protected readonly _eventBridgeEnabled: IBox<boolean> = Box.fromValue(false);
+
+  /**
+   * Whether a notifications custom resource has been created for this bucket.
+   *
+   * When one exists it owns the bucket's full notification configuration, so EventBridge
+   * must be rendered through it rather than directly on the bucket resource.
+   *
+   * @internal
+   */
+  protected readonly _hasNotificationsResource: IBox<boolean> = Box.fromValue(false);
+
   protected notificationsHandlerRole?: iam.IRole;
 
   protected notificationsSkipDestinationValidation?: boolean;
@@ -1071,7 +1092,15 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
         bucket: this,
         handlerRole: this.notificationsHandlerRole,
         skipDestinationValidation: this.notificationsSkipDestinationValidation ?? false,
+        preserveEventBridgeOnDelete: this._isEventBridgeViaCfnProperty(),
       });
+      this._hasNotificationsResource.set(true);
+      // If EventBridge was enabled before any other notification target was added, the
+      // newly created custom resource must also configure it: its PutBucketNotification
+      // call overwrites the bucket's full notification configuration.
+      if (this._eventBridgeEnabled.get()) {
+        this.notifications.enableEventBridgeNotification();
+      }
     }
     cb(this.notifications);
   }
@@ -1115,7 +1144,32 @@ export abstract class BucketBase extends Resource implements IBucket, IEncrypted
    * - Object Tags Deleted
    */
   public enableEventBridgeNotification() {
-    this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+    this._eventBridgeEnabled.set(true);
+    if (this._isEventBridgeViaCfnProperty()) {
+      // EventBridge is rendered directly on the bucket resource. We do not need the
+      // notifications custom resource for EventBridge alone. If one already exists for
+      // other targets, it must keep EventBridge configured because its
+      // PutBucketNotification call overwrites the bucket's full notification configuration.
+      if (this.notifications) {
+        this.notifications.enableEventBridgeNotification();
+      }
+    } else {
+      this.withNotifications(notifications => notifications.enableEventBridgeNotification());
+    }
+  }
+
+  /**
+   * Whether EventBridge notifications are rendered directly on the bucket resource's
+   * `NotificationConfiguration` property (true) or provisioned through the notifications
+   * custom resource (false).
+   *
+   * Only concrete, in-stack buckets can render the property directly; imported buckets
+   * and the base class fall back to the custom resource.
+   *
+   * @internal
+   */
+  protected _isEventBridgeViaCfnProperty(): boolean {
+    return false;
   }
 
   /**
@@ -2627,6 +2681,17 @@ export class Bucket extends BucketBase {
       objectLockConfiguration: objectLockConfiguration,
       replicationConfiguration,
       abacStatus: props.abacStatus !== undefined ? (props.abacStatus ? 'Enabled' : 'Disabled') : undefined,
+      // EventBridge is rendered here only when no notifications custom resource exists; when one
+      // does (because Lambda/SQS/SNS targets were added), it owns the full notification
+      // configuration and already includes EventBridge.
+      notificationConfiguration: this._isEventBridgeViaCfnProperty()
+        ? Box.combine(
+          { eventBridge: this._eventBridgeEnabled, hasResource: this._hasNotificationsResource },
+          ({ eventBridge, hasResource }) => eventBridge && !hasResource
+            ? { eventBridgeConfiguration: { eventBridgeEnabled: true } }
+            : undefined,
+        )
+        : undefined,
     });
     this._resource = resource;
     this.reflection = BucketReflection.of(this);
@@ -2696,6 +2761,13 @@ export class Bucket extends BucketBase {
     if (this.eventBridgeEnabled) {
       this.enableEventBridgeNotification();
     }
+  }
+
+  /**
+   * @internal
+   */
+  protected _isEventBridgeViaCfnProperty(): boolean {
+    return FeatureFlags.of(this).isEnabled(cxapi.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY) ?? false;
   }
 
   /**

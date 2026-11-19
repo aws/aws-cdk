@@ -51,6 +51,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.BATCH_DEFAULT_AL2023]: false,
     [feats.EKS_DEFAULT_AL2023]: false,
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
+    [feats.S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY]: false,
     [feats.VALIDATE_AGAINST_DEFAULT_RULES]: false,
     [feats.ECS_REMOVE_EMPTY_LOAD_BALANCERS]: false,
     [feats.CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: false,

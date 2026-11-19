@@ -158,6 +158,7 @@ export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
+export const S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY = '@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
@@ -1918,6 +1919,39 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.254.0' },
     recommendedValue: 'weak',
     unconfiguredBehavesLike: { v2: 'strong' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [S3_EVENTBRIDGE_NOTIFICATION_VIA_CFN_PROPERTY]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource',
+    detailsMd: `
+      Enabling EventBridge notifications on a bucket (via the \`eventBridgeEnabled\` prop or
+      \`enableEventBridgeNotification()\`) currently routes through the stack-singleton
+      \`BucketNotificationsHandler\` custom resource. That handler accumulates one IAM policy
+      statement per bucket, so stacks with many EventBridge-enabled buckets can exceed the
+      10,240 byte IAM role policy size limit at deploy time.
+
+      EventBridge enablement is a simple boolean on the bucket and, unlike Lambda/SQS/SNS
+      notification targets, has no circular-dependency reason to go through the custom resource.
+
+      When this feature flag is enabled, EventBridge notifications for buckets created in the
+      current stack are set directly on the \`AWS::S3::Bucket\` resource's
+      \`NotificationConfiguration.EventBridgeConfiguration\` property. A bucket that only enables
+      EventBridge no longer creates the custom resource or its per-bucket IAM policy. Buckets that
+      also have Lambda/SQS/SNS notifications continue to use the custom resource, which keeps
+      rendering the EventBridge configuration so it is not lost. Imported buckets are unaffected
+      and continue to use the custom resource.
+
+      Do not enable this flag on a stack that has already deployed EventBridge-enabled buckets:
+      the deployment removes the old notifications custom resource after updating the bucket,
+      and its Delete clears the bucket's notification configuration, so EventBridge delivery
+      stops even though the template shows it enabled.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep routing EventBridge notifications through the notifications custom resource.',
   },
 
   //////////////////////////////////////////////////////////////////////

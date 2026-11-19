@@ -16,10 +16,11 @@ def handler(event: dict, context):
     notification_configuration = props["NotificationConfiguration"]
     managed = props.get('Managed', 'true').lower() == 'true'
     skipDestinationValidation = props.get('SkipDestinationValidation', 'false').lower() == 'true'
+    preserve_eventbridge = props.get('PreserveEventBridgeOnDelete', 'false').lower() == 'true'
     stack_id = event['StackId']
     old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
     if managed:
-      config = handle_managed(event["RequestType"], notification_configuration)
+      config = handle_managed(props["BucketName"], event["RequestType"], notification_configuration, preserve_eventbridge)
     else:
       config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
     s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config, SkipDestinationValidation=skipDestinationValidation)
@@ -30,8 +31,15 @@ def handler(event: dict, context):
   finally:
     submit_response(event, context, response_status, error_message)
 
-def handle_managed(request_type, notification_configuration):
+def handle_managed(bucket, request_type, notification_configuration, preserve_eventbridge):
   if request_type == 'Delete':
+    if preserve_eventbridge:
+      # EventBridge may have moved to the bucket resource, which CloudFormation updates before
+      # deleting this resource. That update replaces the whole configuration, so if EventBridge
+      # is all that is left, it was set by the bucket resource and is not ours to remove.
+      existing = s3.get_bucket_notification_configuration(Bucket=bucket)
+      if EVENTBRIDGE_CONFIGURATION in existing and not any(existing.get(t) for t in CONFIGURATION_TYPES):
+        return {EVENTBRIDGE_CONFIGURATION: existing[EVENTBRIDGE_CONFIGURATION]}
     return {}
   return notification_configuration
 

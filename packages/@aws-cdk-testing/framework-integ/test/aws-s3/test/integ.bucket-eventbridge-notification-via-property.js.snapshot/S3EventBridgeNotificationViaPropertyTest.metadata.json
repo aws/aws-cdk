@@ -1,0 +1,41 @@
+{
+  "/S3EventBridgeNotificationViaPropertyTest": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "S3EventBridgeNotificationViaPropertyTest.template.json"
+    }
+  ],
+  "/S3EventBridgeNotificationViaPropertyTest/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "eventBridgeEnabled": true,
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/S3EventBridgeNotificationViaPropertyTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/S3EventBridgeNotificationViaPropertyTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/S3EventBridgeNotificationViaPropertyTest/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    }
+  ],
+  "/S3EventBridgeNotificationViaPropertyTest/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefBucket83908E7781C90AC0"
+    }
+  ]
+}

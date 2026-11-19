@@ -1,16 +1,16 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
-    "1e977357e94ea469609bae20fdb22ef354cc823d6593c169f112d4367f91a11b": {
+    "ff27ff6dd0d54620c0e4448f540a39c8256acb836dd385f01e0ab7f69f45a6ea": {
       "displayName": "aws-cdk-s3-notifications-scoped-permissions Template",
       "source": {
         "path": "aws-cdk-s3-notifications-scoped-permissions.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-8ed38954": {
+        "current_account-current_region-a08ba27a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1e977357e94ea469609bae20fdb22ef354cc823d6593c169f112d4367f91a11b.json",
+          "objectKey": "ff27ff6dd0d54620c0e4448f540a39c8256acb836dd385f01e0ab7f69f45a6ea.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
