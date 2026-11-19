@@ -6,6 +6,8 @@ on:
     - cron: 15 10 * * 1
   workflow_dispatch: {}
 
+cache-mode: read
+
 jobs:
   update-spec:
     # this workflow will always fail in forks; bail if this isn't running in the upstream
@@ -148,6 +150,7 @@ jobs:
           path: ${{ runner.temp }}
 
       - name: Make Pull Request
+        id: create-pr
         uses: peter-evans/create-pull-request@v8
         with:
           # Git commit details
@@ -160,7 +163,22 @@ jobs:
           title: "feat: update L1 CloudFormation resource definitions"
           body-path: ${{ runner.temp }}/PR.md
           labels: contribution/core,dependencies,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
-          team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+
+      # Save the number of the pull request this run created or updated, empty when it made none, so a
+      # workflow that reacts to this run's completion can find it. A workflow_run event lists no pull
+      # request for a run on main.
+      - name: Save PR number
+        env:
+          PR_NUMBER: ${{ steps.create-pr.outputs.pull-request-number }}
+        run: |
+          mkdir -p ${{ runner.temp }}/pr
+          echo "$PR_NUMBER" > ${{ runner.temp }}/pr/pr_number
+      - name: Upload PR number
+        uses: actions/upload-artifact@v7
+        with:
+          name: pr_info
+          path: ${{ runner.temp }}/pr/
+          if-no-files-found: error

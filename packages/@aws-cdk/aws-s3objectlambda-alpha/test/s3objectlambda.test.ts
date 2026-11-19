@@ -10,6 +10,10 @@ let handler: lambda.Function;
 
 beforeEach(() => {
   stack = new cdk.Stack();
+  cdk.Validations.of(stack).acknowledge({
+    id: 'CloudFormation-Validate::W3697',
+    reason: 'S3 Object Lambda is in maintenance mode and is intentionally exercised by this unit test',
+  });
   bucket = new s3.Bucket(stack, 'MyBucket');
   handler = new lambda.Function(stack, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_LATEST,
