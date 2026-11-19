@@ -9,6 +9,5 @@
       "assertionStackName": "IntegTestDSSEBucketDefaultTestDeployAssert56801A2F"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1146.1"
+  "enableLookups": true
 }

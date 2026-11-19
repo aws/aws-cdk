@@ -18,6 +18,5 @@
       "assertionStackName": "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }

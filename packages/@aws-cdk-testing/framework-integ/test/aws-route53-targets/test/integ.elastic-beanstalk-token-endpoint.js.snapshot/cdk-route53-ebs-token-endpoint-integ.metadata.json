@@ -1,4 +1,10 @@
 {
+  "/cdk-route53-ebs-token-endpoint-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-route53-ebs-token-endpoint-integ.template.json"
+    }
+  ],
   "/cdk-route53-ebs-token-endpoint-integ/HostedZone": [
     {
       "type": "aws:cdk:analytics:construct",

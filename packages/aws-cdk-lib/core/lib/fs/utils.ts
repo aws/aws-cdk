@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { IgnoreStrategy } from './ignore';
 import { SymlinkFollowMode } from './options';
+import { UnscopedValidationError } from '../errors';
+import { lit } from '../private/literal-string';
 
 export function isInternalPath(rootPath: string, targetPath: string): boolean {
   return rootPath === targetPath || targetPath.startsWith(rootPath + path.sep);
@@ -221,6 +223,12 @@ export function walkDirectory(directory: string, options: WalkOptions, visitor: 
 
     if (!targetStats) {
       if (!ignoreStrategy.ignores(symbolicPath)) {
+        if (follow === SymlinkFollowMode.BLOCK_EXTERNAL && !internal) {
+          throw new UnscopedValidationError(
+            lit`ExternalSymlink`,
+            `BLOCK_EXTERNAL forbids the symbolic link ${realPath} from pointing outside the directory tree (to ${linkTarget}). Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
+          );
+        }
         visitor.onSymlink?.({ path: symbolicPath, realPath, linkTarget, resolvedLinkTarget, internal });
       }
       return;
@@ -247,9 +255,7 @@ export function walkDirectory(directory: string, options: WalkOptions, visitor: 
       case SymlinkFollowMode.EXTERNAL:
         return !internal;
       case SymlinkFollowMode.BLOCK_EXTERNAL:
-        return internal;
       case SymlinkFollowMode.NEVER:
-      default:
         return false;
     }
   }
