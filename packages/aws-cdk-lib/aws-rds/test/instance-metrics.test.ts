@@ -1,8 +1,8 @@
+import { acknowledgeTestValidationRules } from './util';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
 import * as rds from '../lib';
-import { acknowledgeTestValidationRules } from './util';
 
 let stack: cdk.Stack;
 

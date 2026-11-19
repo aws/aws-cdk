@@ -1,8 +1,8 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
+import { testFixture } from './util';
 import { Template } from '../../assertions';
 import { Stack } from '../../core';
 import * as eks from '../lib';
-import { testFixture } from './util';
 
 describe('KubectlProvider', () => {
   test('creates AWS::Lambda::Function onEvent handler with correct AWS_STS_REGIONAL_ENDPOINTS environment variable', () => {

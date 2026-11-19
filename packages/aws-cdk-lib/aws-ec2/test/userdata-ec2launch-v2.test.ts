@@ -213,6 +213,25 @@ describe('EC2Launch v2 user data', () => {
     ].join('\n'));
   });
 
+  test('escapes S3 download and execute file parameters', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'test');
+
+    // WHEN
+    userData.addS3DownloadCommand({ bucket, bucketKey: 'it\'s.ps1', region: 'us-east-1; x' });
+    userData.addExecuteFileCommand({ filePath: 'C:\\it\'s.ps1' });
+
+    // THEN
+    expect(parse(userData).tasks[0].inputs[0].content).toEqual([
+      'mkdir (Split-Path -Path \'C:/temp/it\'\'s.ps1\' ) -ea 0',
+      'Read-S3Object -BucketName \'test\' -key \'it\'\'s.ps1\' -file \'C:/temp/it\'\'s.ps1\' -ErrorAction Stop -Region \'us-east-1; x\'',
+      '&\'C:\\it\'\'s.ps1\'',
+      'if (!$?) { Write-Error \'Failed to execute the file "C:\\it\'\'s.ps1"\' -ErrorAction Stop }',
+    ].join('\n'));
+  });
+
   test('keeps tokens in commands intact', () => {
     // GIVEN
     const stack = new Stack();
