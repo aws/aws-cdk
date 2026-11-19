@@ -768,6 +768,11 @@ The following write permissions are provided to a service principal by the
 - `firehose:PutRecord`
 - `firehose:PutRecordBatch`
 
+If the delivery stream is encrypted with a customer managed key
+(`StreamEncryption.customerManagedKey()`), Amazon Data Firehose also requires callers of
+`PutRecord` and `PutRecordBatch` to be able to use that key, so `grantPutRecords()` also grants
+`kms:GenerateDataKey` and `kms:Decrypt` on the key.
+
 ## Granting a delivery stream access to a resource
 
 Conversely to the above, Amazon Data Firehose requires permissions in order for delivery

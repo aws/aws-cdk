@@ -7,7 +7,11 @@
             "firehose:PutRecord",
             "firehose:PutRecordBatch"
           ],
-          "docSummary": "Grant the `grantee` identity permissions to perform `actions`."
+          "keyActions": [
+            "kms:GenerateDataKey",
+            "kms:Decrypt"
+          ],
+          "docSummary": "Grant the `grantee` identity permissions to perform `firehose:PutRecord` and `firehose:PutRecordBatch` actions on this delivery stream.\n\nIf the delivery stream is encrypted with a customer managed KMS key, the `grantee` is also granted `kms:GenerateDataKey` and `kms:Decrypt` on that key, which Amazon Data Firehose requires from callers of `PutRecord` and `PutRecordBatch`."
         }
       }
     }

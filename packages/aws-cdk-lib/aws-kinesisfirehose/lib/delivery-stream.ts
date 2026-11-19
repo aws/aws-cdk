@@ -92,12 +92,17 @@ export interface IDeliveryStream extends cdk.IResource, iam.IGrantable, ec2.ICon
 /**
  * Base class for new and imported Amazon Data Firehose delivery streams.
  */
-abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream {
+abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStream, iam.IEncryptedResource {
   public abstract readonly deliveryStreamName: string;
 
   public abstract readonly deliveryStreamArn: string;
 
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * The customer managed KMS key used for server-side encryption of the delivery stream, if any.
+   */
+  public abstract readonly encryptionKey?: kms.IKey;
 
   /**
    * Collection of grant methods for a DeliveryStream
@@ -120,6 +125,16 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
       deliveryStreamArn: this.deliveryStreamArn,
       deliveryStreamName: this.deliveryStreamName,
     };
+  }
+
+  /**
+   * Gives permissions to a grantable entity to perform actions on the encryption key.
+   */
+  public grantOnKey(grantee: iam.IGrantable, ...actions: string[]): iam.GrantOnKeyResult {
+    const grant = this.encryptionKey
+      ? this.encryptionKey.grant(grantee, ...actions)
+      : undefined;
+    return { grant };
   }
 
   /**
@@ -321,9 +336,17 @@ export class DeliveryStream extends DeliveryStreamBase {
       public readonly deliveryStreamName = deliveryStreamName!;
       public readonly deliveryStreamArn = deliveryStreamArn;
       public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
+      public readonly encryptionKey = undefined;
     }
     return new Import(scope, id);
   }
+
+  /**
+   * The customer managed KMS key used for server-side encryption of the delivery stream, if any.
+   *
+   * Undefined when the delivery stream is unencrypted or encrypted with an AWS owned key.
+   */
+  public readonly encryptionKey?: kms.IKey;
 
   private readonly resource: CfnDeliveryStream;
 
@@ -377,6 +400,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       keyArn: encryptionKey?.keyArn,
       keyType: encryptionKey ? 'CUSTOMER_MANAGED_CMK' : 'AWS_OWNED_CMK',
     } : undefined;
+    this.encryptionKey = encryptionKey;
     /*
      * In order for the service role to have access to the encryption key before the delivery stream is created, the
      * CfnDeliveryStream below should have a dependency on the grant returned by the function call below:
