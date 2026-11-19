@@ -79,7 +79,7 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   only for pure style, an obvious typo or unused import, or a genuine question. **Verify
   before you cite:** when a finding
   turns on whether an attribute, mode, default, enum value, or a service behavior is
-  REAL, search and read the authoritative AWS documentation available to you and
+  real, search and read the authoritative AWS documentation available to you and
   confirm the fact against it before posting; confirm what CDK's own API does by reading
   that code, and what CDK's testing or README guidance says by reading that guide; never
   post from memory. An unverified "X isn't supported" or
@@ -108,7 +108,7 @@ positive notes, and clusters of nits in the review summary, not the posted comme
 See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
 structured finding fields and how to write each one before you generate findings.
 
-## What NOT to flag — the shared exclusions
+## What not to flag — the shared exclusions
 
 Every dimension skill applies these five exclusions on top of its own dimension-specific
 carve-outs. None is a finding, at any severity:
@@ -132,7 +132,7 @@ carve-outs. None is a finding, at any severity:
 Each dimension skill keeps its detailed rules in a `references/*-rules.md` lookup. Every
 lookup shares one shape so they never drift: rows grouped by family, sorted
 BLOCKING → RECOMMENDED → OPTIONAL within each family, `[id]`s stable. A conditional
-severity is ONE rule — the row header carries the primary severity, the body states when it
+severity is one rule — the row header carries the primary severity, the body states when it
 up- or down-tiers. A row marked `(doc-absent detail)` carries reviewer calibration the source
 doc does not state, kept in full. All aws/aws-cdk links reference `main`.
 

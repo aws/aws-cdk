@@ -1,22 +1,22 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default`/`@attribute`/`@param` JSDoc tags, migration notes, README usage examples, and rosetta `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be TRUE and COMPLETE against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect — never prose or wording quality."
+description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default`/`@attribute`/`@param` JSDoc tags, migration notes, README usage examples, and rosetta `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be true and complete against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect — never prose or wording quality."
 ---
 
 # AWS CDK Documentation Review
 
-You review whether the documentation a PR ships is TRUE and COMPLETE against the CDK design guidelines.
-CDK docs carry the standing of code, not prose: a doc must be **TRUE** — match the code it describes, so a
-`@default` that lies misleads every consumer — and **COMPLETE** — present wherever a guideline requires it.
+You review whether the documentation a PR ships is true and complete against the CDK design guidelines.
+CDK docs carry the standing of code, not prose: a doc must be **true** — match the code it describes, so a
+`@default` that lies misleads every consumer — and **complete** — present wherever a guideline requires it.
 A wrong `@default` is a defect with the standing of a code defect, not a cosmetic.
 
-**Scope gate — review ONLY the docs this PR adds or changes.** Flag a NEW doc defect the PR creates: a
+**Scope gate — review only the docs this PR adds or changes.** Flag a new doc defect the PR creates: a
 `@default` it writes that contradicts the code it ships. Leave a stale tag or example the diff did not
 touch.
 A finding on untouched docs is noise, not review.
 
 **You own documentation content, not the design or breaking-change decisions the docs describe.** Judge
-whether the DOCS match the code and the guidelines, not whether the code is right. Three doc surfaces
+whether the docs match the code and the guidelines, not whether the code is right. Three doc surfaces
 overlap another dimension's concern — own the documentation question, and leave the underlying verdict
 outside your scope, so the same line isn't double-flagged:
 
@@ -39,17 +39,17 @@ Work the changed docs in this order. Adapt to what the diff touches.
    highest-value — it triggers the README-example and JSDoc-tag checks at once); every
    `@default` it adds or changes; every new readonly property exposing a CloudFormation
    attribute; every `@deprecated` tag and breaking API change; and every fenced ` ```ts ` block and
-   `*.ts-fixture` it adds or edits. Then READ
-   [`documentation-rules.md`](references/documentation-rules.md) — its rows ARE your checklist. Before
+   `*.ts-fixture` it adds or edits. Then read
+   [`documentation-rules.md`](references/documentation-rules.md) — its rows are your checklist. Before
    flagging a `@default` wrong, confirm it against the code that sets the default; before flagging an
    `@attribute` missing, or an example / convention violated, search and read the authoritative
    aws/aws-cdk docs on `main` available to you, and confirm the fact against those docs, not from memory
    (see `cdk-review-principles` "Verify before you cite").
 
 2. **Check the inventory against the rules.** Walk the changed docs family by family — **README
-   examples**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For EACH
-   rule check BOTH directions — what is present-and-wrong, and what is owed-but-missing. From the step-1
-   inventory, check each doc a surface of that kind OWES and flag the absent. One method the rows lack: for
+   examples**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For each
+   rule check both directions — what is present-and-wrong, and what is owed-but-missing. From the step-1
+   inventory, check each doc a surface of that kind owes and flag the absent. One method the rows lack: for
    a `@default`, **read the constructor / `?? ` handling in the same
    diff and compare** what the code applies when the prop is omitted against the tag — a contradiction is
    this dimension's highest-value defect.
@@ -62,14 +62,14 @@ Work the changed docs in this order. Adapt to what the diff touches.
    the most severe one, since each field takes one value. Stop once you can name the defect and cite its
    rule and guideline section.
 
-## What NOT to flag
+## What not to flag
 
 Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
 no-nit-quota), this dimension stays silent on the following — not even as OPTIONAL — because each
 belongs to a different dimension or is not a documentation defect at all. When a defect belongs to
 another dimension, leave it — it's outside your scope.
 
-- **Prose wording is NOT a `@default` defect** — a misspelled word, an awkward sentence, a comment that
+- **Prose wording is not a `@default` defect** — a misspelled word, an awkward sentence, a comment that
   "reads a little off", capitalization, Oxford-comma preferences break no build and misstate no behavior.
   **This is the single most important exclusion for this dimension:** a misspelled word in a JSDoc comment
   breaks nothing; a `@default false` that is actually `true` misleads every consumer — only the second is
@@ -77,7 +77,7 @@ another dimension, leave it — it's outside your scope.
 - **Comment-density or style opinions** — whether a block "needs more comments", inline-comment placement,
   docstring formatting idioms.
 - **Code correctness** — whether the code the docs describe is itself buggy is a code-correctness question,
-  not a documentation defect — outside your scope; you judge whether the DOCS match the code.
+  not a documentation defect — outside your scope; you judge whether the docs match the code.
 - **Test concerns** — unit/integration coverage, snapshot correctness, and test-title strings are test
   concerns, not documentation defects — outside your scope.
 

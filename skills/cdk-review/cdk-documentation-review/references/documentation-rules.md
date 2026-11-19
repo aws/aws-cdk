@@ -20,7 +20,7 @@ added/renamed, signature changed) but the module README not updated to match. Se
 PR adds, or hides the feature in a fixture, so it documents nothing the PR introduced. See
 [`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes)
 (the simple-example-per-use-case requirement; use `nofixture` to surface setup in the doc).
-- **Reviewer lens (doc-absent detail):** values stored in a `.ts-fixture` do NOT surface to the docs the
+- **Reviewer lens (doc-absent detail):** values stored in a `.ts-fixture` do not surface to the docs the
   user sees. So an example that compiles only because it hides everything meaningful in a fixture — showing
   the user nothing of the feature — is this gap even though it passes the build.
 
@@ -30,7 +30,7 @@ PR adds, or hides the feature in a fixture, so it documents nothing the PR intro
 code actually does when the prop is omitted (e.g. `@default false` on a prop the constructor defaults to
 `true`). This ships a false statement about real behavior to every consumer, not a wording nit. See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design) for the
-`@default` FORMAT rule and
+`@default` format rule and
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior)
 for why the default *behavior* is a design decision the tag documents (so a wrong `@default` often signals
 a real behavioral surprise).

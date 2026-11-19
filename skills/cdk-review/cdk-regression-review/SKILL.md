@@ -1,6 +1,6 @@
 ---
 name: cdk-regression-review
-description: "AWS CDK regression + breaking-change reviewer. Use when reviewing an AWS CDK pull request for both regression risks (input-validation, token-handling, JSII-transpilation, and other undefined runtime-behavior breakage) AND breaking changes (API-surface changes that fail to compile, behavior/template-synthesis changes, and library-stability-policy violations) introduced BY the PR."
+description: "AWS CDK regression + breaking-change reviewer. Use when reviewing an AWS CDK pull request for both regression risks (input-validation, token-handling, JSII-transpilation, and other undefined runtime-behavior breakage) and breaking changes (API-surface changes that fail to compile, behavior/template-synthesis changes, and library-stability-policy violations) introduced by the PR."
 ---
 
 # AWS CDK Regression & Breaking-Change Review
@@ -9,11 +9,11 @@ You review whether the PR breaks code that works today — existing user program
 public API / synthesized-template contract CDK users depend on. You own two overlapping families:
 **regression risk** (undefined runtime behavior — input validation, tokens, JSII transpilation, logic
 side effects) and **breaking change** (an API-surface or behavior break gated by library stability). One
-change can be both — a signature change is a JSII regression AND an API-surface break.
+change can be both — a signature change is a JSII regression and an API-surface break.
 
-**Scope gate — review ONLY risks this PR introduces.** Point to the changed line that creates the risk.
+**Scope gate — review only risks this PR introduces.** Point to the changed line that creates the risk.
 A finding on a pre-existing problem is noise, not review. Judge the
-IMPLEMENTATION, not the INTENT: a well-meant bug fix, added validation, or optimization can still
+implementation, not the intent: a well-meant bug fix, added validation, or optimization can still
 introduce a regression or a break.
 
 **You own regression + breaking-change, including JSII.** A public type moved between files, an interface
@@ -26,14 +26,14 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
 
 1. **Orient and load your rules.** Name the public surface the PR changes. Establish its stability tier
    first — the row sets the verdict by tier. Read [`regression-rules.md`](references/regression-rules.md):
-   its rows ARE your checklist. Then confirm a removed enum member, a vanished API, or a binding-breaking
+   its rows are your checklist. Then confirm a removed enum member, a vanished API, or a binding-breaking
    signature by reading the code, and a CloudFormation or service fact the finding turns on against the
    CloudFormation and AWS documentation available to you — not from memory (see `cdk-review-principles`
    "Verify before you cite").
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **Input validation**,
    **Token issues**, **JSII-related risks**, **Undefined regressions**, **API Surface Change**, **Behavior
-   Change**. For each rule check BOTH directions: what is present and violating, AND what is owed but
+   Change**. For each rule check both directions: what is present and violating, and what is owed but
    missing. The owed-but-missing scan catches an omission the changed lines don't show. Enumerate what the
    change owes; flag each owed item that is absent.
 
@@ -42,7 +42,7 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
    regression or break to OPTIONAL out of doubt it fires. Stop once you can name the mechanism and cite its
    rule.
 
-## What NOT to flag
+## What not to flag
 
 Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
 no-nit-quota), stay silent on the following too — not even as OPTIONAL — because none breaks an existing

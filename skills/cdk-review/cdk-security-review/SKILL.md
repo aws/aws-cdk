@@ -1,20 +1,20 @@
 ---
 name: cdk-security-review
-description: "AWS CDK security reviewer. Use when reviewing an AWS CDK pull request for security exposure introduced BY the PR — across IAM least-privilege, network/resource access, secrets/credentials, and secure-by-default changes. Triggers on changes to IAM/KMS/Secrets Manager/certificates, network config, or other security-sensitive services. Leading concepts: least-privilege and secure-by-default."
+description: "AWS CDK security reviewer. Use when reviewing an AWS CDK pull request for security exposure introduced by the PR — across IAM least-privilege, network/resource access, secrets/credentials, and secure-by-default changes. Triggers on changes to IAM/KMS/Secrets Manager/certificates, network config, or other security-sensitive services. Leading concepts: least-privilege and secure-by-default."
 ---
 
 # AWS CDK Security Review
 
 You review the security exposure a PR introduces — over-broad permissions, widened access, weakened
 protections, or leaked secrets — across IAM least-privilege, network/resource access,
-secrets/credentials, and secure-by-default. Do not re-audit the pre-existing posture. Judge what THIS
+secrets/credentials, and secure-by-default. Do not re-audit the pre-existing posture. Judge what this
 change widens, weakens, or leaks for users of the CDK.
 
 Security is a **baseline** dimension: a real exposure must be fixed before merge (see
 `cdk-review-principles` "Calibrate the harm honestly"), so this dimension's calibration skews toward BLOCKING
 for a concrete exposure.
 
-**Scope gate — review ONLY security exposure introduced BY this PR.** Flag NEW exposure the PR
+**Scope gate — review only security exposure introduced by this PR.** Flag new exposure the PR
 creates for existing users or the resources it provisions: how the change widens who or what can
 reach a resource, weakens a protection users relied on, or places a secret where it can leak. A
 wildcard that already existed and the PR merely moved is not a finding. A finding on pre-existing
@@ -32,8 +32,8 @@ Work the changed surface in this order; adapt to what the diff touches.
 
 1. **Orient and load your rules.** Name the security-sensitive surface the diff adds or changes — an
    IAM policy/grant, a trust policy, a KMS key policy, a resource/network policy, a default, a
-   secret-shaped prop — and its KIND. The kind tells you which controls it owes and what to scan. Then
-   read [`security-rules.md`](references/security-rules.md): its rows ARE your checklist. Before you flag what
+   secret-shaped prop — and its kind. The kind tells you which controls it owes and what to scan. Then
+   read [`security-rules.md`](references/security-rules.md): its rows are your checklist. Before you flag what
    an action allows, a service's real default posture, or whether a condition key applies,
    search and read the authoritative AWS IAM/service / CloudFormation documentation available to you and
    confirm the fact there, not from memory (see `cdk-review-principles` "Verify before you cite").
@@ -42,7 +42,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    least-privilege** (including trust-policy confused-deputy), **Network & resource access**,
    **Secrets & credentials**, **Secure defaults** — judging the implementation the change produces, not
    the stated intent. For each rule, check both directions: what is present-and-violating, and what
-   CONTROL is owed-but-missing. From the KIND (step 1), check each control the change owes. Confirm the
+   control is owed-but-missing. From the kind (step 1), check each control the change owes. Confirm the
    service supports the control before flagging its absence.
 
 3. **Rate by harm and stop.** Rate each finding by the impact if the exposure is reached, on the
@@ -50,7 +50,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    not severity"). Never demote a concrete exposure to OPTIONAL out of uncertainty a caller reaches it.
    Stop once you can name the specific exposure, one realistic reach path, and cite its rule.
 
-## What NOT to flag
+## What not to flag
 
 Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
 no-nit-quota), stay silent on the following — not even as OPTIONAL — because none is a security
@@ -73,8 +73,8 @@ your scope.
 **The base rate is mostly "no finding."** Across real CDK review threads, only a small fraction of
 security-*adjacent* comments (roughly 1 in 20) are actual security findings — the rest are questions,
 naming/wording nits, and API-design points that merely mention IAM/KMS/encryption/secret/public. A
-mention of a security concept is NOT itself a finding: the discriminator is whether the change asserts
-a concrete NEW exposure the diff introduces, together with a fix. If the changed surface is clean
+mention of a security concept is not itself a finding: the discriminator is whether the change asserts
+a concrete new exposure the diff introduces, together with a fix. If the changed surface is clean
 across all four families, report nothing — do not reach for a hardening nit to have something to say.
 
 ## Output

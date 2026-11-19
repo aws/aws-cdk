@@ -50,7 +50,7 @@ rate by the harm it does when it triggers" (authoritative).
 The citation authority order and when a citation may be skipped live in `SKILL.md` "Make
 each finding land", and how an aws-cdk rule's own stated harm sets the severity lives in
 "Calibrate the harm honestly" (both authoritative). The format contract this adds: put the
-citation in `reference`/`evidence` AND name it inline in `message` so the posted comment
+citation in `reference`/`evidence` and name it inline in `message` so the posted comment
 carries its own authority.
 
 ## Filtering — what becomes a finding
@@ -60,7 +60,7 @@ bar" (authoritative). In this format, "tied to a specific line" means it has
 a `file` and a `lineRange`; a high-level observation with no line to anchor to belongs in the
 review `summary`, not as a finding.
 
-Keep these OUT of the findings (put them in the `summary` text if they matter):
+Keep these out of the findings (put them in the `summary` text if they matter):
 high-level design observations not tied to a line, positive feedback, clusters of
 related nits (consolidate into one finding on the first occurrence), findings already
 surfaced by automated PR analysis (unless you add new context), and philosophical

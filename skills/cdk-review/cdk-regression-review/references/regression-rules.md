@@ -31,7 +31,7 @@ value flows into a working stack and breaks its update.)*
   (CloudFormation rejects the configuration), **create a misconfigured resource** (created but does not
   work as expected), or be **silently ignored** (no error, but the property has no effect).
 
-**[REG-CFN-TYPE-LEAK] (RECOMMENDED)** — A change to an EXISTING public API that newly exposes an
+**[REG-CFN-TYPE-LEAK] (RECOMMENDED)** — A change to an existing public API that newly exposes an
 L1/CFN-layer type where it did not before, breaking or coupling existing consumers to CloudFormation. (The
 same leak on a *brand-new* L2 surface is not a regression — outside your scope.) See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design)
@@ -50,8 +50,8 @@ encodings and the `Token.asString/asList/asNumber` conversions — read the
   [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety).
 - **Boolean-token false-positive guard (doc-absent detail):** tokens encode only as string, number, or
   string-list (`Token.asString`/`asNumber`/`asList` — there is no `asBoolean`), so a `boolean`-typed value
-  can never be an unresolved token. Do NOT flag a missing `Token.isUnresolved()` guard on a boolean prop,
-  and do NOT report that a boolean "could be a token." The same fact validates the opposite finding: a
+  can never be an unresolved token. Do not flag a missing `Token.isUnresolved()` guard on a boolean prop,
+  and do not report that a boolean "could be a token." The same fact validates the opposite finding: a
   `Token.isUnresolved()` call on a boolean, enum, or construct reference (e.g. `IKey`) is dead code — the
   guard can never be true.
 
@@ -61,14 +61,14 @@ Every rule here but `REG-JSII-NO-FLUENT` is BLOCKING — the public surface MUST
 Python, Java, C#, and Go. For
 the *why*, see the
 [jsii TypeScript restrictions guide](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/).
-A change that compiles in TypeScript can still break another language's bindings, so do NOT clear a
+A change that compiles in TypeScript can still break another language's bindings, so do not clear a
 signature change just because TypeScript accepts it.
 
-**[REG-JSII-SIGNATURE-CHANGE] (BLOCKING)** — For EVERY changed signature of a public function, method, or
+**[REG-JSII-SIGNATURE-CHANGE] (BLOCKING)** — For every changed signature of a public function, method, or
 constructor, enumerate the before→after parameter delta (count, order, types, optionality, and whether any
 parameter is a struct/data interface) and check each against the matrix.
 - **The signature matrix (doc-absent detail):**
-  - Add an optional parameter at the end: ✅ safe ONLY if no parameter before it is a struct (data
+  - Add an optional parameter at the end: ✅ safe only if no parameter before it is a struct (data
     interface); if a struct precedes it, ❌ breaking (see [REG-JSII-STRUCT-LAST]).
   - Remove a parameter: ❌ breaking.
   - Change a parameter type: ❌ breaking.
@@ -78,8 +78,8 @@ parameter is a struct/data interface) and check each against the matrix.
 
 **[REG-JSII-STRUCT-LAST] (BLOCKING)** — A struct argument (a data interface: no `I` prefix, `readonly`-only
 props) MUST be the last positional parameter. jsii explodes it into keyword/named arguments in Python,
-Java, C#, and Go, so ANY parameter after a struct breaks the generated bindings — even an optional one
-TypeScript accepts. Fix: move the new field INTO the struct as an optional `readonly` property.
+Java, C#, and Go, so any parameter after a struct breaks the generated bindings — even an optional one
+TypeScript accepts. Fix: move the new field into the struct as an optional `readonly` property.
 *(doc-absent detail — the jsii spec states the primitive; this is the applied diff-review consequence.)*
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
 
@@ -153,10 +153,10 @@ return). *(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
 - **Also breaking, not enumerated by the doc (doc-absent detail):** deprecating (`@deprecated`) a still-used
-  STABLE API, and removing an enum member. (Moving a public member between files is its own rule —
+  stable API, and removing an enum member. (Moving a public member between files is its own rule —
   [REG-JSII-TYPE-MOVE].)
-- **✅ NON-BREAKING guard (doc-absent detail):** adding optional input props, new methods/classes, and
-  return props is additive — do NOT flag it.
+- **✅ Non-breaking guard (doc-absent detail):** adding optional input props, new methods/classes, and
+  return props is additive — do not flag it.
 
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
 error: an update that cannot be applied, a change that causes service interruption or data loss
@@ -167,12 +167,12 @@ for the construct-ID/logical-ID→data-loss rule; [`CONTRIBUTING.md § Behavior 
 for the definitional test of which template changes are breaking.
 - **Also breaking, not enumerated by the doc (doc-absent detail):** a `@default` change that alters an
   existing stack's synthesized template, and a noop→real-policy change without a feature flag.
-- **✅ NON-BREAKING guard (doc-absent detail):** an update that applies cleanly with no replacement and only
-  additive template changes is safe — do NOT flag it.
+- **✅ Non-breaking guard (doc-absent detail):** an update that applies cleanly with no replacement and only
+  additive template changes is safe — do not flag it.
 
 **[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
 breaking change still requires an explicit `BREAKING CHANGE:` callout in the PR body (before the `---`
-line) — the *missing* callout is the finding. A permitted experimental break that ALREADY carries the
+line) — the *missing* callout is the finding. A permitted experimental break that already carries the
 callout is at most an OPTIONAL note, not a finding *(doc-absent detail)*. For a mitigation, prefer opt-in
 via a new API element (add
 it and mark the old one `@deprecated` with a descriptive error) over a feature flag, whose effects are

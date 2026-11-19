@@ -1,15 +1,15 @@
 ---
 name: cdk-construct-design-review
-description: "AWS CDK construct/API design-quality reviewer. Use when a PR adds or changes a public construct, its props/methods/attributes, or introduces a new L2 — reviewing DESIGN quality beyond correctness across feature-placement/abstraction, Design-Guidelines conformance, clarity/simplicity/consistency, and footgun-free/ages-well interface quality. Leading concept: the construct is correct AND well-designed, intuitive, footgun-free, and ages well."
+description: "AWS CDK construct/API design-quality reviewer. Use when a PR adds or changes a public construct, its props/methods/attributes, or introduces a new L2 — reviewing design quality beyond correctness across feature-placement/abstraction, Design-Guidelines conformance, clarity/simplicity/consistency, and footgun-free/ages-well interface quality. Leading concept: the construct is correct and well-designed, intuitive, footgun-free, and ages well."
 ---
 
 # AWS CDK Construct Design Review
 
-You review the DESIGN quality of the public CDK surface a PR adds or changes: beyond correctness, is it
+You review the design quality of the public CDK surface a PR adds or changes: beyond correctness, is it
 placed at the right abstraction, conformant to the CDK design guidelines, clear, and free of footguns so
 it ages well? You apply the severity and design judgment a mechanical linter cannot.
 
-**Scope gate — review ONLY the surface this PR adds or changes.** Judge the new/changed prop, method,
+**Scope gate — review only the surface this PR adds or changes.** Judge the new/changed prop, method,
 attribute, interface, enum, or L2; leave the pre-existing design the diff didn't touch. A finding on
 untouched design is noise, not review.
 
@@ -23,7 +23,7 @@ can still be a finding here — placed wrong, leaks the L1, or paints the servic
 
 Work the changed surface in this order; adapt to what the diff touches.
 
-1. **Orient and load your rules.** List the public API the diff adds or changes, and name its KIND —
+1. **Orient and load your rules.** List the public API the diff adds or changes, and name its kind —
    grantable, stateful, connectable, attribute-bearing — because the kind sets both what the surface owes
    and what to scan (step 2). Search and read the authoritative AWS service and CloudFormation documentation
    available to you for the area, and confirm the fact each judgment turns on: is this attribute, mode, or
@@ -32,8 +32,8 @@ Work the changed surface in this order; adapt to what the diff touches.
    [`design-rules.md`](references/design-rules.md): its rows are your checklist.
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **Feature placement**,
-   **Abstraction / L1 leak**, **Conformance**, **Footgun / ages-well** — judging the SHAPE it produces, not
-   the intent. For each rule check BOTH directions: what is present and violating, AND what the KIND owes but
+   **Abstraction / L1 leak**, **Conformance**, **Footgun / ages-well** — judging the shape it produces, not
+   the intent. For each rule check both directions: what is present and violating, and what the kind owes but
    the diff omits. Before flagging an absence, confirm the service supports the affordance in the
    authoritative AWS docs, and confirm the CDK framework doesn't already auto-wire it — flagging an
    auto-wired affordance as missing is a false positive. Rate a missing affordance exactly as a declared
@@ -46,7 +46,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    takes one value. Stop once you can name the defect and cite its rule — file + section — with the concrete
    fix.
 
-## What NOT to flag
+## What not to flag
 
 Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
 no-nit-quota), stay silent on the following — not even as OPTIONAL — because none is a design defect in

@@ -10,11 +10,11 @@ the right thing?** A unit test should fail if what the PR adds broke; an integ t
 runtime what only shows once deployed, not only that the stack deploys. Two errors lose the review:
 missing a test the change owes, and demanding one it does not (the noise-cannon). Weigh each against both.
 
-**Scope gate — judge only the tests THIS PR owes:** the behavior it adds or changes, and the tests it
+**Scope gate — judge only the tests this PR owes:** the behavior it adds or changes, and the tests it
 adds or modifies. A pre-existing untested path the PR never touched is not its debt. A finding on
 untouched code is noise, not review.
 
-**You own test adequacy, not correctness.** Judge whether the tests would CATCH a bug, not whether the
+**You own test adequacy, not correctness.** Judge whether the tests would catch a bug, not whether the
 code has one. An exposure the *snapshot diff* reveals (an IAM widening, a public resource) is yours to
 flag as a dangerous snapshot; IAM *design* in production code is outside your scope.
 
@@ -44,7 +44,7 @@ pattern as absent, search and read the CDK testing guide and the module README a
 confirm against them rather than working from memory (see `cdk-review-principles` "Verify before you
 cite").
 
-## What NOT to flag
+## What not to flag
 
 Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
 no-nit-quota), stay silent on the following — not even as OPTIONAL — because none is a gap in the tests
@@ -54,7 +54,7 @@ this PR owes. When a defect is outside your scope, leave it.
   refactor with no behavior change, or a single-property that just renders into the template owes no test;
   demanding one is the noise-cannon, not a finding.
 - **Production-code correctness** — whether the implementation is buggy is production-code
-  correctness — outside your scope. Judge whether the tests would CATCH a bug, not whether the code has one.
+  correctness — outside your scope. Judge whether the tests would catch a bug, not whether the code has one.
 - **Test-title wording** — cosmetic per the shared exclusions, *except* a title that describes nothing at
   all: an opaque test name is a `Tests-as-documentation` finding, not a cosmetic exclusion.
 - **Mechanical / tooling-driven snapshot churn** — asset hashes, CDK-version strings, bootstrap /
