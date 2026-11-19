@@ -26,10 +26,10 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
 
 1. **Orient and load your rules.** Name the public surface the PR changes. Establish its stability tier
    first — the row sets the verdict by tier. Read [`regression-rules.md`](references/regression-rules.md):
-   its rows ARE your checklist. Then read the authoritative CDK/CloudFormation docs for the changed
-   surface: search and read the docs available to you and confirm a removed enum member, a vanished API, or
-   a binding-breaking signature against them — not from memory (see `cdk-review-principles` "Verify before you
-   cite").
+   its rows ARE your checklist. Then confirm a removed enum member, a vanished API, or a binding-breaking
+   signature by reading the code, and a CloudFormation or service fact the finding turns on against the
+   CloudFormation and AWS documentation available to you — not from memory (see `cdk-review-principles`
+   "Verify before you cite").
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **Input validation**,
    **Token issues**, **JSII-related risks**, **Undefined regressions**, **API Surface Change**, **Behavior
