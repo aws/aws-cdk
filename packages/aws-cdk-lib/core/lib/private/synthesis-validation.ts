@@ -6,7 +6,7 @@ import type { IConstruct } from 'constructs';
 import { collectAnnotationReport } from './annotation-plugin';
 import type { Acknowledgement } from './collect-acknowledged-rule-ids';
 import { collectAcknowledgedRules } from './collect-acknowledged-rule-ids';
-import { iterateAssembliesPostorder, iterateAssembliesPreorder, iterateDfsPreorder } from './construct-iteration';
+import { iterateAssembliesPostorder, iterateAssembliesPreorder, iterateStackConstructs, tryFindByPath } from './construct-iteration';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
@@ -36,7 +36,7 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   using _span = profileSpan('validateTemplates', { telemetry: true });
   const assemblies = getAssemblies(root, assembly);
   // Keyed by template path, so a template reached through several stages is validated once
-  const stacksByPlugin: Map<IPolicyValidationPlugin, Map<string, PolicyValidationStack>> = new Map();
+  const stacksByPlugin = new DefaultMap<IPolicyValidationPlugin, Map<string, PolicyValidationStack>>(() => new Map());
 
   // The default plugin is configured at root level, but is auto-added to the list per stage.
   const addDefaultPlugin = defaultValidationEnabled(root) && !hasUserRegisteredCloudFormationValidatePlugin(root);
@@ -46,19 +46,12 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
     if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${stage.stageName}`);
 
     const plugins = pluginsToEvaluate(root, stage, addDefaultPlugin);
-    if (plugins.length === 0) continue;
 
-    const stageStacks = [
-      ...stageAssembly.stacksRecursively.map(validationStackFromArtifact),
-      ...assetStackTemplates(stage, assemblies),
-    ];
+    const validatableTemplates = stageAssembly.stacksRecursively.flatMap((artifact) => allTemplatesForStack(root, artifact));
+
     for (const plugin of plugins) {
-      let stacks = stacksByPlugin.get(plugin);
-      if (!stacks) {
-        stacks = new Map();
-        stacksByPlugin.set(plugin, stacks);
-      }
-      for (const stack of stageStacks) {
+      const stacks = stacksByPlugin.ensure(plugin);
+      for (const stack of validatableTemplates) {
         if (!stacks.has(stack.templatePath)) {
           stacks.set(stack.templatePath, stack);
         }
@@ -203,43 +196,45 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   }
 }
 
-function validationStackFromArtifact(artifact: private_cxapi.CloudFormationStackArtifact): PolicyValidationStack {
-  return {
+/**
+ * Return all validatable templates for the given stack artifact.
+ *
+ * This includes the template for the stack artifact, as well as the templates produced by
+ * all constructs within the stack (like NestedStacks, ProductStacks, etc).
+ */
+function allTemplatesForStack(root: IConstruct, artifact: private_cxapi.CloudFormationStackArtifact): PolicyValidationStack[] {
+  const ret: PolicyValidationStack[] = [];
+
+  // We get the stack template itself from the Assembly, only because I'm only 99% confident that
+  // we could get it from the construct tree.
+  ret.push({
     stackConstructPath: artifact.hierarchicalId,
     templatePath: artifact.templateFullPath,
     accountId: artifact.environment.account !== cxapi.UNKNOWN_ACCOUNT ? artifact.environment.account : undefined,
     region: artifact.environment.region !== cxapi.UNKNOWN_REGION ? artifact.environment.region : undefined,
-  };
-}
+  });
 
-/**
- * The templates of all stacks under the given stage that were written to a cloud assembly
- *
- * This includes stacks whose template is not a cloud assembly stack artifact, such as
- * `NestedStack` and `ProductStack`, whose templates are written as file assets of their parent stack.
- */
-function assetStackTemplates(stage: Stage, assemblies: Map<string, private_cxapi.CloudAssembly>): PolicyValidationStack[] {
-  const ret: PolicyValidationStack[] = [];
-  for (const construct of iterateDfsPreorder(stage)) {
-    if (!STACK_TYPE.isMarked(construct)) {
-      continue;
+  const stackConstruct = tryFindByPath(root, artifact.hierarchicalId);
+  if (stackConstruct && STACK_TYPE.isMarked(stackConstruct)) {
+    for (const child of iterateStackConstructs(stackConstruct)) {
+      // This is guaranteed to not return top-level Stacks other than the stack
+      // construct itself, so anything that still looks like a Stack here must
+      // be some kind of template producer.
+
+      if (STACK_TYPE.isMarked(child) && child !== stackConstruct) {
+        const templateConstruct = child;
+        const stage = stageOf(templateConstruct)!;
+
+        ret.push({
+          stackConstructPath: templateConstruct.node.path,
+          templatePath: path.resolve(stage.outdir, templateConstruct.templateFile),
+          accountId: Token.isUnresolved(templateConstruct.account) ? undefined : templateConstruct.account,
+          region: Token.isUnresolved(templateConstruct.region) ? undefined : templateConstruct.region,
+        });
+      }
     }
-    const stackStage = stageOf(construct);
-    const stackAssembly = stackStage ? assemblies.get(stackStage.artifactId) : undefined;
-    if (!stackAssembly) {
-      throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stack ${construct.node.path}`);
-    }
-    const templatePath = path.join(stackAssembly.directory, construct.templateFile);
-    if (!fs.existsSync(templatePath)) {
-      continue;
-    }
-    ret.push({
-      stackConstructPath: construct.node.path,
-      templatePath,
-      accountId: Token.isUnresolved(construct.account) ? undefined : construct.account,
-      region: Token.isUnresolved(construct.region) ? undefined : construct.region,
-    });
   }
+
   return ret;
 }
 
@@ -694,4 +689,17 @@ function cdkAppMode(root: IConstruct): 'process' | 'inmemory' | 'unknown' {
 
   // Unknown mode, either a legacy CLI or running via toolkit-lib.
   return 'unknown';
+}
+
+class DefaultMap<K, V> extends Map<K, V> {
+  constructor(private readonly defaultFactory: (key: K) => V) {
+    super();
+  }
+
+  public ensure(key: K): V {
+    if (!this.has(key)) {
+      this.set(key, this.defaultFactory(key));
+    }
+    return this.get(key)!;
+  }
 }

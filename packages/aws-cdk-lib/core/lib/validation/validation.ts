@@ -107,28 +107,41 @@ export interface IPolicyValidationContext {
 }
 
 /**
- * Information about a single stack that is being validated.
+ * Information about a single stack template that is being validated.
+ *
+ * Note that this type is called `PolicyValidationStack`, but doesn't
+ * necessarily represent an actual CloudFormation stack. It can also represent a
+ * Nested Stack, a StackSet Stack, or a Service Catalog Product. It would
+ * have been more accurate to name it `ValidatableTemplate` instead.
  */
 export interface PolicyValidationStack {
   /**
-   * The Stack's construct path
+   * The construct path of the construct producing this template
    */
   readonly stackConstructPath: string;
 
   /**
    * The path to the template file on disk
+   *
+   * Should be absolute.
    */
   readonly templatePath: string;
 
   /**
-   * The account ID for this stack, if known
+   * The account ID in which this template will be deployed, if known
+   *
+   * If the account ID is not known, the validator will have to assume
+   * this template could be deployed in any account.
    *
    * @default - the account ID is unknown
    */
   readonly accountId: string | undefined;
 
   /**
-   * The region for this stack, if known
+   * The region in which this template will be deployed, if known
+   *
+   * If the region is not known, the validator will have to assume
+   * this template could be deployed in any region.
    *
    * @default - the region is unknown
    */

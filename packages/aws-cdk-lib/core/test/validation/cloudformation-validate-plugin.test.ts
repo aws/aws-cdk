@@ -1071,4 +1071,22 @@ describe('nested stack templates', () => {
     const nested = received.find(s => s.stackConstructPath === 'Parent/Child')!;
     expect(nested.templatePath).toEqual(path.join(app.outdir, child.templateFile));
   });
+
+  test('fails synthesis for an invalid resource in a nested stack inside a stage', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: 'true',
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+      },
+    });
+    const stage = new core.Stage(app, 'MyStage');
+    const parent = new core.Stack(stage, 'Parent');
+    const child = new core.NestedStack(parent, 'Child');
+    new core.CfnResource(child, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: { BogusProperty: 'invalid-value' },
+    });
+
+    expect(() => app.synth()).toThrow(/BogusProperty/);
+  });
 });
