@@ -10,7 +10,7 @@
         "    at Stack._silenceLiteralAzWarning (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
         "    at get availabilityZones (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
         "    at new Vpc (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.userdata-ec2launch-v2.js:51:13)",
+        "    at <anonymous> (/home/azatoth/build/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.userdata-ec2launch-v2.js:53:13)",
         "    ...node internals..."
       ]
     },

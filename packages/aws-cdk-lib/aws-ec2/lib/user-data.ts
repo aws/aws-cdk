@@ -801,11 +801,15 @@ export class Ec2LaunchV2Task {
   /**
    * A task not otherwise supported by this class
    *
-   * `inputs` is rendered as-is. If it is a list, adding the same task again
-   * appends to that list, like `executeScript` and `executeProgram`.
+   * `inputs` is rendered into the YAML document unchanged, except that
+   * properties set to `undefined` are omitted, and tokens are rendered as
+   * strings. Lists cannot be tokens, and strings containing tokens follow the
+   * same single-line rules as other task inputs (see the module README).
+   * If `inputs` is a list, adding the same task again appends to that list,
+   * like `executeScript` and `executeProgram`.
    *
    * @param taskName the name of the task, for example `executeScript`
-   * @param inputs the inputs of the task
+   * @param inputs the inputs of the task, or omit for a task without inputs
    */
   public static custom(taskName: string, inputs?: any): Ec2LaunchV2Task {
     return new Ec2LaunchV2Task(taskName, inputs);

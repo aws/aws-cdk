@@ -8,6 +8,8 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
  * YAML user data, run the initializeVolume and executeProgram tasks and the
  * batch and PowerShell scripts in order, and the PowerShell commands have
  * verified their results. Deployment fails if any of that does not happen.
+ * The detached script only verifies that EC2Launch v2 accepts the detach
+ * input, as nothing waits for it.
  *
  * The other tasks that do not shut down, reboot or reconfigure the network of
  * the instance are included to verify that EC2Launch v2 loads them.
@@ -43,7 +45,9 @@ userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({
     'Set-Content -Path \'C:\\cdk-integ-powershell.txt\' -Value powershell',
   ].join('\n'),
   runAs: ec2.Ec2LaunchV2RunAs.ADMIN,
+  arguments: ['-NoProfile', '-ExecutionPolicy', 'Unrestricted'],
 }));
+userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: 'Write-Output detached', detach: true }));
 userData.addCommands(
   'if (-not (Test-Path -Path \'D:\\\')) { throw \'initializeVolume task did not run\' }',
   'if (-not (Test-Path -Path \'C:\\cdk-integ-powershell.txt\')) { throw \'PowerShell script did not run before the commands\' }',

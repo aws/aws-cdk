@@ -278,16 +278,24 @@ describe('EC2Launch v2 user data', () => {
     const before = YAML.scalarOptions.str.fold.lineWidth;
     const userData = ec2.UserData.forWindowsEc2LaunchV2();
     userData.addCommands('command1');
-    const failing = ec2.UserData.forWindowsEc2LaunchV2();
-    failing.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: `echo ${Aws.STACK_NAME}\r\n` }));
 
     // WHEN
     userData.render();
     const afterRender = YAML.scalarOptions.str.fold.lineWidth;
-    expect(() => failing.render()).toThrow(/values containing tokens/);
+    let duringRender: number | undefined;
+    const spy = jest.spyOn(YAML.Document.prototype, 'toString').mockImplementationOnce(() => {
+      duringRender = YAML.scalarOptions.str.fold.lineWidth;
+      throw new Error('boom');
+    });
+    try {
+      expect(() => userData.render()).toThrow('boom');
+    } finally {
+      spy.mockRestore();
+    }
 
     // THEN
     expect(afterRender).toEqual(before);
+    expect(duringRender).toEqual(0);
     expect(YAML.scalarOptions.str.fold.lineWidth).toEqual(before);
   });
 
@@ -754,6 +762,21 @@ describe('EC2Launch v2 user data', () => {
 
     // THEN
     expect(() => userData.addTask(second())).toThrow(/has already been added/);
+  });
+
+  test('renders a custom executeScript task with non-list inputs as-is', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: 'C:\\a.exe' }));
+    userData.addTask(ec2.Ec2LaunchV2Task.custom('executeScript', { content: 'x' }));
+
+    // THEN
+    expect(parse(userData).tasks).toEqual([
+      { task: 'executeProgram', inputs: [{ frequency: 'once', path: 'C:\\a.exe', runAs: 'localSystem' }] },
+      { task: 'executeScript', inputs: { content: 'x' } },
+    ]);
   });
 
   test('fails to add commands after a custom executeScript task without a list of inputs', () => {
