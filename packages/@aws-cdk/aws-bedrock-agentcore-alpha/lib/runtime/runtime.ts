@@ -1,8 +1,9 @@
 
-import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names } from 'aws-cdk-lib';
+import { Duration, Stack, Annotations, Token, Arn, ArnFormat, Lazy, Names, RemovalPolicy, Tags } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -147,6 +148,38 @@ export interface RuntimeProps {
    * @default - No logging configured
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  /**
+   * Tags to apply to the service-created CloudWatch Log Group for this runtime's
+   * application logs (`/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT`).
+   *
+   * Because the log group is provisioned by the AgentCore service rather than by
+   * CloudFormation, CDK cannot tag it through the runtime resource itself.
+   * When this prop is provided, CDK pre-creates the log group with
+   * `RemovalPolicy.RETAIN` so the specified tags are present from the first
+   * runtime invocation onward.
+   *
+   * **Removal behavior**: the pre-created log group always uses
+   * `RemovalPolicy.RETAIN` (CloudFormation deletion behavior — not to be confused
+   * with the CloudWatch Logs retention period). This means:
+   * - The log group persists when the stack is deleted (logs are preserved).
+   * - If the runtime is replaced and its `agentRuntimeId` changes (e.g. the
+   *   runtime resource is recreated), the old log group is orphaned and must be
+   *   cleaned up manually from the AWS console or CLI.
+   *
+   * **Migration caveat**: if this runtime has already been invoked before you add
+   * `applicationLogGroupTags`, the AgentCore service will have already created the
+   * log group at the same name. CloudFormation will then fail with a
+   * `ResourceAlreadyExistsException` when it tries to create the CDK-managed log
+   * group. To work around this, manually delete (or rename) the existing log group
+   * in CloudWatch Logs before deploying the updated stack.
+   *
+   * Use this when tag-based controls are required for cost allocation, data
+   * classification, retention automation, or access governance.
+   *
+   * @default - no extra tags on the application log group; no log group is pre-created
+   */
+  readonly applicationLogGroupTags?: { [key: string]: string };
 }
 
 /**
@@ -403,6 +436,20 @@ export class Runtime extends RuntimeBase {
 
     if (props.loggingConfigs && props.loggingConfigs.length > 0) {
       configureLoggingDelivery(this, this.agentRuntimeArn, props.loggingConfigs);
+    }
+
+    // Pre-create the service-managed application log group so that user-specified
+    // tags are present before the first runtime invocation.
+    if (props.applicationLogGroupTags && Object.keys(props.applicationLogGroupTags).length > 0) {
+      this.validateTags(props.applicationLogGroupTags);
+      const applicationLogGroup = new logs.LogGroup(this, 'ApplicationLogGroup', {
+        logGroupName: `/aws/bedrock-agentcore/runtimes/${this.agentRuntimeId}-DEFAULT`,
+        removalPolicy: RemovalPolicy.RETAIN,
+      });
+      const tagManager = Tags.of(applicationLogGroup);
+      for (const [key, value] of Object.entries(props.applicationLogGroupTags)) {
+        tagManager.add(key, value);
+      }
     }
   }
 
@@ -742,6 +789,11 @@ export class Runtime extends RuntimeBase {
       const keyErrors = [...keyLengthErrors, ...keyPatternErrors];
       if (keyErrors.length > 0) {
         throw new ValidationError(lit`InvalidTagKey`, keyErrors.join('\n'), this);
+      }
+
+      // Validate that tag key does not use the AWS-reserved prefix
+      if (key.toLowerCase().startsWith('aws:')) {
+        throw new ValidationError(lit`ReservedTagKeyPrefix`, `Tag key "${key}" cannot start with "aws:" as this prefix is reserved by AWS`, this);
       }
 
       if (value === undefined || value === null) {
