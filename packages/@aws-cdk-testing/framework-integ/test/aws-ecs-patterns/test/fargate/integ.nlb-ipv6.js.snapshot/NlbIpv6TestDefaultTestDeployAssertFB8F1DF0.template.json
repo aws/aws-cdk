@@ -30,7 +30,7 @@
      "Ref": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForC585FC77"
     },
     "flattenResponse": "false",
-    "salt": "1767876214358"
+    "salt": "1795063504619"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -186,6 +186,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "route53:ListResourceRecordSets"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -196,12 +205,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "49b3dc0bca0ad2920096fcbc8d247cad6d799282292ad8888df26f82954951f7.zip"
+     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -210,6 +219,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -238,12 +251,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "49b3dc0bca0ad2920096fcbc8d247cad6d799282292ad8888df26f82954951f7.zip"
+     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -252,6 +265,10 @@
       "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -280,12 +297,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "49b3dc0bca0ad2920096fcbc8d247cad6d799282292ad8888df26f82954951f7.zip"
+     "S3Key": "6ffc47b88143a52aa50e26c31da776854b28dff0e45b1a97d7c1e530d59590ad.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -294,7 +311,55 @@
       "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
+   }
+  },
+  "AwsApiCallRoute53listResourceRecordSets93c9c5fc415cccd743065d1f73b96918": {
+   "Type": "Custom::DeployAssert@SdkCallRoute53listResourceRecordSets",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Route53",
+    "api": "listResourceRecordSets",
+    "expected": "{\"$ObjectLike\":{\"ResourceRecordSets\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"service.test.public.\",\"Type\":\"AAAA\"}}]}}}",
+    "parameters": {
+     "HostedZoneId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "NlbIpv6Stack:ExportsOutputRefHostedZoneDB99F8662BBAE844"
+        },
+        "\""
+       ]
+      ]
+     },
+     "StartRecordName": "\"service.test.public\"",
+     "StartRecordType": "\"AAAA\""
+    },
+    "flattenResponse": "false",
+    "salt": "1795063504623"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallRoute53listResourceRecordSets93c9c5fc415cccd743065d1f73b96918": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRoute53listResourceRecordSets93c9c5fc415cccd743065d1f73b96918",
+     "assertion"
+    ]
    }
   }
  },

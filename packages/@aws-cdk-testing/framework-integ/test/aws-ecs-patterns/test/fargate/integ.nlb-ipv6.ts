@@ -46,6 +46,13 @@ const nlbLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargate
 nlbLoadbalancedFargateService.loadBalancer.connections.addSecurityGroup(securityGroupNlb);
 nlbLoadbalancedFargateService.loadBalancer.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 
+// Suppress security guardian rule - intentionally allowing public access for load balancer testing
+nlbLoadbalancedFargateService.loadBalancer.connections.securityGroups.forEach(sg => {
+  (sg.node.defaultChild as cdk.CfnResource).addMetadata('guard', {
+    SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+  });
+});
+
 const integ = new IntegTest(app, 'NlbIpv6Test', {
   testCases: [stack],
 });

@@ -625,6 +625,12 @@
   "FargateCluster7CCD5F93": {
    "Type": "AWS::ECS::Cluster"
   },
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "test.public."
+   }
+  },
   "SecurityGroupNlbFA132873": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -647,6 +653,13 @@
     ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
     }
    }
   },
@@ -763,6 +776,13 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "NlbFargateServiceLBPublicListenerBD013EC0": {
@@ -792,6 +812,70 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "NlbFargateServiceDNSC9B2B360": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::Join": [
+       "",
+       [
+        "dualstack.",
+        {
+         "Fn::GetAtt": [
+          "NlbFargateServiceLBDFBF1D54",
+          "DNSName"
+         ]
+        }
+       ]
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "NlbFargateServiceLBDFBF1D54",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "service.test.public.",
+    "Type": "A"
+   }
+  },
+  "NlbFargateServiceDNSAAAA91481B22": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "AliasTarget": {
+     "DNSName": {
+      "Fn::Join": [
+       "",
+       [
+        "dualstack.",
+        {
+         "Fn::GetAtt": [
+          "NlbFargateServiceLBDFBF1D54",
+          "DNSName"
+         ]
+        }
+       ]
+      ]
+     },
+     "HostedZoneId": {
+      "Fn::GetAtt": [
+       "NlbFargateServiceLBDFBF1D54",
+       "CanonicalHostedZoneID"
+      ]
+     }
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "service.test.public.",
+    "Type": "AAAA"
    }
   },
   "NlbFargateServiceTaskDefTaskRole6C597850": {
@@ -983,6 +1067,14 @@
    },
    "Export": {
     "Name": "NlbIpv6Stack:ExportsOutputFnGetAttNlbFargateServiceLBDFBF1D54DNSNameCE845CD9"
+   }
+  },
+  "ExportsOutputRefHostedZoneDB99F8662BBAE844": {
+   "Value": {
+    "Ref": "HostedZoneDB99F866"
+   },
+   "Export": {
+    "Name": "NlbIpv6Stack:ExportsOutputRefHostedZoneDB99F8662BBAE844"
    }
   }
  },
