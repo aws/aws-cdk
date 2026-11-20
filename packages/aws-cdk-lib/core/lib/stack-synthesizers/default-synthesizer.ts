@@ -5,7 +5,7 @@ import type { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesiz
 import * as cxapi from '../../../cx-api';
 import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { UnscopedValidationError } from '../errors';
-import { StringSpecializer } from '../helpers-internal/string-specializer';
+import { StringSpecializer, translateAssetTokenToCfnToken } from '../helpers-internal/string-specializer';
 import { lit } from '../private/literal-string';
 import type { Stack } from '../stack';
 import { Token } from '../token';
@@ -47,6 +47,20 @@ export interface DefaultStackSynthesizerProps {
    * @default DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME
    */
   readonly fileAssetsBucketName?: string;
+
+  /**
+   * ARN of the KMS key used to encrypt the file asset bucket.
+   *
+   * Specify this when asset readers, such as BucketDeployment handlers, need
+   * identity-based decryption permissions for a customer-managed bootstrap key.
+   * This does not configure bucket encryption or change the key policy. For a
+   * cross-account key, its policy must also allow the readers to use the key.
+   * The placeholders `${Qualifier}`, `${AWS::AccountId}`, `${AWS::Region}` and
+   * `${AWS::Partition}` are supported. CloudFormation tokens are not allowed.
+   *
+   * @default - no key is advertised to asset readers
+   */
+  readonly fileAssetsBucketKmsKeyArn?: string;
 
   /**
    * Name of the ECR repository to hold Docker Image assets
@@ -354,6 +368,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
   private useLookupRoleForStackOperations: boolean;
   private qualifier?: string;
   private bucketPrefix?: string;
+  private fileAssetsBucketKmsKeyArn?: string;
   private dockerTagPrefix?: string;
   private bootstrapStackVersionSsmParameter?: string;
   private assetManifest = new AssetManifestBuilder();
@@ -421,6 +436,9 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
 
     /* eslint-disable max-len */
     this.bucketName = spec.specialize(this.props.fileAssetsBucketName ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSETS_BUCKET_NAME);
+    this.fileAssetsBucketKmsKeyArn = this.props.fileAssetsBucketKmsKeyArn === undefined
+      ? undefined
+      : translateAssetTokenToCfnToken(spec.specialize(this.props.fileAssetsBucketKmsKeyArn));
     this.repositoryName = spec.specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
     this._deployRoleArn = spec.specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
     this._cloudFormationExecutionRoleArn = spec.specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
@@ -447,7 +465,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
     }, {
       displayName: asset.displayName,
     });
-    return this.cloudFormationLocationFromFileAsset(location);
+    const cfnLocation = this.cloudFormationLocationFromFileAsset(location);
+    return this.fileAssetsBucketKmsKeyArn === undefined
+      ? cfnLocation
+      : { ...cfnLocation, kmsKeyArn: this.fileAssetsBucketKmsKeyArn };
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {

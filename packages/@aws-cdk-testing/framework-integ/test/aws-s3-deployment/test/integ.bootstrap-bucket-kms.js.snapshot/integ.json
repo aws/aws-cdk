@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "BootstrapBucketKms/DefaultTest": {
+      "stacks": [
+        "bootstrap-bucket-kms"
+      ],
+      "assertionStack": "BootstrapBucketKms/DefaultTest/DeployAssert",
+      "assertionStackName": "BootstrapBucketKmsDefaultTestDeployAssert1EF594AD"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
