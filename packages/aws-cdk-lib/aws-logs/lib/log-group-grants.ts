@@ -1,5 +1,5 @@
-import * as logs from './logs.generated';
-import { logGroupArnWithoutStreamSuffix } from './private/log-group-arn';
+import type * as logs from './logs.generated';
+import { logGroupArnWithoutStreamSuffix, logGroupArnWithStreamSuffix } from './private/log-group-arn';
 import * as iam from '../../aws-iam';
 import type * as cdk from '../../core/lib';
 
@@ -50,7 +50,7 @@ export class LogGroupGrants {
     // Include both the log group ARN and the log stream ARN (':*') by default.
     const resourceArns = options.resourceArns ?? [
       logGroupArnWithoutStreamSuffix(this.resource),
-      logs.CfnLogGroup.arnForLogGroup(this.resource),
+      logGroupArnWithStreamSuffix(this.resource),
     ];
     return this.policyResource
       ? iam.Grant.addToPrincipalOrResource({
@@ -72,7 +72,7 @@ export class LogGroupGrants {
   public write(grantee: iam.IGrantable): iam.Grant {
     const actions = ['logs:CreateLogStream', 'logs:PutLogEvents'];
     // Both actions apply to log streams, which only the log stream ARN (':*') matches.
-    return this.actions(grantee, actions, { resourceArns: [logs.CfnLogGroup.arnForLogGroup(this.resource)] });
+    return this.actions(grantee, actions, { resourceArns: [logGroupArnWithStreamSuffix(this.resource)] });
   }
 
   /**
