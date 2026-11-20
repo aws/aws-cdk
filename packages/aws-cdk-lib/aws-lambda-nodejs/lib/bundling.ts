@@ -465,7 +465,11 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.buildEsbuildArgs(scope, options.inputDir, options.outputDir, options.pathJoin),
       ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
-    steps.push({ type: 'spawn', command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs] });
+    steps.push({
+      type: 'spawn',
+      command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs],
+      counter: esbuildCounter(options.esbuildRunner),
+    });
 
     // 4-5. Node modules installation
     if (this.props.nodeModules) {
@@ -524,7 +528,9 @@ export class Bundling implements cdk.BundlingOptions {
             }
           }
           break;
-        case 'spawn':
+        case 'spawn': {
+          using _span = step.counter ? profileSpan(step.counter, { telemetry: true }) : undefined;
+
           // On Windows, spawnSync fails with EINVAL when invoking .cmd shims
           // (e.g. npx.cmd, npx.bat) directly. We need to route through a shell.
           // Powershell.exe instead of cmd.exe because the quoting rules are saner.
@@ -541,6 +547,7 @@ export class Bundling implements cdk.BundlingOptions {
             });
           }
           break;
+        }
         case 'callback':
           try {
             step.operation();
@@ -558,8 +565,25 @@ export class Bundling implements cdk.BundlingOptions {
  */
 type BundlingStep =
   | { type: 'shell'; commands: string[] }
-  | { type: 'spawn'; command: string[]; cwd?: string }
+  | {
+    type: 'spawn';
+    command: string[];
+    cwd?: string;
+    /** Telemetry counter for the time this step takes when it runs locally */
+    counter?: string;
+  }
   | { type: 'callback'; operation: () => void };
+
+/**
+ * The telemetry counter for running esbuild, named after the program that starts it
+ *
+ * Separates running the esbuild binary directly from running it through a package manager.
+ */
+function esbuildCounter(esbuildRunner: string[]): string {
+  const program = esbuildRunner[0].replace(/\.cmd$/, '');
+  const known = ['esbuild', 'npx', 'yarn', 'pnpm', 'bun'];
+  return `NodejsFunction#esbuild:${known.includes(program) ? program : 'other'}`;
+}
 
 interface BundlingCommandOptions {
   readonly inputDir: string;
