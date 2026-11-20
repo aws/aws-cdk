@@ -43,5 +43,5 @@ const integ = new IntegTest(app, 'FunctionUrlOriginIpAddressTypeTest', {
 for (const dist of [distribution, distributionOac]) {
   integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
     Id: dist.distributionId,
-  }).assertAtPath('Distribution.DistributionConfig.Origins.Items.0.CustomOriginConfig.IpAddressType', ExpectedResult.exact('dualstack'));
+  }).assertAtPath('Distribution.DistributionConfig.Origins.Items.0.CustomOriginConfig.IpAddressType', ExpectedResult.stringLikeRegexp('^dualstack$'));
 }

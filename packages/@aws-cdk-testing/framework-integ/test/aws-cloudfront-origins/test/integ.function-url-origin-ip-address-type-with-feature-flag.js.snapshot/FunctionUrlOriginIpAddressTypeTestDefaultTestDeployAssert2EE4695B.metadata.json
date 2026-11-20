@@ -1,0 +1,102 @@
+{
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:259:29)",
+        "Annotations.addWarningV2 (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:125:18)",
+        "resolveValue (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:207:52)",
+        "resolveReferencesInElements (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:30)",
+        "resolveReferences (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:5)",
+        "prepareApp (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:34)",
+        "synthesize (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:192:92)",
+        "App.synth (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:205:27)",
+        "process.<anonymous> (/home/user/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:161:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FunctionUrlOriginIpAddressTypeTestDefaultTestDeployAssert2EE4695B.template.json"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution8f9d08285e130ac6fb0aa9096e996dc1/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution8f9d08285e130ac6fb0aa9096e996dc1/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFrontgetDistribution8f9d08285e130ac6fb0aa9096e996dc1"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistributionebc194746e7a8d510513842421f19e59/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistributionebc194746e7a8d510513842421f19e59/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFrontgetDistributionebc194746e7a8d510513842421f19e59"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistribution8f9d08285e130ac6fb0aa9096e996dc1/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFrontgetDistribution8f9d08285e130ac6fb0aa9096e996dc1"
+    }
+  ],
+  "/FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert/AwsApiCallCloudFrontgetDistributionebc194746e7a8d510513842421f19e59/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFrontgetDistributionebc194746e7a8d510513842421f19e59"
+    }
+  ]
+}

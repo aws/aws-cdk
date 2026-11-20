@@ -168,6 +168,39 @@
     }
    }
   },
+  "DistributionWithoutIpAddressTypePropOacDualStackOrigin1InvokeFunctionFromCloudFrontForFunctionUrlOriginIpAddressTypeStackDistributionWithoutIpAddressTypePropOacDualStackOrigin1EF74651A9EE2F337": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "TestFunctionFunctionUrlF8C7B1A2",
+      "FunctionArn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "cloudfront.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistributionWithoutIpAddressTypePropOacDualStack7C39838F"
+       }
+      ]
+     ]
+    }
+   }
+  },
   "DistributionWithoutIpAddressTypePropOacDualStack7C39838F": {
    "Type": "AWS::CloudFront::Distribution",
    "Properties": {
@@ -220,20 +253,20 @@
   }
  },
  "Outputs": {
-  "ExportsOutputRefDistributionWithoutIpAddressTypePropOacDualStack7C39838F87B73317": {
-   "Value": {
-    "Ref": "DistributionWithoutIpAddressTypePropOacDualStack7C39838F"
-   },
-   "Export": {
-    "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithoutIpAddressTypePropOacDualStack7C39838F87B73317"
-   }
-  },
   "ExportsOutputRefDistributionWithoutIpAddressTypePropDualStack5FD049090515B694": {
    "Value": {
     "Ref": "DistributionWithoutIpAddressTypePropDualStack5FD04909"
    },
    "Export": {
     "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithoutIpAddressTypePropDualStack5FD049090515B694"
+   }
+  },
+  "ExportsOutputRefDistributionWithoutIpAddressTypePropOacDualStack7C39838F87B73317": {
+   "Value": {
+    "Ref": "DistributionWithoutIpAddressTypePropOacDualStack7C39838F"
+   },
+   "Export": {
+    "Name": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithoutIpAddressTypePropOacDualStack7C39838F87B73317"
    }
   }
  },
