@@ -1,0 +1,156 @@
+{
+ "Resources": {
+  "AwsApiCallApplicationAutoScalingdescribeScalingPolicies1c5f9d2940185d94c4cc98b7276234f2": {
+   "Type": "Custom::DeployAssert@SdkCallApplicationAutoScalingdescribeSc",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ApplicationAutoScaling",
+    "api": "describeScalingPolicies",
+    "expected": "{\"$ObjectLike\":{\"ScalingPolicies\":[{\"PolicyType\":\"TargetTrackingScaling\",\"TargetTrackingScalingPolicyConfiguration\":{\"TargetValue\":0.7,\"CustomizedMetricSpecification\":{\"Metrics\":[{\"Id\":\"expr_1\",\"Expression\":\"FILL(utilization, 0)\",\"ReturnData\":true},{\"Id\":\"utilization\",\"MetricStat\":{\"Metric\":{\"Namespace\":\"AWS/Lambda\",\"MetricName\":\"ProvisionedConcurrencyUtilization\"},\"Stat\":\"Maximum\"},\"ReturnData\":false}]}}}]}}",
+    "parameters": {
+     "ServiceNamespace": "\"lambda\"",
+     "ResourceId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"function:",
+        {
+         "Fn::ImportValue": "aws-cdk-appscaling-target-tracking-metric-math:ExportsOutputRefFunction76856677C48862D5"
+        },
+        ":live\""
+       ]
+      ]
+     },
+     "PolicyNames": "[\"utilization-or-zero\"]"
+    },
+    "flattenResponse": "false",
+    "salt": "1791635336312"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "application-autoscaling:DescribeScalingPolicies"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "13c53d1af041ac32db1c99c5bae43b3bd7d29a12d9113921a925efd959ba10dc.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallApplicationAutoScalingdescribeScalingPolicies1c5f9d2940185d94c4cc98b7276234f2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallApplicationAutoScalingdescribeScalingPolicies1c5f9d2940185d94c4cc98b7276234f2",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

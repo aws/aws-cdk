@@ -98,6 +98,9 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    * The metric must track utilization. Scaling out will happen if the metric is higher than
    * the target value, scaling in will happen in the metric is lower than the target value.
    *
+   * The metric can be a `Metric` or a `MathExpression` that combines several metrics into a
+   * single time series. Search expressions are not supported.
+   *
    * The metric must be in the same account and region as the scaling policy.
    *
    * Exactly one of customMetric or predefinedMetric must be specified.
@@ -130,8 +133,9 @@ export class TargetTrackingScalingPolicy extends Construct {
       throw new ValidationError(lit`ExactlyOneCustomMetricPredefined`, 'Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.', scope);
     }
 
-    if (props.customMetric && !props.customMetric.toMetricConfig().metricStat) {
-      throw new ValidationError(lit`DirectMetricsSupportedTargetTracking`, 'Only direct metrics are supported for Target Tracking. Use Step Scaling or supply a Metric object.', scope);
+    const customMetricConfig = props.customMetric?.toMetricConfig();
+    if (customMetricConfig && !customMetricConfig.metricStat && !customMetricConfig.mathExpression) {
+      throw new ValidationError(lit`DirectMetricsSupportedTargetTracking`, 'Only metrics and math expressions are supported for Target Tracking. Use Step Scaling or supply a Metric or MathExpression object.', scope);
     }
 
     super(scope, id);
@@ -159,17 +163,102 @@ export class TargetTrackingScalingPolicy extends Construct {
     });
 
     this.scalingPolicyArn = resource.ref;
+
+    // Surface problems the math expression found in itself, such as identifiers missing from `usingMetrics`
+    if (customMetricConfig?.mathExpression) {
+      for (const [warningId, message] of Object.entries(props.customMetric?.warningsV2 ?? {})) {
+        cdk.Annotations.of(this).addWarningV2(warningId, message);
+      }
+    }
   }
 }
 
 function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnScalingPolicy.CustomizedMetricSpecificationProperty | undefined {
   if (!metric) { return undefined; }
-  const c = metric.toMetricConfig().metricStat!;
+  const config = metric.toMetricConfig();
+
+  if (config.mathExpression) {
+    return { metrics: renderMetricMath(scope, metric) };
+  }
+
+  const c = config.metricStat!;
 
   if (c.statistic.startsWith('p')) {
     throw new ValidationError(lit`CannotStatistic`, `Cannot use statistic '${c.statistic}' for Target Tracking: only 'Average', 'Minimum', 'Maximum', 'SampleCount', and 'Sum' are supported.`, scope);
   }
 
+  warnIfElsewhere(scope, c);
+
+  return {
+    dimensions: c.dimensions,
+    metricName: c.metricName,
+    namespace: c.namespace,
+    statistic: c.statistic,
+    unit: c.unitFilter,
+  };
+}
+
+/**
+ * Flatten a math expression and the metrics it uses into metric data queries.
+ *
+ * The top-level expression is the only query that returns data. Every metric and nested
+ * expression keeps the id it has in `usingMetrics`, because the expressions refer to it by that id.
+ * `MathExpression` already rejects two different metrics under one id, so a repeated id is rendered once.
+ */
+function renderMetricMath(scope: Construct, expression: cloudwatch.IMetric): CfnScalingPolicy.TargetTrackingMetricDataQueryProperty[] {
+  const queries: CfnScalingPolicy.TargetTrackingMetricDataQueryProperty[] = [];
+  const seen = new Set<string>();
+
+  const render = (metric: cloudwatch.IMetric, id: string, returnData: boolean): CfnScalingPolicy.TargetTrackingMetricDataQueryProperty => {
+    const config = metric.toMetricConfig();
+    const label = config.renderingProperties?.label as string | undefined;
+
+    if (config.mathExpression) {
+      return { id, expression: config.mathExpression.expression, label, returnData };
+    }
+    if (config.metricStat) {
+      const stat = config.metricStat;
+      warnIfElsewhere(scope, stat);
+      return {
+        id,
+        metricStat: {
+          metric: {
+            namespace: stat.namespace,
+            metricName: stat.metricName,
+            dimensions: stat.dimensions,
+          },
+          stat: stat.statistic,
+          unit: stat.unitFilter,
+        },
+        label,
+        returnData,
+      };
+    }
+    throw new ValidationError(lit`SearchExpressionsNotSupportedTargetTracking`, 'Search expressions are not supported for Target Tracking.', scope);
+  };
+
+  const visitChildren = (metric: cloudwatch.IMetric) => {
+    for (const [id, child] of Object.entries(metric.toMetricConfig().mathExpression?.usingMetrics ?? {})) {
+      if (seen.has(id)) { continue; }
+      seen.add(id);
+      queries.push(render(child, id, false));
+      visitChildren(child);
+    }
+  };
+  visitChildren(expression);
+
+  // The top-level expression needs an id of its own that no metric in `usingMetrics` uses
+  let n = 1;
+  while (seen.has(`expr_${n}`)) { n++; }
+  queries.unshift(render(expression, `expr_${n}`, true));
+
+  return queries;
+}
+
+/**
+ * Warn when a metric names another account or region, which target tracking ignores.
+ */
+function warnIfElsewhere(scope: Construct, c: cloudwatch.MetricStatConfig) {
   const stack = cdk.Stack.of(scope);
   if (definitelyDifferent(c.account, stack.account)) {
     cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-applicationautoscaling:crossAccountMetricIgnored',
@@ -179,14 +268,6 @@ function renderCustomMetric(scope: Construct, metric?: cloudwatch.IMetric): CfnS
     cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-applicationautoscaling:crossRegionMetricIgnored',
       `target tracking can only use metrics from its own region; metric region ${JSON.stringify(c.region)} is ignored and region ${JSON.stringify(stack.region)} is used`);
   }
-
-  return {
-    dimensions: c.dimensions,
-    metricName: c.metricName,
-    namespace: c.namespace,
-    statistic: c.statistic,
-    unit: c.unitFilter,
-  };
 }
 
 /**

@@ -152,6 +152,42 @@ readCapacity.scaleOnUtilization({
 });
 ```
 
+### Target tracking with metric math
+
+A custom metric can also be a `MathExpression`, which combines one or more metrics into the single
+time series that the policy tracks. The policy is rendered with the expression and every metric it uses.
+
+The following example scales the provisioned concurrency of a Lambda alias on the `Maximum` of its
+utilization. Lambda publishes no utilization datapoints while the alias receives no requests, which
+leaves the policy's alarms without data and the capacity where it was. `FILL` counts those gaps as 0,
+so the policy scales back in when traffic stops:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const alias: lambda.Alias;
+
+const target = new appscaling.ScalableTarget(this, 'ScalableTarget', {
+  serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
+  minCapacity: 1,
+  maxCapacity: 10,
+  resourceId: `function:${alias.lambda.functionName}:${alias.aliasName}`,
+  scalableDimension: 'lambda:function:ProvisionedConcurrency',
+});
+
+target.scaleToTrackMetric('UtilizationTracking', {
+  targetValue: 0.7,
+  customMetric: new cloudwatch.MathExpression({
+    expression: 'FILL(utilization, 0)',
+    usingMetrics: {
+      utilization: alias.metric('ProvisionedConcurrencyUtilization', {
+        statistic: cloudwatch.Stats.MAXIMUM,
+      }),
+    },
+  }),
+});
+```
+
 ## Scheduled Scaling
 
 This type of scaling is used to change capacities based on time. It works
