@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.278.0](https://github.com/aws/aws-cdk/compare/v2.277.0...v2.278.0) (2026-11-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-bedrockagentcore: AWS::BedrockAgentCore::PaymentManager: AuthorizingClaimMatchValue type removed, replaced by AuthorizingClaimMatchValueType.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::PaymentManager: ClaimMatchValue type removed, replaced by ClaimMatchValueType.  
+aws-bedrockagentcore: AWS::BedrockAgentCore::PaymentManager: CustomJWTAuthorizer type removed, replaced by CustomJWTAuthorizerConfiguration.  
+aws-servicecatalog: AWS::ServiceCatalog::AcceptedPortfolioShare: Id attribute removed.
+
+### Features
+
+* **lambda:** add AcceleratorConfig on Lambda Managed Instances ([#39806](https://github.com/aws/aws-cdk/issues/39806)) ([315481c](https://github.com/aws/aws-cdk/commit/315481c8e9eebf407cc762c30d2ebe7661ee3ddf)), closes [#39804](https://github.com/aws/aws-cdk/issues/39804) [#39788](https://github.com/aws/aws-cdk/issues/39788) [#39643](https://github.com/aws/aws-cdk/issues/39643)
+* update L1 CloudFormation resource definitions ([#39847](https://github.com/aws/aws-cdk/issues/39847)) ([6680150](https://github.com/aws/aws-cdk/commit/66801507ee5f5935f90bff5ee5ed54121eb48eab))
+* **apigateway:** add `autoConfigurePathParameter` option for proxy resources ([#37124](https://github.com/aws/aws-cdk/issues/37124)) ([ae2e6da](https://github.com/aws/aws-cdk/commit/ae2e6daf342c6f2ac276ed80f7f42b099b344345)), closes [#28545](https://github.com/aws/aws-cdk/issues/28545)
+* **core:** build bundling images only when an asset is bundled ([#39778](https://github.com/aws/aws-cdk/issues/39778)) ([8b2487e](https://github.com/aws/aws-cdk/commit/8b2487e6ca30d8b4d037cab1fe1acfa5133ed128)), closes [#27991](https://github.com/aws/aws-cdk/issues/27991)
+* **lambda:** add FunctionRuntimeConfig mixin for customer-managed runtimes ([#39834](https://github.com/aws/aws-cdk/issues/39834)) ([95aa146](https://github.com/aws/aws-cdk/commit/95aa14677b2648cd75b6cb53cce5ad7aefd9e1da)), closes [#39643](https://github.com/aws/aws-cdk/issues/39643)
+* update L1 CloudFormation resource definitions ([#39788](https://github.com/aws/aws-cdk/issues/39788)) ([774b2ff](https://github.com/aws/aws-cdk/commit/774b2ffac7a9e934a7e8883575515b3a4050844b))
+* **core:** embed structured design context in synthesized templates (MetadataContext) ([#38381](https://github.com/aws/aws-cdk/issues/38381)) ([708bee9](https://github.com/aws/aws-cdk/commit/708bee9a0964cb73177245938de96e67cb57ab79))
+* **ec2:** support IPAM CIDR allocation for Subnet ([#38810](https://github.com/aws/aws-cdk/issues/38810)) ([16c42cb](https://github.com/aws/aws-cdk/commit/16c42cbd230f0a7d4d87566cbddfd3ea0181ff58)), closes [#34296](https://github.com/aws/aws-cdk/issues/34296) [#34349](https://github.com/aws/aws-cdk/issues/34349)
+* **elbv2:** add RFC 9151 (CNSA 1.0) SSL security policies for ALB and NLB ([#38700](https://github.com/aws/aws-cdk/issues/38700)) ([06a1c50](https://github.com/aws/aws-cdk/commit/06a1c50a966fcd8d39956d889ca6b736c53eba65)), closes [#38666](https://github.com/aws/aws-cdk/issues/38666)
+* **elbv2:** regex support for listener conditions ([#36384](https://github.com/aws/aws-cdk/issues/36384)) ([6f1e448](https://github.com/aws/aws-cdk/commit/6f1e44841a1f832663e0a7f37579c048ad1c242a)), closes [#36363](https://github.com/aws/aws-cdk/issues/36363) [#36363](https://github.com/aws/aws-cdk/issues/36363) [#38058](https://github.com/aws/aws-cdk/issues/38058)
+* **lambda-event-sources:** support queue consumption mode for self-managed Kafka ([#39712](https://github.com/aws/aws-cdk/issues/39712)) ([907dffd](https://github.com/aws/aws-cdk/commit/907dffddea3151512d58711f2e6312296957ec0b))
+* **rds:** add CloudWatch metric helpers to DatabaseInstance ([#37931](https://github.com/aws/aws-cdk/issues/37931)) ([beb2061](https://github.com/aws/aws-cdk/commit/beb206171b52bfeca5c5fdee78ba965ee5b33c25)), closes [#37930](https://github.com/aws/aws-cdk/issues/37930)
+
+
+### Bug Fixes
+
+* **core:** asset hashing and symlink contract is not documented ([#39779](https://github.com/aws/aws-cdk/issues/39779)) ([4ed690e](https://github.com/aws/aws-cdk/commit/4ed690ec28c6f538998549603c53160e3dd83443))
+* a number of shell components are not escaped ([#39688](https://github.com/aws/aws-cdk/issues/39688)) ([911c34a](https://github.com/aws/aws-cdk/commit/911c34a3d1c4b550293b870273791d693ad3d70b))
+* **awslint:** --quiet is ignored for warning and skipped diagnostics ([#39790](https://github.com/aws/aws-cdk/issues/39790)) ([7105c25](https://github.com/aws/aws-cdk/commit/7105c25611b1d0d2a3ff312b69f8bbb5eb2967c2)), closes [#39789](https://github.com/aws/aws-cdk/issues/39789) [#38350](https://github.com/aws/aws-cdk/issues/38350)
+* **core:** bump bundled minimatch to 11.0.8 to address CVE-2026-118764 ([#39595](https://github.com/aws/aws-cdk/issues/39595)) ([c153af9](https://github.com/aws/aws-cdk/commit/c153af906a24dde1797fbd15153ca2c4b29317d5)), closes [#39594](https://github.com/aws/aws-cdk/issues/39594)
+* **core:** upgrade CloudFormation validation to latest version ([#39643](https://github.com/aws/aws-cdk/issues/39643)) ([2f790a3](https://github.com/aws/aws-cdk/commit/2f790a316d3887abfae5f6677791fc453b98981d))
+* **iam:** imported users and groups get a default policy name that is not stack-safe ([#38894](https://github.com/aws/aws-cdk/issues/38894)) ([ea35903](https://github.com/aws/aws-cdk/commit/ea35903ff0dd873fe06837b7b6227d369cedf17e)), closes [#38892](https://github.com/aws/aws-cdk/issues/38892) [#37682](https://github.com/aws/aws-cdk/issues/37682) [#37682](https://github.com/aws/aws-cdk/issues/37682) [#29762](https://github.com/aws/aws-cdk/issues/29762) [#7483](https://github.com/aws/aws-cdk/issues/7483) [#37682](https://github.com/aws/aws-cdk/issues/37682) [#23080](https://github.com/aws/aws-cdk/issues/23080) [#37682](https://github.com/aws/aws-cdk/issues/37682)
+
 ## [2.277.0](https://github.com/aws/aws-cdk/compare/v2.276.0...v2.277.0) (2026-11-12)
 
 
