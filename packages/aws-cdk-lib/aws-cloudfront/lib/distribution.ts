@@ -8,6 +8,7 @@ import type {
   IOriginRequestPolicyRef,
   IRealtimeLogConfigRef,
   IResponseHeadersPolicyRef,
+  ITrustStoreRef,
 } from './cloudfront.generated';
 import {
   CfnDistribution,
@@ -307,6 +308,17 @@ export interface DistributionProps {
    * @default false
    */
   readonly publishAdditionalMetrics?: boolean;
+
+  /**
+   * Configuration for mutual TLS (mTLS) authentication between viewers and CloudFront.
+   *
+   * When configured, CloudFront validates client certificates using the specified trust store.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html
+   *
+   * @default - mTLS is not enabled
+   */
+  readonly viewerMtlsConfig?: ViewerMtlsConfig;
 }
 
 /**
@@ -382,6 +394,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly certificate?: ICertificateRef;
   private readonly publishAdditionalMetrics?: boolean;
   private readonly _webAclId: IBox<string | undefined>;
+  private readonly isMtlsEnabled: boolean;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -415,6 +428,9 @@ export class Distribution extends Resource implements IDistribution {
 
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
+    this.isMtlsEnabled = props.viewerMtlsConfig !== undefined;
+    this.validateMtlsHttpVersion();
+    this.validateMtlsViewerProtocolPolicy(props.defaultBehavior.viewerProtocolPolicy, 'default behavior');
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
     this.defaultBehavior = new CacheBehavior(originId, {
@@ -465,6 +481,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
+        viewerMtlsConfig: this.renderViewerMtlsConfig(props.viewerMtlsConfig),
         // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
         webAclId: Token.asString(this._webAclId),
       },
@@ -702,6 +719,7 @@ export class Distribution extends Resource implements IDistribution {
       throw new ValidationError(lit`DefaultBehaviorCannotHavePathPattern`, 'Only the default behavior can have a path pattern of \'*\'', this);
     }
     this.validateGrpc(behaviorOptions);
+    this.validateMtlsViewerProtocolPolicy(behaviorOptions.viewerProtocolPolicy, `behavior for path '${pathPattern}'`);
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, {
       pathPattern,
@@ -902,8 +920,24 @@ export class Distribution extends Resource implements IDistribution {
     };
   }
 
+  private renderViewerMtlsConfig(config?: ViewerMtlsConfig): CfnDistribution.ViewerMtlsConfigProperty | undefined {
+    if (!config) {
+      return undefined;
+    }
+
+    return {
+      mode: config.mode,
+      trustStoreConfig: {
+        trustStoreId: config.trustStore.trustStoreRef.trustStoreId,
+        advertiseTrustStoreCaNames: config.advertiseTrustStoreCaNames,
+        ignoreCertificateExpiry: config.ignoreCertificateExpiry,
+      },
+    };
+  }
+
   private resolveViewerProtocolPolicy(viewerProtocolPolicyProp?: ViewerProtocolPolicy): ViewerProtocolPolicy {
-    const defaultPolicy = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS)
+    // mTLS requires HTTPS, so behaviors of an mTLS distribution redirect HTTP viewers to HTTPS by default.
+    const defaultPolicy = this.isMtlsEnabled || FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS)
       ? ViewerProtocolPolicy.REDIRECT_TO_HTTPS : ViewerProtocolPolicy.ALLOW_ALL;
     return viewerProtocolPolicyProp ?? defaultPolicy;
   }
@@ -915,6 +949,34 @@ export class Distribution extends Resource implements IDistribution {
     const validHttpVersions = [HttpVersion.HTTP2, HttpVersion.HTTP2_AND_3];
     if (!validHttpVersions.includes(this.httpVersion)) {
       throw new ValidationError(lit`HttpVersionMustSupportHttp2ForGrpc`, `'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
+    }
+  }
+
+  private validateMtlsHttpVersion(): void {
+    if (!this.isMtlsEnabled) {
+      return;
+    }
+    const invalidHttpVersions = [HttpVersion.HTTP3, HttpVersion.HTTP2_AND_3];
+    if (invalidHttpVersions.includes(this.httpVersion)) {
+      throw new ValidationError(
+        lit`HttpVersionNotSupportedWithMtls`,
+        `'httpVersion' must be ${HttpVersion.HTTP1_1} or ${HttpVersion.HTTP2} when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${this.httpVersion}`,
+        this,
+      );
+    }
+  }
+
+  private validateMtlsViewerProtocolPolicy(policy: ViewerProtocolPolicy | undefined, location: string): void {
+    if (!this.isMtlsEnabled || policy === undefined) {
+      return;
+    }
+    const validPolicies = [ViewerProtocolPolicy.HTTPS_ONLY, ViewerProtocolPolicy.REDIRECT_TO_HTTPS];
+    if (!validPolicies.includes(policy)) {
+      throw new ValidationError(
+        lit`ViewerProtocolPolicyIncompatibleWithMtls`,
+        `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${policy}' in ${location}`,
+        this,
+      );
     }
   }
 }
@@ -1010,6 +1072,71 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2_2021 = 'TLSv1.2_2021',
   TLS_V1_2_2025 = 'TLSv1.2_2025',
   TLS_V1_3_2025 = 'TLSv1.3_2025',
+}
+
+/**
+ * The mode for mutual TLS (mTLS) authentication between viewers and CloudFront.
+ */
+export enum MtlsMode {
+  /**
+   * All clients must present valid certificates during the TLS handshake.
+   * Connections without valid certificates are rejected.
+   */
+  REQUIRED = 'required',
+
+  /**
+   * CloudFront validates the client certificate against the trust store if one is
+   * presented, but also allows connections without a certificate.
+   *
+   * Connections that present an invalid certificate are still rejected.
+   */
+  OPTIONAL = 'optional',
+}
+
+/**
+ * Configuration for mutual TLS (mTLS) authentication between viewers and CloudFront.
+ *
+ * Mutual TLS authentication enables bidirectional certificate-based authentication,
+ * ensuring only trusted clients can access your CloudFront distribution.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/mtls-authentication.html
+ */
+export interface ViewerMtlsConfig {
+  /**
+   * The mode for mutual TLS authentication.
+   *
+   * - REQUIRED: All clients must present valid certificates
+   * - OPTIONAL: Certificates are validated if presented; connections without a certificate are allowed
+   */
+  readonly mode: MtlsMode;
+
+  /**
+   * The trust store to use for mTLS authentication.
+   *
+   * The trust store contains CA certificates that CloudFront uses to
+   * authenticate client certificates during mTLS handshakes.
+   */
+  readonly trustStore: ITrustStoreRef;
+
+  /**
+   * Whether to advertise trust store CA names to clients during the TLS handshake.
+   *
+   * When enabled, CloudFront sends the list of CA names from the trust store to clients,
+   * which can help clients select the appropriate certificate to present.
+   *
+   * @default false
+   */
+  readonly advertiseTrustStoreCaNames?: boolean;
+
+  /**
+   * Whether to allow connections with expired client certificates.
+   *
+   * When enabled, CloudFront accepts connections from clients with expired certificates.
+   * This should only be used in specific scenarios where certificate expiration cannot be controlled.
+   *
+   * @default false
+   */
+  readonly ignoreCertificateExpiry?: boolean;
 }
 
 /**
@@ -1195,9 +1322,9 @@ export interface AddBehaviorOptions {
   /**
    * The protocol that viewers can use to access the files controlled by this behavior.
    *
-   * @default - ViewerProtocolPolicy.REDIRECT_TO_HTTPS if the
-   * `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature flag is enabled,
-   * otherwise ViewerProtocolPolicy.ALLOW_ALL
+   * @default - ViewerProtocolPolicy.REDIRECT_TO_HTTPS if `viewerMtlsConfig` is specified on the
+   * distribution or the `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature
+   * flag is enabled, otherwise ViewerProtocolPolicy.ALLOW_ALL
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 
