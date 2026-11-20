@@ -520,9 +520,9 @@ export interface TableV2MultiAccountReplicaProps extends TableOptionsV2 {
   /**
    * Whether or not to grant permissions for all indexes of the table.
    *
-   * Note: If false, permissions will only be granted to indexes when `globalIndexes` is specified.
+   * Note: If false, `grant*` methods do not grant permissions for the table's indexes.
    *
-   * @default false
+   * @default true
    */
   readonly grantIndexPermissions?: boolean;
 }
