@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "0d2ad138299235302947e2a67c242ede73740661c0d6e78f10604a536b475525": {
+      "displayName": "aws-ecs-cloudmap-a-and-srv-records Template",
+      "source": {
+        "path": "aws-ecs-cloudmap-a-and-srv-records.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-9f246b7e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0d2ad138299235302947e2a67c242ede73740661c0d6e78f10604a536b475525.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
