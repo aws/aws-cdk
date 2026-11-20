@@ -99,7 +99,7 @@ export interface S3LogsDeliveryProps extends DeliveryProps {
   readonly permissionsVersion?: S3LogsDeliveryPermissionsVersion;
   /**
    * The KMS key that is used to encrypt the bucket used for log delivery
-   * 
+   *
    * Grants permissions required for log delivery when provided. Does not change
    * the bucket's encryption configuration.
    *

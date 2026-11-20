@@ -170,7 +170,7 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
     if (encryptionKey) {
       const grant = KeyGrants.fromKey(encryptionKey).actions(principal, ...actions);
       if (!grant) {
-         Annotations.of(this).addWarningV2('@aws-cdk/mixins-preview:logsDeliveryKeyPolicyNotUpdated',
+        Annotations.of(this).addWarningV2('@aws-cdk/mixins-preview:logsDeliveryKeyPolicyNotUpdated',
           `could not add policy to the provided encryption key, ${encryptionKey.keyRef.keyId}. Add a statement to allow log delivery manually.`);
       }
     } else {
