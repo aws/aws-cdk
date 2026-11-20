@@ -1,0 +1,1526 @@
+{
+ "Resources": {
+  "McpServerServiceRole9E526485": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "McpServerD7E15234": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\nexports.handler = async (event) => {\n  const raw = event.isBase64Encoded ? Buffer.from(event.body ?? '', 'base64').toString() : event.body;\n  const body = raw ? JSON.parse(raw) : {};\n  const id = body.id ?? null;\n  let result;\n  switch (body.method) {\n    case 'initialize':\n      result = {\n        protocolVersion: body.params?.protocolVersion ?? '2025-06-18',\n        capabilities: { tools: {} },\n        serverInfo: { name: 'integ-private-ca-mcp-server', version: '0.0.1' },\n      };\n      break;\n    case 'tools/list':\n      result = {\n        tools: [{\n          name: 'echo',\n          description: 'Echoes the input back',\n          inputSchema: { type: 'object', properties: { text: { type: 'string' } }, required: ['text'] },\n        }],\n      };\n      break;\n    case 'notifications/initialized':\n      return { statusCode: 202, statusDescription: '202 Accepted', isBase64Encoded: false, headers: {}, body: '' };\n    default:\n      result = undefined;\n  }\n  const payload = result !== undefined\n    ? { jsonrpc: '2.0', id, result }\n    : { jsonrpc: '2.0', id, error: { code: -32601, message: 'Method not found' } };\n  return {\n    statusCode: 200,\n    statusDescription: '200 OK',\n    isBase64Encoded: false,\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify(payload),\n  };\n};\n  "
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "McpServerServiceRole9E526485",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "McpServerServiceRole9E526485"
+   ]
+  },
+  "McpServerLogGroup767EA142": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "McpServerD7E15234"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "McpServerInvoke2UTWxhlfyqbT5FTn5jvgbLgjFfJwzswGk55DU1HY50EF9830": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "McpServerD7E15234",
+      "Arn"
+     ]
+    },
+    "Principal": "elasticloadbalancing.amazonaws.com"
+   }
+  },
+  "Vpc8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-agentcore-gateway-target-certificate/Vpc"
+     }
+    ]
+   }
+  },
+  "VpcIsolatedSubnet1SubnetE48C5737": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcIsolatedSubnet1RouteTable4771E3E5": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcIsolatedSubnet1RouteTableAssociationD300FCBB": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcIsolatedSubnet1RouteTable4771E3E5"
+    },
+    "SubnetId": {
+     "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+    }
+   }
+  },
+  "VpcIsolatedSubnet2Subnet16364B91": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcIsolatedSubnet2RouteTable1D30AF7D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "cdk-agentcore-gateway-target-certificate/Vpc/IsolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcIsolatedSubnet2RouteTable1D30AF7D"
+    },
+    "SubnetId": {
+     "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+    }
+   }
+  },
+  "Alb16C2F182": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internal",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "AlbSecurityGroup580F65A6",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+     },
+     {
+      "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+     }
+    ],
+    "Type": "application"
+   }
+  },
+  "AlbSecurityGroup580F65A6": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatically created Security Group for ELB cdkagentcoregatewaytargetcertificateAlb38AABBFE",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "AlbSecurityGroupfromcdkagentcoregatewaytargetcertificateResourceGatewaySecurityGroup962E4D1D443EE7F0116": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from cdkagentcoregatewaytargetcertificateResourceGatewaySecurityGroup962E4D1D:443",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "AlbSecurityGroup580F65A6",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ResourceGatewaySecurityGroupD9C47918",
+      "GroupId"
+     ]
+    },
+    "ToPort": 443
+   }
+  },
+  "AlbHttpsB7CA700A": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "Certificates": [
+     {
+      "CertificateArn": {
+       "Fn::GetAtt": [
+        "PrivateCa",
+        "CertificateArn"
+       ]
+      }
+     }
+    ],
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "AlbHttpsMcpServerGroupBBACCA8C"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "Alb16C2F182"
+    },
+    "Port": 443,
+    "Protocol": "HTTPS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
+   }
+  },
+  "AlbHttpsMcpServerGroupBBACCA8C": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "TargetType": "lambda",
+    "Targets": [
+     {
+      "Id": {
+       "Fn::GetAtt": [
+        "McpServerD7E15234",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   },
+   "DependsOn": [
+    "McpServerInvoke2UTWxhlfyqbT5FTn5jvgbLgjFfJwzswGk55DU1HY50EF9830"
+   ]
+  },
+  "ResourceGatewaySecurityGroupD9C47918": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "cdk-agentcore-gateway-target-certificate/ResourceGatewaySecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "CaBucketB5F27F18": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CaBucketPolicy1A5986F9": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "CaBucketB5F27F18"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CaBucketB5F27F18",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CaBucketB5F27F18",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CaBucketAutoDeleteObjectsCustomResource4AD6FFF2": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "CaBucketB5F27F18"
+    }
+   },
+   "DependsOn": [
+    "CaBucketPolicy1A5986F9"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "CaBucketB5F27F18"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "CaSecretDDF0A10D": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Private root CA certificate for the AgentCore gateway target certificate integ test",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PrivateCaGeneratorServiceRole9EE947B3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PrivateCaGeneratorServiceRoleDefaultPolicy0FF69DCE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "CaBucketB5F27F18",
+            "Arn"
+           ]
+          },
+          "/certs/private-root-ca.pem"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:PutSecretValue",
+        "secretsmanager:UpdateSecret",
+        "secretsmanager:UpdateSecretVersionStage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "CaSecretDDF0A10D"
+       }
+      },
+      {
+       "Action": [
+        "acm:DeleteCertificate",
+        "acm:ImportCertificate"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PrivateCaGeneratorServiceRoleDefaultPolicy0FF69DCE",
+    "Roles": [
+     {
+      "Ref": "PrivateCaGeneratorServiceRole9EE947B3"
+     }
+    ]
+   }
+  },
+  "PrivateCaGenerator6C23F2AD": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "41032118a4cce5b7656122986b98a49951c0720173cae3248226c934aabec146.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "PrivateCaGeneratorServiceRole9EE947B3",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "PrivateCaGeneratorServiceRoleDefaultPolicy0FF69DCE",
+    "PrivateCaGeneratorServiceRole9EE947B3"
+   ]
+  },
+  "PrivateCaGeneratorLogGroupC4CC5081": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "PrivateCaGenerator6C23F2AD"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "PrivateCaProviderframeworkonEventServiceRoleBAAB196F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PrivateCaProviderframeworkonEventServiceRoleDefaultPolicyCAD75E3B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PrivateCaGenerator6C23F2AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PrivateCaGenerator6C23F2AD",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "PrivateCaGenerator6C23F2AD",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PrivateCaProviderframeworkonEventServiceRoleDefaultPolicyCAD75E3B",
+    "Roles": [
+     {
+      "Ref": "PrivateCaProviderframeworkonEventServiceRoleBAAB196F"
+     }
+    ]
+   }
+  },
+  "PrivateCaProviderframeworkonEventA7454400": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (cdk-agentcore-gateway-target-certificate/PrivateCaProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "PrivateCaGenerator6C23F2AD",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "PrivateCaProviderframeworkonEventServiceRoleBAAB196F",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs24.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "PrivateCaProviderframeworkonEventServiceRoleDefaultPolicyCAD75E3B",
+    "PrivateCaProviderframeworkonEventServiceRoleBAAB196F"
+   ]
+  },
+  "PrivateCaProviderframeworkonEventLogGroupB2AB3A6A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "PrivateCaProviderframeworkonEventA7454400"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "PrivateCa": {
+   "Type": "AWS::CloudFormation::CustomResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "PrivateCaProviderframeworkonEventA7454400",
+      "Arn"
+     ]
+    },
+    "DnsName": {
+     "Fn::GetAtt": [
+      "Alb16C2F182",
+      "DNSName"
+     ]
+    },
+    "BucketName": {
+     "Ref": "CaBucketB5F27F18"
+    },
+    "ObjectKey": "certs/private-root-ca.pem",
+    "SecretArn": {
+     "Ref": "CaSecretDDF0A10D"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "GatewayServiceRole162DEA77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":gateway/private-ca-cert-gw-??????????"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Service role for Bedrock AgentCore Gateway private-ca-cert-gw"
+   }
+  },
+  "GatewayServiceRoleDefaultPolicy5A851A93": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:GetObject",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":s3:::",
+          {
+           "Ref": "CaBucketB5F27F18"
+          },
+          "/certs/private-root-ca.pem"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "CaSecretDDF0A10D"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GatewayServiceRoleDefaultPolicy5A851A93",
+    "Roles": [
+     {
+      "Ref": "GatewayServiceRole162DEA77"
+     }
+    ]
+   }
+  },
+  "GatewayUserPoolAC9C51BE": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UsernameConfiguration": {
+     "CaseSensitive": false
+    },
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "GatewayUserPoolResourceServerA9AA7EAD": {
+   "Type": "AWS::Cognito::UserPoolResourceServer",
+   "Properties": {
+    "Identifier": "cdkagentcoregatewaytargetcertificate-Gateway-205A98CA",
+    "Name": "cdkagentcoregatewaytargetcertificate-Gateway-205A98CA",
+    "Scopes": [
+     {
+      "ScopeDescription": "Read access to gateway tools",
+      "ScopeName": "read"
+     },
+     {
+      "ScopeDescription": "Write access to gateway tools",
+      "ScopeName": "write"
+     }
+    ],
+    "UserPoolId": {
+     "Ref": "GatewayUserPoolAC9C51BE"
+    }
+   }
+  },
+  "GatewayUserPoolDefaultClient48FC6ADE": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "client_credentials"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "GatewayUserPoolResourceServerA9AA7EAD"
+        },
+        "/read"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "GatewayUserPoolResourceServerA9AA7EAD"
+        },
+        "/write"
+       ]
+      ]
+     }
+    ],
+    "GenerateSecret": true,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "GatewayUserPoolAC9C51BE"
+    }
+   }
+  },
+  "GatewayUserPoolDomainCD8A1197": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "cdkagentcoregatewaytargetcertificate-gateway-205a98ca",
+    "UserPoolId": {
+     "Ref": "GatewayUserPoolAC9C51BE"
+    }
+   }
+  },
+  "Gateway43CB3636": {
+   "Type": "AWS::BedrockAgentCore::Gateway",
+   "Properties": {
+    "AuthorizerConfiguration": {
+     "CustomJWTAuthorizer": {
+      "AllowedClients": [
+       {
+        "Ref": "GatewayUserPoolDefaultClient48FC6ADE"
+       }
+      ],
+      "DiscoveryUrl": {
+       "Fn::Join": [
+        "",
+        [
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
+         {
+          "Ref": "GatewayUserPoolAC9C51BE"
+         },
+         "/.well-known/openid-configuration"
+        ]
+       ]
+      }
+     }
+    },
+    "AuthorizerType": "CUSTOM_JWT",
+    "Name": "private-ca-cert-gw",
+    "ProtocolConfiguration": {
+     "Mcp": {
+      "Instructions": "Default gateway to connect to external MCP tools",
+      "SearchType": "SEMANTIC",
+      "SupportedVersions": [
+       "2025-03-26"
+      ]
+     }
+    },
+    "ProtocolType": "MCP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "GatewayServiceRole162DEA77",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "GatewayS3CaTarget9851B7E9": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CertificateConfigurations": [
+     {
+      "S3": {
+       "Uri": {
+        "Fn::Join": [
+         "",
+         [
+          "s3://",
+          {
+           "Ref": "CaBucketB5F27F18"
+          },
+          "/certs/private-root-ca.pem"
+         ]
+        ]
+       }
+      }
+     }
+    ],
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "private-ca-from-s3",
+    "PrivateEndpoint": {
+     "ManagedVpcResource": {
+      "EndpointIpAddressType": "IPV4",
+      "SecurityGroupIds": [
+       {
+        "Fn::GetAtt": [
+         "ResourceGatewaySecurityGroupD9C47918",
+         "GroupId"
+        ]
+       }
+      ],
+      "SubnetIds": [
+       {
+        "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+       },
+       {
+        "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+       }
+      ],
+      "VpcIdentifier": {
+       "Ref": "Vpc8378EB38"
+      }
+     }
+    },
+    "TargetConfiguration": {
+     "Mcp": {
+      "McpServer": {
+       "Endpoint": {
+        "Fn::Join": [
+         "",
+         [
+          "https://",
+          {
+           "Fn::GetAtt": [
+            "Alb16C2F182",
+            "DNSName"
+           ]
+          },
+          "/mcp"
+         ]
+        ]
+       }
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "AlbHttpsMcpServerGroupBBACCA8C",
+    "AlbHttpsB7CA700A",
+    "GatewayServiceRoleDefaultPolicy5A851A93",
+    "PrivateCa"
+   ]
+  },
+  "GatewaySecretCaTarget85C8978E": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CertificateConfigurations": [
+     {
+      "SecretsManager": {
+       "SecretArn": {
+        "Ref": "CaSecretDDF0A10D"
+       }
+      }
+     }
+    ],
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "private-ca-from-secret",
+    "PrivateEndpoint": {
+     "ManagedVpcResource": {
+      "EndpointIpAddressType": "IPV4",
+      "SecurityGroupIds": [
+       {
+        "Fn::GetAtt": [
+         "ResourceGatewaySecurityGroupD9C47918",
+         "GroupId"
+        ]
+       }
+      ],
+      "SubnetIds": [
+       {
+        "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+       },
+       {
+        "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+       }
+      ],
+      "VpcIdentifier": {
+       "Ref": "Vpc8378EB38"
+      }
+     }
+    },
+    "TargetConfiguration": {
+     "Mcp": {
+      "McpServer": {
+       "Endpoint": {
+        "Fn::Join": [
+         "",
+         [
+          "https://",
+          {
+           "Fn::GetAtt": [
+            "Alb16C2F182",
+            "DNSName"
+           ]
+          },
+          "/mcp"
+         ]
+        ]
+       }
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "AlbHttpsMcpServerGroupBBACCA8C",
+    "AlbHttpsB7CA700A",
+    "GatewayServiceRoleDefaultPolicy5A851A93",
+    "PrivateCa"
+   ]
+  },
+  "GatewaySelfManagedLatticeTarget847E4851": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CertificateConfigurations": [
+     {
+      "SecretsManager": {
+       "SecretArn": {
+        "Ref": "CaSecretDDF0A10D"
+       }
+      }
+     }
+    ],
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "private-ca-self-managed-lattice",
+    "PrivateEndpoint": {
+     "SelfManagedLatticeResource": {
+      "ResourceConfigurationIdentifier": {
+       "Fn::GetAtt": [
+        "ResourceConfiguration",
+        "Id"
+       ]
+      }
+     }
+    },
+    "TargetConfiguration": {
+     "Mcp": {
+      "McpServer": {
+       "Endpoint": {
+        "Fn::Join": [
+         "",
+         [
+          "https://",
+          {
+           "Fn::GetAtt": [
+            "Alb16C2F182",
+            "DNSName"
+           ]
+          },
+          "/mcp"
+         ]
+        ]
+       }
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "AlbHttpsMcpServerGroupBBACCA8C",
+    "AlbHttpsB7CA700A",
+    "GatewayServiceRoleDefaultPolicy5A851A93",
+    "PrivateCa"
+   ]
+  },
+  "ResourceGateway": {
+   "Type": "AWS::VpcLattice::ResourceGateway",
+   "Properties": {
+    "IpAddressType": "IPV4",
+    "Name": "private-ca-cert-rgw",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "ResourceGatewaySecurityGroupD9C47918",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetIds": [
+     {
+      "Ref": "VpcIsolatedSubnet1SubnetE48C5737"
+     },
+     {
+      "Ref": "VpcIsolatedSubnet2Subnet16364B91"
+     }
+    ],
+    "VpcIdentifier": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "ResourceConfiguration": {
+   "Type": "AWS::VpcLattice::ResourceConfiguration",
+   "Properties": {
+    "Name": "private-ca-cert-rcfg",
+    "PortRanges": [
+     "443"
+    ],
+    "ProtocolType": "TCP",
+    "ResourceConfigurationDefinition": {
+     "DnsResource": {
+      "DomainName": {
+       "Fn::GetAtt": [
+        "Alb16C2F182",
+        "DNSName"
+       ]
+      },
+      "IpAddressType": "IPV4"
+     }
+    },
+    "ResourceConfigurationType": "SINGLE",
+    "ResourceGatewayId": {
+     "Fn::GetAtt": [
+      "ResourceGateway",
+      "Id"
+     ]
+    }
+   }
+  },
+  "GatewayTargetGetterServiceRole0D93EF8D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "GatewayTargetGetterServiceRoleDefaultPolicy2DC8843B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "bedrock-agentcore:GetGatewayTarget",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GatewayTargetGetterServiceRoleDefaultPolicy2DC8843B",
+    "Roles": [
+     {
+      "Ref": "GatewayTargetGetterServiceRole0D93EF8D"
+     }
+    ]
+   }
+  },
+  "GatewayTargetGetter4CEECE39": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a18edcc96245c3c68b058f05c1aaf0136199697c3970b19b1ad8151cd5ce61da.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "GatewayTargetGetterServiceRole0D93EF8D",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "GatewayTargetGetterServiceRoleDefaultPolicy2DC8843B",
+    "GatewayTargetGetterServiceRole0D93EF8D"
+   ]
+  },
+  "GatewayTargetGetterLogGroup59DB59BB": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "GatewayTargetGetter4CEECE39"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefCaBucketB5F27F185E5D4FE2": {
+   "Value": {
+    "Ref": "CaBucketB5F27F18"
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputRefCaBucketB5F27F185E5D4FE2"
+   }
+  },
+  "ExportsOutputRefVpc8378EB38272D6E3A": {
+   "Value": {
+    "Ref": "Vpc8378EB38"
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputRefVpc8378EB38272D6E3A"
+   }
+  },
+  "ExportsOutputRefGatewayTargetGetter4CEECE393411A838": {
+   "Value": {
+    "Ref": "GatewayTargetGetter4CEECE39"
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputRefGatewayTargetGetter4CEECE393411A838"
+   }
+  },
+  "ExportsOutputFnGetAttGateway43CB3636GatewayIdentifier8B82BE81": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Gateway43CB3636",
+     "GatewayIdentifier"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputFnGetAttGateway43CB3636GatewayIdentifier8B82BE81"
+   }
+  },
+  "ExportsOutputFnGetAttGatewayS3CaTarget9851B7E9TargetId5E92C5AE": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GatewayS3CaTarget9851B7E9",
+     "TargetId"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputFnGetAttGatewayS3CaTarget9851B7E9TargetId5E92C5AE"
+   }
+  },
+  "ExportsOutputRefCaSecretDDF0A10D05756EA6": {
+   "Value": {
+    "Ref": "CaSecretDDF0A10D"
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputRefCaSecretDDF0A10D05756EA6"
+   }
+  },
+  "ExportsOutputFnGetAttGatewaySecretCaTarget85C8978ETargetId8169D337": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GatewaySecretCaTarget85C8978E",
+     "TargetId"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputFnGetAttGatewaySecretCaTarget85C8978ETargetId8169D337"
+   }
+  },
+  "ExportsOutputFnGetAttResourceConfigurationId3ECAD3CA": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ResourceConfiguration",
+     "Id"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputFnGetAttResourceConfigurationId3ECAD3CA"
+   }
+  },
+  "ExportsOutputFnGetAttGatewaySelfManagedLatticeTarget847E4851TargetIdCE1CEAD8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "GatewaySelfManagedLatticeTarget847E4851",
+     "TargetId"
+    ]
+   },
+   "Export": {
+    "Name": "cdk-agentcore-gateway-target-certificate:ExportsOutputFnGetAttGatewaySelfManagedLatticeTarget847E4851TargetIdCE1CEAD8"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

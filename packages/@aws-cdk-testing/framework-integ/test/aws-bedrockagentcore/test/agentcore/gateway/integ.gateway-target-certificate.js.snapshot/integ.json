@@ -1,0 +1,17 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "GatewayTargetCertificate/DefaultTest": {
+      "stacks": [
+        "cdk-agentcore-gateway-target-certificate"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "GatewayTargetCertificate/DefaultTest/DeployAssert",
+      "assertionStackName": "GatewayTargetCertificateDefaultTestDeployAssertA6CAA5CF"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
+}
