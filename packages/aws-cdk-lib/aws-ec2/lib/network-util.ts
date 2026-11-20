@@ -34,8 +34,11 @@ export class NetworkUtils {
     if (octets.length !== 4) {
       return false;
     }
-    return octets.map((octet: string) => parseInt(octet, 10)).
-      filter((octet: number) => octet >= 0 && octet <= 255).length === 4;
+    return octets
+      // each octet must be digits only (no trailing/leading non-numeric characters)
+      // and parse to a value within the 0-255 range
+      .filter((octet: string) => /^\d{1,3}$/.test(octet) && parseInt(octet, 10) <= 255)
+      .length === 4;
   }
 
   /**
