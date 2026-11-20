@@ -1,0 +1,18 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "aws-cdk-serverless-cache-public-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-serverless-cache-public"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "aws-cdk-serverless-cache-public-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkserverlesscachepublicintegDefaultTestDeployAssert2A341934"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
