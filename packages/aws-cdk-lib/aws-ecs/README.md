@@ -2606,3 +2606,44 @@ Applies one or more cluster settings to an ECS cluster. If a setting with the sa
 new ecs.CfnCluster(this, 'Cluster')
   .with(new ecs.mixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]));
 ```
+
+### CapacityProviderInfrastructureOptimization
+
+Configures how Amazon ECS Managed Instances optimizes (scales in) idle or underutilized EC2 instances. Can only be applied to a capacity provider that is already configured with `managedInstancesProvider`.
+
+`ManagedInstancesCapacityProvider` exposes this directly through `scaleInAfter`, so most users do not need to apply the mixin themselves:
+
+```ts
+declare const infrastructureRole: iam.IRole;
+declare const ec2InstanceProfile: iam.IInstanceProfile;
+declare const subnets: ec2.ISubnet[];
+declare const securityGroups: ec2.ISecurityGroup[];
+
+new ecs.ManagedInstancesCapacityProvider(this, 'Provider', {
+  infrastructureRole,
+  ec2InstanceProfile,
+  subnets,
+  securityGroups,
+  scaleInAfter: Duration.minutes(10),
+});
+```
+
+The mixin can also be applied directly, for example to an L1 `CfnCapacityProvider`:
+
+```ts
+declare const capacityProvider: ecs.CfnCapacityProvider;
+
+capacityProvider.with(new ecs.mixins.CapacityProviderInfrastructureOptimization({
+  scaleInAfter: Duration.minutes(10),
+}));
+```
+
+To disable automatic infrastructure optimization entirely, use `disableInfrastructureOptimization` instead of `scaleInAfter` (they are mutually exclusive):
+
+```ts
+declare const capacityProvider: ecs.CfnCapacityProvider;
+
+capacityProvider.with(new ecs.mixins.CapacityProviderInfrastructureOptimization({
+  disableInfrastructureOptimization: true,
+}));
+```
