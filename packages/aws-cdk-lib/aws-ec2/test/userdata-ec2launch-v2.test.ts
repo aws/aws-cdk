@@ -232,6 +232,27 @@ describe('EC2Launch v2 user data', () => {
     ].join('\n'));
   });
 
+  test('keeps leading spaces of substituted values at the start of a block', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    const value = Lazy.string({ produce: () => '  foo' });
+
+    // WHEN
+    userData.addCommands(value, 'Write-Host done');
+    userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: value, arguments: [value] }));
+    userData.addTask(ec2.Ec2LaunchV2Task.custom('custom', { value }));
+
+    // THEN
+    const rendered = stack.resolve(userData.render());
+    expect(rendered).toContain('content: |2-\n            foo\n          Write-Host done\n');
+    expect(YAML.parse(rendered, { version: '1.1' }).tasks).toEqual([
+      { task: 'executeProgram', inputs: [{ frequency: 'once', path: '  foo', arguments: ['  foo'], runAs: 'localSystem' }] },
+      { task: 'custom', inputs: { value: '  foo' } },
+      { task: 'executeScript', inputs: [{ frequency: 'once', type: 'powershell', runAs: 'localSystem', content: '  foo\nWrite-Host done' }] },
+    ]);
+  });
+
   test('keeps tokens in commands intact', () => {
     // GIVEN
     const stack = new Stack();
@@ -249,7 +270,7 @@ describe('EC2Launch v2 user data', () => {
         UserData: {
           'Fn::Base64': {
             'Fn::Join': ['', [
-              'version: 1.1\ntasks:\n  - task: executeScript\n    inputs:\n      - frequency: once\n        type: powershell\n        runAs: localSystem\n        content: |-\n          Write-Host ',
+              'version: 1.1\ntasks:\n  - task: executeScript\n    inputs:\n      - frequency: once\n        type: powershell\n        runAs: localSystem\n        content: |2-\n          Write-Host ',
               { Ref: 'AWS::Region' },
               ' yes\n',
             ]],
@@ -270,7 +291,7 @@ describe('EC2Launch v2 user data', () => {
     // THEN
     expect(stack.resolve(userData.render())).toEqual({
       'Fn::Join': ['', [
-        'version: 1.1\ntasks:\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: C:\\a.exe\n        arguments:\n          - /x\n          - |-\n            ',
+        'version: 1.1\ntasks:\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: C:\\a.exe\n        arguments:\n          - /x\n          - |2-\n            ',
         { Ref: 'AWS::StackName' },
         '\n        runAs: localSystem\n',
       ]],
@@ -354,7 +375,7 @@ describe('EC2Launch v2 user data', () => {
     // THEN
     expect(stack.resolve(userData.render())).toEqual({
       'Fn::Join': ['', [
-        'version: 1.1\ntasks:\n  - task: futureTask\n    inputs:\n      id: |-\n        ',
+        'version: 1.1\ntasks:\n  - task: futureTask\n    inputs:\n      id: |2-\n        ',
         { 'Fn::GetAtt': ['Resource', 'Id'] },
         '\n',
       ]],
@@ -372,7 +393,7 @@ describe('EC2Launch v2 user data', () => {
     // THEN
     expect(stack.resolve(userData.render())).toEqual({
       'Fn::Join': ['', [
-        'version: 1.1\ntasks:\n  - task: futureTask\n    inputs:\n      count: |-\n        ',
+        'version: 1.1\ntasks:\n  - task: futureTask\n    inputs:\n      count: |2-\n        ',
         { Ref: 'Count' },
         '\n',
       ]],
@@ -406,6 +427,52 @@ describe('EC2Launch v2 user data', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       UserData: { 'Fn::Base64': 'version: 1.1\ntasks:\n  - task: startSsm\n' },
     });
+  });
+
+  test('can add writeFile tasks', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.writeFile({ destination: 'C:\\a.txt', content: 'a' }));
+    userData.addTask(ec2.Ec2LaunchV2Task.writeFile({
+      destination: 'C:\\b.txt',
+      content: 'line1\nline2',
+      frequency: ec2.Ec2LaunchV2Frequency.ALWAYS,
+    }));
+
+    // THEN
+    expect(parse(userData).tasks).toEqual([{
+      task: 'writeFile',
+      inputs: [
+        { frequency: 'once', destination: 'C:\\a.txt', content: 'a' },
+        { frequency: 'always', destination: 'C:\\b.txt', content: 'line1\nline2' },
+      ],
+    }]);
+  });
+
+  test.each([
+    'C:\\Windows',
+    'C:\\Windows\\Temp\\a.txt',
+    'c:\\windows\\temp\\a.txt',
+    'C:/Windows/Temp/a.txt',
+  ])('fails to write a file under C:\\Windows: %s', (destination) => {
+    expect(() => ec2.Ec2LaunchV2Task.writeFile({ destination, content: 'a' }))
+      .toThrow(`destination must not be under C:\\Windows, EC2Launch v2 does not load user data that writes there, got ${JSON.stringify(destination)}`);
+  });
+
+  test('accepts a tokenized writeFile destination', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.writeFile({ destination: Lazy.string({ produce: () => 'C:\\a.txt' }), content: 'a' }));
+
+    // THEN
+    expect(YAML.parse(stack.resolve(userData.render()), { version: '1.1' }).tasks).toEqual([
+      { task: 'writeFile', inputs: [{ frequency: 'once', destination: 'C:\\a.txt', content: 'a' }] },
+    ]);
   });
 
   test('renders tasks in the order they were first added', () => {
@@ -555,7 +622,7 @@ describe('EC2Launch v2 user data', () => {
     // THEN
     expect(stack.resolve(userData.render())).toEqual({
       'Fn::Join': ['', [
-        'version: 1.1\ntasks:\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: |-\n          C:\\',
+        'version: 1.1\ntasks:\n  - task: executeProgram\n    inputs:\n      - frequency: once\n        path: |2-\n          C:\\',
         { Ref: 'AWS::StackName' },
         '.exe\n        runAs: localSystem\n',
       ]],

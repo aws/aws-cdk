@@ -5,9 +5,9 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 
 /*
  * The instance only signals CloudFormation once EC2Launch v2 has parsed the
- * YAML user data, run the initializeVolume and executeProgram tasks and the
- * batch and PowerShell scripts in order, and the PowerShell commands have
- * verified their results. Deployment fails if any of that does not happen.
+ * YAML user data, run the initializeVolume, writeFile and executeProgram tasks
+ * and the batch and PowerShell scripts in order, and the PowerShell commands
+ * have verified their results. Deployment fails if any of that does not happen.
  * The detached script only verifies that EC2Launch v2 accepts the detach
  * input, as nothing waits for it.
  *
@@ -34,6 +34,7 @@ userData.addTask(ec2.Ec2LaunchV2Task.wallpaper({
   instanceTags: ec2.Ec2LaunchV2WallpaperTags.all(),
 }));
 userData.addTask(ec2.Ec2LaunchV2Task.startSsm());
+userData.addTask(ec2.Ec2LaunchV2Task.writeFile({ destination: 'C:\\cdk-integ-write-file.txt', content: 'written by writeFile' }));
 userData.addTask(ec2.Ec2LaunchV2Task.executeProgram({
   path: 'C:\\Windows\\System32\\cmd.exe',
   arguments: ['/c', 'mkdir', createdDir],
@@ -52,6 +53,7 @@ userData.addCommands(
   'if (-not (Test-Path -Path \'D:\\\')) { throw \'initializeVolume task did not run\' }',
   'if (-not (Test-Path -Path \'C:\\cdk-integ-powershell.txt\')) { throw \'PowerShell script did not run before the commands\' }',
   `if (-not (Test-Path -Path '${createdDir}' -PathType Container)) { throw 'executeProgram task did not run' }`,
+  'if ((Get-Content -Path \'C:\\cdk-integ-write-file.txt\' -ErrorAction SilentlyContinue) -ne \'written by writeFile\') { throw \'writeFile task did not run\' }',
 );
 
 const instance = new ec2.Instance(stack, 'Instance', {

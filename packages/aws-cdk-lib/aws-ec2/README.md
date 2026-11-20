@@ -2619,8 +2619,8 @@ in: https://aws.amazon.com/premiumsupport/knowledge-center/execute-user-data-ec2
 `UserData.forWindows()` produces the XML (`<powershell>`) format that every Windows launch agent understands.
 Instances running the [EC2Launch v2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2.html) agent
 also accept a YAML document listing [tasks](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html)
-to run, which gives more control: for example, initializing volumes, setting the host name, running programs, or running
-scripts as a specific account. Use `UserData.forWindowsEc2LaunchV2()` to produce this format.
+to run, which gives more control: for example, initializing volumes, writing files, setting the host name, running
+programs, or running scripts as a specific account. Use `UserData.forWindowsEc2LaunchV2()` to produce this format.
 
 Commands added with `addCommands()` and the other `add*Command()` methods are run as a single PowerShell script, and
 other tasks can be added with `addTask()`:
@@ -2654,13 +2654,12 @@ in user data. Tasks run in the order they were first added, with two exceptions:
   `detach: true` are the exception: they run concurrently, so the signal does not wait for them to finish.
 * EC2Launch v2 always runs `sysprep` last.
 
-Adding `executeProgram`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again appends to the
-inputs of the existing task. Adding any other task with inputs twice is an error. Tasks without a factory method in
-`Ec2LaunchV2Task` can be added with `Ec2LaunchV2Task.custom()`.
+Adding `executeProgram`, `writeFile`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again
+appends to the inputs of the existing task. Adding any other task with inputs twice is an error. Tasks without a factory
+method in `Ec2LaunchV2Task` can be added with `Ec2LaunchV2Task.custom()`.
 
-There is no factory method for the `writeFile` task: although it is documented for user data, EC2Launch v2
-(tested with version 2.5.2) does not load user data that contains it. Use `Set-Content` in `addCommands()`
-to write files instead, or `Ec2LaunchV2Task.custom('writeFile', [...])` on agent versions that support it.
+EC2Launch v2 (tested with version 2.5.2) does not load user data with a `writeFile` task whose destination is under
+`C:\Windows`, so `Ec2LaunchV2Task.writeFile()` rejects such destinations. Write those files with a command instead.
 
 Values that CloudFormation substitutes into the document, such as parameters or resource attributes, must be single
 line: a multi-line value cannot be indented to fit the YAML document. A string that contains such a value must not

@@ -1,8 +1,8 @@
-import * as YAML from 'yaml';
 import { OperatingSystemType } from './machine-image';
+import { normalizeEc2LaunchV2Value, renderEc2LaunchV2Yaml } from './private/ec2launch-v2-yaml';
 import type { IBucketRef } from '../../aws-s3';
 import type { Resource, CfnResource } from '../../core';
-import { Fn, Stack, Token, Tokenization, UnscopedValidationError } from '../../core';
+import { Fn, Stack, Token, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import { posixShellEscape, posixShellEscapeMinimal, powershellEscape, powershellEscapeMinimal } from '../../core/lib/private/shell-escape';
 
@@ -512,6 +512,31 @@ export interface Ec2LaunchV2ExecuteProgramOptions {
 }
 
 /**
+ * Options for the EC2Launch v2 `writeFile` task
+ */
+export interface Ec2LaunchV2WriteFileOptions {
+  /**
+   * The path of the file to write
+   *
+   * EC2Launch v2 does not load user data that writes to a path under
+   * `C:\Windows`.
+   */
+  readonly destination: string;
+
+  /**
+   * The text to write to the file
+   */
+  readonly content: string;
+
+  /**
+   * How often the file is written
+   *
+   * @default Ec2LaunchV2Frequency.ONCE
+   */
+  readonly frequency?: Ec2LaunchV2Frequency;
+}
+
+/**
  * A device for the EC2Launch v2 `initializeVolume` task to initialize
  */
 export interface Ec2LaunchV2VolumeDevice {
@@ -657,12 +682,8 @@ export interface Ec2LaunchV2SysprepOptions {
 /**
  * A task for EC2Launch v2 to run as part of user data
  *
- * Only the tasks that EC2Launch v2 allows in the `UserData` stage are provided
- * as factory methods. Use `Ec2LaunchV2Task.custom()` for tasks not covered here.
- *
- * The `writeFile` task is not provided: although documented for user data,
- * EC2Launch v2 (version 2.5.2) does not load user data that contains it. Use
- * `Set-Content` in `addCommands()` to write files instead.
+ * The factory methods cover the tasks that EC2Launch v2 allows in the
+ * `UserData` stage. Use `Ec2LaunchV2Task.custom()` for tasks not covered here.
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html
  */
@@ -698,6 +719,26 @@ export class Ec2LaunchV2Task {
       path: options.path,
       arguments: options.arguments,
       runAs: Ec2LaunchV2RunAs.LOCAL_SYSTEM,
+    }]);
+  }
+
+  /**
+   * Write a file
+   *
+   * EC2Launch v2 (tested with version 2.5.2) does not load user data that
+   * writes to a path under `C:\Windows`, so such destinations are rejected.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html#ec2-launch-v2-writefile
+   */
+  public static writeFile(options: Ec2LaunchV2WriteFileOptions): Ec2LaunchV2Task {
+    // EC2Launch v2 matches the path case-insensitively, and with either kind of slash
+    if (!Token.isUnresolved(options.destination) && /^c:[\\/]+windows(?:[\\/]|$)/i.test(options.destination)) {
+      throw new UnscopedValidationError(lit`Ec2LaunchV2WriteFileWindowsDirectory`, `destination must not be under C:\\Windows, EC2Launch v2 does not load user data that writes there, got ${JSON.stringify(options.destination)}`);
+    }
+    return new Ec2LaunchV2Task('writeFile', [{
+      frequency: options.frequency ?? Ec2LaunchV2Frequency.ONCE,
+      destination: options.destination,
+      content: options.content,
     }]);
   }
 
@@ -988,96 +1029,6 @@ export class Ec2LaunchV2UserData extends UserData {
       existing.push(...inputs);
     } else if (existing !== undefined || inputs !== undefined) {
       throw new UnscopedValidationError(lit`Ec2LaunchV2DuplicateTask`, `task ${JSON.stringify(task)} has already been added, EC2Launch v2 allows each task only once in user data`);
-    }
-  }
-}
-
-/**
- * Render an EC2Launch v2 user data document
- *
- * Uses YAML 1.1 rules, so strings such as `yes` or `on` are quoted, and
- * literal block scalars for multi-line strings and strings containing tokens,
- * so scripts stay readable and single-line values substituted by
- * CloudFormation need no escaping. Multi-line substituted values cannot be
- * indented to fit the block, so they are not supported.
- */
-function renderEc2LaunchV2Yaml(value: any): string {
-  const doc = new YAML.Document({ version: '1.1' });
-  doc.contents = YAML.createNode(normalizeEc2LaunchV2Value(value)) as any;
-  useLiteralBlocks(doc.contents);
-  return withoutFolding(() => doc.toString());
-}
-
-/**
- * Run a function with line folding of the yaml library disabled
- *
- * Folding is a global option of the yaml library, so it is restored afterwards.
- */
-function withoutFolding<T>(fn: () => T): T {
-  const fold = YAML.scalarOptions.str.fold;
-  const lineWidth = fold.lineWidth;
-  fold.lineWidth = 0;
-  try {
-    return fn();
-  } finally {
-    fold.lineWidth = lineWidth;
-  }
-}
-
-/**
- * Whether the yaml library renders a string as a literal block scalar
- *
- * It falls back to a double-quoted scalar for strings that a literal block
- * cannot represent, for example strings containing carriage returns.
- */
-function rendersAsLiteralBlock(value: string): boolean {
-  const doc = new YAML.Document({ version: '1.1' });
-  const node = YAML.createNode(value) as any;
-  node.type = 'BLOCK_LITERAL';
-  doc.contents = node;
-  return withoutFolding(() => doc.toString()).startsWith('|');
-}
-
-/**
- * Prepare a value for rendering into an EC2Launch v2 document
- *
- * Removes `undefined` properties, and turns tokens that are not strings into
- * string tokens, so that they are substituted into the document. Lists cannot
- * be substituted into a YAML document, so list tokens are rejected.
- */
-function normalizeEc2LaunchV2Value(value: any): any {
-  if (Tokenization.isResolvable(value)) {
-    return Token.asString(value);
-  }
-  if (typeof value === 'number' && Token.isUnresolved(value)) {
-    return Tokenization.stringifyNumber(value);
-  }
-  if (Array.isArray(value)) {
-    if (Token.isUnresolved(value)) {
-      throw new UnscopedValidationError(lit`Ec2LaunchV2ListToken`, 'lists in EC2Launch v2 task inputs cannot be tokens, pass a list of values instead');
-    }
-    return value.map(normalizeEc2LaunchV2Value);
-  }
-  if (value !== null && typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value)
-      .filter(([, v]) => v !== undefined)
-      .map(([k, v]) => [k, normalizeEc2LaunchV2Value(v)]));
-  }
-  return value;
-}
-
-function useLiteralBlocks(node: any) {
-  if (node?.items) {
-    // Maps contain pairs, sequences contain nodes
-    node.items.forEach((item: any) => useLiteralBlocks(item?.value !== undefined && item?.key !== undefined ? item.value : item));
-  } else if (typeof node?.value === 'string') {
-    const hasToken = Token.isUnresolved(node.value);
-    if (hasToken && !rendersAsLiteralBlock(node.value)) {
-      // In a quoted scalar, CloudFormation would substitute the value unescaped
-      throw new UnscopedValidationError(lit`Ec2LaunchV2TokenNotLiteral`, `values containing tokens must not contain carriage returns or other control characters, or end with a line of only whitespace, got ${JSON.stringify(node.value)}`);
-    }
-    if (hasToken || node.value.includes('\n')) {
-      node.type = 'BLOCK_LITERAL';
     }
   }
 }
