@@ -1,0 +1,20 @@
+{
+  "/BatchEksJobDefinitionSecurityContextTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "BatchEksJobDefinitionSecurityContextTestDefaultTestDeployAssertD076C762.template.json"
+    }
+  ],
+  "/BatchEksJobDefinitionSecurityContextTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BatchEksJobDefinitionSecurityContextTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
