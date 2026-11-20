@@ -619,6 +619,8 @@ export interface StackSetProps {
   /**
    * A description of the StackSet resource
    *
+   * Must be 1 to 1024 characters long.
+   *
    * @default - none
    */
   readonly description?: string;
@@ -1061,6 +1063,11 @@ export class StackSet extends Stack implements IStackSet {
     if (props.capabilities && !Token.isUnresolved(props.capabilities)
       && props.capabilities.some((capability) => !Token.isUnresolved(capability) && capability === CfnCapabilities.NONE)) {
       throw new ValidationError(lit`StackSetCapabilityNoneNotSupported`, 'a StackSet does not accept CfnCapabilities.NONE, remove it from \'capabilities\'', this);
+    }
+
+    if (props.description !== undefined && !Token.isUnresolved(props.description)
+      && (props.description.length < 1 || props.description.length > 1024)) {
+      throw new ValidationError(lit`StackSetDescriptionLength`, `a StackSet description must be 1 to 1024 characters long, got ${props.description.length} characters, change 'description' or omit it`, this);
     }
 
     if (deploymentTypeConfig.permissionsModel === PermissionModel.SELF_MANAGED) {

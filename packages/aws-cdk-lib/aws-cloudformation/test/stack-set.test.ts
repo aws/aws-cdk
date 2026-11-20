@@ -1843,6 +1843,38 @@ describe('StackSet description and tags', () => {
     expect(stackSetTemplateOf(stackSet).toJSON().Description).toBeUndefined();
   });
 
+  test.each([0, 1025])('fails with an error code when the description has %d characters', (length) => {
+    const app = new App();
+    const stack = new Stack(app);
+
+    expect(() => new StackSet(stack, 'StackSet', { description: 'a'.repeat(length) })).toThrow(expect.objectContaining({
+      name: 'StackSetDescriptionLength',
+      message: `a StackSet description must be 1 to 1024 characters long, got ${length} characters, change 'description' or omit it`,
+    }));
+  });
+
+  test('accepts a description of 1024 characters', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const description = 'a'.repeat(1024);
+    new StackSet(stack, 'StackSet', { description });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', { Description: description });
+  });
+
+  test('does not check the length of a tokenized description', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const suffix = new CfnParameter(stack, 'DescriptionSuffix').valueAsString;
+    // longer than 1024 characters while unresolved, so only a token check lets it through
+    const description = `${'a'.repeat(1020)}${suffix}`;
+    new StackSet(stack, 'StackSet', { description });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      Description: { 'Fn::Join': ['', ['a'.repeat(1020), { Ref: 'DescriptionSuffix' }]] },
+    });
+  });
+
   test('the description of its template is set with templateOptions', () => {
     const app = new App();
     const stack = new Stack(app);
