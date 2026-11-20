@@ -163,6 +163,20 @@ export class TrustStore extends Resource implements ITrustStore {
   public readonly trustStoreArn: string;
   public readonly trustStoreRef: TrustStoreReference;
 
+  /**
+   * The status of the trust store.
+   *
+   * @attribute
+   */
+  public readonly trustStoreStatus: string;
+
+  /**
+   * The number of CA certificates in the trust store.
+   *
+   * @attribute
+   */
+  public readonly trustStoreNumberOfCaCertificates: number;
+
   constructor(scope: Construct, id: string, props: TrustStoreProps) {
     super(scope, id);
     addConstructMetadata(this, props);
@@ -180,6 +194,8 @@ export class TrustStore extends Resource implements ITrustStore {
     this.trustStoreId = resource.attrId;
     this.trustStoreArn = resource.attrArn;
     this.trustStoreRef = resource.trustStoreRef;
+    this.trustStoreStatus = resource.attrStatus;
+    this.trustStoreNumberOfCaCertificates = resource.attrNumberOfCaCertificates;
   }
 
   private validateName(name?: string): void {

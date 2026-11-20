@@ -241,4 +241,16 @@ describe('TrustStore', () => {
       },
     });
   });
+
+  test('exposes status and number of CA certificates attributes', () => {
+    const trustStore = new TrustStore(stack, 'TrustStore', {
+      caCertificatesBundleS3Location: {
+        bucket,
+        key: 'ca-bundle.pem',
+      },
+    });
+
+    expect(stack.resolve(trustStore.trustStoreStatus)).toEqual({ 'Fn::GetAtt': ['TrustStore982C25D3', 'Status'] });
+    expect(stack.resolve(trustStore.trustStoreNumberOfCaCertificates)).toEqual({ 'Fn::GetAtt': ['TrustStore982C25D3', 'NumberOfCaCertificates'] });
+  });
 });

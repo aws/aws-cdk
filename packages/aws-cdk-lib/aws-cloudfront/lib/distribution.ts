@@ -1085,8 +1085,10 @@ export enum MtlsMode {
   REQUIRED = 'required',
 
   /**
-   * Clients can optionally present certificates during the TLS handshake.
-   * Connections are allowed even without certificates.
+   * CloudFront validates the client certificate against the trust store if one is
+   * presented, but also allows connections without a certificate.
+   *
+   * Connections that present an invalid certificate are still rejected.
    */
   OPTIONAL = 'optional',
 }
@@ -1104,7 +1106,7 @@ export interface ViewerMtlsConfig {
    * The mode for mutual TLS authentication.
    *
    * - REQUIRED: All clients must present valid certificates
-   * - OPTIONAL: Clients can optionally present certificates
+   * - OPTIONAL: Certificates are validated if presented; connections without a certificate are allowed
    */
   readonly mode: MtlsMode;
 
