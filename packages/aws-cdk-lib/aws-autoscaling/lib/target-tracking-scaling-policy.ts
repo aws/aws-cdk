@@ -28,16 +28,19 @@ export interface BaseTargetTrackingProps {
   readonly disableScaleIn?: boolean;
 
   /**
-   * Period after a scaling completes before another scaling activity can start.
+   * Cooldown only applies to simple scaling policies, not target tracking.
    *
-   * @default - The default cooldown configured on the AutoScalingGroup.
+   * Use `estimatedInstanceWarmup` to set how long newly launched instances take
+   * to contribute to the policy's metrics.
+   *
+   * @default - No cooldown
    */
   readonly cooldown?: Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
-   * @default - Same as the cooldown.
+   * @default - The AutoScalingGroup's `defaultInstanceWarmup`, or its `cooldown` if that is not set
    */
   readonly estimatedInstanceWarmup?: Duration;
 }
