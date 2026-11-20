@@ -54,6 +54,23 @@ test('does nothing on create event', async () => {
   expect(mockLambdaClient.send).toHaveBeenCalledTimes(0);
 });
 
+test('returns the canary name as physical resource id on create event', async () => {
+  // GIVEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceCreateEvent> = {
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      CanaryName: 'MyCanary',
+    },
+  };
+
+  // WHEN
+  const result = await invokeHandler(event);
+
+  // THEN
+  expect((result as any).PhysicalResourceId).toEqual('MyCanary');
+});
+
 test('does nothing on update event when everything remains the same', async () => {
   // GIVEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceUpdateEvent> = {
