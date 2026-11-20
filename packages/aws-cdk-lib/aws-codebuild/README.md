@@ -383,6 +383,33 @@ can use the `environment` property to customize the build environment:
 * `environmentVariables` can be set at this level (and also at the project
   level).
 
+You can also add or replace a project environment variable after constructing
+the project with `addEnvironmentVariable`. For variables backed by Parameter
+Store or Secrets Manager, the project role receives the corresponding read
+grant:
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+const dockerHubSecret = secretsmanager.Secret.fromSecretNameV2(
+  this,
+  'DockerHubCredentials',
+  'docker-hub-credentials',
+);
+
+const project = new codebuild.Project(this, 'Project', {
+  buildSpec: codebuild.BuildSpec.fromObject({ version: '0.2' }),
+  environmentVariables: {
+    LOG_LEVEL: { value: 'info' },
+  },
+});
+
+project.addEnvironmentVariable('DOCKER_HUB_USERNAME', {
+  type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+  value: `${dockerHubSecret.secretArn}:username`,
+});
+```
+
 Finally, you can also set the build environment `fleet` property to create
 a reserved capacity project. See [Fleet](#fleet) for more information.
 

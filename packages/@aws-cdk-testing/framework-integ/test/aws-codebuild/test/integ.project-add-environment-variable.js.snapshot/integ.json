@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-test-codebuild-add-environment-variable/DefaultTest": {
+      "stacks": [
+        "codebuild-add-environment-variable"
+      ],
+      "assertionStack": "integ-test-codebuild-add-environment-variable/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestcodebuildaddenvironmentvariableDefaultTestDeployAssert5A91487A"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

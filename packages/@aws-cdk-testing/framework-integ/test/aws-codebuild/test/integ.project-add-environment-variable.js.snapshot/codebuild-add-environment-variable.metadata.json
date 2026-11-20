@@ -1,0 +1,181 @@
+{
+  "/codebuild-add-environment-variable": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "codebuild-add-environment-variable.template.json"
+    }
+  ],
+  "/codebuild-add-environment-variable/DockerHubCredentials": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/codebuild-add-environment-variable/Project": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "buildSpec": "*",
+        "environmentVariables": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/codebuild-add-environment-variable/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/codebuild-add-environment-variable/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/codebuild-add-environment-variable/DockerHubCredentials/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DockerHubCredentialsD9EB8298"
+    }
+  ],
+  "/codebuild-add-environment-variable/Project/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codebuild-add-environment-variable/Project/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProjectC78D97AD"
+    }
+  ],
+  "/codebuild-add-environment-variable/Project/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProjectRole4CCB274E"
+    }
+  ],
+  "/codebuild-add-environment-variable/Project/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/codebuild-add-environment-variable/Project/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProjectRoleDefaultPolicy7F29461B"
+    }
+  ]
+}
