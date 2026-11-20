@@ -34,6 +34,46 @@ beforeEach(() => {
   octomock.actions.listWorkflowRuns.mockReturnValue({ data: [] });
 });
 
+describe('find PR from commit', () => {
+  test('finds the current PR and scopes the search to open PRs in the repository', async () => {
+    octomock.search.issuesAndPullRequests.mockResolvedValue({
+      data: { items: [{ number: 123, state: 'open' }] },
+    });
+
+    const pr = await PullRequestLinterBase.getPRFromCommit(octomock as any, 'test-owner', 'test-repo', 'ABC');
+
+    expect(pr?.number).toBe(123);
+    expect(octomock.search.issuesAndPullRequests).toHaveBeenCalledWith({
+      q: 'repo:test-owner/test-repo is:pull-request is:open ABC',
+    });
+    expect(octomock.pulls.get).toHaveBeenCalledWith({
+      owner: 'test-owner', repo: 'test-repo', pull_number: 123,
+    });
+  });
+
+  test('ignores a superseded commit', async () => {
+    octomock.search.issuesAndPullRequests.mockResolvedValue({
+      data: { items: [{ number: 123, state: 'open' }] },
+    });
+
+    const pr = await PullRequestLinterBase.getPRFromCommit(octomock as any, 'test-owner', 'test-repo', 'OLD');
+
+    expect(pr).toBeUndefined();
+  });
+
+  test.each([
+    { items: [] },
+    { items: [{ number: 123, state: 'closed' }] },
+  ])('ignores a commit without an open PR: $items', async ({ items }) => {
+    octomock.search.issuesAndPullRequests.mockResolvedValue({ data: { items } });
+
+    const pr = await PullRequestLinterBase.getPRFromCommit(octomock as any, 'test-owner', 'test-repo', 'ABC');
+
+    expect(pr).toBeUndefined();
+    expect(octomock.pulls.get).not.toHaveBeenCalled();
+  });
+});
+
 test('ignore if dismissing reviews throws a specific "already dismissed" error', async () => {
   // GIVEN
   octomock.pulls.listReviews.mockReturnValue({
