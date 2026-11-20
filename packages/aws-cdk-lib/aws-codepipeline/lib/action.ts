@@ -1,4 +1,4 @@
-import type { Construct } from 'constructs';
+import type { Construct, IDependable } from 'constructs';
 import type { Artifact } from './artifact';
 import type * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
@@ -147,6 +147,9 @@ export interface ActionBindOptions {
 
 export interface ActionConfig {
   readonly configuration?: any;
+
+  /** @internal */
+  readonly dependencies?: IDependable[];
 }
 
 /**
