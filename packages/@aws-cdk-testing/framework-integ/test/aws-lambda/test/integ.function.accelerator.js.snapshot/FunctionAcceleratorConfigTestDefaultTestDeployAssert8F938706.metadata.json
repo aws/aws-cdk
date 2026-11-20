@@ -1,0 +1,20 @@
+{
+  "/FunctionAcceleratorConfigTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FunctionAcceleratorConfigTestDefaultTestDeployAssert8F938706.template.json"
+    }
+  ],
+  "/FunctionAcceleratorConfigTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FunctionAcceleratorConfigTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
