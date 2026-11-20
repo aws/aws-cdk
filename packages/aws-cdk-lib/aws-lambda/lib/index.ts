@@ -1,3 +1,4 @@
+export * from './accelerator-config';
 export * from './adot-layers';
 export * from './alias';
 export * from './dlq';
