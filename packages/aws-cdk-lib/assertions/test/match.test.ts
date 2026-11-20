@@ -441,3 +441,37 @@ function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp
     throw new Error(`Patterns: ${notFound}\nMissing from error:\n${actual.join('\n')}`);
   }
 }
+
+describe('numeric comparison matchers', () => {
+  test.each<[string, Matcher, any[], any[]]>([
+    ['greaterThan', Match.greaterThan(5), [6, '6', ' 6 ', '+6', '6e0', 5.1], [5, '5', 4]],
+    ['greaterThanOrEqual', Match.greaterThanOrEqual(5), [5, '5', 6], [4, '4.9']],
+    ['lessThan', Match.lessThan(5), [4, '4', '-2', '.5'], [5, '5', 6]],
+    ['lessThanOrEqual', Match.lessThanOrEqual(5), [5, '5', 4], [6, '5.1']],
+  ])('%s handles boundaries and numeric strings', (_name, matcher, passing, failing) => {
+    for (const value of passing) {
+      expect(matcher.test(value).isSuccess).toBe(true);
+    }
+    for (const value of failing) {
+      expect(matcher.test(value).isSuccess).toBe(false);
+    }
+  });
+
+  test.each([null, undefined, true, false, {}, [], '', ' ', '0x10', '12px', 'Infinity', 'NaN', '1e999', NaN, Infinity, -Infinity])(
+    'does not coerce invalid numeric input %p', (value) => {
+      expect(Match.greaterThan(-100).test(value).isSuccess).toBe(false);
+    },
+  );
+
+  test.each([NaN, Infinity, -Infinity])('fails for non-finite threshold %s', (value) => {
+    for (const create of [Match.greaterThan, Match.greaterThanOrEqual, Match.lessThan, Match.lessThanOrEqual]) {
+      expect(() => create(value)).toThrow('Expected a finite comparison value');
+    }
+  });
+
+  test('works inside resource property matchers', () => {
+    const matcher = Match.objectLike({ BacktrackWindow: Match.greaterThanOrEqual(10) });
+    expect(matcher.test({ BacktrackWindow: '10' }).isSuccess).toBe(true);
+    expect(matcher.test({ BacktrackWindow: 9 }).isSuccess).toBe(false);
+  });
+});
