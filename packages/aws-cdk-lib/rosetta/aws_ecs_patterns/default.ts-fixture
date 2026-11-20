@@ -6,6 +6,7 @@ import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 import * as cxapi from 'aws-cdk-lib/cx-api';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
@@ -14,4 +15,3 @@ class Fixture extends Stack {
     /// here
   }
 }
-

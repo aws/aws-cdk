@@ -2,6 +2,7 @@ import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ScheduledFargateTask } from '../../lib';
 import { acknowledgeTestValidationRules } from '../util';
@@ -424,6 +425,38 @@ test('Scheduled Fargate Task - with securityGroups defined', () => {
         Id: 'Target0',
         Input: '{}',
         RoleArn: { 'Fn::GetAtt': ['ScheduledFargateTaskScheduledTaskDefEventsRole6CE19522', 'Arn'] },
+      },
+    ],
+  });
+});
+
+test('Scheduled Fargate Task - with an existing role defined', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = new iam.Role(stack, 'TaskRole', {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+  });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    role,
+  });
+
+  // THEN - the Events Rule targets use the provided role instead of a new one
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        RoleArn: {
+          'Fn::GetAtt': [Match.stringLikeRegexp('^TaskRole'), 'Arn'],
+        },
       },
     ],
   });
