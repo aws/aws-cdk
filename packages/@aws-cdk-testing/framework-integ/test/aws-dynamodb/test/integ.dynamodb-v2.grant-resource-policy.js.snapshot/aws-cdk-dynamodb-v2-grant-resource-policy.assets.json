@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "f7e180bc457b9fe15a4a80321fa193858953ddffc6236ce2bf5e41dd4c4a07ff": {
+      "displayName": "aws-cdk-dynamodb-v2-grant-resource-policy Template",
+      "source": {
+        "path": "aws-cdk-dynamodb-v2-grant-resource-policy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-73c5bc05": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f7e180bc457b9fe15a4a80321fa193858953ddffc6236ce2bf5e41dd4c4a07ff.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
