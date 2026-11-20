@@ -25,7 +25,7 @@ export class CfnThingApplicationLogs {
     {
       return new CfnThingLogsMixin("APPLICATION_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
         permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
-        kmsKey: props?.encryptionKey,
+        encryptionKey: props?.encryptionKey,
         outputFormat: props?.outputFormat,
         providedFields: props?.recordFields,
         mandatoryFields: undefined
@@ -99,7 +99,7 @@ export class CfnThingAccessLogs {
     {
       return new CfnThingLogsMixin("ACCESS_LOGS", new logsDelivery.S3LogsDelivery(bucket, {
         permissionsVersion: logsDelivery.S3LogsDeliveryPermissionsVersion.V2,
-        kmsKey: props?.encryptionKey,
+        encryptionKey: props?.encryptionKey,
         outputFormat: props?.outputFormat,
         providedFields: props?.recordFields,
         mandatoryFields: ["resource-id","body"]
@@ -184,7 +184,7 @@ export class CfnThingLogsMixin extends cdk.Mixin implements constructs.IMixin {
   }
 
   /**
-   * Check if this mixin supports the given construct (has vendedLogs property)
+   * Check if this mixin supports the given construct
    */
   public supports(construct: constructs.IConstruct): construct is service.CfnThing {
     return (cdk.CfnResource.isCfnResource(construct) && service.CfnThing.isCfnThing(construct));
@@ -238,7 +238,7 @@ export enum CfnThingApplicationLogsRecordFields {
 
 export interface CfnThingApplicationLogsS3Props {
   /**
-   * Encrpytion key for your delivery bucket
+   * Encryption key for your delivery bucket
    */
   readonly encryptionKey?: interfaces.aws_kms.IKeyRef;
 
@@ -323,7 +323,7 @@ export enum CfnThingAccessLogsRecordFields {
 
 export interface CfnThingAccessLogsS3Props {
   /**
-   * Encrpytion key for your delivery bucket
+   * Encryption key for your delivery bucket
    */
   readonly encryptionKey?: interfaces.aws_kms.IKeyRef;
 

@@ -1,12 +1,12 @@
 import type { IEnvironmentAware } from 'aws-cdk-lib/core';
-import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Annotations, Aws, Names, Resource, Stack, Tags } from 'aws-cdk-lib/core';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import type { Construct, IConstruct } from 'constructs';
-import type { Grant, IEncryptedResource } from 'aws-cdk-lib/aws-iam';
+import { type Construct, type IConstruct } from 'constructs';
+import type { Grant } from 'aws-cdk-lib/aws-iam';
 import { AccountPrincipal, Effect, EncryptedResources, PolicyDocument, PolicyStatement, PrincipalWithConditions, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnKey, KeyGrants, type IKeyRef } from 'aws-cdk-lib/aws-kms';
-import type { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
+import type { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as xray from './xray-policy';
 import { S3LogsDeliveryPermissionsVersion } from './logs-delivery';
@@ -22,11 +22,12 @@ interface DeliveryDestinationProps {
 }
 
 /**
- * Properties for Delivery Destinations the participate in Cross Account Delivery
+ * Properties for Delivery Destinations that participate in Cross Account Delivery
  */
 interface CrossAccountDestinationProps extends DeliveryDestinationProps {
   /**
-   * Optional acount id for account the delivery source is in for cross account Vended Logs
+   * Optional account id for the account the delivery source is in for cross account Vended Logs
+   * Setting this will add permissions to the delivery destination that are required for cross account log delivery
    */
   readonly sourceAccountId?: string;
 }
@@ -43,14 +44,13 @@ export interface S3DeliveryDestinationProps extends CrossAccountDestinationProps
    * The permissions version ('V1' or 'V2') to be used for this delivery.
    * Depending on the source of the logs, different permissions are required.
    *
-   * @default "V2"
+   * @default S3LogsDeliveryPermissionsVersion.V2
    */
   readonly permissionsVersion?: S3LogsDeliveryPermissionsVersion;
   /**
-   * KMS key to use for encrypting logs in the S3 bucket.
-   * When provided, grants the logs delivery service permissions to use the key.
+   * KMS key the bucket encrypts logs with.
    *
-   * @default - No encryption key is configured
+   * @default - the key is discovered from the bucket, if it has one
    */
   readonly encryptionKey?: IKeyRef;
 }
@@ -87,6 +87,8 @@ export interface XRayDeliveryDestinationProps {
 
 /**
  * Creates an S3 delivery destination for CloudWatch Logs.
+ * Including adding permissions requires for Vended Log delivery to the bucket and
+ * KMS key (if one is associated with the bucket).
  */
 export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
   private readonly bucket: IBucketRef;
@@ -109,7 +111,7 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
     const bucketPolicy = this.grantLogsDelivery();
     this.node.addDependency(bucketPolicy);
 
-    this.addToEncryptionKeyPolicy(EncryptedResources.of(this.bucket));
+    this.addToEncryptionKeyPolicy(props.encryptionKey);
   }
 
   /**
@@ -144,33 +146,43 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
     return bucketGrants;
   }
 
-  private addToEncryptionKeyPolicy(encryptedKey: IEncryptedResource | undefined) {
-    if (!encryptedKey) {
+  private addToEncryptionKeyPolicy(encryptionKey?: IKeyRef): void {
+    const keyOnbucket = EncryptedResources.of(this.bucket);
+    if (!keyOnbucket && !encryptionKey) {
       return;
     }
+
+    const account = this.sourceAccount ? this.sourceAccount : encryptionKey?.env.account || keyOnbucket?.env.account;
+    const region = encryptionKey?.env.region || keyOnbucket?.env.region;
     const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
-    const account = this.sourceAccount ? this.sourceAccount : encryptedKey.env.account;
     const principal = new PrincipalWithConditions(new ServicePrincipal('delivery.logs.amazonaws.com'), {
       StringEquals: {
         'aws:SourceAccount': [account],
       },
       ArnLike: {
-        'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${encryptedKey.env.region}:${account}:${sourceArnPostfix}`],
+        'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${region}:${account}:${sourceArnPostfix}`],
       },
-    },
-    );
-    const actions = this.sourceAccount ? ['kms:GenerateDataKey*'] : ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'];
-    if (encryptedKey instanceof CfnKey) {
-      const keyGrant = KeyGrants.fromKey(encryptedKey);
-      keyGrant.actions(principal, ...actions);
+    });
+    const actions = this.sourceAccount
+      ? ['kms:GenerateDataKey*']
+      : ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'];
+
+    if (encryptionKey) {
+      const grant = KeyGrants.fromKey(encryptionKey).actions(principal, ...actions);
+      // second half of this check is to see if we have an imported L2 key, those will silently succeed but will not get the updated permissions
+      if (!grant.success || !(Resource.isOwnedResource(encryptionKey) || CfnKey.isCfnKey(encryptionKey))) {
+        Annotations.of(this).addWarningV2('@aws-cdk/mixins-preview:logsDeliveryKeyPolicyNotUpdated',
+          `could not add policy to the provided encryption key, ${encryptionKey.keyRef.keyId}. Add a statement to allow log delivery manually.`);
+      }
     } else {
-      encryptedKey.grantOnKey(principal, ...actions);
+      keyOnbucket?.grantOnKey(principal, ...actions);
     }
   }
 }
 
 /**
  * Firehose delivery destination for CloudWatch Logs.
+ * Including adding the tags needed to enable log delivery.
  */
 export class FirehoseDeliveryDestination extends logs.CfnDeliveryDestination {
   constructor(scope: Construct, id: string, props: FirehoseDeliveryDestinationProps) {
@@ -228,6 +240,7 @@ export class CloudwatchDeliveryDestination extends logs.CfnDeliveryDestination {
 
 /**
  * XRay delivery destination for XRay traces.
+ * Including creating or adding to an XRay resource policy which grants permissions needed for Log Delivery.
  */
 export class XRayDeliveryDestination extends logs.CfnDeliveryDestination {
   constructor(scope: Construct, id: string, props: XRayDeliveryDestinationProps) {

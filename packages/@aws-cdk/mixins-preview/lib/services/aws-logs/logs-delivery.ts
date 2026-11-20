@@ -8,7 +8,7 @@ import type { IKeyRef } from 'aws-cdk-lib/aws-kms';
 import { S3DeliveryDestination, CloudwatchDeliveryDestination, FirehoseDeliveryDestination, XRayDeliveryDestination } from './logs-destination';
 
 /**
- * The individual elements of a logs delivery integration.
+ * The elements of a logs delivery integration.
  */
 export interface ILogsDeliveryConfig {
   /**
@@ -16,11 +16,11 @@ export interface ILogsDeliveryConfig {
    */
   readonly deliverySource: logs.IDeliverySourceRef;
   /**
-   *  The logs delivery destination.
+   * The logs delivery destination.
    */
   readonly deliveryDestination: logs.IDeliveryDestinationRef;
   /**
-   *  The logs delivery
+   * The logs delivery that connects the delivery source to the delivery destination
    */
   readonly delivery: logs.IDeliveryRef;
 }
@@ -34,7 +34,7 @@ export interface ILogsDelivery {
    * @param scope - The construct scope
    * @param logType - The type of logs that the delivery source will produce
    * @param sourceResourceArn - The Arn of the source resource
-   * @returns The delivery reference
+   * @returns LogsDeliveryConfig
    */
   bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig;
 }
@@ -44,13 +44,15 @@ export interface ILogsDelivery {
  */
 export interface RecordFieldDeliveryProps {
   /**
-   * RecordFields the user has defined to be used in log delivery
+   * RecordFields the user wants to include in log delivery (mandatory fields will always be included)
    *
-   * @default - no fields were provided
+   * @default - no fields are provided to perform log delivery, if this log type has mandatory fields
+   * they will be included in the log delivery
    */
   readonly providedFields?: string[];
   /**
-   * Any recordFields that a mandatory to be included in a log delivery of a certain log type
+   * Any recordFields that are mandatory to be included in a log delivery of a certain log type
+   * These will be included whether fields were specified to be included or not
    *
    * @default - log type has no mandatory fields
    */
@@ -74,11 +76,11 @@ export interface DeliveryProps extends RecordFieldDeliveryProps {
  */
 export enum S3LogsDeliveryPermissionsVersion {
   /**
-   * V1
+   * V1 Permissions require s3:GetBucketAcl, s3:ListBucket, and s3:PutObject on the Delivery Destination Bucket
    */
   V1 = 'V1',
   /**
-   * V2
+   * V2 Permissions only require s3:PutObject on the Delivery Destination Bucket
    */
   V2 = 'V2',
 }
@@ -89,18 +91,21 @@ export enum S3LogsDeliveryPermissionsVersion {
 export interface S3LogsDeliveryProps extends DeliveryProps {
   /**
    * The permissions version ('V1' or 'V2') to be used for this delivery.
-   * Depending on the source of the logs, different permissions are required.
+   * Depends on how Vended Logs are implemented for the source resource.
+   * Almost all source resources that can use this Mixin will use V2 permissions.
    *
-   * @default "V2"
+   * @default S3LogsDeliveryPermissionsVersion.V2
    */
   readonly permissionsVersion?: S3LogsDeliveryPermissionsVersion;
   /**
-   * KMS key to use for encrypting logs in the S3 bucket.
-   * When provided, grants the logs delivery service permissions to use the key.
+   * The KMS key that is used to encrypt the bucket used for log delivery
+   *
+   * Grants permissions required for log delivery when provided. Does not change
+   * the bucket's encryption configuration.
    *
    * @default - No encryption key is configured
    */
-  readonly kmsKey?: IKeyRef;
+  readonly encryptionKey?: IKeyRef;
 }
 
 /**
@@ -108,8 +113,8 @@ export interface S3LogsDeliveryProps extends DeliveryProps {
  */
 export class S3LogsDelivery implements ILogsDelivery {
   private readonly bucket: s3.IBucketRef;
-  private readonly permissions: S3LogsDeliveryPermissionsVersion;
-  private readonly kmsKey: IKeyRef | undefined;
+  private readonly permissions: S3LogsDeliveryPermissionsVersion | undefined;
+  private readonly encryptionKey: IKeyRef | undefined;
   private readonly outputFormat: string | undefined;
   private readonly providedFields: string[] | undefined;
   private readonly mandatoryFields: string[] | undefined;
@@ -119,8 +124,8 @@ export class S3LogsDelivery implements ILogsDelivery {
    */
   constructor(bucket: s3.IBucketRef, props: S3LogsDeliveryProps = {}) {
     this.bucket = bucket;
-    this.permissions = props.permissionsVersion ?? S3LogsDeliveryPermissionsVersion.V2;
-    this.kmsKey = props.kmsKey;
+    this.permissions = props.permissionsVersion;
+    this.encryptionKey = props.encryptionKey;
     this.outputFormat = props.outputFormat;
     this.providedFields = props.providedFields;
     this.mandatoryFields = props.mandatoryFields;
@@ -128,6 +133,7 @@ export class S3LogsDelivery implements ILogsDelivery {
 
   /**
    * Binds S3 Bucket to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
+   * Note that delivery sources may be reused if one already exists for a source resource/log type pair.
    */
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const container = new Construct(scope, deliveryId('S3', logType, scope, this.bucket));
@@ -138,7 +144,7 @@ export class S3LogsDelivery implements ILogsDelivery {
     const deliveryDestination = new S3DeliveryDestination(container, makeDestId(logType), {
       bucket: this.bucket,
       permissionsVersion: this.permissions,
-      encryptionKey: this.kmsKey,
+      encryptionKey: this.encryptionKey,
       outputFormat: this.outputFormat,
     });
 
@@ -183,6 +189,7 @@ export class FirehoseLogsDelivery implements ILogsDelivery {
 
   /**
    * Binds Firehose Delivery Stream to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
+   * Note that delivery sources may be reused if one already exists for a source resource/log type pair.
    */
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const container = new Construct(scope, deliveryId('Firehose', logType, scope, this.deliveryStream));
@@ -235,6 +242,7 @@ export class LogGroupLogsDelivery implements ILogsDelivery {
 
   /**
    * Binds Log Group to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
+   * Note that delivery sources may be reused if one already exists for a source resource/log type pair.
    */
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const container = new Construct(scope, deliveryId('LogGroup', logType, scope, this.logGroup));
@@ -283,6 +291,7 @@ export class XRayLogsDelivery implements ILogsDelivery {
 
   /**
    * Binds X-Ray Destination to a source resource for the purposes of log delivery and creates a delivery source, a delivery destination, and a connection between them.
+   * Note that delivery sources may be reused if one already exists for a source resource/log type pair.
    */
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
@@ -330,6 +339,7 @@ export class DestinationLogsDelivery implements ILogsDelivery {
 
   /**
    * Binds Delivery Destination to a source resource for the purposes of log delivery and creates a delivery source and a connection between the source and the destination.
+   * Note that delivery sources may be reused if one already exists for a source resource/log type pair.
    */
   public bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig {
     const deliverySource = getOrCreateDeliverySource(logType, scope, sourceResourceArn);
