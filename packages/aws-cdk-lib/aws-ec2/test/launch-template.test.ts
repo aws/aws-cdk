@@ -11,8 +11,10 @@ import {
   App,
   Duration,
   Expiration,
+  Size,
   Stack,
   Tags,
+  Validations,
 } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { BlockDevice } from '../lib';
@@ -304,6 +306,10 @@ describe('LaunchTemplate', () => {
 
   test('Given blockDeviceMapping', () => {
     // GIVEN
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::F3014',
+      reason: 'test violates this',
+    });
     const kmsKey = new Key(stack, 'EbsKey');
     const blockDevices: BlockDevice[] = [
       {
@@ -341,6 +347,12 @@ describe('LaunchTemplate', () => {
         volume: BlockDeviceVolume.ebs(15, {
           volumeType: EbsDeviceVolumeType.GP3,
           throughput: 350,
+        }),
+      }, {
+        deviceName: 'volumeInitializationRate',
+        volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+          volumeInitializationRate: Size.mebibytes(300),
+          volumeSize: 15,
         }),
       },
     ];
@@ -402,6 +414,14 @@ describe('LaunchTemplate', () => {
               Throughput: 350,
             },
           },
+          {
+            DeviceName: 'volumeInitializationRate',
+            Ebs: {
+              VolumeSize: 15,
+              VolumeInitializationRate: 300,
+              SnapshotId: 'snapshot-id',
+            },
+          },
         ],
       },
     });
@@ -460,6 +480,20 @@ describe('LaunchTemplate', () => {
         }],
       });
     }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
+  });
+
+  test.each([Size.mebibytes(99), Size.mebibytes(301)])('throws if volumeInitializationRate is set less than 100 or more than 300', (volumeInitializationRate) => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            volumeInitializationRate,
+          }),
+        }],
+      });
+    }).toThrow(`volumeInitializationRate must be between 100 and 300 MiB/s, got: ${volumeInitializationRate.toMebibytes()} MiB/s`);
   });
 
   test('Given instance profile', () => {
@@ -594,6 +628,108 @@ describe('LaunchTemplate', () => {
         CreditSpecification: {
           CpuCredits: expected,
         },
+      },
+    });
+  });
+
+  test('Given cpuOptions', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {
+        amdSevSnp: true,
+        coreCount: 4,
+        nestedVirtualization: true,
+        threadsPerCore: 1,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: {
+          AmdSevSnp: 'enabled',
+          CoreCount: 4,
+          NestedVirtualization: 'enabled',
+          ThreadsPerCore: 1,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('Given cpuOptions.nestedVirtualization %p', (given: boolean, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {
+        nestedVirtualization: given,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: {
+          NestedVirtualization: expected,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, 'enabled'],
+    [false, 'disabled'],
+  ])('Given cpuOptions.amdSevSnp %p', (given: boolean, expected: string) => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {
+        amdSevSnp: given,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: {
+          AmdSevSnp: expected,
+        },
+      },
+    });
+  });
+
+  test('Given partial cpuOptions only renders specified fields', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {
+        coreCount: 2,
+        threadsPerCore: 2,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: {
+          CoreCount: 2,
+          ThreadsPerCore: 2,
+          AmdSevSnp: Match.absent(),
+          NestedVirtualization: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('Given empty cpuOptions does not render CpuOptions', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      cpuOptions: {},
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        CpuOptions: Match.absent(),
       },
     });
   });

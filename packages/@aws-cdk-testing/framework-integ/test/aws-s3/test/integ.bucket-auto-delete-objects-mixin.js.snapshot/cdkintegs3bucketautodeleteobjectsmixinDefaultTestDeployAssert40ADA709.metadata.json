@@ -1,0 +1,20 @@
+{
+  "/cdk-integ-s3-bucket-auto-delete-objects-mixin/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegs3bucketautodeleteobjectsmixinDefaultTestDeployAssert40ADA709.template.json"
+    }
+  ],
+  "/cdk-integ-s3-bucket-auto-delete-objects-mixin/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-s3-bucket-auto-delete-objects-mixin/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

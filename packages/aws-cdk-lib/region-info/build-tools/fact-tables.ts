@@ -122,17 +122,18 @@ enum Runtime {
   NODE_18 = 'nodejs18.x',
   NODE_20 = 'nodejs20.x',
   NODE_22 = 'nodejs22.x',
+  NODE_24 = 'nodejs24.x',
 }
 
 export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
-  [Partition.Default]: Runtime.NODE_22,
-  [Partition.Cn]: Runtime.NODE_22,
-  [Partition.UsGov]: Runtime.NODE_22,
-  [Partition.UsIso]: Runtime.NODE_22,
-  [Partition.UsIsoB]: Runtime.NODE_22,
-  [Partition.UsIsoF]: Runtime.NODE_22,
-  [Partition.EuIsoE]: Runtime.NODE_22,
-  [Partition.Eusc]: Runtime.NODE_22,
+  [Partition.Default]: Runtime.NODE_24,
+  [Partition.Cn]: Runtime.NODE_24,
+  [Partition.UsGov]: Runtime.NODE_24,
+  [Partition.UsIso]: Runtime.NODE_24,
+  [Partition.UsIsoB]: Runtime.NODE_24,
+  [Partition.UsIsoF]: Runtime.NODE_24,
+  [Partition.EuIsoE]: Runtime.NODE_24,
+  [Partition.Eusc]: Runtime.NODE_24,
 };
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
@@ -198,6 +199,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'eu-west-3': '763104351884',
   'me-central-1': '914824155844',
   'me-south-1': '217643126080',
+  'me-west-1': '124382933778',
   'sa-east-1': '763104351884',
   'us-east-1': '763104351884',
   'us-east-2': '763104351884',
@@ -233,6 +235,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'eu-west-3': '840364872350',
   'il-central-1': '564877687649',
   'me-south-1': '772975370895',
+  'me-west-1': '675079659277',
   'sa-east-1': '840364872350',
   'us-east-1': '840364872350',
   'us-east-2': '840364872350',

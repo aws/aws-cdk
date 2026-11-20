@@ -3,6 +3,8 @@ on:
   pull_request_target:
     types: [opened, edited, reopened]
 
+cache-mode: read
+
 jobs:
   check-issue-reference:
     runs-on: ubuntu-latest
@@ -10,7 +12,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install type dependencies
         run: yarn install --frozen-lockfile
       - name: Compile TypeScript

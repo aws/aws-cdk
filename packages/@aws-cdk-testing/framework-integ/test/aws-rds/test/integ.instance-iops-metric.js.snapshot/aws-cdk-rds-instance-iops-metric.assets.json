@@ -1,16 +1,16 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
-    "d698cc9f8e4d62ad08bc3b300202cb3996aa96cc0a8a2c49ddd7882ab79c4958": {
+    "bf77e0f205c135cb1febec8c8315ea3b3444047c915e92f3312358d0f4130256": {
       "displayName": "aws-cdk-rds-instance-iops-metric Template",
       "source": {
         "path": "aws-cdk-rds-instance-iops-metric.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-31a7c2b0": {
+        "current_account-current_region-2951c3fc": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d698cc9f8e4d62ad08bc3b300202cb3996aa96cc0a8a2c49ddd7882ab79c4958.json",
+          "objectKey": "bf77e0f205c135cb1febec8c8315ea3b3444047c915e92f3312358d0f4130256.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-eks-helm/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkekshelmDefaultTestDeployAssert044A589A.template.json"
+    }
+  ],
   "/aws-cdk-eks-helm/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

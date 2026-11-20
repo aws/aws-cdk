@@ -12,12 +12,6 @@
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-permissions.html
  *
- * TODO: When this package graduates from alpha and is moved into aws-cdk-lib (and renamed from
- * `aws-bedrock-agentcore-alpha` to `aws-bedrockagentcore` to align with the L1 module name),
- * replace this file with an auto-generated grants class following the CDK Design Guidelines:
- * @see https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#grants
- * This requires creating a `grants.json` file at the package root, after which the tooling
- * will auto-generate the `*Grants` class on every `yarn build`.
  */
 
 /**
@@ -27,6 +21,7 @@
  * Grant these to Gateway execution roles that evaluate policies during agent requests.
  *
  * Usage: policyEngine.grantEvaluate(gatewayRole)
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const POLICY_ENGINE_EVALUATE_PERMS = [
   'bedrock-agentcore:GetPolicyEngine',
@@ -39,6 +34,7 @@ export const POLICY_ENGINE_EVALUATE_PERMS = [
  *
  * These permissions allow reading policy engine configuration at runtime.
  * Typically used for monitoring, observability, or read-only administrative tools.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const POLICY_ENGINE_READ_PERMS = [
   'bedrock-agentcore:GetPolicyEngine',
@@ -55,6 +51,7 @@ export const POLICY_ENGINE_READ_PERMS = [
  *
  * Note: `ListPolicies` is intentionally excluded as it's an administrative operation.
  * Applications should reference specific policies by ID/ARN, not list all policies.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export const POLICY_READ_PERMS = [
   'bedrock-agentcore:GetPolicy',

@@ -1,0 +1,120 @@
+{
+ "Resources": {
+  "ParamOne60C4B187": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "KNOWN_PARAM_MULTI_1",
+    "Type": "String",
+    "Value": "MY_PARAMETER_VALUE_MULTI"
+   }
+  },
+  "ParamTwo374C16A1": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "KNOWN_PARAM_MULTI_2",
+    "Type": "String",
+    "Value": "MY_PARAMETER_VALUE_MULTI"
+   }
+  },
+  "PublishGetStackOutputRoleF953C5C7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": [
+         {
+          "Fn::Sub": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-cfn-exec-role-222222222222-us-east-1"
+         },
+         {
+          "Fn::Sub": "arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-cfn-exec-role-222222222222-us-east-2"
+         }
+        ]
+       },
+       "Action": [
+        "sts:AssumeRole"
+       ]
+      }
+     ]
+    },
+    "RoleName": "CrossAccountMultiConsumerProcerPublishGetStackOutputRoleC3B334CF"
+   }
+  },
+  "PublishGetStackOutputPolicy1874DE82": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "PublishGetStackOutputRoleF953C5C7"
+     }
+    ],
+    "PolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Effect": "Allow",
+       "Action": "cloudformation:DescribeStacks",
+       "Resource": "arn:aws:cloudformation:eu-central-1:111111111111:stack/CrossAccountMultiConsumerProducer/*"
+      }
+     ]
+    },
+    "PolicyName": "CrossAccountMultiConsumerProducerPublishGetStackOutputPolicyE1893659"
+   }
+  }
+ },
+ "Outputs": {
+  "PublishOutputFnGetAttParamOne60C4B187Value0AEC4F24": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ParamOne60C4B187",
+     "Value"
+    ]
+   }
+  },
+  "PublishOutputFnGetAttParamTwo374C16A1ValueC381F4FA": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ParamTwo374C16A1",
+     "Value"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

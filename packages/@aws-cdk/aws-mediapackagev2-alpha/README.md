@@ -243,6 +243,50 @@ origin.addToResourcePolicy(new PolicyStatement({
 }));
 ```
 
+### CDN Authorization
+
+MediaPackage V2 supports two ways to lock an origin endpoint to your CDN:
+
+- **AWS Signature Version 4 (SigV4)** — the CDN signs requests with an IAM
+  role. For Amazon CloudFront, see [CloudFront Integration](#cloudfront-integration).
+  See the [SigV4 authentication guide][sigv4-auth].
+- **Header-based CDN authorization** — the CDN attaches a shared secret in
+  a request header that MediaPackage validates. Use this when your CDN
+  doesn't support SigV4. See the [CDN authorization guide][cdn-auth].
+
+[sigv4-auth]: https://docs.aws.amazon.com/mediapackage/latest/userguide/sig-v4-authenticating-requests.html
+[cdn-auth]: https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth.html
+
+To configure header-based authorization, set `cdnAuth` on the `OriginEndpoint`
+props. The L2 auto-creates the endpoint policy with:
+
+- a `PolicyStatement` requiring the `mediapackagev2:RequestHasMatchingCdnAuthHeader`
+  condition on every `GetObject` request
+- the `CdnAuthConfiguration` block that references the secrets and the read role
+
+If you don't supply a role, one is created with the needed Secrets Manager
+and KMS permissions.
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const channel: Channel;
+declare const mySecret: secretsmanager.ISecret;
+
+new OriginEndpoint(this, 'OriginEndpoint', {
+  channel,
+  segment: Segment.ts(),
+  manifests: [Manifest.hls({ manifestName: 'index' })],
+  cdnAuth: {
+    secrets: [mySecret],
+  },
+});
+```
+
+You can still call `addToResourcePolicy()` to add extra statements (e.g. a
+harvester allow); they're appended to the auto-created policy alongside the
+gating statement.
+
 ## Granting Permissions
 
 ### Granting Ingest Access to MediaLive
@@ -261,7 +305,24 @@ channel.grants.ingest(mediaLiveRole);
 
 MediaPackage origin endpoints are designed to be used with Content Delivery Network (CDN) like Amazon CloudFront distributions. CloudFront provides caching, DDoS protection, and global content delivery for your streaming content.
 
-To allow a CloudFront distribution to access a MediaPackage origin endpoint, add a resource policy with the CloudFront service principal:
+The simplest way to connect CloudFront to a MediaPackage V2 endpoint is with `MediaPackageV2Origin`, which automatically creates an Origin Access Control (OAC) and wires the endpoint policy:
+
+```ts
+declare const endpoint: OriginEndpoint;
+declare const group: ChannelGroup;
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: {
+    origin: new MediaPackageV2Origin(endpoint, {
+      channelGroup: group,
+    }),
+  },
+});
+```
+
+This handles OAC creation, HTTPS-only origin config, and the IAM policy granting CloudFront access to the endpoint (including `GetHeadObject` for MQAR support).
+
+For more control, you can manually configure the policy and OAC:
 
 ```ts
 declare const originEndpoint: OriginEndpoint;
@@ -281,7 +342,7 @@ originEndpoint.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-You can complete the confirmation with an OAC (Origin Access Control) Policy on the CloudFront Distribution.
+> **Graduation plan:** `MediaPackageV2Origin` currently lives in this alpha module. When MediaPackage V2 graduates to stable, it will move to `aws-cloudfront-origins` alongside `S3BucketOrigin` and other origin helpers.
 
 ## Manifest Configuration
 

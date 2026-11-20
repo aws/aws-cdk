@@ -6,6 +6,7 @@ import { lit } from './literal-string';
 
 // Details for encoding and decoding Tokens into native types; should not be exported
 
+export const ANY_TOKEN_MARKER = 'Token[';
 export const BEGIN_STRING_TOKEN_MARKER = '${Token[';
 export const BEGIN_LIST_TOKEN_MARKER = '#{Token[';
 export const END_TOKEN_MARKER = ']}';
@@ -110,7 +111,7 @@ export function containsListTokenElement(xs: any[]) {
  */
 export function unresolved(obj: any): boolean {
   if (typeof(obj) === 'string') {
-    return TokenString.forString(obj).test();
+    return obj.includes(ANY_TOKEN_MARKER) && TokenString.forString(obj).test();
   } else if (typeof obj === 'number') {
     return extractTokenDouble(obj) !== undefined;
   } else if (Array.isArray(obj) && obj.length === 1) {

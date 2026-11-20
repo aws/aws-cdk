@@ -4,7 +4,7 @@ import { InstanceProfile, Role, ServicePrincipal } from '../../aws-iam';
 import { Key } from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { StringParameter } from '../../aws-ssm';
-import { App, Stack, Duration } from '../../core';
+import { App, Stack, Duration, Validations, Size } from '../../core';
 import * as cxapi from '../../cx-api';
 import type { LaunchTemplate } from '../lib';
 import {
@@ -122,6 +122,15 @@ describe('instance', () => {
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
     }
+  });
+  test('c9g instance class renders the c9g instance type and is discerned as arm', () => {
+    // WHEN
+    const instanceType = InstanceType.of(InstanceClass.C9G, InstanceSize.XLARGE);
+
+    // THEN
+    expect(instanceType.toString()).toBe('c9g.xlarge');
+    expect(InstanceType.of(InstanceClass.COMPUTE9_GRAVITON, InstanceSize.XLARGE).toString()).toBe('c9g.xlarge');
+    expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
@@ -243,6 +252,11 @@ describe('instance', () => {
   });
   describe('blockDeviceMappings', () => {
     test('can set blockDeviceMappings', () => {
+      Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::F3014',
+        reason: 'test violates this',
+      });
+
       // WHEN
       const kmsKey = new Key(stack, 'EbsKey');
       new Instance(stack, 'Instance', {
@@ -368,6 +382,37 @@ describe('instance', () => {
       Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The throughput property is not supported on EC2 instances. Use a Launch Template instead'));
     });
 
+    test('warns if volumeInitializationRate is specified for an EBS volume on an EC2 instance', () => {
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            volumeType: EbsDeviceVolumeType.GP3,
+            volumeInitializationRate: Size.mebibytes(300),
+          }),
+        }],
+      });
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', Match.stringLikeRegexp('The volumeInitializationRate is not supported on EC2 instances. Use a Launch Template instead.'));
+
+      // Assert VolumeInitializationRate is absent from the synthesized template
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        BlockDeviceMappings: Match.arrayWith([
+          Match.objectLike({
+            Ebs: Match.not(Match.objectLike({
+              VolumeInitializationRate: Match.anyValue(),
+            })),
+          }),
+        ]),
+      });
+    });
+
     test('throws if ephemeral volumeIndex < 0', () => {
       // THEN
       expect(() => {
@@ -441,6 +486,10 @@ describe('instance', () => {
     });
 
     test('warning if iops and invalid volumeType', () => {
+      Validations.of(stack).acknowledge({
+        id: 'CloudFormation-Validate::W3671',
+        reason: 'We already have a warning here',
+      });
       new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),

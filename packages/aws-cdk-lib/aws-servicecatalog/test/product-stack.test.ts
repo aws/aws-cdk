@@ -10,6 +10,7 @@ import * as s3_assets from '../../aws-s3-assets';
 import { ServerSideEncryption } from '../../aws-s3-deployment';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as servicecatalog from '../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -235,7 +236,29 @@ describe('ProductStack', () => {
       new s3_assets.Asset(productStack, 'testAsset', {
         path: path.join(__dirname, 'assets'),
       });
-    }).toThrow('A bucketName must be provided to use Assets');
+    }).toThrow('A ProductStack\'s assetBucket must have a physical name');
+  });
+
+  // The synthesizer resolves the L1 `bucketName` of an owned asset bucket. If that name
+  // contains a token (e.g. account/region to make it unique), resolve() returns a
+  // CloudFormation intrinsic object ({ 'Fn::Join.. }) instead of a string.
+  test('addFileAsset requires the asset bucket name to not contain tokens', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const mainStack = new cdk.Stack(app, 'MyStack');
+    const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
+      bucketName: `test-asset-bucket-${cdk.Aws.ACCOUNT_ID}-${cdk.Aws.REGION}`,
+    });
+    const productStack = new servicecatalog.ProductStack(mainStack, 'MyProductStack', {
+      assetBucket: testAssetBucket,
+    });
+
+    // THEN
+    expect(() => {
+      new s3_assets.Asset(productStack, 'testAsset', {
+        path: path.join(__dirname, 'assets'),
+      });
+    }).toThrow('may not have Tokens in its physical name');
   });
 
   test('fails if Asset bucket is not defined in product stack with assets', () => {
@@ -504,6 +527,27 @@ describe('ProductStack', () => {
         // same asset so it only needs to be copied once.
         Match.anyValue(),
       ],
+    });
+  });
+
+  test('product stack adds template-producer metadata to the cloud assembly', () => {
+    // GIVEN
+    const app = new cdk.App({ stackTraces: false });
+    const parentStack = new cdk.Stack(app, 'ParentStack');
+    const productStack = new servicecatalog.ProductStack(parentStack, 'ProductStack');
+    new cdk.CfnResource(productStack, 'Resource', { type: 'AWS::Test::Resource' });
+
+    // WHEN
+    const assembly = app.synth();
+
+    // THEN — product stack metadata is collected in the parent stack artifact
+    const parentArtifact = assembly.getStackArtifact(parentStack.artifactId);
+    const entries = parentArtifact.findMetadataByType(cxapi.CDK_TEMPLATE_FILE_KEY);
+    const productEntry = entries.find(e => e.path.includes('ProductStack'));
+    expect(productEntry).toEqual({
+      path: '/' + productStack.node.path,
+      type: cxapi.CDK_TEMPLATE_FILE_KEY,
+      data: productStack.templateFile,
     });
   });
 });

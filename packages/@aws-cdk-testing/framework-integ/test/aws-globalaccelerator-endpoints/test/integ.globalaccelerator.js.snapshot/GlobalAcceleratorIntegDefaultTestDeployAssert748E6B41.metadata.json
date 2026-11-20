@@ -1,0 +1,20 @@
+{
+  "/GlobalAcceleratorInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "GlobalAcceleratorIntegDefaultTestDeployAssert748E6B41.template.json"
+    }
+  ],
+  "/GlobalAcceleratorInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/GlobalAcceleratorInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

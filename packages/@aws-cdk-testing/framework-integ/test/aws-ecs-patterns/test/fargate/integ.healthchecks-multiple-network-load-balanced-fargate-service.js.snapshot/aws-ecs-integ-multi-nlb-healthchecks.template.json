@@ -433,18 +433,30 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecsintegmultinlbhealthchecksmyServicelb12E6A6A8E",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "myServicelb1SecurityGrouptoawsecsintegmultinlbhealthchecksmyServiceSecurityGroup96C20969ALLPORTSF320245A": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "to awsecsintegmultinlbhealthchecksmyServiceSecurityGroup96C20969:ALL PORTS",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "myServiceSecurityGroupC3B9D4E0",
+      "GroupId"
+     ]
+    },
+    "FromPort": 0,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "myServicelb1SecurityGroup342C51EA",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
    }
   },
   "myServicelb1listener15ED0E805": {
@@ -515,18 +527,30 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecsintegmultinlbhealthchecksmyServicelb2BB59289D",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "myServicelb2SecurityGrouptoawsecsintegmultinlbhealthchecksmyServiceSecurityGroup96C20969ALLPORTS02726A32": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "to awsecsintegmultinlbhealthchecksmyServiceSecurityGroup96C20969:ALL PORTS",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "myServiceSecurityGroupC3B9D4E0",
+      "GroupId"
+     ]
+    },
+    "FromPort": 0,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "myServicelb2SecurityGroupEB00B5B9",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 65535
    }
   },
   "myServicelb2listener2AA6970EB": {
@@ -535,7 +559,7 @@
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+       "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
       },
       "Type": "forward"
      }
@@ -547,10 +571,10 @@
     "Protocol": "TCP"
    }
   },
-  "myServicelb2listener2ECSTargetGroupweb90Group6841F924": {
+  "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
-    "Port": 90,
+    "Port": 80,
     "Protocol": "TCP",
     "TargetType": "ip",
     "VpcId": {
@@ -598,10 +622,6 @@
       "PortMappings": [
        {
         "ContainerPort": 80,
-        "Protocol": "tcp"
-       },
-       {
-        "ContainerPort": 90,
         "Protocol": "tcp"
        }
       ]
@@ -702,9 +722,9 @@
      },
      {
       "ContainerName": "web",
-      "ContainerPort": 90,
+      "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+       "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
       }
      }
     ],
@@ -736,7 +756,7 @@
    "DependsOn": [
     "myServicelb1listener1ECSTargetGroupweb80GroupC3F9339A",
     "myServicelb1listener15ED0E805",
-    "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
+    "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6",
     "myServicelb2listener2AA6970EB",
     "myServiceTaskDefTaskRole1C1DE6CC"
    ]
@@ -755,6 +775,54 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
+  },
+  "myServiceSecurityGroupfromawsecsintegmultinlbhealthchecksmyServicelb1SecurityGroup60412726ALLPORTSF58AE8AD": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awsecsintegmultinlbhealthchecksmyServicelb1SecurityGroup60412726:ALL PORTS",
+    "FromPort": 0,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "myServiceSecurityGroupC3B9D4E0",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "myServicelb1SecurityGroup342C51EA",
+      "GroupId"
+     ]
+    },
+    "ToPort": 65535
+   },
+   "DependsOn": [
+    "myServiceTaskDefTaskRole1C1DE6CC"
+   ]
+  },
+  "myServiceSecurityGroupfromawsecsintegmultinlbhealthchecksmyServicelb2SecurityGroupAFC7ABC5ALLPORTSC736BACA": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awsecsintegmultinlbhealthchecksmyServicelb2SecurityGroupAFC7ABC5:ALL PORTS",
+    "FromPort": 0,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "myServiceSecurityGroupC3B9D4E0",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "myServicelb2SecurityGroupEB00B5B9",
+      "GroupId"
+     ]
+    },
+    "ToPort": 65535
    },
    "DependsOn": [
     "myServiceTaskDefTaskRole1C1DE6CC"

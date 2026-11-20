@@ -1106,7 +1106,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -1128,7 +1128,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/52adb2fbcb72df67b6a0c694f66a64ad139905919198a77f7f50ccb3070b08d7.json"
+       "/9ef7a8fb6d13c7987b3ad2137fc72e7b0644ecb691a3099c32efe34285871204.json"
       ]
      ]
     }
@@ -1174,7 +1174,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/7362ba3fd5f962d9e5d58d6b8d8be1a00de1c601342b0c1d295942a814365346.json"
+       "/1e1fe1114bb0bb440879160e7bf16a4b267aab06cbfb91ae965e7af5f6e34392.json"
       ]
      ]
     }
@@ -1347,7 +1347,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"

@@ -1,0 +1,32 @@
+{
+  "/DefaultRegoRulesStack/CompliantAlias": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CompliantAlias"
+    }
+  ],
+  "/DefaultRegoRulesStack/NeverTrue": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NeverTrue"
+    }
+  ],
+  "/DefaultRegoRulesStack/ViolatingAlias": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ViolatingAlias"
+    }
+  ],
+  "/DefaultRegoRulesStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/DefaultRegoRulesStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

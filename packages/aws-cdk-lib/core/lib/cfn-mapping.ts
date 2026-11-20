@@ -3,9 +3,9 @@ import { Annotations } from './annotations';
 import { CfnRefElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { UnscopedValidationError, ValidationError } from './errors';
+import { stackOf } from './private/core-construct-finders';
 import { lit } from './private/literal-string';
 import type { IResolvable, IResolveContext } from './resolvable';
-import { Stack } from './stack';
 import { Token } from './token';
 
 type Mapping = { [k1: string]: { [k2: string]: any } };
@@ -155,8 +155,8 @@ class CfnMappingEmbedder implements IResolvable {
     private readonly defaultValue?: string) { }
 
   public resolve(context: IResolveContext): string {
-    const consumingStack = Stack.of(context.scope);
-    if (consumingStack === Stack.of(this.cfnMapping)) {
+    const consumingStack = stackOf(context.scope);
+    if (consumingStack === stackOf(this.cfnMapping)) {
       return Fn.findInMap(this.cfnMapping.logicalId, this.key1, this.key2, this.defaultValue);
     }
 

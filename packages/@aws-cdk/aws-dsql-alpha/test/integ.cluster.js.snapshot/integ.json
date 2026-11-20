@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "testCases": {
     "aws-cdk-dsql-integ/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "awscdkdsqlintegDefaultTestDeployAssert9569A7F9"
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1123.0"
 }

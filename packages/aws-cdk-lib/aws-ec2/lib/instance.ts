@@ -377,7 +377,7 @@ export interface InstanceProps {
    * Whether "Detailed Monitoring" is enabled for this instance
    * Keep in mind that Detailed Monitoring results in extra charges
    *
-   * @see http://aws.amazon.com/cloudwatch/pricing/
+   * @see https://aws.amazon.com/cloudwatch/pricing/
    * @default - false
    */
   readonly detailedMonitoring?: boolean;
@@ -759,6 +759,7 @@ export class Instance extends Resource implements IInstance {
     // try to naively resolve. We need a recursion breaker in this.
     const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
     let recursing = false;
+    // eslint-disable-next-line no-restricted-syntax
     this.instance.overrideLogicalId(Lazy.uncachedString({
       produce: (context) => {
         if (recursing) { return originalLogicalId; }

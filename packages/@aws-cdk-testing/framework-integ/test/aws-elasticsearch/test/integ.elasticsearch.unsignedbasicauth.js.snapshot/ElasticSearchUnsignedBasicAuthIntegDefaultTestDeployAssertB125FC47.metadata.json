@@ -1,0 +1,20 @@
+{
+  "/ElasticSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ElasticSearchUnsignedBasicAuthIntegDefaultTestDeployAssertB125FC47.template.json"
+    }
+  ],
+  "/ElasticSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ElasticSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

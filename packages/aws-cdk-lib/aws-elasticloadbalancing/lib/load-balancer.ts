@@ -278,6 +278,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
 
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
@@ -285,7 +286,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
     this._listeners = Box.fromArray([], { omitEmpty: false });
-    this._instanceIds = Box.fromArray([]);
+    this._instanceIds = Box.fromArray();
 
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 

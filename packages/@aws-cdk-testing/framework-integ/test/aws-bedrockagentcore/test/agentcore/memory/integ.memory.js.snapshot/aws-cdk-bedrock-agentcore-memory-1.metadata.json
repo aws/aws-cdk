@@ -1,0 +1,619 @@
+{
+  "/aws-cdk-bedrock-agentcore-memory-1": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Memory": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MyEncryptionKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinEpisodicEx": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:222:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:586: (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:586:3)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:643:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:640:9)",
+        "synthesizeTree (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:579:5)",
+        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:142:5)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:191:92)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:188:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:230:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:140:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:260:18)",
+        "/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:586: (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:586:3)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:643:9)",
+        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:640:9)",
+        "synthesizeTree (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:579:5)",
+        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:142:5)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:191:92)",
+        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:188:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Memory/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Memory/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Memory3232ACAB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:567:31)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:50:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MyEncryptionKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyEncryptionKeyD795679F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:631:30)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:54:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinStrategiesMemory25697FD7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:567:31)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:55:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithCustomStrategiesMemoryFBD56D7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:567:31)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:67:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryBucket34BAD4CD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1207:30)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:87:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:119:25)",
+        "new AutoDeleteObjectsProvider (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:57:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:54:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:79:93)",
+        "applyMixin (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:140:52)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1928:22)",
+        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1281:22)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:141:24)",
+        "new AutoDeleteObjectsProvider (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:57:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:54:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:79:93)",
+        "applyMixin (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:140:52)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1928:22)",
+        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1281:22)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryTopic5EB6DDE2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:237:30)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:91:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithSelfManagedStrategyMemory927C030F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:567:31)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:93:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinEpisodicEx/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinEpisodicEx/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinEpisodicExMemory4F42AC13"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:567:31)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:113:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Memory/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryServiceRoleC95D1642"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "WrappedClass._createMemoryRole (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:599:26)",
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:532:62)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:50:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinStrategiesServiceRole9D3D59C7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "WrappedClass._createMemoryRole (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:599:26)",
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:532:62)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:55:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithCustomStrategiesServiceRole8BB48B33"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "WrappedClass._createMemoryRole (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:599:26)",
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:532:62)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:67:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryBucketPolicyE2E00A35"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:143:29)",
+        "WrappedClass.maybeAutoCreatePolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:251:31)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1927:18)",
+        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1281:22)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:87:16)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryBucketAutoDeleteObjectsCustomResource24E6631C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
+        "BucketAutoDeleteObjects.applyTo (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:99:32)",
+        "applyMixin (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:140:52)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1928:22)",
+        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1281:22)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithSelfManagedStrategyServiceRole9A484437"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "WrappedClass._createMemoryRole (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:599:26)",
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:532:62)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:93:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinEpisodicEx/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinEpisodicExServiceRoleB89EDF28"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:422:34)",
+        "WrappedClass._createMemoryRole (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:599:26)",
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:532:62)",
+        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory.js:113:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinStrategiesServiceRoleDefaultPolicy99037030"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:164:65)",
+        "Grant.addToPrincipalOrResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:67:30)",
+        "KeyGrants.actions (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key-grants.js:96:34)",
+        "WrappedClass.grant (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:153:32)",
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:540:29)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithCustomStrategiesServiceRoleDefaultPolicyB8522B1A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:164:65)",
+        "ManagedMemoryStrategy.grant (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/strategies/managed-strategy.js:173:31)",
+        "WrappedClass.addMemoryStrategy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:590:42)",
+        "WrappedClass.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:576:22)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithSelfManagedStrategyServiceRoleDefaultPolicy8649CA0E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "WrappedClass.addToPrincipalPolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:474:42)",
+        "WrappedClass.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:164:65)",
+        "SelfManagedMemoryStrategy.grant (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/strategies/self-managed-strategy.js:192:34)",
+        "WrappedClass.addMemoryStrategy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:590:42)",
+        "WrappedClass.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Memory (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:576:22)"
+      ]
+    }
+  ]
+}

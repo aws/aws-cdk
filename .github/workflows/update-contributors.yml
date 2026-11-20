@@ -7,6 +7,8 @@ on:
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   main:
     # this workflow will always fail in forks; bail if this isn't running in the upstream
@@ -14,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: automation
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: minicli/action-contributors@v3.3
         name: "Update a projects CONTRIBUTORS file"
         env:

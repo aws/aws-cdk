@@ -1,0 +1,170 @@
+{
+  "/aws-cdk-bedrock-agentcore-browser-1/Browser": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/BrowserWithRecording": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/Browser/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/Browser/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Browser5046F7C9"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RecordingBucket03AEF6D2"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/BrowserWithRecording/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/BrowserWithRecording/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrowserWithRecordingEAD45E5F"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/BrowserWithRecording/browser_recording_integRecordingBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/Browser/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrowserServiceRoleE2CB4014"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RecordingBucketPolicyE50392DB"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/RecordingBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RecordingBucketAutoDeleteObjectsCustomResource2688253B"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/BrowserWithRecording/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrowserWithRecordingServiceRole6F12B29B"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/BrowserWithRecording/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-browser-1/BrowserWithRecording/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BrowserWithRecordingServiceRoleDefaultPolicyA7C6D5ED"
+    }
+  ]
+}

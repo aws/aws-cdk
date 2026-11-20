@@ -5,24 +5,36 @@ on: [issues, issue_comment]
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   sync-issue:
     name: Sync Issue with Project Board
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
-          node-version: '20'
-          cache: 'yarn'
-          cache-dependency-path: 'yarn.lock'
+          node-version: "22"
+
+      - name: Locate yarn cache
+        id: yarn-cache-dir
+        run: echo "dir=$(yarn cache dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Restore yarn cache
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ steps.yarn-cache-dir.outputs.dir }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            yarn-${{ runner.os }}-
 
       # Cache node_modules
       - name: Cache node_modules
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-modules
         with:
           path: |
@@ -40,7 +52,7 @@ jobs:
 
       # Cache build output
       - name: Cache build output
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-build
         with:
           path: |

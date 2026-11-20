@@ -1,0 +1,20 @@
+{
+  "/CustomResourceVpc/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CustomResourceVpcDefaultTestDeployAssert5F9D2F88.template.json"
+    }
+  ],
+  "/CustomResourceVpc/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CustomResourceVpc/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

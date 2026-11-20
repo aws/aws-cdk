@@ -1,0 +1,38 @@
+{
+  "/aws-sfn-cross-region-lambda-target/TargetLambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-sfn-cross-region-lambda-target/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-sfn-cross-region-lambda-target/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-sfn-cross-region-lambda-target/TargetLambda/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-sfn-cross-region-lambda-target/TargetLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TargetLambdaE6C763FE"
+    }
+  ],
+  "/aws-sfn-cross-region-lambda-target/TargetLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TargetLambdaServiceRole567EC23E"
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/BatchInferenceTask/SagemakerTransformRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SimpleStateMachineE8E2CF40"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/BatchInferenceTask/SagemakerTransformRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BatchInferenceTaskSagemakerTransformRoleEABCCE1A"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SimpleStateMachineRole0CBC135A"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-step-functions-task-create-transform-job-integ/SimpleStateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SimpleStateMachineRoleDefaultPolicyF5E1CB8E"
+    }
+  ]
+}

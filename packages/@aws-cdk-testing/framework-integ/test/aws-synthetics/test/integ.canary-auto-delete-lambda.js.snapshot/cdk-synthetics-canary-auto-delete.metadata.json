@@ -1,4 +1,10 @@
 {
+  "/cdk-synthetics-canary-auto-delete": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-synthetics-canary-auto-delete.template.json"
+    }
+  ],
   "/cdk-synthetics-canary-auto-delete/Canary": [
     {
       "type": "aws:cdk:analytics:construct",

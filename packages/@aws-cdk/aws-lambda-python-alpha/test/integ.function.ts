@@ -21,7 +21,7 @@ class TestStack extends Stack {
 
     const defaultFunction = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
     });
     this.functionNames.push(defaultFunction.functionName);
 
@@ -31,7 +31,7 @@ class TestStack extends Stack {
 
     const functionWithExcludes = new lambda.PythonFunction(this, 'my_handler_excludes', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       bundling: {
         assetExcludes: ['.ignorefiles'],
       },
@@ -44,7 +44,7 @@ class TestStack extends Stack {
 
     const functionWithCustomPypi = new lambda.PythonFunction(this, 'my_handler_pypi', {
       entry: path.join(__dirname, 'lambda-handler'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       bundling: {
         environment: {
           PIP_INDEX_URL: 'https://aws:SOME_SECRET_TOKEN@pypi.org/simple',

@@ -580,7 +580,7 @@ test('CodeBuild: Can specify additional policy statements', () => {
       rolePolicyStatements: [
         new iam.PolicyStatement({
           actions: ['codeartifact:*', 'sts:GetServiceBearerToken'],
-          resources: ['arn:my:arn'],
+          resources: ['arn:aws:codeartifact:us-east-1:123456789012:repository/my-domain/my-repo'],
         }),
       ],
     }),
@@ -593,7 +593,7 @@ test('CodeBuild: Can specify additional policy statements', () => {
           'codeartifact:*',
           'sts:GetServiceBearerToken',
         ],
-        Resource: 'arn:my:arn',
+        Resource: 'arn:aws:codeartifact:us-east-1:123456789012:repository/my-domain/my-repo',
       })]),
     },
   });
@@ -651,8 +651,8 @@ test('Multiple input sources in side-by-side directories', () => {
         phases: {
           install: {
             commands: [
-              '[ ! -d "../sibling" ] || { echo \'additionalInputs: "../sibling" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_foo_bar_Source" "../sibling"',
-              '[ ! -d "sub" ] || { echo \'additionalInputs: "sub" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_Prebuild_Output" "sub"',
+              '[ ! -d \'../sibling\' ] || { echo \'additionalInputs: "../sibling" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_foo_bar_Source" \'../sibling\'',
+              '[ ! -d \'sub\' ] || { echo \'additionalInputs: "sub" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && ln -s -- "$CODEBUILD_SRC_DIR_Prebuild_Output" \'sub\'',
             ],
           },
           build: {

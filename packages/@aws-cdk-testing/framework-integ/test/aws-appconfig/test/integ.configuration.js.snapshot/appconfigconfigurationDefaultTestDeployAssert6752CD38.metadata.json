@@ -1,0 +1,20 @@
+{
+  "/appconfig-configuration/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "appconfigconfigurationDefaultTestDeployAssert6752CD38.template.json"
+    }
+  ],
+  "/appconfig-configuration/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/appconfig-configuration/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

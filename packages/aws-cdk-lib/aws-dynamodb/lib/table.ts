@@ -35,7 +35,7 @@ import {
   FeatureFlags,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import type { IArrayBox } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IReadableBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
@@ -754,7 +754,6 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
       throw new ValidationError(lit`StreamsRequired`, `DynamoDB Streams must be enabled on the table ${this.node.path}`, this);
     }
     return new StreamGrants({
-      table: this,
       tableStreamArn: this.tableStreamArn,
       encryptionKey: this.encryptionKey,
     });
@@ -1265,6 +1264,7 @@ export class Table extends TableBase {
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
   private readonly _globalSecondaryIndexes: IArrayBox<CfnTable.GlobalSecondaryIndexProperty>;
   private readonly _localSecondaryIndexes: IArrayBox<CfnTable.LocalSecondaryIndexProperty>;
+  private readonly _hasIndexBox: IReadableBox<boolean>;
 
   /**
    * Schemas for the table and all of the indexes
@@ -1308,8 +1308,12 @@ export class Table extends TableBase {
       physicalName: props.tableName,
     });
 
-    this._globalSecondaryIndexes = Box.fromArray([]);
-    this._localSecondaryIndexes = Box.fromArray([]);
+    this._globalSecondaryIndexes = Box.fromArray();
+    this._localSecondaryIndexes = Box.fromArray();
+    this._hasIndexBox = Box.combine(
+      { gsi: this._globalSecondaryIndexes, lsi: this._localSecondaryIndexes },
+      ({ gsi, lsi }) => gsi.length + lsi.length > 0,
+    );
 
     if (!props?.partitionKey) {
       throw new ValidationError(lit`PartitionKeyRequired`, 'partitionKey is required for Table', this);
@@ -1862,11 +1866,11 @@ export class Table extends TableBase {
       actions: ['dynamodb:*'],
       resources: [
         this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Token.asString(this._hasIndexBox.derive(has => has ? `${this.tableArn}/index/*` : Aws.NO_VALUE)),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
+        ...this.regionalArns.map(arn => Token.asString(this._hasIndexBox.derive(
+          has => has ? `${arn}/index/*` : Aws.NO_VALUE,
+        ))),
       ],
     }));
 
@@ -1874,11 +1878,11 @@ export class Table extends TableBase {
       actions: ['dynamodb:DescribeTable'],
       resources: [
         this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Token.asString(this._hasIndexBox.derive(has => has ? `${this.tableArn}/index/*` : Aws.NO_VALUE)),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        })),
+        ...this.regionalArns.map(arn => Token.asString(this._hasIndexBox.derive(
+          has => has ? `${arn}/index/*` : Aws.NO_VALUE,
+        ))),
       ],
     }));
 
@@ -1979,7 +1983,7 @@ export class Table extends TableBase {
    * Whether this table has indexes
    */
   protected get hasIndex(): boolean {
-    return this._globalSecondaryIndexes.length + this._localSecondaryIndexes.length > 0;
+    return this._hasIndexBox.get();
   }
 
   /**

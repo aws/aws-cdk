@@ -121,10 +121,11 @@ class ConditionExpression {
     private readonly attribute: string,
     private readonly operator: string,
     private readonly value: string | number | boolean,
+    private readonly isCedarExpression: boolean = false,
   ) {}
 
   public toCedar(): string {
-    const formattedValue = typeof this.value === 'string' && !this.value.startsWith('ip(')
+    const formattedValue = (typeof this.value === 'string' && !this.isCedarExpression)
       ? `"${this.value}"`
       : this.value;
     return `${this.attribute} ${this.operator} ${formattedValue}`;
@@ -136,6 +137,7 @@ class ConditionExpression {
  *
  * Conditions define when a policy statement should apply or not apply.
  * Supports logical operators (AND, OR) and various comparison operators.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ConditionBuilder {
   private conditions: ConditionExpression[] = [];
@@ -228,6 +230,7 @@ export class ConditionBuilder {
  * This class allows chaining condition methods and returning to the parent
  * PolicyStatement when done. It proxies condition building methods from
  * ConditionBuilder.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ConditionalPolicyStatement {
   constructor(
@@ -300,6 +303,7 @@ export class ConditionalPolicyStatement {
  * Accessor for building type-safe attribute comparisons within conditional statements.
  *
  * Returns ConditionalPolicyStatement to allow chaining back to policy building.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ConditionalAttributeAccessor {
   constructor(
@@ -375,7 +379,7 @@ export class ConditionalAttributeAccessor {
    */
   public isInRange(ipRange: string): ConditionalPolicyStatement {
     this.conditionBuilder._addCondition(
-      new ConditionExpression(this.path, 'isInRange', `ip("${ipRange}")`),
+      new ConditionExpression(this.path, 'isInRange', `ip("${ipRange}")`, true),
     );
     return this.parent;
   }
@@ -398,7 +402,7 @@ export class ConditionalAttributeAccessor {
       typeof v === 'string' ? `"${v}"` : v,
     ).join(', ');
     this.conditionBuilder._addCondition(
-      new ConditionExpression(this.path, 'in', `[${formattedValues}]`),
+      new ConditionExpression(this.path, 'in', `[${formattedValues}]`, true),
     );
     return this.parent;
   }
@@ -408,6 +412,7 @@ export class ConditionalAttributeAccessor {
  * Accessor for building type-safe attribute comparisons.
  *
  * Provides methods for common comparison operators with proper type checking.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class AttributeAccessor {
   constructor(
@@ -476,7 +481,7 @@ export class AttributeAccessor {
    */
   public isInRange(ipRange: string): ConditionBuilder {
     return this.parent._addCondition(
-      new ConditionExpression(this.path, 'isInRange', `ip("${ipRange}")`),
+      new ConditionExpression(this.path, 'isInRange', `ip("${ipRange}")`, true),
     );
   }
 
@@ -497,7 +502,7 @@ export class AttributeAccessor {
       typeof v === 'string' ? `"${v}"` : v,
     ).join(', ');
     return this.parent._addCondition(
-      new ConditionExpression(this.path, 'in', `[${formattedValues}]`),
+      new ConditionExpression(this.path, 'in', `[${formattedValues}]`, true),
     );
   }
 }
@@ -614,6 +619,7 @@ export class AttributeAccessor {
  *     'forbid(principal, action, resource) when { resource.confidential == true };'
  *   ),
  * });
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class PolicyStatement {
   /**

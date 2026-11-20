@@ -1,9 +1,15 @@
 {
+  "/CrossAccountStepFunctionStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CrossAccountStepFunctionStack.template.json"
+    }
+  ],
   "/CrossAccountStepFunctionStack/CrossAccountStateMachine": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "definition": "*",
+        "definitionBody": "*",
         "stateMachineName": "*"
       }
     }

@@ -1,0 +1,32 @@
+{
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PreparelessPipelineStackMyStageStackMyAppStack51FBCD39.template.json"
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/PreparelessPipelineStack/MyStage/Stack/MyApp/Stack/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    }
+  ]
+}

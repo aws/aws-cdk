@@ -17,7 +17,7 @@ The open-source Lustre file system is designed for applications that require fas
 to keep up with your compute. Lustre was built to solve the problem of quickly and cheaply processing the world's
 ever-growing datasets. It's a widely used file system designed for the fastest computers in the world. It provides
 submillisecond latencies, up to hundreds of GBps of throughput, and up to millions of IOPS. For more information on
-Lustre, see the [Lustre website](http://lustre.org/).
+Lustre, see the [Lustre website](https://www.lustre.org/).
 
 As a fully managed service, Amazon FSx makes it easier for you to use Lustre for workloads where storage speed matters.
 Amazon FSx for Lustre eliminates the traditional complexity of setting up and managing Lustre file systems, enabling

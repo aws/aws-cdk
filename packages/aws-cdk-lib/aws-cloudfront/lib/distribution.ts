@@ -38,13 +38,16 @@ import {
   Token,
   ValidationError,
 } from '../../core';
-import type { IBox } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox, IReadableBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
+import {
+  CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021,
+  CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS,
+} from '../../cx-api';
 import type { ICertificateRef } from '../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 
 /**
@@ -206,9 +209,10 @@ export interface DistributionProps {
   readonly geoRestriction?: GeoRestriction;
 
   /**
-   * Specify the maximum HTTP version that you want viewers to use to communicate with CloudFront.
+   * The HTTP version(s) to enable on the distribution.
    *
-   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support server name identification (SNI).
+   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support Server Name Indication (SNI).
+   * For viewers and CloudFront to use HTTP/3, viewers must support TLS 1.3 and Server Name Indication (SNI).
    *
    * @default HttpVersion.HTTP2
    */
@@ -382,9 +386,9 @@ export class Distribution extends Resource implements IDistribution {
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
-  private readonly additionalBehaviors: CacheBehavior[] = [];
-  private readonly boundOrigins: BoundOrigin[] = [];
-  private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
+  private readonly additionalBehaviors: IArrayBox<CacheBehavior> = Box.fromArray();
+  private readonly boundOrigins: IArrayBox<BoundOrigin> = Box.fromArray([], { omitEmpty: false });
+  private readonly originGroups: IArrayBox<CfnDistribution.OriginGroupProperty> = Box.fromArray();
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: ICertificateRef;
@@ -397,7 +401,7 @@ export class Distribution extends Resource implements IDistribution {
     addConstructMetadata(this, props);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateId, ArnFormat.SLASH_RESOURCE_NAME).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateRef.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new ValidationError(lit`DistributionCertificateMustBeInUsEast1`, `Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`, this);
       }
@@ -407,12 +411,30 @@ export class Distribution extends Resource implements IDistribution {
       }
     }
 
+    if (props.minimumProtocolVersion && !props.certificate) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-cloudfront:minimumProtocolVersionWithoutCertificate',
+        "Ignoring 'minimumProtocolVersion': it has no effect without a custom 'certificate'. The distribution uses the CloudFront default certificate, whose security policy is fixed at TLSv1.",
+      );
+    }
+
+    if (props.sslSupportMethod && !props.certificate) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-cloudfront:sslSupportMethodWithoutCertificate',
+        "Ignoring 'sslSupportMethod': it has no effect without a custom 'certificate'. The distribution uses the CloudFront default certificate, which is served to all viewers.",
+      );
+    }
+
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
     this.validateMtls(props);
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
-    this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
+    this.defaultBehavior = new CacheBehavior(originId, {
+      pathPattern: '*',
+      ...props.defaultBehavior,
+      viewerProtocolPolicy: this.resolveViewerProtocolPolicy(props.defaultBehavior.viewerProtocolPolicy),
+    });
     if (props.additionalBehaviors) {
       Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
         this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
@@ -437,11 +459,15 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
-        origins: Lazy.any({ produce: () => this.renderOrigins() }),
-        originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
+        origins: this.renderOrigins(),
+        originGroups: this.originGroups.derive(og =>
+          og.length === 0 ? undefined : { items: og, quantity: og.length },
+        ),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
-        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
+        cacheBehaviors: this.additionalBehaviors.derive(ab =>
+          ab.length === 0 ? undefined : ab.map(b => b._renderBehavior()),
+        ),
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
@@ -691,7 +717,11 @@ export class Distribution extends Resource implements IDistribution {
     }
     this.validateGrpc(behaviorOptions);
     const originId = this.addOrigin(origin);
-    this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
+    this.additionalBehaviors.push(new CacheBehavior(originId, {
+      pathPattern,
+      ...behaviorOptions,
+      viewerProtocolPolicy: this.resolveViewerProtocolPolicy(behaviorOptions.viewerProtocolPolicy),
+    }));
   }
 
   /**
@@ -818,28 +848,12 @@ export class Distribution extends Resource implements IDistribution {
     });
   }
 
-  private renderOrigins(): CfnDistribution.OriginProperty[] {
-    const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.boundOrigins.forEach(boundOrigin => {
-      if (boundOrigin.originProperty) {
-        renderedOrigins.push(boundOrigin.originProperty);
-      }
-    });
-    return renderedOrigins;
-  }
-
-  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
-    return this.originGroups.length === 0
-      ? undefined
-      : {
-        items: this.originGroups,
-        quantity: this.originGroups.length,
-      };
-  }
-
-  private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
-    if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+  private renderOrigins(): IReadableBox<Array<CfnDistribution.OriginProperty>> {
+    return this.boundOrigins
+      .map(origin => origin.originProperty)
+      .derive(origins => origins.filter(Boolean))
+      // only defined values remaining
+      .derive(origins => origins as CfnDistribution.OriginProperty[]);
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
@@ -896,7 +910,7 @@ export class Distribution extends Resource implements IDistribution {
     const sslSupportMethod = sslSupportMethodProp ?? SSLMethod.SNI;
 
     return {
-      acmCertificateArn: certificate.certificateRef.certificateId,
+      acmCertificateArn: certificate.certificateRef.certificateArn,
       minimumProtocolVersion: minimumProtocolVersion,
       sslSupportMethod: sslSupportMethod,
     };
@@ -915,6 +929,12 @@ export class Distribution extends Resource implements IDistribution {
         ignoreCertificateExpiry: config.ignoreCertificateExpiry,
       },
     };
+  }
+
+  private resolveViewerProtocolPolicy(viewerProtocolPolicyProp?: ViewerProtocolPolicy): ViewerProtocolPolicy {
+    const defaultPolicy = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS)
+      ? ViewerProtocolPolicy.REDIRECT_TO_HTTPS : ViewerProtocolPolicy.ALLOW_ALL;
+    return viewerProtocolPolicyProp ?? defaultPolicy;
   }
 
   private validateGrpc(behaviorOptions: AddBehaviorOptions) {
@@ -942,8 +962,8 @@ export class Distribution extends Resource implements IDistribution {
 
     // Validate viewerProtocolPolicy - mTLS requires HTTPS.
     const validPolicies = [ViewerProtocolPolicy.HTTPS_ONLY, ViewerProtocolPolicy.REDIRECT_TO_HTTPS];
-    const defaultPolicy = props.defaultBehavior.viewerProtocolPolicy;
-    if (defaultPolicy === undefined) {
+    const defaultPolicy = this.resolveViewerProtocolPolicy(props.defaultBehavior.viewerProtocolPolicy);
+    if (props.defaultBehavior.viewerProtocolPolicy === undefined && !validPolicies.includes(defaultPolicy)) {
       throw new ValidationError(
         lit`ViewerProtocolPolicyRequiredForMtls`,
         `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
@@ -960,8 +980,8 @@ export class Distribution extends Resource implements IDistribution {
 
     if (props.additionalBehaviors) {
       for (const [pathPattern, behavior] of Object.entries(props.additionalBehaviors)) {
-        const policy = behavior.viewerProtocolPolicy;
-        if (policy === undefined) {
+        const policy = this.resolveViewerProtocolPolicy(behavior.viewerProtocolPolicy);
+        if (behavior.viewerProtocolPolicy === undefined && !validPolicies.includes(policy)) {
           throw new ValidationError(
             lit`ViewerProtocolPolicyRequiredForMtls`,
             `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified for behavior at path '${pathPattern}'. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
@@ -980,15 +1000,21 @@ export class Distribution extends Resource implements IDistribution {
   }
 }
 
-/** Maximum HTTP version to support */
+/**
+ * The HTTP version(s) to enable on the distribution.
+ *
+ * Note: Setting `HTTP3` enables HTTP 3 only (not HTTP 2). To support both HTTP 2 and HTTP 3, use `HTTP2_AND_3`.
+ *
+ * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_UpdateDistribution.html#cloudfront-UpdateDistribution-request-HttpVersion
+ */
 export enum HttpVersion {
-  /** HTTP 1.1 */
+  /** HTTP 1.1 only */
   HTTP1_1 = 'http1.1',
-  /** HTTP 2 */
+  /** HTTP 2 only */
   HTTP2 = 'http2',
   /** HTTP 2 and HTTP 3 */
   HTTP2_AND_3 = 'http2and3',
-  /** HTTP 3 */
+  /** HTTP 3 only (does not include HTTP 2) */
   HTTP3 = 'http3',
 }
 
@@ -999,7 +1025,7 @@ export enum HttpVersion {
 export enum PriceClass {
   /** USA, Canada, Europe, & Israel */
   PRICE_CLASS_100 = 'PriceClass_100',
-  /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, & Philippines */
+  /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, Philippines, India, Indonesia, Thailand, Malaysia, Vietnam, Nigeria, Egypt, & Türkiye */
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
   PRICE_CLASS_ALL = 'PriceClass_All',
@@ -1313,7 +1339,9 @@ export interface AddBehaviorOptions {
   /**
    * The protocol that viewers can use to access the files controlled by this behavior.
    *
-   * @default ViewerProtocolPolicy.ALLOW_ALL
+   * @default - ViewerProtocolPolicy.REDIRECT_TO_HTTPS if the
+   * `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature flag is enabled,
+   * otherwise ViewerProtocolPolicy.ALLOW_ALL
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 

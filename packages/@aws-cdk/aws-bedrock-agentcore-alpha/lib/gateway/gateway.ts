@@ -32,6 +32,7 @@ import { validateStringField, validateFieldPattern } from './validation-helpers'
 /**
  * The enforcement mode for a policy engine associated with a gateway.
  *
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class PolicyEngineMode {
   /**
@@ -61,6 +62,7 @@ export class PolicyEngineMode {
  * When configured, the policy engine intercepts all agent requests through this
  * gateway and evaluates them against the defined Cedar policies.
  * [disable-awslint:prefer-ref-interface]
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayPolicyEngineConfig {
   /**
@@ -86,6 +88,7 @@ export interface GatewayPolicyEngineConfig {
 
 /**
  * Options for adding a Lambda target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddLambdaTargetOptions {
   /**
@@ -120,6 +123,7 @@ export interface AddLambdaTargetOptions {
 
 /**
  * Options for adding an OpenAPI target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddOpenApiTargetOptions {
   /**
@@ -149,14 +153,16 @@ export interface AddOpenApiTargetOptions {
   readonly validateOpenApiSchema?: boolean;
 
   /**
-   * Credential providers for authentication
-   * @default - [GatewayCredentialProvider.iamRole()]
+   * Credential providers for outbound authentication (OpenAPI targets use API Key or OAuth, not IAM).
+   *
+   * @default - none (no credential configuration on the target; supply providers for secured backends)
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
 }
 
 /**
  * Options for adding a Smithy target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddSmithyTargetOptions {
   /**
@@ -186,6 +192,7 @@ export interface AddSmithyTargetOptions {
 
 /**
  * Options for adding an MCP Server target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddMcpServerTargetOptions {
   /**
@@ -222,6 +229,7 @@ export interface AddMcpServerTargetOptions {
 
 /**
  * Options for adding an API Gateway target to a gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddApiGatewayTargetOptions {
   /**
@@ -272,6 +280,7 @@ export interface AddApiGatewayTargetOptions {
 
 /**
  * Properties for defining a Gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayProps {
   /**
@@ -359,6 +368,7 @@ export interface GatewayProps {
 
 /**
  * Attributes for importing an existing Gateway
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface GatewayAttributes {
   /**
@@ -393,6 +403,10 @@ export interface GatewayAttributes {
  * @see https://docs.aws.amazon.com/bedrock-agentcore-control/latest/APIReference/API_CreateGateway.html
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class Gateway extends GatewayBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.Gateway';

@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "OrchestrationFunctionServiceRole12D0673A"

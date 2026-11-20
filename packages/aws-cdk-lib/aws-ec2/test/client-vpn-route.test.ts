@@ -9,6 +9,8 @@ import {
   ClientVpnUserBasedAuthentication,
 } from '../lib';
 
+const dummySamlMetadata = '<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://idp.example.com">' + 'x'.repeat(1000) + '</md:EntityDescriptor>';
+
 let stack: Stack;
 let vpc: ec2.IVpc;
 beforeEach(() => {
@@ -24,7 +26,7 @@ beforeEach(() => {
 describe('ClientVpnRoute constructor', () => {
   test('normal usage', () => {
     const samlProvider = new SamlProvider(stack, 'Provider', {
-      metadataDocument: SamlMetadataDocument.fromXml('xml'),
+      metadataDocument: SamlMetadataDocument.fromXml(dummySamlMetadata),
     });
     const clientVpnEndpoint = vpc.addClientVpnEndpoint('Endpoint', {
       cidr: '10.100.0.0/16',
@@ -61,7 +63,7 @@ describe('ClientVpnRoute constructor', () => {
   });
   testDeprecated('specifying both clientVpnEndoint (deprecated, typo) and clientVpnEndpoint is not allowed', () => {
     const samlProvider = new SamlProvider(stack, 'Provider', {
-      metadataDocument: SamlMetadataDocument.fromXml('xml'),
+      metadataDocument: SamlMetadataDocument.fromXml(dummySamlMetadata),
     });
     const clientVpnEndpoint = vpc.addClientVpnEndpoint('Endpoint', {
       cidr: '10.100.0.0/16',
@@ -101,7 +103,7 @@ describe('ClientVpnRoute constructor', () => {
   });
   testDeprecated('supplying clientVpnEndoint (deprecated due to typo) should still work', () => {
     const samlProvider = new SamlProvider(stack, 'Provider', {
-      metadataDocument: SamlMetadataDocument.fromXml('xml'),
+      metadataDocument: SamlMetadataDocument.fromXml(dummySamlMetadata),
     });
     const clientVpnEndoint = vpc.addClientVpnEndpoint('Endpoint', {
       cidr: '10.100.0.0/16',

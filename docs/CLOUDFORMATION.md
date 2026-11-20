@@ -22,7 +22,7 @@ state resource `Creates`, `Updates` or `Deletes` are performed.
 ```text
       ╔══════════════════╗
       ║                  ║
-      ║  <nonexistant>   ║──────────────────┐
+      ║  <nonexistent>   ║──────────────────┐
       ║                  ║                  ▼
       ╚══════════════════╝       ┌────────────────────┐
                 │                │                    │
@@ -97,6 +97,35 @@ state resource `Creates`, `Updates` or `Deletes` are performed.
      ╚════════════════════╝
 ```
 
+### Failing Resource Deletions
+
+Resources can be deleted during 3 operations:
+
+- Stack Create that is being rolled back
+- Stack Delete
+- Stack Update (if the resource disappears from the template, or is replaced,
+  or a newly added resource is rolled back)
+
+Because a Stack Update operation must be able to be rolled back, and deletes are
+not possible to roll back in general, a Stack Update is done in 2 phases: first
+rollback-able changes and then deletes. Succesful updates to through the
+following state sequence:
+
+```
+UPDATE_IN_PROGRESS -> UPDATE_COMPLETE_CLEANUP_IN_PROGRESS -> UPDATE_COMPLETE
+       ^                            ^
+  new resources           delete replaced resources
+    updates               delete removed resources
+```
+
+Once the `UPDATE_IN_PROGRESS` phase concludes, no rollback will be started
+anymore. This means that even if a resource delete fails during the
+`UPDATE_COMPLETE_CLEANUP_IN_PROGRESS`, *this will not fail the stack update
+operation*.
+
+During other stack operations (which do not have a rollback requirement), a
+failing resource deletion *will* fail and block the operation.
+
 ### Rollbacks
 
 When rolling back:
@@ -118,7 +147,7 @@ be immediately followed by delete and an update back to the original state, resp
 ```text
                                   ╔════════════════════════╗
                                   ║                        ║
-                                  ║     <nonexistant>      ║
+                                  ║     <nonexistent>      ║
                                   ║                        ║
                                   ╚════════════════════════╝
                                                │
@@ -177,8 +206,10 @@ be immediately followed by delete and an update back to the original state, resp
 
 - A custom resource is updated whenever any of its properties change. It is not
   re-executed when its source code changes.
-- Boolean properties are stringified. `true` and `false` in `Properties` are turned
-  into `"true"` and `"false"`.
+- All scalar property values are stringified. `true` and `false` in `Properties` are turned
+  into `"true"` and `"false"`; numbers are turned into `"42"`; lists and objects of numbers are
+  turned into `["80", "443"]`, `{ "port": "443" }`. Number literals are stringified
+  using a Java built-in, so the decimal representation of non-integers may change.
 - When releasing a new version of a custom resource, be aware that you may still
   get properties from any of its previous versions.
 - If you return a different PhysicalId from a custom resource during an Update,

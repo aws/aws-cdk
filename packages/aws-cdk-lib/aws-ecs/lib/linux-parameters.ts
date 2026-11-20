@@ -105,10 +105,10 @@ export class LinuxParameters extends Construct {
 
     this.validateProps(props);
 
-    this.capAdd = Box.fromArray([]);
-    this.capDrop = Box.fromArray([]);
-    this.devices = Box.fromArray([]);
-    this.tmpfs = Box.fromArray([]);
+    this.capAdd = Box.fromArray();
+    this.capDrop = Box.fromArray();
+    this.devices = Box.fromArray();
+    this.tmpfs = Box.fromArray();
 
     this.sharedMemorySize = props.sharedMemorySize;
     this.initProcessEnabled = props.initProcessEnabled;

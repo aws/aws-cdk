@@ -10,6 +10,7 @@ import { flattenMeta } from './util';
 import { Annotations } from '../lib/annotations';
 import type { AppProps } from '../lib/app';
 import { App } from '../lib/app';
+import { profileFn } from '../lib/private/perf';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({
@@ -353,9 +354,9 @@ describe('app', () => {
       // A ->
       //      C -> D
       // B ->
-      stackC.addDependency(stackA);
-      stackC.addDependency(stackB);
-      stackD.addDependency(stackC);
+      stackC.addStackDependency(stackA);
+      stackC.addStackDependency(stackB);
+      stackD.addStackDependency(stackC);
     });
 
     // THEN
@@ -389,6 +390,67 @@ describe('app', () => {
     const stage = new Stage(app, 'TestStage');
     const stack = new Stack(stage, 'TestStack');
     expect(App.of(stack)).toBe(app);
+  });
+
+  test('App performance counter report only contains telemetry: true measurements', () => {
+    // GIVEN
+    const countersDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-counters'));
+    const countersFile = path.join(countersDir, 'counters.json');
+    process.env[cxapi.PERF_COUNTERS_FILE_ENV] = countersFile;
+    try {
+      const yes = profileFn('yes', { telemetry: true })(() => {});
+      const no = profileFn('no')(() => {});
+
+      // WHEN
+      const app = new App({
+        outdir: countersDir,
+      });
+      yes();
+      no();
+      app.synth();
+
+      // THEN
+      const counters = JSON.parse(fs.readFileSync(countersFile, 'utf-8')).counters;
+      expect(counters).toMatchObject({
+        yes: expect.anything(),
+      });
+      expect(counters).not.toMatchObject({
+        no: expect.anything(),
+      });
+    } finally {
+      fs.rmSync(countersDir, { force: true, recursive: true });
+      delete process.env[cxapi.PERF_COUNTERS_FILE_ENV];
+    }
+  });
+
+  test('App performance counters include stack and construct counts', () => {
+    // GIVEN
+    const countersDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-counters'));
+    const countersFile = path.join(countersDir, 'counters.json');
+    process.env[cxapi.PERF_COUNTERS_FILE_ENV] = countersFile;
+    try {
+      // WHEN
+      const app = new App({
+        outdir: countersDir,
+        context: {
+          '@aws-cdk/core.slowSynthThreshold': 0,
+        },
+      });
+      const stack1 = new Stack(app, 'Stack1');
+      new CfnResource(stack1, 'Resource1', { type: 'AWS::Test::Resource' });
+      const stack2 = new Stack(app, 'Stack2');
+      new CfnResource(stack2, 'Resource2', { type: 'AWS::Test::Resource' });
+      new Construct(stack2, 'PlainConstruct');
+      app.synth();
+
+      // THEN
+      const counters = JSON.parse(fs.readFileSync(countersFile, 'utf-8')).counters;
+      // App + Tree + Stack1 + Resource1 + Stack2 + Resource2 + PlainConstruct = at least 7
+      expect(counters['count:Constructs(cnt)']).toBeGreaterThanOrEqual(7);
+    } finally {
+      fs.rmSync(countersDir, { force: true, recursive: true });
+      delete process.env[cxapi.PERF_COUNTERS_FILE_ENV];
+    }
   });
 });
 

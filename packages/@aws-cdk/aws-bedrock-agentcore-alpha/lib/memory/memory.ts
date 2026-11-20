@@ -77,6 +77,7 @@ const MEMORY_EXPIRATION_DAYS_MAX = 365;
  *****************************************************************************/
 /**
  * Interface for Memory resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IMemory extends IResource, iam.IGrantable, IMemoryRef {
   /**
@@ -189,6 +190,7 @@ export interface IMemory extends IResource, iam.IGrantable, IMemoryRef {
 /**
  * Abstract base class for a Memory.
  * Contains methods and attributes valid for Memories either created with CDK or imported.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class MemoryBase extends Resource implements IMemory {
   public abstract readonly memoryArn: string;
@@ -470,6 +472,7 @@ export abstract class MemoryBase extends Resource implements IMemory {
  *****************************************************************************/
 /**
  * Properties for creating a Memory resource
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface MemoryProps {
   /**
@@ -526,6 +529,7 @@ export interface MemoryProps {
  *****************************************************************************/
 /**
  * Attributes for specifying an imported Memory.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface MemoryAttributes {
   /**
@@ -572,6 +576,10 @@ export interface MemoryAttributes {
  * @resource AWS::BedrockAgentCore::Memory
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class Memory extends MemoryBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.Memory';

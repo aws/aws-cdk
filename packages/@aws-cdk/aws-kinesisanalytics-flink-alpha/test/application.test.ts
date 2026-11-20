@@ -21,7 +21,7 @@ describe('Application', () => {
     stack = new core.Stack();
     bucket = new s3.Bucket(stack, 'CodeBucket');
     requiredProps = {
-      runtime: flink.Runtime.FLINK_1_20,
+      runtime: flink.Runtime.FLINK_2_2,
       code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
     };
   });
@@ -35,6 +35,7 @@ describe('Application', () => {
     flink.Runtime.FLINK_1_18,
     flink.Runtime.FLINK_1_19,
     flink.Runtime.FLINK_1_20,
+    flink.Runtime.FLINK_2_2,
   ];
 
   test.each(flinkRuntimes)('Flink Application with %s', (runtime) => {
@@ -189,11 +190,11 @@ describe('Application', () => {
   test('providing a custom runtime', () => {
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      runtime: flink.Runtime.of('custom'),
+      runtime: flink.Runtime.of('ZEPPELIN-FLINK-2_0'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KinesisAnalyticsV2::Application', {
-      RuntimeEnvironment: 'custom',
+      RuntimeEnvironment: 'ZEPPELIN-FLINK-2_0',
     });
   });
 

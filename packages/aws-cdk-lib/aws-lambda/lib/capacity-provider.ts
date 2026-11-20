@@ -1,13 +1,16 @@
 import type { Construct } from 'constructs';
 import type { Architecture } from './architecture';
+import type { SystemLogLevel } from './function';
 import type { IFunction } from './function-base';
 import type { CfnFunction } from './lambda.generated';
 import { CfnCapacityProvider } from './lambda.generated';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
+import type * as logs from '../../aws-logs';
 import type { IResource } from '../../core';
 import { Annotations, Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -99,6 +102,72 @@ export interface CapacityProviderProps {
    * @default - No KMS key specified, uses an AWS-managed key instead
    */
   readonly kmsKey?: kms.IKey;
+
+  /**
+   * Configuration for tag propagation to managed resources (EC2 instances, ENIs, EBS volumes).
+   *
+   * Use the static factory methods on `PropagateTags` to create:
+   * - `PropagateTags.none()` - Explicitly disable tag propagation
+   * - `PropagateTags.explicit(tags)` - Propagate specified tags
+   *
+   * @default - No tag propagation; tags are not propagated to managed resources.
+   */
+  readonly propagateTags?: PropagateTags;
+
+  /**
+   * The CloudWatch log group for capacity provider system logs.
+   *
+   * @default - Service creates a default log group at /aws/lambda/capacity-provider/<name>
+   */
+  readonly logGroup?: logs.ILogGroupRef;
+
+  /**
+   * The level of detail for capacity provider system logs.
+   *
+   * @default - Service default applies (INFO)
+   */
+  readonly systemLogLevel?: SystemLogLevel;
+}
+
+/**
+ * Configuration for propagating tags to managed resources created by a capacity provider.
+ *
+ * Use static factory methods to create instances:
+ * ```
+ * propagateTags: lambda.PropagateTags.explicit({ env: 'prod', team: 'platform' })
+ * ```
+ */
+export class PropagateTags {
+  /**
+   * No tag propagation to managed resources.
+   */
+  public static none(): PropagateTags {
+    return new PropagateTags('None');
+  }
+
+  /**
+   * Propagate the specified tags to all managed resources.
+   *
+   * @param tags A map of tag keys to values to propagate. Maximum 40 tags.
+   */
+  public static explicit(tags: { [key: string]: string }): PropagateTags {
+    return new PropagateTags('Explicit', tags);
+  }
+
+  /**
+   * The propagation mode.
+   */
+  public readonly mode: string;
+
+  /**
+   * The explicit tags to propagate (only for Explicit mode).
+   */
+  public readonly explicitTags?: { [key: string]: string };
+
+  private constructor(mode: string, explicitTags?: { [key: string]: string }) {
+    this.mode = mode;
+    this.explicitTags = explicitTags;
+  }
 }
 
 /**
@@ -200,10 +269,31 @@ export class TargetTrackingScalingPolicy {
   /**
    * Creates a target tracking scaling policy for CPU utilization.
    *
-   * @param targetCpuUtilization The target value for CPU utilization. The capacity provider will scale resources to maintain this target value.
+   * @param targetCpuUtilization The target CPU utilization as a percentage, e.g. `50` for 50%. The capacity provider will scale resources to maintain this target value.
    */
   public static cpuUtilization(targetCpuUtilization: number): TargetTrackingScalingPolicy {
+    TargetTrackingScalingPolicy.validateTargetPercentage(targetCpuUtilization, 'targetCpuUtilization');
     return new TargetTrackingScalingPolicy('LambdaCapacityProviderAverageCPUUtilization', targetCpuUtilization);
+  }
+
+  /**
+   * Creates a target tracking scaling policy for GPU utilization.
+   *
+   * @param targetGpuUtilization The target GPU utilization as a percentage, e.g. `50` for 50%. The capacity provider will scale resources to maintain this target value.
+   */
+  public static gpuUtilization(targetGpuUtilization: number): TargetTrackingScalingPolicy {
+    TargetTrackingScalingPolicy.validateTargetPercentage(targetGpuUtilization, 'targetGpuUtilization');
+    return new TargetTrackingScalingPolicy('LambdaCapacityProviderAverageGPUUtilization', targetGpuUtilization);
+  }
+
+  /**
+   * Validates a target utilization percentage. The service handler rejects a `TargetValue`
+   * outside `0..100` at deploy, so we reject out-of-range values at synth. Skips tokens.
+   */
+  private static validateTargetPercentage(value: number, name: string): void {
+    if (!Token.isUnresolved(value) && (value < 0 || value > 100)) {
+      throw new UnscopedValidationError(lit`ScalingTargetPercentageOutOfRange`, `${name} must be between 0 and 100, got ${value}`);
+    }
   }
 
   /**
@@ -271,7 +361,7 @@ export interface CapacityProviderFunctionOptions {
   /**
    * Specifies the maximum number of concurrent invokes a single execution environment can handle.
    *
-   * @default Maximum is set to 10
+   * @default - not set; the Lambda service applies its default
    */
   readonly perExecutionEnvironmentMaxConcurrency?: number;
 
@@ -455,6 +545,18 @@ export class CapacityProvider extends CapacityProviderBase {
       instanceRequirements,
       capacityProviderScalingConfig,
       kmsKeyArn: props.kmsKey?.keyArn,
+      propagateTags: props.propagateTags ? {
+        mode: props.propagateTags.mode,
+        explicitTags: props.propagateTags.explicitTags
+          ? Object.entries(props.propagateTags.explicitTags).map(([key, value]) => ({ key, value }))
+          : undefined,
+      } : undefined,
+      telemetryConfig: props.logGroup || props.systemLogLevel ? {
+        loggingConfig: {
+          logGroup: props.logGroup?.logGroupRef.logGroupName,
+          systemLogLevel: props.systemLogLevel,
+        },
+      } : undefined,
     });
   }
 
@@ -483,6 +585,16 @@ export class CapacityProvider extends CapacityProviderBase {
 
     if (props.scalingOptions) {
       this.validateScalingPolicies(props.scalingOptions, validationErrorCPName);
+    }
+
+    if (props.propagateTags?.explicitTags && !Token.isUnresolved(props.propagateTags.explicitTags)
+      && Object.keys(props.propagateTags.explicitTags).length > 40) {
+      const tagCount = Object.keys(props.propagateTags.explicitTags).length;
+      throw new ValidationError(
+        lit`PropagateTagsExplicitTagsMaximum`,
+        `propagateTags explicit tags can have at most 40 tags, but ${validationErrorCPName} has ${tagCount}.`,
+        this,
+      );
     }
   }
 
@@ -530,7 +642,7 @@ export class CapacityProvider extends CapacityProviderBase {
    */
   @MethodMetadata()
   public addFunction(func: IFunction, options?: CapacityProviderFunctionOptions): void {
-    Annotations.of(func).addInfoV2('aws-lambda:Function.CapacityProviderConfiguration', 'Capacity provider configuration cannot be removed from a function, only modified.');
+    Annotations.of(func).addInfoV2('aws-lambda:Function.CapacityProviderConfiguration', 'Capacity provider configuration cannot be removed from a function once added, only modified.');
 
     const cfnFunction = func.node.defaultChild as CfnFunction;
 

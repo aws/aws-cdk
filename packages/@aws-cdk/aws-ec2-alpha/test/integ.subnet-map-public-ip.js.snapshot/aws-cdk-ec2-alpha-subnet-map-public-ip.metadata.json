@@ -1,0 +1,251 @@
+{
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:46:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/vpc-v2.js:352:29)",
+        "new VpcV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:47:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublicSubnetWithIpSubnetE138C159"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:258:28)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:54:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublicSubnetWithIpRouteTableAssociationDE6A8683"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:288:32)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:54:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublicSubnetWithoutIpSubnet2AD95043"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:258:28)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:63:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublicSubnetWithoutIpRouteTableAssociation94BDCA57"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:288:32)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:63:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateSubnetDefaultSubnet75A313E4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:258:28)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:72:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault/RouteTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateSubnetDefaultRouteTableAssociation134B8A4F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:288:32)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:72:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithIp/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublicSubnetWithIpRouteTableFE9B374B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RouteTable (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:716:29)",
+        "new RouteTable (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:283:36)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:54:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PublicSubnetWithoutIp/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublicSubnetWithoutIpRouteTable0C664965"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RouteTable (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:716:29)",
+        "new RouteTable (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:283:36)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:63:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-ec2-alpha-subnet-map-public-ip/PrivateSubnetDefault/RouteTable/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivateSubnetDefaultRouteTableC3E4815F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RouteTable (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/route.js:716:29)",
+        "new RouteTable (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/lib/subnet-v2.js:283:36)",
+        "new SubnetV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-ec2-alpha/test/integ.subnet-map-public-ip.js:72:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

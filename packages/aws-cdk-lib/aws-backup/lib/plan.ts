@@ -169,7 +169,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.rules = Box.fromArray([]);
+    this.rules = Box.fromArray();
 
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
@@ -235,6 +235,9 @@ export class BackupPlan extends Resource implements IBackupPlan {
       targetBackupVault: vault.backupVaultRef.backupVaultName,
       copyActions: rule.props.copyActions?.map(this.planCopyActions),
       recoveryPointTags: rule.props.recoveryPointTags,
+      indexActions: rule.props.indexActions?.map(indexAction => ({
+        resourceTypes: indexAction.resourceTypes.map(resourceType => resourceType.value),
+      })),
     });
   }
 

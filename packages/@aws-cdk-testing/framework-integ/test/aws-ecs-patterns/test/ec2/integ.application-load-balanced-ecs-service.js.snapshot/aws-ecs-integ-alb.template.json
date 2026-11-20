@@ -665,7 +665,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "first-capacity-provider"
+    "Name": "cp-aws-ecs-integ-albFirstCapacityProvier880B75B5"
    }
   },
   "SecondAutoScalingGroupInstanceRoleB7DE61A1": {
@@ -890,7 +890,7 @@
      },
      "ManagedTerminationProtection": "ENABLED"
     },
-    "Name": "second-capacity-provider"
+    "Name": "cp-aws-ecs-integ-albSecondCapacityProvier96D4D42F"
    }
   },
   "myServiceLB168895E1": {

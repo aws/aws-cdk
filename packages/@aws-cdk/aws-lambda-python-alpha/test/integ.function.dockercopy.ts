@@ -21,7 +21,7 @@ class TestStack extends Stack {
 
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: path.join(__dirname, 'lambda-handler-dockercopy'),
-      runtime: Runtime.PYTHON_3_9,
+      runtime: Runtime.PYTHON_3_10,
       bundling: {
         bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,
       },

@@ -128,7 +128,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -153,7 +153,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -173,20 +173,25 @@
      }
     ],
     "SourceObjectKeys": [
-     "21409ce0b2930d62f0f9cbee71545f6a93874b6bd01a8558df7de06918b71b78.zip"
+     "0969b9460723deab24342c25f3f1da5190f4fa2192f19c5976c8f69b6a373281.zip"
     ],
     "SourceMarkers": [
      {
       "<<marker:0xbaba:0>>": {
-       "Fn::GetAtt": [
-        "CdkJsonStringifyFnSplitresolvessmreprosubnets67ED8B00",
-        "Value"
+       "Fn::Split": [
+        ",",
+        "{{resolve:ssm:/repro/subnets}}"
        ]
       }
      }
     ],
     "SourceMarkersConfig": [
-     {}
+     {
+      "jsonEscape": true,
+      "markerEncodings": {
+       "<<marker:0xbaba:0>>": "JSON_VALUE"
+      }
+     }
     ],
     "DestinationBucketName": {
      "Ref": "ReproBucketB02973C7"
@@ -326,11 +331,14 @@
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
+     "S3Key": "9a429549ac40e3ec3e6335de0a56794665ab2c4602d6e60ec7b31ea303b149a4.zip"
     },
     "Environment": {
      "Variables": {
@@ -343,6 +351,7 @@
       "Ref": "DeployWithSsmParameterAwsCliLayer695E077A"
      }
     ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
@@ -375,71 +384,6 @@
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
-  },
-  "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-     }
-    ]
-   }
-  },
-  "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "0d94926290549a70008a6e1e24fe1f1b29c5b53364bc1c09c60ef9cb02f562ca.zip"
-    },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs22.x"
-   },
-   "DependsOn": [
-    "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
-   ]
-  },
-  "CdkJsonStringifyFnSplitresolvessmreprosubnets67ED8B00": {
-   "Type": "Custom::AWSCDKCfnJsonStringify",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57",
-      "Arn"
-     ]
-    },
-    "Value": {
-     "Fn::Split": [
-      ",",
-      "{{resolve:ssm:/repro/subnets}}"
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

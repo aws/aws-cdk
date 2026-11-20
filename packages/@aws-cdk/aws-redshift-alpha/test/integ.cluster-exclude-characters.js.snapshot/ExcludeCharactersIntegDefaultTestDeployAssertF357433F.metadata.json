@@ -1,0 +1,20 @@
+{
+  "/ExcludeCharactersInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ExcludeCharactersIntegDefaultTestDeployAssertF357433F.template.json"
+    }
+  ],
+  "/ExcludeCharactersInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ExcludeCharactersInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -15,6 +15,7 @@
  * Custom claim value type.
  * Shared by Runtime and Gateway custom claim implementations.
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum CustomClaimValueType {
   /** String value type */
@@ -26,6 +27,7 @@ export enum CustomClaimValueType {
 /**
  * Custom claim match operator.
  * Shared by Runtime and Gateway custom claim implementations.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum CustomClaimOperator {
   /** Equals operator - used for STRING type claims */

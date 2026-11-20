@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "RuntimeGatewayIntegTest/DefaultTest": {
+      "stacks": [
+        "BedrockAgentCoreRuntimeGatewayM2MIntegTest"
+      ],
+      "assertionStack": "RuntimeGatewayIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RuntimeGatewayIntegTestDefaultTestDeployAssert1ACA2D2A"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

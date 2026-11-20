@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "SizeRounding/DefaultTest": {
+      "stacks": [
+        "size-rounding"
+      ],
+      "assertionStack": "SizeRounding/DefaultTest/DeployAssert",
+      "assertionStackName": "SizeRoundingDefaultTestDeployAssertDE2E126B"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1146.1"
+}

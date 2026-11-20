@@ -338,6 +338,17 @@ export interface CanaryProps {
   readonly artifactS3KmsKey?: kms.IKey;
 
   /**
+   * The customer-managed KMS key used to encrypt the canary's Lambda function
+   * environment variables at rest.
+   *
+   * This mirrors `lambda.Function.environmentEncryption`, since a canary runs as
+   * a managed Lambda function.
+   *
+   * @default - Lambda uses an AWS managed key to encrypt the environment variables at rest.
+   */
+  readonly environmentEncryption?: kms.IKeyRef;
+
+  /**
    * Specifies whether to perform a dry run before updating the canary.
    *
    * If set to true, CDK will execute a dry run to validate the changes before applying them to the canary.
@@ -586,8 +597,17 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
         browserType,
       })),
       resourcesToReplicateTags: props.resourcesToReplicateTags,
+      kmsKeyArn: props.environmentEncryption?.keyRef.keyArn,
     });
     this._resource = resource;
+
+    if (props.resourcesToReplicateTags?.length === 0) {
+      // Silence a CloudFormation-Validate warning that it would emit about an empty array here
+      cdk.Validations.of(resource).acknowledge({
+        id: 'CloudFormation-Validate::F3032',
+        reason: 'An empty list of resources to replicate tags is historically supported by this construct.',
+      });
+    }
 
     this.canaryArn = cdk.Stack.of(this).formatArn({
       service: 'synthetics',

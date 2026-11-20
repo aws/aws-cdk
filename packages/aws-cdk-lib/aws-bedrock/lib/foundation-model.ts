@@ -98,6 +98,12 @@ export class FoundationModelIdentifier {
   /** amazon.nova-2-multimodal-embeddings-v1:0 */
   public static readonly AMAZON_NOVA_2_MULTIMODAL_EMBEDDINGS_V1_0 = new FoundationModelIdentifier('amazon.nova-2-multimodal-embeddings-v1:0');
 
+  /** Base model "amazon.nova-2-lite-v1:0". */
+  public static readonly AMAZON_NOVA_2_LITE_V1_0 = new FoundationModelIdentifier('amazon.nova-2-lite-v1:0');
+
+  /** Base model "amazon.nova-2-sonic-v1:0". */
+  public static readonly AMAZON_NOVA_2_SONIC_V1_0 = new FoundationModelIdentifier('amazon.nova-2-sonic-v1:0');
+
   /**
    * Base model "ai21.j2-mid".
    * @deprecated use latest version of the model
@@ -275,8 +281,35 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-opus-4-7". */
   public static readonly ANTHROPIC_CLAUDE_OPUS_4_7 = new FoundationModelIdentifier('anthropic.claude-opus-4-7');
 
+  /** Base model "anthropic.claude-opus-4-8". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_8 = new FoundationModelIdentifier('anthropic.claude-opus-4-8');
+
+  /** Base model "anthropic.claude-opus-5-5". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5_5 = new FoundationModelIdentifier('anthropic.claude-opus-5-5');
+
   /** Base model "anthropic.claude-sonnet-4-6". */
   public static readonly ANTHROPIC_CLAUDE_SONNET_4_6 = new FoundationModelIdentifier('anthropic.claude-sonnet-4-6');
+
+  /** Base model "anthropic.claude-sonnet-5". */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5 = new FoundationModelIdentifier('anthropic.claude-sonnet-5');
+
+  /** Base model "anthropic.claude-opus-5". */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_5 = new FoundationModelIdentifier('anthropic.claude-opus-5');
+
+  /** Base model "anthropic.claude-mythos-5". */
+  public static readonly ANTHROPIC_CLAUDE_MYTHOS_5 = new FoundationModelIdentifier('anthropic.claude-mythos-5');
+
+  /** Base model "anthropic.claude-fable-5". */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5 = new FoundationModelIdentifier('anthropic.claude-fable-5');
+
+  /** Base model "anthropic.claude-sonnet-5-5". */
+  public static readonly ANTHROPIC_CLAUDE_SONNET_5_5 = new FoundationModelIdentifier('anthropic.claude-sonnet-5-5');
+
+  /** Base model "anthropic.claude-haiku-5-5". */
+  public static readonly ANTHROPIC_CLAUDE_HAIKU_5_5 = new FoundationModelIdentifier('anthropic.claude-haiku-5-5');
+
+  /** Base model "anthropic.claude-fable-5-1". */
+  public static readonly ANTHROPIC_CLAUDE_FABLE_5_1 = new FoundationModelIdentifier('anthropic.claude-fable-5-1');
 
   /**
    * Base model "anthropic.claude-instant-v1".
@@ -332,11 +365,53 @@ export class FoundationModelIdentifier {
   /** Base model "deepseek.v3-v1:0" */
   public static readonly DEEP_SEEK_V3_V1_0 = new FoundationModelIdentifier('deepseek.v3-v1:0');
 
+  /** Base model "deepseek.v3.2". */
+  public static readonly DEEP_SEEK_V3_2 = new FoundationModelIdentifier('deepseek.v3.2');
+
   /** Base model "openai.gpt-oss-120b-1:0". */
   public static readonly OPENAI_GPT_OSS_120B_1 = new FoundationModelIdentifier('openai.gpt-oss-120b-1:0');
 
   /** Base model "openai.gpt-oss-20b-1:0". */
   public static readonly OPENAI_GPT_OSS_20B_1 = new FoundationModelIdentifier('openai.gpt-oss-20b-1:0');
+
+  /** Base model "openai.gpt-oss-safeguard-120b". */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_120B = new FoundationModelIdentifier('openai.gpt-oss-safeguard-120b');
+
+  /** Base model "openai.gpt-oss-safeguard-20b". */
+  public static readonly OPENAI_GPT_OSS_SAFEGUARD_20B = new FoundationModelIdentifier('openai.gpt-oss-safeguard-20b');
+
+  /** Base model "openai.gpt-5.4". */
+  public static readonly OPENAI_GPT_5_4 = new FoundationModelIdentifier('openai.gpt-5.4');
+
+  /** Base model "openai.gpt-5.5". */
+  public static readonly OPENAI_GPT_5_5 = new FoundationModelIdentifier('openai.gpt-5.5');
+
+  /** Base model "openai.gpt-5.6-sol". */
+  public static readonly OPENAI_GPT_5_6_SOL = new FoundationModelIdentifier('openai.gpt-5.6-sol');
+
+  /** Base model "openai.gpt-5.6-terra". */
+  public static readonly OPENAI_GPT_5_6_TERRA = new FoundationModelIdentifier('openai.gpt-5.6-terra');
+
+  /** Base model "openai.gpt-5.6-luna". */
+  public static readonly OPENAI_GPT_5_6_LUNA = new FoundationModelIdentifier('openai.gpt-5.6-luna');
+
+  /** Base model "openai.gpt-5.6-cyber". */
+  public static readonly OPENAI_GPT_5_6_CYBER = new FoundationModelIdentifier('openai.gpt-5.6-cyber');
+
+  /** Base model "openai.gpt-daybreak-blue-5.6-sol". */
+  public static readonly OPENAI_GPT_DAYBREAK_BLUE_5_6_SOL = new FoundationModelIdentifier('openai.gpt-daybreak-blue-5.6-sol');
+
+  /** Base model "openai.gpt-6-astra". */
+  public static readonly OPENAI_GPT_6_ASTRA = new FoundationModelIdentifier('openai.gpt-6-astra');
+
+  /** Base model "openai.gpt-6-sol". */
+  public static readonly OPENAI_GPT_6_SOL = new FoundationModelIdentifier('openai.gpt-6-sol');
+
+  /** Base model "openai.gpt-6-luna". */
+  public static readonly OPENAI_GPT_6_LUNA = new FoundationModelIdentifier('openai.gpt-6-luna');
+
+  /** Base model "openai.gpt-6.1-sol". */
+  public static readonly OPENAI_GPT_6_1_SOL = new FoundationModelIdentifier('openai.gpt-6.1-sol');
 
   /** Base model "luma.ray-v2:0". */
   public static readonly LUMA_RAY_V2_0 = new FoundationModelIdentifier('luma.ray-v2:0');
@@ -461,6 +536,15 @@ export class FoundationModelIdentifier {
   /** Base Model "qwen.qwen3-32b-v1:0" */
   public static readonly QWEN_QWEN3_32B_V1_0 = new FoundationModelIdentifier('qwen.qwen3-32b-v1:0');
 
+  /** Base Model "qwen.qwen3-coder-next" */
+  public static readonly QWEN_QWEN3_CODER_NEXT = new FoundationModelIdentifier('qwen.qwen3-coder-next');
+
+  /** Base Model "qwen.qwen3-next-80b-a3b" */
+  public static readonly QWEN_QWEN3_NEXT_80B_A3B = new FoundationModelIdentifier('qwen.qwen3-next-80b-a3b');
+
+  /** Base Model "qwen.qwen3-vl-235b-a22b" */
+  public static readonly QWEN_QWEN3_VL_235B_A22B = new FoundationModelIdentifier('qwen.qwen3-vl-235b-a22b');
+
   /** Base Model "qwen.qwen3-235b-a22b-2507-v1:0" */
   public static readonly QWEN_QWEN3_235B_A22B_2507_V1_0 = new FoundationModelIdentifier('qwen.qwen3-235b-a22b-2507-v1:0');
 
@@ -526,6 +610,12 @@ export class FoundationModelIdentifier {
 
   /** Basic model "twelvelabs.marengo-embed-3-0-v1:0" */
   public static readonly TWELVELABS_MARENGO_EMBED_3_0_V1_0 = new FoundationModelIdentifier('twelvelabs.marengo-embed-3-0-v1:0');
+
+  /** Base model "moonshotai.kimi-k2.5". */
+  public static readonly MOONSHOT_KIMI_K2_5 = new FoundationModelIdentifier('moonshotai.kimi-k2.5');
+
+  /** Base model "moonshot.kimi-k2-thinking". */
+  public static readonly MOONSHOT_KIMI_K2_THINKING = new FoundationModelIdentifier('moonshot.kimi-k2-thinking');
 
   /** Base model "zai.glm-4.7". */
   public static readonly ZAI_GLM_4_7 = new FoundationModelIdentifier('zai.glm-4.7');

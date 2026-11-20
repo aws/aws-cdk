@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
-import { Stack, App, Resource } from '../../core';
+import { Stack, App, Lazy, Resource } from '../../core';
 import { BucketReflection } from '../lib/bucket-reflection';
 
 /** Compare constructs by node path to avoid circular JSON serialization in Jest error messages */
@@ -388,5 +388,76 @@ describe('find KMS key for Bucket', () => {
   test('returns undefined for custom IBucketRef without CfnBucket', () => {
     const bucket = new CustomBucket(stack, 'CustomBucket', 'my-bucket');
     expect(BucketReflection.of(bucket).encryptionKey).toBeUndefined();
+  });
+});
+
+describe('find default encryption rule for Bucket', () => {
+  let app: App;
+  let stack: Stack;
+
+  beforeEach(() => {
+    app = new App();
+    stack = new Stack(app, 'TestStack');
+  });
+
+  test('returns no algorithm and no key when the bucket has no encryption configuration', () => {
+    const bucket = new s3.CfnBucket(stack, 'Bucket');
+
+    expect(BucketReflection.of(bucket).defaultEncryption).toEqual({ sseAlgorithm: undefined, hasKmsMasterKeyId: false });
+  });
+
+  test('returns the declared algorithm and key presence', () => {
+    const bucket = new s3.CfnBucket(stack, 'Bucket', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse', kmsMasterKeyId: 'key-id' },
+        }],
+      },
+    });
+
+    expect(BucketReflection.of(bucket).defaultEncryption).toEqual({ sseAlgorithm: 'aws:kms:dsse', hasKmsMasterKeyId: true });
+  });
+
+  test('treats a tokenized KMS key ID as a declared key', () => {
+    const key = new kms.CfnKey(stack, 'Key', { keyPolicy: {} });
+    const bucket = new s3.CfnBucket(stack, 'Bucket', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms', kmsMasterKeyId: key.attrArn },
+        }],
+      },
+    });
+
+    expect(BucketReflection.of(bucket).defaultEncryption).toEqual({ sseAlgorithm: 'aws:kms', hasKmsMasterKeyId: true });
+  });
+
+  test('returns undefined for an unresolved encryption algorithm', () => {
+    const bucket = new s3.CfnBucket(stack, 'Bucket', {
+      bucketEncryption: {
+        serverSideEncryptionConfiguration: [{
+          serverSideEncryptionByDefault: {
+            sseAlgorithm: Stack.of(stack).toJsonString('AES256'),
+          },
+        }],
+      },
+    });
+
+    expect(BucketReflection.of(bucket).defaultEncryption).toBeUndefined();
+  });
+
+  test.each([
+    ['encryption configuration', Lazy.any({ produce: () => ({ serverSideEncryptionConfiguration: [] }) })],
+    ['server-side encryption configuration', {
+      serverSideEncryptionConfiguration: Lazy.any({ produce: () => [{ serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } }] }),
+    }],
+  ])('returns undefined for unresolved %s', (_description, bucketEncryption) => {
+    const bucket = new s3.CfnBucket(stack, 'Bucket', { bucketEncryption });
+
+    expect(BucketReflection.of(bucket).defaultEncryption).toBeUndefined();
+  });
+
+  test('returns undefined for custom IBucketRef without CfnBucket', () => {
+    const bucket = new CustomBucket(stack, 'CustomBucket', 'my-bucket');
+    expect(BucketReflection.of(bucket).defaultEncryption).toBeUndefined();
   });
 });

@@ -214,8 +214,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
       }
     }
 
-    const constraints = Box.fromArray<CfnService.PlacementConstraintProperty>([], { omitEmpty: false });
-    const strategies = Box.fromArray<CfnService.PlacementStrategyProperty>([], { omitEmpty: false });
+    const constraints = Box.fromArray([], { omitEmpty: false });
+    const strategies = Box.fromArray([], { omitEmpty: false });
 
     super(scope, id, {
       ...props,

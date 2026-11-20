@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "description": "various tests for development and build scripts",
   "scripts": {
-    "build": "echo ok",
+    "build": "tsc -p tsconfig.json",
     "test": "jest",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build+test",
@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "jest": "^29.7.0",
-    "ts-jest": "^29.4.6",
+    "ts-jest": "^29.4.15",
     "@types/jest": "^29.5.14"
   },
   "jest": {

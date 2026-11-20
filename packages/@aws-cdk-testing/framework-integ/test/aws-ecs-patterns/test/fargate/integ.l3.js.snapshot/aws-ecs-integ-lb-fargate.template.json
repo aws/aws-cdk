@@ -755,18 +755,30 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "Automatically created Security Group for ELB awsecsinteglbfargateNLBFargateServiceLBAC83F53C",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "255.255.255.255/32",
-      "Description": "Disallow all traffic",
-      "FromPort": 252,
-      "IpProtocol": "icmp",
-      "ToPort": 86
-     }
-    ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "NLBFargateServiceLBSecurityGrouptoawsecsinteglbfargateNLBFargateServiceSecurityGroup0F41CC8C8043C65C3B": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "to awsecsinteglbfargateNLBFargateServiceSecurityGroup0F41CC8C:80",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "NLBFargateServiceSecurityGroup9D81388B",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NLBFargateServiceLBSecurityGroup4E9972CC",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 80
    }
   },
   "NLBFargateServiceLBPublicListenerB0DCA73C": {
@@ -982,6 +994,30 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "DependsOn": [
+    "NLBFargateServiceTaskDefTaskRole6C88F40B"
+   ]
+  },
+  "NLBFargateServiceSecurityGroupfromawsecsinteglbfargateNLBFargateServiceLBSecurityGroup71218BB780FD68F6C3": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awsecsinteglbfargateNLBFargateServiceLBSecurityGroup71218BB7:80",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "NLBFargateServiceSecurityGroup9D81388B",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "NLBFargateServiceLBSecurityGroup4E9972CC",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
    },
    "DependsOn": [
     "NLBFargateServiceTaskDefTaskRole6C88F40B"

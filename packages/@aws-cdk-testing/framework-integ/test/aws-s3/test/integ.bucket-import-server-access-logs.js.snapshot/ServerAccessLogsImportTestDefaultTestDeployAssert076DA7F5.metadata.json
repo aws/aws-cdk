@@ -1,0 +1,20 @@
+{
+  "/ServerAccessLogsImportTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ServerAccessLogsImportTestDefaultTestDeployAssert076DA7F5.template.json"
+    }
+  ],
+  "/ServerAccessLogsImportTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ServerAccessLogsImportTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

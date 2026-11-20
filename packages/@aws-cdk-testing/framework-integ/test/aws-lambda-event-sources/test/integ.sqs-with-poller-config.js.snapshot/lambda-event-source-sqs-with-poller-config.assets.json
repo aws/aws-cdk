@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "cb03eb2f7dd78813a8954dceb57791402507c6fcb4825ab372dd79e0bffadb06": {
+      "displayName": "lambda-event-source-sqs-with-poller-config Template",
+      "source": {
+        "path": "lambda-event-source-sqs-with-poller-config.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-060abd49": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cb03eb2f7dd78813a8954dceb57791402507c6fcb4825ab372dd79e0bffadb06.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

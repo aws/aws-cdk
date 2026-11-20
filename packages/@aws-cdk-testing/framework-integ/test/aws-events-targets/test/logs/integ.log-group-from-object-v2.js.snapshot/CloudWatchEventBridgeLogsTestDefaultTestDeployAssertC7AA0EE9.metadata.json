@@ -1,0 +1,20 @@
+{
+  "/CloudWatchEventBridgeLogsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CloudWatchEventBridgeLogsTestDefaultTestDeployAssertC7AA0EE9.template.json"
+    }
+  ],
+  "/CloudWatchEventBridgeLogsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CloudWatchEventBridgeLogsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

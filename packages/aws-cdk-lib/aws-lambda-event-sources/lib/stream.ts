@@ -27,8 +27,14 @@ export interface BaseStreamEventSourceProps {
 
   /**
    * Where to begin consuming the stream.
+   *
+   * Required for DynamoDB, Kinesis and Amazon MSK event sources, and for self-managed Kafka
+   * event sources unless `consumptionMode` is `KafkaConsumptionMode.QUEUE`. Not supported in
+   * queue mode.
+   *
+   * @default - no starting position; synthesis fails if the event source requires one
    */
-  readonly startingPosition: lambda.StartingPosition;
+  readonly startingPosition?: lambda.StartingPosition;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -51,6 +57,9 @@ export interface BaseStreamEventSourceProps {
    * Configuration for provisioned pollers that read from the event source.
    * When specified, allows control over the minimum and maximum number of pollers
    * that can be provisioned to process events from the source.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/kafka-scaling-modes.html
+   *
    * @default - no provisioned pollers
    */
   readonly provisionedPollerConfig?: ProvisionedPollerConfig;
@@ -63,15 +72,19 @@ export interface ProvisionedPollerConfig {
   /**
    * The minimum number of pollers that should be provisioned.
    *
+   * Valid Range: Minimum value of 1. Maximum value of 200.
+   *
    * @default 1
    */
-  readonly minimumPollers: number;
+  readonly minimumPollers?: number;
   /**
    * The maximum number of pollers that can be provisioned.
    *
+   * Valid Range: Minimum value of 1. Maximum value of 2000.
+   *
    * @default 200
    */
-  readonly maximumPollers: number;
+  readonly maximumPollers?: number;
   /**
    * An optional identifier that groups multiple ESMs to share EPU capacity
    * and reduce costs. ESMs with the same PollerGroupName share compute

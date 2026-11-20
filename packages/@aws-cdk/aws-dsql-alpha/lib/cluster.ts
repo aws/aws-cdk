@@ -5,6 +5,7 @@ import { RemovalPolicy, Resource, Tags, ValidationError } from 'aws-cdk-lib/core
 import type { IResource } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 
 /**
@@ -157,7 +158,11 @@ abstract class ClusterBase extends Resource implements ICluster {
  *
  * @resource AWS::DSQL::Cluster
  */
+@propertyInjectable
 export class Cluster extends ClusterBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-dsql-alpha.Cluster';
+
   /**
    * Import an existing Cluster from attributes
    */

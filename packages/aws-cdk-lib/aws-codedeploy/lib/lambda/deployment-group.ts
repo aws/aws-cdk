@@ -6,7 +6,7 @@ import { LambdaDeploymentConfig } from './deployment-config';
 import * as iam from '../../../aws-iam';
 import type * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
-import type { IBox } from '../../../core/lib/helpers-internal';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
 import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
@@ -168,7 +168,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
    */
   public readonly role: iam.IRole;
 
-  private readonly alarms: IAlarmRef[];
+  private readonly alarms: IArrayBox<IAlarmRef>;
   private readonly _preHook: IBox<lambda.IFunction | undefined>;
   private readonly _postHook: IBox<lambda.IFunction | undefined>;
   private readonly _deploymentConfig: IDeploymentConfigRef;
@@ -188,7 +188,7 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
     this.role = this._role;
 
     this.application = props.application || new LambdaApplication(this, 'Application');
-    this.alarms = props.alarms || [];
+    this.alarms = Box.fromArray(props.alarms || [], { omitEmpty: false });
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRoleForLambdaLimited'));
     this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES);
@@ -204,15 +204,13 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
         deploymentType: 'BLUE_GREEN',
         deploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
-      alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration({
-          alarms: this.alarms,
-          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
-          removeAlarms: removeAlarmsFromDeploymentGroup,
-          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
-        }),
-      }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this, this.alarms, props.autoRollback) }),
+      alarmConfiguration: this.alarms.derive(alarms => renderAlarmConfiguration({
+        alarms: [...alarms],
+        ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+        removeAlarms: removeAlarmsFromDeploymentGroup,
+        ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+      })),
+      autoRollbackConfiguration: this.alarms.derive(alarms => renderAutoRollbackConfiguration(this, [...alarms], props.autoRollback)),
     });
 
     this._setNameAndArn(resource, this.application);

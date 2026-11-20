@@ -19,7 +19,7 @@ const gateway = new agentcore.Gateway(stack, 'NoAuthGateway', {
 
 const lambdaFunction = new lambda.Function(stack, 'TestFunction', {
   functionName: 'integ-test-no-auth-gateway-lambda',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

@@ -630,7 +630,7 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._triggers = Box.fromArray([]);
+    this._triggers = Box.fromArray();
 
     this.resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,

@@ -1,15 +1,16 @@
 {
-  "version": "36.0.5",
+  "version": "53.0.0",
   "files": {
-    "fb14db2f3f849c96db420afc9fd158b99550fa4ffa602209cd78e471a282fc4a": {
+    "c8a8c8dfce10f17edb54e52a1ac665696256c26e88773d9a9d67a150cca66fc7": {
+      "displayName": "codebuild-project-arm Template",
       "source": {
         "path": "codebuild-project-arm.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-d3212734": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fb14db2f3f849c96db420afc9fd158b99550fa4ffa602209cd78e471a282fc4a.json",
+          "objectKey": "c8a8c8dfce10f17edb54e52a1ac665696256c26e88773d9a9d67a150cca66fc7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
