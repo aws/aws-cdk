@@ -1,7 +1,7 @@
 import type { IStageRef } from './apigateway.generated';
 import type * as firehose from '../../aws-kinesisfirehose';
 import { ArnFormat, FeatureFlags, Stack } from '../../core';
-import { ValidationError } from '../../core/lib/errors';
+import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 import { APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD } from '../../cx-api';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
@@ -686,40 +686,68 @@ export class AccessLogField {
 export interface JsonWithStandardFieldProps {
   /**
    * If this flag is enabled, the source IP of request will be output to the log
+   *
+   * @default true
    */
-  readonly ip: boolean;
+  readonly ip?: boolean;
   /**
    * If this flag is enabled, the principal identifier of the caller will be output to the log
+   *
+   * @default true
    */
-  readonly caller: boolean;
+  readonly caller?: boolean;
   /**
    * If this flag is enabled, the principal identifier of the user will be output to the log
+   *
+   * @default true
    */
-  readonly user: boolean;
+  readonly user?: boolean;
   /**
    * If this flag is enabled, the CLF-formatted request time((dd/MMM/yyyy:HH:mm:ss +-hhmm) will be output to the log
+   *
+   * @default true
    */
-  readonly requestTime: boolean;
+  readonly requestTime?: boolean;
   /**
    * If this flag is enabled, the http method will be output to the log
+   *
+   * @default true
    */
-  readonly httpMethod: boolean;
+  readonly httpMethod?: boolean;
   /**
    * If this flag is enabled, the path to your resource will be output to the log
+   *
+   * @default true
    */
-  readonly resourcePath: boolean;
+  readonly resourcePath?: boolean;
   /**
    * If this flag is enabled, the method response status will be output to the log
+   *
+   * @default true
    */
-  readonly status: boolean;
+  readonly status?: boolean;
   /**
    * If this flag is enabled, the request protocol will be output to the log
+   *
+   * @default true
    */
-  readonly protocol: boolean;
+  readonly protocol?: boolean;
   /**
    * If this flag is enabled, the response payload length will be output to the log
+   *
+   * @default true
    */
-  readonly responseLength: boolean;
+  readonly responseLength?: boolean;
+  /**
+   * Extra fields to add to the JSON object, after the standard fields. Each key becomes a field name and each
+   * value is the format string for that field, typically one of the `AccessLogField` helpers.
+   *
+   * A key cannot be `requestId` or the name of a standard field that is turned on. Turn the standard field off first
+   * to replace it; the replacement keeps the position of the standard field.
+   *
+   * @default - no additional fields
+   */
+  readonly additionalFields?: { [key: string]: string };
 }
 
 /**
@@ -759,32 +787,29 @@ export class AccessLogFormat {
 
   /**
    * Access log will be produced in the JSON format with a set of fields most useful in the access log. All fields are turned on by default with the
-   * option to turn off specific fields.
+   * option to turn off specific fields, and extra fields can be added with `additionalFields`.
    */
-  public static jsonWithStandardFields(
-    fields: JsonWithStandardFieldProps = {
-      ip: true,
-      user: true,
-      caller: true,
-      requestTime: true,
-      httpMethod: true,
-      resourcePath: true,
-      status: true,
-      protocol: true,
-      responseLength: true,
-    }): AccessLogFormat {
-    return this.custom(JSON.stringify({
+  public static jsonWithStandardFields(fields: JsonWithStandardFieldProps = {}): AccessLogFormat {
+    // every standard field is on unless it is switched off
+    const on = (flag?: boolean) => flag ?? true;
+    const standard: { [key: string]: string | undefined } = {
       requestId: AccessLogField.contextRequestId(),
-      ip: fields.ip ? AccessLogField.contextIdentitySourceIp() : undefined,
-      user: fields.user ? AccessLogField.contextIdentityUser() : undefined,
-      caller: fields.caller ? AccessLogField.contextIdentityCaller() : undefined,
-      requestTime: fields.requestTime ? AccessLogField.contextRequestTime() : undefined,
-      httpMethod: fields.httpMethod ? AccessLogField.contextHttpMethod() : undefined,
-      resourcePath: fields.resourcePath ? AccessLogField.contextResourcePath() : undefined,
-      status: fields.status ? AccessLogField.contextStatus() : undefined,
-      protocol: fields.protocol ? AccessLogField.contextProtocol() : undefined,
-      responseLength: fields.responseLength ? AccessLogField.contextResponseLength() : undefined,
-    }));
+      ip: on(fields.ip) ? AccessLogField.contextIdentitySourceIp() : undefined,
+      user: on(fields.user) ? AccessLogField.contextIdentityUser() : undefined,
+      caller: on(fields.caller) ? AccessLogField.contextIdentityCaller() : undefined,
+      requestTime: on(fields.requestTime) ? AccessLogField.contextRequestTime() : undefined,
+      httpMethod: on(fields.httpMethod) ? AccessLogField.contextHttpMethod() : undefined,
+      resourcePath: on(fields.resourcePath) ? AccessLogField.contextResourcePath() : undefined,
+      status: on(fields.status) ? AccessLogField.contextStatus() : undefined,
+      protocol: on(fields.protocol) ? AccessLogField.contextProtocol() : undefined,
+      responseLength: on(fields.responseLength) ? AccessLogField.contextResponseLength() : undefined,
+    };
+    for (const key of Object.keys(fields.additionalFields ?? {})) {
+      if (Object.prototype.hasOwnProperty.call(standard, key) && standard[key] !== undefined) {
+        throw new UnscopedValidationError(lit`AccessLogAdditionalFieldClash`, `additionalFields cannot contain '${key}': it is already in the log format. Turn the standard field off to replace it`);
+      }
+    }
+    return this.custom(JSON.stringify({ ...standard, ...fields.additionalFields }));
   }
 
   /**
