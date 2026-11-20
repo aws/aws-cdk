@@ -133,6 +133,8 @@ export interface DataProtectionPolicyProps {
   /**
    * Name of the data protection policy
    *
+   * The name can only include alphanumeric characters, hyphens (-) and underscores (_).
+   *
    * @default - 'data-protection-policy-cdk'
    */
   readonly name?: string;
