@@ -8,6 +8,52 @@ import * as cpactions from '../../lib';
 /* eslint-disable @stylistic/quote-props */
 
 describe('ecr source action', () => {
+  test.each(['123456789012', undefined])('registryId=%p filters only the native event account', registryId => {
+    const stack = new Stack();
+    const output = new codepipeline.Artifact();
+    new codepipeline.Pipeline(stack, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [new cpactions.EcrSourceAction({
+            actionName: 'Source',
+            output,
+            repository: ecr.Repository.fromRepositoryName(stack, 'Repository', 'source-repo'),
+            registryId,
+          })],
+        },
+        {
+          stageName: 'Build',
+          actions: [new cpactions.CodeBuildAction({
+            actionName: 'Build', input: output, project: new codebuild.PipelineProject(stack, 'Project'),
+          })],
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      EventPattern: {
+        account: registryId === undefined ? Match.absent() : [registryId],
+        'detail-type': ['ECR Image Action'],
+        source: ['aws.ecr'],
+        detail: {
+          'repository-name': ['source-repo'],
+          'image-tag': ['latest'],
+          'action-type': ['PUSH'],
+          result: ['SUCCESS'],
+          registryId: Match.absent(),
+        },
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([Match.objectLike({
+        Name: 'Source',
+        Actions: [Match.objectLike({
+          Configuration: { RepositoryName: 'source-repo', ImageTag: Match.absent(), RegistryId: Match.absent() },
+        })],
+      })]),
+    });
+  });
+
   describe('ECR source Action', () => {
     test('exposes variables for other actions to consume', () => {
       const stack = new Stack();
