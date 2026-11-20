@@ -14,6 +14,7 @@
 import type { Construct } from 'constructs';
 import type { IEvaluatorRef, EvaluatorReference as L1EvaluatorReference } from '../../../aws-bedrockagentcore';
 import * as iam from '../../../aws-iam';
+import type * as lambda from '../../../aws-lambda';
 import { Resource, type IResource, type ResourceProps } from '../../../core';
 
 /**
@@ -60,6 +61,24 @@ export interface IEvaluator extends IResource, IEvaluatorRef {
    * Grant the given principal identity permissions to perform actions on this evaluator.
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+}
+
+/**
+ * An evaluator that is backed by a Lambda function (a code-based evaluator).
+ *
+ * Constructs that reference a code-based evaluator, such as
+ * `OnlineEvaluationConfig`, use this capability to grant their execution
+ * role permission to invoke the backing function. Implement it on custom
+ * `IEvaluator` implementations to opt in to the same wiring.
+ */
+export interface ICodeBasedEvaluator extends IEvaluator {
+  /**
+   * The Lambda function backing this evaluator.
+   *
+   * Uses the L2 interface to match `CodeBasedOptions.lambdaFunction`.
+   * [disable-awslint:prefer-ref-interface]
+   */
+  readonly lambdaFunction: lambda.IFunction;
 }
 
 /**

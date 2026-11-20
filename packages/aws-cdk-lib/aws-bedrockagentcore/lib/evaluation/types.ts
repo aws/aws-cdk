@@ -12,6 +12,7 @@
  */
 
 import type * as iam from '../../../aws-iam';
+import type * as lambda from '../../../aws-lambda';
 import type { Duration } from '../../../core';
 
 /**
@@ -515,6 +516,21 @@ export interface EvaluatorAttributes {
    * @default - No name available
    */
   readonly evaluatorName?: string;
+
+  /**
+   * The Lambda function backing the evaluator, when it is code-based.
+   *
+   * Providing it lets constructs that reference the imported evaluator,
+   * such as `OnlineEvaluationConfig`, grant their execution role permission
+   * to invoke the function.
+   *
+   * Uses the L2 interface to match `CodeBasedOptions.lambdaFunction`.
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @default - the imported evaluator is not treated as code-based and no
+   * function permissions are wired for it
+   */
+  readonly lambdaFunction?: lambda.IFunction;
 }
 
 /**
