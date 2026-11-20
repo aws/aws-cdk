@@ -1090,6 +1090,22 @@ Read more about [Using the Amazon Cognito
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-assign-domain-prefix.html) and [Using Your Own
 Domain](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-add-custom-domain.html).
 
+To control the minimum TLS version and cipher suites that clients can use with a custom domain, set `securityPolicy`.
+`TLS_V1_2_2021` is the recommended minimum for most applications; `TLS_V1_3_2025` requires TLS 1.3.
+
+```ts
+declare const pool: cognito.UserPool;
+declare const domainCert: certificatemanager.ICertificate;
+
+pool.addDomain('CustomDomainWithTls12', {
+  customDomain: {
+    domainName: 'auth.myapp.com',
+    certificate: domainCert,
+    securityPolicy: cognito.UserPoolDomainSecurityPolicy.TLS_V1_2_2021,
+  },
+});
+```
+
 
 You can use the [managed login](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-managed-login.html) page provided by Amazon Cognito to sign in users. The managed login page has two versions: a classic version and a new version. You can switch between the two versions by using the `managedLoginVersion` property.
 
