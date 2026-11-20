@@ -109,8 +109,11 @@ async function updateExportsAndEntryPoints(modules: ModuleMap, pkgPath: string) 
       serviceIndexExports.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
 
-    const mixinsExportName = `./${moduleConfig.name}/mixins`;
-    newExports[mixinsExportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
+    const mixinsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'mixins.ts');
+    if (existsSync(mixinsFilePath)) {
+      const mixinsExportName = `./${moduleConfig.name}/mixins`;
+      newExports[mixinsExportName] = `./lib/services/${moduleConfig.name}/mixins.js`;
+    }
 
     const eventsFilePath = path.join(pkgPath, 'lib', 'services', moduleConfig.name, 'events.ts');
     if (existsSync(eventsFilePath)) {
