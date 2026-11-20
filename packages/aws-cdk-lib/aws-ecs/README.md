@@ -2130,6 +2130,33 @@ const service = new ecs.FargateService(this, 'Service', {
 Service Connect-enabled services may now reach this service at `http-api:80`. Traffic to this endpoint will
 be routed to the container's port 8080.
 
+The discovery URL of a Service Connect service — the ARN of the Cloud Map service ECS creates for it — is only known once the service is deployed. `serviceConnectDiscoveryArn()` looks it up at deploy time, so it can be passed to other constructs, for example an API Gateway v2 private integration:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  minHealthyPercent: 100,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+        dnsName: 'http-api',
+        port: 80,
+      },
+    ],
+  },
+});
+
+// The Cloud Map service ARN for the 'api' Service Connect service, resolved at deploy time.
+const discoveryArn = service.serviceConnectDiscoveryArn();
+```
+
+When the service has more than one Service Connect service, pass the discovery name: `service.serviceConnectDiscoveryArn('api')`.
+
 To opt a service into using service connect without advertising a port, simply call the 'enableServiceConnect' method on an initialized service.
 
 ```ts

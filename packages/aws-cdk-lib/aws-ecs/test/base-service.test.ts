@@ -1358,3 +1358,121 @@ describe('empty load balancers', () => {
     expect(Object.values(service1)[0].Properties).not.toHaveProperty('HealthCheckGracePeriodSeconds');
   });
 });
+
+describe('serviceConnectDiscoveryArn', () => {
+  function createServiceWithServiceConnect(stack: cdk.Stack, services: Array<{ portMappingName: string; discoveryName?: string }>) {
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        { name: 'api', containerPort: 80 },
+        { name: 'metrics', containerPort: 9090 },
+      ],
+    });
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+    service.enableServiceConnect({
+      services,
+      namespace: 'test namespace',
+    });
+    return service;
+  }
+
+  test('returns the discovery ARN of the only Service Connect service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const service = createServiceWithServiceConnect(stack, [{ portMappingName: 'api' }]);
+
+    // WHEN
+    const arn = service.serviceConnectDiscoveryArn();
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('Custom::ServiceConnectDiscoveryArn');
+    expect(Object.keys(resources)).toHaveLength(1);
+    const logicalId = Object.keys(resources)[0];
+    expect(stack.resolve(arn)).toEqual({
+      'Fn::GetAtt': [logicalId, 'services.0.deployments.0.serviceConnectResources.0.discoveryArn'],
+    });
+    const create = JSON.stringify(resources[logicalId].Properties.Create);
+    expect(create).toContain('describeServices');
+    expect(create).toContain('ECS');
+    // Only the discovery ARN is returned, so the custom-resource response
+    // stays under CloudFormation's size limit.
+    expect(create).toContain('serviceConnectResources');
+  });
+
+  test('picks the matching discovery name when the service has more than one', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const service = createServiceWithServiceConnect(stack, [
+      { portMappingName: 'api', discoveryName: 'api-service' },
+      { portMappingName: 'metrics', discoveryName: 'metrics-service' },
+    ]);
+
+    // WHEN
+    const arn = service.serviceConnectDiscoveryArn('metrics-service');
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('Custom::ServiceConnectDiscoveryArn');
+    expect(Object.keys(resources)).toHaveLength(1);
+    const logicalId = Object.keys(resources)[0];
+    expect(stack.resolve(arn)).toEqual({
+      'Fn::GetAtt': [logicalId, 'services.0.deployments.0.serviceConnectResources.1.discoveryArn'],
+    });
+  });
+
+  test('creates the custom resource only once no matter how often it is called', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const service = createServiceWithServiceConnect(stack, [{ portMappingName: 'api' }]);
+
+    // WHEN
+    const first = service.serviceConnectDiscoveryArn();
+    const second = service.serviceConnectDiscoveryArn();
+
+    // THEN
+    expect(first).toEqual(second);
+    expect(Object.keys(Template.fromStack(stack).findResources('Custom::ServiceConnectDiscoveryArn'))).toHaveLength(1);
+  });
+
+  test('throws when Service Connect is not enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [{ name: 'api', containerPort: 80 }],
+    });
+    const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+    // THEN
+    expect(() => service.serviceConnectDiscoveryArn()).toThrow(/Service Connect is not enabled on this service/);
+  });
+
+  test('throws when the discovery name is unknown', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const service = createServiceWithServiceConnect(stack, [{ portMappingName: 'api' }]);
+
+    // THEN
+    expect(() => service.serviceConnectDiscoveryArn('nope')).toThrow(/No Service Connect service with discovery name 'nope'/);
+  });
+
+  test('throws when the discovery name is omitted and the service has more than one', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const service = createServiceWithServiceConnect(stack, [
+      { portMappingName: 'api' },
+      { portMappingName: 'metrics' },
+    ]);
+
+    // THEN
+    expect(() => service.serviceConnectDiscoveryArn()).toThrow(/specify a discoveryName/);
+  });
+});
