@@ -1,0 +1,19 @@
+{
+  "Description": "EC2_NO_OPEN_SECURITY_GROUPS passes: the security group allows SSH from a private range only",
+  "Resources": {
+    "ScopedSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Allows SSH from the VPC",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": 22,
+            "ToPort": 22,
+            "CidrIp": "10.0.0.0/16"
+          }
+        ]
+      }
+    }
+  }
+}

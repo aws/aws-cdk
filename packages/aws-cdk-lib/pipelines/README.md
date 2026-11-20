@@ -549,6 +549,26 @@ class PipelineStack extends Stack {
 }
 ```
 
+### Execution mode
+
+To control how CodePipeline handles multiple executions of the pipeline, use the `executionMode` property.
+`QUEUED` and `PARALLEL` require `pipelineType: PipelineType.V2`. See
+[execution modes](https://docs.aws.amazon.com/codepipeline/latest/userguide/execution-modes.html).
+
+```ts
+declare const synth: pipelines.ShellStep;
+
+new pipelines.CodePipeline(this, 'Pipeline', {
+  synth,
+  pipelineType: codepipeline.PipelineType.V2,
+  executionMode: codepipeline.ExecutionMode.QUEUED,
+});
+```
+
+> Self-mutation updates the pipeline. On an update, `QUEUED` cancels pending executions, and `PARALLEL`
+> lets running executions continue on the old definition. `PARALLEL` can also run two executions against
+> the same stacks at once, so only use it when that is safe for your stages.
+
 ### Validation
 
 Every `addStage()` and `addWave()` command takes additional options. As part of these options,
@@ -982,7 +1002,8 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 ```
 
 Note that if you provide an existing pipeline, you cannot provide values for
-`pipelineName`, `crossAccountKeys`, `reuseCrossRegionSupportStacks`, or `role`
+`pipelineName`, `crossAccountKeys`, `enableKeyRotation`, `crossRegionReplicationBuckets`,
+`reuseCrossRegionSupportStacks`, `role`, `artifactBucket`, or `executionMode`
 because those values are passed in directly to the underlying `codepipeline.Pipeline`.
 
 ### Use pipeline service role as default action role in pipeline

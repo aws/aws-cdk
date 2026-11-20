@@ -16,6 +16,7 @@ import type * as s3 from '../../../aws-s3';
 import type { Duration } from '../../../core';
 import { Aws, CfnCapabilities, PhysicalName, Stack, Names, FeatureFlags, UnscopedValidationError, ValidationError, Annotations } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
+import { posixShellEscapeMinimal } from '../../../core/lib/private/shell-escape';
 import * as cxapi from '../../../cx-api';
 import type { FileSet, IFileSetProducer, StackAsset, StackDeployment, Step } from '../blueprint';
 import { AssetType, ManualApprovalStep, ShellStep } from '../blueprint';
@@ -46,6 +47,17 @@ export interface CodePipelineProps {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
    */
   readonly pipelineType?: cp.PipelineType;
+
+  /**
+   * The method that the pipeline will use to handle multiple executions.
+   *
+   * `QUEUED` and `PARALLEL` require `pipelineType: PipelineType.V2`.
+   *
+   * @default - ExecutionMode.SUPERSEDED
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/concepts-how-it-works.html
+   */
+  readonly executionMode?: cp.ExecutionMode;
 
   /**
    * The build step that produces the CDK Cloud Assembly
@@ -505,6 +517,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.artifactBucket !== undefined) {
         throw new ValidationError(lit`CannotSetArtifactBucketExisting`, 'Cannot set \'artifactBucket\' if an existing CodePipeline is given using \'codePipeline\'', this);
       }
+      if (this.props.executionMode !== undefined) {
+        throw new ValidationError(lit`CannotSetExecutionModeExisting`, 'Cannot set \'executionMode\' if an existing CodePipeline is given using \'codePipeline\'', this);
+      }
 
       this._pipeline = this.props.codePipeline;
     } else {
@@ -512,9 +527,13 @@ export class CodePipeline extends PipelineBase {
       if (!isDefaultV2 && this.props.pipelineType === undefined) {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
       }
+      if (this.props.executionMode === cp.ExecutionMode.PARALLEL) {
+        Annotations.of(this).addWarningV2('@aws-cdk/pipelines:parallelExecutionMode', 'PARALLEL execution mode lets executions overlap: approvals, deploy order and self-mutation are no longer serialized. Only use it when your stages can safely run concurrently.');
+      }
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
         pipelineType: this.props.pipelineType ?? (isDefaultV2 ? cp.PipelineType.V2 : cp.PipelineType.V1),
+        executionMode: this.props.executionMode,
         crossAccountKeys: this.props.crossAccountKeys ?? false,
         crossRegionReplicationBuckets: this.props.crossRegionReplicationBuckets,
         reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,
@@ -843,10 +862,10 @@ export class CodePipeline extends PipelineBase {
       projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
       input: this._cloudAssemblyFileSet,
       installCommands: [
-        `npm install -g aws-cdk${installSuffix}`,
+        `npm install -g ${posixShellEscapeMinimal(`aws-cdk${installSuffix}`)}`,
       ],
       commands: [
-        `cdk -a ${toPosixPath(embeddedAsmPath(this.pipeline))} deploy ${pipelineStackIdentifier} --require-approval=never --verbose`,
+        `cdk -a ${posixShellEscapeMinimal(toPosixPath(embeddedAsmPath(this.pipeline)))} deploy ${posixShellEscapeMinimal(pipelineStackIdentifier)} --require-approval=never --verbose`,
       ],
 
       rolePolicyStatements: [
@@ -882,7 +901,7 @@ export class CodePipeline extends PipelineBase {
   private publishAssetsAction(node: AGraphNode, assets: StackAsset[]): ICodePipelineActionFactory {
     const commands = assets.map(asset => {
       const relativeAssetManifestPath = path.relative(this.myCxAsmRoot, asset.assetManifestPath);
-      return `cdk-assets --path "${toPosixPath(relativeAssetManifestPath)}" --verbose publish "${asset.assetSelector}"`;
+      return `cdk-assets --path ${posixShellEscapeMinimal(toPosixPath(relativeAssetManifestPath))} --verbose publish ${posixShellEscapeMinimal(asset.assetSelector)}`;
     });
 
     const assetType = assets[0].assetType;
@@ -901,7 +920,7 @@ export class CodePipeline extends PipelineBase {
     const script = new CodeBuildStep(node.id, {
       commands,
       installCommands: [
-        `npm install -g cdk-assets@${this.cdkAssetsCliVersion}`,
+        `npm install -g ${posixShellEscapeMinimal(`cdk-assets@${this.cdkAssetsCliVersion}`)}`,
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {

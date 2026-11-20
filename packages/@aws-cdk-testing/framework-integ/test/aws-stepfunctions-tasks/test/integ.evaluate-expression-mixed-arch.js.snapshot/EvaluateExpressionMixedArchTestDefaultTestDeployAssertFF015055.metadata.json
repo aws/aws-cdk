@@ -1,4 +1,10 @@
 {
+  "/EvaluateExpressionMixedArchTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EvaluateExpressionMixedArchTestDefaultTestDeployAssertFF015055.template.json"
+    }
+  ],
   "/EvaluateExpressionMixedArchTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

@@ -36,7 +36,7 @@ type ArbitraryConstructor = (abstract new (...args: any[]) => {}) | (new (...arg
  * ```
  */
 export function noBoxStackTraces<T extends ArbitraryConstructor>(constructor: T): T {
-  const WrappedClass = class extends constructor {
+  const NoBoxStackTraces = class extends constructor {
     constructor(...args: any[]) {
       Box.disableStackTraceCollection();
       try {
@@ -46,9 +46,9 @@ export function noBoxStackTraces<T extends ArbitraryConstructor>(constructor: T)
       }
     }
   };
-  Object.defineProperty(WrappedClass, 'name', {
+  Object.defineProperty(NoBoxStackTraces, 'name', {
     value: constructor.name,
     writable: false,
   });
-  return WrappedClass as any;
+  return NoBoxStackTraces as any;
 }

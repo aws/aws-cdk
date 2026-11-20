@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "EvaluateExpressionIsolationTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sfn-evaluate-expression-isolation-integ"
+      ],
+      "assertionStack": "EvaluateExpressionIsolationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluateExpressionIsolationTestDefaultTestDeployAssertF7EDA3D1"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

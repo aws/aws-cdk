@@ -5,7 +5,7 @@
 [![NPM version](https://badge.fury.io/js/aws-cdk.svg)](https://badge.fury.io/js/aws-cdk)
 [![PyPI version](https://badge.fury.io/py/aws-cdk-lib.svg)](https://badge.fury.io/py/aws-cdk-lib)
 [![NuGet version](https://badge.fury.io/nu/Amazon.CDK.Lib.svg)](https://badge.fury.io/nu/Amazon.CDK.Lib)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/aws-cdk-lib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/software.amazon.awscdk/aws-cdk-lib)
+[![Maven Central](https://img.shields.io/maven-central/v/software.amazon.awscdk/aws-cdk-lib)](https://central.sonatype.com/artifact/software.amazon.awscdk/aws-cdk-lib)
 [![Go Reference](https://pkg.go.dev/badge/github.com/aws/aws-cdk-go/awscdk/v2.svg)](https://pkg.go.dev/github.com/aws/aws-cdk-go/awscdk/v2)
 
 [![View on Construct Hub](https://constructs.dev/badge?package=aws-cdk-lib)](https://constructs.dev/packages/aws-cdk-lib)
@@ -37,7 +37,6 @@ Jump To:
 [Getting Help](#getting-help) |
 [Contributing](#contributing) |
 [RFCs](https://github.com/aws/aws-cdk-rfcs) |
-[Roadmap](https://github.com/aws/aws-cdk/blob/main/ROADMAP.md) |
 [More Resources](#more-resources)
 
 -------
@@ -137,15 +136,17 @@ You may also find help on these community resources:
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
 
-## Roadmap
-
-The AWS CDK Roadmap lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/main/ROADMAP.md) for more information and FAQs.
-
 ## Contributing
 
 We welcome community contributions and pull requests. See
 [CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
+
+## Security model
+
+The AWS CDK has a documented security model that describes what it protects against and
+what it expects from you. See [Security for the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/security.html)
+in the Developer Guide.
 
 ## Metrics collection
 

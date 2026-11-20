@@ -119,6 +119,32 @@
    "DeletionPolicy": "Delete"
   }
  },
+ "Outputs": {
+  "ExportsOutputRefMyDSSEBucket8A2A1D0CB378E195": {
+   "Value": {
+    "Ref": "MyDSSEBucket8A2A1D0C"
+   },
+   "Export": {
+    "Name": "aws-cdk-s3-bucket-encryption:ExportsOutputRefMyDSSEBucket8A2A1D0CB378E195"
+   }
+  },
+  "ExportsOutputRefMySSES3Bucket6973690D99FA943B": {
+   "Value": {
+    "Ref": "MySSES3Bucket6973690D"
+   },
+   "Export": {
+    "Name": "aws-cdk-s3-bucket-encryption:ExportsOutputRefMySSES3Bucket6973690D99FA943B"
+   }
+  },
+  "ExportsOutputRefMyKMSBucketDF8715AC0EE8E2A4": {
+   "Value": {
+    "Ref": "MyKMSBucketDF8715AC"
+   },
+   "Export": {
+    "Name": "aws-cdk-s3-bucket-encryption:ExportsOutputRefMyKMSBucketDF8715AC0EE8E2A4"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

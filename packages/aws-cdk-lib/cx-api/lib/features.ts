@@ -93,6 +93,7 @@ export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 export const EC2_RESTRICT_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-ec2:restrictDefaultSecurityGroup';
 export const APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID = '@aws-cdk/aws-apigateway:requestValidatorUniqueId';
+export const APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD = '@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard';
 export const INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION = '@aws-cdk/core:includePrefixInUniqueNameGeneration';
 export const KMS_ALIAS_NAME_REF = '@aws-cdk/aws-kms:aliasNameRef';
 export const KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL = '@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal';
@@ -159,6 +160,9 @@ export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInVali
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoadBalancers';
+export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
+export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
+export const IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1179,7 +1183,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When enabled, the default volume type of the EBS volume will be GP3',
     detailsMd: `
-      When this featuer flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
+      When this feature flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
     `,
     introducedIn: { v2: '2.140.0' },
     recommendedValue: true,
@@ -1954,6 +1958,88 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: 'Set this flag to `false` to keep omitting the property, and remove the registrations with `aws ecs update-service --load-balancers \'[]\'` instead.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS]: {
+    type: FlagType.ApiDefault,
+    summary: 'Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS',
+    detailsMd: `
+      When enabled, cache behaviors on a \`Distribution\` that do not specify an explicit
+      \`viewerProtocolPolicy\` default to \`ViewerProtocolPolicy.REDIRECT_TO_HTTPS\` instead of
+      \`ViewerProtocolPolicy.ALLOW_ALL\`, so viewers are redirected from HTTP to HTTPS rather
+      than being served over plaintext HTTP.
+
+      This applies to the default behavior, to \`additionalBehaviors\`, and to behaviors added
+      later with \`addBehavior()\`. An explicitly specified \`viewerProtocolPolicy\` always wins,
+      regardless of this flag.
+
+      Note that \`REDIRECT_TO_HTTPS\` answers an HTTP request with an HTTP 301 redirect, which the
+      viewer then follows with a second request. That additional request is billable.`,
+    introducedIn: { v2: '2.273.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Set `viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL` explicitly on each behavior to keep the old default.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: {
+    type: FlagType.BugFix,
+    summary: 'Render the API Gateway access log destination ARN without the trailing `:*`',
+    detailsMd: `
+      API Gateway stores the access log destination ARN without the trailing \`:*\` that
+      \`LogGroup.logGroupArn\` carries. When the CDK renders the log group \`Arn\` attribute,
+      CloudFormation drift detection reports the stage as \`MODIFIED\` on every run, even
+      though the access logging configuration has not changed.
+
+      When this flag is enabled, \`LogGroupLogDestination\` rebuilds the ARN from the log
+      group name, so the synthesized template matches the value stored by the service and
+      drift detection reports the stage as \`IN_SYNC\`.
+
+      When disabled, the destination ARN keeps using the log group \`Arn\` attribute.
+    `,
+    introducedIn: { v2: '2.274.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, each EvaluateExpression task gets its own Lambda function',
+    detailsMd: `
+      When this feature flag is enabled, each \`EvaluateExpression\` task creates its own Lambda function.
+      When this feature flag is disabled, all \`EvaluateExpression\` tasks in a stack that use the same runtime and
+      architecture share one Lambda function, even across state machines.
+
+      Enabling this flag replaces the shared function with one function per task on the next deployment, so let
+      running executions finish first.`,
+    introducedIn: { v2: '2.275.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: true },
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the default policy of an imported user or group gets a name that includes the stack name',
+    detailsMd: `
+      An imported user or group puts the permissions granted to it in a default inline policy. Without this flag, the
+      name of that policy only depends on the construct path inside the stack, so stacks that import the same user or
+      group under the same construct id use the same inline policy name on the same principal, and their deployments
+      conflict.
+
+      When this flag is enabled, the policy name also includes the stack name, so each stack gets an inline policy of
+      its own. The logical ID of the policy does not change, so CloudFormation renames the existing policy in place.
+
+      Deploy all stacks that import the same user or group after enabling this flag. The first of them to rename its
+      policy removes the inline policy under the old shared name, which may hold the permissions of another stack until
+      that stack is deployed too.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 

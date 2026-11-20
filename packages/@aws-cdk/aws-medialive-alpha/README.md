@@ -468,7 +468,7 @@ output format via the `CaptionDestination` factory. One selector can feed multip
 // Define a caption selector on the input attachment (see Input Attachment Settings below)
 const captionSelector = medialive.CaptionSelector.embedded('captions');
 
-// WebVTT captions — packaged alongside the video encode in the same output
+// WebVTT captions
 const webvtt = medialive.EncodeConfiguration.caption({
   name: 'eng_webvtt',
   captionSelectorName: captionSelector.name,
@@ -502,7 +502,7 @@ const burnIn = medialive.EncodeConfiguration.caption({
 
 Use `mediaPackageV2()` and pass a single `channel` — MediaLive maps each pipeline to a MediaPackage ingest endpoint automatically (one for `SINGLE_PIPELINE`, both for `STANDARD`). Each output contains a single encode (one track per output).
 
-In-band captions (burn-in, embedded) ride alongside a video encode via the `captions` prop:
+In-band captions (burn-in, embedded) ride alongside a video encode via the `captions` prop. Out-of-band (sidecar) captions are a track of their own, so they go in their own output as that output's `encode`:
 
 ```ts
 declare const mpChannel: mediapackagev2.IChannel;
@@ -510,6 +510,7 @@ declare const hdVideo: medialive.EncodeConfiguration;
 declare const sdVideo: medialive.EncodeConfiguration;
 declare const audio: medialive.EncodeConfiguration;
 declare const burnIn: medialive.EncodeConfiguration;
+declare const ttml: medialive.EncodeConfiguration;
 
 medialive.OutputGroupConfiguration.mediaPackageV2({
   name: 'emp',
@@ -518,6 +519,7 @@ medialive.OutputGroupConfiguration.mediaPackageV2({
     { encode: hdVideo, captions: [burnIn], outputName: 'hd' },
     { encode: sdVideo, outputName: 'sd' },
     { encode: audio, outputName: 'audio' },
+    { encode: ttml, outputName: 'eng_ttml' },
   ],
 });
 ```

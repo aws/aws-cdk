@@ -450,7 +450,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    * Return a metric containing the total number of errors (system + user) for this agent runtime.
    */
   public metricTotalErrors(props?: MetricOptions): Metric {
-    return this.metric('TotalErrors', { statistic: Stats.SUM, ...props });
+    return this.metric('Errors', { statistic: Stats.SUM, ...props });
   }
 
   /**
