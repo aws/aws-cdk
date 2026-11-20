@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "ManagedInstancesLaunchTemplateOptions/DefaultTest": {
+      "stacks": [
+        "integ-managedinstances-launch-template-options"
+      ],
+      "assertionStack": "ManagedInstancesLaunchTemplateOptions/DefaultTest/DeployAssert",
+      "assertionStackName": "ManagedInstancesLaunchTemplateOptionsDefaultTestDeployAssert7E24274C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
