@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "7a7112c6ef0f9f65517a027c302f8e4694db5550c1850d6030171545aabc1589": {
+      "displayName": "ExactAssertion Template",
+      "source": {
+        "path": "ExactAssertion.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5196e9f7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7a7112c6ef0f9f65517a027c302f8e4694db5550c1850d6030171545aabc1589.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

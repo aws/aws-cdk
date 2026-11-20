@@ -1,0 +1,216 @@
+{
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/Users/kazuhoshinozuka/git/work/tasks/cdk-gateway-certificate/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.template.json"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e5/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e5/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e5"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallS3getObject5fadd9d30511df40ccf893791785d7a1/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e5/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e5"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetProjectse4e70f538ace0b5aacdb4877f40690e51"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallS3getObject5fadd9d30511df40ccf893791785d7a1/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallS3getObject5fadd9d30511df40ccf893791785d7a1"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForRole755D6EC3"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForEABFE599"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForIsCompleteProviderInvokeA895084C"
+    }
+  ],
+  "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForTimeoutProviderInvokeC4B68BD5"
+    }
+  ]
+}

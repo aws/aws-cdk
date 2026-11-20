@@ -118,6 +118,8 @@ class MatchCreator {
             return Match.stringLikeRegexp(v[nested]);
           case '$SerializedJson':
             return Match.serializedJson(v[nested]);
+          case '$Exact':
+            return Match.exact(v[nested]);
           default:
             return v;
         }

@@ -14,14 +14,18 @@ const project = new codebuild.Project(stack, 'MyProject', {
 
 const integ = new IntegTest(app, 'AssetBuildSpecTest', { testCases: [stack] });
 
+// assertAtPath() replaces the expectation of the API call it is called on, so each
+// assertion uses its own call.
+integ.assertions.awsApiCall('CodeBuild', 'batchGetProjects', {
+  names: [project.projectName],
+}).assertAtPath(
+  'projects.0.name',
+  ExpectedResult.exact(project.projectName),
+);
+
 const getBuildProject = integ.assertions.awsApiCall('CodeBuild', 'batchGetProjects', {
   names: [project.projectName],
 });
-
-getBuildProject.assertAtPath(
-  'projects.0.name.buildspec',
-  ExpectedResult.exact(project.projectName),
-);
 
 getBuildProject.assertAtPath(
   'projects.0.source.buildspec',
