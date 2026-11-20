@@ -1,0 +1,629 @@
+{
+  "/aws-ecs-service-connect-proxy-log-level": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/stack.js:1503:47)",
+        "    at get availabilityZones (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/stack.js:849:18)",
+        "    at new Vpc (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:48)",
+        "    at new Cluster (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/aws-ecs/lib/cluster.js:355:37)",
+        "    at <anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.service-connect-proxy-log-level.js:41:17)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-ecs-service-connect-proxy-log-level.template.json"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultCloudMapNamespace": {
+          "name": "*",
+          "useForServiceConnect": true
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addDefaultCloudMapNamespace": [
+          {
+            "name": "*",
+            "useForServiceConnect": true
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Service": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
+      "trace": [
+        "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/annotations.js:271:29)",
+        "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/annotations.js:137:18)",
+        "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:517:45)",
+        "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:188:13)",
+        "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.service-connect-proxy-log-level.js:53:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1934:14)",
+        "Object..js (node:internal/modules/cjs/loader:2074:10)",
+        "Module.load (node:internal/modules/cjs/loader:1656:32)",
+        "Module._load (node:internal/modules/cjs/loader:1448:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]",
+      "trace": [
+        "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/annotations.js:271:29)",
+        "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/annotations.js:137:18)",
+        "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:542:45)",
+        "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:188:13)",
+        "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-39704/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.service-connect-proxy-log-level.js:53:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1934:14)",
+        "Object..js (node:internal/modules/cjs/loader:2074:10)",
+        "Module.load (node:internal/modules/cjs/loader:1656:32)",
+        "Module._load (node:internal/modules/cjs/loader:1448:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsCluster97242B84"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*"
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/DefaultServiceDiscoveryNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "name": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/TaskRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDef54694570"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "roleName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Service/Service": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServiceD69D759B"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Service/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "retention": "*"
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Service/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpc779914AB"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcIGW3663B083"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcVPCGW944296C0"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/DefaultServiceDiscoveryNamespace/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/TaskRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDefTaskRole1EDB4A67"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/web/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "retention": "*"
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDefExecutionRoleB4775C97"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Service/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServiceLogGroupB910EE76"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/Service/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ServiceSecurityGroupC96ED6A7"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet1Subnet4AC37B0F"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet1RouteTable4AE3113D"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet1RouteTableAssociation49C4CDBB"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet1DefaultRoute8C7EFC96"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet1EIP2D3759A3"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet1NATGateway2F1E7764"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet2Subnet4A959A4C"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet2RouteTable89A2F6C5"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet2RouteTableAssociationE4D42FC1"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet2DefaultRoute048730F7"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet2EIP26E3EEEF"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPublicSubnet2NATGatewayBD015416"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPrivateSubnet1SubnetFAB0E487"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPrivateSubnet1RouteTable2EA148EE"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPrivateSubnet1RouteTableAssociationF4E8ACD7"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPrivateSubnet1DefaultRoute0239F5D0"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPrivateSubnet2SubnetC2B7B1BA"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPrivateSubnet2RouteTable1D430E45"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPrivateSubnet2RouteTableAssociation329A2412"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcPrivateSubnet2DefaultRoute27221D27"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/EcsCluster/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EcsClusterVpcRestrictDefaultSecurityGroupCustomResource8F588911"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/web/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDefwebLogGroupC89AAFBC"
+    }
+  ],
+  "/aws-ecs-service-connect-proxy-log-level/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TaskDefExecutionRoleDefaultPolicy0DBB737A"
+    }
+  ]
+}

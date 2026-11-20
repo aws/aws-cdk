@@ -1,0 +1,34 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "c56ac0efa74faf3860a6ae520c7c77aafc5252480c00537377a48f430c4084b2": {
+      "displayName": "aws-ecs-service-connect-proxy-log-level/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.c56ac0efa74faf3860a6ae520c7c77aafc5252480c00537377a48f430c4084b2",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9049ef93": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c56ac0efa74faf3860a6ae520c7c77aafc5252480c00537377a48f430c4084b2.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "4a5b4c6135ae91b6650b4126d543d09fce3eb1adaa43a2c71414328eee3b26ef": {
+      "displayName": "aws-ecs-service-connect-proxy-log-level Template",
+      "source": {
+        "path": "aws-ecs-service-connect-proxy-log-level.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-0ec59b47": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4a5b4c6135ae91b6650b4126d543d09fce3eb1adaa43a2c71414328eee3b26ef.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
