@@ -1,0 +1,42 @@
+{
+  "/events-eventbus-policy-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "events-eventbus-policy-stack.template.json"
+    }
+  ],
+  "/events-eventbus-policy-stack/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/events-eventbus-policy-stack/MyPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "eventBus": "*",
+        "statementId": "*",
+        "statement": "*"
+      }
+    }
+  ],
+  "/events-eventbus-policy-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/events-eventbus-policy-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/events-eventbus-policy-stack/MyPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyPolicy39D66CF6"
+    }
+  ]
+}

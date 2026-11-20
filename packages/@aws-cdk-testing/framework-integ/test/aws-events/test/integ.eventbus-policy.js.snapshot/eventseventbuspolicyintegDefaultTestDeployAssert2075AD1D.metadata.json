@@ -1,0 +1,20 @@
+{
+  "/events-eventbus-policy-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "eventseventbuspolicyintegDefaultTestDeployAssert2075AD1D.template.json"
+    }
+  ],
+  "/events-eventbus-policy-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/events-eventbus-policy-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

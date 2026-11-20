@@ -613,6 +613,9 @@ export interface EventBusPolicyProps {
 
   /**
    * An IAM Policy Statement to apply to the Event Bus
+   *
+   * If a `PolicyStatement` object is passed, it is automatically converted
+   * to plain IAM JSON. A plain JSON object is also accepted.
    */
   readonly statement: iam.PolicyStatement;
 
@@ -647,9 +650,18 @@ export class EventBusPolicy extends Resource {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    // The L1 construct expects a plain IAM JSON document. Serialize a
+    // `PolicyStatement` object up-front, otherwise template resolution walks
+    // into the principal objects and fails with a circular-reference error.
+    // Objects without a toJSON() method (plain JSON) are passed through.
+    // See https://github.com/aws/aws-cdk/issues/24031
+    const statement = typeof props.statement.toJSON === 'function'
+      ? props.statement.toJSON()
+      : props.statement;
+
     new CfnEventBusPolicy(this, 'Resource', {
       statementId: props.statementId!,
-      statement: props.statement,
+      statement,
       eventBusName: props.eventBus.eventBusName,
     });
   }
