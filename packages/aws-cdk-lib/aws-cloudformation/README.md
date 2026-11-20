@@ -222,7 +222,7 @@ declare const stack: Stack;
 new StackSet(stack, 'StackSet', {
   targets: [StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
-    organizationalUnits: ['ou-1111-11111111'],
+    organizationalUnits: ['ou-1'],
   })],
   deploymentType: DeploymentType.serviceManaged(),
 });
@@ -239,7 +239,7 @@ declare const stack: Stack;
 new StackSet(stack, 'StackSet', {
   targets: [StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
-    organizationalUnits: ['ou-1111-11111111'],
+    organizationalUnits: ['ou-1'],
     accountFilter: StackSetAccountFilter.difference(['account-2']),
   })],
   deploymentType: DeploymentType.serviceManaged(),
@@ -265,7 +265,7 @@ declare const stackSet: StackSet;
 
 stackSet.addTarget(StackSetTarget.fromOrganizationalUnits({
   regions: ['us-east-1'],
-  organizationalUnits: ['ou-2222-22222222'],
+  organizationalUnits: ['ou-2'],
   accountFilter: StackSetAccountFilter.intersection(['account-5']),
 }));
 ```
