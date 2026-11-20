@@ -1,6 +1,6 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default`/`@attribute`/`@param` JSDoc tags, migration notes, README usage examples, and rosetta `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be true and complete against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect."
+description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default`/`@param` JSDoc tags, migration notes, README usage examples, and rosetta `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be true and complete against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect."
 ---
 
 # AWS CDK Documentation Review
@@ -19,9 +19,8 @@ concern; on each, own the documentation question:
 - **A new L2's README usage example.** You own whether the example *exists* and *demonstrates the feature
   the PR adds*. Whether the API is well-designed — right abstraction, prop shape, placement —
   is outside your scope.
-- **A JSDoc `@default` or `@attribute` tag.** You own whether a `@default` states the *real* default and
-  whether an `@attribute` tag is *present*. Whether that default *behavior* or attribute surface is the
-  right *design* is outside your scope.
+- **A JSDoc `@default` tag.** You own whether a `@default` states the *real* default. Whether that
+  default *behavior* is the right *design* is outside your scope.
 - **A `@deprecated` or breaking API's migration note.** You own whether a note *points at the replacement*.
   Whether the break itself is *allowed* (stable vs experimental, callout present) is
   outside your scope.
@@ -33,12 +32,11 @@ Work the changed docs in this order. Adapt to what the diff touches.
 1. **Inventory the doc surfaces, and load your rules.** From the diff, enumerate every doc surface the
    PR touches: every exported public class / method / prop it adds or renames (a brand-new exported L2 is
    highest-value — it triggers the README-example and JSDoc-tag checks at once); every
-   `@default` it adds or changes; every new readonly property exposing a CloudFormation
-   attribute; every `@deprecated` tag and breaking API change; and every fenced ` ```ts ` block and
-   `*.ts-fixture` it adds or edits. Then read
+   `@default` it adds or changes; every `@deprecated` tag and breaking API change; and every fenced
+   ` ```ts ` block and `*.ts-fixture` it adds or edits. Then read
    [`documentation-rules.md`](references/documentation-rules.md) — its rows are your checklist. Before
    flagging a `@default` wrong, confirm it against the code that sets the default; before flagging an
-   `@attribute` missing, or an example / convention violated, search and read the authoritative
+   example or convention violated, search and read the authoritative
    aws/aws-cdk docs on `main` available to you, and confirm the fact against those docs, not from memory
    (see `cdk-review-principles` "Verify before you cite").
 
@@ -50,9 +48,10 @@ Work the changed docs in this order. Adapt to what the diff touches.
    diff and compare** what the code applies when the prop is omitted against the tag — a contradiction is
    this dimension's highest-value defect.
 
-3. **Rate by harm and stop.** Rate every finding by the harm the defect does — misled consumer, unspecified
-   API — per `cdk-review-principles` (its BLOCKING/RECOMMENDED/OPTIONAL scale, "Confidence is not
-   severity"); rate a real defect at that harm even when you are unsure a reader reaches the line. When one
+3. **Rate by harm and stop.** Rate every finding by the harm the defect does — misled consumer, a feature
+   shipped without the usage docs a guide requires — per `cdk-review-principles` (its
+   BLOCKING/RECOMMENDED/OPTIONAL scale, "Confidence is not severity"); rate a real defect at that harm
+   even when you are unsure a reader reaches the line. When one
    location has more than one doc defect, describe them in one finding with the `ruleId`, `category` and
    `severity` of the most severe one, since each field takes one value. Stop once you can name the defect
    and cite its rule and guideline section.

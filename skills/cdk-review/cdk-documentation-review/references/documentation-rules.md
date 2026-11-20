@@ -43,12 +43,6 @@ README usage example. See
   Down to RECOMMENDED for a new prop on an existing construct with no README mention; a new mixin with no
   `## Mixins` README entry is a RECOMMENDED completeness gap.
 
-**[DOC-ATTRIBUTE-MISSING] (RECOMMENDED)** — A new resource-attribute property missing its `@attribute`
-tag (`awslint:attribute-tag`; attribute names must begin with the type name, `bucketArn` not `arn`). See
-[`AGENTS.md § Documentation › JSDoc`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#jsdoc).
-- **Severity (doc-absent detail):** a completeness gap — the property is present and documented; only the
-  attribute marking is absent, so the consumer is under-informed, not actively misled.
-
 ## Migration notes
 
 **[DOC-MIGRATION-NOTE-MISSING] (RECOMMENDED)** — A `@deprecated` tag (or a breaking change to an
