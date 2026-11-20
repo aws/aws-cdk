@@ -1,0 +1,224 @@
+{
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/home/fukunaga/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "process.wrapper (node:events:639:12)",
+        "process.emit (node:events:514:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "GatewayKnowledgeBasesTargetDefaultTestDeployAssert59190245.template.json"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallbedrockagentcorecontrolgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6WaitForRoleDBE7830B"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6WaitForD1525CA3"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38WaitForRoleB1192B4A"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38WaitFor7B22060D"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForRole4CF55770"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitFor821ABBDF"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6WaitForIsCompleteProviderInvokeBA3B0461"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTargetaac39aaaf75b4ef51456616d3c90cad6WaitForTimeoutProviderInvoke66B3E41B"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38WaitForIsCompleteProviderInvoke9D045B5A"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget98e2e7cbdc9af3e611f4ff4d90a00d38WaitForTimeoutProviderInvokeCD6D69F1"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForIsCompleteProviderInvoke99AC7235"
+    }
+  ],
+  "/GatewayKnowledgeBasesTarget/DefaultTest/DeployAssert/AwsApiCallbedrock-agentcore-controlgetGatewayTarget01fbfa56bb9b8201bd014543c59343fa/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallbedrockagentcorecontrolgetGatewayTarget01fbfa56bb9b8201bd014543c59343faWaitForTimeoutProviderInvoke2A9F28F2"
+    }
+  ]
+}

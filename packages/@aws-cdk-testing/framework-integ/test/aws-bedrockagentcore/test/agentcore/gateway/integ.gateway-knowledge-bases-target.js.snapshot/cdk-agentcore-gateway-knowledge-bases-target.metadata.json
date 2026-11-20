@@ -1,0 +1,343 @@
+{
+  "/cdk-agentcore-gateway-knowledge-bases-target": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-agentcore-gateway-knowledge-bases-target.template.json"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/KnowledgeBaseRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/KnowledgeBase": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KnowledgeBase"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/RetrieveOnlyKnowledgeBase": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RetrieveOnlyKnowledgeBase"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/KnowledgeBaseRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KnowledgeBaseRoleA2B317B9"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "signInCaseSensitive": false
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Gateway43CB3636"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/KnowledgeBases": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/RetrieveOnly": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/WebSearch": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"Gateway43CB3636\",\"GatewayIdentifier\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGateway43CB3636GatewayIdentifier8B82BE81"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"GatewayKnowledgeBases9289AC1A\",\"TargetId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGatewayKnowledgeBases9289AC1ATargetId4DBB45D3"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"GatewayRetrieveOnlyF6191441\",\"TargetId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGatewayRetrieveOnlyF6191441TargetId9055F51C"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Exports/Output{\"Fn::GetAtt\":[\"GatewayWebSearchFCF67CA7\",\"TargetId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttGatewayWebSearchFCF67CA7TargetId99CF92DB"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayServiceRole162DEA77"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayUserPoolAC9C51BE"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool/ResourceServer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "identifier": "*",
+        "scopes": "*"
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool/DefaultClient": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "generateSecret": true,
+        "oAuth": {
+          "flows": {
+            "clientCredentials": true
+          },
+          "scopes": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "cognitoDomain": {
+          "domainPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/KnowledgeBases/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayKnowledgeBases9289AC1A"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/RetrieveOnly/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayRetrieveOnlyF6191441"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/WebSearch/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayWebSearchFCF67CA7"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayServiceRoleDefaultPolicy5A851A93"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool/ResourceServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayUserPoolResourceServerA9AA7EAD"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool/DefaultClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayUserPoolDefaultClient48FC6ADE"
+    }
+  ],
+  "/cdk-agentcore-gateway-knowledge-bases-target/Gateway/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayUserPoolDomainCD8A1197"
+    }
+  ]
+}
