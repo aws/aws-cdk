@@ -130,7 +130,9 @@ export abstract class AgentRuntimeArtifact {
   }
 
   /**
-   * Reference an agent runtime artifact that's constructed from local code assets uploaded to a CDK-managed S3 bucket
+   * Reference an agent runtime artifact that's constructed from local code assets uploaded to a CDK-managed S3 bucket.
+   *
+   * The folder is zipped as is. Include all dependencies, built for Linux arm64, in the folder.
    * @param options The options for configuring the code asset
    */
   public static fromCodeAsset(options: CodeAssetOptions): AgentRuntimeArtifact {
