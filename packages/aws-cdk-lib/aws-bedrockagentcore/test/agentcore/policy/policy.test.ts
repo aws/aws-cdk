@@ -18,7 +18,7 @@ import * as cdk from '../../../../core';
 import { Policy } from '../../../lib/policy/policy';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
 import { PolicyStatement } from '../../../lib/policy/policy-statement';
-import { PolicyValidationMode } from '../../../lib/policy/policy-types';
+import { PolicyEnforcementMode, PolicyValidationMode } from '../../../lib/policy/policy-types';
 
 describe('Policy default tests', () => {
   let template: Template;
@@ -637,5 +637,142 @@ describe('PolicyValidationMode.of() escape hatch', () => {
       Name: 'of_validation',
       ValidationMode: 'FUTURE_MODE',
     });
+  });
+});
+
+describe('Policy enforcement mode', () => {
+  let stack: cdk.Stack;
+  let policyEngine: PolicyEngine;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'PolicyEnforcementModeStack');
+    policyEngine = new PolicyEngine(stack, 'PolicyEngine', {
+      policyEngineName: 'enforcement_engine',
+    });
+  });
+
+  test('omits EnforcementMode when not set', () => {
+    const policy = new Policy(stack, 'Policy', {
+      policyEngine,
+      policyName: 'no_mode',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
+    });
+
+    expect(policy.enforcementMode).toBeUndefined();
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Policy', {
+      Name: 'no_mode',
+      EnforcementMode: Match.absent(),
+    });
+  });
+
+  test.each([
+    ['LOG_ONLY', PolicyEnforcementMode.LOG_ONLY],
+    ['ACTIVE', PolicyEnforcementMode.ACTIVE],
+  ])('renders EnforcementMode %s', (expected, mode) => {
+    const policy = new Policy(stack, 'Policy', {
+      policyEngine,
+      policyName: 'with_mode',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
+      enforcementMode: mode,
+    });
+
+    expect(policy.enforcementMode).toBe(mode);
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Policy', {
+      Name: 'with_mode',
+      EnforcementMode: expected,
+    });
+  });
+
+  test('renders a custom enforcement mode from PolicyEnforcementMode.of()', () => {
+    // `EnforcementMode` is an enumerated CFN property, so an unmodelled value synthesizes with a warning.
+    const app = new cdk.App({ postCliContext: { '@aws-cdk/core:strictCfnValidateErrors': false } });
+    const customStack = new cdk.Stack(app, 'PolicyEnforcementModeOfStack');
+    const engine = new PolicyEngine(customStack, 'PolicyEngine', {
+      policyEngineName: 'of_enforcement_engine',
+    });
+
+    new Policy(customStack, 'Policy', {
+      policyEngine: engine,
+      policyName: 'of_enforcement',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
+      enforcementMode: PolicyEnforcementMode.of('FUTURE_MODE'),
+    });
+
+    Template.fromStack(customStack).hasResourceProperties('AWS::BedrockAgentCore::Policy', {
+      Name: 'of_enforcement',
+      EnforcementMode: 'FUTURE_MODE',
+    });
+  });
+});
+
+describe('Policy definition member', () => {
+  let stack: cdk.Stack;
+  let policyEngine: PolicyEngine;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'PolicyDefinitionMemberStack');
+    policyEngine = new PolicyEngine(stack, 'PolicyEngine', {
+      policyEngineName: 'definition_engine',
+    });
+  });
+
+  test('writes a fromCedar() statement to Definition.Cedar', () => {
+    new Policy(stack, 'Policy', {
+      policyEngine,
+      policyName: 'cedar_member',
+      statement: PolicyStatement.fromCedar('permit(principal, action, resource);'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Policy', {
+      Name: 'cedar_member',
+      Definition: {
+        Cedar: { Statement: 'permit(principal, action, resource);' },
+        Policy: Match.absent(),
+      },
+    });
+  });
+
+  test('writes a fromPolicy() statement to Definition.Policy', () => {
+    const policy = new Policy(stack, 'Policy', {
+      policyEngine,
+      policyName: 'policy_member',
+      statement: PolicyStatement.fromPolicy('permit(principal, action, resource is AgentCore::Gateway);'),
+    });
+
+    expect(policy.definition).toBe('permit(principal, action, resource is AgentCore::Gateway);');
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Policy', {
+      Name: 'policy_member',
+      Definition: {
+        Policy: { Statement: 'permit(principal, action, resource is AgentCore::Gateway);' },
+        Cedar: Match.absent(),
+      },
+    });
+  });
+
+  test('combines a fromPolicy() statement with LOG_ONLY', () => {
+    new Policy(stack, 'Policy', {
+      policyEngine,
+      policyName: 'policy_member_log_only',
+      statement: PolicyStatement.fromPolicy('permit(principal, action, resource is AgentCore::Gateway);'),
+      enforcementMode: PolicyEnforcementMode.LOG_ONLY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Policy', {
+      Name: 'policy_member_log_only',
+      Definition: {
+        Policy: { Statement: 'permit(principal, action, resource is AgentCore::Gateway);' },
+      },
+      EnforcementMode: 'LOG_ONLY',
+    });
+  });
+
+  test('applies the definition length validation to a fromPolicy() statement', () => {
+    expect(() => new Policy(stack, 'Policy', {
+      policyEngine,
+      policyName: 'too_short',
+      statement: PolicyStatement.fromPolicy('permit(principal, action, r);'),
+    })).toThrow(/definition/);
   });
 });
