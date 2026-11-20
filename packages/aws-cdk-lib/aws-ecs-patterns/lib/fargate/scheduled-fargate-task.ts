@@ -107,6 +107,9 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     if (props.runtimePlatform) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'runtimePlatform\' is ignored.');
     }
+    if (props.availabilityZoneRebalancing) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:propertyIgnored', 'Property \'availabilityZoneRebalancing\' is ignored; ScheduledFargateTask does not create a FargateService.');
+    }
 
     // Use the EcsTask as the target of the EventRule
     this.task = new EcsTask( {
