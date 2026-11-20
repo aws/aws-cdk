@@ -3,6 +3,8 @@ on:
   pull_request_target:
     types: [opened, edited, reopened]
 
+cache-mode: read
+
 jobs:
   check-issue-reference:
     runs-on: ubuntu-latest

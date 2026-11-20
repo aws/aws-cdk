@@ -1,3 +1,4 @@
+import { posixShellEscapeMinimal } from '../../../core/lib/helpers-internal';
 import { BuildSpec } from '../build-spec';
 
 export const S3_BUCKET_ENV = 'SCRIPT_S3_BUCKET';
@@ -23,8 +24,8 @@ export function runScriptLinuxBuildSpec(entrypoint: string) {
         commands: [
           'export SCRIPT_DIR=/tmp/scriptdir',
           `echo "Running ${entrypoint}"`,
-          `chmod +x /tmp/scriptdir/${entrypoint}`,
-          `/tmp/scriptdir/${entrypoint}`,
+          `chmod +x ${posixShellEscapeMinimal(`/tmp/scriptdir/${entrypoint}`)}`,
+          `${posixShellEscapeMinimal(`/tmp/scriptdir/${entrypoint}`)}`,
         ],
       },
     },

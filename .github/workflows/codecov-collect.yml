@@ -6,6 +6,8 @@ on:
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   collect:
     name: Collect Coverage
