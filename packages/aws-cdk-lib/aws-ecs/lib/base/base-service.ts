@@ -30,6 +30,7 @@ import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../../custom-resources';
 import * as cxapi from '../../../cx-api';
 import type { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
@@ -853,6 +854,7 @@ export abstract class BaseService extends Resource
    * The service connect configuration for this service.
    */
   private readonly _serviceConnectConfig: IBox<CfnService.ServiceConnectConfigurationProperty | undefined> = Box.fromValue(undefined);
+  private readonly _serviceConnectDiscoveryArns = new Map<string, string>();
 
   /**
    * Whether this service is using the ECS deployment controller.
@@ -1358,6 +1360,88 @@ export abstract class BaseService extends Resource
         includeQueryParameters: cfg.accessLogConfiguration.includeQueryParameters ? 'ENABLED' : 'DISABLED',
       } : undefined,
     });
+  }
+
+  /**
+   * The ARN of the Cloud Map service that ECS creates for one of this service's
+   * Service Connect services.
+   *
+   * ECS creates the Cloud Map service only when the service is deployed, so the
+   * ARN is not known at synthesis time. This method looks it up at deploy time
+   * with an `ecs:DescribeServices` call (through a custom resource) and returns
+   * it as a token, so it can be passed to other constructs — for example, an API
+   * Gateway v2 private integration that targets the Service Connect service.
+   * ECS only reports the discovery ARN on the service's deployment record, so
+   * the lookup reads it from there.
+   *
+   * The custom resource is created only once per discovery name, no matter how
+   * many times this method is called.
+   *
+   * @param discoveryName the discovery name of the Service Connect service, as
+   * configured in `enableServiceConnect`. If the service has exactly one Service
+   * Connect service, it can be omitted.
+   */
+  public serviceConnectDiscoveryArn(discoveryName?: string): string {
+    const config = this._serviceConnectConfig.get();
+    // The stored configuration is exactly what enableServiceConnect() set, so the
+    // services are plain objects in the order they were configured. A discovery
+    // name defaults to its port mapping name when it is not specified.
+    const services = config?.services as CfnService.ServiceConnectServiceProperty[] | undefined;
+    if (!services || services.length === 0) {
+      throw new ValidationError(lit`ServiceConnectNotEnabled`, 'Service Connect is not enabled on this service. Call enableServiceConnect() with at least one service first.', this);
+    }
+
+    let index: number;
+    if (discoveryName === undefined) {
+      if (services.length > 1) {
+        throw new ValidationError(lit`ServiceConnectDiscoveryNameRequired`, `This service has ${services.length} Service Connect services, specify a discoveryName.`, this);
+      }
+      index = 0;
+    } else {
+      index = services.findIndex((svc) => (svc.discoveryName ?? svc.portName) === discoveryName);
+      if (index === -1) {
+        throw new ValidationError(lit`ServiceConnectDiscoveryNameNotFound`, `No Service Connect service with discovery name '${discoveryName}' found on this service.`, this);
+      }
+    }
+
+    const effectiveName = services[index].discoveryName ?? services[index].portName;
+    const cached = this._serviceConnectDiscoveryArns.get(effectiveName);
+    if (cached) {
+      return cached;
+    }
+
+    // The service name is a reference to the ECS service, so CloudFormation runs
+    // this lookup only after the service exists.
+    const describeCall = {
+      service: 'ECS',
+      action: 'describeServices',
+      region: Stack.of(this).region,
+      parameters: {
+        cluster: this.cluster.clusterName,
+        services: [this.serviceName],
+      },
+      physicalResourceId: PhysicalResourceId.of(`${this.serviceName}/${effectiveName}`),
+      // Only return the discovery ARN. The full DescribeServices response is
+      // far over CloudFormation's 4KB custom-resource response limit, and the
+      // discovery ARN only exists on the deployment record, not on the service
+      // itself, so there is nothing else worth returning.
+      outputPaths: [`services.0.deployments.0.serviceConnectResources.${index}.discoveryArn`],
+    };
+    const resource = new AwsCustomResource(this, `ServiceConnectDiscoveryArn${index}`, {
+      resourceType: 'Custom::ServiceConnectDiscoveryArn',
+      onCreate: describeCall,
+      onUpdate: describeCall,
+      policy: AwsCustomResourcePolicy.fromSdkCalls({
+        resources: [this.serviceArn, this.cluster.clusterArn],
+      }),
+      // DescribeServices is an old API, so the SDK bundled with the Lambda
+      // runtime already supports it.
+      installLatestAwsSdk: false,
+    });
+
+    const arn = resource.getResponseField(`services.0.deployments.0.serviceConnectResources.${index}.discoveryArn`);
+    this._serviceConnectDiscoveryArns.set(effectiveName, arn);
+    return arn;
   }
 
   /**
