@@ -864,9 +864,6 @@ describe('cluster new api', () => {
 
       // THEN
       const test1Template = Template.fromStack(stack1).toJSON();
-      // deleteAutomatedBackups is not needed on the instance, it is set on the cluster
-      delete test1Template.Resources.DatabaseInstance1844F58FD.Properties.DeleteAutomatedBackups;
-      delete test1Template.Resources.DatabaseInstance2AA380DEE.Properties.DeleteAutomatedBackups;
       expect(
         test1Template,
       ).toEqual(Template.fromStack(stack2).toJSON());
@@ -945,9 +942,6 @@ describe('cluster new api', () => {
 
       // THEN
       const test1Template = Template.fromStack(stack1).toJSON();
-      // deleteAutomatedBackups is not needed on the instance, it is set on the cluster
-      delete test1Template.Resources.DatabaseInstance1844F58FD.Properties.DeleteAutomatedBackups;
-      delete test1Template.Resources.DatabaseInstance2AA380DEE.Properties.DeleteAutomatedBackups;
       expect(test1Template).toEqual(Template.fromStack(stack2).toJSON());
     });
   });
@@ -1075,6 +1069,31 @@ describe('cluster new api', () => {
         Engine: 'aurora-mysql',
         PerformanceInsightsRetentionPeriod: 7,
         PromotionTier: 0,
+      });
+    });
+
+    test.each([true, false])('provisioned writer with deleteAutomatedBackups=%s', (deleteAutomatedBackups) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.provisioned('writer', {
+          deleteAutomatedBackups,
+        }),
+        iamAuthentication: true,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::RDS::DBInstance', 1);
+      template.hasResourceProperties('AWS::RDS::DBInstance', {
+        DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+        DBInstanceClass: 'db.t3.medium',
+        DeleteAutomatedBackups: deleteAutomatedBackups,
       });
     });
 
