@@ -2,7 +2,7 @@ import type { Construct } from 'constructs';
 import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import type * as s3 from '../../../aws-s3';
-import { RemovalPolicy } from '../../../core';
+import { RemovalPolicy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 import { DatabaseSecret } from '../database-secret';
@@ -127,6 +127,48 @@ export function validateManagedPasswordSnapshotCredentials(scope: Construct, sna
       lit`ManagedPasswordUnsupportedSnapshotCredentialProperties`,
       'When manageMasterUserPassword is enabled, only \'username\' and \'encryptionKey\' are allowed in snapshotCredentials. ' +
       `Found unsupported properties: ${unsupportedProps.join(', ')}.`,
+      scope,
+    );
+  }
+}
+
+/**
+ * Validates the database name (the `defaultDatabaseName`/`databaseName` create-only property)
+ * at synthesis time so that a definitively-invalid name fails fast with a descriptive error,
+ * instead of synthesizing successfully and then failing late at deploy time with the opaque
+ * RDS API error "DatabaseName must begin with a letter and contain only alphanumeric characters".
+ *
+ * NOTE: RDS DatabaseName rules DIFFER BY ENGINE (for example, PostgreSQL-family engines also
+ * allow underscores, and engines apply different length caps and reserved-word rules). To avoid
+ * false-positive rejections of names that are valid for some engines, this validator deliberately
+ * enforces ONLY the character/first-letter rule that RDS applies uniformly across engines (the
+ * rule that produced the reported opaque failure): the name must begin with a letter and contain
+ * only alphanumeric characters, plus underscores for PostgreSQL-family engines. It intentionally
+ * does NOT enforce engine-specific length or reserved-word rules. When the engine is unknown or
+ * undefined, the strict alphanumeric-only rule is applied as the safe common denominator.
+ *
+ * The name is never sanitized or mutated - silent mutation of a database name is dangerous, so an
+ * invalid name is rejected outright rather than "fixed".
+ */
+export function validateDatabaseName(scope: Construct, databaseName: string | undefined, engineType?: string): void {
+  if (databaseName === undefined) {
+    return;
+  }
+  // Token-safe: the resolved value is unknown at synth time, so we cannot inspect it.
+  if (Token.isUnresolved(databaseName)) {
+    return;
+  }
+
+  // PostgreSQL-family engines ('postgres' and 'aurora-postgresql*') additionally allow underscores.
+  const isPostgresFamily = engineType === 'postgres' || (engineType?.startsWith('aurora-postgresql') ?? false);
+
+  const pattern = isPostgresFamily ? /^[A-Za-z][A-Za-z0-9_]*$/ : /^[A-Za-z][A-Za-z0-9]*$/;
+
+  if (!pattern.test(databaseName)) {
+    const allowedChars = isPostgresFamily ? 'alphanumeric characters, or underscores' : 'alphanumeric characters';
+    throw new ValidationError(
+      lit`InvalidDatabaseName`,
+      `database name ${JSON.stringify(databaseName)} is invalid. the database name must begin with a letter and contain only ${allowedChars}`,
       scope,
     );
   }
