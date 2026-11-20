@@ -21,6 +21,7 @@ import {
   parseKeySchema,
   ProjectionType,
   StreamViewType,
+  TableType,
   validateContributorInsights,
 } from './shared';
 import { TableGrants } from './table-grants';
@@ -248,6 +249,21 @@ export interface TableOptionsV2 extends IContributorInsightsConfigurable {
   readonly deletionProtection?: boolean;
 
   /**
+   * Whether disassociation protection is enabled.
+   *
+   * When enabled, this replica cannot be disassociated from its global table.
+   * Disassociation protection is independent of deletion protection.
+   *
+   * Note: Disassociation protection must be disabled in an update that completes before
+   * the update that disassociates the table (an update declaring `TableType.REGIONAL`).
+   * Remove this property in the disassociating update: the setting applies only while
+   * the table is a replica.
+   *
+   * @default - not set; DynamoDB enables disassociation protection on every global table replica
+   */
+  readonly disassociationProtection?: boolean;
+
+  /**
    * Whether point-in-time recovery is enabled.
    * @deprecated use `pointInTimeRecoverySpecification` instead
    * @default false - point in time recovery is not enabled.
@@ -406,7 +422,7 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * settings independently (billing mode must be PAY_PER_REQUEST).
    *
    * Note: Some settings are always synchronized (key schema, LSIs) regardless of this setting,
-   * and some are never synchronized (table class, SSE, deletion protection, PITR, tags, resource policy).
+   * and some are never synchronized (table class, SSE, deletion protection, disassociation protection, PITR, tags, resource policy).
    *
    * @default GlobalTableSettingsReplicationMode.NONE
    */
@@ -429,6 +445,27 @@ export interface TablePropsV2 extends TableOptionsV2 {
    * @default MultiRegionConsistency.EVENTUAL
    */
   readonly multiRegionConsistency?: MultiRegionConsistency;
+
+  /**
+   * The type of the table: a global table replica or a standalone regional table.
+   *
+   * Declare `TableType.GLOBAL_TABLE_REPLICA` to pin the classification of a table whose
+   * shape alone under-classifies it, such as the source stack of a multi-account global
+   * table, which models only its local replica. Declare `TableType.REGIONAL` on a table
+   * that was previously deployed as a global table replica to disassociate the
+   * stack-local replica from its global table, converting it into a standalone table
+   * without deleting its data.
+   *
+   * Note: `TableType.REGIONAL` cannot be combined with `replicas`, `witnessRegion`,
+   * `multiRegionConsistency` or `globalTableSettingsReplicationMode`. The disassociating
+   * update must contain no other configuration changes, so declare
+   * `dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES` to keep the stream that the global
+   * table required.
+   *
+   * @see https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/globaltables-disassociate.html
+   * @default - CloudFormation classifies the table from its shape
+   */
+  readonly tableType?: TableType;
 
   /**
    * Global secondary indexes.
@@ -511,7 +548,7 @@ export interface TableV2MultiAccountReplicaProps extends TableOptionsV2 {
    * settings independently (billing mode must be PAY_PER_REQUEST).
    *
    * Note: Some settings are always synchronized (key schema, LSIs) regardless of this setting,
-   * and some are never synchronized (table class, SSE, deletion protection, PITR, tags, resource policy).
+   * and some are never synchronized (table class, SSE, deletion protection, disassociation protection, PITR, tags, resource policy).
    *
    * @default GlobalTableSettingsReplicationMode.ALL
    */
@@ -773,6 +810,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
+  private readonly tableType?: TableType;
 
   @memoizedGetter
   public get tableArn(): string {
@@ -809,6 +847,7 @@ export class TableV2 extends TableBaseV2 {
     this.region = this.stack.region;
     this.tags = new TagManager(TagType.STANDARD, CfnGlobalTable.CFN_RESOURCE_TYPE_NAME);
     this.globalTableSettingsReplicationMode = props.globalTableSettingsReplicationMode;
+    this.tableType = props.tableType;
 
     this.encryption = props.encryption;
     this.encryptionKey = this.encryption?.tableKey;
@@ -843,6 +882,10 @@ export class TableV2 extends TableBaseV2 {
       throw new ValidationError(lit`WitnessRegionNotSupportedForMrec`, 'Witness region cannot be specified for a Multi-Region Eventual Consistency (MREC) Global Table - Witness regions are only supported for Multi-Region Strong Consistency (MRSC) Global Tables.', this);
     }
 
+    if (props.tableType === TableType.REGIONAL) {
+      this.validateRegionalTableType(props);
+    }
+
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
     this.resourcePolicy = props.resourcePolicy;
     this.streamResourcePolicy = props.streamResourcePolicy;
@@ -854,6 +897,7 @@ export class TableV2 extends TableBaseV2 {
       replicas: this.replicaTables.derive(_ => this.renderReplicaTables()),
       globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
+      tableType: props.tableType,
       globalSecondaryIndexes: this.globalSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
       localSecondaryIndexes: this.localSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
       billingMode: this.billingMode,
@@ -1062,6 +1106,7 @@ export class TableV2 extends TableBaseV2 {
       region: props.region,
       globalSecondaryIndexes: this.configureReplicaGlobalSecondaryIndexes(props.globalSecondaryIndexOptions),
       deletionProtectionEnabled: props.deletionProtection ?? this.tableOptions.deletionProtection,
+      disassociationProtectionEnabled: props.disassociationProtection ?? this.tableOptions.disassociationProtection,
       tableClass: props.tableClass ?? this.tableOptions.tableClass,
       sseSpecification: this.encryption?._renderReplicaSseSpecification(this, props.region),
       kinesisStreamSpecification: props.kinesisStream
@@ -1286,6 +1331,10 @@ export class TableV2 extends TableBaseV2 {
       throw new ValidationError(lit`ReplicaTablesNotSupportedInRegionAgnosticStack`, 'Replica tables are not supported in a region agnostic stack', this);
     }
 
+    if (this.tableType === TableType.REGIONAL) {
+      throw new ValidationError(lit`ReplicaTablesNotAllowedOnRegionalTable`, `You cannot add a replica table when 'tableType' is ${TableType.REGIONAL} - a table disassociating from its global table must remove all peer replicas in the same update`, this);
+    }
+
     if (Token.isUnresolved(props.region)) {
       throw new ValidationError(lit`ReplicaTableRegionCannotBeToken`, 'Replica table region must not be a token', this);
     }
@@ -1344,6 +1393,40 @@ export class TableV2 extends TableBaseV2 {
 
     if (recoveryPeriodInDays !== undefined && (recoveryPeriodInDays < 1 || recoveryPeriodInDays > 35 )) {
       throw new ValidationError(lit`RecoveryPeriodOutOfRange`, '`recoveryPeriodInDays` must be a value between `1` and `35`.', this);
+    }
+  }
+
+  /**
+   * Shape rules for a table declared with `TableType.REGIONAL`, mirroring the
+   * CloudFormation handler's disassociation gating: a Regional template models only the
+   * stack-local replica and must omit every global-table-only property. A witness region
+   * never reaches this method, since the consistency validations reject it first.
+   *
+   * The handler also rejects a disassociating update that changes any other property
+   * against the live table. The stream specification is the one such property this
+   * construct changes on its own: it renders `NEW_AND_OLD_IMAGES` only while replicas
+   * exist, so removing them drops the stream unless `dynamoStream` is declared. Both
+   * cases below are legal on a table that is already regional, so they warn.
+   */
+  private validateRegionalTableType(props: TablePropsV2) {
+    if (props.replicas && props.replicas.length > 0) {
+      throw new ValidationError(lit`ReplicaTablesNotAllowedOnRegionalTable`, `You cannot configure 'replicas' when 'tableType' is ${TableType.REGIONAL} - a table disassociating from its global table must remove all peer replicas in the same update`, this);
+    }
+
+    if (props.multiRegionConsistency !== undefined) {
+      throw new ValidationError(lit`MultiRegionConsistencyNotAllowedOnRegionalTable`, `You cannot configure 'multiRegionConsistency' when 'tableType' is ${TableType.REGIONAL}`, this);
+    }
+
+    if (props.globalTableSettingsReplicationMode !== undefined) {
+      throw new ValidationError(lit`GlobalTableSettingsReplicationModeNotAllowedOnRegionalTable`, `You cannot configure 'globalTableSettingsReplicationMode' when 'tableType' is ${TableType.REGIONAL}`, this);
+    }
+
+    if (props.dynamoStream === undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-dynamodb:regionalTableTypeWithoutStream', `A table with 'tableType' ${TableType.REGIONAL} and no 'dynamoStream' renders no stream specification. If this update disassociates the table from its global table, CloudFormation rejects it because the global table's stream would change: declare 'dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES'.`);
+    }
+
+    if (props.disassociationProtection !== undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-dynamodb:disassociationProtectionWithRegionalTableType', `Remove 'disassociationProtection' when 'tableType' is ${TableType.REGIONAL}. The setting applies only while the table is a global table replica: a value that changes in the update that disassociates the table is rejected, and a value left in place is reported as drift after disassociation.`);
     }
   }
 
@@ -1510,6 +1593,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
       replicas: [{
         region: this.stack.region,
         deletionProtectionEnabled: props.deletionProtection,
+        disassociationProtectionEnabled: props.disassociationProtection,
         tableClass: props.tableClass,
         kinesisStreamSpecification: props.kinesisStream ?
           { streamArn: props.kinesisStream.streamArn } : undefined,
