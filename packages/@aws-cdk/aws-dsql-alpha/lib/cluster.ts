@@ -9,6 +9,22 @@ import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 
 /**
+ * Advanced monitoring metric groups that can be enabled on an Aurora DSQL cluster
+ *
+ * @see https://docs.aws.amazon.com/aurora-dsql/latest/userguide/dsql-statement-statistics.html
+ */
+export enum MetricGroup {
+  /**
+   * Statement statistics.
+   *
+   * Aurora DSQL records aggregated statistics for each SQL statement, such as call counts,
+   * planning and execution time, rows, and DPU usage, and publishes them to Amazon CloudWatch
+   * and Amazon CloudWatch Logs. This incurs additional CloudWatch charges.
+   */
+  STATEMENT_STATISTICS = 'STATEMENT_STATISTICS',
+}
+
+/**
  * Properties for a new Aurora DSQL cluster
  */
 export interface ClusterProps {
@@ -37,6 +53,19 @@ export interface ClusterProps {
    * @default - true if `removalPolicy` is RETAIN, undefined otherwise.
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * The advanced monitoring metric groups to enable on the cluster.
+   *
+   * This list is the complete set of metric groups for the cluster. Metric groups
+   * that are not included are disabled. Specify an empty list to explicitly
+   * disable all metric groups.
+   *
+   * @see https://docs.aws.amazon.com/aurora-dsql/latest/userguide/dsql-statement-statistics.html
+   *
+   * @default - No metric groups are configured. Advanced monitoring is off for a new cluster.
+   */
+  readonly metricGroups?: MetricGroup[];
 }
 
 /**
@@ -214,8 +243,16 @@ export class Cluster extends ClusterBase {
 
     const deletionProtection = props?.deletionProtection ?? (props?.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
 
+    if (props?.metricGroups !== undefined && !cdk.Token.isUnresolved(props.metricGroups)) {
+      const duplicates = props.metricGroups.filter((group, index) => props.metricGroups!.indexOf(group) !== index);
+      if (duplicates.length > 0) {
+        throw new ValidationError(lit`DuplicateMetricGroups`, `metricGroups must not contain duplicates, got duplicated ${JSON.stringify([...new Set(duplicates)])}`, this);
+      }
+    }
+
     this.cluster = new CfnCluster(this, 'Resource', {
       deletionProtectionEnabled: deletionProtection,
+      metricGroups: props?.metricGroups?.map(metricGroup => ({ metricGroup })),
     });
 
     this.clusterIdentifier = this.cluster.ref;

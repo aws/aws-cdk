@@ -1,0 +1,35 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3002",
+          "description": "MetricGroups: Additional properties are not allowed ('MetricGroups' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-dsql-metric-groups-stack/Database/Resource",
+              "constructFqn": "aws-cdk-lib.aws_dsql.CfnCluster",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-dsql-metric-groups-stack.template.json",
+                "logicalId": "DatabaseB269D8BB",
+                "propertyPaths": [
+                  "Properties.MetricGroups"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
