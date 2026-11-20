@@ -14,16 +14,6 @@
    "DeletionPolicy": "Delete"
   }
  },
- "Outputs": {
-  "ExportsOutputRefDatabaseB269D8BB88F4B1C4": {
-   "Value": {
-    "Ref": "DatabaseB269D8BB"
-   },
-   "Export": {
-    "Name": "aws-cdk-dsql-metric-groups-stack:ExportsOutputRefDatabaseB269D8BB88F4B1C4"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

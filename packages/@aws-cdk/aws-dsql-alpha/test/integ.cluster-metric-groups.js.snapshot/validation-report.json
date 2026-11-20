@@ -28,6 +28,21 @@
               }
             }
           ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources: Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-dsql-metric-groups-integ/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
         }
       ]
     }

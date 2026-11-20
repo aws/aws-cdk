@@ -28,11 +28,5 @@
       "type": "aws:cdk:logicalId",
       "data": "DatabaseB269D8BB"
     }
-  ],
-  "/aws-cdk-dsql-metric-groups-stack/Exports/Output{\"Ref\":\"DatabaseB269D8BB\"}": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputRefDatabaseB269D8BB88F4B1C4"
-    }
   ]
 }

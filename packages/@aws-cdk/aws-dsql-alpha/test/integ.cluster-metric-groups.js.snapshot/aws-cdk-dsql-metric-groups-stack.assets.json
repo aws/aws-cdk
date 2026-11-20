@@ -1,16 +1,16 @@
 {
   "version": "55.0.0",
   "files": {
-    "131bc28bdf4d625bc5dd37b745ed989bae95454df56d5818f5f94c20d2a6bb36": {
+    "887e4257037a04ad410213013e3881d3b0aa346703c2ca872319be4a32b9ae45": {
       "displayName": "aws-cdk-dsql-metric-groups-stack Template",
       "source": {
         "path": "aws-cdk-dsql-metric-groups-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d0f4f590": {
+        "current_account-current_region-5e75f173": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "131bc28bdf4d625bc5dd37b745ed989bae95454df56d5818f5f94c20d2a6bb36.json",
+          "objectKey": "887e4257037a04ad410213013e3881d3b0aa346703c2ca872319be4a32b9ae45.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

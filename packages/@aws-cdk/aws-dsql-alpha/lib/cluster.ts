@@ -246,7 +246,7 @@ export class Cluster extends ClusterBase {
     if (props?.metricGroups !== undefined && !cdk.Token.isUnresolved(props.metricGroups)) {
       const duplicates = props.metricGroups.filter((group, index) => props.metricGroups!.indexOf(group) !== index);
       if (duplicates.length > 0) {
-        throw new ValidationError(lit`DuplicateMetricGroups`, `metricGroups must not contain duplicates, got duplicated ${JSON.stringify([...new Set(duplicates)])}`, this);
+        throw new ValidationError(lit`DuplicateMetricGroups`, `metricGroups must not contain duplicates, got ${JSON.stringify(props.metricGroups)}, remove the duplicated ${JSON.stringify([...new Set(duplicates)])}`, this);
       }
     }
 

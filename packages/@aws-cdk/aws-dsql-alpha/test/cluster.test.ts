@@ -158,7 +158,7 @@ describe('Aurora DSQL Cluster - Metric groups', () => {
     // WHEN / THEN
     expect(() => new Cluster(stack, 'Cluster', {
       metricGroups: [MetricGroup.STATEMENT_STATISTICS, MetricGroup.STATEMENT_STATISTICS],
-    })).toThrow('metricGroups must not contain duplicates, got duplicated ["STATEMENT_STATISTICS"]');
+    })).toThrow('metricGroups must not contain duplicates, got ["STATEMENT_STATISTICS","STATEMENT_STATISTICS"], remove the duplicated ["STATEMENT_STATISTICS"]');
   });
 });
 
