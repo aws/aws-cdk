@@ -119,13 +119,13 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   }
 
   @MethodMetadata()
-  public grantPassRole(identity: IPrincipal): Grant {
-    return this.grant(identity, 'iam:PassRole');
+  public grantPassRole(grantee: IPrincipal): Grant {
+    return this.grant(grantee, 'iam:PassRole');
   }
 
   @MethodMetadata()
-  public grantAssumeRole(identity: IPrincipal): Grant {
-    return this.grant(identity, 'sts:AssumeRole');
+  public grantAssumeRole(grantee: IPrincipal): Grant {
+    return this.grant(grantee, 'sts:AssumeRole');
   }
 
   @MethodMetadata()
