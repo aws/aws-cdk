@@ -938,6 +938,22 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
 });
 ```
 
+### Set a custom IAM role for ScheduledFargateTask
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const role: iam.Role;
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+  },
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  role,
+});
+```
+
 ### Customize Container Name for ScheduledEc2Task
 
 ```ts
