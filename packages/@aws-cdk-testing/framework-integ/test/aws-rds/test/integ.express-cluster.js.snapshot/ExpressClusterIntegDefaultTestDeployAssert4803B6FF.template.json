@@ -1,0 +1,194 @@
+{
+ "Resources": {
+  "AwsApiCallRDSdescribeDBClustersf49aa5c3064ae01e1c2109e99ad0d9ba": {
+   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBClusters",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "RDS",
+    "api": "describeDBClusters",
+    "expected": "{\"$ObjectLike\":{\"DBClusters\":[{\"Engine\":\"aurora-postgresql\",\"MasterUsername\":\"appadmin\",\"IAMDatabaseAuthenticationEnabled\":true,\"BackupRetentionPeriod\":7,\"StorageType\":\"aurora-iopt1\",\"EnabledCloudwatchLogsExports\":[\"postgresql\"],\"PerformanceInsightsEnabled\":true,\"ServerlessV2ScalingConfiguration\":{\"MinCapacity\":0,\"MaxCapacity\":4,\"SecondsUntilAutoPause\":600}}]}}",
+    "parameters": {
+     "DBClusterIdentifier": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-rds-express-cluster:ExportsOutputRefClusterEB0386A796A0E3FE"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794294723082"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "rds:DescribeDBClusters"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "rds:DescribeDBInstances"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "0c27302dd127441f84341af708066b603946169453a79140d9f0031e15377670.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallRDSdescribeDBInstances52536b2de0b097f21342b274b328aa27": {
+   "Type": "Custom::DeployAssert@SdkCallRDSdescribeDBInstances",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "RDS",
+    "api": "describeDBInstances",
+    "expected": "{\"$ObjectLike\":{\"DBInstances\":[{\"DBInstanceClass\":\"db.serverless\",\"Engine\":\"aurora-postgresql\"}]}}",
+    "parameters": {
+     "Filters": {
+      "Fn::Join": [
+       "",
+       [
+        "[{\"Name\":\"db-cluster-id\",\"Values\":[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-rds-express-cluster:ExportsOutputRefClusterEB0386A796A0E3FE"
+        },
+        "\"]}]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1794294723084"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallRDSdescribeDBClustersf49aa5c3064ae01e1c2109e99ad0d9ba": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRDSdescribeDBClustersf49aa5c3064ae01e1c2109e99ad0d9ba",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallRDSdescribeDBInstances52536b2de0b097f21342b274b328aa27": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallRDSdescribeDBInstances52536b2de0b097f21342b274b328aa27",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

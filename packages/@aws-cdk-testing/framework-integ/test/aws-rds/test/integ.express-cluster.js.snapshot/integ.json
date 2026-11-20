@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "ExpressClusterInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-express-cluster"
+      ],
+      "assertionStack": "ExpressClusterInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ExpressClusterIntegDefaultTestDeployAssert4803B6FF"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
+}
