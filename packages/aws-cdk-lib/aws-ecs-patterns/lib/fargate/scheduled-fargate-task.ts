@@ -15,6 +15,8 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps, Farga
   /**
    * Existing IAM role to run the ECS task.
    *
+   * [disable-awslint:prefer-ref-interface] EcsTask in aws-events-targets accepts IRole, so this prop uses the same type.
+   *
    * @default - A new IAM role is created
    */
   readonly role?: IRole;
