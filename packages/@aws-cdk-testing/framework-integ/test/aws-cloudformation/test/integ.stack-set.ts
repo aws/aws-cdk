@@ -118,10 +118,10 @@ class TestCase extends Stack {
     });
     const stackSet = new MyStackSet(this, 'StackSet', {
       stackSetName,
-      target: cfn.StackSetTarget.fromAccounts({
+      targets: [cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
-      }),
+      })],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
         adminRole,
@@ -151,10 +151,10 @@ class AssetTestCase extends Stack {
       assetBuckets: [s3.Bucket.fromBucketName(this, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
       assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
       stackSetName: assetStackSetName,
-      target: cfn.StackSetTarget.fromAccounts({
+      targets: [cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
-      }),
+      })],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
       }),
