@@ -1,0 +1,56 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources: Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "GatewayDomainOverrideIntegTest/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ],
+      "suppressedViolations": [
+        {
+          "ruleName": "F3002",
+          "description": "DomainOverride: Additional properties are not allowed ('DomainOverride' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "BedrockAgentCoreGatewayDomainOverrideIntegTest/DomainOverrideGateway/Resource",
+              "constructFqn": "aws-cdk-lib.aws_bedrockagentcore.CfnGateway",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "BedrockAgentCoreGatewayDomainOverrideIntegTest.template.json",
+                "logicalId": "DomainOverrideGatewayC3CA88E9",
+                "propertyPaths": [
+                  "Properties.DomainOverride"
+                ]
+              }
+            }
+          ],
+          "acknowledgedId": "CloudFormation-Validate::F3002",
+          "reason": "DomainOverride is a newly launched property not yet in the bundled schema",
+          "acknowledgedAt": "BedrockAgentCoreGatewayDomainOverrideIntegTest",
+          "acknowledgedStackTrace": "    at Validations.acknowledge (/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)\n    at <anonymous> (/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/gateway/integ.gateway-domain-override.js:50:27)\n    ...node internals..."
+        }
+      ]
+    }
+  ]
+}
