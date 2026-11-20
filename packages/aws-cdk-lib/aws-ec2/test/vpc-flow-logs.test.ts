@@ -3,10 +3,148 @@ import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { RemovalPolicy, Stack } from '../../core';
+import { App, RemovalPolicy, Stack } from '../../core';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc, FlowLogTrafficType } from '../lib';
 
 describe('vpc flow logs', () => {
+  describe('default VPC Flow Logs CloudWatch role confused-deputy trust', () => {
+    const account = '111122223333';
+    const region = 'us-east-1';
+    const trustFlag = '@aws-cdk/aws-ec2:flowLogsCloudWatchLogsTrustScoped';
+    const partitionLiteralFlag = '@aws-cdk/core:enablePartitionLiterals';
+
+    function testStack(enabled?: boolean, environment?: { account: string; region: string }, literalPartitions = false): Stack {
+      const context: { [key: string]: boolean } = {};
+      if (enabled !== undefined) {
+        context[trustFlag] = enabled;
+      }
+      if (literalPartitions) {
+        context[partitionLiteralFlag] = true;
+      }
+      return new Stack(new App({ context }), 'FlowLogTrustTest', {
+        env: environment ?? { account, region },
+      });
+    }
+
+    function createLog(stack: Stack): void {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
+      });
+    }
+
+    function singleRole(stack: Stack): any {
+      const roles = Object.values(Template.fromStack(stack).findResources('AWS::IAM::Role'));
+      expect(roles).toHaveLength(1);
+      return roles[0];
+    }
+
+    test.each([undefined, false])('preserves exact legacy trust when flag is %s', enabled => {
+      const stack = testStack(enabled);
+      createLog(stack);
+      expect(singleRole(stack).Properties.AssumeRolePolicyDocument.Statement).toEqual([{
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: { Service: 'vpc-flow-logs.amazonaws.com' },
+      }]);
+    });
+
+    test.each([
+      ['aws', 'us-east-1', 'arn:aws:ec2:us-east-1:111122223333:vpc-flow-log/*'],
+      ['aws-cn', 'cn-north-1', 'arn:aws-cn:ec2:cn-north-1:111122223333:vpc-flow-log/*'],
+      ['aws-us-gov', 'us-gov-west-1', 'arn:aws-us-gov:ec2:us-gov-west-1:111122223333:vpc-flow-log/*'],
+    ])('uses independently specified ARN for partition %s (%s)', (_partition, targetRegion, expectedArn) => {
+      const stack = testStack(true, { account, region: targetRegion }, true);
+      createLog(stack);
+      expect(singleRole(stack).Properties.AssumeRolePolicyDocument.Statement).toEqual([{
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: { Service: 'vpc-flow-logs.amazonaws.com' },
+        Condition: {
+          StringEquals: { 'aws:SourceAccount': '111122223333' },
+          ArnLike: { 'aws:SourceArn': expectedArn },
+        },
+      }]);
+    });
+
+    test('preserves account, region and partition pseudo-parameters without an explicit env', () => {
+      const stack = new Stack(new App({ context: { [trustFlag]: true, [partitionLiteralFlag]: true } }), 'AgnosticFlowLog');
+      createLog(stack);
+      const statement = singleRole(stack).Properties.AssumeRolePolicyDocument.Statement[0];
+      expect(statement.Action).toBe('sts:AssumeRole');
+      expect(statement.Principal).toEqual({ Service: 'vpc-flow-logs.amazonaws.com' });
+      expect(statement.Condition.StringEquals).toEqual({ 'aws:SourceAccount': { Ref: 'AWS::AccountId' } });
+      const actualArn = JSON.stringify(statement.Condition.ArnLike['aws:SourceArn']);
+      for (const segment of ['AWS::Partition', 'AWS::Region', 'AWS::AccountId', 'vpc-flow-log/*']) {
+        expect(actualArn).toContain(segment);
+      }
+      expect(actualArn).not.toContain('vpc-flow-log:*');
+    });
+
+    test('preserves the exact caller-supplied role trust statement', () => {
+      const stack = testStack(true);
+      const originalConditions = { StringEquals: { 'aws:SourceAccount': '999988887777' } };
+      const role = new iam.Role(stack, 'UserRole', {
+        assumedBy: new iam.ServicePrincipal('vpc-flow-logs.amazonaws.com', { conditions: originalConditions }),
+      });
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
+        destination: FlowLogDestination.toCloudWatchLogs(new logs.LogGroup(stack, 'ExistingLogGroup'), role),
+      });
+      expect(singleRole(stack).Properties.AssumeRolePolicyDocument.Statement).toEqual([{
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: { Service: 'vpc-flow-logs.amazonaws.com' },
+        Condition: originalConditions,
+      }]);
+    });
+
+    test('scopes Vpc.addFlowLog default role without changing the flow log resource', () => {
+      const stack = testStack(true, { account, region }, true);
+      const vpc = new Vpc(stack, 'Vpc');
+      vpc.addFlowLog('FlowLogs');
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::EC2::FlowLog', 1);
+      t.resourceCountIs('AWS::IAM::Role', 1);
+      const statement = singleRole(stack).Properties.AssumeRolePolicyDocument.Statement[0];
+      expect(statement.Condition).toEqual({
+        StringEquals: { 'aws:SourceAccount': account },
+        ArnLike: { 'aws:SourceArn': 'arn:aws:ec2:us-east-1:111122223333:vpc-flow-log/*' },
+      });
+    });
+
+    test('preserves FlowLog, LogGroup, identity policy and every other role property', () => {
+      const legacy = testStack(false, { account, region }, true);
+      const scoped = testStack(true, { account, region }, true);
+      createLog(legacy);
+      createLog(scoped);
+      const oldTemplate = Template.fromStack(legacy);
+      const newTemplate = Template.fromStack(scoped);
+      for (const type of ['AWS::EC2::FlowLog', 'AWS::Logs::LogGroup', 'AWS::IAM::Policy']) {
+        expect(newTemplate.findResources(type)).toEqual(oldTemplate.findResources(type));
+      }
+      const oldRole = JSON.parse(JSON.stringify(singleRole(legacy)));
+      const newRole = JSON.parse(JSON.stringify(singleRole(scoped)));
+      expect(newRole.Properties.AssumeRolePolicyDocument.Statement[0].Condition).toEqual({
+        StringEquals: { 'aws:SourceAccount': account },
+        ArnLike: { 'aws:SourceArn': 'arn:aws:ec2:us-east-1:111122223333:vpc-flow-log/*' },
+      });
+      delete newRole.Properties.AssumeRolePolicyDocument.Statement[0].Condition;
+      expect(newRole).toEqual(oldRole);
+    });
+
+    test('trust policy does not depend on the generated FlowLog resource ID', () => {
+      const stack = testStack(true, { account, region }, true);
+      createLog(stack);
+      const template = Template.fromStack(stack);
+      const flowLogIds = Object.keys(template.findResources('AWS::EC2::FlowLog'));
+      const role = singleRole(stack);
+      const trust = JSON.stringify(role.Properties.AssumeRolePolicyDocument);
+      for (const id of flowLogIds) {
+        expect(trust).not.toContain(id);
+        expect(role.DependsOn ?? []).not.toContain(id);
+      }
+    });
+  });
   test('with defaults set, it successfully creates with cloudwatch logs destination', () => {
     const stack = getTestStack();
 
