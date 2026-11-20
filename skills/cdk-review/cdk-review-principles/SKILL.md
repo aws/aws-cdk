@@ -100,6 +100,11 @@ A finding becomes a posted comment only when it is (1) tied to a specific line, 
 actionable, and (3) significant enough to stand alone. Keep high-level observations,
 positive notes, and clusters of nits in the review summary.
 
+Spend the review on what the build cannot see. The PR's build already fails on what its
+compiler and linters check, such as a public API with no docstring or an optional props
+property with no `@default` (see
+[`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint)).
+
 See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
 structured finding fields and how to write each one before you generate findings.
 

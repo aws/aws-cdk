@@ -10,8 +10,7 @@ docs carry the standing of code: a doc must be **true** — match the code it de
 lies misleads every consumer — and **complete** — present wherever a guideline requires it. A wrong
 `@default` is a defect with the standing of a code defect.
 
-**Scope gate — review only the docs this PR adds or changes.** Flag a new doc defect the PR creates: a
-`@default` it writes that contradicts the code it ships.
+**Scope gate — review only the docs this PR adds or changes.** Flag a doc defect the PR creates in them.
 
 **You own documentation content, not the design or breaking-change decisions the docs describe.** Judge
 whether the docs match the code and the guidelines. Three doc surfaces overlap another dimension's
