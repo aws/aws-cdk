@@ -693,6 +693,8 @@ export interface StackSetProps {
    * If you deploy a stack that requires certain capabilities and they are
    * not specified, the deployment will fail with a `InsufficientCapabilities` error.
    *
+   * `CfnCapabilities.NONE` is not accepted; omit `capabilities` to specify no capabilities.
+   *
    * @default - no specific capabilities
    */
   readonly capabilities?: CfnCapabilities[];
@@ -1054,6 +1056,11 @@ export class StackSet extends Stack implements IStackSet {
 
     if (props.capabilities?.includes(CfnCapabilities.AUTO_EXPAND) && deploymentTypeConfig.permissionsModel === PermissionModel.SERVICE_MANAGED) {
       throw new ValidationError(lit`StackSetAutoExpandNotSupported`, 'service managed stacksets do not currently support the "AUTO_EXPAND" capability', this);
+    }
+
+    if (props.capabilities && !Token.isUnresolved(props.capabilities)
+      && props.capabilities.some((capability) => !Token.isUnresolved(capability) && capability === CfnCapabilities.NONE)) {
+      throw new ValidationError(lit`StackSetCapabilityNoneNotSupported`, 'a StackSet does not accept CfnCapabilities.NONE, remove it from \'capabilities\'', this);
     }
 
     if (deploymentTypeConfig.permissionsModel === PermissionModel.SELF_MANAGED) {

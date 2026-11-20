@@ -2281,6 +2281,45 @@ describe('StackSet validation errors', () => {
     }));
   });
 
+  test.each([
+    ['only', [CfnCapabilities.NONE]],
+    ['with another capability', [CfnCapabilities.NONE, CfnCapabilities.NAMED_IAM]],
+  ])('fails with an error code when the capabilities contain CfnCapabilities.NONE %s', (_name, capabilities) => {
+    const app = new App();
+    const stack = new Stack(app);
+
+    expect(() => new StackSet(stack, 'StackSet', { capabilities })).toThrow(expect.objectContaining({
+      name: 'StackSetCapabilityNoneNotSupported',
+      message: 'a StackSet does not accept CfnCapabilities.NONE, remove it from \'capabilities\'',
+      constructPath: 'Default/StackSet',
+    }));
+  });
+
+  test('renders the capabilities when they do not contain CfnCapabilities.NONE', () => {
+    const app = new App();
+    const stack = new Stack(app);
+
+    new StackSet(stack, 'StackSet', { capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM] });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM'],
+    });
+  });
+
+  test('accepts a tokenized capabilities list and a tokenized capability', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const list = new CfnParameter(stack, 'Capabilities', { type: 'CommaDelimitedList' }).valueAsList as CfnCapabilities[];
+    const element = new CfnParameter(stack, 'Capability').valueAsString as CfnCapabilities;
+
+    new StackSet(stack, 'ListStackSet', { capabilities: list });
+    new StackSet(stack, 'ElementStackSet', { capabilities: [element] });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudFormation::StackSet', { Capabilities: { Ref: 'Capabilities' } });
+    template.hasResourceProperties('AWS::CloudFormation::StackSet', { Capabilities: [{ Ref: 'Capability' }] });
+  });
+
   test('fails with an error code when a file asset is used without asset buckets', () => {
     const app = new App();
     const stack = new Stack(app);
