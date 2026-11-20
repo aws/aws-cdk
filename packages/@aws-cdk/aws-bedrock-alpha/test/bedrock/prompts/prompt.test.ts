@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, CfnParameter, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
@@ -240,6 +240,55 @@ describe('Prompt', () => {
           defaultVariant: defaultVariant,
         });
       }).toThrow('The \'defaultVariant\' needs to be included in the \'variants\' array.');
+    });
+
+    test('does not fail validation if description is a late-bound value', () => {
+      const prefix = new CfnParameter(stack, 'DescriptionPrefix');
+      // The encoded token is ~20 characters, so the unresolved string exceeds the 200 character limit
+      const padding = 'a'.repeat(190);
+
+      new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: 'test-prompt',
+        description: `${prefix.valueAsString}${padding}`,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Prompt', {
+        Description: { 'Fn::Join': ['', [{ Ref: 'DescriptionPrefix' }, padding]] },
+      });
+    });
+
+    test('does not fail validation if inference configuration values are late-bound', () => {
+      const numberParam = (id: string) => new CfnParameter(stack, id, { type: 'Number' }).valueAsNumber;
+
+      const variant = bedrock.PromptVariant.text({
+        variantName: 'text-variant',
+        model: foundationModel,
+        promptText: 'Hello',
+        inferenceConfiguration: bedrock.PromptInferenceConfiguration.text({
+          maxTokens: numberParam('MaxTokens'),
+          temperature: numberParam('Temperature'),
+          topP: numberParam('TopP'),
+        }),
+      });
+
+      new bedrock.Prompt(stack, 'TestPrompt', {
+        promptName: 'test-prompt',
+        variants: [variant],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Bedrock::Prompt', {
+        Variants: [
+          Match.objectLike({
+            InferenceConfiguration: {
+              Text: {
+                MaxTokens: { Ref: 'MaxTokens' },
+                Temperature: { Ref: 'Temperature' },
+                TopP: { Ref: 'TopP' },
+              },
+            },
+          }),
+        ],
+      });
     });
   });
 

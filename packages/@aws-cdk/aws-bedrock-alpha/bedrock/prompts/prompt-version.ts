@@ -1,4 +1,5 @@
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import { Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 // Internal Libs
 import type { IPrompt } from './prompt';
@@ -121,7 +122,7 @@ export class PromptVersion extends Construct {
   private validateDescriptionImmediate = (description: string): string[] => {
     const errors: string[] = [];
 
-    if (description && description.length > 200) {
+    if (description && !Token.isUnresolved(description) && description.length > 200) {
       errors.push(
         `Description must be 200 characters or less, got ${description.length} characters.`,
       );
@@ -137,7 +138,7 @@ export class PromptVersion extends Construct {
   private validateDescription(): string[] {
     const errors: string[] = [];
 
-    if (this.description && this.description.length > 200) {
+    if (this.description && !Token.isUnresolved(this.description) && this.description.length > 200) {
       errors.push(
         `Description must be 200 characters or less, got ${this.description.length} characters.`,
       );
