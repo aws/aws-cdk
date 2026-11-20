@@ -271,6 +271,69 @@ describe('options for other engines', () => {
     ]);
   });
 
+  test('deployments read the cloud assembly by default', () => {
+    // GIVEN
+    const blueprint = new Blueprint(app, 'Bp', {
+      synth: new cdkp.ShellStep('Synth', {
+        commands: ['build'],
+      }),
+    });
+    blueprint.addStage(new OneStackApp(app, 'Alpha'));
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint);
+
+    // THEN
+    expect(graph.deployFileSet).toBe(graph.cloudAssemblyFileSet);
+    expect(childrenAt(graph.graph)).toEqual([
+      'Build',
+      'Alpha',
+    ]);
+  });
+
+  test('"deployFileSet" producer is added to the Assets stage, and every deployment depends on it', () => {
+    // GIVEN
+    const blueprint = new Blueprint(app, 'Bp', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+        commands: ['build'],
+      }),
+    });
+    const wave = blueprint.addWave('Wave');
+    wave.addStage(new OneStackApp(app, 'Alpha'));
+    wave.addStage(new OneStackApp(app, 'Beta'));
+
+    const deployStep = new cdkp.ShellStep('Strip', {
+      input: blueprint.cloudAssemblyFileSet,
+      commands: ['strip'],
+      primaryOutputDirectory: '.',
+    });
+
+    // WHEN
+    const graph = new PipelineGraph(blueprint, {
+      selfMutation: true,
+      deployFileSet: deployStep.primaryOutput,
+    });
+
+    // THEN
+    expect(graph.deployFileSet).toBe(deployStep.primaryOutput);
+    expect(childrenAt(graph.graph)).toEqual([
+      'Source',
+      'Build',
+      'UpdatePipeline',
+      'Assets',
+      'Wave',
+    ]);
+    expect(childrenAt(graph.graph, 'Assets')).toEqual([
+      'Strip',
+    ]);
+
+    const stripNode = nodeAt(graph.graph, 'Assets', 'Strip');
+    expect(stripNode.dependencies).toContain(nodeAt(graph.graph, 'UpdatePipeline', 'SelfMutate'));
+    expect(nodeAt(graph.graph, 'Wave', 'Alpha', 'Stack', 'Prepare').dependencies).toContain(stripNode);
+    expect(nodeAt(graph.graph, 'Wave', 'Beta', 'Stack', 'Prepare').dependencies).toContain(stripNode);
+  });
+
   test('specifying changeSet step with "prepareStep: false" will throw', () => {
     // GIVEN
     const blueprint = new Blueprint(app, 'Bp', {

@@ -35,6 +35,16 @@ export interface PipelineGraphProps {
    * @default true
    */
   readonly prepareStep?: boolean;
+
+  /**
+   * The file set the deployment actions read their templates from
+   *
+   * Its producer is added to the "Assets" stage, after the self-mutation
+   * step (or the synth step, if there is no self-mutation).
+   *
+   * @default - the cloud assembly produced by the synth step
+   */
+  readonly deployFileSet?: FileSet;
 }
 
 /**
@@ -50,6 +60,10 @@ export class PipelineGraph {
 
   public readonly graph: AGraph = Graph.of('', { type: 'group' });
   public readonly cloudAssemblyFileSet: FileSet;
+  /**
+   * The file set the deployment actions read their templates from
+   */
+  public readonly deployFileSet: FileSet;
   public readonly queries: PipelineQueries;
 
   private readonly added = new Map<Step, AGraphNode>();
@@ -89,6 +103,7 @@ export class PipelineGraph {
     }
 
     this.cloudAssemblyFileSet = cloudAssembly;
+    this.deployFileSet = props.deployFileSet ?? cloudAssembly;
 
     if (props.selfMutation) {
       const stage: AGraph = Graph.of('UpdatePipeline', { type: 'group' });
@@ -184,6 +199,10 @@ export class PipelineGraph {
       const cloudAssembly = this.cloudAssemblyFileSet;
 
       firstDeployNode.dependOn(this.addStepNode(cloudAssembly.producer, retGraph));
+
+      if (this.deployFileSet !== cloudAssembly) {
+        firstDeployNode.dependOn(this.addDeployFileSetProducer());
+      }
 
       // add the template asset
       if (this.publishTemplate) {
@@ -329,6 +348,22 @@ export class PipelineGraph {
       'Recursion depth too large while adding dependency nodes:',
       unsatisfied.map(([step, builder]) => `${builder.consumersAsString()} awaiting ${step}.`),
     ].join(' '), this.pipeline);
+  }
+
+  /**
+   * Add the producer of the deploy file set to the "Assets" stage
+   *
+   * It runs in parallel with the asset publishing steps, after the last preparation step.
+   */
+  private addDeployFileSetProducer(): AGraphNode | undefined {
+    const producer = this.deployFileSet.producer;
+
+    const previous = this.added.get(producer);
+    if (previous) { return previous; }
+
+    const node = this.addStepNode(producer, this.topLevelGraph('Assets'));
+    node?.dependOn(this.lastPreparationNode);
+    return node;
   }
 
   private publishAsset(stackAsset: StackAsset): AGraphNode {
