@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "ee4f0d40c519383dabd1419562bc948f0c3f256a1b5bafd133aa3b3e74a42e2b": {
       "displayName": "aws-sfn-cross-region-lambda-target Template",

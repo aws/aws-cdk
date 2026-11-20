@@ -5,7 +5,8 @@ import { FingerprintDiskCache } from './fingerprint-disk-cache';
 import { IgnoreStrategy } from './ignore';
 import type { FingerprintOptions } from './options';
 import { IgnoreMode, SymlinkFollowMode } from './options';
-import { isInternalPath, resolveLinkTarget } from './utils';
+import type { WalkSymlinkEntry } from './utils';
+import { walkDirectory } from './utils';
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 
@@ -45,12 +46,10 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   // might be symlinked). It's important that we know the absolute path, so we
   // can judge if further symlinks inside the target directory are within the
   // target or not (if we don't resolve, we would test w.r.t. the wrong path).
-  fileOrDirectory = fs.realpathSync(fileOrDirectory);
+  const root = fs.realpathSync(fileOrDirectory);
 
-  const isDir = fs.statSync(fileOrDirectory).isDirectory();
-  const rootDirectory = isDir
-    ? fileOrDirectory
-    : path.dirname(fileOrDirectory);
+  const isDir = fs.statSync(root).isDirectory();
+  const rootDirectory = isDir ? root : path.dirname(root);
 
   const ignoreMode = options.ignoreMode || IgnoreMode.GLOB;
   if (ignoreMode != IgnoreMode.GLOB) {
@@ -60,114 +59,58 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   // Pre-resolve rootDirectory once — avoids repeated path.resolve in the hot loop
   const resolvedRoot = path.resolve(rootDirectory);
 
-  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
+  const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, root);
 
   // Per-operation disk cache scoped to this directory
   const cache = new FingerprintDiskCache(resolvedRoot);
 
-  function _contentFingerprint(file: string): string {
-    const stats = fs.statSync(file, { bigint: true });
-    return contentFingerprintWithStats(file, stats, cache);
-  }
-
   // Dispatch based on whether the root is a file or directory
   if (isDir) {
-    _processDirectory(fileOrDirectory, fileOrDirectory);
+    walkDirectory(root, { follow, ignoreStrategy }, {
+      onFile: (entry) => hashFileContent(entry.path, entry.stats
+        ? contentFingerprintWithStats(entry.realPath, entry.stats, cache)
+        : contentFingerprintOf(entry.realPath)),
+
+      onSymlink: (entry) => hashLinkTarget(entry),
+
+      onUnsupported: (entry) => {
+        throw new UnscopedValidationError(
+          lit`UnableToUnableHashNeither`,
+          `Unable to hash ${entry.path}: it is neither a file nor a directory`,
+        );
+      },
+    });
   } else {
-    const hashComponent = path.relative(fileOrDirectory, fileOrDirectory).replace(/\\/g, '/');
-    _hashField(hash, `file:${hashComponent}`, _contentFingerprint(fileOrDirectory));
+    hashFileContent(root, contentFingerprintOf(root));
   }
 
   cache.save();
   return hash.digest('hex');
 
-  // --- Inlined shouldFollow logic (avoids per-call path.resolve + fs.existsSync overhead) ---
+  // --- Hashing ---
 
-  function _shouldFollowLink(resolvedLinkTarget: string): boolean {
-    switch (follow) {
-      case SymlinkFollowMode.ALWAYS:
-        return true;
-      case SymlinkFollowMode.EXTERNAL:
-        return !isInternalPath(resolvedRoot, resolvedLinkTarget);
-      case SymlinkFollowMode.BLOCK_EXTERNAL:
-        return isInternalPath(resolvedRoot, resolvedLinkTarget);
-      case SymlinkFollowMode.NEVER:
-        return false;
-      default:
-        return false;
-    }
+  function hashKey(symbolicPath: string): string {
+    return path.relative(root, symbolicPath).replace(/\\/g, '/');
   }
 
-  // --- Core traversal ---
-
-  function _processDirectory(symbolicPath: string, realPath: string) {
-    const entries = fs.readdirSync(realPath, { withFileTypes: true });
-    const sorted = entries.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-    for (const entry of sorted) {
-      const childSymbolicPath = path.join(symbolicPath, entry.name);
-      const childRealPath = path.join(realPath, entry.name);
-      if (entry.isSymbolicLink()) {
-        _processSymlink(childSymbolicPath, childRealPath);
-      } else if (entry.isFile()) {
-        if (ignoreStrategy.ignores(childSymbolicPath)) {
-          continue;
-        }
-        const hashComponent = path.relative(fileOrDirectory, childSymbolicPath).replace(/\\/g, '/');
-        _hashField(hash, `file:${hashComponent}`, _contentFingerprint(childRealPath));
-      } else if (entry.isDirectory()) {
-        if (ignoreStrategy.completelyIgnores(childSymbolicPath)) {
-          continue;
-        }
-        _processDirectory(childSymbolicPath, childRealPath);
-      }
-    }
+  function hashFileContent(symbolicPath: string, contentHash: string) {
+    _hashField(hash, `file:${hashKey(symbolicPath)}`, contentHash);
   }
 
-  function _processSymlink(symbolicPath: string, realPath: string) {
-    const linkTarget = fs.readlinkSync(realPath);
-    const resolvedLinkTarget = resolveLinkTarget(realPath, linkTarget);
+  /**
+   * An absolute target inside the tree is hashed relative to the root, so the asset hash does
+   * not change when the tree moves. Anything else is hashed as written.
+   */
+  function hashLinkTarget(entry: WalkSymlinkEntry) {
+    const target = entry.internal && path.isAbsolute(entry.linkTarget)
+      ? hashKey(entry.resolvedLinkTarget)
+      : entry.linkTarget;
 
-    if (!_shouldFollowLink(resolvedLinkTarget)) {
-      // Not following — hash the link target string itself
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path.relative(fileOrDirectory, symbolicPath).replace(/\\/g, '/');
-      _hashField(hash, `link:${hashComponent}`, linkTarget);
-      return;
-    }
+    _hashField(hash, `link:${hashKey(entry.path)}`, target);
+  }
 
-    // Following the symlink — stat the target to determine type
-    let targetStat: fs.BigIntStats;
-    try {
-      targetStat = fs.statSync(resolvedLinkTarget, { bigint: true });
-    } catch {
-      // Target doesn't exist — treat as non-followed link
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path.relative(fileOrDirectory, symbolicPath).replace(/\\/g, '/');
-      _hashField(hash, `link:${hashComponent}`, linkTarget);
-      return;
-    }
-
-    if (targetStat.isDirectory()) {
-      if (ignoreStrategy.completelyIgnores(symbolicPath)) {
-        return;
-      }
-      _processDirectory(symbolicPath, resolvedLinkTarget);
-    } else if (targetStat.isFile()) {
-      if (ignoreStrategy.ignores(symbolicPath)) {
-        return;
-      }
-      const hashComponent = path.relative(fileOrDirectory, symbolicPath).replace(/\\/g, '/');
-      _hashField(hash, `file:${hashComponent}`, contentFingerprintWithStats(resolvedLinkTarget, targetStat, cache));
-    } else {
-      throw new UnscopedValidationError(
-        lit`UnableToUnableHashNeither`,
-        `Unable to hash ${symbolicPath}: it is neither a file nor a directory`,
-      );
-    }
+  function contentFingerprintOf(file: string): string {
+    return contentFingerprintWithStats(file, fs.statSync(file, { bigint: true }), cache);
   }
 }
 

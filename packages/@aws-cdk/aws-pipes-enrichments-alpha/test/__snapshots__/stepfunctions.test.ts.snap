@@ -8,6 +8,35 @@ exports[`stepfunctions should grant pipe role invoke access 1`] = `
         "Statement": [
           {
             "Action": "sts:AssumeRole",
+            "Condition": {
+              "ArnLike": {
+                "aws:SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition",
+                      },
+                      ":states:",
+                      {
+                        "Ref": "AWS::Region",
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId",
+                      },
+                      ":stateMachine:*",
+                    ],
+                  ],
+                },
+              },
+              "StringEquals": {
+                "aws:SourceAccount": {
+                  "Ref": "AWS::AccountId",
+                },
+              },
+            },
             "Effect": "Allow",
             "Principal": {
               "Service": "states.amazonaws.com",

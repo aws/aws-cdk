@@ -1,13 +1,24 @@
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
+import type { CfnRole } from '../../aws-iam';
+import { PolicyStatement } from '../../aws-iam';
+import type { IFunction } from '../../aws-lambda';
 import { Architecture, Runtime, RuntimeFamily } from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
-import { Lazy, Stack } from '../../core';
+import { App, Lazy, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 import * as tasks from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
 });
+
+/** Logical ID of the only Lambda function in the stack. */
+function evalFnLogicalId(): string {
+  const ids = Object.keys(Template.fromStack(stack).findResources('AWS::Lambda::Function'));
+  expect(ids).toHaveLength(1);
+  return ids[0];
+}
 
 test('Eval with Node.js', () => {
   // WHEN
@@ -26,7 +37,7 @@ test('Eval with Node.js', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
+            'Fn::GetAtt': [evalFnLogicalId(), 'Arn'],
           },
           '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
         ],
@@ -55,7 +66,7 @@ test('expression does not contain paths', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
+            'Fn::GetAtt': [evalFnLogicalId(), 'Arn'],
           },
           '","Parameters":{"expression":"2 + 2","expressionAttributeValues":{}}}}}',
         ],
@@ -80,7 +91,7 @@ test('with dash and underscore in path', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
+            'Fn::GetAtt': [evalFnLogicalId(), 'Arn'],
           },
           '","Parameters":{"expression":"$.a_b + $.c-d + $[_e]","expressionAttributeValues":{"$.a_b.$":"$.a_b","$.c-d.$":"$.c-d","$[_e].$":"$[_e]"}}}}}',
         ],
@@ -350,5 +361,197 @@ describe('EvaluateExpression expression shapes', () => {
         Template.fromStack(stack);
       }).not.toThrow();
     });
+  });
+});
+
+const DEDICATED_FUNCTION_FLAG = { [cxapi.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: true };
+const SHARED_FUNCTION_FLAG = { [cxapi.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: false };
+
+test.each([false, true])('fails for a runtime that is not supported (dedicated function flag %s)', (flag) => {
+  const flagStack = new Stack(new App({ context: { [cxapi.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: flag } }));
+  expect(() => new tasks.EvaluateExpression(flagStack, 'Task', {
+    expression: '$.a + $.b',
+    runtime: Runtime.PYTHON_3_12,
+  })).toThrow('The runtime python3.12 is currently not supported.');
+});
+
+test('accepts a Node.js runtime that has no shared function with the dedicated function flag', () => {
+  // GIVEN
+  const runtime = new Runtime('nodejs26.x', RuntimeFamily.NODEJS);
+
+  // THEN
+  const sharedStack = new Stack(new App({ context: SHARED_FUNCTION_FLAG }));
+  expect(() => new tasks.EvaluateExpression(sharedStack, 'Shared', { expression: '$.a + $.b', runtime }))
+    .toThrow('The runtime nodejs26.x is currently not supported.');
+
+  const flagStack = new Stack(new App({ context: DEDICATED_FUNCTION_FLAG }));
+  new tasks.EvaluateExpression(flagStack, 'Dedicated', { expression: '$.a + $.b', runtime });
+  Template.fromStack(flagStack).hasResourceProperties('AWS::Lambda::Function', { Runtime: 'nodejs26.x' });
+});
+
+test.each([false, true])('accepts a Node.js runtime created without a family (dedicated function flag %s)', (flag) => {
+  // GIVEN
+  const flagStack = new Stack(new App({ context: { [cxapi.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: flag } }));
+
+  // WHEN
+  const task = new tasks.EvaluateExpression(flagStack, 'Task', { expression: '$.a + $.b', runtime: new Runtime('nodejs20.x') });
+  new sfn.StateMachine(flagStack, 'SM', { definitionBody: sfn.DefinitionBody.fromChainable(task) });
+
+  // THEN
+  Template.fromStack(flagStack).hasResourceProperties('AWS::Lambda::Function', { Runtime: 'nodejs20.x' });
+});
+
+describe('shared function when the dedicated function flag is disabled', () => {
+  beforeEach(() => {
+    stack = new Stack(new App({ context: SHARED_FUNCTION_FLAG }));
+  });
+
+  test('tasks in different state machines share one function', () => {
+    // WHEN
+    for (const id of ['SM1', 'SM2']) {
+      const task = new tasks.EvaluateExpression(stack, `${id}Task`, { expression: '$.a + $.b' });
+      new sfn.StateMachine(stack, id, { definitionBody: sfn.DefinitionBody.fromChainable(task) });
+    }
+
+    // THEN
+    const functions = Template.fromStack(stack).findResources('AWS::Lambda::Function');
+    expect(Object.keys(functions)).toHaveLength(1);
+  });
+
+  test('warns that the function is shared', () => {
+    // WHEN
+    const task = new tasks.EvaluateExpression(stack, 'Task', { expression: '$.a + $.b' });
+    new sfn.StateMachine(stack, 'SM', { definitionBody: sfn.DefinitionBody.fromChainable(task) });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Task', Match.stringLikeRegexp(
+      '^The feature flag \'@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction\' is disabled, .* share one Lambda function, ' +
+      'including tasks in different state machines. Remove the flag or set it to true',
+    ));
+  });
+});
+
+describe('function isolation', () => {
+  test('does not warn about a shared function', () => {
+    // WHEN
+    const task = new tasks.EvaluateExpression(stack, 'Task', { expression: '$.a + $.b' });
+    new sfn.StateMachine(stack, 'SM', { definitionBody: sfn.DefinitionBody.fromChainable(task) });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('share one Lambda function'));
+  });
+
+  function addStateMachine(id: string, expression: string) {
+    const task = new tasks.EvaluateExpression(stack, `${id}Task`, { expression });
+    return new sfn.StateMachine(stack, id, { definitionBody: sfn.DefinitionBody.fromChainable(task) });
+  }
+
+  /** The functions that the given state machine role is allowed to invoke. */
+  function invokedFunctions(stateMachine: sfn.StateMachine): string[] {
+    const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy', {
+      Properties: { Roles: [{ Ref: stack.getLogicalId(stateMachine.role.node.defaultChild as CfnRole) }] },
+    });
+    return Object.values(policies)
+      .flatMap((policy: any) => policy.Properties.PolicyDocument.Statement)
+      .filter((statement: any) => statement.Action === 'lambda:InvokeFunction')
+      .flatMap((statement: any) => [statement.Resource].flat())
+      .map((resource: any) => JSON.stringify(resource));
+  }
+
+  test('creates a function for each task', () => {
+    // WHEN
+    const task1 = new tasks.EvaluateExpression(stack, 'Task1', { expression: '$.a + $.b' });
+    const task2 = new tasks.EvaluateExpression(stack, 'Task2', { expression: '$.a * $.b' });
+    new sfn.StateMachine(stack, 'SM', { definitionBody: sfn.DefinitionBody.fromChainable(task1.next(task2)) });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+    expect(stack.resolve(task1.toStateJson()).Resource).not.toEqual(stack.resolve(task2.toStateJson()).Resource);
+  });
+
+  test('creates a function for each task with the same runtime and architecture', () => {
+    // WHEN
+    for (const id of ['Task1', 'Task2']) {
+      const task = new tasks.EvaluateExpression(stack, id, {
+        expression: '$.a + $.b',
+        runtime: Runtime.NODEJS_22_X,
+        architecture: Architecture.ARM_64,
+      });
+      new sfn.StateMachine(stack, `${id}SM`, { definitionBody: sfn.DefinitionBody.fromChainable(task) });
+    }
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+  });
+
+  test('each state machine can only invoke the functions of its own tasks', () => {
+    // WHEN
+    const attacker = addStateMachine('AttackerSM', '$.a + $.b');
+    const victim = addStateMachine('VictimSM', '$.secret');
+
+    // THEN
+    const attackerFunctions = invokedFunctions(attacker);
+    const victimFunctions = invokedFunctions(victim);
+    expect(attackerFunctions).toHaveLength(2); // the function ARN and its versions
+    expect(victimFunctions).toHaveLength(2);
+    expect(attackerFunctions.some((fn) => victimFunctions.includes(fn))).toBe(false);
+  });
+
+  test('functions in a stack share one execution role that can only write logs', () => {
+    // WHEN
+    addStateMachine('SM1', '$.a + $.b');
+    addStateMachine('SM2', '$.a * $.b');
+    // adding a permission through one task's function must not widen the shared role
+    const evalFn = stack.node.findChild('SM1Task').node.findChild('EvalFunction') as IFunction;
+    evalFn.addToRolePolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] }));
+
+    // THEN
+    const template = Template.fromStack(stack);
+    const functionRoles = Object.values(template.findResources('AWS::Lambda::Function'))
+      .map((fn: any) => JSON.stringify(fn.Properties.Role));
+    expect(new Set(functionRoles).size).toBe(1);
+
+    const lambdaRoles = template.findResources('AWS::IAM::Role', {
+      Properties: {
+        AssumeRolePolicyDocument: {
+          Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
+        },
+      },
+    });
+    expect(Object.values(lambdaRoles)).toEqual([{
+      Type: 'AWS::IAM::Role',
+      Properties: {
+        AssumeRolePolicyDocument: {
+          Statement: [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }],
+          Version: '2012-10-17',
+        },
+        ManagedPolicyArns: [{
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']],
+        }],
+      },
+    }]);
+    // The permission added above was ignored: no policy is attached to the shared role.
+    template.resourcePropertiesCountIs('AWS::IAM::Policy', {
+      Roles: [{ Ref: Object.keys(lambdaRoles)[0] }],
+    }, 0);
+  });
+
+  test('stacks do not share an execution role', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN
+    for (const s of [stack1, stack2]) {
+      const task = new tasks.EvaluateExpression(s, 'Task', { expression: '$.a + $.b' });
+      new sfn.StateMachine(s, 'SM', { definitionBody: sfn.DefinitionBody.fromChainable(task) });
+    }
+
+    // THEN
+    for (const s of [stack1, stack2]) {
+      const fn = Object.values(Template.fromStack(s).findResources('AWS::Lambda::Function'))[0] as any;
+      expect(Object.keys(Template.fromStack(s).findResources('AWS::IAM::Role'))).toContain(fn.Properties.Role['Fn::GetAtt'][0]);
+    }
   });
 });

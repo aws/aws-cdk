@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "54.0.0",
   "testCases": {
     "StartBuildBatchInteg/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "StartBuildBatchInteg/DefaultTest/DeployAssert",
       "assertionStackName": "StartBuildBatchIntegDefaultTestDeployAssert142C169A"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }

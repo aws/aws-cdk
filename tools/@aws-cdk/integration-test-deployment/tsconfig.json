@@ -23,6 +23,7 @@
       "jest",
       "node"
     ],
+    "rootDir": ".",
     "outDir": ".",
     "esModuleInterop": true,
     "noUncheckedSideEffectImports": true

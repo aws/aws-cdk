@@ -1,0 +1,170 @@
+{
+  "/NetworkConnectorStack": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/validation/validations.js:104:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack.js:1348:47)",
+        "    at get availabilityZones (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/core/lib/stack.js:756:18)",
+        "    at new Vpc (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:788:48)",
+        "    at <anonymous> (/Users/licjun/workplace/SourceCode/licjun-code/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.network-connector.js:44:13)",
+        "    ...node internals..."
+      ]
+    }
+  ],
+  "/NetworkConnectorStack/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/NetworkConnectorStack/ConnectorSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorStack/Connector": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorStack/ConnectorArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConnectorArn"
+    }
+  ],
+  "/NetworkConnectorStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/NetworkConnectorStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/isolatedSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/isolatedSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/NetworkConnectorStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/NetworkConnectorStack/ConnectorSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConnectorSecurityGroup5AD7DC86"
+    }
+  ],
+  "/NetworkConnectorStack/Connector/OperatorRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorStack/Connector/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConnectorC537A2FB"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/isolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet1SubnetE62B1B9B"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/isolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet1RouteTableE442650B"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/isolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet1RouteTableAssociationD259E31A"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/isolatedSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet2Subnet39217055"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/isolatedSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet2RouteTable334F9764"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/isolatedSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcisolatedSubnet2RouteTableAssociation25A4716F"
+    }
+  ],
+  "/NetworkConnectorStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    }
+  ],
+  "/NetworkConnectorStack/Connector/OperatorRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ConnectorOperatorRoleC4EE1CDE"
+    }
+  ]
+}

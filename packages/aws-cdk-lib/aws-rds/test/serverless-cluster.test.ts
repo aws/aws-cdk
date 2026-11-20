@@ -10,6 +10,10 @@ describe('serverless cluster', () => {
   test('can create a Serverless Cluster with Aurora Postgres database engine', () => {
     // GIVEN
     const stack = testStack();
+    cdk.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::E3002',
+      reason: 'This test intentionally uses the reserved username "admin" to verify explicit credentials are synthesized unchanged',
+    });
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN

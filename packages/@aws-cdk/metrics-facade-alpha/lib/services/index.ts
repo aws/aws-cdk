@@ -44,6 +44,7 @@ export * as aws_mediastore from './aws-mediastore';
 export * as aws_memorydb from './aws-memorydb';
 export * as aws_neptune from './aws-neptune';
 export * as aws_opsworks from './aws-opsworks';
+export * as aws_outposts from './aws-outposts';
 export * as aws_qldb from './aws-qldb';
 export * as aws_quicksight from './aws-quicksight';
 export * as aws_rds from './aws-rds';

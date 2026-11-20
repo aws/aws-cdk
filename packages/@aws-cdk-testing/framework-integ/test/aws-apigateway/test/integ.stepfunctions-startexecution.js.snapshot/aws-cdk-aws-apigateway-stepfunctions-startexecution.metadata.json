@@ -1,0 +1,294 @@
+{
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiBAC2BF45"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiEndpoint0DE8A5DE"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiDeployment010A9D4F8d8391dd5e41be487121f43257df00d7"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiDeploymentStageprod3140E1BE"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "addMethodResponse called multiple times with statusCode=200, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response. [ack: @aws-cdk/aws-apigateway:duplicateStatusCodes]",
+      "trace": [
+        "Annotations.addMessage (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:234:29)",
+        "Annotations.addWarningV2 (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:103:18)",
+        "PropertyInjectable.addMethodResponse (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:265:45)",
+        "PropertyInjectable.<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "StepFunctionsExecutionIntegration.bind (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integrations/stepfunctions.js:115:24)",
+        "new Method (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:194:44)",
+        "new Method (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addMethod (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:56:16)",
+        "Object.<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.stepfunctions-startexecution.js:71:10)",
+        "Module._compile (node:internal/modules/cjs/loader:1562:14)",
+        "Object..js (node:internal/modules/cjs/loader:1699:10)",
+        "Module.load (node:internal/modules/cjs/loader:1313:32)",
+        "Function._load (node:internal/modules/cjs/loader:1123:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:217:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "addMethodResponse called multiple times with statusCode=200, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response. [ack: @aws-cdk/aws-apigateway:duplicateStatusCodes]",
+      "trace": [
+        "Annotations.addMessage (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:234:29)",
+        "Annotations.addWarningV2 (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:103:18)",
+        "PropertyInjectable.addMethodResponse (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:265:45)",
+        "PropertyInjectable.<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "StepFunctionsExecutionIntegration.bind (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integrations/stepfunctions.js:115:24)",
+        "new Method (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:194:44)",
+        "new Method (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addMethod (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:56:16)",
+        "Object.<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.stepfunctions-startexecution.js:72:10)",
+        "Module._compile (node:internal/modules/cjs/loader:1562:14)",
+        "Object..js (node:internal/modules/cjs/loader:1699:10)",
+        "Module.load (node:internal/modules/cjs/loader:1313:32)",
+        "Function._load (node:internal/modules/cjs/loader:1123:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:217:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:170:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiGET3A49A218"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiPOST155A9625"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiGETStartSyncExecutionRoleC284C05B"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiPOSTStartSyncExecutionRole7AFBE835"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiGETStartSyncExecutionRoleDefaultPolicy8B2F6ADF"
+    }
+  ],
+  "/aws-cdk-aws-apigateway-stepfunctions-startexecution/my-rest-api/Default/POST/StartSyncExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myrestapiPOSTStartSyncExecutionRoleDefaultPolicy7D411AE9"
+    }
+  ]
+}

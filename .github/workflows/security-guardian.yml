@@ -12,6 +12,8 @@ on:
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   log-skip:
     if: |

@@ -1,61 +1,80 @@
 {
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "extends": "@nx/workspace/presets/npm.json",
+  "workspaceLayout": {},
+  "namedInputs": {
+    "$comment": [
+      "'default' is '{projectRoot}/**/*' plus 'sharedGlobals'. Nx's file walker honours",
+      ".gitignore, and every build artifact in this repo is gitignored, so this",
+      "automatically means 'all sources, no artifacts'. Do NOT replace it with an",
+      "allow-list of directories or extensions: builds here consume .ts, .json, .py,",
+      ".md (Rosetta), .ts-fixture, .yaml, .sh, Dockerfiles and package.json, and a",
+      "'lib/*.ts'-style glob silently misses everything in a subdirectory of lib/."
+    ],
+    "sharedGlobals": [
+      "{workspaceRoot}/package.json",
+      "{workspaceRoot}/yarn.lock",
+      "{workspaceRoot}/version.v2.json",
+      "{workspaceRoot}/release.json",
+      "{workspaceRoot}/scripts/resolve-version.js",
+      "{workspaceRoot}/scripts/resolve-version-lib.js"
+    ],
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals"
+    ],
+    "production": [
+      "default"
+    ]
+  },
   "targetDefaults": {
     "build": {
+      "cache": true,
       "dependsOn": [
         "^build"
       ],
       "inputs": [
-        "{projectRoot}/**/bin/!(*.d|*.generated).ts",
-        "{projectRoot}/**/lib/!(*.d|*.generated).ts",
-        "{projectRoot}/**/test/!(*.d).ts",
-        "!{workspaceRoot}/**/tsconfig.json",
-        "!{workspaceRoot}/**/tsconfig.json",
-        "!{workspaceRoot}/tsconfig.base.json",
-        "!{workspaceRoot}/**/tsconfig.tsbuildinfo",
-        "!{workspaceRoot}/**/jest.config.js"
+        "default",
+        "^default"
       ],
       "outputs": [
-        "{projectRoot}/**/*.integ.*.js.snapshot/*",
         "{projectRoot}/tsconfig.json",
-        "{projectRoot}/**/lib/aws-custom-resource/sdk-v2-to-v3.json",
-        "{projectRoot}/**/lib/aws-custom-resource/sdk-v3-metadata.json",
-        "{projectRoot}/**/build-info.json",
+        "{projectRoot}/tsconfig.tsbuildinfo",
+        "{projectRoot}/.jsii",
+        "{projectRoot}/.jsii.gz",
+        "{projectRoot}/.warnings.jsii.js",
+        "{projectRoot}/**/dist/**/*.py",
+        "{projectRoot}/interfaces/generated/**/*",
+        "{projectRoot}/cloudformation-include/cfn-types-2-classes.json",
         "{projectRoot}/**/*.js",
         "{projectRoot}/**/*.js.map",
         "{projectRoot}/**/*.d.ts",
-        "{projectRoot}/**/lib/layer.zip",
+        "{projectRoot}/**/*.d.ts.map",
         "{projectRoot}/**/*.generated.ts",
+        "{projectRoot}/**/*.generated.json",
         "{projectRoot}/**/built-ins.generated/*",
+        "{projectRoot}/**/lib/layer.zip",
+        "{projectRoot}/**/lib/aws-custom-resource/sdk-v2-to-v3.json",
+        "{projectRoot}/**/lib/aws-custom-resource/sdk-v3-metadata.json",
+        "{projectRoot}/**/build-info.json",
         "{projectRoot}/**/schema/*.json",
-        "{projectRoot}/**/.jsii",
-        "{projectRoot}/**/.jsii.gz",
         "{projectRoot}/**/spec/*.json",
-        "{projectRoot}/**/.warnings.jsii.js"
+        "!{projectRoot}/node_modules/**/*",
+        "!{projectRoot}/**/*.snapshot/**/*"
       ]
     },
     "test": {
+      "cache": true,
       "dependsOn": [
         "build"
       ],
       "inputs": [
-        "{projectRoot}/**/test/!(*.d|*.generated).ts"
+        "default",
+        "^default"
+      ],
+      "outputs": [
+        "{projectRoot}/coverage/**/*"
       ]
-    }
-  },
-  "extends": "@nx/workspace/presets/npm.json",
-  "workspaceLayout": {},
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nx/workspace/tasks-runners/default",
-      "options": {
-        "cacheableOperations": [
-          "build",
-          "test",
-          "lint",
-          "package",
-          "prepare"
-        ]
-      }
     }
   },
   "affected": {
@@ -65,17 +84,6 @@
     "@nrwl/js": {
       "analyzeSourceFiles": false
     }
-  },
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
-    "sharedGlobals": [],
-    "production": [
-      "default"
-    ]
   },
   "analytics": false
 }

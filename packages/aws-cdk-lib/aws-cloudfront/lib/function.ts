@@ -135,7 +135,10 @@ export interface FunctionProps {
 
   /**
    * The runtime environment for the function.
-   * @default FunctionRuntime.JS_1_0 (unless `keyValueStore` is specified, then `FunctionRuntime.JS_2_0`)
+   *
+   * @default - FunctionRuntime.JS_2_0 if `keyValueStore` is specified or the
+   * `@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0` feature flag is enabled;
+   * otherwise, FunctionRuntime.JS_1_0.
    */
   readonly runtime?: FunctionRuntime;
 

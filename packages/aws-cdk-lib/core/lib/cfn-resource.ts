@@ -776,6 +776,6 @@ export function traceProperty(node: Node, propertyName: string) {
     node.addMetadata(cxschema.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT, {
       propertyName,
       stackTrace: captureStackTrace(traceProperty),
-    });
+    } satisfies cxschema.PropertyMutationMetadataEntry);
   }
 }
