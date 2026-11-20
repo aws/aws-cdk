@@ -1,0 +1,117 @@
+{
+  "/aws-cdk-ecr-repository-grant-dependency": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-ecr-repository-grant-dependency.template.json"
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Repo": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "emptyOnDelete": true
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToResourcePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Topic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Repo/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Repo02AC86CF"
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Repo/ScanCompleted": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          {
+            "source": "*",
+            "detailType": "*",
+            "detail": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Topic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicBFC7AF6E"
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Topic/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topics": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Exports/Output{\"Ref\":\"Repo02AC86CF\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefRepo02AC86CF4670CBFE"
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Repo/ScanCompleted/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RepoScanCompleted622EC299"
+    }
+  ],
+  "/aws-cdk-ecr-repository-grant-dependency/Topic/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicPolicyA1747468"
+    }
+  ]
+}
