@@ -505,6 +505,22 @@ describe('markers', () => {
 
     expect(JSON.parse(fakeS3.text(DST, 'config.json')).v).toBe(value);
   });
+
+  test('applies per-marker encodings, with trailing sources omitted from the marker lists', async () => {
+    seedZip('a.zip', [{ path: 'config.yaml', body: 'flag: <<flag>>\nname: <<name>>' }]);
+    seedZip('b.zip', [{ path: 'b.txt', body: '<<flag>>' }]);
+
+    await onEvent(cfnEvent('Create', props(
+      {
+        SourceMarkers: [{ '<<flag>>': 'yes', '<<name>>': 'plain' }],
+        SourceMarkersConfig: [{ markerEncodings: { '<<flag>>': 'YAML_STRING' } }],
+      },
+      ['a.zip', 'b.zip'],
+    )));
+
+    expect(fakeS3.text(DST, 'config.yaml')).toBe('flag: "yes"\nname: plain');
+    expect(fakeS3.text(DST, 'b.txt')).toBe('<<flag>>');
+  });
 });
 
 // ---------------------------------------------------------------------------------------

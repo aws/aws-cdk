@@ -8,6 +8,7 @@ import * as path from 'path';
 import { S3 } from '@aws-sdk/client-s3';
 import type { AwsStub } from 'aws-sdk-client-mock';
 import { mockClient } from 'aws-sdk-client-mock';
+import * as YAML from 'yaml';
 import { FakeS3 } from './fake-aws/fake-s3';
 import { buildZip, cfnEvent, renameEntry } from './helpers';
 import { S3ObjectSet } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/file-set';
@@ -330,9 +331,73 @@ describe('marker substitution', () => {
       expect(JSON.parse(body)).toEqual({ n: 42, o: { a: 1 } });
     });
 
-    test('non-string values do not throw when escaping is off', () => {
-      expect(encodeMarkerValue(42, false)).toBe('42');
-      expect(encodeMarkerValue({ a: 1 }, false)).toBe('{"a":1}');
+    test('non-string values are rejected when escaping is off', () => {
+      expect(() => encodeMarkerValue('m', 42, undefined)).toThrow(/Expected a string for LITERAL encoding for marker m, got number/);
+    });
+  });
+
+  describe('markerEncodings', () => {
+    const encode = (encoding: string, value: unknown) =>
+      encodeMarkerValue('m', value, { markerEncodings: { m: encoding } });
+
+    test.each([
+      ['LITERAL', 'a"b', 'a"b'],
+      ['UNQUOTED_JSON_VALUE', 'a"b\\c', 'a\\"b\\\\c'],
+      ['JSON_VALUE', 'a"b', '"a\\"b"'],
+    ])('%s encodes %j as %j', (encoding, value, expected) => {
+      expect(encode(encoding, value)).toBe(expected);
+    });
+
+    test.each([
+      ['UNQUOTED_JSON_VALUE', ['a"1', 'b']],
+      ['JSON_VALUE', ['a', 'b']],
+      ['JSON_VALUE', { k: 'v' }],
+    ])('%s keeps the meaning of compound value %j', (encoding, value) => {
+      expect(JSON.parse(encode(encoding, value))).toEqual(value);
+    });
+
+    test.each([
+      'plain', 'arn:aws:s3:::bucket', 'a b', '', 'test"with"quotes', 'line\nbreak',
+      'true', 'True', 'NULL', 'yes', 'Off', 'y', 'n', '~', '.inf', '.NaN', '0x1F', '0o17',
+      '42', '1.5', '012345678901', '2024-01-01', '-', '#comment', 'a: b',
+    ])('YAML_STRING keeps %j a string for YAML 1.1 and 1.2 parsers', (value) => {
+      const rendered = encode('YAML_STRING', value);
+      for (const version of ['1.1', '1.2'] as const) {
+        expect(YAML.parse(`v: ${rendered}`, { version }).v).toBe(value);
+      }
+    });
+
+    test('YAML_STRING leaves an unambiguous value unquoted', () => {
+      expect(encode('YAML_STRING', 'plain')).toBe('plain');
+    });
+
+    test('default encoding follows jsonEscape', () => {
+      // Templates synthesized before per-marker encodings only carry `jsonEscape`, and must render as before
+      expect(encodeMarkerValue('m', 'a"b', {})).toBe('a"b');
+      expect(encodeMarkerValue('m', 'a"b', { jsonEscape: 'true' })).toBe('a\\"b');
+      expect(JSON.parse(encodeMarkerValue('m', ['a'], { jsonEscape: 'true' }))).toEqual(['a']);
+    });
+
+    test('an encoding overrides jsonEscape for that marker only', () => {
+      const config = { jsonEscape: 'true', markerEncodings: { m: 'JSON_VALUE' } };
+      expect(encodeMarkerValue('m', 'a"b', config)).toBe('"a\\"b"');
+      expect(encodeMarkerValue('other', 'a"b', config)).toBe('a\\"b');
+    });
+
+    test.each(['LITERAL', 'YAML_STRING'])('fails for a non-string with %s, without revealing the value', (encoding) => {
+      expect(() => encode(encoding, ['secret-value'])).toThrow(/got array/);
+      expect(() => encode(encoding, ['secret-value'])).not.toThrow(/secret-value/);
+    });
+
+    test('fails for an unknown encoding', () => {
+      expect(() => encode('SOMETHING_NEW', 'x')).toThrow(/Unknown marker encoding/);
+    });
+
+    test('replaceMarkers applies the encoding per marker', () => {
+      const body = replaceMarkers(Buffer.from('a: <<a>>\nb: <<b>>'), { '<<a>>': 'yes', '<<b>>': 'x' }, {
+        markerEncodings: { '<<a>>': 'YAML_STRING' },
+      }).toString();
+      expect(body).toBe('a: "yes"\nb: x');
     });
   });
 });
@@ -445,13 +510,29 @@ describe('parsing a request into actions', () => {
       }))).toThrow(/must be the same length/);
     });
 
-    test('rejects a marker list that does not cover every source', () => {
-      expect(() => parseRequest(cfnEvent('Create', {
+    test('a shorter marker list leaves the remaining sources without markers', () => {
+      const actions = parseRequest(cfnEvent('Create', {
         ...minimal,
         SourceBucketNames: ['a', 'b'],
         SourceObjectKeys: ['one.zip', 'two.zip'],
-        SourceMarkers: [{}],
-      }))).toThrow(/'SourceMarkers' has 1 entries but there are 2 sources/);
+        SourceMarkers: [{ X: '1' }],
+        SourceMarkersConfig: [{ jsonEscape: 'true' }],
+      }));
+      const copy = actions.find((a) => a.type === 'copy-sources');
+
+      expect(copy?.type === 'copy-sources' && copy.sources.map((s) => [s.markers, s.markersConfig])).toEqual([
+        [{ X: '1' }, { jsonEscape: 'true' }],
+        [{}, undefined],
+      ]);
+    });
+
+    test.each(['SourceMarkers', 'SourceMarkersConfig'])('fails for a %s list longer than the sources', (name) => {
+      expect(() => parseRequest(cfnEvent('Create', {
+        ...minimal,
+        SourceBucketNames: ['a'],
+        SourceObjectKeys: ['one.zip'],
+        [name]: [{}, {}],
+      }))).toThrow(`'${name}' has 2 entries but there are only 1 sources`);
     });
 
     test('rejects version-id reporting combined with extraction', () => {

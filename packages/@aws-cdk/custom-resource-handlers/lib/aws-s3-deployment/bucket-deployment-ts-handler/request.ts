@@ -280,12 +280,17 @@ export function parseBoolean(value: unknown, defaultValue: boolean): boolean {
   }
 }
 
-/** A per-source list, checked to cover every source. */
+/**
+ * A per-source list, checked not to have more entries than there are sources.
+ *
+ * The list may be shorter: trailing empty entries are omitted from the template, and
+ * sources past the end of the list have no entry.
+ */
 function perSource(props: Record<string, any>, name: string, sourceCount: number): any[] | undefined {
   const value = optionalList(props, name);
-  if (value && value.length !== sourceCount) {
+  if (value && value.length > sourceCount) {
     throw new Error(
-      `'${name}' has ${value.length} entries but there are ${sourceCount} sources; they must be the same length`,
+      `'${name}' has ${value.length} entries but there are only ${sourceCount} sources; it can never have more entries than there are sources`,
     );
   }
   return value;
