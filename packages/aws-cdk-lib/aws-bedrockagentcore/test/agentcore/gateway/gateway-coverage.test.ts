@@ -167,6 +167,51 @@ describe('Gateway Coverage Tests', () => {
     });
   });
 
+  test('OpenAPI target with empty credentialPrefix omits CredentialPrefix from template', () => {
+    const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'test-gateway' });
+    const apiKey = new ApiKeyCredentialProvider(stack, 'KeyProv', {
+      apiKeyCredentialProviderName: 'gw_cov_apikey',
+      apiKey: cdk.SecretValue.unsafePlainText('secret'),
+    });
+
+    gateway.addOpenApiTarget('OpenApiKeyNoPrefix', {
+      gatewayTargetName: 'openapi-api-key-no-prefix',
+      apiSchema: minimalOpenApiSchema,
+      validateOpenApiSchema: false,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromApiKeyIdentity(apiKey, {
+          credentialLocation: ApiKeyCredentialLocation.header({
+            credentialParameterName: 'PRIVATE-TOKEN',
+            credentialPrefix: '',
+          }),
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+      Name: 'openapi-api-key-no-prefix',
+      CredentialProviderConfigurations: [
+        {
+          CredentialProviderType: 'API_KEY',
+          CredentialProvider: {
+            ApiKeyCredentialProvider: {
+              ProviderArn: { 'Fn::GetAtt': ['KeyProv8A34724C', 'CredentialProviderArn'] },
+              CredentialLocation: 'HEADER',
+              CredentialParameterName: 'PRIVATE-TOKEN',
+            },
+          },
+        },
+      ],
+    });
+    const targets = template.findResources('AWS::BedrockAgentCore::GatewayTarget');
+    const targetResource = Object.values(targets).find(
+      (r: any) => r.Properties?.Name === 'openapi-api-key-no-prefix',
+    );
+    const cfnApiKeyProv = (targetResource as any).Properties.CredentialProviderConfigurations[0].CredentialProvider.ApiKeyCredentialProvider;
+    expect(cfnApiKeyProv).not.toHaveProperty('CredentialPrefix');
+  });
+
   test('OpenAPI target uses Token Vault OAuth2CredentialProvider via fromOauthIdentity', () => {
     const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'test-gateway' });
     const oauth = OAuth2CredentialProvider.usingGithub(stack, 'OAuthProvider', {
@@ -1170,6 +1215,38 @@ describe('LambdaInterceptor tests', () => {
  * GatewayTarget's credential provider. We test the factory output directly
  * because there is no template to assert against at this level.
  */
+describe('ApiKeyCredentialLocation.header tests', () => {
+  test('Should default credentialParameterName to "Authorization" and credentialPrefix to "Bearer "', () => {
+    const location = ApiKeyCredentialLocation.header();
+
+    expect(location.credentialLocationType).toBe('HEADER');
+    expect(location.credentialParameterName).toBe('Authorization');
+    expect(location.credentialPrefix).toBe('Bearer ');
+  });
+
+  test('Should accept custom credentialParameterName and credentialPrefix', () => {
+    const location = ApiKeyCredentialLocation.header({
+      credentialParameterName: 'X-API-Key',
+      credentialPrefix: 'Token ',
+    });
+
+    expect(location.credentialLocationType).toBe('HEADER');
+    expect(location.credentialParameterName).toBe('X-API-Key');
+    expect(location.credentialPrefix).toBe('Token ');
+  });
+
+  test('Should treat empty string credentialPrefix as undefined (no prefix)', () => {
+    const location = ApiKeyCredentialLocation.header({
+      credentialParameterName: 'PRIVATE-TOKEN',
+      credentialPrefix: '',
+    });
+
+    expect(location.credentialLocationType).toBe('HEADER');
+    expect(location.credentialParameterName).toBe('PRIVATE-TOKEN');
+    expect(location.credentialPrefix).toBeUndefined();
+  });
+});
+
 describe('ApiKeyCredentialLocation.queryParameter tests', () => {
   test('Should default credentialParameterName to "api_key" and leave credentialPrefix undefined', () => {
     const location = ApiKeyCredentialLocation.queryParameter();
@@ -1188,6 +1265,14 @@ describe('ApiKeyCredentialLocation.queryParameter tests', () => {
     expect(location.credentialLocationType).toBe('QUERY_PARAMETER');
     expect(location.credentialParameterName).toBe('myKey');
     expect(location.credentialPrefix).toBe('Key-');
+  });
+
+  test('Should treat empty string credentialPrefix as undefined', () => {
+    const location = ApiKeyCredentialLocation.queryParameter({
+      credentialPrefix: '',
+    });
+
+    expect(location.credentialPrefix).toBeUndefined();
   });
 });
 
