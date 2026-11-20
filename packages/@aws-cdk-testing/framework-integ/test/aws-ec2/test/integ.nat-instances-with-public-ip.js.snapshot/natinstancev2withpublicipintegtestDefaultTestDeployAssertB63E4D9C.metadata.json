@@ -1,0 +1,20 @@
+{
+  "/nat-instance-v2-with-public-ip-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "natinstancev2withpublicipintegtestDefaultTestDeployAssertB63E4D9C.template.json"
+    }
+  ],
+  "/nat-instance-v2-with-public-ip-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/nat-instance-v2-with-public-ip-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

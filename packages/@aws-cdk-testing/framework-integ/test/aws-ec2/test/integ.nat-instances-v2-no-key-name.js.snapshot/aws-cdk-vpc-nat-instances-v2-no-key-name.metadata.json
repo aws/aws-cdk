@@ -1,4 +1,25 @@
 {
+  "/aws-cdk-vpc-nat-instances-v2-no-key-name": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/private/tmp/claude-501/-Users-diogoesteves-githug-imporvments/f830b94b-ff43-450f-ba1c-c141e45c953b/scratchpad/cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at NatInstanceNoKeyNameStack._silenceLiteralAzWarning (/private/tmp/claude-501/-Users-diogoesteves-githug-imporvments/f830b94b-ff43-450f-ba1c-c141e45c953b/scratchpad/cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/private/tmp/claude-501/-Users-diogoesteves-githug-imporvments/f830b94b-ff43-450f-ba1c-c141e45c953b/scratchpad/cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/private/tmp/claude-501/-Users-diogoesteves-githug-imporvments/f830b94b-ff43-450f-ba1c-c141e45c953b/scratchpad/cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new NatInstanceNoKeyNameStack (/private/tmp/claude-501/-Users-diogoesteves-githug-imporvments/f830b94b-ff43-450f-ba1c-c141e45c953b/scratchpad/cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.nat-instances-v2-no-key-name.js:55:9)",
+        "    at <anonymous> (/private/tmp/claude-501/-Users-diogoesteves-githug-imporvments/f830b94b-ff43-450f-ba1c-c141e45c953b/scratchpad/cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.nat-instances-v2-no-key-name.js:63:15)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-vpc-nat-instances-v2-no-key-name.template.json"
+    }
+  ],
   "/aws-cdk-vpc-nat-instances-v2-no-key-name/MyVpc": [
     {
       "type": "aws:cdk:analytics:construct",
