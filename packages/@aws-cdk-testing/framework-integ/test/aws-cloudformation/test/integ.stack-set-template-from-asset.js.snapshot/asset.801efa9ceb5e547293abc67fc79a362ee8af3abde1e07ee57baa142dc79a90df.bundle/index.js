@@ -12417,6 +12417,13 @@ function appOf(construct) {
 function isCfnResource(x) {
   return x !== null && typeof x === "object" && x.cfnResourceType !== void 0;
 }
+function outermostNestingStack(stack) {
+  return stack.nestedStackParent ? outermostNestingStack(stack.nestedStackParent) : stack;
+}
+function templateHostOf(stack) {
+  const deployingResource = outermostNestingStack(stack)._deployingResource;
+  return deployingResource ? stackOf(deployingResource) : void 0;
+}
 var ConstructType, APP_TYPE, STACK_TYPE, STAGE_TYPE, NESTED_STACK_TYPE, MY_STACK_CACHE;
 var init_core_construct_finders = __esm({
   "../../aws-cdk-lib/core/lib/private/core-construct-finders.ts"() {
@@ -56591,6 +56598,13 @@ function mimicReference(refSource, producer) {
     }
   }(reference, reference.target, reference.displayName));
 }
+function referenceResolvingStack(consumer, producer) {
+  if (outermostNestingStack(consumer) === outermostNestingStack(producer)) {
+    return consumer;
+  }
+  const templateHost = templateHostOf(consumer);
+  return templateHost ? referenceResolvingStack(templateHost, producer) : consumer;
+}
 var import_constructs6, _physicalName_dec, _env_dec, _stack_dec, _a, _init, Resource;
 var init_resource = __esm({
   "../../aws-cdk-lib/core/lib/resource.ts"() {
@@ -56749,7 +56763,7 @@ var init_resource = __esm({
       getResourceNameAttribute(nameAttr) {
         return mimicReference(nameAttr, {
           produce: (context) => {
-            const consumingStack = stackOf(context.scope);
+            const consumingStack = referenceResolvingStack(stackOf(context.scope), this.stack);
             if (this.stack.account !== consumingStack.account || this.stack.region !== consumingStack.region && !consumingStack._crossRegionReferences) {
               this._enableCrossEnvironment();
               return this.physicalName;
@@ -56779,7 +56793,7 @@ var init_resource = __esm({
       getResourceArnAttribute(arnAttr, arnComponents) {
         return mimicReference(arnAttr, {
           produce: (context) => {
-            const consumingStack = stackOf(context.scope);
+            const consumingStack = referenceResolvingStack(stackOf(context.scope), this.stack);
             if (this.stack.account !== consumingStack.account || this.stack.region !== consumingStack.region && !consumingStack._crossRegionReferences) {
               this._enableCrossEnvironment();
               return this.stack.formatArn(arnComponents);
@@ -79127,29 +79141,26 @@ function resolveValue(consumer, reference, strengthOverride) {
   if (producer.node.root !== consumer.node.root) {
     throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, "Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.");
   }
-  const consumerRoot = outermostNestingStack(consumer);
-  if (consumerRoot !== outermostNestingStack(producer)) {
-    const parameterHost = consumerRoot._parameterHost;
-    if (parameterHost && producer._supportsCrossStackReferences()) {
+  if (outermostNestingStack(consumer) !== outermostNestingStack(producer)) {
+    if (templateHostOf(producer)) {
+      throw new UnscopedValidationError(
+        lit`CrossStackReferenceNotSupported`,
+        `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": the producer stack "${producer.node.path}" does not support cross-stack references`
+      );
+    }
+    const templateHost = templateHostOf(consumer);
+    if (templateHost) {
       if (consumer.nestedStackParent) {
         const parameterValue2 = resolveValue(consumer.nestedStackParent, reference);
-        return createNestedStackParameter(consumer, reference, parameterValue2);
+        return createTemplateParameter(consumer, reference, parameterValue2);
       }
-      const parameterValue = resolveValue(parameterHost, reference);
-      return createTemplateParameter(consumer, reference, parameterValue, (name, value) => consumer._setParameterFromHost(name, value));
-    }
-    for (const [side, stack] of [["consumer", consumer], ["producer", producer]]) {
-      if (!stack._supportsCrossStackReferences()) {
-        throw new UnscopedValidationError(
-          lit`CrossStackReferenceNotSupported`,
-          `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}": the ${side} stack "${stack.node.path}" does not support cross-stack references`
-        );
-      }
+      const parameterValue = resolveValue(templateHost, reference);
+      return createTemplateParameter(consumer, reference, parameterValue);
     }
   }
   if (consumer.nestedStackParent && isNested(consumer, producer)) {
     const parameterValue = resolveValue(consumer.nestedStackParent, reference);
-    return createNestedStackParameter(consumer, reference, parameterValue);
+    return createTemplateParameter(consumer, reference, parameterValue);
   }
   if (producer.nested) {
     const outputValue = createNestedStackOutput(producer, reference);
@@ -79307,7 +79318,7 @@ function createCrossRegionImportValue(reference, importStack) {
   const { exportWriter, exportName } = getOrCreateExportWriter(reference, importStack);
   const exported = exportWriter.exportValue(exportName, reference, importStack);
   if (importStack.nestedStackParent) {
-    return createNestedStackParameter(importStack, exported, exported);
+    return createTemplateParameter(importStack, exported, exported);
   }
   return exported;
 }
@@ -79464,25 +79475,14 @@ function getExportable(stack, reference) {
   }
   return referenceNestedStackValueInParent(reference, stack);
 }
-function createNestedStackParameter(nested, reference, value) {
-  return createTemplateParameter(nested, reference, value, (name, parameterValue) => {
-    if (!("setParameter" in nested)) {
-      throw new UnscopedValidationError(lit`NestedStackMustHaveSetParameter`, 'assertion failed: nested stack should have a "setParameter" method');
-    }
-    nested.setParameter(name, parameterValue);
-  });
-}
-function createTemplateParameter(stack, reference, value, setParameter) {
+function createTemplateParameter(stack, reference, value) {
   const paramId = generateUniqueId(stack, reference, "reference-to-");
   let param = stack.node.tryFindChild(paramId);
   if (!param) {
     param = new CfnParameter(stack, paramId, { type: "String" });
-    setParameter(param.logicalId, Token.asString(value));
+    stack._setTemplateParameter(param.logicalId, Token.asString(value));
   }
   return param.value;
-}
-function outermostNestingStack(stack) {
-  return stack.nestedStackParent ? outermostNestingStack(stack.nestedStackParent) : stack;
 }
 function createNestedStackOutput(producer, reference) {
   const outputId = generateUniqueId(producer, reference);
@@ -79636,6 +79636,7 @@ function doDispatch(source, target, op) {
       }
       break;
     case "nested-stack":
+    case "template-stack":
     case "construct":
       for (const sourceResource of dependingResourcesFor(source)) {
         for (const targetResource of dependingResourcesFor(target)) {
@@ -79656,6 +79657,9 @@ function* dependingResourcesFor(construct) {
   if (construct.type === "nested-stack" && construct.construct.nestedStackResource) {
     yield construct.construct.nestedStackResource;
   }
+  if (construct.type === "template-stack" && construct.construct._deployingResource) {
+    yield construct.construct._deployingResource;
+  }
   if (construct.type === "construct") {
     yield* iterateTemplateCfnResources(construct.construct);
   }
@@ -79669,6 +79673,8 @@ function dependencyContainerPath(start) {
       candidate = { type: "stage", construct };
     } else if (NESTED_STACK_TYPE.isMarked(construct)) {
       candidate = { type: "nested-stack", construct };
+    } else if (STACK_TYPE.isMarked(construct) && construct._deployingResource) {
+      candidate = { type: "template-stack", construct };
     } else if (STACK_TYPE.isMarked(construct)) {
       candidate = { type: "stack", construct };
     } else {
@@ -79687,7 +79693,8 @@ function dependencyContainerPath(start) {
       case "stage":
         return container.type == "stage";
       case "nested-stack":
-        return container.type == "nested-stack" || container.type == "stack";
+      case "template-stack":
+        return container.type == "nested-stack" || container.type == "template-stack" || container.type == "stack";
       case "stack":
         return container.type == "stage";
       case "construct":
@@ -86629,12 +86636,21 @@ var init_stack = __esm({
         return true;
       }
       /**
-       * Whether this stack's template can produce or consume cross-stack references.
+       * The resource of another stack that deploys this stack's template, if any.
+       *
+       * For example the `AWS::CloudFormation::Stack` resource of a nested stack, or the
+       * `AWS::CloudFormation::StackSet` resource of a StackSet. Dependencies on this stack
+       * are dependencies on that resource, and values that this stack references from other
+       * stacks are passed to its template as parameters, resolved in the stack of that resource.
+       *
+       * Only nested stacks pass values out of their template (through the outputs of the
+       * `AWS::CloudFormation::Stack` resource); other stacks deployed by a resource can't
+       * be referenced by other stacks.
        *
        * @internal
        */
-      _supportsCrossStackReferences() {
-        return true;
+      get _deployingResource() {
+        return void 0;
       }
       /**
        * Registers this stack's template as an asset of the stack that deploys it.
@@ -86649,25 +86665,14 @@ var init_stack = __esm({
         return void 0;
       }
       /**
-       * The stack that passes values into this stack's template as parameters, if any.
-       *
-       * Values that this stack references from other stacks are resolved in the
-       * parameter host, and passed to this stack's template as parameters.
-       *
-       * @internal
-       */
-      get _parameterHost() {
-        return void 0;
-      }
-      /**
-       * Sets a template parameter of this stack from its parameter host.
+       * Sets a parameter of this stack's template, passed by its deploying resource.
        *
        * @param name the logical ID of the parameter
-       * @param value the value, resolved in the parameter host
+       * @param value the value, resolved in the stack of the deploying resource
        * @internal
        */
-      _setParameterFromHost(_name, _value) {
-        throw new AssumptionError(lit`StackHasNoParameterHost`, `stack "${this.node.path}" has no parameter host`);
+      _setTemplateParameter(_name, _value) {
+        throw new AssumptionError(lit`StackHasNoDeployingResource`, `stack "${this.node.path}" is not deployed by a resource of another stack`);
       }
       /**
        * Returns the naming scheme used to allocate logical IDs. By default, uses

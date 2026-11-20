@@ -118,10 +118,10 @@ class TestCase extends Stack {
     });
     const stackSet = new MyStackSet(this, 'StackSet', {
       stackSetName,
-      target: cfn.StackSetTarget.fromAccounts({
+      targets: [cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
-      }),
+      })],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
         adminRole,
@@ -135,7 +135,7 @@ class TestCase extends Stack {
 
     // A value of this stack, passed to the template as a StackSet parameter
     new CfnOutput(stackSet, 'AdminRoleId', { value: adminRole.roleId });
-    // The template is environment agnostic, so the ARN is formatted from the physical name of the role
+    // Also passed to the template as a StackSet parameter, so no physical name is generated for the role
     new CfnOutput(stackSet, 'AdminRoleArn', { value: adminRole.roleArn });
   }
 }
@@ -151,10 +151,10 @@ class AssetTestCase extends Stack {
       assetBuckets: [s3.Bucket.fromBucketName(this, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
       assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
       stackSetName: assetStackSetName,
-      target: cfn.StackSetTarget.fromAccounts({
+      targets: [cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
-      }),
+      })],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
       }),

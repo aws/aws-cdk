@@ -18,7 +18,7 @@
      "StackInstanceRegion": "\"us-east-1\""
     },
     "flattenResponse": "false",
-    "salt": "1795021402992"
+    "salt": "1795189213592"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -115,7 +115,7 @@
      "StackInstanceRegion": "\"us-east-1\""
     },
     "flattenResponse": "false",
-    "salt": "1795021402993"
+    "salt": "1795189213594"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

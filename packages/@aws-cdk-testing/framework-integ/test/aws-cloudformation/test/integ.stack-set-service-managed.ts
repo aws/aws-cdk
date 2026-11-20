@@ -37,11 +37,11 @@ class TestCase extends Stack {
     super(scope, id, props);
 
     new TopicStackSet(this, 'StackSet', {
-      target: cfn.StackSetTarget.fromOrganizationalUnits({
+      targets: [cfn.StackSetTarget.fromOrganizationalUnits({
         organizationalUnits: [targetOu],
         regions: [targetRegion],
         accountFilter: cfn.StackSetAccountFilter.intersection([targetAccount]),
-      }),
+      })],
       deploymentType: cfn.DeploymentType.serviceManaged(),
     });
   }
