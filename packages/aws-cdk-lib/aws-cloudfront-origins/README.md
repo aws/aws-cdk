@@ -880,6 +880,10 @@ The default behavior is determined by the feature flag `@aws-cdk/aws-cloudfront-
 - When the flag is enabled: Dual-stack (IPv4 + IPv6) - recommended for better connectivity
 - When the flag is disabled: IPv4 only - maintains backward compatibility
 
+New apps created with `cdk init` have the flag enabled. Existing apps keep the IPv4-only default until
+they enable it, and enabling it changes the origin of existing distributions to dual-stack on the next
+deployment. The same default applies to origins created with `FunctionUrlOrigin.withOriginAccessControl()`.
+
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront';

@@ -39,19 +39,9 @@ const integ = new IntegTest(app, 'FunctionUrlOriginIpAddressTypeTest', {
   testCases: [stack],
 });
 
-// Assert that distributions are created with expected IP address type settings
-integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
-  Id: distributionOac.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV4Enabled', ExpectedResult.exact(true));
-
-integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
-  Id: distributionOac.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV6Enabled', ExpectedResult.exact(true));
-
-integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
-  Id: distribution.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV4Enabled', ExpectedResult.exact(true));
-
-integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
-  Id: distribution.distributionId,
-}).assertAtPath('Distribution.DistributionConfig.IsIPV6Enabled', ExpectedResult.exact(true));
+// Assert that the origins of both distributions use dual-stack by default
+for (const dist of [distribution, distributionOac]) {
+  integ.assertions.awsApiCall('CloudFront', 'getDistribution', {
+    Id: dist.distributionId,
+  }).assertAtPath('Distribution.DistributionConfig.Origins.Items.0.CustomOriginConfig.IpAddressType', ExpectedResult.exact('dualstack'));
+}

@@ -2681,6 +2681,10 @@ When disabled, maintains the current IPv4-only default behavior for backward com
 
 Users can still explicitly set ipAddressType to override the default behavior.
 
+Enabling this flag in an existing app changes existing distributions in place: every Lambda
+Function URL origin without an explicit ipAddressType gets
+`CustomOriginConfig.IpAddressType: dualstack` on the next deployment.
+
 
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |

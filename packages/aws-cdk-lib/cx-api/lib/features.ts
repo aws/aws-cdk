@@ -1733,8 +1733,13 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When disabled, maintains the current IPv4-only default behavior for backward compatibility.
 
-      Users can still explicitly set ipAddressType to override the default behavior.`,
+      Users can still explicitly set ipAddressType to override the default behavior.
+
+      Enabling this flag in an existing app changes existing distributions in place: every Lambda
+      Function URL origin without an explicit ipAddressType gets
+      \`CustomOriginConfig.IpAddressType: dualstack\` on the next deployment.`,
     introducedIn: { v2: 'V2NEXT' },
+    unconfiguredBehavesLike: { v2: false },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.',
   },
