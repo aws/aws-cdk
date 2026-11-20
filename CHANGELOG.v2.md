@@ -33,7 +33,7 @@ aws-servicecatalog: AWS::ServiceCatalog::AcceptedPortfolioShare: Id attribute re
 ### Bug Fixes
 
 * **core:** asset hashing and symlink contract is not documented ([#39779](https://github.com/aws/aws-cdk/issues/39779)) ([4ed690e](https://github.com/aws/aws-cdk/commit/4ed690ec28c6f538998549603c53160e3dd83443))
-* a number of shell components are not escaped ([#39688](https://github.com/aws/aws-cdk/issues/39688)) ([911c34a](https://github.com/aws/aws-cdk/commit/911c34a3d1c4b550293b870273791d693ad3d70b))
+* **core:** a number of shell components are not escaped ([#39688](https://github.com/aws/aws-cdk/issues/39688)) ([911c34a](https://github.com/aws/aws-cdk/commit/911c34a3d1c4b550293b870273791d693ad3d70b))
 * **awslint:** --quiet is ignored for warning and skipped diagnostics ([#39790](https://github.com/aws/aws-cdk/issues/39790)) ([7105c25](https://github.com/aws/aws-cdk/commit/7105c25611b1d0d2a3ff312b69f8bbb5eb2967c2)), closes [#39789](https://github.com/aws/aws-cdk/issues/39789) [#38350](https://github.com/aws/aws-cdk/issues/38350)
 * **core:** bump bundled minimatch to 11.0.8 to address CVE-2026-118764 ([#39595](https://github.com/aws/aws-cdk/issues/39595)) ([c153af9](https://github.com/aws/aws-cdk/commit/c153af906a24dde1797fbd15153ca2c4b29317d5)), closes [#39594](https://github.com/aws/aws-cdk/issues/39594)
 * **core:** upgrade CloudFormation validation to latest version ([#39643](https://github.com/aws/aws-cdk/issues/39643)) ([2f790a3](https://github.com/aws/aws-cdk/commit/2f790a316d3887abfae5f6677791fc453b98981d))
