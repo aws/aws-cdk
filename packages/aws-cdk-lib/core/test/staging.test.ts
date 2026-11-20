@@ -10,6 +10,7 @@ import { FileAssetPackaging } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import type { AssetStagingProps, BundlingOptions } from '../lib';
 import { App, AssetHashType, AssetStaging, DockerImage, BundlingOutput, FileSystem, IgnoreMode, Stack, NestedStack, Stage, BundlingFileAccess, SymlinkFollowMode } from '../lib';
+import { readPerfCounters, resetCounters } from '../lib/private/perf';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -2606,6 +2607,58 @@ describe('staging with docker cp', () => {
     ]);
     expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
     expect(staging.isArchive).toEqual(false);
+  });
+});
+
+describe('bundling telemetry', () => {
+  const bundling: BundlingOptions = {
+    image: DockerImage.fromRegistry('alpine'),
+    local: {
+      tryBundle(outputDir: string): boolean {
+        fs.writeFileSync(path.join(outputDir, 'hello.txt'), 'hello');
+        return true;
+      },
+    },
+  };
+
+  beforeEach(() => {
+    AssetStaging.clearAssetHashCache();
+    resetCounters();
+  });
+
+  test('bundling without a built-in bundler counts as custom', () => {
+    const stack = new Stack(new App(), 'Stack');
+    new AssetStaging(stack, 'Asset', { sourcePath: FIXTURE_TEST1_DIR, bundling });
+
+    expect(readPerfCounters({ telemetry: true })).toMatchObject({
+      'bundle:Custom': { count: 1 },
+      'bundle:Custom:local': { count: 1 },
+    });
+  });
+
+  test('skipped bundling is counted', () => {
+    const stack = new Stack(new App({ context: { [cxapi.BUNDLING_STACKS]: [] } }), 'Stack');
+    new AssetStaging(stack, 'Asset', { sourcePath: FIXTURE_TEST1_DIR, bundling });
+
+    expect(readPerfCounters({ telemetry: true })).toMatchObject({ 'bundle:Custom:skipped': { count: 1 } });
+  });
+
+  test('reusing bundled output from an earlier synth is counted', () => {
+    const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-reuse-'));
+    try {
+      for (let i = 0; i < 2; i++) {
+        AssetStaging.clearAssetHashCache();
+        const stack = new Stack(new App({ outdir }), 'Stack');
+        new AssetStaging(stack, 'Asset', { sourcePath: FIXTURE_TEST1_DIR, assetHashType: AssetHashType.SOURCE, bundling });
+      }
+
+      expect(readPerfCounters({ telemetry: true })).toMatchObject({
+        'bundle:Custom:local': { count: 1 },
+        'bundle:Custom:reused': { count: 1 },
+      });
+    } finally {
+      fs.rmSync(outdir, { recursive: true, force: true });
+    }
   });
 });
 
