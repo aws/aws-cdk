@@ -3,7 +3,7 @@ import { ImportedTaskDefinition } from './_imported-task-definition';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import type { IResource } from '../../../core';
-import { Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
+import { Lazy, Names, PhysicalName, Resource, Token, UnscopedValidationError, ValidationError } from '../../../core';
 import type { IArrayBox } from '../../../core/lib/helpers-internal';
 import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
@@ -257,6 +257,19 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - Undefined.
    */
   readonly runtimePlatform?: RuntimePlatform;
+
+  /**
+   * The trusted execution configuration for the task, which runs the task in an AWS Nitro Sandbox.
+   *
+   * Only supported for tasks that run on Amazon ECS Managed Instances. The Managed Instances
+   * capacity provider must enable Nitro Enclaves on its instances. The `ISOLATED_SANDBOX` and
+   * `CONFIDENTIAL_SANDBOX` isolation modes require the `AWS_VPC` network mode.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/isolated-confidential-tasks.html
+   *
+   * @default - No trusted execution configuration. Amazon ECS uses the `SHARED` isolation mode.
+   */
+  readonly trustedExecutionConfiguration?: TrustedExecutionConfiguration;
 }
 
 /**
@@ -565,6 +578,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new ValidationError(lit`OnlyAwsVpcHostNetwork`, `Only AWS_VPC and HOST Network Modes are supported for enabling Fault Injection, got ${this.networkMode} mode.`, this);
     }
 
+    this.validateTrustedExecutionConfiguration(props.trustedExecutionConfiguration);
+
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
@@ -619,6 +634,10 @@ export class TaskDefinition extends TaskDefinitionBase {
         operatingSystemFamily: this._runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
       enableFaultInjection: props.enableFaultInjection,
+      trustedExecutionConfiguration: props.trustedExecutionConfiguration ? {
+        isolationMode: props.trustedExecutionConfiguration.isolationMode,
+        attestationPolicy: props.trustedExecutionConfiguration.attestationPolicy,
+      } : undefined,
     };
 
     if (props.inferenceAccelerators) {
@@ -767,6 +786,41 @@ export class TaskDefinition extends TaskDefinitionBase {
   public addVolume(volume: Volume) {
     this.validateVolume(volume);
     this.volumes.push(volume);
+  }
+
+  private validateTrustedExecutionConfiguration(config?: TrustedExecutionConfiguration): void {
+    if (!config) {
+      return;
+    }
+
+    // `isManagedInstancesCompatible()` leaves out FARGATE_AND_EC2_AND_MANAGED_INSTANCES, so list the values here.
+    const managedInstancesCompatibilities = [
+      Compatibility.MANAGED_INSTANCES,
+      Compatibility.EC2_AND_MANAGED_INSTANCES,
+      Compatibility.FARGATE_AND_MANAGED_INSTANCES,
+      Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES,
+    ];
+    if (!managedInstancesCompatibilities.includes(this.compatibility)) {
+      throw new ValidationError(lit`TrustedExecutionRequiresManagedInstances`, 'trustedExecutionConfiguration is only supported for tasks that run on Managed Instances', this);
+    }
+
+    if (Token.isUnresolved(config.isolationMode)) {
+      return;
+    }
+
+    const hasAttestationPolicy = config.attestationPolicy !== undefined
+      && (Token.isUnresolved(config.attestationPolicy) || config.attestationPolicy.length > 0);
+    if (config.isolationMode === IsolationMode.CONFIDENTIAL_SANDBOX && !hasAttestationPolicy) {
+      throw new ValidationError(lit`ConfidentialSandboxRequiresAttestationPolicy`, 'attestationPolicy is required when isolationMode is CONFIDENTIAL_SANDBOX', this);
+    }
+    if (config.isolationMode !== IsolationMode.CONFIDENTIAL_SANDBOX && config.attestationPolicy !== undefined) {
+      throw new ValidationError(lit`AttestationPolicyRequiresConfidentialSandbox`, `attestationPolicy can only be set when isolationMode is CONFIDENTIAL_SANDBOX, got: ${config.isolationMode}`, this);
+    }
+
+    // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ict-considerations-and-limitations.html#ict-considerations-networking
+    if (config.isolationMode !== IsolationMode.SHARED && !Token.isUnresolved(this.networkMode) && this.networkMode !== NetworkMode.AWS_VPC) {
+      throw new ValidationError(lit`TrustedExecutionSandboxRequiresAwsVpc`, `isolationMode ${config.isolationMode} requires the AwsVpc network mode, got: ${this.networkMode}`, this);
+    }
   }
 
   private validateVolume(volume: Volume): void {
@@ -1105,6 +1159,51 @@ export enum PidMode {
    * If task is specified, all containers within the specified task share the same process namespace.
    */
   TASK = 'task',
+}
+
+/**
+ * The isolation mode of a task that runs on Amazon ECS Managed Instances.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/isolated-confidential-tasks.html
+ */
+export enum IsolationMode {
+  /**
+   * The task uses standard shared placement on the instance.
+   */
+  SHARED = 'SHARED',
+
+  /**
+   * The task runs in its own AWS Nitro Sandbox on a shared instance, isolated by the Nitro Hypervisor.
+   *
+   * Requires the `AWS_VPC` network mode.
+   */
+  ISOLATED_SANDBOX = 'ISOLATED_SANDBOX',
+
+  /**
+   * The task runs in its own AWS Nitro Sandbox, and the attestation policy verifies the workload before it runs.
+   *
+   * Requires the `AWS_VPC` network mode.
+   */
+  CONFIDENTIAL_SANDBOX = 'CONFIDENTIAL_SANDBOX',
+}
+
+/**
+ * The trusted execution configuration of a task definition.
+ */
+export interface TrustedExecutionConfiguration {
+  /**
+   * The isolation mode for the task.
+   */
+  readonly isolationMode: IsolationMode;
+
+  /**
+   * The base64-encoded attestation policy that verifies the workload before the task runs.
+   *
+   * Required when `isolationMode` is `IsolationMode.CONFIDENTIAL_SANDBOX`, and not allowed with the other modes.
+   *
+   * @default - No attestation policy.
+   */
+  readonly attestationPolicy?: string;
 }
 
 /**

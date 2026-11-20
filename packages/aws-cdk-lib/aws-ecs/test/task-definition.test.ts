@@ -1109,3 +1109,368 @@ describe('Managed Instances compatibility', () => {
     });
   });
 });
+
+describe('trusted execution configuration', () => {
+  const policy = Buffer.from('{"policy":"envelope"}').toString('base64');
+
+  function newStack() {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    return stack;
+  }
+
+  test.each([
+    [ecs.IsolationMode.SHARED, 'SHARED'],
+    [ecs.IsolationMode.ISOLATED_SANDBOX, 'ISOLATED_SANDBOX'],
+  ])('renders isolation mode %s', (isolationMode, expected) => {
+    // GIVEN
+    const stack = newStack();
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+      trustedExecutionConfiguration: { isolationMode },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      TrustedExecutionConfiguration: {
+        IsolationMode: expected,
+        AttestationPolicy: Match.absent(),
+      },
+    });
+  });
+
+  test('renders CONFIDENTIAL_SANDBOX with an attestation policy', () => {
+    // GIVEN
+    const stack = newStack();
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+      trustedExecutionConfiguration: {
+        isolationMode: ecs.IsolationMode.CONFIDENTIAL_SANDBOX,
+        attestationPolicy: policy,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      TrustedExecutionConfiguration: {
+        IsolationMode: 'CONFIDENTIAL_SANDBOX',
+        AttestationPolicy: policy,
+      },
+    });
+  });
+
+  test.each([
+    ['MANAGED_INSTANCES', ecs.Compatibility.MANAGED_INSTANCES],
+    ['EC2_AND_MANAGED_INSTANCES', ecs.Compatibility.EC2_AND_MANAGED_INSTANCES],
+    ['FARGATE_AND_MANAGED_INSTANCES', ecs.Compatibility.FARGATE_AND_MANAGED_INSTANCES],
+    ['FARGATE_AND_EC2_AND_MANAGED_INSTANCES', ecs.Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES],
+  ])('accepts compatibility %s, which includes Managed Instances', (_name, compatibility) => {
+    // GIVEN
+    const stack = newStack();
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility,
+      networkMode: ecs.NetworkMode.AWS_VPC,
+      trustedExecutionConfiguration: { isolationMode: ecs.IsolationMode.ISOLATED_SANDBOX },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      NetworkMode: 'awsvpc',
+      TrustedExecutionConfiguration: { IsolationMode: 'ISOLATED_SANDBOX' },
+    });
+  });
+
+  test('sandbox modes accept the default network mode for MANAGED_INSTANCES, which is AwsVpc', () => {
+    // GIVEN
+    const stack = newStack();
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+      trustedExecutionConfiguration: { isolationMode: ecs.IsolationMode.ISOLATED_SANDBOX },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      NetworkMode: 'awsvpc',
+      TrustedExecutionConfiguration: { IsolationMode: 'ISOLATED_SANDBOX' },
+    });
+  });
+
+  test.each([
+    // MANAGED_INSTANCES allows HOST, and the existing checks reject BRIDGE and NONE first.
+    ['ISOLATED_SANDBOX', 'HOST', ecs.IsolationMode.ISOLATED_SANDBOX, ecs.Compatibility.MANAGED_INSTANCES, ecs.NetworkMode.HOST],
+    ['CONFIDENTIAL_SANDBOX', 'HOST', ecs.IsolationMode.CONFIDENTIAL_SANDBOX, ecs.Compatibility.MANAGED_INSTANCES, ecs.NetworkMode.HOST],
+    // FARGATE_AND_EC2_AND_MANAGED_INSTANCES skips those checks and defaults to BRIDGE.
+    ['ISOLATED_SANDBOX', 'BRIDGE', ecs.IsolationMode.ISOLATED_SANDBOX, ecs.Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES, ecs.NetworkMode.BRIDGE],
+    ['CONFIDENTIAL_SANDBOX', 'BRIDGE', ecs.IsolationMode.CONFIDENTIAL_SANDBOX, ecs.Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES, ecs.NetworkMode.BRIDGE],
+    ['ISOLATED_SANDBOX', 'NONE', ecs.IsolationMode.ISOLATED_SANDBOX, ecs.Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES, ecs.NetworkMode.NONE],
+    ['CONFIDENTIAL_SANDBOX', 'NONE', ecs.IsolationMode.CONFIDENTIAL_SANDBOX, ecs.Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES, ecs.NetworkMode.NONE],
+  ])('throws when isolation mode %s uses network mode %s', (_isolationName, _networkName, isolationMode, compatibility, networkMode) => {
+    // GIVEN
+    const stack = newStack();
+
+    // THEN
+    expect(() => {
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '1024',
+        memoryMiB: '2048',
+        compatibility,
+        networkMode,
+        trustedExecutionConfiguration: {
+          isolationMode,
+          attestationPolicy: isolationMode === ecs.IsolationMode.CONFIDENTIAL_SANDBOX ? policy : undefined,
+        },
+      });
+    }).toThrow(`isolationMode ${isolationMode} requires the AwsVpc network mode, got: ${networkMode}`);
+  });
+
+  test('throws when a sandbox mode uses the default network mode of FARGATE_AND_EC2_AND_MANAGED_INSTANCES, which is Bridge', () => {
+    // GIVEN
+    const stack = newStack();
+
+    // THEN
+    expect(() => {
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '1024',
+        memoryMiB: '2048',
+        compatibility: ecs.Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES,
+        trustedExecutionConfiguration: { isolationMode: ecs.IsolationMode.ISOLATED_SANDBOX },
+      });
+    }).toThrow('isolationMode ISOLATED_SANDBOX requires the AwsVpc network mode, got: bridge');
+  });
+
+  test('SHARED accepts the Host network mode', () => {
+    // GIVEN
+    const stack = newStack();
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+      networkMode: ecs.NetworkMode.HOST,
+      trustedExecutionConfiguration: { isolationMode: ecs.IsolationMode.SHARED },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      NetworkMode: 'host',
+      TrustedExecutionConfiguration: { IsolationMode: 'SHARED' },
+    });
+  });
+
+  test('skips the network mode check when the isolation mode is a token', () => {
+    // GIVEN
+    const stack = newStack();
+    const isolationMode = new cdk.CfnParameter(stack, 'IsolationMode', { type: 'String' }).valueAsString as ecs.IsolationMode;
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+      networkMode: ecs.NetworkMode.HOST,
+      trustedExecutionConfiguration: { isolationMode },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      NetworkMode: 'host',
+      TrustedExecutionConfiguration: { IsolationMode: { Ref: 'IsolationMode' } },
+    });
+  });
+
+  test('skips the network mode check when the network mode is a token', () => {
+    // GIVEN
+    const stack = newStack();
+    const networkMode = new cdk.CfnParameter(stack, 'NetworkMode', { type: 'String' }).valueAsString as ecs.NetworkMode;
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.FARGATE_AND_EC2_AND_MANAGED_INSTANCES,
+      networkMode,
+      trustedExecutionConfiguration: { isolationMode: ecs.IsolationMode.ISOLATED_SANDBOX },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      NetworkMode: { Ref: 'NetworkMode' },
+      TrustedExecutionConfiguration: { IsolationMode: 'ISOLATED_SANDBOX' },
+    });
+  });
+
+  test('is absent when not set', () => {
+    // GIVEN
+    const stack = newStack();
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      TrustedExecutionConfiguration: Match.absent(),
+    });
+  });
+
+  test('throws when CONFIDENTIAL_SANDBOX has no attestation policy', () => {
+    // GIVEN
+    const stack = newStack();
+
+    // THEN
+    expect(() => {
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '1024',
+        memoryMiB: '2048',
+        compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+        trustedExecutionConfiguration: { isolationMode: ecs.IsolationMode.CONFIDENTIAL_SANDBOX },
+      });
+    }).toThrow('attestationPolicy is required when isolationMode is CONFIDENTIAL_SANDBOX');
+  });
+
+  test('throws when CONFIDENTIAL_SANDBOX has an empty attestation policy', () => {
+    // GIVEN
+    const stack = newStack();
+
+    // THEN
+    expect(() => {
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '1024',
+        memoryMiB: '2048',
+        compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+        trustedExecutionConfiguration: {
+          isolationMode: ecs.IsolationMode.CONFIDENTIAL_SANDBOX,
+          attestationPolicy: '',
+        },
+      });
+    }).toThrow('attestationPolicy is required when isolationMode is CONFIDENTIAL_SANDBOX');
+  });
+
+  test.each([
+    [ecs.IsolationMode.SHARED],
+    [ecs.IsolationMode.ISOLATED_SANDBOX],
+  ])('throws when isolation mode %s has an attestation policy', (isolationMode) => {
+    // GIVEN
+    const stack = newStack();
+
+    // THEN
+    expect(() => {
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '1024',
+        memoryMiB: '2048',
+        compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+        trustedExecutionConfiguration: { isolationMode, attestationPolicy: policy },
+      });
+    }).toThrow(`attestationPolicy can only be set when isolationMode is CONFIDENTIAL_SANDBOX, got: ${isolationMode}`);
+  });
+
+  test('skips the attestation policy checks when the isolation mode is a token', () => {
+    // GIVEN
+    const stack = newStack();
+    const isolationMode = new cdk.CfnParameter(stack, 'IsolationMode', { type: 'String' }).valueAsString as ecs.IsolationMode;
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+      trustedExecutionConfiguration: { isolationMode },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      TrustedExecutionConfiguration: {
+        IsolationMode: { Ref: 'IsolationMode' },
+      },
+    });
+  });
+
+  test('accepts a token attestation policy with CONFIDENTIAL_SANDBOX', () => {
+    // GIVEN
+    const stack = newStack();
+    const attestationPolicy = new cdk.CfnParameter(stack, 'AttestationPolicy', { type: 'String' }).valueAsString;
+
+    // WHEN
+    new ecs.TaskDefinition(stack, 'TD', {
+      cpu: '1024',
+      memoryMiB: '2048',
+      compatibility: ecs.Compatibility.MANAGED_INSTANCES,
+      trustedExecutionConfiguration: {
+        isolationMode: ecs.IsolationMode.CONFIDENTIAL_SANDBOX,
+        attestationPolicy,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      TrustedExecutionConfiguration: {
+        IsolationMode: 'CONFIDENTIAL_SANDBOX',
+        AttestationPolicy: { Ref: 'AttestationPolicy' },
+      },
+    });
+  });
+
+  test.each([
+    ['EC2', ecs.Compatibility.EC2],
+    ['FARGATE', ecs.Compatibility.FARGATE],
+    ['EC2_AND_FARGATE', ecs.Compatibility.EC2_AND_FARGATE],
+    ['EXTERNAL', ecs.Compatibility.EXTERNAL],
+  ])('throws for compatibility %s, which does not include Managed Instances', (_name, compatibility) => {
+    // GIVEN
+    const stack = newStack();
+
+    // THEN
+    expect(() => {
+      new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '1024',
+        memoryMiB: '2048',
+        compatibility,
+        networkMode: compatibility === ecs.Compatibility.EXTERNAL ? ecs.NetworkMode.BRIDGE : ecs.NetworkMode.AWS_VPC,
+        trustedExecutionConfiguration: { isolationMode: ecs.IsolationMode.ISOLATED_SANDBOX },
+      });
+    }).toThrow('trustedExecutionConfiguration is only supported for tasks that run on Managed Instances');
+  });
+
+  test('is not part of the Fargate, EC2 and External task definition props', () => {
+    // Compile-time check: the prop is only declared on TaskDefinitionProps.
+    type HasProp<T> = 'trustedExecutionConfiguration' extends keyof T ? true : false;
+    const onTaskDefinition: HasProp<ecs.TaskDefinitionProps> = true;
+    const onFargate: HasProp<ecs.FargateTaskDefinitionProps> = false;
+    const onEc2: HasProp<ecs.Ec2TaskDefinitionProps> = false;
+    const onExternal: HasProp<ecs.ExternalTaskDefinitionProps> = false;
+
+    expect([onTaskDefinition, onFargate, onEc2, onExternal]).toEqual([true, false, false, false]);
+  });
+
+  test('FargateTaskDefinition rejects the prop when passed without type checking', () => {
+    // GIVEN
+    const stack = newStack();
+
+    // THEN
+    expect(() => {
+      new ecs.FargateTaskDefinition(stack, 'TD', {
+        trustedExecutionConfiguration: { isolationMode: ecs.IsolationMode.ISOLATED_SANDBOX },
+      } as any);
+    }).toThrow('trustedExecutionConfiguration is only supported for tasks that run on Managed Instances');
+  });
+});

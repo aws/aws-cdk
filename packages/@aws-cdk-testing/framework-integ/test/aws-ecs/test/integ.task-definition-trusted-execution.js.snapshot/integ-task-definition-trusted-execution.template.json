@@ -1,0 +1,84 @@
+{
+ "Resources": {
+  "IsolatedSandboxTaskDefTaskRole319D6094": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "IsolatedSandboxTaskDefB3E6B0F0": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Essential": true,
+      "Image": "public.ecr.aws/docker/library/nginx:latest",
+      "MemoryReservation": 256,
+      "Name": "web"
+     }
+    ],
+    "Cpu": "1024",
+    "Family": "integtaskdefinitiontrustedexecutionIsolatedSandboxTaskDef572A7B7E",
+    "Memory": "2048",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "MANAGED_INSTANCES"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "IsolatedSandboxTaskDefTaskRole319D6094",
+      "Arn"
+     ]
+    },
+    "TrustedExecutionConfiguration": {
+     "IsolationMode": "ISOLATED_SANDBOX"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
