@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import { isCfnResource, NESTED_STACK_TYPE, STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { LinkedQueue } from './linked-queue';
 import type { CfnResource } from '../cfn-resource';
+import type { Stack } from '../stack';
 import type { Stage } from '../stage';
 
 /**
@@ -58,9 +59,36 @@ export function* iterateAssembliesPostorder(root: Stage): IterableIterator<Stage
 }
 
 /**
+ * Depth-first iterator over all constructs in the given Stack, stopping at deployment boundaries.
+ *
+ * Also yields the stack itself.
+ *
+ * Will break at stack boundaries that logically form a different deployment
+ * unit: top-level Stacks and Stages.
+ */
+export function* iterateStackConstructs(root: Stack): IterableIterator<IConstruct> {
+  const stack: IConstruct[] = [root];
+
+  let next = stack.pop();
+  while (next) {
+    if ((STACK_TYPE.isMarked(next) && next._isTopLevelStack && root !== next) || STAGE_TYPE.isMarked(next)) {
+      // New deployment unit, do not recurse
+    } else {
+      yield next;
+
+      // Reverse the children so that they get popped in original array order,
+      // consistent with the behavior of `node.findAll()`.
+      stack.push(...next.node.children.reverse());
+    }
+
+    next = stack.pop();
+  }
+}
+
+/**
  * Depth-first iterator over CFN resources under the given construct, including the construct itself
  *
- * Will break at stack boundaries that logically form a different deployment unit: nested Stacks,
+ * Will break at stack boundaries that logically form a different template: nested Stacks,
  * NestedStacks and Stages.
  *
  * Replaces `node.findAll()` which both uses recursive function
@@ -178,4 +206,12 @@ export function* iterateDfsPostorderStopAtStage(root: IConstruct) {
     }
     next = stack.pop();
   }
+}
+
+export function tryFindByPath(root: IConstruct, path: string): IConstruct | undefined {
+  let node: IConstruct | undefined = root;
+  for (const id of path.replace(/^\//, '').split('/')) {
+    node = node?.node.tryFindChild(id);
+  }
+  return node;
 }
