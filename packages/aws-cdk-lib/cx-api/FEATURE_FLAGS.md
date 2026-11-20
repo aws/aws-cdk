@@ -123,6 +123,7 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 | [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | V2NEXT | fix |
+| [@aws-cdk/aws-redshift:singletonProvider](#aws-cdkaws-redshiftsingletonprovider) | Share one custom resource provider for Redshift database queries in each stack | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -195,6 +196,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
     "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
     "@aws-cdk/aws-redshift:columnId": true,
+    "@aws-cdk/aws-redshift:singletonProvider": true,
     "@aws-cdk/aws-route53-patterns:useDistribution": true,
     "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
@@ -2688,6 +2690,29 @@ that stack is deployed too.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-redshift:singletonProvider
+
+*Share one custom resource provider for Redshift database queries in each stack*
+
+Flag type: New default behavior
+
+When enabled, Redshift database queries share a single custom resource provider
+in each stack, in addition to the existing shared query handler and invoker role.
+This reduces the number of Lambda functions created for tables, users and privileges.
+
+Enable this flag before deploying database query resources for the first time.
+Enabling it on an existing deployment changes the custom resources' service tokens,
+which CloudFormation does not support updating in place.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Leave this flag unset or set it to false to preserve existing providers and custom resource service tokens.
 
 
 <!-- END details -->
