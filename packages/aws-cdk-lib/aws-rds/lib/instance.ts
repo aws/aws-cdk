@@ -1328,12 +1328,18 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   /**
    * Indicates whether the DB instance is encrypted.
    *
+   * Changing this on a deployed instance replaces it with a new, empty one.
+   * If you set `instanceIdentifier`, the update fails instead.
+   *
    * @default - true if storageEncryptionKey has been provided, false otherwise
    */
   readonly storageEncrypted?: boolean;
 
   /**
    * The KMS key that's used to encrypt the DB instance.
+   *
+   * Changing this on a deployed instance replaces it with a new, empty one.
+   * If you set `instanceIdentifier`, the update fails instead.
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
@@ -1583,12 +1589,20 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
   /**
    * Indicates whether the DB instance is encrypted.
    *
+   * The replica's encryption must match its source instance. Changing this on
+   * a deployed replica replaces it, and the new replica re-syncs from the source.
+   * If you set `instanceIdentifier`, the update fails instead.
+   *
    * @default - true if storageEncryptionKey has been provided, false otherwise
    */
   readonly storageEncrypted?: boolean;
 
   /**
    * The KMS key that's used to encrypt the DB instance.
+   *
+   * The replica's encryption must match its source instance. Changing this on
+   * a deployed replica replaces it, and the new replica re-syncs from the source.
+   * If you set `instanceIdentifier`, the update fails instead.
    *
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
