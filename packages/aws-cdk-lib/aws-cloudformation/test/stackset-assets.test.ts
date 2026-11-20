@@ -51,14 +51,6 @@ class LambdaStackSet extends StackSet {
   }
 }
 
-/**
- * A StackSet is not a cloud assembly artifact, so read its template file from the assembly
- */
-function stackSetTemplateOf(stackSet: StackSet): Template {
-  const assembly = Stage.of(stackSet)!.synth();
-  return Template.fromJSON(JSON.parse(fs.readFileSync(path.join(assembly.directory, stackSet.templateFile), 'utf-8')));
-}
-
 test('requires asset bucket to be passed', () => {
   const app = new App();
   const stack = new Stack(app);
@@ -138,7 +130,7 @@ test('lambda asset bucket name is looked up by region in the stackset template',
     capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
   });
 
-  stackSetTemplateOf(lambdaStack).hasResourceProperties('AWS::Lambda::Function', {
+  Template.fromStack(lambdaStack).hasResourceProperties('AWS::Lambda::Function', {
     Code: {
       S3Bucket: { 'Fn::FindInMap': ['StackSetAssetBuckets', { Ref: 'AWS::Region' }, 'BucketName'] },
     },
@@ -183,7 +175,7 @@ test('httpUrl and s3Url use the regional S3 endpoint', () => {
   new CfnOutput(stackSet, 'HttpUrl', { value: script.httpUrl });
   new CfnOutput(stackSet, 'S3Url', { value: location.s3Url ?? 'no s3Url' });
 
-  const outputs = stackSetTemplateOf(stackSet).toJSON().Outputs;
+  const outputs = Template.fromStack(stackSet).toJSON().Outputs;
   const expectedUrl = {
     'Fn::Join': ['', [
       'https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/',
@@ -428,7 +420,7 @@ describe('StackSet asset buckets', () => {
   test('the template reads each asset from the bucket of its region through a mapping', () => {
     const { stackSet } = twoRegionStackSet(['us-east-1', 'eu-west-1']);
 
-    const template = stackSetTemplateOf(stackSet);
+    const template = Template.fromStack(stackSet);
     expect(template.toJSON().Mappings).toEqual({
       StackSetAssetBuckets: {
         'us-east-1': { BucketName: 'my-assets-us-east-1' },
@@ -447,7 +439,7 @@ describe('StackSet asset buckets', () => {
     });
     new sns.Topic(stackSet, 'Topic');
 
-    expect(stackSetTemplateOf(stackSet).toJSON().Mappings).toBeUndefined();
+    expect(Template.fromStack(stackSet).toJSON().Mappings).toBeUndefined();
   });
 
   test('a lambda in a nested stack of the StackSet reads its code through a copy of the mapping', () => {
@@ -479,7 +471,7 @@ describe('StackSet asset buckets', () => {
     });
     addLambda(stackSet);
 
-    expect(stackSetTemplateOf(stackSet).toJSON().Mappings).toEqual({ StackSetAssetBuckets: { [region]: { BucketName: bucketName } } });
+    expect(Template.fromStack(stackSet).toJSON().Mappings).toEqual({ StackSetAssetBuckets: { [region]: { BucketName: bucketName } } });
   });
 
   test('the mapping holds the generated name of a bucket in a stack of another region', () => {
@@ -492,7 +484,7 @@ describe('StackSet asset buckets', () => {
     });
     addLambda(stackSet);
 
-    const mapping = stackSetTemplateOf(stackSet).toJSON().Mappings.StackSetAssetBuckets;
+    const mapping = Template.fromStack(stackSet).toJSON().Mappings.StackSetAssetBuckets;
     const [generatedName] = Object.values(Template.fromStack(assetsStack).findResources('AWS::S3::Bucket'))
       .map((resource) => resource.Properties.BucketName);
     expect(typeof generatedName).toBe('string');
@@ -564,7 +556,7 @@ describe('StackSet asset buckets', () => {
     });
     addLambda(stackSet);
 
-    expect(stackSetTemplateOf(stackSet).toJSON().Mappings).toEqual({ StackSetAssetBuckets: { 'eu-west-1': { BucketName: 'my-assets' } } });
+    expect(Template.fromStack(stackSet).toJSON().Mappings).toEqual({ StackSetAssetBuckets: { 'eu-west-1': { BucketName: 'my-assets' } } });
   });
 
   test('copies the assets with one bucket deployment per region, keyed by region', () => {
@@ -601,7 +593,7 @@ describe('StackSet asset buckets', () => {
       const [stackSetResource] = Object.values(Template.fromStack(stack).findResources('AWS::CloudFormation::StackSet'));
       return {
         // the order of the keys is part of the template file, and so of its hash in the template URL
-        template: JSON.stringify(stackSetTemplateOf(stackSet).toJSON()),
+        template: JSON.stringify(Template.fromStack(stackSet).toJSON()),
         templateUrl: stackSetResource.Properties.TemplateURL,
       };
     }
