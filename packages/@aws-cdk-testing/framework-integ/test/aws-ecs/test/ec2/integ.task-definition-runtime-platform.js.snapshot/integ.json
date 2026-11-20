@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "TaskDefinitionRuntimePlatform/DefaultTest": {
+      "stacks": [
+        "aws-ecs-task-definition-runtime-platform"
+      ],
+      "assertionStack": "TaskDefinitionRuntimePlatform/DefaultTest/DeployAssert",
+      "assertionStackName": "TaskDefinitionRuntimePlatformDefaultTestDeployAssert4569B69A"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
