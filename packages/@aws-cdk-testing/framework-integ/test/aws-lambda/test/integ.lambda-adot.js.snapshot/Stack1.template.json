@@ -255,6 +255,9 @@
   "MyFunc3666B7A2F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "ZipFile": "def handler(event, context): pass"
     },
@@ -266,15 +269,12 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Fn::Join": [
-       "",
-       [
-        "arn:aws:lambda:",
-        {
-         "Ref": "AWS::Region"
-        },
-        ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:9"
-       ]
+      "Fn::FindInMap": [
+       "AdotlambdalayerMap",
+       {
+        "Ref": "AWS::Region"
+       },
+       "JAVAxSDKx1x32x0x2xarm64"
       ]
      }
     ],
@@ -487,6 +487,58 @@
     "MyFunc5ServiceRoleDefaultPolicy96ABEA66",
     "MyFunc5ServiceRoleFE4CE92B"
    ]
+  }
+ },
+ "Mappings": {
+  "AdotlambdalayerMap": {
+   "ap-northeast-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:ap-northeast-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "ap-northeast-2": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:ap-northeast-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "ap-south-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:ap-south-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "ap-southeast-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:ap-southeast-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "ap-southeast-2": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:ap-southeast-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "ca-central-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:ca-central-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "eu-central-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:eu-central-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "eu-north-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:eu-north-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "eu-west-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "eu-west-2": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:eu-west-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "eu-west-3": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:eu-west-3:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "sa-east-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:sa-east-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "us-east-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:us-east-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:10"
+   },
+   "us-east-2": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:us-east-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "us-west-1": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:us-west-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   },
+   "us-west-2": {
+    "JAVAxSDKx1x32x0x2xarm64": "arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9"
+   }
   }
  },
  "Parameters": {

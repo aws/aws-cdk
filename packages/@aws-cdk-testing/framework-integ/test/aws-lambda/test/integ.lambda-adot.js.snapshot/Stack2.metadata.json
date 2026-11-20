@@ -75,6 +75,7 @@
         "runtime": "*",
         "handler": "*",
         "code": "*",
+        "architecture": "*",
         "adotInstrumentation": {
           "layerVersion": "*",
           "execWrapper": "/opt/otel-instrument"

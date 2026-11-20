@@ -75,6 +75,7 @@
         "runtime": "*",
         "handler": "*",
         "code": "*",
+        "architecture": "*",
         "adotInstrumentation": {
           "layerVersion": "*",
           "execWrapper": "/opt/otel-instrument"
@@ -97,6 +98,12 @@
           "*"
         ]
       }
+    }
+  ],
+  "/Stack1/Adot-lambda-layerMap": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AdotlambdalayerMap"
     }
   ],
   "/Stack1/MyFunc4": [

@@ -255,6 +255,9 @@
   "MyFunc3666B7A2F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
     "Code": {
      "ZipFile": "def handler(event, context): pass"
     },

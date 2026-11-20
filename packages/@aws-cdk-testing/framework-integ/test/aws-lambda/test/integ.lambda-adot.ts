@@ -58,6 +58,7 @@ class StackUnderTest extends Stack {
       runtime: Runtime.PYTHON_3_9,
       handler: 'index.handler',
       code: Code.fromInline('def handler(event, context): pass'),
+      architecture: props.architecture,
       adotInstrumentation: {
         layerVersion: AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.LATEST),
         execWrapper: AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
