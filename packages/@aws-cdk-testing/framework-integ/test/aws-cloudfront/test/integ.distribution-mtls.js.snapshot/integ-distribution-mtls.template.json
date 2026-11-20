@@ -117,7 +117,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+     "S3Key": "721002ca002e91836d1734098989599191db85af70cd89ea2d5bb9191dd0efa4.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -128,7 +128,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -153,7 +153,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -173,7 +173,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "c1b93019f6fb2a6a3942ed472bec934fd6f68b230f470a046c25e24e132725c2.zip"
+     "520c8cc6a84413d6c1029b3d94ecc6b92c3a8704315cfdb83d45c5f52e119493.zip"
     ],
     "DestinationBucketName": {
      "Ref": "CertBucket8AAEA095"
@@ -334,11 +334,14 @@
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
+     "S3Key": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip"
     },
     "Environment": {
      "Variables": {
@@ -351,6 +354,7 @@
       "Ref": "DeployCertsAwsCliLayer20DEEC78"
      }
     ],
+    "MemorySize": 1024,
     "Role": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
@@ -398,7 +402,13 @@
       }
      }
     },
-    "Name": "integ-test-trust-store"
+    "Name": "integ-test-trust-store",
+    "Tags": [
+     {
+      "Key": "purpose",
+      "Value": "integ-test"
+     }
+    ]
    },
    "DependsOn": [
     "DeployCertsAwsCliLayer20DEEC78",
@@ -512,6 +522,50 @@
          ]
         ]
        }
+      },
+      {
+       "Action": "s3:GetObject",
+       "Condition": {
+        "StringEquals": {
+         "AWS:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "OptionalDistribution18707953"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "OriginBucketCA772B8F",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -544,7 +598,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -564,7 +618,7 @@
      }
     ],
     "SourceObjectKeys": [
-     "5e3d80694d2ba6336c71177649ab6036191495293d008820b846db7fae494f17.zip"
+     "d1a221e60be897449a22c1a4d76084366f4484edce6a17f7d7647da7047834ec.zip"
     ],
     "DestinationBucketName": {
      "Ref": "OriginBucketCA772B8F"
@@ -624,6 +678,63 @@
      "ViewerMtlsConfig": {
       "Mode": "required",
       "TrustStoreConfig": {
+       "TrustStoreId": {
+        "Ref": "TrustStore982C25D3"
+       }
+      }
+     }
+    }
+   }
+  },
+  "OptionalDistributionOrigin1S3OriginAccessControl84C1FE08": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "integdistributionmtlsOptionaOrigin1S3OriginAccessControl3AB3CFEA",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "OptionalDistribution18707953": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "integdistributionmtlsOptionalDistributionOrigin199B4E83F",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "OriginBucketCA772B8F",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "integdistributionmtlsOptionalDistributionOrigin199B4E83F",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "OptionalDistributionOrigin1S3OriginAccessControl84C1FE08",
+         "Id"
+        ]
+       },
+       "S3OriginConfig": {
+        "OriginAccessIdentity": ""
+       }
+      }
+     ],
+     "ViewerMtlsConfig": {
+      "Mode": "optional",
+      "TrustStoreConfig": {
+       "AdvertiseTrustStoreCaNames": true,
+       "IgnoreCertificateExpiry": true,
        "TrustStoreId": {
         "Ref": "TrustStore982C25D3"
        }
@@ -716,7 +827,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a31a0834d6027d6f7bb30cbfbd36e43f29f94911c61a803034122d0b0d39f93d.zip"
+     "S3Key": "fc46151c3ccc2b17fa9d4b374d9e774d0b7ef43ccf70323eee930aa6ddeee152.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -779,6 +890,17 @@
    },
    "Export": {
     "Name": "integ-distribution-mtls:ExportsOutputRefCertBucket8AAEA095E7C65627"
+   }
+  },
+  "ExportsOutputFnGetAttOptionalDistribution18707953DomainName373AF213": {
+   "Value": {
+    "Fn::GetAtt": [
+     "OptionalDistribution18707953",
+     "DomainName"
+    ]
+   },
+   "Export": {
+    "Name": "integ-distribution-mtls:ExportsOutputFnGetAttOptionalDistribution18707953DomainName373AF213"
    }
   }
  },

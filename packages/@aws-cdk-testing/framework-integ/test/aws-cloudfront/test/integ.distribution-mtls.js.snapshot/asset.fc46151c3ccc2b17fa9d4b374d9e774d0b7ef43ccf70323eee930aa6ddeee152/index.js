@@ -74,10 +74,19 @@ async function handler(event) {
     const req = https.request(options, (res) => {
       resolve({
         statusCode: res.statusCode ?? 0,
-        statusMessage: res.statusMessage ?? ""
+        statusMessage: res.statusMessage ?? "",
+        denied: res.statusCode === 403
       });
     });
     req.on("error", (err) => {
+      if (!event.useCert) {
+        resolve({
+          statusCode: 0,
+          statusMessage: err.message,
+          denied: true
+        });
+        return;
+      }
       reject(err);
     });
     req.end();
