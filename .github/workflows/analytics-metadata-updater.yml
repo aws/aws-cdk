@@ -5,6 +5,8 @@ on:
     branches:
       - v2-release
 
+cache-mode: read
+
 jobs:
   update-analytics-metadata:
     if: github.repository == 'aws/aws-cdk' && github.actor == 'aws-cdk-automation'

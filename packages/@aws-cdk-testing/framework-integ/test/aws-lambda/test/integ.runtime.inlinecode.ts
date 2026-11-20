@@ -90,6 +90,13 @@ const node24xfn = new Function(stack, 'NODEJS_24_X', {
 });
 new CfnOutput(stack, 'NODEJS_24_X-functionName', { value: node24xfn.functionName });
 
+const node26xfn = new Function(stack, 'NODEJS_26_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_26_X,
+});
+new CfnOutput(stack, 'NODEJS_26_X-functionName', { value: node26xfn.functionName });
+
 new integ.IntegTest(app, 'lambda-runtime-inlinecode', {
   testCases: [stack],
 });
