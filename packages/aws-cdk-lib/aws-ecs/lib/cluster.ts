@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs';
-import { Construct } from 'constructs';
+import { Construct, DependencyGroup } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { ClusterGrants } from './cluster-grants';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
@@ -7,11 +7,13 @@ import { ECSMetrics } from './ecs-canned-metrics.generated';
 import type {
   IClusterRef,
   ClusterReference,
+  IGatewayRef,
 } from './ecs.generated';
 import {
   CfnCluster,
   CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
+  CfnGatewayClusterAssociations,
 } from './ecs.generated';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -265,6 +267,13 @@ export class Cluster extends Resource implements ICluster {
    * CfnCluster instance
    */
   private _cfnCluster: CfnCluster;
+
+  /**
+   * The gateway associations of this cluster, for services with a gateway connector to depend on.
+   */
+  private readonly _gatewayAssociations = new DependencyGroup();
+
+  private _gatewayAssociationCount = 0;
 
   @memoizedGetter
   public get clusterArn(): string {
@@ -814,6 +823,43 @@ export class Cluster extends Resource implements ICluster {
     if (!this._capacityProviderNames.includes(provider)) {
       this._capacityProviderNames.push(provider);
     }
+  }
+
+  /**
+   * Associate an Amazon ECS gateway with this cluster.
+   *
+   * Services in this cluster with a `gatewayConnector` receive traffic through the gateways
+   * associated with the cluster. Services created in this app depend on the association, so they
+   * are only created once it is active. Amazon ECS evaluates up to 5 gateways per cluster, and a
+   * gateway can be associated with a cluster once.
+   *
+   * @param gateway the gateway to associate with this cluster.
+   */
+  @MethodMetadata()
+  public associateGateway(gateway: IGatewayRef): void {
+    const id = `GatewayAssociation${Names.nodeUniqueId(gateway.node)}`;
+    if (this.node.tryFindChild(id)) {
+      throw new ValidationError(lit`GatewayAlreadyAssociated`, `gateway ${gateway.node.path} is already associated with this cluster`, this);
+    }
+    const association = new CfnGatewayClusterAssociations(this, id, {
+      cluster: this.clusterName,
+      gateway: gateway.gatewayRef.gatewayArn,
+    });
+    this._gatewayAssociations.add(association);
+    this._gatewayAssociationCount++;
+    if (this._gatewayAssociationCount === 6) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:clusterGatewayLimit',
+        'Amazon ECS evaluates up to 5 gateways for the services of a cluster; more than 5 gateways are associated with this cluster.');
+    }
+  }
+
+  /**
+   * The gateway associations of this cluster.
+   *
+   * @internal
+   */
+  public get _gatewayAssociationsDependable(): DependencyGroup {
+    return this._gatewayAssociations;
   }
 
   /**
