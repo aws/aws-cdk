@@ -1,0 +1,20 @@
+{
+  "/TableBucketLoggingIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "TableBucketLoggingIntegTestDefaultTestDeployAssert205BE1FD.template.json"
+    }
+  ],
+  "/TableBucketLoggingIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TableBucketLoggingIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

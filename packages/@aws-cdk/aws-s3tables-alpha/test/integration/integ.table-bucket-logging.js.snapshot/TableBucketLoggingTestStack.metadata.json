@@ -1,0 +1,103 @@
+{
+  "/TableBucketLoggingTestStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "TableBucketLoggingTestStack.template.json"
+    }
+  ],
+  "/TableBucketLoggingTestStack/LogBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/TableBucketLoggingTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/TableBucketLoggingTestStack/LoggedTableBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketLoggingTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/TableBucketLoggingTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/TableBucketLoggingTestStack/LogBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogBucketCC3B17E8"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/TableBucketLoggingTestStack/LogBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/TableBucketLoggingTestStack/LogBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketLoggingTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/TableBucketLoggingTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/TableBucketLoggingTestStack/LoggedTableBucket/LoggedTableBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LoggedTableBucket62100886"
+    }
+  ],
+  "/TableBucketLoggingTestStack/LogBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogBucketPolicy900DBE48"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/TableBucketLoggingTestStack/LogBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogBucketAutoDeleteObjectsCustomResource7762F42C"
+    }
+  ]
+}
