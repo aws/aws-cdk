@@ -126,7 +126,7 @@ export interface QueueProps {
   /**
    * Whether this a first-in-first-out (FIFO) queue.
    *
-   * @default false, unless queueName ends in '.fifo' or 'contentBasedDeduplication' is true.
+   * @default false, unless queueName ends in '.fifo', contentBasedDeduplication is true, or deduplicationScope or fifoThroughputLimit is set.
    */
   readonly fifo?: boolean;
 
