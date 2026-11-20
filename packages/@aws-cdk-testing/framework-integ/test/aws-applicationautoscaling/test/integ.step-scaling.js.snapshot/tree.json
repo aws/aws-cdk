@@ -1,0 +1,265 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-applicationautoscaling-step-scaling": {
+        "id": "aws-applicationautoscaling-step-scaling",
+        "path": "aws-applicationautoscaling-step-scaling",
+        "children": {
+          "Target": {
+            "id": "Target",
+            "path": "aws-applicationautoscaling-step-scaling/Target",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-applicationautoscaling-step-scaling/Target/Role",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-applicationautoscaling-step-scaling/Target/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "application-autoscaling.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-applicationautoscaling-step-scaling/Target/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalableTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "maxCapacity": 10,
+                    "minCapacity": 1,
+                    "resourceId": "https://custom-resource",
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "TargetRole12E3474B",
+                        "Arn"
+                      ]
+                    },
+                    "scalableDimension": "custom-resource:ResourceType:Property",
+                    "serviceNamespace": "custom-resource"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget",
+                  "version": "0.0.0"
+                }
+              },
+              "StepScaling": {
+                "id": "StepScaling",
+                "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling",
+                "children": {
+                  "LowerPolicy": {
+                    "id": "LowerPolicy",
+                    "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling/LowerPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling/LowerPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyName": "awsapplicationautoscalingstepscalingTargetStepScalingLowerPolicy5C847361",
+                            "policyType": "StepScaling",
+                            "scalingTargetId": {
+                              "Ref": "Target3191CF44"
+                            },
+                            "stepScalingPolicyConfiguration": {
+                              "adjustmentType": "ChangeInCapacity",
+                              "metricAggregationType": "Average",
+                              "stepAdjustments": [
+                                {
+                                  "metricIntervalUpperBound": 0,
+                                  "scalingAdjustment": -1
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingAction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LowerAlarm": {
+                    "id": "LowerAlarm",
+                    "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling/LowerAlarm",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling/LowerAlarm/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmActions": [
+                              {
+                                "Ref": "TargetStepScalingLowerPolicy0E8A27EC"
+                              }
+                            ],
+                            "alarmDescription": "Lower threshold scaling alarm",
+                            "comparisonOperator": "LessThanOrEqualToThreshold",
+                            "evaluationPeriods": 1,
+                            "metricName": "Metric",
+                            "namespace": "Test",
+                            "period": 300,
+                            "statistic": "Average",
+                            "threshold": 0,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "UpperPolicy": {
+                    "id": "UpperPolicy",
+                    "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling/UpperPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling/UpperPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyName": "awsapplicationautoscalingstepscalingTargetStepScalingUpperPolicy2F9C4F83",
+                            "policyType": "StepScaling",
+                            "scalingTargetId": {
+                              "Ref": "Target3191CF44"
+                            },
+                            "stepScalingPolicyConfiguration": {
+                              "adjustmentType": "ChangeInCapacity",
+                              "metricAggregationType": "Average",
+                              "stepAdjustments": [
+                                {
+                                  "metricIntervalLowerBound": 0,
+                                  "metricIntervalUpperBound": 400,
+                                  "scalingAdjustment": 1
+                                },
+                                {
+                                  "metricIntervalLowerBound": 400,
+                                  "scalingAdjustment": 5
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingAction",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "UpperAlarm": {
+                    "id": "UpperAlarm",
+                    "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling/UpperAlarm",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-applicationautoscaling-step-scaling/Target/StepScaling/UpperAlarm/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmActions": [
+                              {
+                                "Ref": "TargetStepScalingUpperPolicy2F3A21B2"
+                              }
+                            ],
+                            "alarmDescription": "Upper threshold scaling alarm",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "evaluationPeriods": 1,
+                            "metricName": "Metric",
+                            "namespace": "Test",
+                            "period": 300,
+                            "statistic": "Average",
+                            "threshold": 100,
+                            "treatMissingData": "notBreaching"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-cloudwatch.CfnAlarm",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cloudwatch.Alarm",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-applicationautoscaling.StepScalingPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}
