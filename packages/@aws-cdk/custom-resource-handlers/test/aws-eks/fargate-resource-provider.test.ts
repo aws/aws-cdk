@@ -226,6 +226,91 @@ describe('fargate resource provider', () => {
       });
     });
 
+    // CloudFormation assigns "<stack name>-<logical id>-<suffix>" when it cancels a create before
+    // the provider reports a physical id, and sends it with the rollback delete
+    test.each([
+      ['longer than 100 characters', `${'MyApplicationStack-Production'.repeat(3)}-ClusterfargateprofileMyProfile1A2B3C4D-1WI69JK2O6SPV`],
+      ['starting with the reserved eks- prefix', 'eks-cluster-stack-ClusterfargateprofileMyProfile1A2B3C4D-1WI69JK2O6SPV'],
+      ['starting with the reserved prefix in upper case', 'EKS-Cluster-Stack-ClusterfargateprofileMyProfile1A2B3C4D-1WI69JK2O6SPV'],
+    ])('does not call deleteFargateProfile for a physical id %s', async (_, physicalResourceId) => {
+      // GIVEN
+      const client = newEksClientMock();
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+        PhysicalResourceId: physicalResourceId,
+      }));
+
+      // WHEN
+      const onEventResponse = await handler.onEvent();
+      const isCompleteResponse = await handler.isComplete();
+
+      // THEN
+      sinon.assert.notCalled(client.deleteFargateProfile);
+      sinon.assert.notCalled(client.describeFargateProfile);
+      expect(onEventResponse).toEqual(undefined);
+      expect(isCompleteResponse).toEqual({ IsComplete: true });
+    });
+
+    test('calls deleteFargateProfile for a physical id of exactly 100 characters', async () => {
+      // GIVEN
+      const client = newEksClientMock();
+      const physicalResourceId = 'a'.repeat(100);
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+        PhysicalResourceId: physicalResourceId,
+      }));
+
+      // WHEN
+      await handler.onEvent();
+
+      // THEN
+      sinon.assert.calledWithExactly(client.deleteFargateProfile, {
+        clusterName: 'MockClusterName',
+        fargateProfileName: physicalResourceId,
+      });
+    });
+
+    test('succeeds when deleteFargateProfile throws ResourceNotFoundException', async () => {
+      // GIVEN
+      const client = newEksClientMock();
+      client.deleteFargateProfile = sinon.fake.throws(new eks.ResourceNotFoundException({
+        message: 'The requested resource does not exist.',
+        $metadata: {
+          httpStatusCode: 404,
+        },
+      }));
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+      }));
+
+      // WHEN
+      const onEventResponse = await handler.onEvent();
+
+      // THEN
+      sinon.assert.calledWithExactly(client.deleteFargateProfile, {
+        clusterName: 'MockClusterName',
+        fargateProfileName: 'PhysicalResourceIdMock',
+      });
+      expect(onEventResponse).toEqual(undefined);
+    });
+
+    test('rethrows other deleteFargateProfile errors', async () => {
+      // GIVEN
+      const client = newEksClientMock();
+      client.deleteFargateProfile = sinon.fake.throws(new eks.ResourceInUseException({
+        message: 'Resource in use',
+        $metadata: {
+          httpStatusCode: 409,
+        },
+      }));
+      const handler = new FargateProfileResourceHandler(client, newRequestMock({
+        RequestType: 'Delete',
+      }));
+
+      // WHEN / THEN
+      await expect(handler.onEvent()).rejects.toThrow('Resource in use');
+    });
+
     test('isComplete throws an exception if the status is DELETE_FAILED', async () => {
       // GIVEN
       const client = newEksClientMock();
