@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "a71eca31209b91c0e659663ebc4ec002f7a41a41c1e7d7ea11f761c6a4ef8bcd": {
+      "displayName": "aws-ecs-integ-alb-fg-cloudfront Template",
+      "source": {
+        "path": "aws-ecs-integ-alb-fg-cloudfront.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-79573f2d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a71eca31209b91c0e659663ebc4ec002f7a41a41c1e7d7ea11f761c6a4ef8bcd.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

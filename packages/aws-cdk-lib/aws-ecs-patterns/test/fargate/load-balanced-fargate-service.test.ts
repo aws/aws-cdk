@@ -1,6 +1,8 @@
 import { Match, Template } from '../../../assertions';
 import { AutoScalingGroup } from '../../../aws-autoscaling';
 import { Certificate, CertificateValidation } from '../../../aws-certificatemanager';
+import * as cloudfront from '../../../aws-cloudfront';
+import * as origins from '../../../aws-cloudfront-origins';
 import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
@@ -31,6 +33,55 @@ describe('ApplicationLoadBalancedFargateService', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       HealthCheckGracePeriodSeconds: 600,
     });
+  });
+
+  test('cloudFrontDistribution adds the load balancer as an origin for all paths', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      cloudFrontDistribution: distribution,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        Origins: Match.arrayWith([
+          Match.objectLike({
+            DomainName: { 'Fn::GetAtt': [Match.stringLikeRegexp('ServiceLB.*'), 'DNSName'] },
+          }),
+        ]),
+        CacheBehaviors: Match.arrayWith([
+          Match.objectLike({
+            PathPattern: '/*',
+          }),
+        ]),
+      }),
+    });
+  });
+
+  test('without cloudFrontDistribution no distribution is created', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::CloudFront::Distribution', 0);
   });
 
   test('setting healthCheck works', () => {

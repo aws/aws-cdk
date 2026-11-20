@@ -422,6 +422,28 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
 });
 ```
 
+### Serve an ApplicationLoadBalancedFargateService through CloudFront
+
+You can put a CloudFront distribution in front of the load balancer by passing it as `cloudFrontDistribution`.
+The load balancer is added to the distribution as an origin, with a cache behavior that sends all requests (`/*`) to it, so the service is served through CloudFront. Any cache behaviors you already added to the distribution are evaluated first.
+
+```ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+
+declare const cluster: ecs.Cluster;
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+});
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  cloudFrontDistribution: distribution,
+});
+```
+
 ### Set capacityProviderStrategies for ApplicationLoadBalancedFargateService
 
 ```ts
