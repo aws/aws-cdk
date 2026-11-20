@@ -88,7 +88,7 @@ async function handler(event, context) {
             else {
                 // otherwise, if PhysicalResourceId is not specified, something is
                 // terribly wrong because all other events should have an ID.
-                exports.external.log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event)}`);
+                exports.external.log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(sanitizedEvent)}`);
             }
         }
         // this is an actual error, fail the activity altogether and exist.
@@ -123,7 +123,7 @@ async function submitResponse(status, event) {
     };
     const parsedUrl = url.parse(event.ResponseURL);
     const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
-    exports.external.log('submit response to cloudformation', loggingSafeUrl, json);
+    exports.external.log('submit response to cloudformation', loggingSafeUrl, json.NoEcho ? redactResponseData(json) : json);
     const responseBody = JSON.stringify(json);
     const req = {
         hostname: parsedUrl.hostname,
@@ -160,6 +160,28 @@ async function defaultSendHttpRequest(options, requestBody) {
             reject(e);
         }
     });
+}
+const REDACTED = '*****';
+/**
+ * Returns a copy of the response with every `Data` value replaced, for logging
+ * a response that has `NoEcho` set. The `Data` key names are kept: they are the
+ * attribute names the template reads with `Fn::GetAtt`, so they are not secret.
+ *
+ * The same rule is implemented in `nodejs-entrypoint.ts` and by `redactDataFromPayload` in the
+ * aws-cdk-lib provider framework; they cannot share code.
+ * `custom-resources/test/provider-framework/redact-data-parity.test.ts` in
+ * aws-cdk-lib runs all three on the same inputs.
+ */
+function redactResponseData(json) {
+    if (json.Data === undefined || json.Data === null) {
+        return json;
+    }
+    if (typeof json.Data !== 'object' || Array.isArray(json.Data)) {
+        // masking per key only makes sense for an object; for anything else (for
+        // example a string, whose keys are character indices) hide the whole value.
+        return { ...json, Data: REDACTED };
+    }
+    return { ...json, Data: Object.fromEntries(Object.keys(json.Data).map(k => [k, REDACTED])) };
 }
 function defaultLog(fmt, ...params) {
     console.log(fmt, ...params);

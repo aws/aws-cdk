@@ -480,7 +480,7 @@
     },
     "Engine": "mysql",
     "EngineLifecycleSupport": "open-source-rds-extended-support",
-    "EngineVersion": "8.4.10",
+    "EngineVersion": "8.4.11",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -883,7 +883,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "1513a46beda7e9e4bd33dd1b7fb240e4309d6f6a71bf2d62add82648422188fe.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1086,7 +1086,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "1513a46beda7e9e4bd33dd1b7fb240e4309d6f6a71bf2d62add82648422188fe.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1286,7 +1286,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip"
+     "S3Key": "1513a46beda7e9e4bd33dd1b7fb240e4309d6f6a71bf2d62add82648422188fe.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-instance-engine-lifecycle-support/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1572,7 +1572,7 @@
     },
     "Engine": "mysql",
     "EngineLifecycleSupport": "open-source-rds-extended-support-disabled",
-    "EngineVersion": "8.4.10",
+    "EngineVersion": "8.4.11",
     "StorageType": "gp2",
     "VPCSecurityGroups": [
      {
