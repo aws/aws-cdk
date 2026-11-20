@@ -209,6 +209,7 @@ describeDockerSuite((forceDockerBundling) => {
         expect(counters).toMatchObject({
           'bundle:NodejsFunction': expect.anything(),
           'bundle:NodejsFunction(cnt)': 1,
+          'bundle:NodejsFunction:docker(cnt)': 1,
           'DockerImage.fromBuild': expect.anything(),
           'AssetBundlingBindMount.run': expect.anything(),
         });
@@ -219,6 +220,7 @@ describeDockerSuite((forceDockerBundling) => {
         expect(counters).toMatchObject({
           'bundle:NodejsFunction': expect.anything(),
           'bundle:NodejsFunction(cnt)': 1,
+          'bundle:NodejsFunction:local(cnt)': 1,
           'NodejsFunction#tryBundle': expect.anything(),
         });
 
