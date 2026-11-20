@@ -57,6 +57,13 @@ This method uses AWS API calls to lookup the value from SSM during synthesis.
 const stringValue = ssm.StringParameter.valueFromLookup(this, '/My/Public/Parameter');
 ```
 
+By default, the lookup uses the stack region. To look up a parameter from a different
+region, use the `region` property of the `options` parameter.
+
+```ts
+const stringValue = ssm.StringParameter.valueFromLookup(this, '/My/Public/Parameter', undefined, { region: 'us-west-2' });
+```
+
 The result of the `StringParameter.valueFromLookup()` operation will be written to a file
 called `cdk.context.json`. You must commit this file to source control so
 that the lookup values are available in non-privileged environments such
