@@ -253,6 +253,25 @@ describe('EC2Launch v2 user data', () => {
     ]);
   });
 
+  test('keeps leading spaces of substituted values in blocks that end with a newline', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    const value = Lazy.string({ produce: () => '  foo' });
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.writeFile({ destination: 'C:\\a.txt', content: `${value}\n` }));
+    userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: `${value}\n\n` }));
+
+    // THEN
+    const rendered = stack.resolve(userData.render());
+    expect(rendered).toContain('content: |2\n');
+    expect(rendered).toContain('content: |2+\n');
+    const tasks = YAML.parse(rendered, { version: '1.1' }).tasks;
+    expect(tasks[0].inputs[0].content).toEqual('  foo\n');
+    expect(tasks[1].inputs[0].content).toEqual('  foo\n\n');
+  });
+
   test('keeps tokens in commands intact', () => {
     // GIVEN
     const stack = new Stack();

@@ -2665,12 +2665,14 @@ Values that CloudFormation substitutes into the document, such as parameters or 
 line: a multi-line value cannot be indented to fit the YAML document. A string that contains such a value must not
 contain carriage returns or other control characters, so use LF line endings in scripts that contain them.
 
-AWS Windows Server 2022 and later AMIs run EC2Launch v2 by default. For Windows Server 2016 and 2019, use the AMIs whose
-names start with `EC2LaunchV2-Windows_Server-`:
+AWS Windows Server 2022 and later AMIs run EC2Launch v2 by default. For Windows Server 2016 and 2019, use the AMIs
+published by Amazon whose names start with `EC2LaunchV2-Windows_Server-`. Limit the lookup to Amazon as owner, as any
+account can publish an AMI with a matching name:
 
 ```ts
 const machineImage = ec2.MachineImage.lookup({
   name: 'EC2LaunchV2-Windows_Server-2019-English-Full-Base-*',
+  owners: ['amazon'],
   windows: true,
 });
 ```
