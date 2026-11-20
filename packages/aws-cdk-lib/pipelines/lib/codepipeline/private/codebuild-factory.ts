@@ -10,6 +10,7 @@ import * as ec2 from '../../../../aws-ec2';
 import * as iam from '../../../../aws-iam';
 import { Stack, Token, UnscopedValidationError } from '../../../../core';
 import { lit } from '../../../../core/lib/private/literal-string';
+import { posixShellEscape, powershellEscape } from '../../../../core/lib/private/shell-escape';
 import type { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
@@ -382,23 +383,19 @@ function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileS
     const existsMessage = `additionalInputs: "${directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.`;
 
     const linux = [
-      `[ ! -d "${directory}" ] || { echo '${existsMessage}'; exit 1; }`,
-      ...hasParent ? [`mkdir -p -- "${parentDirectory}"`] : [],
-      `ln -s -- "$${variable}" "${directory}"`,
+      `[ ! -d ${posixShellEscape(directory)} ] || { echo ${posixShellEscape(existsMessage)}; exit 1; }`,
+      ...hasParent ? [`mkdir -p -- ${posixShellEscape(parentDirectory)}`] : [],
+      `ln -s -- "$${variable}" ${posixShellEscape(directory)}`,
     ];
 
     const windows = [
-      `if (Test-Path -LiteralPath ${powershellLiteral(directory)}) { throw ${powershellLiteral(existsMessage)} }`,
-      ...hasParent ? [`New-Item -ItemType Directory -Force -Path ${powershellLiteral(parentDirectory)} -ErrorAction Stop`] : [],
-      `New-Item -ItemType SymbolicLink -Path ${powershellLiteral(directory)} -Target $env:${variable} -ErrorAction Stop`,
+      `if (Test-Path -LiteralPath ${powershellEscape(directory)}) { throw ${powershellEscape(existsMessage)} }`,
+      ...hasParent ? [`New-Item -ItemType Directory -Force -Path ${powershellEscape(parentDirectory)} -ErrorAction Stop`] : [],
+      `New-Item -ItemType SymbolicLink -Path ${powershellEscape(directory)} -Target $env:${variable} -ErrorAction Stop`,
     ];
 
     return [`!LINUX!${linux.join(' && ')}`, `!WINDOWS!try { ${windows.join('; ')} } catch { Write-Output $_; exit 1 }`];
   });
-}
-
-function powershellLiteral(value: string): string {
-  return `'${value.replace(/'/g, "''")}'`;
 }
 
 function renderArtifactsBuildSpec(artifactMap: ArtifactMap, outputs: FileSetLocation[]) {

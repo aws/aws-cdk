@@ -5,6 +5,8 @@ on:
   pull_request_target:
     types: [ labeled, unlabeled, opened, synchronize, reopened, ready_for_review, review_requested ]
 
+cache-mode: read
+
 jobs:
   auto-approve:
     if: contains(github.event.pull_request.labels.*.name, 'auto-approve')

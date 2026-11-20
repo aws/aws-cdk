@@ -1,4 +1,10 @@
 {
+  "/cdk-route53-ebs-hostedzoneid-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-route53-ebs-hostedzoneid-integ.template.json"
+    }
+  ],
   "/cdk-route53-ebs-hostedzoneid-integ/EbsHostedZoneMapping": [
     {
       "type": "aws:cdk:logicalId",
