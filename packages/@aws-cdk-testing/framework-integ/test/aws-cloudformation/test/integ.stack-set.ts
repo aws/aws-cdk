@@ -5,6 +5,7 @@ import {
   App,
   CfnCapabilities,
   CfnOutput,
+  CfnParameter,
   Stack,
 } from 'aws-cdk-lib';
 import type { CfnResource, StackProps } from 'aws-cdk-lib';
@@ -24,12 +25,18 @@ import * as cfn from 'aws-cdk-lib/aws-cloudformation';
  *  - A "target" account which is where the stackset will deploy into
  *
  * - The target account must be bootstrapped to trust the deployment account
- * - The below environment variables must be set appropriately
+ * - The below environment variables must be set appropriately:
+ *  - `INTEG_TARGET_REGION` (default `us-east-1`): the region of the first target
+ *  - `INTEG_SECOND_TARGET_REGION` (default `us-west-2`): the region of a second target in the
+ *    same target account, with its own parameter override. It must differ from `INTEG_TARGET_REGION`
  */
 
 const deploymentAccount = process.env.CDK_INTEG_ACCOUNT ?? process.env.INTEG_DEPLOYMENT_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT;
 const targetAccount = process.env.CDK_INTEG_ACCOUNT ?? process.env.INTEG_TARGET_ACCOUNT;
 const targetRegion = process.env.INTEG_TARGET_REGION ?? 'us-east-1';
+const secondTargetRegion = process.env.INTEG_SECOND_TARGET_REGION ?? 'us-west-2';
+const topicDisplayName = 'integ-stackset-topic';
+const secondRegionTopicDisplayName = 'integ-stackset-topic-second-region';
 const executionRoleName = 'AWSCloudFormationStackSetExecutionRole-integ-test';
 const adminRoleName = 'AWSCloudFormationStackSetAdministrationRole-integ-test';
 const stackSetName = 'integ-stackset-test';
@@ -64,13 +71,14 @@ export class SupportStack extends Stack {
 }
 
 /**
- * Create a StackSet which just creates a simple SNS topic
+ * Create a StackSet which just creates a simple SNS topic, named by a parameter
  */
 class MyStackSet extends cfn.StackSet {
   constructor(scope: Construct, id: string, props: cfn.StackSetProps) {
     super(scope, id, props);
 
-    new sns.Topic(this, 'IntegStackSetSNSTopic');
+    const displayName = new CfnParameter(this, 'TopicDisplayName', { type: 'String' });
+    new sns.Topic(this, 'IntegStackSetSNSTopic', { displayName: displayName.valueAsString });
   }
 }
 
@@ -118,10 +126,19 @@ class TestCase extends Stack {
     });
     const stackSet = new MyStackSet(this, 'StackSet', {
       stackSetName,
-      targets: [cfn.StackSetTarget.fromAccounts({
-        accounts: [targetAccount!],
-        regions: [targetRegion],
-      })],
+      parameters: { TopicDisplayName: topicDisplayName },
+      // Each target is one group of stack instances
+      targets: [
+        cfn.StackSetTarget.fromAccounts({
+          accounts: [targetAccount!],
+          regions: [targetRegion],
+        }),
+        cfn.StackSetTarget.fromAccounts({
+          accounts: [targetAccount!],
+          regions: [secondTargetRegion],
+          parameterOverrides: { TopicDisplayName: secondRegionTopicDisplayName },
+        }),
+      ],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
         adminRole,
@@ -197,6 +214,17 @@ integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {
   StackInstanceRegion: targetRegion,
 }).expect(ExpectedResult.objectLike({
   StackInstance: { Status: 'CURRENT' },
+}));
+
+integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {
+  StackSetName: stackSetName,
+  StackInstanceAccount: targetAccount,
+  StackInstanceRegion: secondTargetRegion,
+}).expect(ExpectedResult.objectLike({
+  StackInstance: {
+    Status: 'CURRENT',
+    ParameterOverrides: [{ ParameterKey: 'TopicDisplayName', ParameterValue: secondRegionTopicDisplayName }],
+  },
 }));
 
 integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {

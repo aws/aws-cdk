@@ -1,7 +1,23 @@
 {
+  "Parameters": {
+    "TopicDisplayName": {
+      "Type": "String"
+    },
+    "referencetointegstacksettestAdminRoleD699F605RoleId": {
+      "Type": "String"
+    },
+    "referencetointegstacksettestAdminRoleD699F605Arn": {
+      "Type": "String"
+    }
+  },
   "Resources": {
     "IntegStackSetSNSTopic360B333E": {
-      "Type": "AWS::SNS::Topic"
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "DisplayName": {
+          "Ref": "TopicDisplayName"
+        }
+      }
     }
   },
   "Outputs": {
@@ -14,14 +30,6 @@
       "Value": {
         "Ref": "referencetointegstacksettestAdminRoleD699F605Arn"
       }
-    }
-  },
-  "Parameters": {
-    "referencetointegstacksettestAdminRoleD699F605RoleId": {
-      "Type": "String"
-    },
-    "referencetointegstacksettestAdminRoleD699F605Arn": {
-      "Type": "String"
     }
   }
 }

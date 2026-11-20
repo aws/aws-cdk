@@ -1,31 +1,31 @@
 {
   "version": "55.0.0",
   "files": {
-    "da87d45514430d7fd05c48fd2f620eff53356f93c0e5c49e11d0f9eb322b78e9": {
+    "866fc51934c9f1147cf509bc2e1c8088ccb6f49df3484028c698fed1337ba613": {
       "displayName": "integ-stackset-test/StackSet Template",
       "source": {
         "path": "integstacksettestStackSet7A3EC558.stackset.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region-1cff74f3": {
+        "12345678-test-region-481d0c22": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "da87d45514430d7fd05c48fd2f620eff53356f93c0e5c49e11d0f9eb322b78e9.json",
+          "objectKey": "866fc51934c9f1147cf509bc2e1c8088ccb6f49df3484028c698fed1337ba613.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
       }
     },
-    "43dfb31c5175a2cd470c1812193fbe752724deeb345925c13180bee6dec2c820": {
+    "b1114d85ac121b0bb43627bd93ca74bc6501896ed8f406b4b9dd2e48159bc381": {
       "displayName": "integ-stackset-test Template",
       "source": {
         "path": "integ-stackset-test.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region-65c9c488": {
+        "12345678-test-region-4aac1620": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "43dfb31c5175a2cd470c1812193fbe752724deeb345925c13180bee6dec2c820.json",
+          "objectKey": "b1114d85ac121b0bb43627bd93ca74bc6501896ed8f406b4b9dd2e48159bc381.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
