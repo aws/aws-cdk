@@ -25,6 +25,7 @@ import {
   LambdaTargetConfiguration,
   OpenApiTargetConfiguration,
   SmithyTargetConfiguration,
+  McpListingMode,
   McpServerTargetConfiguration,
 } from '../../../lib/gateway/targets/target-configuration';
 
@@ -1158,6 +1159,27 @@ describe('Target Configuration Tests', () => {
       expect(rendered).toHaveProperty('mcp');
       expect(rendered.mcp).toHaveProperty('mcpServer');
       expect(rendered.mcp.mcpServer.endpoint).toBe('https://mcp-server.example.com');
+      expect(rendered.mcp.mcpServer.listingMode).toBeUndefined();
+    });
+
+    test('Should render MCP Server configuration with DEFAULT listingMode', () => {
+      const config = McpServerTargetConfiguration.create('https://mcp-server.example.com', {
+        listingMode: McpListingMode.DEFAULT,
+      });
+      const rendered = config._render();
+
+      expect(rendered.mcp.mcpServer.endpoint).toBe('https://mcp-server.example.com');
+      expect(rendered.mcp.mcpServer.listingMode).toBe(McpListingMode.DEFAULT);
+    });
+
+    test('Should render MCP Server configuration with DYNAMIC listingMode', () => {
+      const config = McpServerTargetConfiguration.create('https://mcp-server.example.com', {
+        listingMode: McpListingMode.DYNAMIC,
+      });
+      const rendered = config._render();
+
+      expect(rendered.mcp.mcpServer.endpoint).toBe('https://mcp-server.example.com');
+      expect(rendered.mcp.mcpServer.listingMode).toBe(McpListingMode.DYNAMIC);
     });
 
     test('Should accept endpoint with port number', () => {

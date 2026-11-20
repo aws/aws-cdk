@@ -20,7 +20,7 @@ import type { IPolicyEngine } from '../policy/policy-engine-base';
 import type { ApiSchema } from './targets/schema/api-schema';
 import type { ToolSchema } from './targets/schema/tool-schema';
 import { GatewayTarget } from './targets/target';
-import type { ApiGatewayToolConfiguration, MetadataConfiguration } from './targets/target-configuration';
+import type { ApiGatewayToolConfiguration, McpListingMode, MetadataConfiguration } from './targets/target-configuration';
 import type { IFunction } from '../../../aws-lambda';
 import { Annotations, Stack, Token, Lazy, Names } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
@@ -173,6 +173,13 @@ export interface AddMcpServerTargetOptions {
    * OAuth2 is strongly recommended over NoAuth.
    */
   readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+
+  /**
+   * The listing mode for the MCP server tools
+   *
+   * @default - CloudFormation default (syncs at create/update time or provider default)
+   */
+  readonly listingMode?: McpListingMode;
 }
 
 /**
@@ -800,6 +807,7 @@ export class Gateway extends GatewayBase {
       description: props.description,
       gateway: this,
       endpoint: props.endpoint,
+      listingMode: props.listingMode,
       ...(props.credentialProviderConfigurations && props.credentialProviderConfigurations.length > 0
         ? { credentialProviderConfigurations: props.credentialProviderConfigurations }
         : {}),

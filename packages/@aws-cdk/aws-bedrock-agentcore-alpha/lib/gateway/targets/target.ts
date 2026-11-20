@@ -15,7 +15,7 @@ import type { ToolSchema } from './schema/tool-schema';
 import type { IGatewayTarget, IMcpGatewayTarget } from './target-base';
 import { GatewayTargetBase, GatewayTargetProtocolType, McpTargetType } from './target-base';
 import type { ApiGatewayToolConfiguration, ITargetConfiguration, MetadataConfiguration } from './target-configuration';
-import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
+import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpListingMode, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
 import { validateStringField, validateFieldPattern } from '../validation-helpers';
@@ -178,6 +178,13 @@ export interface GatewayTargetMcpServerProps extends GatewayTargetCommonProps {
    * Credential providers for authentication
    */
   readonly credentialProviderConfigurations: ICredentialProviderConfig[];
+
+  /**
+   * The listing mode for the MCP server tools
+   *
+   * @default - CloudFormation default (syncs at create/update time or provider default)
+   */
+  readonly listingMode?: McpListingMode;
 }
 
 /**
@@ -417,7 +424,9 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       gatewayTargetName: props.gatewayTargetName,
       description: props.description,
       credentialProviderConfigurations: props.credentialProviderConfigurations,
-      targetConfiguration: McpServerTargetConfiguration.create(props.endpoint),
+      targetConfiguration: McpServerTargetConfiguration.create(props.endpoint, {
+        listingMode: props.listingMode,
+      }),
     });
   }
 
