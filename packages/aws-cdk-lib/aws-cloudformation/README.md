@@ -96,7 +96,7 @@ new MyStackSet(stack, 'OrgStackSet', {
   })],
 });
 new MyStackSet(stack, 'ManagementStackSet', {
-  targets: [StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['11111111111'] })],
+  targets: [StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['111111111111'] })],
 });
 ```
 
