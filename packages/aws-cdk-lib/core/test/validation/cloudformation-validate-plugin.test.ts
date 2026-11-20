@@ -3,6 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import type { PolicyValidationReportJson } from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
+import * as ec2 from '../../../aws-ec2';
 import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
 import type { IPolicyValidationContext } from '../../lib';
@@ -43,6 +44,49 @@ afterAll(() => {
 });
 
 describe('CloudFormationValidatePlugin', () => {
+  test('skips built-in validation for missing context but runs custom plugins', () => {
+    const validate = jest.fn().mockReturnValue({
+      success: true,
+      violations: [],
+    });
+
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+      },
+    });
+
+    core.Validations.of(app).addPlugins({
+      name: 'custom-test-plugin',
+      validate,
+    });
+
+    const stack = new core.Stack(app, 'TestStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    ec2.Vpc.fromLookup(stack, 'Vpc', {
+      vpcId: 'vpc-0a1b2c3d4e5f67890',
+    });
+
+    // This invalid property would fail built-in validation.
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        BogusProperty: 'invalid-value',
+      },
+    });
+
+    const assembly = app.synth();
+
+    expect(assembly.manifest.missing?.length).toBeGreaterThan(0);
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(process.exitCode).toBeUndefined();
+  });
+
   test('_dispose frees the engine exactly once', () => {
     const plugin = newPlugin();
     const free = jest.spyOn(engineFor(plugin), 'free');
