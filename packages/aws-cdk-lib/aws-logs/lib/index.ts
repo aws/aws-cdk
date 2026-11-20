@@ -8,6 +8,7 @@ export * from './log-stream';
 export * from './metric-filter';
 export * from './pattern';
 export * from './subscription-filter';
+export * from './system-field';
 export * from './log-retention';
 export * from './policy';
 export * from './query-definition';
