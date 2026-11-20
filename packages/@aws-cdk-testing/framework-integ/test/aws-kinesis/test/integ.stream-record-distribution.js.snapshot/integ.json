@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "KinesisStreamRecordDistribution/DefaultTest": {
+      "stacks": [
+        "integ-kinesis-stream-record-distribution"
+      ],
+      "assertionStack": "KinesisStreamRecordDistribution/DefaultTest/DeployAssert",
+      "assertionStackName": "KinesisStreamRecordDistributionDefaultTestDeployAssertA1D80033"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

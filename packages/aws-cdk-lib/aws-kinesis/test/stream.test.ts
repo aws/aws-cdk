@@ -1,8 +1,8 @@
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { App, Duration, Stack, CfnParameter, RemovalPolicy, CfnDeletionPolicy } from '../../core';
-import { ShardLevelMetrics, Stream, StreamEncryption, StreamMode } from '../lib';
+import { App, Duration, Stack, CfnParameter, RemovalPolicy, CfnDeletionPolicy, Validations } from '../../core';
+import { RecordDistributionStrategy, ShardLevelMetrics, Stream, StreamEncryption, StreamMode } from '../lib';
 
 describe('Kinesis data streams', () => {
   describe('shard level metrics', () => {
@@ -1425,6 +1425,48 @@ describe('Kinesis data streams', () => {
           },
         ],
       },
+    });
+  });
+
+  describe('record distribution strategy', () => {
+    test.each([RecordDistributionStrategy.AUTO, RecordDistributionStrategy.USER_PARTITION_KEY])('renders %s on an on-demand stream', (strategy) => {
+      const stack = new Stack();
+      Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'RecordDistributionStrategy is a newly launched property not yet in the bundled schema' });
+      new Stream(stack, 'MyStream', {
+        streamMode: StreamMode.ON_DEMAND,
+        recordDistributionStrategy: strategy,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
+        StreamModeDetails: { StreamMode: 'ON_DEMAND' },
+        RecordDistributionStrategy: strategy,
+      });
+    });
+
+    test('is not rendered when not specified', () => {
+      const stack = new Stack();
+      new Stream(stack, 'MyStream', {
+        streamMode: StreamMode.ON_DEMAND,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
+        RecordDistributionStrategy: Match.absent(),
+      });
+    });
+
+    test('fails when set on a provisioned stream', () => {
+      const stack = new Stack();
+      expect(() => new Stream(stack, 'MyStream', {
+        streamMode: StreamMode.PROVISIONED,
+        recordDistributionStrategy: RecordDistributionStrategy.AUTO,
+      })).toThrow('recordDistributionStrategy can only be set when streamMode is ON_DEMAND, got PROVISIONED');
+    });
+
+    test('fails when set without a streamMode, since the default is provisioned', () => {
+      const stack = new Stack();
+      expect(() => new Stream(stack, 'MyStream', {
+        recordDistributionStrategy: RecordDistributionStrategy.AUTO,
+      })).toThrow('recordDistributionStrategy can only be set when streamMode is ON_DEMAND, got PROVISIONED');
     });
   });
 });
