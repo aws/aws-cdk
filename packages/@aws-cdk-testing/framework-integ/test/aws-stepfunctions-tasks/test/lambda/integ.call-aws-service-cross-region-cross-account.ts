@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import type { StackProps } from 'aws-cdk-lib';
+import type { CfnResource, StackProps } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
@@ -45,6 +45,14 @@ class ApiCalleeStack extends Stack {
     this.role = new iam.Role(this, 'Role', {
       roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.AccountPrincipal(account),
+    });
+
+    // Suppress Security Guardian: this role is assumed by the Lambda execution role that
+    // CallAwsServiceCrossRegion creates in the other account's stack. That role's ARN is
+    // not known ahead of time (CDK auto-generates it and there is no way to inject a custom
+    // role), and cross-account CloudFormation exports cannot be used to pass it in either.
+    (this.role.node.defaultChild as CfnResource).addMetadata('guard', {
+      SuppressedRules: ['IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS'],
     });
 
     this.table = new dynamodb.Table(this, 'Table', {

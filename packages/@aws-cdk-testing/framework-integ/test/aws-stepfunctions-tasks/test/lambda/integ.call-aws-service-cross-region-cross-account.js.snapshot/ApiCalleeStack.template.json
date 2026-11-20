@@ -16,6 +16,13 @@
      "Version": "2012-10-17"
     },
     "RoleName": "apicalleestackicalleestackrole8c13ce427c3a2e0dd857"
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS"
+     ]
+    }
    }
   },
   "RoleDefaultPolicy5FFB7DAB": {
