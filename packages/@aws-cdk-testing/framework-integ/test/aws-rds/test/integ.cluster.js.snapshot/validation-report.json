@@ -1,0 +1,97 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.14.0",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W2501",
+          "description": "MasterUserPassword: Property 'MasterUserPassword' should not be a hardcoded string - use a parameter with NoEcho or a dynamic reference",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-rds-integ-with-feature-flag/Database/Resource",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-integ-with-feature-flag.template.json",
+                "logicalId": "DatabaseB269D8BB",
+                "propertyPaths": [
+                  "Properties.MasterUserPassword"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W9011",
+          "description": "PubliclyAccessible: RDS instance has PubliclyAccessible set to true - consider restricting access",
+          "suggestedFix": "Set PubliclyAccessible to false",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Security"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-rds-integ-with-feature-flag/Database/Instance1",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-integ-with-feature-flag.template.json",
+                "logicalId": "DatabaseInstance1844F58FD",
+                "propertyPaths": [
+                  "Properties.PubliclyAccessible"
+                ]
+              }
+            },
+            {
+              "constructPath": "aws-cdk-rds-integ-with-feature-flag/Database/Instance2",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-integ-with-feature-flag.template.json",
+                "logicalId": "DatabaseInstance2AA380DEE",
+                "propertyPaths": [
+                  "Properties.PubliclyAccessible"
+                ]
+              }
+            },
+            {
+              "constructPath": "aws-cdk-rds-integ-with-feature-flag/Database/Instance3",
+              "constructFqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-rds-integ-with-feature-flag.template.json",
+                "logicalId": "DatabaseInstance32FCBA185",
+                "propertyPaths": [
+                  "Properties.PubliclyAccessible"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "F0001",
+          "description": "Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "test-rds-cluster-with-feature-flag/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

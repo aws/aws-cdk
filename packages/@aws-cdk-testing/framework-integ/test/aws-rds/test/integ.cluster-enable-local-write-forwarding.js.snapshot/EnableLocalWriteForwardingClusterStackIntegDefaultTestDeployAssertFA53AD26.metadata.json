@@ -1,4 +1,10 @@
 {
+  "/EnableLocalWriteForwardingClusterStackInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EnableLocalWriteForwardingClusterStackIntegDefaultTestDeployAssertFA53AD26.template.json"
+    }
+  ],
   "/EnableLocalWriteForwardingClusterStackInteg/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
