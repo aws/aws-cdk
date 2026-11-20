@@ -19,6 +19,8 @@ process.env.CDK_CONTEXT_JSON = JSON.stringify({
 // so we can more easily attach the debugger to the subprocesses.
 const isVsCodeDebugTerminal = process.env.NODE_OPTIONS?.includes('ms-vscode.js-debug') ?? false;
 
+const jestJunitReporter = ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage', suiteNameTemplate: '{filepath}', classNameTemplate: '{classname}', titleTemplate: '{title}' }];
+
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   // The preset deals with preferring TS over JS
@@ -58,7 +60,11 @@ module.exports = {
   coveragePathIgnorePatterns: ['\\.generated\\.[jt]s$', '<rootDir>/test/', '.warnings.jsii.js$', '/node_modules/', '/analytics-data-source/'],
   reporters: [
     'default',
-    ['jest-junit', { suiteName: 'jest tests', outputDirectory: 'coverage', suiteNameTemplate: '{filepath}', classNameTemplate: '{classname}', titleTemplate: '{title}' }]],
+    // Failure annotations on the PR. Not grouped per test file, because nx
+    // already groups each package's output and GitHub can't nest groups.
+    ...(process.env.GITHUB_ACTIONS ? [['github-actions', { silent: true }]] : []),
+    jestJunitReporter,
+  ],
 
   setupFilesAfterEnv,
 };

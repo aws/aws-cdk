@@ -1,0 +1,486 @@
+{
+  "/FunctionAcceleratorConfigStack": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
+        "    at new Vpc (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:47:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FunctionAcceleratorConfigStack.template.json"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*"
+      }
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*"
+      }
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/CapacityProvider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "subnets": [
+          "*",
+          "*"
+        ],
+        "securityGroups": [
+          "*"
+        ],
+        "architectures": "*",
+        "instanceTypeFilter": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addFunction": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "memorySize": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Modifying acceleratorConfig on an existing function will trigger a resource replacement [ack: aws-lambda:Function.AcceleratorConfig]",
+      "trace": [
+        "Annotations.addMessage (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addInfoV2 (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
+        "PropertyInjectable.validateAndRenderAcceleratorConfig (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1322:43)",
+        "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:736:24)",
+        "new Function (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:57:12)",
+        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
+        "Object..js (node:internal/modules/cjs/loader:1913:10)",
+        "Module.load (node:internal/modules/cjs/loader:1505:32)",
+        "Function._load (node:internal/modules/cjs/loader:1309:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Capacity provider configuration cannot be removed from a function once added, only modified. [ack: aws-lambda:Function.CapacityProviderConfiguration]",
+      "trace": [
+        "Annotations.addMessage (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addInfoV2 (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
+        "PropertyInjectable.addFunction (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/capacity-provider.js:527:43)",
+        "PropertyInjectable.<anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Object.<anonymous> (/local/home/vichym/.kiro/crew/workspace/Projects/lmi-gpu-support/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.function.accelerator.js:66:18)",
+        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
+        "Object..js (node:internal/modules/cjs/loader:1913:10)",
+        "Module.load (node:internal/modules/cjs/loader:1505:32)",
+        "Function._load (node:internal/modules/cjs/loader:1309:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SecurityGroupDD263621"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/CapacityProvider/OperatorRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/CapacityProvider/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CapacityProvider7AA4F436"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function76856677"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2EIP3C605A87"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2NATGateway9182C01D"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/CapacityProvider/OperatorRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CapacityProviderOperatorRole6E18375F"
+    }
+  ],
+  "/FunctionAcceleratorConfigStack/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    }
+  ]
+}

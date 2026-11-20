@@ -10,6 +10,5 @@
       "assertionStackName": "codepipelineecrimagescanactiontestDefaultTestDeployAssertD4D5DC63"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }
