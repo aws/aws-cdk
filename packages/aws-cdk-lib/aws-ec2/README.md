@@ -2639,6 +2639,7 @@ new ec2.Instance(this, 'Instance', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM),
   machineImage: ec2.MachineImage.latestWindows(ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE),
+  blockDevices: [{ deviceName: 'xvdf', volume: ec2.BlockDeviceVolume.ebs(10) }],
   userData,
 });
 ```
