@@ -5,6 +5,7 @@ import type { ContainerImage, ContainerImageConfig } from './container-image';
 import type { CredentialSpec, CredentialSpecConfig } from './credential-spec';
 import type { CfnTaskDefinition } from './ecs.generated';
 import type { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
+import type { GpuSharing } from './gpu-sharing';
 import type { LinuxParameters } from './linux-parameters';
 import type { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 import type * as iam from '../../aws-iam';
@@ -368,9 +369,23 @@ export interface ContainerDefinitionOptions {
   /**
    * The number of GPUs assigned to the container.
    *
+   * Cannot be combined with `gpuSharing`.
+   *
    * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
+
+  /**
+   * Share a GPU with other containers instead of reserving whole GPUs.
+   *
+   * Cannot be combined with `gpuCount`. All containers in a task definition that
+   * request GPUs must either all share GPUs or all use `gpuCount`.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-gpu.html
+   *
+   * @default - The container does not share a GPU.
+   */
+  readonly gpuSharing?: GpuSharing;
 
   /**
    * The port mappings to add to the container definition.
@@ -585,6 +600,8 @@ export class ContainerDefinition extends Construct {
 
   private versionConsistency?: VersionConsistency;
 
+  private readonly gpuSharingStrategy?: CfnTaskDefinition.SharingStrategyProperty;
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
@@ -614,6 +631,13 @@ export class ContainerDefinition extends Construct {
     this._namedPorts = new Map<string, PortMapping>();
 
     this.versionConsistency = props.versionConsistency;
+
+    if (props.gpuSharing) {
+      if (props.gpuCount !== undefined && (cdk.Token.isUnresolved(props.gpuCount) || props.gpuCount > 0)) {
+        throw new ValidationError(lit`GpuCountGpuSharingExclusive`, 'cannot specify both gpuCount and gpuSharing on a container', this);
+      }
+      this.gpuSharingStrategy = props.gpuSharing._renderSharingStrategy(this);
+    }
 
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, this);
@@ -881,6 +905,23 @@ export class ContainerDefinition extends Construct {
   }
 
   /**
+   * How this container requests GPUs: `'shared'` with `gpuSharing`, `'exclusive'`
+   * with `gpuCount`, or `undefined` when it requests none.
+   *
+   * @internal
+   */
+  public get _gpuMode(): 'shared' | 'exclusive' | undefined {
+    if (this.gpuSharingStrategy) {
+      return 'shared';
+    }
+    // A token gpuCount counts as no GPU, matching renderResourceRequirements, which drops it.
+    if (this.props.gpuCount !== undefined && this.props.gpuCount > 0) {
+      return 'exclusive';
+    }
+    return undefined;
+  }
+
+  /**
    * The inbound rules associated with the security group the task or service will use.
    *
    * This property is only used for tasks that use the awsvpc network mode.
@@ -984,8 +1025,8 @@ export class ContainerDefinition extends Construct {
       healthCheck: this.props.healthCheck && renderHealthCheck(this, this.props.healthCheck),
       links: cdk.Token.asList(this._links, { displayHint: 'links' }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
-      resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
-        renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
+      resourceRequirements: (!this.props.gpuCount && !this.gpuSharingStrategy && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
+        renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources, this.gpuSharingStrategy),
       systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
       restartPolicy: renderRestartPolicy(this.props.enableRestartPolicy, this.props.restartIgnoredExitCodes, this.props.restartAttemptPeriod),
     };
@@ -1123,7 +1164,8 @@ function getHealthCheckCommand(scope: Construct, hc: HealthCheck): string[] {
   return hcCommand.concat(cmd);
 }
 
-function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = []):
+function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = [],
+  gpuSharingStrategy?: CfnTaskDefinition.SharingStrategyProperty):
 CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
   const ret = [];
   for (const resource of inferenceAcceleratorResources) {
@@ -1136,6 +1178,12 @@ CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
     ret.push({
       type: 'GPU',
       value: gpuCount.toString(),
+    });
+  }
+  if (gpuSharingStrategy) {
+    ret.push({
+      type: 'GPU',
+      sharingStrategy: gpuSharingStrategy,
     });
   }
   return ret;

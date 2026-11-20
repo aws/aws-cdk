@@ -12,6 +12,7 @@ export * from './cluster-grants';
 export * from './environment-file';
 export * from './credential-spec';
 export * from './firelens-log-router';
+export * from './gpu-sharing';
 export * from './placement';
 
 export * from './ec2/ec2-service';
