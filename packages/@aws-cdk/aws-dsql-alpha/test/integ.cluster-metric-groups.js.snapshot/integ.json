@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "aws-cdk-dsql-metric-groups-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dsql-metric-groups-stack"
+      ],
+      "assertionStack": "aws-cdk-dsql-metric-groups-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdsqlmetricgroupsintegDefaultTestDeployAssertD2E5846C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

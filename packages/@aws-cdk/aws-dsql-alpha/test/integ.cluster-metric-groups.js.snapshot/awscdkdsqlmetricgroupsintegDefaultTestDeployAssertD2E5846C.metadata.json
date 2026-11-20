@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-dsql-metric-groups-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkdsqlmetricgroupsintegDefaultTestDeployAssertD2E5846C.template.json"
+    }
+  ],
+  "/aws-cdk-dsql-metric-groups-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dsql-metric-groups-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

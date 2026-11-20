@@ -1,0 +1,32 @@
+{
+  "/aws-cdk-dsql-metric-groups-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-dsql-metric-groups-stack.template.json"
+    }
+  ],
+  "/aws-cdk-dsql-metric-groups-stack/Database": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dsql-metric-groups-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dsql-metric-groups-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-dsql-metric-groups-stack/Database/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseB269D8BB"
+    }
+  ]
+}
