@@ -1,0 +1,433 @@
+{
+  "/integ-stack-set-nested-stack": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/private/refs.js:237:54)",
+        "resolveReferencesInElements (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/app.js:217:27)",
+        "process.<anonymous> (/workplace/gudipatg/worktrees/aws-cdk/stackset-nested-stack-integ/packages/aws-cdk-lib/core/lib/app.js:164:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-stack-set-nested-stack.template.json"
+    }
+  ],
+  "/integ-stack-set-nested-stack/AdminRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet.Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetResource"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet.HostAssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "architecture": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    }
+  ],
+  "/integ-stack-set-nested-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-stack-set-nested-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-stack-set-nested-stack/AdminRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AdminRole38563C57"
+    }
+  ],
+  "/integ-stack-set-nested-stack/AdminRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet/Nested": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integstacksetnestedstackStackSetNested6F270B2A.nested.template.json"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet.AssetBucketDeployment0/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet.AssetBucketDeployment0/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "architecture": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet.AssetBucketDeployment0/CustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack/AdminRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AdminRoleDefaultPolicy1C2AB961"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet/Nested/Topic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topicName": "*"
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet/Nested.NestedStack/Nested.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NestedNestedStackNestedNestedStackResourceDEFDAA4D"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet.AssetBucketDeployment0/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetAssetBucketDeployment0AwsCliLayer1DC61731"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet.AssetBucketDeployment0/CustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetAssetBucketDeployment0CustomResource3D83B472"
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CLogGroup817B64E9"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet/Nested/Topic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicBFC7AF6E"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet/Nested/Topic/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topics": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet.AssetBucketDeployment0/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-stack-set-nested-stack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+    }
+  ],
+  "/integ-stack-set-nested-stack/StackSet/Nested/Topic/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicPolicyA1747468"
+    }
+  ]
+}

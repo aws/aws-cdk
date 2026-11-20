@@ -1,0 +1,21 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "007d3f55ec2824d5512fe8798aeb4aa90f8048b2341c1cf842a091b9c0aa6196": {
+      "displayName": "integ-stack-set-nested-stack-support Template",
+      "source": {
+        "path": "integ-stack-set-nested-stack-support.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region-37917008": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "007d3f55ec2824d5512fe8798aeb4aa90f8048b2341c1cf842a091b9c0aa6196.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

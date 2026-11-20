@@ -1,0 +1,49 @@
+{
+  "/integ-stack-set-nested-stack-support": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-stack-set-nested-stack-support.template.json"
+    }
+  ],
+  "/integ-stack-set-nested-stack-support/CfnExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-stack-set-nested-stack-support/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-stack-set-nested-stack-support/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-stack-set-nested-stack-support/CfnExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CfnExecutionRole87CC388E"
+    }
+  ],
+  "/integ-stack-set-nested-stack-support/Exports/Output{\"Ref\":\"CfnExecutionRole87CC388E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCfnExecutionRole87CC388E7B4B6CAA"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-stack-set-nested-stack-test/DefaultTest": {
+      "stacks": [
+        "integ-stack-set-nested-stack"
+      ],
+      "assertionStack": "integ-stack-set-nested-stack-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integstacksetnestedstacktestDefaultTestDeployAssertAC26FB6D"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

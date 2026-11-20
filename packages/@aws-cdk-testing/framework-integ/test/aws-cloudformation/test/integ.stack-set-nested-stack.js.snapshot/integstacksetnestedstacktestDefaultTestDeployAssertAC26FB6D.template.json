@@ -1,0 +1,199 @@
+{
+ "Resources": {
+  "AwsApiCallCloudFormationdescribeStackInstance60dca09d4c668b5ad1f0ab4e91e126c6": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStackInsta",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFormation",
+    "api": "describeStackInstance",
+    "expected": "{\"$ObjectLike\":{\"StackInstance\":{\"Status\":\"CURRENT\",\"StackInstanceStatus\":{\"DetailedStatus\":\"SUCCEEDED\"}}}}",
+    "parameters": {
+     "StackSetName": "\"integ-stackset-nested-stack\"",
+     "StackInstanceAccount": "\"12345678\"",
+     "StackInstanceRegion": "\"test-region\""
+    },
+    "flattenResponse": "false",
+    "salt": "1795179566182"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudformation:DescribeStackInstance"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "sns:GetTopicAttributes"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "801efa9ceb5e547293abc67fc79a362ee8af3abde1e07ee57baa142dc79a90df.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallSNSgetTopicAttributes7b5dc89a57f4d50d39b5083773a07276": {
+   "Type": "Custom::DeployAssert@SdkCallSNSgetTopicAttributes",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SNS",
+    "api": "getTopicAttributes",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"Attributes\":{\"TopicArn\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":sns:test-region:12345678:integ-stackset-nested-stack-topic\"}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "TopicArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":sns:test-region:12345678:integ-stackset-nested-stack-topic\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795179566184"
+   },
+   "DependsOn": [
+    "AwsApiCallCloudFormationdescribeStackInstance60dca09d4c668b5ad1f0ab4e91e126c6"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudFormationdescribeStackInstance60dca09d4c668b5ad1f0ab4e91e126c6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFormationdescribeStackInstance60dca09d4c668b5ad1f0ab4e91e126c6",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSNSgetTopicAttributes7b5dc89a57f4d50d39b5083773a07276": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSNSgetTopicAttributes7b5dc89a57f4d50d39b5083773a07276",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
