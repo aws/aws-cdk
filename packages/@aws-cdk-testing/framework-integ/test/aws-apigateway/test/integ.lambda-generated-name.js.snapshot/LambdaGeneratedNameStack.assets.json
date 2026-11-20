@@ -1,0 +1,21 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "c1fbf73a89e5d34d2fba3ed12b5bc25542c990dd103cc8c7ade4524e6bfbe0d3": {
+      "displayName": "LambdaGeneratedNameStack Template",
+      "source": {
+        "path": "LambdaGeneratedNameStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "111111111111-us-east-1-4029648d": {
+          "bucketName": "cdk-hnb659fds-assets-111111111111-us-east-1",
+          "objectKey": "c1fbf73a89e5d34d2fba3ed12b5bc25542c990dd103cc8c7ade4524e6bfbe0d3.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-file-publishing-role-111111111111-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

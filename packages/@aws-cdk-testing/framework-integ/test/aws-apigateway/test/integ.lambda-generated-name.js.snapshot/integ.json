@@ -1,0 +1,15 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "lambda-generated-name/DefaultTest": {
+      "stacks": [
+        "LambdaGeneratedNameStack",
+        "LambdaGeneratedNameOtherStack"
+      ],
+      "assertionStack": "lambda-generated-name/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdageneratednameDefaultTestDeployAssert3598CE7F"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
