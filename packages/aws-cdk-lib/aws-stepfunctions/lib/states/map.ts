@@ -104,7 +104,7 @@ export class Map extends MapBase implements INextable {
     return {
       ...super.toStateJson(queryLanguage),
       ...this.renderParameters(),
-      ...this.renderIterator(),
+      ...this.renderIterator(queryLanguage),
     };
   }
 

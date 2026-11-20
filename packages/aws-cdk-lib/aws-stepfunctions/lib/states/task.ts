@@ -163,10 +163,10 @@ export class Task extends State implements INextable {
   /**
    * Return the Amazon States Language object for this state
    */
-  public toStateJson(_?: QueryLanguage): object {
+  public toStateJson(topLevelQueryLanguage?: QueryLanguage): object {
     return {
       ...this.renderNextEnd(),
-      ...this.renderRetryCatch(),
+      ...this.renderRetryCatch(topLevelQueryLanguage),
       ...this.renderInputOutput(),
       Type: StateType.TASK,
       Comment: this.comment,
