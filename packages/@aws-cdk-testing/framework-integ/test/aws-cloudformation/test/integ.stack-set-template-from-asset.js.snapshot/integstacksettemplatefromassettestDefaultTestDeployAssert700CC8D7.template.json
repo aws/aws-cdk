@@ -18,7 +18,7 @@
      "StackInstanceRegion": "\"us-east-1\""
     },
     "flattenResponse": "false",
-    "salt": "1793883045644"
+    "salt": "1795189214036"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -72,7 +72,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ba27b9b51c40c7eeb844056287c2f081fa6de13099e55a5fbdecec526ae80ae8.zip"
+     "S3Key": "801efa9ceb5e547293abc67fc79a362ee8af3abde1e07ee57baa142dc79a90df.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
