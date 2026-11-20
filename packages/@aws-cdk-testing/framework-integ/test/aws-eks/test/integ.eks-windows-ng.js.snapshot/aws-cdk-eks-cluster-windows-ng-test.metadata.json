@@ -6,12 +6,12 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at EksClusterStack._silenceLiteralAzWarning (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
-        "    at get availabilityZones (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new EksClusterStack (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-windows-ng.js:56:20)",
-        "    at <anonymous> (/local/home/matboros/work/workspaces/cdk/pr-reviewer/work/worktrees/aws-cdk/eks-1.37/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-windows-ng.js:85:15)",
+        "    at Validations.acknowledge (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdk39428/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at EksClusterStack._silenceLiteralAzWarning (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdk39428/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdk39428/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdk39428/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new EksClusterStack (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdk39428/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-windows-ng.js:56:20)",
+        "    at <anonymous> (/private/tmp/claude-501/-Users-sivasaikrishnasuryadevara-Documents-ml-model-pipeline/b7ce4885-370c-45e5-95ae-9d2cf732cd9d/scratchpad/cdk39428/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-windows-ng.js:97:15)",
         "    ...node internals..."
       ]
     },
@@ -96,6 +96,12 @@
     {
       "type": "aws:cdk:templateFile",
       "data": "awscdkeksclusterwindowsngtestawscdkawseksKubectlProviderAC962C42.nested.template.json"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng-test/AwsAuthMapRoles": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsAuthMapRoles"
     }
   ],
   "/aws-cdk-eks-cluster-windows-ng-test/BootstrapVersion": [
@@ -623,6 +629,16 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng-test/AwsAuthMapRolesValue/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
     }
   ],
   "/aws-cdk-eks-cluster-windows-ng-test/Vpc/PublicSubnet1/Subnet": [
@@ -1270,6 +1286,12 @@
           "*"
         ]
       }
+    }
+  ],
+  "/aws-cdk-eks-cluster-windows-ng-test/AwsAuthMapRolesValue/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsAuthMapRolesValueB0604A45"
     }
   ],
   "/aws-cdk-eks-cluster-windows-ng-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource": [

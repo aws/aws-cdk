@@ -1280,6 +1280,49 @@ describe('node group', () => {
     });
   });
 
+  test.each([
+    NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+  ])('aws-auth maps a %s nodegroup role with the eks:kube-proxy-windows group', (amiType) => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster, amiType });
+
+    // THEN
+    expect(awsAuthNodeRoleGroups(stack)).toEqual([
+      ['system:bootstrappers', 'system:nodes', 'eks:kube-proxy-windows'],
+    ]);
+  });
+
+  test('aws-auth does not add the eks:kube-proxy-windows group for a Linux nodegroup', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+
+    // WHEN
+    new eks.Nodegroup(stack, 'Nodegroup', { cluster, amiType: NodegroupAmiType.AL2023_X86_64_STANDARD });
+
+    // THEN
+    expect(awsAuthNodeRoleGroups(stack)).toEqual([
+      ['system:bootstrappers', 'system:nodes'],
+    ]);
+  });
+
   test('create nodegroup correctly with security groups provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -2072,3 +2115,17 @@ describe('isGpuInstanceType', () => {
     });
   });
 });
+
+/**
+ * Returns the groups of every node role mapping in the synthesized aws-auth ConfigMap.
+ * Tokens in the manifest (role ARNs) are replaced with a placeholder before parsing.
+ */
+function awsAuthNodeRoleGroups(stack: cdk.Stack): string[][] {
+  const manifests = Template.fromStack(stack).findResources(eks.KubernetesManifest.RESOURCE_TYPE);
+  const awsAuth = Object.values(manifests).find((r: any) => JSON.stringify(r.Properties.Manifest).includes('aws-auth'));
+  const parts: any[] = awsAuth!.Properties.Manifest['Fn::Join'][1];
+  const configMap = JSON.parse(parts.map((p) => (typeof p === 'string' ? p : 'TOKEN')).join(''))[0];
+  return JSON.parse(configMap.data.mapRoles)
+    .filter((m: any) => m.username === 'system:node:{{EC2PrivateDNSName}}')
+    .map((m: any) => m.groups);
+}
