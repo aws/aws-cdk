@@ -1,4 +1,25 @@
 {
+  "/integ-aurora-serverlessv2-cluster-capacity-token": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at TestStack._silenceLiteralAzWarning (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at new TestStack (/Users/gasolima/work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-serverless-v2-capacity-token.js:47:21)",
+        "    at <anonymous> (/Users/gasolima/work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-serverless-v2-capacity-token.js:64:17)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-aurora-serverlessv2-cluster-capacity-token.template.json"
+    }
+  ],
   "/integ-aurora-serverlessv2-cluster-capacity-token/Integ-VPC": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -95,7 +116,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }
@@ -131,7 +155,10 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "addNatGateway": [
-          "*"
+          "*",
+          {
+            "maxDrainDuration": "*"
+          }
         ]
       }
     }

@@ -1,0 +1,438 @@
+{
+  "/aws-cdk-rds-cluster-dual-integ": [
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at IntegTestBaseStack._silenceLiteralAzWarning (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/Users/gasolima/work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/Users/gasolima/work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-dual.js:44:13)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-rds-cluster-dual-integ.template.json"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv6CidrBlock": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Ipv6CidrBlock"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "engine": {
+          "engineType": "*",
+          "engineVersion": {
+            "fullVersion": "*",
+            "majorVersion": "*"
+          },
+          "parameterGroupFamily": "*",
+          "singleUserRotationApplication": "*",
+          "engineFamily": "*",
+          "supportedLogTypes": "*",
+          "combineImportAndExportRoles": true
+        },
+        "credentials": "*",
+        "writer": "*",
+        "readers": "*",
+        "vpcSubnets": {
+          "subnetType": "Isolated"
+        },
+        "vpc": "*",
+        "networkType": "DUAL"
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "engine": {
+          "engineType": "*",
+          "engineVersion": {
+            "fullVersion": "*",
+            "majorVersion": "*"
+          },
+          "parameterGroupFamily": "*",
+          "singleUserRotationApplication": "*",
+          "engineFamily": "*",
+          "supportedLogTypes": "*",
+          "combineImportAndExportRoles": true
+        },
+        "credentials": "*",
+        "vpcSubnets": {
+          "subnetType": "Isolated"
+        },
+        "vpc": "*",
+        "writer": "*",
+        "readers": "*",
+        "networkType": "IPV4"
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/Subnets": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnetType": "Isolated"
+        },
+        "removalPolicy": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DualstackCluster84A5FE37"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/Instance1Wrapper": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/Instance1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DualstackClusterInstance11BFB1E7F"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/Instance2Wrapper": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/Instance2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DualstackClusterInstance227DA8F29"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Subnets": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnetType": "Isolated"
+        },
+        "removalPolicy": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Ipv4Cluster5F67A28A"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Instance1Wrapper": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Instance1": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Ipv4ClusterInstance1AC5CF4FD"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Instance2Wrapper": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Instance2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Ipv4ClusterInstance20433FFCA"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIsolatedSubnet1SubnetEBD00FC6"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIsolatedSubnet1RouteTableEB156210"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/VPC/IsolatedSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/Subnets/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DualstackClusterSubnets00EA466E"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/DualstackCluster/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DualstackClusterSecurityGroupA8CDA208"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/Subnets/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Ipv4ClusterSubnets5BD573AA"
+    }
+  ],
+  "/aws-cdk-rds-cluster-dual-integ/Ipv4Cluster/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Ipv4ClusterSecurityGroup90341172"
+    }
+  ]
+}
