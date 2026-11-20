@@ -516,6 +516,51 @@ describe('MSK Cluster', () => {
         });
       });
     });
+
+    describe('when a customer master key is provided for sasl/scram auth', () => {
+      const providedKeyArn = 'arn:aws:kms:us-east-1:123456789012:key/abcd1234-a123-456a-a12b-a123b4cd56ef';
+
+      beforeEach(() => {
+        const importedKey = kms.Key.fromKeyArn(stack, 'ImportedSaslKey', providedKeyArn);
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+          encryptionInTransit: {
+            clientBroker: msk.ClientBrokerEncryption.TLS,
+          },
+          clientAuthentication: msk.ClientAuthentication.sasl({
+            scram: true,
+            key: importedKey,
+          }),
+        });
+      });
+
+      test('does not create a new KMS key', () => {
+        Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+      });
+
+      test('does not create the default SASL/SCRAM key alias', () => {
+        Template.fromStack(stack).resourceCountIs('AWS::KMS::Alias', 0);
+      });
+
+      test('exposes the provided key as saslScramAuthenticationKey', () => {
+        const cluster = new msk.Cluster(stack, 'ClusterWithProvidedKey', {
+          clusterName: 'cluster2',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+          encryptionInTransit: {
+            clientBroker: msk.ClientBrokerEncryption.TLS,
+          },
+          clientAuthentication: msk.ClientAuthentication.sasl({
+            scram: true,
+            key: kms.Key.fromKeyArn(stack, 'ImportedSaslKey2', providedKeyArn),
+          }),
+        });
+
+        expect(cluster.saslScramAuthenticationKey?.keyArn).toBe(providedKeyArn);
+      });
+    });
   });
 
   describe('created with an instance type set', () => {
@@ -910,6 +955,26 @@ describe('MSK Cluster', () => {
             ],
           ],
         },
+      });
+    });
+
+    test('uses a customer provided key to encrypt the user secret', () => {
+      const providedKeyArn = 'arn:aws:kms:us-east-1:123456789012:key/abcd1234-a123-456a-a12b-a123b4cd56ef';
+      const cluster = new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
+        vpc,
+        clientAuthentication: msk.ClientAuthentication.sasl({
+          scram: true,
+          key: kms.Key.fromKeyArn(stack, 'ImportedSaslKey', providedKeyArn),
+        }),
+      });
+
+      // addUser must not throw MissingAuthenticationKmsKey when a key is provided
+      expect(() => cluster.addUser('my-user')).not.toThrow();
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+        KmsKeyId: providedKeyArn,
       });
     });
   });
