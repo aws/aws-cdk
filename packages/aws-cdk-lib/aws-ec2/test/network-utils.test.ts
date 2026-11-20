@@ -90,6 +90,44 @@ describe('network utils', () => {
       const netmask = CidrBlock.calculateNetmask(27);
       expect(netmask).toEqual('255.255.255.224');
     });
+    test.each([
+      ['10.0.0.0', 'no mask at all'],
+      ['10.0.0.0/', 'empty mask'],
+      ['10.0.0.0/abc', 'non-numeric mask'],
+    ])('fails with a mask-specific error for %s (%s)', (cidr: string) => {
+      expect(() => new CidrBlock(cidr)).toThrow(/invalid CIDR mask/);
+      expect(() => new CidrBlock(cidr)).not.toThrow(/NaN/);
+    });
+    test.each([
+      ['10.0.0.0/33', 'mask above 32'],
+      ['10.0.0.0/-1', 'negative mask'],
+    ])('fails instead of building a nonsensical block for %s (%s)', (cidr: string) => {
+      expect(() => new CidrBlock(cidr)).toThrow(/invalid CIDR mask/);
+    });
+    test.each([
+      ['2001:db8::/64', 'IPv6 CIDR'],
+      ['${Token[TOKEN.123]}/33', 'unresolved token with a bad mask'],
+      ['300.0.0.0/33', 'out-of-range octet with a bad mask'],
+      ['300.0.0.0', 'out-of-range octet with no mask'],
+    ])('reports the invalid address before the mask for %s (%s)', (cidr: string) => {
+      expect(() => new CidrBlock(cidr)).toThrow(/is not valid/);
+      expect(() => new CidrBlock(cidr)).not.toThrow(/invalid CIDR mask/);
+    });
+    test('the error names the offending input', () => {
+      expect(() => new CidrBlock('10.0.0.0/33')).toThrow(/"10\.0\.0\.0\/33"/);
+    });
+    test('accepts the boundary masks 0 and 32', () => {
+      expect(new CidrBlock('0.0.0.0/0').cidr).toEqual('0.0.0.0/0');
+      expect(new CidrBlock('10.0.0.1/32').cidr).toEqual('10.0.0.1/32');
+    });
+    test('accepts ordinary valid masks', () => {
+      expect(new CidrBlock('10.0.0.0/16').cidr).toEqual('10.0.0.0/16');
+      expect(new CidrBlock('10.0.0.0/28').cidr).toEqual('10.0.0.0/28');
+    });
+    test('keeps resolving masks that already resolved under parseInt', () => {
+      expect(new CidrBlock('10.0.0.0/16abc').cidr).toEqual('10.0.0.0/16');
+      expect(new CidrBlock('10.0.0.0/16.5').cidr).toEqual('10.0.0.0/16');
+    });
   });
   describe('NetworkBuilder', () => {
     test('allows you to carve subnets our of CIDR network', () => {
