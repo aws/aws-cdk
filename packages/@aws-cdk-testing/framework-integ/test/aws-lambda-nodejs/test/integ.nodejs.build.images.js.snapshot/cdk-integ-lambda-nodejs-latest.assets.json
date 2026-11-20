@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "55.0.0",
   "files": {
     "e8960aa6af35278f443e1ec124004691bddeea5dce3b83e2c00b020b65fe5dea": {
       "displayName": "func-nodejs20.x/Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-69376d1b": {
+        "current_account-current_region-ab4a8e9c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "e8960aa6af35278f443e1ec124004691bddeea5dce3b83e2c00b020b65fe5dea.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "a5099ee0e66e8c25e1d5e0b72f6e19fed3aded94e9ebbe9919e3bb6b4032e513": {
+    "82ccbd572950b8afaf834767da97aa8e64a06cba0f2723c55e082f8cb84551e3": {
       "displayName": "cdk-integ-lambda-nodejs-latest Template",
       "source": {
         "path": "cdk-integ-lambda-nodejs-latest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e8825408": {
+        "current_account-current_region-f31d7ce6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a5099ee0e66e8c25e1d5e0b72f6e19fed3aded94e9ebbe9919e3bb6b4032e513.json",
+          "objectKey": "82ccbd572950b8afaf834767da97aa8e64a06cba0f2723c55e082f8cb84551e3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
