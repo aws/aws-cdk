@@ -1451,6 +1451,9 @@ const ADOT_LAMBDA_LAYER_JAVA_SDK_ARNS: { [version: string]: { [arch: string]: { 
       'eu-west-2': 'arn:aws:lambda:eu-west-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9',
       'eu-west-3': 'arn:aws:lambda:eu-west-3:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9',
       'sa-east-1': 'arn:aws:lambda:sa-east-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9',
+      // us-east-1 differs from upstream layer_arm64.tf, which lists :9. In this region :9 is the
+      // 2026-08-25 build without aws-otel-lambda#1154; the 2026-08-27 republish (same CodeSha256
+      // as :9 in every other region) is :10. See aws-observability/aws-otel-lambda#1176.
       'us-east-1': 'arn:aws:lambda:us-east-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:10',
       'us-east-2': 'arn:aws:lambda:us-east-2:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9',
       'us-west-1': 'arn:aws:lambda:us-west-1:901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:9',
