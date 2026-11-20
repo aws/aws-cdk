@@ -1,0 +1,20 @@
+{
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6.template.json"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
