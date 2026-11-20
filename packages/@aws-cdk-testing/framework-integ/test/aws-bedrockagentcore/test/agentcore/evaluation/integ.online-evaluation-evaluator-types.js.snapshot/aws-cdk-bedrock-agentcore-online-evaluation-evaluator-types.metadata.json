@@ -1,0 +1,246 @@
+{
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup4": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup5": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup6": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup7": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup8": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup9": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/EvaluatorTypesEvaluation": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup001917541"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup1AC54A942"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup278B9A1A9"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup3AE3C0026"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup4/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup433A13873"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup5/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup57AC7988F"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup6/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup63D317BF9"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup7/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup749D93BE0"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup8/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup882508971"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/AgentLogGroup9/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroup9A46C3859"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/EvaluatorTypesEvaluation/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/EvaluatorTypesEvaluation/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EvaluatorTypesEvaluation5087E0A9"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/EvaluatorTypesEvaluation/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EvaluatorTypesEvaluationExecutionRole0692DF89"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/EvaluatorTypesEvaluation/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation-evaluator-types/EvaluatorTypesEvaluation/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EvaluatorTypesEvaluationExecutionRoleDefaultPolicyBFBD92FD"
+    }
+  ]
+}

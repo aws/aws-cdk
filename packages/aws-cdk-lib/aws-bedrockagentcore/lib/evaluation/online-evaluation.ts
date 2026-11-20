@@ -49,10 +49,10 @@ export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
   /**
    * The list of evaluators to apply during online evaluation.
    *
-   * Can include both built-in evaluators and custom evaluators.
+   * Can include built-in, managed third-party, and custom evaluators.
    *
    * @minimum 1
-   * @maximum 10
+   * @maximum 25
    */
   readonly evaluators: EvaluatorSelector[];
 
