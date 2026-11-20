@@ -1,11 +1,8 @@
 {
   "/integ-lambda-python-test-build-images": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)",
-        "...node internals..."
-      ]
+      "type": "aws:cdk:templateFile",
+      "data": "integ-lambda-python-test-build-images.template.json"
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.10": [
@@ -58,46 +55,26 @@
       "data": "*"
     }
   ],
+  "/integ-lambda-python-test-build-images/func-python3.15": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/integ-lambda-python-test-build-images/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)"
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
-        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
-        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)"
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.10/ServiceRole": [
@@ -120,20 +97,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython310172B0718"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.11/ServiceRole": [
@@ -156,20 +119,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython3111F585CD4"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.12/ServiceRole": [
@@ -192,20 +141,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython3122CBD643A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.13/ServiceRole": [
@@ -228,20 +163,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython313412235A8"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.14/ServiceRole": [
@@ -264,141 +185,70 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython314D76898E8"
-    },
+    }
+  ],
+  "/integ-lambda-python-test-build-images/func-python3.15/ServiceRole": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)",
-        "...node internals..."
-      ]
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-test-build-images/func-python3.15/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "funcpython31576D13106"
     }
   ],
   "/integ-lambda-python-test-build-images/Exports/Output{\"Ref\":\"funcpython310172B0718\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputReffuncpython310172B07183FDAB4C5"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/Exports/Output{\"Ref\":\"funcpython3111F585CD4\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputReffuncpython3111F585CD475F56B0A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/Exports/Output{\"Ref\":\"funcpython3122CBD643A\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputReffuncpython3122CBD643AA9BB5D5A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/Exports/Output{\"Ref\":\"funcpython313412235A8\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputReffuncpython313412235A8A629B84E"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
-        "...node internals..."
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/Exports/Output{\"Ref\":\"funcpython314D76898E8\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputReffuncpython314D76898E817928841"
-    },
+    }
+  ],
+  "/integ-lambda-python-test-build-images/Exports/Output{\"Ref\":\"funcpython31576D13106\"}": [
     {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
-        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
-        "...node internals..."
-      ]
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReffuncpython31576D13106B2C8C1A6"
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.10/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython310ServiceRole420BCC1A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)"
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.10/Code/AssetBucket": [
@@ -411,21 +261,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython311ServiceRoleE57E73A3"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)"
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.11/Code/AssetBucket": [
@@ -438,21 +273,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython312ServiceRole100DA5E2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)"
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.12/Code/AssetBucket": [
@@ -465,21 +285,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython313ServiceRoleB9C1B3D0"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)"
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.13/Code/AssetBucket": [
@@ -492,24 +297,21 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "funcpython314ServiceRoleAB9F26E6"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24: (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:24:2)",
-        "Array.forEach (:)",
-        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:23:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:37:18)"
-      ]
     }
   ],
   "/integ-lambda-python-test-build-images/func-python3.14/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-test-build-images/func-python3.15/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "funcpython315ServiceRole475AC872"
+    }
+  ],
+  "/integ-lambda-python-test-build-images/func-python3.15/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
