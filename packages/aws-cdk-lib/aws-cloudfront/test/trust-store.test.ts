@@ -1,6 +1,6 @@
 import { Match, Template } from '../../assertions';
 import * as s3 from '../../aws-s3';
-import { App, Stack } from '../../core';
+import { App, Lazy, Stack } from '../../core';
 import { TrustStore } from '../lib';
 
 /**
@@ -148,5 +148,97 @@ describe('TrustStore', () => {
         },
       });
     }).toThrow("'caCertificatesBundleS3Location.key' cannot be an empty string");
+  });
+
+  test('with OCSP and tags', () => {
+    new TrustStore(stack, 'TrustStore', {
+      caCertificatesBundleS3Location: {
+        bucket,
+        key: 'ca-bundle.pem',
+      },
+      useClientCertificateOcspEndpoint: true,
+      tags: { team: 'platform' },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::TrustStore', {
+      UseClientCertificateOCSPEndpoint: true,
+      Tags: [{ Key: 'team', Value: 'platform' }],
+    });
+  });
+
+  test('uses the region of an imported bucket from another region', () => {
+    const importedBucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+      bucketName: 'my-certs-bucket',
+      region: 'eu-west-1',
+    });
+
+    new TrustStore(stack, 'TrustStore', {
+      caCertificatesBundleS3Location: {
+        bucket: importedBucket,
+        key: 'ca-bundle.pem',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::TrustStore', {
+      CaCertificatesBundleSource: {
+        CaCertificatesBundleS3Location: Match.objectLike({ Bucket: 'my-certs-bucket', Region: 'eu-west-1' }),
+      },
+    });
+  });
+
+  test('explicit region overrides the region of the bucket', () => {
+    const importedBucket = s3.Bucket.fromBucketName(stack, 'ImportedBucket', 'my-certs-bucket');
+
+    new TrustStore(stack, 'TrustStore', {
+      caCertificatesBundleS3Location: {
+        bucket: importedBucket,
+        key: 'ca-bundle.pem',
+        region: 'ap-northeast-1',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::TrustStore', {
+      CaCertificatesBundleSource: {
+        CaCertificatesBundleS3Location: Match.objectLike({ Region: 'ap-northeast-1' }),
+      },
+    });
+  });
+
+  test('uses the stack region token in an environment-agnostic stack', () => {
+    const agnosticStack = new Stack(app, 'AgnosticStack');
+    const agnosticBucket = new s3.Bucket(agnosticStack, 'Bucket');
+
+    new TrustStore(agnosticStack, 'TrustStore', {
+      caCertificatesBundleS3Location: {
+        bucket: agnosticBucket,
+        key: 'ca-bundle.pem',
+      },
+    });
+
+    Template.fromStack(agnosticStack).hasResourceProperties('AWS::CloudFront::TrustStore', {
+      CaCertificatesBundleSource: {
+        CaCertificatesBundleS3Location: Match.objectLike({ Region: { Ref: 'AWS::Region' } }),
+      },
+    });
+  });
+
+  test('does not validate token values for trustStoreName and key', () => {
+    const trustStoreName = Lazy.string({ produce: () => 'resolved-name' });
+    const key = Lazy.string({ produce: () => 'resolved-key.pem' });
+
+    new TrustStore(stack, 'TrustStore', {
+      trustStoreName,
+      caCertificatesBundleS3Location: {
+        bucket,
+        key,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::TrustStore', {
+      Name: 'resolved-name',
+      CaCertificatesBundleSource: {
+        CaCertificatesBundleS3Location: Match.objectLike({ Key: 'resolved-key.pem' }),
+      },
+    });
   });
 });

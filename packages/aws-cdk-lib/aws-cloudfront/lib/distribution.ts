@@ -394,6 +394,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly certificate?: ICertificateRef;
   private readonly publishAdditionalMetrics?: boolean;
   private readonly _webAclId: IBox<string | undefined>;
+  private readonly isMtlsEnabled: boolean;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -427,7 +428,9 @@ export class Distribution extends Resource implements IDistribution {
 
     this.httpVersion = props.httpVersion ?? HttpVersion.HTTP2;
     this.validateGrpc(props.defaultBehavior);
-    this.validateMtls(props);
+    this.isMtlsEnabled = props.viewerMtlsConfig !== undefined;
+    this.validateMtlsHttpVersion();
+    this.validateMtlsViewerProtocolPolicy(props.defaultBehavior.viewerProtocolPolicy, 'default behavior');
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
     this.defaultBehavior = new CacheBehavior(originId, {
@@ -716,6 +719,7 @@ export class Distribution extends Resource implements IDistribution {
       throw new ValidationError(lit`DefaultBehaviorCannotHavePathPattern`, 'Only the default behavior can have a path pattern of \'*\'', this);
     }
     this.validateGrpc(behaviorOptions);
+    this.validateMtlsViewerProtocolPolicy(behaviorOptions.viewerProtocolPolicy, `behavior for path '${pathPattern}'`);
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, {
       pathPattern,
@@ -932,7 +936,8 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private resolveViewerProtocolPolicy(viewerProtocolPolicyProp?: ViewerProtocolPolicy): ViewerProtocolPolicy {
-    const defaultPolicy = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS)
+    // mTLS requires HTTPS, so behaviors of an mTLS distribution redirect HTTP viewers to HTTPS by default.
+    const defaultPolicy = this.isMtlsEnabled || FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS)
       ? ViewerProtocolPolicy.REDIRECT_TO_HTTPS : ViewerProtocolPolicy.ALLOW_ALL;
     return viewerProtocolPolicyProp ?? defaultPolicy;
   }
@@ -947,8 +952,8 @@ export class Distribution extends Resource implements IDistribution {
     }
   }
 
-  private validateMtls(props: DistributionProps): void {
-    if (!props.viewerMtlsConfig) {
+  private validateMtlsHttpVersion(): void {
+    if (!this.isMtlsEnabled) {
       return;
     }
     const invalidHttpVersions = [HttpVersion.HTTP3, HttpVersion.HTTP2_AND_3];
@@ -959,43 +964,19 @@ export class Distribution extends Resource implements IDistribution {
         this,
       );
     }
+  }
 
-    // Validate viewerProtocolPolicy - mTLS requires HTTPS.
-    const validPolicies = [ViewerProtocolPolicy.HTTPS_ONLY, ViewerProtocolPolicy.REDIRECT_TO_HTTPS];
-    const defaultPolicy = this.resolveViewerProtocolPolicy(props.defaultBehavior.viewerProtocolPolicy);
-    if (props.defaultBehavior.viewerProtocolPolicy === undefined && !validPolicies.includes(defaultPolicy)) {
-      throw new ValidationError(
-        lit`ViewerProtocolPolicyRequiredForMtls`,
-        `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
-        this,
-      );
+  private validateMtlsViewerProtocolPolicy(policy: ViewerProtocolPolicy | undefined, location: string): void {
+    if (!this.isMtlsEnabled || policy === undefined) {
+      return;
     }
-    if (!validPolicies.includes(defaultPolicy)) {
+    const validPolicies = [ViewerProtocolPolicy.HTTPS_ONLY, ViewerProtocolPolicy.REDIRECT_TO_HTTPS];
+    if (!validPolicies.includes(policy)) {
       throw new ValidationError(
         lit`ViewerProtocolPolicyIncompatibleWithMtls`,
-        `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${defaultPolicy}' in default behavior`,
+        `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${policy}' in ${location}`,
         this,
       );
-    }
-
-    if (props.additionalBehaviors) {
-      for (const [pathPattern, behavior] of Object.entries(props.additionalBehaviors)) {
-        const policy = this.resolveViewerProtocolPolicy(behavior.viewerProtocolPolicy);
-        if (behavior.viewerProtocolPolicy === undefined && !validPolicies.includes(policy)) {
-          throw new ValidationError(
-            lit`ViewerProtocolPolicyRequiredForMtls`,
-            `'viewerProtocolPolicy' must be explicitly set to '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified for behavior at path '${pathPattern}'. If not specified, it defaults to '${ViewerProtocolPolicy.ALLOW_ALL}' which is not compatible with mTLS.`,
-            this,
-          );
-        }
-        if (!validPolicies.includes(policy)) {
-          throw new ValidationError(
-            lit`ViewerProtocolPolicyIncompatibleWithMtls`,
-            `'viewerProtocolPolicy' must be '${ViewerProtocolPolicy.HTTPS_ONLY}' or '${ViewerProtocolPolicy.REDIRECT_TO_HTTPS}' when 'viewerMtlsConfig' is specified, got '${policy}' in behavior for path '${pathPattern}'`,
-            this,
-          );
-        }
-      }
     }
   }
 }
@@ -1141,7 +1122,7 @@ export interface ViewerMtlsConfig {
    * When enabled, CloudFront sends the list of CA names from the trust store to clients,
    * which can help clients select the appropriate certificate to present.
    *
-   * @default undefined - AWS CloudFront default is to not advertise CA names to clients
+   * @default false
    */
   readonly advertiseTrustStoreCaNames?: boolean;
 
@@ -1151,7 +1132,7 @@ export interface ViewerMtlsConfig {
    * When enabled, CloudFront accepts connections from clients with expired certificates.
    * This should only be used in specific scenarios where certificate expiration cannot be controlled.
    *
-   * @default undefined - AWS CloudFront default is to reject expired client certificates
+   * @default false
    */
   readonly ignoreCertificateExpiry?: boolean;
 }
@@ -1339,9 +1320,9 @@ export interface AddBehaviorOptions {
   /**
    * The protocol that viewers can use to access the files controlled by this behavior.
    *
-   * @default - ViewerProtocolPolicy.REDIRECT_TO_HTTPS if the
-   * `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature flag is enabled,
-   * otherwise ViewerProtocolPolicy.ALLOW_ALL
+   * @default - ViewerProtocolPolicy.REDIRECT_TO_HTTPS if `viewerMtlsConfig` is specified on the
+   * distribution or the `@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps` feature
+   * flag is enabled, otherwise ViewerProtocolPolicy.ALLOW_ALL
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 

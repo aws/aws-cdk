@@ -776,6 +776,25 @@ const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
 });
 ```
 
+CloudFront reads the bundle from the region of `bucket`. If that region is not known to the
+bucket reference, for example for a bucket imported from another region, set `region` explicitly.
+You can also have CloudFront check the revocation status of client certificates with OCSP, and
+tag the trust store:
+
+```ts
+const importedBucket = s3.Bucket.fromBucketName(this, 'CertsBucket', 'my-certs-bucket');
+
+const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
+  caCertificatesBundleS3Location: {
+    bucket: importedBucket,
+    key: 'ca-bundle.pem',
+    region: 'eu-west-1',
+  },
+  useClientCertificateOcspEndpoint: true,
+  tags: { team: 'platform' },
+});
+```
+
 
 ### Mutual TLS (mTLS) Authentication
 
@@ -783,7 +802,9 @@ You can configure CloudFront to require mutual TLS (mTLS) authentication between
 With mTLS, CloudFront authenticates viewers using client certificates. To enable mTLS, create a TrustStore
 containing CA certificates and configure the `viewerMtlsConfig` property.
 
-**Note:** mTLS requires HTTPS. Use `ViewerProtocolPolicy.HTTPS_ONLY` or `ViewerProtocolPolicy.REDIRECT_TO_HTTPS`.
+**Note:** mTLS requires HTTPS. When `viewerMtlsConfig` is specified, behaviors without an explicit
+`viewerProtocolPolicy` default to `ViewerProtocolPolicy.REDIRECT_TO_HTTPS`, and an explicit
+`ViewerProtocolPolicy.ALLOW_ALL` is rejected.
 **Note:** mTLS is not supported with HTTP/3. You cannot use `HttpVersion.HTTP3` or `HttpVersion.HTTP2_AND_3` with mTLS.
 
 ```ts
@@ -800,7 +821,7 @@ const trustStore = new cloudfront.TrustStore(this, 'TrustStore', {
 new cloudfront.Distribution(this, 'Dist', {
   defaultBehavior: {
     origin: origins.S3BucketOrigin.withOriginAccessControl(bucket),
-    // You have to use HTTPS for mTLS
+    // Defaults to REDIRECT_TO_HTTPS when mTLS is enabled
     viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
   },
   viewerMtlsConfig: {

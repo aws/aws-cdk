@@ -15,12 +15,15 @@ import type { Construct } from 'constructs';
  * This test:
  * - Creates an S3 bucket and uploads a CA certificate bundle and client certificates
  * - Creates a CloudFront TrustStore using the CA certificate
- * - Creates a CloudFront Distribution with mTLS enabled in optional mode
+ * - Creates a CloudFront Distribution with mTLS in required mode
+ * - Creates a CloudFront Distribution with mTLS in optional mode, advertising the trust store CA names
+ *   and ignoring certificate expiry
  * - Deploys test content to the origin bucket
- * - Uses a Lambda function to make an mTLS request and verify the response
+ * - Uses a Lambda function to make requests with and without a client certificate and verify the responses
  */
 class MtlsDistributionStack extends cdk.Stack {
   public readonly distribution: cloudfront.Distribution;
+  public readonly optionalDistribution: cloudfront.Distribution;
   public readonly certBucket: s3.Bucket;
   public readonly mtlsTestFunction: lambda.IFunction;
 
@@ -51,6 +54,7 @@ class MtlsDistributionStack extends cdk.Stack {
         bucket: this.certBucket,
         key: 'ca-bundle.pem',
       },
+      tags: { purpose: 'integ-test' },
     });
     // Ensure certificates are deployed before creating TrustStore
     trustStore.node.addDependency(certDeployment);
@@ -70,8 +74,7 @@ class MtlsDistributionStack extends cdk.Stack {
       retainOnDelete: false,
     });
 
-    // CloudFront Distribution with mTLS enabled
-    // Note: mTLS requires HTTPS_ONLY - HTTP is not allowed with ViewerMutualAuthentication
+    // CloudFront Distribution with mTLS in required mode
     this.distribution = new cloudfront.Distribution(this, 'Distribution', {
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(originBucket),
@@ -80,6 +83,20 @@ class MtlsDistributionStack extends cdk.Stack {
       viewerMtlsConfig: {
         mode: cloudfront.MtlsMode.REQUIRED,
         trustStore: trustStore,
+      },
+    });
+
+    // CloudFront Distribution with mTLS in optional mode.
+    // viewerProtocolPolicy is omitted to verify that it defaults to REDIRECT_TO_HTTPS with mTLS.
+    this.optionalDistribution = new cloudfront.Distribution(this, 'OptionalDistribution', {
+      defaultBehavior: {
+        origin: origins.S3BucketOrigin.withOriginAccessControl(originBucket),
+      },
+      viewerMtlsConfig: {
+        mode: cloudfront.MtlsMode.OPTIONAL,
+        trustStore: trustStore,
+        advertiseTrustStoreCaNames: true,
+        ignoreCertificateExpiry: true,
       },
     });
 
@@ -121,7 +138,8 @@ mtlsWithCertAssertion.expect(integ.ExpectedResult.objectLike({
   Payload: integ.Match.stringLikeRegexp('.*"statusCode":200.*'),
 }));
 
-// Test 2: mTLS request WITHOUT client certificate should return 403 (mTLS REQUIRED mode)
+// Test 2: mTLS request WITHOUT client certificate should be denied (mTLS REQUIRED mode).
+// CloudFront either returns 403 or rejects the TLS handshake.
 const mtlsWithoutCertAssertion = test.assertions.invokeFunction({
   functionName: testCase.mtlsTestFunction.functionName,
   payload: JSON.stringify({
@@ -132,5 +150,33 @@ const mtlsWithoutCertAssertion = test.assertions.invokeFunction({
 });
 
 mtlsWithoutCertAssertion.expect(integ.ExpectedResult.objectLike({
-  Payload: integ.Match.stringLikeRegexp('.*"statusCode":403.*'),
+  Payload: integ.Match.stringLikeRegexp('.*"denied":true.*'),
+}));
+
+// Test 3: OPTIONAL mode request WITH client certificate should return 200
+const optionalWithCertAssertion = test.assertions.invokeFunction({
+  functionName: testCase.mtlsTestFunction.functionName,
+  payload: JSON.stringify({
+    distributionDomainName: testCase.optionalDistribution.distributionDomainName,
+    certBucket: testCase.certBucket.bucketName,
+    useCert: true,
+  }),
+});
+
+optionalWithCertAssertion.expect(integ.ExpectedResult.objectLike({
+  Payload: integ.Match.stringLikeRegexp('.*"statusCode":200.*'),
+}));
+
+// Test 4: OPTIONAL mode request WITHOUT client certificate should also return 200
+const optionalWithoutCertAssertion = test.assertions.invokeFunction({
+  functionName: testCase.mtlsTestFunction.functionName,
+  payload: JSON.stringify({
+    distributionDomainName: testCase.optionalDistribution.distributionDomainName,
+    certBucket: testCase.certBucket.bucketName,
+    useCert: false,
+  }),
+});
+
+optionalWithoutCertAssertion.expect(integ.ExpectedResult.objectLike({
+  Payload: integ.Match.stringLikeRegexp('.*"statusCode":200.*'),
 }));

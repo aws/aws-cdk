@@ -31,9 +31,19 @@ export interface ITrustStore extends IResource, ITrustStoreRef {
 export interface CaCertificatesBundleS3Location {
   /**
    * The S3 bucket containing the CA certificates bundle.
-   * The bucket's region will be used as the region for the CA bundle.
    */
   readonly bucket: IBucketRef;
+
+  /**
+   * The region of the S3 bucket containing the CA certificates bundle.
+   *
+   * Specify this when the bucket is in a different region than the one the
+   * bucket reference reports, for example an imported bucket in another region
+   * or a bucket referenced from an environment-agnostic stack.
+   *
+   * @default - the region of `bucket`
+   */
+  readonly region?: string;
 
   /**
    * The key (path) to the CA certificates bundle file in the S3 bucket.
@@ -44,7 +54,7 @@ export interface CaCertificatesBundleS3Location {
   /**
    * The version of the S3 object to use.
    *
-   * @default undefined - AWS Cloudfront default is using the latest version
+   * @default - the latest version of the object
    */
   readonly version?: string;
 }
@@ -65,6 +75,21 @@ export interface TrustStoreProps {
    * The bundle must be a PEM file containing one or more CA certificates.
    */
   readonly caCertificatesBundleS3Location: CaCertificatesBundleS3Location;
+
+  /**
+   * Whether CloudFront checks the revocation status of client certificates
+   * using the OCSP endpoint in the client certificate.
+   *
+   * @default false
+   */
+  readonly useClientCertificateOcspEndpoint?: boolean;
+
+  /**
+   * Tags to apply to the trust store.
+   *
+   * @default - no tags
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -148,6 +173,8 @@ export class TrustStore extends Resource implements ITrustStore {
     const resource = new CfnTrustStore(this, 'Resource', {
       name: props.trustStoreName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
       caCertificatesBundleSource: this.renderCaCertificatesBundleSource(props),
+      useClientCertificateOcspEndpoint: props.useClientCertificateOcspEndpoint,
+      tags: props.tags ? Object.entries(props.tags).map(([key, value]) => ({ key, value })) : undefined,
     });
 
     this.trustStoreId = resource.attrId;
@@ -183,7 +210,7 @@ export class TrustStore extends Resource implements ITrustStore {
       caCertificatesBundleS3Location: {
         bucket: location.bucket.bucketRef.bucketName,
         key: location.key,
-        region: location.bucket.env.region,
+        region: location.region ?? location.bucket.env.region,
         version: location.version,
       },
     };

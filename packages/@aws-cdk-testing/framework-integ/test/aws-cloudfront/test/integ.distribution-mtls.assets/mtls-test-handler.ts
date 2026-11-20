@@ -10,6 +10,11 @@ interface MtlsTestEvent {
 interface MtlsTestResponse {
   statusCode: number;
   statusMessage: string;
+  /**
+   * Whether CloudFront denied the request, either with an HTTP 403 response
+   * or by rejecting the TLS handshake.
+   */
+  denied: boolean;
 }
 
 class CertificateRetrievalError extends Error {
@@ -62,10 +67,21 @@ export async function handler(event: MtlsTestEvent): Promise<MtlsTestResponse> {
       resolve({
         statusCode: res.statusCode ?? 0,
         statusMessage: res.statusMessage ?? '',
+        denied: res.statusCode === 403,
       });
     });
 
     req.on('error', (err) => {
+      // Without a client certificate, CloudFront can reject the TLS handshake
+      // instead of returning an HTTP response. That is also a valid denial.
+      if (!event.useCert) {
+        resolve({
+          statusCode: 0,
+          statusMessage: err.message,
+          denied: true,
+        });
+        return;
+      }
       reject(err);
     });
 
