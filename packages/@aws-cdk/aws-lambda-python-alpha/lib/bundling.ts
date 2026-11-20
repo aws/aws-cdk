@@ -2,7 +2,7 @@ import * as path from 'path';
 import type { AssetCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Architecture, Code } from 'aws-cdk-lib/aws-lambda';
 import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume } from 'aws-cdk-lib/core';
-import { AssetStaging, DockerImage, PERF_BUNDLING_SRC_SYM } from 'aws-cdk-lib/core';
+import { AssetHashType, AssetStaging, DockerImage, PERF_BUNDLING_SRC_SYM } from 'aws-cdk-lib/core';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { lit, posixShellEscape } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Packaging, DependenciesFile } from './packaging';
@@ -60,10 +60,15 @@ export class Bundling implements CdkBundlingOptions {
   public static bundle(options: BundlingProps): AssetCode {
     validateOutputPathSuffix(options.outputPathSuffix ?? '');
 
+    let exclude = [];
+    if (options.assetHashType === AssetHashType.SOURCE || options.assetHashType === undefined) {
+      exclude.push(...DEPENDENCY_EXCLUDES);
+    }
+
     return Code.fromAsset(options.entry, {
       assetHash: options.assetHash,
       assetHashType: options.assetHashType,
-      exclude: DEPENDENCY_EXCLUDES,
+      exclude,
       bundling: options.skip ? undefined : new Bundling(options),
     });
   }
