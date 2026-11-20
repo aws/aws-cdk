@@ -5,7 +5,7 @@ import type { IUserPoolResourceServer, ResourceServerScope } from './user-pool-r
 import type { IRoleRef } from '../../aws-iam';
 import type { CfnApp } from '../../aws-pinpoint';
 import type { IResource } from '../../core';
-import { Resource, Duration, Stack, SecretValue, Token, FeatureFlags } from '../../core';
+import { Resource, Duration, Stack, SecretValue, Token, FeatureFlags, Validations } from '../../core';
 import { toIUserPool } from './private/ref-utils';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -49,6 +49,43 @@ export interface AuthFlow {
    * @default false
    */
   readonly user?: boolean;
+
+  /**
+   * Enable OAuth 2.0 token exchange without an actor token (impersonation).
+   *
+   * The issued token represents the user directly. Token exchange requires the
+   * user pool to use the Essentials or Plus feature plan.
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-token-exchange.html
+   * @default false
+   */
+  readonly tokenExchangeImpersonation?: boolean;
+
+  /**
+   * Enable OAuth 2.0 token exchange with an actor token (delegation).
+   *
+   * The issued token carries an `act` claim that identifies the intermediary acting
+   * on the user's behalf. Token exchange requires the user pool to use the Essentials
+   * or Plus feature plan.
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-token-exchange.html
+   * @default false
+   */
+  readonly tokenExchangeDelegation?: boolean;
+
+  /**
+   * Enable machine-to-machine access tokens from the `GetClientToken` API operation,
+   * which needs no user pool domain.
+   *
+   * This must be the only enabled auth flow, and the client must have a secret
+   * (`generateSecret: true`). `ALLOW_REFRESH_TOKEN_AUTH` is not added. The token
+   * carries the resource server scopes allowed in `oAuth.scopes`, so configure the
+   * client credentials flow with those scopes.
+   *
+   * @see https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetClientToken.html
+   * @default false
+   */
+  readonly clientToken?: boolean;
 }
 
 /**
@@ -538,11 +575,12 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     this._generateSecret = props.generateSecret;
     this.userPool = props.userPool;
 
+    const explicitAuthFlows = this.configureAuthFlows(props);
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
       generateSecret: props.generateSecret,
       userPoolId: props.userPool.userPoolRef.userPoolId,
-      explicitAuthFlows: this.configureAuthFlows(props),
+      explicitAuthFlows,
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
       defaultRedirectUri: props.oAuth?.defaultRedirectUri,
@@ -557,6 +595,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
       analyticsConfiguration: props.analytics ? this.configureAnalytics(props.analytics) : undefined,
     });
+    // The bundled CloudFormation Validate schemas don't list these flows yet, though CloudFormation accepts them.
+    const newerAuthFlows = ['ALLOW_TOKEN_EXCHANGE_IMPERSONATION', 'ALLOW_TOKEN_EXCHANGE_DELEGATION', 'ALLOW_CLIENT_TOKEN_AUTH'];
+    if (explicitAuthFlows?.some((flow) => newerAuthFlows.includes(flow))) {
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::W3030',
+        reason: 'The bundled schemas do not list the token exchange and client token auth flows yet',
+      });
+    }
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);
     this.configureRefreshTokenRotation(resource, props);
@@ -617,12 +663,28 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
     if (!props.authFlows || Object.keys(props.authFlows).length === 0) return undefined;
 
+    // Cognito rejects ALLOW_CLIENT_TOKEN_AUTH next to any other flow, and on a client without a secret.
+    if (props.authFlows.clientToken) {
+      const others = Object.entries(props.authFlows)
+        .filter(([name, enabled]) => name !== 'clientToken' && enabled)
+        .map(([name]) => name);
+      if (others.length > 0) {
+        throw new ValidationError(lit`ClientTokenAuthFlowNotExclusive`, `authFlows.clientToken must be the only enabled auth flow, but these are also enabled: ${others.join(', ')}`, this);
+      }
+      if (!props.generateSecret) {
+        throw new ValidationError(lit`ClientTokenAuthFlowRequiresSecret`, 'authFlows.clientToken requires generateSecret to be true.', this);
+      }
+      return ['ALLOW_CLIENT_TOKEN_AUTH'];
+    }
+
     const authFlows: string[] = [];
     if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
     if (props.authFlows.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
     if (props.authFlows.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
     if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
     if (props.authFlows.user) { authFlows.push('ALLOW_USER_AUTH'); }
+    if (props.authFlows.tokenExchangeImpersonation) { authFlows.push('ALLOW_TOKEN_EXCHANGE_IMPERSONATION'); }
+    if (props.authFlows.tokenExchangeDelegation) { authFlows.push('ALLOW_TOKEN_EXCHANGE_DELEGATION'); }
 
     // refreshToken should only be allowed if authFlows are present and refresh token rotation is disabled
     if (!props.refreshTokenRotationGracePeriod) {

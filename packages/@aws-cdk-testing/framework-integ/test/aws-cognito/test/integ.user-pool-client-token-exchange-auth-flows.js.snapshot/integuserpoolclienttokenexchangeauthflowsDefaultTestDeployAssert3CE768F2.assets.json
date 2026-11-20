@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "6782def3f2c11763a959a423bbcc99a1a2a0e3576fb32aad163fb874dca0042a": {
+      "source": {
+        "path": "asset.6782def3f2c11763a959a423bbcc99a1a2a0e3576fb32aad163fb874dca0042a.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-3dbba7d5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6782def3f2c11763a959a423bbcc99a1a2a0e3576fb32aad163fb874dca0042a.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "d1e7b1afa1f01f384493caa5b523677b819f0526b2d9ebb4826c2505717ff878": {
+      "displayName": "integuserpoolclienttokenexchangeauthflowsDefaultTestDeployAssert3CE768F2 Template",
+      "source": {
+        "path": "integuserpoolclienttokenexchangeauthflowsDefaultTestDeployAssert3CE768F2.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-12220aea": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d1e7b1afa1f01f384493caa5b523677b819f0526b2d9ebb4826c2505717ff878.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

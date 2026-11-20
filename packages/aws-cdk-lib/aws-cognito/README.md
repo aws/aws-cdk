@@ -817,6 +817,49 @@ Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-u
 Choice-based authentication can be configured by setting the `user` property under `authFlow`. This enables the
 `USER_AUTH` authentication flow. Learn more at [Choice-based authentication](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flows-selection-sdk.html#authentication-flows-selection-choice).
 
+A client that exchanges a user's token for a token scoped to a downstream service, with [OAuth 2.0 token
+exchange](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-token-exchange.html), needs
+`tokenExchangeImpersonation`, `tokenExchangeDelegation`, or both. With delegation, the request includes an actor token
+and the issued token carries an `act` claim that identifies the client acting for the user. Token exchange requires a
+user pool on the Essentials or Plus feature plan.
+
+```ts
+const pool = new cognito.UserPool(this, 'pool', {
+  featurePlan: cognito.FeaturePlan.ESSENTIALS,
+});
+pool.addClient('agent-client', {
+  generateSecret: true,
+  authFlows: {
+    tokenExchangeDelegation: true,
+  },
+});
+```
+
+A machine-to-machine client can get access tokens from the
+[`GetClientToken`](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_GetClientToken.html)
+API operation, without a user pool domain, by setting `clientToken`. This flow must be the client's only auth flow, and
+the client must have a secret. The token carries the resource server scopes allowed in `oAuth.scopes`, so configure
+the client credentials flow with those scopes.
+
+```ts
+const pool = new cognito.UserPool(this, 'pool');
+const readScope = new cognito.ResourceServerScope({ scopeName: 'read', scopeDescription: 'Read access' });
+const resourceServer = pool.addResourceServer('resource-server', {
+  identifier: 'api',
+  scopes: [readScope],
+});
+pool.addClient('m2m-client', {
+  generateSecret: true,
+  authFlows: {
+    clientToken: true,
+  },
+  oAuth: {
+    flows: { clientCredentials: true },
+    scopes: [cognito.OAuthScope.resourceServer(resourceServer, readScope)],
+  },
+});
+```
+
 In addition to these authentication mechanisms, Cognito user pools also support using OAuth 2.0 framework for
 authenticating users. User pool clients can be configured with OAuth 2.0 authorization flows and scopes. Learn more
 about the [OAuth 2.0 authorization framework](https://tools.ietf.org/html/rfc6749) and [Cognito user pool's
