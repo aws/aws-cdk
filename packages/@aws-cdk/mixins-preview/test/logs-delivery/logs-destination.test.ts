@@ -5,7 +5,9 @@ import { DeliveryStream, CfnDeliveryStream, S3Bucket } from 'aws-cdk-lib/aws-kin
 import { CfnLogGroup, LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { CfnKey, Key } from 'aws-cdk-lib/aws-kms';
 import { CloudwatchDeliveryDestination, FirehoseDeliveryDestination, S3DeliveryDestination, S3LogsDeliveryPermissionsVersion, XRayDeliveryDestination } from '../../lib/services/aws-logs';
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
+
+const IMPORTED_KEY_ID = 'abcd1234-a123-456a-a12b-a123b4cd56ef';
 
 // at the time of creating this test file S3 does not support Vended Logs on Buckets but this test pretends they do to make writing tests easier
 describe('cross acount destination', () => {
@@ -1037,6 +1039,32 @@ describe('S3 Destination', () => {
     expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
     expect(Object.keys(Template.fromStack(stack).findResources('AWS::KMS::Key')))
       .toEqual([stack.getLogicalId(unrelatedKey.node.defaultChild as CfnKey)]);
+  });
+
+  // A bare IKeyRef admits no resource policy at all, so the grant is dropped and the user is told.
+  test.each([
+    ['an arn', (s: Stack) => CfnKey.fromKeyArn(s, 'RefKey', `arn:aws:kms:us-east-1:123456789012:key/${IMPORTED_KEY_ID}`)],
+    ['a key id', (s: Stack) => CfnKey.fromKeyId(s, 'RefKey', IMPORTED_KEY_ID)],
+  ])('warns when the provided key is a bare reference from %s', (_name, makeKey) => {
+    const bucket = new Bucket(stack, 'Bucket');
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket, encryptionKey: makeKey(stack) });
+
+    Annotations.fromStack(stack).hasWarning('*',
+      Match.stringLikeRegexp(`could not add policy to the provided encryption key, ${IMPORTED_KEY_ID}`));
+    expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
+  });
+
+  // An imported L2 key cannot take a policy statement either, so it must warn like a bare reference.
+  test('warns when the provided key is an imported L2 key', () => {
+    const bucket = new Bucket(stack, 'Bucket');
+    const key = Key.fromKeyArn(stack, 'ImportedKey', `arn:aws:kms:us-east-1:123456789012:key/${IMPORTED_KEY_ID}`);
+
+    new S3DeliveryDestination(bucket, 'S3Dest', { bucket, encryptionKey: key });
+
+    Annotations.fromStack(stack).hasWarning('*',
+      Match.stringLikeRegexp(`could not add policy to the provided encryption key, ${IMPORTED_KEY_ID}`));
+    expect(Object.keys(findKeysGrantingDelivery(stack))).toEqual([]);
   });
 
   test('uses outputFormat when provided', () => {

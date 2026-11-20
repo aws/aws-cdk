@@ -1,11 +1,11 @@
 import type { IEnvironmentAware } from 'aws-cdk-lib/core';
-import { Annotations, Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Annotations, Aws, Names, Resource, Stack, Tags } from 'aws-cdk-lib/core';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import type { Construct, IConstruct } from 'constructs';
+import { type Construct, type IConstruct } from 'constructs';
 import type { Grant } from 'aws-cdk-lib/aws-iam';
 import { AccountPrincipal, Effect, EncryptedResources, PolicyDocument, PolicyStatement, PrincipalWithConditions, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { KeyGrants, type IKeyRef } from 'aws-cdk-lib/aws-kms';
+import { CfnKey, KeyGrants, type IKeyRef } from 'aws-cdk-lib/aws-kms';
 import type { IBucketRef } from 'aws-cdk-lib/aws-s3';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as xray from './xray-policy';
@@ -169,7 +169,8 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
 
     if (encryptionKey) {
       const grant = KeyGrants.fromKey(encryptionKey).actions(principal, ...actions);
-      if (!grant) {
+      // second half of this check is to see if we have an imported L2 key, those will silently succeed but will not get the updated permissions
+      if (!grant.success || !(Resource.isOwnedResource(encryptionKey) || CfnKey.isCfnKey(encryptionKey))) {
         Annotations.of(this).addWarningV2('@aws-cdk/mixins-preview:logsDeliveryKeyPolicyNotUpdated',
           `could not add policy to the provided encryption key, ${encryptionKey.keyRef.keyId}. Add a statement to allow log delivery manually.`);
       }

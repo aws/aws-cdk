@@ -34,7 +34,7 @@ export interface ILogsDelivery {
    * @param scope - The construct scope
    * @param logType - The type of logs that the delivery source will produce
    * @param sourceResourceArn - The Arn of the source resource
-   * @returns LogDeliveryConfig
+   * @returns LogsDeliveryConfig
    */
   bind(scope: IConstruct, logType: string, sourceResourceArn: string): ILogsDeliveryConfig;
 }
