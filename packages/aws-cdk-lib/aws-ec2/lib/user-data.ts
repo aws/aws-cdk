@@ -397,23 +397,44 @@ export enum Ec2LaunchV2PartitionType {
 /**
  * An instance attribute that the EC2Launch v2 `setWallpaper` task can display
  */
-export enum Ec2LaunchV2WallpaperAttribute {
+export class Ec2LaunchV2WallpaperAttribute {
   /** The processor architecture */
-  ARCHITECTURE = 'architecture',
+  public static readonly ARCHITECTURE = new Ec2LaunchV2WallpaperAttribute('architecture');
+
   /** The Availability Zone */
-  AVAILABILITY_ZONE = 'availabilityZone',
+  public static readonly AVAILABILITY_ZONE = new Ec2LaunchV2WallpaperAttribute('availabilityZone');
+
   /** The host name */
-  HOST_NAME = 'hostName',
+  public static readonly HOST_NAME = new Ec2LaunchV2WallpaperAttribute('hostName');
+
   /** The instance ID */
-  INSTANCE_ID = 'instanceId',
+  public static readonly INSTANCE_ID = new Ec2LaunchV2WallpaperAttribute('instanceId');
+
   /** The instance size */
-  INSTANCE_SIZE = 'instanceSize',
+  public static readonly INSTANCE_SIZE = new Ec2LaunchV2WallpaperAttribute('instanceSize');
+
   /** The private IPv4 address */
-  PRIVATE_IP_ADDRESS = 'privateIpAddress',
+  public static readonly PRIVATE_IP_ADDRESS = new Ec2LaunchV2WallpaperAttribute('privateIpAddress');
+
   /** The public IPv4 address */
-  PUBLIC_IP_ADDRESS = 'publicIpAddress',
+  public static readonly PUBLIC_IP_ADDRESS = new Ec2LaunchV2WallpaperAttribute('publicIpAddress');
+
   /** The IPv6 address */
-  IPV6_ADDRESS = 'ipv6Address',
+  public static readonly IPV6_ADDRESS = new Ec2LaunchV2WallpaperAttribute('ipv6Address');
+
+  /**
+   * An attribute not listed above, for example one added by a later version of EC2Launch v2
+   *
+   * @param name the name of the attribute, as used in the `attributes` input of the `setWallpaper` task
+   */
+  public static of(name: string): Ec2LaunchV2WallpaperAttribute {
+    return new Ec2LaunchV2WallpaperAttribute(name);
+  }
+
+  /**
+   * @param name the name of the attribute, as used in the `attributes` input of the `setWallpaper` task
+   */
+  private constructor(public readonly name: string) {}
 }
 
 /**
@@ -788,7 +809,7 @@ export class Ec2LaunchV2Task {
   public static wallpaper(options: Ec2LaunchV2WallpaperOptions = {}): Ec2LaunchV2Task {
     return new Ec2LaunchV2Task('setWallpaper', {
       path: options.path ?? 'C:\\ProgramData\\Amazon\\EC2Launch\\wallpaper\\Ec2Wallpaper.jpg',
-      attributes: options.attributes,
+      attributes: options.attributes?.map(attribute => attribute.name),
       instanceTags: options.instanceTags?._value,
     });
   }
@@ -850,7 +871,7 @@ export class Ec2LaunchV2Task {
    * strings. Lists cannot be tokens, and strings containing tokens follow the
    * same single-line rules as other task inputs (see the module README).
    * If `inputs` is a list, adding the same task again appends to that list,
-   * like `executeScript` and `executeProgram`.
+   * like `executeScript`, `executeProgram` and `writeFile`.
    *
    * @param taskName the name of the task, for example `executeScript`
    * @param inputs the inputs of the task, or omit for a task without inputs
@@ -923,8 +944,8 @@ export class Ec2LaunchV2UserData extends UserData {
   /**
    * Add an EC2Launch v2 task to the user data
    *
-   * Adding a task whose inputs are a list (`executeScript`, `executeProgram`)
-   * again appends to its inputs. Adding a task without inputs again has no
+   * Adding a task whose inputs are a list (`executeScript`, `executeProgram`,
+   * `writeFile`) again appends to its inputs. Adding a task without inputs again has no
    * effect. Adding any other task again throws an error.
    */
   public addTask(task: Ec2LaunchV2Task): void {

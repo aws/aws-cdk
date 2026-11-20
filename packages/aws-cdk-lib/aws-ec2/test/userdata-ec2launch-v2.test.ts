@@ -461,6 +461,14 @@ describe('EC2Launch v2 user data', () => {
       .toThrow(`destination must not be under C:\\Windows, EC2Launch v2 does not load user data that writes there, got ${JSON.stringify(destination)}`);
   });
 
+  test.each([
+    'C:\\WindowsApps\\a.txt',
+    'C:\\Windows.old\\a.txt',
+    'D:\\Windows\\a.txt',
+  ])('accepts writeFile destination %s', (destination) => {
+    expect(() => ec2.Ec2LaunchV2Task.writeFile({ destination, content: 'a' })).not.toThrow();
+  });
+
   test('accepts a tokenized writeFile destination', () => {
     // GIVEN
     const stack = new Stack();
@@ -752,6 +760,19 @@ describe('EC2Launch v2 user data', () => {
         instanceTags: 'AllTags',
       },
     }]);
+  });
+
+  test('can set the wallpaper with an attribute not listed in Ec2LaunchV2WallpaperAttribute', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.wallpaper({
+      attributes: [ec2.Ec2LaunchV2WallpaperAttribute.HOST_NAME, ec2.Ec2LaunchV2WallpaperAttribute.of('futureAttribute')],
+    }));
+
+    // THEN
+    expect(parse(userData).tasks[0].inputs.attributes).toEqual(['hostName', 'futureAttribute']);
   });
 
   test('can set the wallpaper with named tags', () => {

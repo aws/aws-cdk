@@ -25,7 +25,9 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
   restrictDefaultSecurityGroup: false,
 });
 
-const createdDir = 'C:\\cdk-integ-execute-program';
+// The token makes the program argument a list item with an indentation
+// indicator (`- |2-`), so the test also verifies that EC2Launch v2 parses those
+const createdDir = `C:\\cdk-integ-${cdk.Aws.STACK_NAME}`;
 const userData = ec2.UserData.forWindowsEc2LaunchV2();
 userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({ devices: [{ device: 'xvdf', letter: 'D', name: 'Data' }] }));
 userData.addTask(ec2.Ec2LaunchV2Task.hostName({ hostName: 'cdk-integ' }));
