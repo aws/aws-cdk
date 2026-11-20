@@ -1,0 +1,254 @@
+{
+ "Resources": {
+  "AwsApiCallACMdescribeAcmeEndpoint3a8890c530953bab768efb211aab60b4": {
+   "Type": "Custom::DeployAssert@SdkCallACMdescribeAcmeEndpoint",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ACM",
+    "api": "describeAcmeEndpoint",
+    "expected": "{\"$ObjectLike\":{\"AcmeEndpoint\":{\"Status\":\"ACTIVE\",\"AuthorizationBehavior\":\"PRE_APPROVED\",\"Contact\":\"REQUIRED\"}}}",
+    "parameters": {
+     "AcmeEndpointArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-acme-endpoint:ExportsOutputFnGetAttAcmeEndpoint78A75014AcmeEndpointArn599AA168"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1791200403567"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "acm:DescribeAcmeEndpoint"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "acm:DescribeAcmeDomainValidation"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "acm:DescribeAcmeExternalAccountBinding"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "f6908d65aad9689b7f3773d17be62afe6e973baa92c16c8521798e925c3a6f3e.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallACMdescribeAcmeDomainValidation1839e134cf8bb00b5f5073e5deeb38a7": {
+   "Type": "Custom::DeployAssert@SdkCallACMdescribeAcmeDomainValidation",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ACM",
+    "api": "describeAcmeDomainValidation",
+    "expected": "{\"$ObjectLike\":{\"AcmeDomainValidation\":{\"DomainName\":\"example.com\"}}}",
+    "parameters": {
+     "AcmeDomainValidationArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-acme-endpoint:ExportsOutputFnGetAttAcmeEndpointDomainValidationB4B5D601Arn40FBD77A"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1791200403569"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallACMdescribeAcmeExternalAccountBinding64301318731a11a885520b00b6ed6cb9": {
+   "Type": "Custom::DeployAssert@SdkCallACMdescribeAcmeExternalAccountBi",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ACM",
+    "api": "describeAcmeExternalAccountBinding",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"ExternalAccountBinding\":{\"AcmeEndpointArn\":\"",
+       {
+        "Fn::ImportValue": "integ-acme-endpoint:ExportsOutputFnGetAttAcmeEndpoint78A75014AcmeEndpointArn599AA168"
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "AcmeExternalAccountBindingArn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-acme-endpoint:ExportsOutputFnGetAttAcmeEndpointExternalAccountBinding05A661BFAcmeExternalAccountBindingArnDCC110F1"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1791200403569"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallACMdescribeAcmeEndpoint3a8890c530953bab768efb211aab60b4": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallACMdescribeAcmeEndpoint3a8890c530953bab768efb211aab60b4",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallACMdescribeAcmeDomainValidation1839e134cf8bb00b5f5073e5deeb38a7": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallACMdescribeAcmeDomainValidation1839e134cf8bb00b5f5073e5deeb38a7",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallACMdescribeAcmeExternalAccountBinding64301318731a11a885520b00b6ed6cb9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallACMdescribeAcmeExternalAccountBinding64301318731a11a885520b00b6ed6cb9",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
