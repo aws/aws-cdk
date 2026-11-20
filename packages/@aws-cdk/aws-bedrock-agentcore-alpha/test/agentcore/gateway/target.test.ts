@@ -1202,3 +1202,116 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
     });
   });
 });
+
+describe('Lambda target credential provider validation', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    gateway = new Gateway(stack, 'TestGateway', {
+      gatewayName: 'test-gateway',
+    });
+  });
+
+  function lambdaTargetProps() {
+    const fn = new lambda.Function(stack, 'TestFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+    });
+    const toolSchema = ToolSchema.fromInline([
+      {
+        name: 'test_tool',
+        description: 'Test tool',
+        inputSchema: {
+          type: SchemaDefinitionType.OBJECT,
+          properties: {},
+        },
+      },
+    ]);
+    return { fn, toolSchema };
+  }
+
+  const oauthProvider = GatewayCredentialProvider.fromOauthIdentityArn({
+    providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/default/oauth2credentialprovider/test',
+    secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-abc123',
+    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+  });
+
+  const apiKeyProvider = GatewayCredentialProvider.fromApiKeyIdentityArn({
+    providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/default/apikeycredentialprovider/test',
+    secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-abc123',
+  });
+
+  test('throws when an OAuth credential provider is configured on a Lambda target', () => {
+    const { fn, toolSchema } = lambdaTargetProps();
+
+    expect(() => {
+      GatewayTarget.forLambda(stack, 'LambdaTarget', {
+        gateway,
+        gatewayTargetName: 'lambda-target',
+        lambdaFunction: fn,
+        toolSchema,
+        credentialProviderConfigurations: [oauthProvider],
+      });
+    }).toThrow(/Lambda targets only support the GATEWAY_IAM_ROLE credential provider, but received: OAUTH/);
+  });
+
+  test('throws when an API key credential provider is configured on a Lambda target', () => {
+    const { fn, toolSchema } = lambdaTargetProps();
+
+    expect(() => {
+      GatewayTarget.forLambda(stack, 'LambdaTarget', {
+        gateway,
+        gatewayTargetName: 'lambda-target',
+        lambdaFunction: fn,
+        toolSchema,
+        credentialProviderConfigurations: [apiKeyProvider],
+      });
+    }).toThrow(/Lambda targets only support the GATEWAY_IAM_ROLE credential provider, but received: API_KEY/);
+  });
+
+  test('throws via gateway.addLambdaTarget with an unsupported credential provider', () => {
+    const { fn, toolSchema } = lambdaTargetProps();
+
+    expect(() => {
+      gateway.addLambdaTarget('ToolsTarget', {
+        gatewayTargetName: 'tools',
+        lambdaFunction: fn,
+        toolSchema,
+        credentialProviderConfigurations: [oauthProvider],
+      });
+    }).toThrow(/Lambda targets only support the GATEWAY_IAM_ROLE credential provider/);
+  });
+
+  test('does not throw for an explicit IAM role credential provider', () => {
+    const { fn, toolSchema } = lambdaTargetProps();
+
+    expect(() => {
+      GatewayTarget.forLambda(stack, 'LambdaTarget', {
+        gateway,
+        gatewayTargetName: 'lambda-target',
+        lambdaFunction: fn,
+        toolSchema,
+        credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
+      });
+    }).not.toThrow();
+  });
+
+  test('does not throw when no credential provider is configured (defaults to IAM role)', () => {
+    const { fn, toolSchema } = lambdaTargetProps();
+
+    expect(() => {
+      GatewayTarget.forLambda(stack, 'LambdaTarget', {
+        gateway,
+        gatewayTargetName: 'lambda-target',
+        lambdaFunction: fn,
+        toolSchema,
+      });
+    }).not.toThrow();
+  });
+});
