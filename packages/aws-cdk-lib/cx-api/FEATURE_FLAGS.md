@@ -1800,8 +1800,18 @@ When this feature flag is enabled, a stabilization loop is run to recurse the co
 
 Flag type: Backwards incompatible bugfix
 
-When this feature flag is enabled, a new method will be used to get the DNS Name of the user pool domain target. The old method
-creates a custom resource internally, but the new method doesn't need a custom resource.
+When this feature flag is enabled, `UserPoolDomainTarget` reads the DNS name of the Cognito user pool domain directly from
+the `cloudFrontEndpoint` attribute. The old method used the `cloudFrontDomainName` attribute, which is now deprecated and
+requires deploying a custom resource that resolves the CloudFront distribution domain name.
+
+Migrating to the new method removes both the custom resource and the deprecation warning that is emitted during synthesis
+when the deprecated attribute is used:
+
+```
+[WARNING] aws-cdk-lib.aws_cognito.UserPoolDomain#cloudFrontDomainName is deprecated.
+  use `cloudFrontEndpoint` method instead.
+  This API will be removed in the next major release.
+```
 
 If the flag is set to false then a custom resource will be created when using `UserPoolDomainTarget`.
 
@@ -1810,6 +1820,10 @@ If the flag is set to false then a custom resource will be created when using `U
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.174.0 | `false` | `true` |
+
+
+**Compatibility with old behavior:** Disable the feature flag to keep using the deprecated `cloudFrontDomainName`
+attribute and its custom resource.
 
 
 ### @aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault
