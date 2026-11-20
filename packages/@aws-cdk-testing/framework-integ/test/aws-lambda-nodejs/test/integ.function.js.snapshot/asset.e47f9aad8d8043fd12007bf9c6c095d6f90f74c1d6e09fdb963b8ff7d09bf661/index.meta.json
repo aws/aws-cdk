@@ -18,7 +18,7 @@
     }
   },
   "outputs": {
-    "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js.snapshot/bundling-temp-895a8b40c0f3a86143287c5f08a3418217d8eab86d041da41774a4a6e13eae6e-building/index.js": {
+    "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js.snapshot/bundling-temp-f107db64982bb9fd70218212e9541441efd8ee8dd69d3d848c3746751f071414-building/index.js": {
       "imports": [],
       "exports": [],
       "entryPoint": "packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ-handlers/whitespace path/ts-handler.ts",
