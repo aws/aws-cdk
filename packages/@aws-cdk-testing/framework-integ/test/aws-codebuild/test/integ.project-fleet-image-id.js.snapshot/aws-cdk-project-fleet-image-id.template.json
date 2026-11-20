@@ -1,0 +1,285 @@
+{
+ "Resources": {
+  "CustomAmiFleetRoleFE717169": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomAmiFleetRoleDefaultPolicyC26009B7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ec2:DescribeImages",
+        "ec2:DescribeSnapshots"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomAmiFleetRoleDefaultPolicyC26009B7",
+    "Roles": [
+     {
+      "Ref": "CustomAmiFleetRoleFE717169"
+     }
+    ]
+   }
+  },
+  "CustomAmiFleetEEDFB120": {
+   "Type": "AWS::CodeBuild::Fleet",
+   "Properties": {
+    "BaseCapacity": 1,
+    "ComputeType": "BUILD_GENERAL1_SMALL",
+    "EnvironmentType": "LINUX_EC2",
+    "FleetServiceRole": {
+     "Fn::GetAtt": [
+      "CustomAmiFleetRoleFE717169",
+      "Arn"
+     ]
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+    }
+   },
+   "DependsOn": [
+    "CustomAmiFleetRoleDefaultPolicyC26009B7"
+   ]
+  },
+  "CustomAmiProjectRole354D17B7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codebuild.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomAmiProjectRoleDefaultPolicyEF29E09B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/codebuild/",
+           {
+            "Ref": "CustomAmiProject63223E3E"
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:/aws/codebuild/",
+           {
+            "Ref": "CustomAmiProject63223E3E"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "codebuild:BatchPutCodeCoverages",
+        "codebuild:BatchPutTestCases",
+        "codebuild:CreateReport",
+        "codebuild:CreateReportGroup",
+        "codebuild:UpdateReport"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":codebuild:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":report-group/",
+          {
+           "Ref": "CustomAmiProject63223E3E"
+          },
+          "-*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomAmiProjectRoleDefaultPolicyEF29E09B",
+    "Roles": [
+     {
+      "Ref": "CustomAmiProjectRole354D17B7"
+     }
+    ]
+   }
+  },
+  "CustomAmiProject63223E3E": {
+   "Type": "AWS::CodeBuild::Project",
+   "Properties": {
+    "Artifacts": {
+     "Type": "NO_ARTIFACTS"
+    },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Fleet": {
+      "FleetArn": {
+       "Fn::GetAtt": [
+        "CustomAmiFleetEEDFB120",
+        "Arn"
+       ]
+      }
+     },
+     "Image": "aws/codebuild/amazonlinux-x86_64-standard:5.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": false,
+     "Type": "LINUX_EC2"
+    },
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "CustomAmiProjectRole354D17B7",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"cat /etc/os-release\"\n      ]\n    }\n  }\n}",
+     "Type": "NO_SOURCE"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttCustomAmiFleetEEDFB120Arn9C07717B": {
+   "Value": {
+    "Fn::GetAtt": [
+     "CustomAmiFleetEEDFB120",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-project-fleet-image-id:ExportsOutputFnGetAttCustomAmiFleetEEDFB120Arn9C07717B"
+   }
+  },
+  "ExportsOutputRefCustomAmiProject63223E3EDC5BFC3C": {
+   "Value": {
+    "Ref": "CustomAmiProject63223E3E"
+   },
+   "Export": {
+    "Name": "aws-cdk-project-fleet-image-id:ExportsOutputRefCustomAmiProject63223E3EDC5BFC3C"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,11 +1,11 @@
 import type { Construct, IDependable } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
 import { ComputeType } from './compute-type';
-import type { EnvironmentType } from './environment-type';
+import { EnvironmentType } from './environment-type';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type { IResource, Size } from '../../core';
-import { Arn, ArnFormat, PhysicalName, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
+import { Annotations, Arn, ArnFormat, PhysicalName, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -82,6 +82,12 @@ export interface FleetProps {
    *
    * Specify this if the fleet needs to access resources in a VPC.
    *
+   * Reserved capacity fleets support only one subnet in a single Availability Zone.
+   * If the subnet selection resolves to multiple subnets, the construct uses the
+   * first subnet and emits a warning.
+   *
+   * Cannot be combined with `proxyConfiguration`.
+   *
    * @default - No VPC is specified.
    */
   readonly vpc?: ec2.IVpc;
@@ -94,13 +100,17 @@ export interface FleetProps {
    * 1. Subnets with access to the internet (of type PRIVATE_WITH_EGRESS).
    * 2. Private subnets unconnected to the internet, but with [VPC endpoints](https://docs.aws.amazon.com/codebuild/latest/userguide/use-vpc-endpoints-with-codebuild.html) for the necessary services.
    *
-   * If you don't specify a subnet selection, the default behavior is to use PRIVATE_WITH_EGRESS subnets first if they exist,
-   * then PRIVATE_WITHOUT_EGRESS, and finally PUBLIC subnets. If your VPC doesn't have PRIVATE_WITH_EGRESS subnets but you need
-   * AWS service access, add VPC Endpoints to your private subnets.
+   * Reserved capacity fleets support only one subnet in a single Availability Zone.
+   * If the selection resolves to multiple subnets, the construct uses the first
+   * subnet and emits the warning `@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed`.
+   * If you pin the subnet with an L1 override of `FleetVpcConfig.Subnets`, suppress it with
+   * `Annotations.of(fleet).acknowledgeWarning('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed')`.
+   * The `ec2:CreateNetworkInterfacePermission` grant still covers all selected subnets,
+   * so select a single subnet for the narrowest grant.
    *
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html
    *
-   * @default - private subnets if available else public subnets
+   * @default - first subnet from private subnets if available, else public subnets
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
@@ -113,6 +123,198 @@ export interface FleetProps {
    * @default - A security group will be automatically created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The image for the compute fleet instances.
+   *
+   * Only supported for EC2-based environment types
+   * (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM).
+   *
+   * For a custom AMI, the fleet service role is granted
+   * `ec2:DescribeImages` and `ec2:DescribeSnapshots`. A role is created
+   * if `role` is not specified.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
+   *
+   * @default - CodeBuild uses the default image for the environment type
+   */
+  readonly image?: FleetImage;
+
+  /**
+   * The scaling configuration of the compute fleet.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.reserved-capacity-fleets.html
+   * @default - no auto-scaling, fleet uses fixed baseCapacity
+   */
+  readonly scalingConfiguration?: FleetScalingConfiguration;
+
+  /**
+   * Proxy configuration that applies network access control to reserved
+   * capacity fleet instances.
+   *
+   * Only supported for Linux container environment types (LINUX_CONTAINER,
+   * ARM_CONTAINER, LINUX_GPU_CONTAINER). Not supported for Windows containers,
+   * EC2-based environment types, or fleets placed in a VPC.
+   *
+   * Cannot be combined with `vpc`.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/run-codebuild-in-managed-proxy-server.html
+   * @default - no proxy configuration
+   */
+  readonly proxyConfiguration?: FleetProxyConfiguration;
+}
+
+/**
+ * The scaling type for a fleet.
+ */
+export enum FleetScalingType {
+  /**
+   * Target tracking scaling.
+   */
+  TARGET_TRACKING_SCALING = 'TARGET_TRACKING_SCALING',
+}
+
+/**
+ * The metric type used for target tracking scaling.
+ */
+export enum FleetScalingMetricType {
+  /**
+   * Fleet utilization rate.
+   */
+  FLEET_UTILIZATION_RATE = 'FLEET_UTILIZATION_RATE',
+}
+
+/**
+ * A target tracking scaling configuration for a fleet.
+ */
+export interface FleetTargetTrackingScalingConfiguration {
+  /**
+   * The metric type to track.
+   */
+  readonly metricType: FleetScalingMetricType;
+
+  /**
+   * The target value for the metric.
+   *
+   * Must be between 0 and 100 (inclusive).
+   */
+  readonly targetValue: number;
+}
+
+/**
+ * The scaling configuration for a fleet.
+ */
+export interface FleetScalingConfiguration {
+  /**
+   * The maximum number of instances in the fleet when auto-scaling.
+   *
+   * Must be at least 1 and greater than or equal to `baseCapacity`.
+   */
+  readonly maxCapacity: number;
+
+  /**
+   * The scaling type.
+   *
+   * @default FleetScalingType.TARGET_TRACKING_SCALING
+   */
+  readonly scalingType?: FleetScalingType;
+
+  /**
+   * A list of target tracking scaling configurations.
+   *
+   * Must contain at least one entry when `scalingType` is `TARGET_TRACKING_SCALING`.
+   */
+  readonly targetTrackingScalingConfigs: FleetTargetTrackingScalingConfiguration[];
+}
+
+/**
+ * The default behavior for a fleet proxy when no ordered proxy rules match.
+ *
+ * This controls what happens to traffic that does not match any of the
+ * `orderedProxyRules` in the proxy configuration.
+ */
+export enum FleetProxyRuleBehavior {
+  /**
+   * Allow all traffic that does not match any proxy rule.
+   */
+  ALLOW_ALL = 'ALLOW_ALL',
+
+  /**
+   * Deny all traffic that does not match any proxy rule.
+   */
+  DENY_ALL = 'DENY_ALL',
+}
+
+/**
+ * The effect of an individual fleet proxy rule.
+ *
+ * This controls whether traffic matching a specific rule is allowed or denied.
+ * Rules are evaluated in order; the first matching rule's effect is applied.
+ */
+export enum FleetProxyRuleEffect {
+  /**
+   * Allow traffic matching this rule.
+   */
+  ALLOW = 'ALLOW',
+
+  /**
+   * Deny traffic matching this rule.
+   */
+  DENY = 'DENY',
+}
+
+/**
+ * The type of a fleet proxy rule.
+ */
+export enum FleetProxyRuleType {
+  /**
+   * Match by domain name.
+   */
+  DOMAIN = 'DOMAIN',
+
+  /**
+   * Match by IP address or CIDR.
+   */
+  IP = 'IP',
+}
+
+/**
+ * A proxy rule for a fleet.
+ */
+export interface FleetProxyRule {
+  /**
+   * The effect of this rule.
+   */
+  readonly effect: FleetProxyRuleEffect;
+
+  /**
+   * The entities to match (domains or IPs).
+   *
+   * Must contain at least one entity.
+   */
+  readonly entities: string[];
+
+  /**
+   * The type of rule.
+   */
+  readonly type: FleetProxyRuleType;
+}
+
+/**
+ * Proxy configuration for a fleet.
+ */
+export interface FleetProxyConfiguration {
+  /**
+   * The default behavior when no proxy rules match.
+   */
+  readonly defaultBehavior: FleetProxyRuleBehavior;
+
+  /**
+   * An ordered list of proxy rules.
+   *
+   * @default - no proxy rules
+   */
+  readonly orderedProxyRules?: FleetProxyRule[];
 }
 
 /**
@@ -214,6 +416,7 @@ export interface IFleet extends IResource, iam.IGrantable, ec2.IConnectable, IFl
  *
  * You will be charged for the resources in the fleet, even if they are idle.
  *
+ * @stateless
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
  */
 @propertyInjectable
@@ -346,8 +549,22 @@ export class Fleet extends Resource implements IFleet {
       }
     }
 
-    if ((props.baseCapacity ?? 1) < 1) {
+    if (!Token.isUnresolved(props.baseCapacity) && (props.baseCapacity ?? 1) < 1) {
       throw new ValidationError(lit`BaseCapacityGreaterEqual`, 'baseCapacity must be greater than or equal to 1', this);
+    }
+
+    const ec2EnvironmentTypes = [
+      EnvironmentType.LINUX_EC2,
+      EnvironmentType.ARM_EC2,
+      EnvironmentType.WINDOWS_EC2,
+      EnvironmentType.MAC_ARM,
+    ];
+    if (props.image !== undefined && !ec2EnvironmentTypes.includes(props.environmentType)) {
+      throw new ValidationError(
+        lit`ImageRequiresEc2Environment`,
+        `image is only supported for EC2-based environment types (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM), got: ${props.environmentType}`,
+        this,
+      );
     }
 
     let computeConfiguration: CfnFleet.ComputeConfigurationProperty | undefined;
@@ -398,7 +615,63 @@ export class Fleet extends Resource implements IFleet {
       throw new ValidationError(lit`ComputeConfigurationSpecifiedComputeType`, `computeConfiguration can only be specified if computeType is ATTRIBUTE_BASED or CUSTOM_INSTANCE_TYPE, got: ${props.computeType}`, this);
     }
 
+    if (props.scalingConfiguration) {
+      if (!Token.isUnresolved(props.scalingConfiguration.maxCapacity) && props.scalingConfiguration.maxCapacity < 1) {
+        throw new ValidationError(lit`ScalingMaxCapacityGreaterEqual`, 'scalingConfiguration.maxCapacity must be greater than or equal to 1', this);
+      }
+      if (!Token.isUnresolved(props.scalingConfiguration.maxCapacity)
+        && !Token.isUnresolved(props.baseCapacity)
+        && props.scalingConfiguration.maxCapacity < props.baseCapacity) {
+        throw new ValidationError(lit`ScalingMaxCapacityGreaterEqualBase`, 'scalingConfiguration.maxCapacity must be greater than or equal to baseCapacity', this);
+      }
+      const effectiveScalingType = props.scalingConfiguration.scalingType ?? FleetScalingType.TARGET_TRACKING_SCALING;
+      if (effectiveScalingType === FleetScalingType.TARGET_TRACKING_SCALING
+        && !Token.isUnresolved(props.scalingConfiguration.targetTrackingScalingConfigs)
+        && props.scalingConfiguration.targetTrackingScalingConfigs.length === 0) {
+        throw new ValidationError(lit`TargetTrackingScalingConfigsRequired`, 'At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING', this);
+      }
+      for (const config of props.scalingConfiguration.targetTrackingScalingConfigs) {
+        if (!Token.isUnresolved(config.targetValue) && (config.targetValue < 0 || config.targetValue > 100)) {
+          throw new ValidationError(lit`TargetValueOutOfRange`, `targetValue must be between 0 and 100 (inclusive), got: ${config.targetValue}`, this);
+        }
+      }
+    }
+
+    if (props.proxyConfiguration) {
+      // proxyConfiguration is only supported for Linux container-based environment types.
+      // Windows containers and all EC2-based types are not supported.
+      // Tested via CFN deploy: service returns "Proxy configuration is not supported for {type}"
+      const proxyAllowedEnvironmentTypes = [
+        EnvironmentType.LINUX_CONTAINER,
+        EnvironmentType.ARM_CONTAINER,
+        EnvironmentType.LINUX_GPU_CONTAINER,
+      ];
+      if (!proxyAllowedEnvironmentTypes.includes(props.environmentType)) {
+        throw new ValidationError(
+          lit`ProxyConfigurationRequiresLinuxContainer`,
+          `proxyConfiguration is only supported for Linux container environment types (LINUX_CONTAINER, ARM_CONTAINER, LINUX_GPU_CONTAINER), got: ${props.environmentType}`,
+          this,
+        );
+      }
+      // proxyConfiguration is not supported when VPC is configured.
+      // Per AWS docs: "running reserved capacity fleets in a managed proxy server is not supported for VPC"
+      // CFN accepts the combination but builds fail at PROVISIONING with CLIENT_ERROR.
+      if (props.vpc) {
+        throw new ValidationError(
+          lit`ProxyConfigurationNotSupportedWithVpc`,
+          'proxyConfiguration is not supported when vpc is configured. The managed proxy feature requires fleets to run without VPC.',
+          this,
+        );
+      }
+      for (const rule of props.proxyConfiguration.orderedProxyRules ?? []) {
+        if (!Token.isUnresolved(rule.entities) && rule.entities.length === 0) {
+          throw new ValidationError(lit`ProxyRuleEntitiesRequired`, 'Each proxy rule must have at least one entity', this);
+        }
+      }
+    }
+
     const vpcConfiguration = this.configureVpc(props);
+    const imageConfiguration = this.configureImage(props);
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
@@ -408,6 +681,25 @@ export class Fleet extends Resource implements IFleet {
       computeConfiguration,
       fleetVpcConfig: vpcConfiguration?.fleetVpcConfig,
       fleetServiceRole: this.role?.roleArn,
+      imageId: imageConfiguration?.imageId,
+      scalingConfiguration: props.scalingConfiguration ? {
+        maxCapacity: props.scalingConfiguration.maxCapacity,
+        scalingType: props.scalingConfiguration.scalingType ?? FleetScalingType.TARGET_TRACKING_SCALING,
+        // Explicit mapping to pin the shape against future L1 drift
+        targetTrackingScalingConfigs: props.scalingConfiguration.targetTrackingScalingConfigs.map(config => ({
+          metricType: config.metricType,
+          targetValue: config.targetValue,
+        })),
+      } : undefined,
+      fleetProxyConfiguration: props.proxyConfiguration ? {
+        defaultBehavior: props.proxyConfiguration.defaultBehavior,
+        // Explicit mapping to pin the shape against future L1 drift
+        orderedProxyRules: props.proxyConfiguration.orderedProxyRules?.map(rule => ({
+          effect: rule.effect,
+          entities: rule.entities,
+          type: rule.type,
+        })),
+      } : undefined,
     });
 
     if (vpcConfiguration) {
@@ -415,6 +707,10 @@ export class Fleet extends Resource implements IFleet {
       // to create network interfaces as a part of creation, if there is a VPC
       // config.
       resource.node.addDependency(...vpcConfiguration.policyDependables);
+    }
+    if (imageConfiguration) {
+      // The AMI permissions must exist before the fleet launches instances.
+      resource.node.addDependency(...imageConfiguration.policyDependables);
     }
     if (props.vpc) {
       // Similarly, we should not try to create the fleet until all the
@@ -432,6 +728,25 @@ export class Fleet extends Resource implements IFleet {
     if (value !== undefined && !Token.isUnresolved(value) && (value < 0 || !Number.isInteger(value))) {
       throw new ValidationError(lit`MustBePositiveInteger`, `${fieldName} must be a positive integer, got: ${value}`, this);
     }
+  }
+
+  private configureImage(props: FleetProps): { imageId: string; policyDependables: Array<IDependable> } | undefined {
+    if (!props.image) {
+      return undefined;
+    }
+    const { imageId, isCustomAmi } = props.image._bind(this);
+    const policyDependables: Array<IDependable> = [];
+    if (isCustomAmi) {
+      // https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
+      const addResult = this.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['ec2:DescribeImages', 'ec2:DescribeSnapshots'],
+        resources: ['*'],
+      }));
+      if (addResult.policyDependable) {
+        policyDependables.push(addResult.policyDependable);
+      }
+    }
+    return { imageId, policyDependables };
   }
 
   private configureVpc(props: FleetProps): { fleetVpcConfig: CfnFleet.VpcConfigProperty; policyDependables: Array<IDependable> } | undefined {
@@ -459,9 +774,34 @@ export class Fleet extends Resource implements IFleet {
     // account, so this is a kind of cross-account permissions grant that needs
     // `ec2:CreateNetworkInterfacePermission`.
     // https://docs.aws.amazon.com/codebuild/latest/userguide/auth-and-access-control-iam-identity-based-access-control.html#customer-managed-policies-example-create-vpc-network-interface
-    const { subnetIds } = props.vpc.selectSubnets(props.subnetSelection);
+
+    // Reserved capacity fleets support only one subnet in a single Availability Zone.
+    // https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.reserved-capacity-fleets.html
+    //
+    // If the selection resolves to multiple subnets, we narrow to the first one and warn
+    // instead of throwing, so apps that pin a subnet via an L1 override of
+    // FleetVpcConfig.Subnets keep synthesizing.
+
+    const originalSubnets = props.vpc.selectSubnets(props.subnetSelection);
+    let selectedSubnets = originalSubnets;
+
+    // Skip narrowing during pending lookup. A tokenized subnet list
+    // always has length 1, so the length check already excludes it.
+    if (!selectedSubnets.isPendingLookup && selectedSubnets.subnetIds.length > 1) {
+      const source = props.subnetSelection === undefined ? 'the default subnet selection' : 'subnetSelection';
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed',
+        `Reserved capacity fleets support only one subnet, but ${source} resolves to ${selectedSubnets.subnetIds.length} subnets; ` +
+        `using ${selectedSubnets.subnets[0].node.path}. Pass subnetSelection with a single subnet to suppress this warning.`);
+      selectedSubnets = props.vpc.selectSubnets({ subnets: [selectedSubnets.subnets[0]] });
+    }
+
+    // FleetVpcConfig.Subnets uses the narrowed selection (one subnet).
+    // subnetArns for the IAM condition uses the original selection so existing
+    // stacks that override FleetVpcConfig.Subnets on the L1 keep their IAM unchanged.
+    const { subnetIds } = selectedSubnets;
+    const originalSubnetIds = originalSubnets.subnetIds;
     const networkInterfaceArn = Arn.format({ service: 'ec2', resource: 'network-interface', resourceName: '*' }, this.stack);
-    const subnetArns = subnetIds.map((subnetId) =>
+    const subnetArns = originalSubnetIds.map((subnetId) =>
       Arn.format({ service: 'ec2', resource: 'subnet', resourceName: subnetId }, this.stack),
     );
     const policyDependables: Array<IDependable> = [];
@@ -603,4 +943,78 @@ export enum FleetOverflowBehavior {
    * Overflow builds run on CodeBuild on-demand instances.
    */
   ON_DEMAND = 'ON_DEMAND',
+}
+
+/**
+ * The image used by the instances of a CodeBuild Fleet.
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
+ */
+export class FleetImage {
+  /**
+   * An image managed by CodeBuild.
+   *
+   * For a custom AMI, use `fromAmiId` or `fromMachineImage` instead.
+   *
+   * @param id The CodeBuild image identifier
+   * @example 'aws/codebuild/macos-arm-base:26'
+   */
+  public static fromCodeBuildImageId(id: string): FleetImage {
+    if (!Token.isUnresolved(id) && id.startsWith('ami-')) {
+      throw new UnscopedValidationError(
+        lit`FleetImageAmiIdNotCodeBuildImage`,
+        `fromCodeBuildImageId expects a CodeBuild image identifier, got AMI ID ${JSON.stringify(id)}; use FleetImage.fromAmiId() for custom AMIs`,
+      );
+    }
+    return new FleetImage(() => id, false);
+  }
+
+  /**
+   * A custom AMI.
+   *
+   * The AMI must:
+   * - match the architecture of the fleet's environment type
+   *   (MAC_ARM: Mac-Arm, LINUX_EC2 and WINDOWS_EC2: x86_64, ARM_EC2: Arm64)
+   * - allow the CodeBuild service Organization ARN of the region
+   * - if encrypted with a KMS key, have a key policy that allows the CodeBuild service Organization ID
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
+   *
+   * @param amiId The AMI ID
+   * @example 'ami-0123456789abcdef0'
+   */
+  public static fromAmiId(amiId: string): FleetImage {
+    return new FleetImage(() => amiId, true);
+  }
+
+  /**
+   * A custom AMI from an EC2 machine image.
+   *
+   * Only the AMI ID of the machine image is used. Its OS type and user data are ignored.
+   *
+   * The AMI must:
+   * - match the architecture of the fleet's environment type
+   *   (MAC_ARM: Mac-Arm, LINUX_EC2 and WINDOWS_EC2: x86_64, ARM_EC2: Arm64)
+   * - allow the CodeBuild service Organization ARN of the region
+   * - if encrypted with a KMS key, have a key policy that allows the CodeBuild service Organization ID
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami
+   *
+   * @param machineImage The machine image, for example `ec2.MachineImage.latestAmazonLinux2023()`
+   */
+  public static fromMachineImage(machineImage: ec2.IMachineImage): FleetImage {
+    return new FleetImage((scope) => machineImage.getImage(scope).imageId, true);
+  }
+
+  private constructor(
+    private readonly produceImageId: (scope: Construct) => string,
+    private readonly isCustomAmi: boolean,
+  ) {}
+
+  /**
+   * @internal
+   */
+  public _bind(scope: Construct): { imageId: string; isCustomAmi: boolean } {
+    return { imageId: this.produceImageId(scope), isCustomAmi: this.isCustomAmi };
+  }
 }

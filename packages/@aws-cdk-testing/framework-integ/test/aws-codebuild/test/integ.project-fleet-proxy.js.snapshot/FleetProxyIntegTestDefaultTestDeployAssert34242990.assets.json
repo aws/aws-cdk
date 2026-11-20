@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "5dd2b29a7fd296e5c951bda69ccdd3f794ffb74df10ae9999d512f601ec5922d": {
+      "source": {
+        "path": "asset.5dd2b29a7fd296e5c951bda69ccdd3f794ffb74df10ae9999d512f601ec5922d.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-934340d4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5dd2b29a7fd296e5c951bda69ccdd3f794ffb74df10ae9999d512f601ec5922d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "7ff0c358246d7d00a9b69970de444a0ffdda2eae2d5d50cd9dd7b2f7d31f18eb": {
+      "displayName": "FleetProxyIntegTestDefaultTestDeployAssert34242990 Template",
+      "source": {
+        "path": "FleetProxyIntegTestDefaultTestDeployAssert34242990.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7c160143": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7ff0c358246d7d00a9b69970de444a0ffdda2eae2d5d50cd9dd7b2f7d31f18eb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

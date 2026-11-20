@@ -624,6 +624,88 @@ const fleet = new codebuild.Fleet(this, 'MyFleet', {
 });
 ```
 
+### Fleet image
+
+You can specify the image for your fleet instances using the `image` property.
+This is only supported for EC2-based environment types.
+
+Use `FleetImage.fromCodeBuildImageId()` for an image managed by CodeBuild,
+for example to control the OS version on macOS fleets:
+
+```ts
+const fleet = new codebuild.Fleet(this, 'MacFleet', {
+  computeType: codebuild.FleetComputeType.LARGE,
+  environmentType: codebuild.EnvironmentType.MAC_ARM,
+  baseCapacity: 1,
+  image: codebuild.FleetImage.fromCodeBuildImageId(codebuild.MacBuildImage.BASE_26.imageId),
+});
+```
+
+Use `FleetImage.fromMachineImage()` or `FleetImage.fromAmiId()` for a custom AMI.
+The fleet service role is granted `ec2:DescribeImages` and `ec2:DescribeSnapshots`,
+and a role is created if you don't pass one. The AMI must match the architecture of the
+environment type and be shared with the CodeBuild service organization of the region.
+If the AMI is encrypted with a KMS key, the key policy must allow the CodeBuild service
+Organization ID. `FleetImage.fromMachineImage()` only uses the AMI ID of the machine image.
+See [custom AMI for a reserved capacity fleet](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html#fleets.custom-ami).
+
+```ts
+const fleet = new codebuild.Fleet(this, 'CustomAmiFleet', {
+  computeType: codebuild.FleetComputeType.SMALL,
+  environmentType: codebuild.EnvironmentType.LINUX_EC2,
+  baseCapacity: 1,
+  image: codebuild.FleetImage.fromMachineImage(ec2.MachineImage.latestAmazonLinux2023()),
+});
+```
+
+### Fleet auto-scaling
+
+You can configure auto-scaling for your fleet using the `scalingConfiguration` property.
+This allows the fleet to automatically scale up to handle increased build demand.
+
+For more information, see [Working with reserved capacity in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.reserved-capacity-fleets.html) in the CodeBuild documentation.
+
+```ts
+const fleet = new codebuild.Fleet(this, 'ScalingFleet', {
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  scalingConfiguration: {
+    maxCapacity: 5,
+    scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+    targetTrackingScalingConfigs: [{
+      metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+      targetValue: 80,
+    }],
+  },
+});
+```
+
+### Fleet proxy configuration
+
+You can apply network access control to your fleet instances using the `proxyConfiguration` property.
+Proxy configuration is only supported for Linux container environment types (LINUX_CONTAINER,
+ARM_CONTAINER, LINUX_GPU_CONTAINER). It is not supported for Windows containers, EC2-based environment types,
+or fleets placed in a VPC.
+
+For more information, see [Use AWS CodeBuild with a managed proxy server](https://docs.aws.amazon.com/codebuild/latest/userguide/run-codebuild-in-managed-proxy-server.html) in the CodeBuild documentation.
+
+```ts
+const fleet = new codebuild.Fleet(this, 'ProxyFleet', {
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  baseCapacity: 1,
+  proxyConfiguration: {
+    defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY_ALL,
+    orderedProxyRules: [{
+      effect: codebuild.FleetProxyRuleEffect.ALLOW,
+      entities: ['*.amazonaws.com'],
+      type: codebuild.FleetProxyRuleType.DOMAIN,
+    }],
+  },
+});
+```
+
 ### Fleet overflow behavior
 
 When your builds exceed the capacity of your fleet, you can specify how CodeBuild should handle the overflow builds by setting the `overflowBehavior` property:
@@ -645,20 +727,35 @@ The available overflow behaviors are:
 Note: If you set overflow behavior to `ON_DEMAND` for a VPC-connected fleet, ensure your VPC settings allow access to public AWS services.
 
 ### VPCs
+
 The same considerations that apply to [Project
 VPCs](#definition-of-vpc-configuration-in-codebuild-project) also apply to Fleet
 VPCs.  When using a Fleet in a CodeBuild Project, it is an error to configure a
 VPC on the Project. Configure a VPC on the fleet instead.
 
+Reserved capacity fleets support only one subnet in a single Availability Zone.
+If your `subnetSelection` (or the default selection) resolves to multiple subnets,
+the construct uses the first subnet and emits the warning
+`@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed`. Pass a selection that resolves to a
+single subnet to choose it explicitly. If you pin the subnet with an L1 override of
+`FleetVpcConfig.Subnets` instead, suppress the warning with
+`Annotations.of(fleet).acknowledgeWarning('@aws-cdk/aws-codebuild:fleetSubnetAutoNarrowed')`.
+
+The fleet's IAM policy restricts `ec2:CreateNetworkInterfacePermission` to all
+subnets of your selection, including the ones that are not used after narrowing.
+Pass `subnetSelection: { subnets: [subnet] }` to limit the permission to that subnet.
+
 ```ts
 declare const loadBalancer: elbv2.ApplicationLoadBalancer;
 
 const vpc = new ec2.Vpc(this, 'MyVPC');
-const fleet = new codebuild.Fleet(this, 'MyProject', {
+const fleet = new codebuild.Fleet(this, 'MyFleet', {
   computeType: codebuild.FleetComputeType.MEDIUM,
   environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
   baseCapacity: 1,
   vpc,
+  // Optional: explicitly select a single subnet
+  // subnetSelection: { subnets: [vpc.privateSubnets[0]] },
 });
 
 fleet.connections.allowTo(loadBalancer, ec2.Port.tcp(443));
