@@ -1,0 +1,56 @@
+{
+  "/core-removal-policy-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "core-removal-policy-stack.template.json"
+    }
+  ],
+  "/core-removal-policy-stack/BothAttributesBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/core-removal-policy-stack/DeletionPolicyOnlyBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/core-removal-policy-stack/WithDefaultBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/core-removal-policy-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/core-removal-policy-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/core-removal-policy-stack/BothAttributesBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BothAttributesBucket7BC3AF23"
+    }
+  ],
+  "/core-removal-policy-stack/DeletionPolicyOnlyBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeletionPolicyOnlyBucket489D9176"
+    }
+  ],
+  "/core-removal-policy-stack/WithDefaultBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WithDefaultBucket61D3F672"
+    }
+  ]
+}
