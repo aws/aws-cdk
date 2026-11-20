@@ -17,7 +17,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       case 'Update':
         const oldProps: ExportWriterCRProps = event.OldResourceProperties.WriterProps;
         const oldExports = oldProps.exports as CrossRegionExports;
-        const newExports = except(exports, oldExports);
+        const newExports = changedOrNew(exports, oldExports);
 
         // delete removed exports
         const removedExports = except(oldExports, exports);
@@ -75,6 +75,22 @@ async function deleteParameters(ssm: SSM, names: string[]) {
       });
     }
   }
+}
+
+/**
+ * Return the items from source that do not exist in the filter or whose value differs
+ *
+ * @param source the source object to perform the filter on
+ * @param filter filter out items that exist in this object with the same value
+ * @returns any exports that are new or changed compared to the filter
+ */
+function changedOrNew(source: CrossRegionExports, filter: CrossRegionExports): CrossRegionExports {
+  return Object.keys(source)
+    .filter(key => (!filter.hasOwnProperty(key) || filter[key] !== source[key]))
+    .reduce((acc: CrossRegionExports, curr: string) => {
+      acc[curr] = source[curr];
+      return acc;
+    }, {});
 }
 
 /**
