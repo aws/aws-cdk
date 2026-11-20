@@ -150,6 +150,82 @@ describe('CrossRegionInferenceProfile', () => {
     });
   });
 
+  describe('grantProfileUsage', () => {
+    test('generates two statements: inference-profile (source) and foundation-model (wildcard region with condition)', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.US,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'ProfileUsageRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+
+      expect(statements).toHaveLength(2);
+
+      // Find statements by their distinguishing characteristics (order-independent)
+      const profileStatement = statements.find((s: any) =>
+        Array.isArray(s.Action) && s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+      const fmStatement = statements.find((s: any) => s.Condition);
+
+      // Statement 1: inference-profile in source region
+      expect(profileStatement).toBeDefined();
+      expect(profileStatement.Action).toEqual(['bedrock:GetInferenceProfile', 'bedrock:InvokeModel*']);
+      expect(profileStatement.Effect).toBe('Allow');
+      const profileResource = JSON.stringify(profileStatement.Resource);
+      expect(profileResource).toContain('inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0');
+      expect(profileResource).toContain('AWS::Region');
+
+      // Statement 2: foundation-model with wildcard region + condition
+      expect(fmStatement).toBeDefined();
+      expect(fmStatement.Action).toBe('bedrock:InvokeModel*');
+      expect(fmStatement.Effect).toBe('Allow');
+      const fmResource = JSON.stringify(fmStatement.Resource);
+      expect(fmResource).toContain(':bedrock:*::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0');
+      expect(fmStatement.Condition.StringEquals).toBeDefined();
+      expect(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']).toBeDefined();
+      const conditionValue = JSON.stringify(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']);
+      expect(conditionValue).toContain('inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0');
+    });
+
+    test('condition ties foundation-model grant to the specific inference profile', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.EU,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'ConditionRole', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+
+      const fmStatement = statements.find((s: any) => s.Condition);
+      expect(fmStatement).toBeDefined();
+
+      // The condition must reference the EU inference profile specifically
+      const conditionValue = JSON.stringify(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']);
+      expect(conditionValue).toContain('inference-profile/eu.anthropic.claude-3-5-sonnet-20240620-v1:0');
+      // The foundation-model resource must NOT be region-specific (wildcard)
+      const fmResource = JSON.stringify(fmStatement.Resource);
+      expect(fmResource).toContain(':bedrock:*::foundation-model/');
+      expect(fmResource).not.toContain('us-east-1');
+    });
+  });
+
   describe('region mapping', () => {
     test('REGION_TO_GEO_AREA contains correct mappings', () => {
       expect(bedrockAlpha.REGION_TO_GEO_AREA['us-east-1']).toBe(bedrockAlpha.CrossRegionInferenceProfileRegion.US);
