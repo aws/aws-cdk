@@ -35,7 +35,7 @@ export interface ITaskDefinition extends IResource, ITaskDefinitionRef {
   /**
    * Execution role for this task definition
    */
-  readonly executionRole?: iam.IRole;
+  readonly executionRole?: iam.IRole | undefined;
 
   /**
    * What launch types this task definition should be compatible with.
@@ -309,7 +309,7 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
   public abstract readonly taskRole: iam.IRole;
-  public abstract readonly executionRole?: iam.IRole;
+  public abstract readonly executionRole?: iam.IRole | undefined;
 
   /**
    * A reference to this task definition.

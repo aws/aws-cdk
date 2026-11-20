@@ -116,7 +116,7 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    * Agent addon. If the addon has not been created yet, it will be created and
    * returned.
    */
-  readonly eksPodIdentityAgent?: IAddon;
+  readonly eksPodIdentityAgent?: IAddon | undefined;
 
   /**
    * Specify which IP family is used to assign Kubernetes pod and service IP addresses.
@@ -139,7 +139,7 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
    *
    * If not defined, a default provider will be used
    */
-  readonly kubectlProvider?: IKubectlProvider;
+  readonly kubectlProvider?: IKubectlProvider | undefined;
 
   /**
    * Indicates whether Kubernetes resources can be automatically pruned. When

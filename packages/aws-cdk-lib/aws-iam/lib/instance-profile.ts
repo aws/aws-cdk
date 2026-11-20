@@ -29,7 +29,7 @@ export interface IInstanceProfile extends IResource, IInstanceProfileRef {
   /**
    * The role associated with the InstanceProfile.
    */
-  readonly role?: IRole;
+  readonly role?: IRole | undefined;
 }
 
 /**

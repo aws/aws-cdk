@@ -69,7 +69,7 @@ export interface IJobQueue extends IResource, IJobQueueRef {
    *
    * @default - no scheduling policy
    */
-  readonly schedulingPolicy?: ISchedulingPolicy;
+  readonly schedulingPolicy?: ISchedulingPolicy | undefined;
 
   /**
    * Add a `ComputeEnvironment` to this Queue.

@@ -172,7 +172,7 @@ export interface ICatalog extends IResource, ICatalogRef {
    * access to it via `KeyGrants`, e.g.
    * `if (catalog.encryptionKey) { KeyGrants.fromKey(catalog.encryptionKey).encrypt(grantee); }`.
    */
-  readonly encryptionKey?: kms.IKeyRef;
+  readonly encryptionKey?: kms.IKeyRef | undefined;
 
   /**
    * The customer-managed KMS key used to encrypt connection passwords, if one
@@ -182,7 +182,7 @@ export interface ICatalog extends IResource, ICatalogRef {
    * configured. Grant access to it via `KeyGrants`, e.g.
    * `if (catalog.connectionPasswordKey) { KeyGrants.fromKey(catalog.connectionPasswordKey).encrypt(grantee); }`.
    */
-  readonly connectionPasswordKey?: kms.IKeyRef;
+  readonly connectionPasswordKey?: kms.IKeyRef | undefined;
 }
 
 /**
