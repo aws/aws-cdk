@@ -10,7 +10,7 @@ import * as ec2 from '../../../../aws-ec2';
 import * as iam from '../../../../aws-iam';
 import { Stack, Token, UnscopedValidationError } from '../../../../core';
 import { lit } from '../../../../core/lib/private/literal-string';
-import { posixShellEscape } from '../../../../core/lib/private/shell-escape';
+import { posixShellEscape, powershellEscape } from '../../../../core/lib/private/shell-escape';
 import type { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';
@@ -375,21 +375,26 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
  * Generate commands to move additional input artifacts into the right place
  */
 function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileSetLocation[]): string[] {
-  return inputs.map(input => {
-    const fragments = [];
+  return inputs.flatMap(input => {
+    const directory = input.directory;
+    const parentDirectory = path.dirname(directory);
+    const hasParent = !['.', '..'].includes(parentDirectory);
+    const variable = `CODEBUILD_SRC_DIR_${artifacts.toCodePipeline(input.fileSet).artifactName}`;
+    const existsMessage = `additionalInputs: "${directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.`;
 
-    fragments.push(`[ ! -d ${posixShellEscape(input.directory)} ] || { echo ${posixShellEscape(`additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.`)}; exit 1; }`);
+    const linux = [
+      `[ ! -d ${posixShellEscape(directory)} ] || { echo ${posixShellEscape(existsMessage)}; exit 1; }`,
+      ...hasParent ? [`mkdir -p -- ${posixShellEscape(parentDirectory)}`] : [],
+      `ln -s -- "$${variable}" ${posixShellEscape(directory)}`,
+    ];
 
-    const parentDirectory = path.dirname(input.directory);
-    if (!['.', '..'].includes(parentDirectory)) {
-      fragments.push(`mkdir -p -- ${posixShellEscape(parentDirectory)}`);
-    }
+    const windows = [
+      `if (Test-Path -LiteralPath ${powershellEscape(directory)}) { throw ${powershellEscape(existsMessage)} }`,
+      ...hasParent ? [`New-Item -ItemType Directory -Force -Path ${powershellEscape(parentDirectory)} -ErrorAction Stop`] : [],
+      `New-Item -ItemType SymbolicLink -Path ${powershellEscape(directory)} -Target $env:${variable} -ErrorAction Stop`,
+    ];
 
-    const artifact = artifacts.toCodePipeline(input.fileSet);
-
-    fragments.push(`ln -s -- "$CODEBUILD_SRC_DIR_${artifact.artifactName}" ${posixShellEscape(input.directory)}`);
-
-    return fragments.join(' && ');
+    return [`!LINUX!${linux.join(' && ')}`, `!WINDOWS!try { ${windows.join('; ')} } catch { Write-Output $_; exit 1 }`];
   });
 }
 
