@@ -719,6 +719,23 @@ const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'Google', {
 });
 ```
 
+The OpenID Connect identity provider also accepts the client secret as a `SecretValue` through `clientSecretValue`,
+for example to reference a secret stored in Secrets Manager.
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+const secret = secretsmanager.Secret.fromSecretAttributes(this, "OidcClientSecret", {
+  secretCompleteArn: "arn:aws:secretsmanager:xxx:xxx:secret:xxx-xxx"
+}).secretValue
+
+new cognito.UserPoolIdentityProviderOidc(this, 'Oidc', {
+  userPool: userpool,
+  clientId: 'oidc-client-id',
+  clientSecretValue: secret,
+  issuerUrl: 'https://my-issuer-url.com',
+});
+```
+
 Using SAML identity provider is possible to use SAML metadata file content or SAML metadata file url.
 
 ```ts
