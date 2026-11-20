@@ -122,6 +122,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps](#aws-cdkaws-cloudfrontdefaultviewerprotocolpolicyredirecttohttps) | Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS | 2.273.0 | new default |
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
+| [@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault](#aws-cdkaws-cloudfront-originsfunctionurlorigindualstackdefault) | Default Lambda Function URL origins to dual-stack IPv4/IPv6 | V2NEXT | new default |
 | [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | V2NEXT | fix |
 
 <!-- END table -->
@@ -143,6 +144,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
+    "@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
     "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
@@ -2663,6 +2665,33 @@ running executions finish first.
 | 2.275.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
+
+
+### @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault
+
+*Default Lambda Function URL origins to dual-stack IPv4/IPv6*
+
+Flag type: New default behavior
+
+When enabled, Lambda Function URL origins in CloudFront distributions will default to
+dual-stack IPv4/IPv6 connectivity instead of IPv4-only. This aligns with Lambda Function
+URLs' native dual-stack support and provides better connectivity options.
+
+When disabled, maintains the current IPv4-only default behavior for backward compatibility.
+
+Users can still explicitly set ipAddressType to override the default behavior.
+
+Enabling this flag in an existing app changes existing distributions in place: every Lambda
+Function URL origin without an explicit ipAddressType gets
+`CustomOriginConfig.IpAddressType: dualstack` on the next deployment.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.
 
 
 ### @aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName

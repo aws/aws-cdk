@@ -1,10 +1,10 @@
 import type { Construct } from 'constructs';
 import { validateMinimumSeconds } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
-import type { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
+import * as cxapi from '../../cx-api';
 
 /**
  * Properties for a Lambda Function URL Origin.
@@ -39,9 +39,9 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    *
    * If your origin uses both IPv4 and IPv6 protocols, you can choose dualstack to help optimize reliability.
    *
-   * @default OriginIpAddressType.IPV4
+   * @default - cloudfront.OriginIpAddressType.DUALSTACK when feature flag @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault is enabled, otherwise cloudfront.OriginIpAddressType.IPV4
    */
-  readonly ipAddressType?: OriginIpAddressType;
+  readonly ipAddressType?: cloudfront.OriginIpAddressType;
 }
 
 /**
@@ -73,6 +73,8 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
     return new FunctionUrlOriginWithOAC(lambdaFunctionUrl, props);
   }
 
+  private readonly ipAddressType?: cloudfront.OriginIpAddressType;
+
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, private readonly props: FunctionUrlOriginProps = {}) {
     // Lambda Function URL is of the form 'https://<lambda-id>.lambda-url.<region>.on.aws/'
     // No need to split URL as we do with REST API, the entire URL is needed
@@ -82,6 +84,8 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
     validateMinimumSeconds('readTimeout', 1, props.readTimeout);
     validateMinimumSeconds('keepaliveTimeout', 1, props.keepaliveTimeout);
     this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
+
+    this.ipAddressType = resolveIpAddressType(lambdaFunctionUrl, props.ipAddressType);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
@@ -90,7 +94,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
-      ipAddressType: this.props.ipAddressType,
+      ipAddressType: this.ipAddressType,
     };
   }
 }
@@ -102,6 +106,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
   private originAccessControl?: cloudfront.IOriginAccessControlRef;
   private functionUrl: lambda.IFunctionUrl;
   private readonly props: FunctionUrlOriginWithOACProps;
+  private readonly ipAddressType?: cloudfront.OriginIpAddressType;
 
   constructor(lambdaFunctionUrl: lambda.IFunctionUrl, props: FunctionUrlOriginWithOACProps = {}) {
     const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
@@ -113,6 +118,8 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
 
     validateMinimumSeconds('readTimeout', 1, props.readTimeout);
     validateMinimumSeconds('keepaliveTimeout', 1, props.keepaliveTimeout);
+
+    this.ipAddressType = resolveIpAddressType(lambdaFunctionUrl, props.ipAddressType);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
@@ -121,7 +128,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       originProtocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       originReadTimeout: this.props.readTimeout?.toSeconds(),
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
-      ipAddressType: this.props.ipAddressType,
+      ipAddressType: this.ipAddressType,
     };
   }
 
@@ -186,4 +193,24 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       throw new cdk.ValidationError(lit`FunctionUrlAuthTypeMustBeAwsIam`, 'The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.', scope);
     }
   }
+}
+
+/**
+ * Resolve the IP address type of a Lambda Function URL origin.
+ *
+ * The feature flag is read from the scope of the Function URL, because origins
+ * are constructed before they are bound to a distribution and have no scope of
+ * their own. The Function URL and the distribution normally live in the same
+ * app, so they see the same feature flag value.
+ */
+function resolveIpAddressType(
+  lambdaFunctionUrl: lambda.IFunctionUrl,
+  ipAddressType?: cloudfront.OriginIpAddressType,
+): cloudfront.OriginIpAddressType | undefined {
+  if (ipAddressType !== undefined) {
+    return ipAddressType;
+  }
+  return cdk.FeatureFlags.of(lambdaFunctionUrl).isEnabled(cxapi.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT)
+    ? cloudfront.OriginIpAddressType.DUALSTACK
+    : undefined;
 }

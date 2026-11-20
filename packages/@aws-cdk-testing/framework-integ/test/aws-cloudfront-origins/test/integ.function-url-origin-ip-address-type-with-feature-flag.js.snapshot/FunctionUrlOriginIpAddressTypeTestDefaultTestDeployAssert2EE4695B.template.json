@@ -1,0 +1,202 @@
+{
+ "Resources": {
+  "AwsApiCallCloudFrontgetDistribution8f9d08285e130ac6fb0aa9096e996dc1": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistribution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFront",
+    "api": "getDistribution",
+    "expected": "{\"$StringLike\":\"^dualstack$\"}",
+    "actualPath": "Distribution.DistributionConfig.Origins.Items.0.CustomOriginConfig.IpAddressType",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithoutIpAddressTypePropDualStack5FD049090515B694"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Distribution.DistributionConfig.Origins.Items.0.CustomOriginConfig.IpAddressType"
+    ],
+    "salt": "1795192487977"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudfront:GetDistribution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudfront:GetDistribution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "852a038988032374560acf545c7bf1b9e910c843d05308832b8cddfc0b4ef4dd.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallCloudFrontgetDistributionebc194746e7a8d510513842421f19e59": {
+   "Type": "Custom::DeployAssert@SdkCallCloudFrontgetDistribution",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudFront",
+    "api": "getDistribution",
+    "expected": "{\"$StringLike\":\"^dualstack$\"}",
+    "actualPath": "Distribution.DistributionConfig.Origins.Items.0.CustomOriginConfig.IpAddressType",
+    "parameters": {
+     "Id": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "FunctionUrlOriginIpAddressTypeStack:ExportsOutputRefDistributionWithoutIpAddressTypePropOacDualStack7C39838F87B73317"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Distribution.DistributionConfig.Origins.Items.0.CustomOriginConfig.IpAddressType"
+    ],
+    "salt": "1795192487978"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudFrontgetDistribution8f9d08285e130ac6fb0aa9096e996dc1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFrontgetDistribution8f9d08285e130ac6fb0aa9096e996dc1",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudFrontgetDistributionebc194746e7a8d510513842421f19e59": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudFrontgetDistributionebc194746e7a8d510513842421f19e59",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

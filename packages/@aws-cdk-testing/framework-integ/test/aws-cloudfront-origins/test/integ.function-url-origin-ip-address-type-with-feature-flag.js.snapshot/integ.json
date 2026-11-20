@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "FunctionUrlOriginIpAddressTypeTest/DefaultTest": {
+      "stacks": [
+        "FunctionUrlOriginIpAddressTypeStack"
+      ],
+      "assertionStack": "FunctionUrlOriginIpAddressTypeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FunctionUrlOriginIpAddressTypeTestDefaultTestDeployAssert2EE4695B"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

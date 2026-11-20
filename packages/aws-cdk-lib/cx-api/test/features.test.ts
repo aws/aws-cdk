@@ -57,6 +57,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.APIGATEWAY_LOG_GROUP_DESTINATION_ARN_WITHOUT_WILDCARD]: false,
     [feats.STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION]: true,
     [feats.IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: false,
+    [feats.CLOUDFRONT_ORIGINS_FUNCTION_URL_DUALSTACK_DEFAULT]: false,
 
   });
 });
