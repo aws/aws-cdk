@@ -160,6 +160,17 @@ The StackSet throws an error when it gets a target that doesn't match its permis
 A StackSet takes several targets through the `targets` property or `addTarget()`. Each target
 becomes one group of stack instances.
 
+```ts
+declare const stack: Stack;
+
+const usEast1Target = StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['111111111111'] });
+const euWest1Target = StackSetTarget.fromAccounts({ regions: ['eu-west-1'], accounts: ['222222222222'] });
+
+new StackSet(stack, 'StackSet', {
+  targets: [usEast1Target, euWest1Target],
+});
+```
+
 #### Deploying to individual accounts
 
 Deploying to individual accounts requires you to specify the account IDs. If you later want to deploy to additional accounts,
