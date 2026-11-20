@@ -956,6 +956,20 @@ const target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
 const rule = project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', target);
 ```
 
+Each resource can have at most 10 notification rules. Calls to `notifyOnXxx()` with the
+same `id` add their events and targets to one notification rule:
+
+```ts
+import * as chatbot from 'aws-cdk-lib/aws-chatbot';
+
+declare const project: codebuild.Project;
+declare const target: chatbot.SlackChannelConfiguration;
+
+// One notification rule for both events
+project.notifyOnBuildSucceeded('BuildNotifications', target);
+project.notifyOnBuildFailed('BuildNotifications', target);
+```
+
 ## Secondary sources and artifacts
 
 CodeBuild Projects can get their sources from multiple places, and produce

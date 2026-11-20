@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "f08d7b81885b5645f2fa4f74a6373b4c5e8658f54aa0a7a4d18d754377ccdf8a": {
+      "displayName": "aws-cdk-codebuild-project-notification-shared-rule Template",
+      "source": {
+        "path": "aws-cdk-codebuild-project-notification-shared-rule.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-54881614": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f08d7b81885b5645f2fa4f74a6373b4c5e8658f54aa0a7a4d18d754377ccdf8a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

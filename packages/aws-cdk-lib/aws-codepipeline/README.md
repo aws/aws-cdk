@@ -576,6 +576,25 @@ declare const pipeline: codepipeline.Pipeline;
 const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
 ```
 
+Each resource can have at most 10 notification rules. To keep the number of rules down,
+pass the same `id` to several `notifyOnXxx()` calls: the events and targets are added
+to one notification rule instead of creating a new rule for each call.
+
+```ts
+import * as chatbot from 'aws-cdk-lib/aws-chatbot';
+import * as sns from 'aws-cdk-lib/aws-sns';
+
+declare const pipeline: codepipeline.Pipeline;
+declare const slack: chatbot.SlackChannelConfiguration;
+declare const topic: sns.Topic;
+
+// One notification rule with the execution and manual approval events,
+// notifying both the Slack channel and the SNS topic
+pipeline.notifyOnExecutionStateChange('Notifications', slack);
+pipeline.notifyOnAnyManualApprovalStateChange('Notifications', slack);
+pipeline.notifyOnAnyManualApprovalStateChange('Notifications', topic);
+```
+
 ## Trigger
 
 To trigger a pipeline with Git tags or branches, specify the `triggers` property.
