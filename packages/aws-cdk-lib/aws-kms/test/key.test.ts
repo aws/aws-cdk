@@ -1,4 +1,5 @@
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
+import type { IConstruct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { ServicePrincipal } from '../../aws-iam';
@@ -1434,6 +1435,103 @@ describe('addToResourcePolicy allowNoOp and there is no policy', () => {
     expect(() => {
       key.addToResourcePolicy(new iam.PolicyStatement({ resources: ['*'], actions: ['*'] }), /* allowNoOp */ false);
     }).toThrow('Unable to add statement to IAM resource policy for KMS key: "arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012"');
+  });
+});
+
+describe('grant as a dependency', () => {
+  const KEY_POLICY = {
+    Version: '2012-10-17',
+    Statement: [{
+      Effect: 'Allow',
+      Principal: { AWS: 'arn:aws:iam::111122223333:root' },
+      Action: 'kms:*',
+      Resource: '*',
+    }],
+  };
+
+  function logicalIdOf(stack: cdk.Stack, construct: IConstruct): string {
+    return stack.getLogicalId(construct.node.defaultChild as cdk.CfnElement);
+  }
+
+  test('a grant on the key policy of a Key makes the dependent depend on the key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+    // WHEN
+    key.grantDecrypt(new iam.ServicePrincipal('sns.amazonaws.com')).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(stack, key)],
+    });
+  });
+
+  test('a grant through an alias makes the dependent depend on the key and its aliases', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const alias = key.addAlias('alias/my-key');
+    const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+    // WHEN
+    alias.grantDecrypt(new iam.ServicePrincipal('sns.amazonaws.com')).applyBefore(dependent);
+
+    // THEN
+    // DependsOn is sorted by construct path: Key/Alias comes before Key/Resource
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(stack, alias), logicalIdOf(stack, key)],
+    });
+  });
+
+  test('a grant on a CfnKey through KeyGrants makes the dependent depend on the key and the principal policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.CfnKey(stack, 'Key', { keyPolicy: KEY_POLICY });
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+    const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+    // WHEN
+    dependent.node.addDependency(KeyGrants.fromKey(key).decrypt(role));
+
+    // THEN
+    // DependsOn is sorted by construct path: Key comes before Role/DefaultPolicy
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [stack.getLogicalId(key), logicalIdOf(stack, role.node.findChild('DefaultPolicy'))],
+    });
+  });
+
+  test('a grant on the key policy of a Key imported with fromCfnKey() makes the dependent depend on the CfnKey', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const cfnKey = new kms.CfnKey(stack, 'Key', { keyPolicy: KEY_POLICY });
+    const key = kms.Key.fromCfnKey(cfnKey);
+    const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+    // WHEN
+    key.grantDecrypt(new iam.ServicePrincipal('sns.amazonaws.com')).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [stack.getLogicalId(cfnKey)],
+    });
+  });
+
+  test('a grant only on the principal policy does not make the dependent depend on the key', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'Key');
+    const role = new iam.Role(stack, 'Role', { assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com') });
+    const dependent = new cdk.CfnResource(stack, 'Dependent', { type: 'Test::Dependent' });
+
+    // WHEN
+    key.grantDecrypt(role).applyBefore(dependent);
+
+    // THEN
+    Template.fromStack(stack).hasResource('Test::Dependent', {
+      DependsOn: [logicalIdOf(stack, role.node.findChild('DefaultPolicy'))],
+    });
   });
 });
 

@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "KeyGrantDependencyIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-kms-key-grant-dependency"
+      ],
+      "assertionStack": "KeyGrantDependencyIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "KeyGrantDependencyIntegTestDefaultTestDeployAssertDCD7B54E"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

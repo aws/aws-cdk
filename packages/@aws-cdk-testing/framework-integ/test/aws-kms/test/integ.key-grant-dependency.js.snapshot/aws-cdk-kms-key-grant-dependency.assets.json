@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "cd8378f4ed8251943df2c97e423f4b07eeaf89f3d67ed01f266c7f3897d24069": {
+      "displayName": "aws-cdk-kms-key-grant-dependency Template",
+      "source": {
+        "path": "aws-cdk-kms-key-grant-dependency.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-959d103f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cd8378f4ed8251943df2c97e423f4b07eeaf89f3d67ed01f266c7f3897d24069.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
