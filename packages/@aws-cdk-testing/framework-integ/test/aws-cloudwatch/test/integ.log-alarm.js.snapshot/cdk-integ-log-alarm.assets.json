@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "822863fec446c7efb1920419a36558e51fb4aee00a42c656e278300c197f5b3f": {
+      "displayName": "cdk-integ-log-alarm Template",
+      "source": {
+        "path": "cdk-integ-log-alarm.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-967e0ea2": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "822863fec446c7efb1920419a36558e51fb4aee00a42c656e278300c197f5b3f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
