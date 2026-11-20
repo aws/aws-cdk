@@ -655,6 +655,47 @@ describe('NetworkLoadBalancedEc2Service', () => {
     });
   });
 
+  test('setting NLB dual-stack alias option creates A and AAAA records', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC', { ipProtocol: ec2.IpProtocol.DUAL_STACK });
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+    const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      domainName: 'api.example.com',
+      domainZone: zone,
+      recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.ALIAS_DUAL_STACK,
+      ipAddressType: IpAddressType.DUAL_STACK,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Route53::RecordSet', 2);
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'api.example.com.',
+      Type: 'A',
+    });
+    template.hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'api.example.com.',
+      Type: 'AAAA',
+    });
+  });
+
   test('NLB - throws if desiredTaskCount is 0', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -175,7 +175,7 @@ The CDK will create a new Amazon ECS cluster if you specify a VPC and omit `clus
 
 If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in two Availability Zones and a cluster within this VPC.
 
-If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
+If you specify the option `recordType`, you can choose a CNAME record, an A alias record, both A and AAAA alias records, or no DNS record.
 
 Additionally, if more than one network target group is needed, instantiate one of the following:
 
@@ -1265,15 +1265,24 @@ const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalance
 ### Network Load Balancer
 
 You can use dualstack Network Load Balancer for Fargate and EC2 services.
+For a custom domain on either pattern, set `recordType` to `NetworkLoadBalancedServiceRecordType.ALIAS_DUAL_STACK`
+to create both A and AAAA alias records. The load balancer must also use the dual-stack IP address type: set
+`ipAddressType` to `IpAddressType.DUAL_STACK` when the pattern creates the load balancer, or configure your own
+`loadBalancer` accordingly. If the load balancer uses `IpAddressType.IPV4`, CDK emits a synth-time warning because
+IPv6 clients cannot reach the service.
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as route53 from 'aws-cdk-lib/aws-route53';
 
 // The VPC and subnet must have associated IPv6 CIDR blocks.
 const vpc = new ec2.Vpc(this, 'Vpc', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
 });
 const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
+const hostedZone = route53.HostedZone.fromLookup(this, 'HostedZone', {
+  domainName: 'example.com',
+});
 
 const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'NlbFargateService', {
   cluster,
@@ -1282,6 +1291,9 @@ const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
   },
   minHealthyPercent: 100,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  domainName: 'api.example.com',
+  domainZone: hostedZone,
+  recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.ALIAS_DUAL_STACK,
 });
 
 const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Service(this, 'NlbEc2Service', {
