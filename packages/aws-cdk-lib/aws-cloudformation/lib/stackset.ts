@@ -617,7 +617,7 @@ export interface StackSetProps {
   readonly stackSetName?: string;
 
   /**
-   * A description of the StackSet, also used as the description of its template
+   * A description of the StackSet resource
    *
    * @default - none
    */
@@ -1032,7 +1032,9 @@ export class StackSet extends Stack implements IStackSet {
       // The template is deployed to the accounts and regions targeted by the StackSet
       env: { account: Aws.ACCOUNT_ID, region: Aws.REGION },
       synthesizer,
-      description: props.description,
+      // With an external template, the StackSet's own template is never deployed, so it must
+      // not get the AWS::CDK::Metadata resource that version reporting adds to every stack
+      analyticsReporting: props.template ? false : undefined,
     });
     Object.defineProperty(this, STACK_SET_SYMBOL, { value: true });
 

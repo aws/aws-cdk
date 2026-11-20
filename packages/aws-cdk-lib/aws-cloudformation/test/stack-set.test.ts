@@ -1875,6 +1875,28 @@ describe('StackSetTemplate.fromAsset', () => {
 
     expect(() => app.synth()).toThrow(/a StackSet with a 'template' must not contain resources/);
   });
+
+  test('synthesizes with version reporting enabled', () => {
+    const app = new App({ context: { [cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT]: true } });
+    const stack = new Stack(app);
+    const stackSet = new StackSet(stack, 'StackSet', {
+      template: StackSetTemplate.fromUrl('https://s3.amazonaws.com/my-bucket/template.json'),
+    });
+
+    expect(() => app.synth()).not.toThrow();
+    expect(stackSet.node.tryFindChild('CDKMetadata')).toBeUndefined();
+  });
+
+  test('a StackSet that defines its own template gets version reporting', () => {
+    const app = new App({ context: { [cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT]: true } });
+    const stack = new Stack(app);
+    const stackSet = new StackSet(stack, 'StackSet');
+    new iam.Role(stackSet, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+    app.synth();
+
+    expect(stackSet.node.tryFindChild('CDKMetadata')).toBeDefined();
+  });
 });
 
 describe('StackSet placement', () => {
@@ -2049,13 +2071,22 @@ describe('StackSet environment', () => {
 });
 
 describe('StackSet description and tags', () => {
-  test('the description is the description of the StackSet and of its template', () => {
+  test('the description is the description of the StackSet, not of its template', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSet = new StackSet(stack, 'StackSet', { description: 'Security baseline' });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', { Description: 'Security baseline' });
-    expect(stackSetTemplateOf(stackSet).toJSON().Description).toEqual('Security baseline');
+    expect(stackSetTemplateOf(stackSet).toJSON().Description).toBeUndefined();
+  });
+
+  test('the description of its template is set with templateOptions', () => {
+    const app = new App();
+    const stack = new Stack(app);
+    const stackSet = new StackSet(stack, 'StackSet');
+    stackSet.templateOptions.description = 'Security baseline template';
+
+    expect(stackSetTemplateOf(stackSet).toJSON().Description).toEqual('Security baseline template');
   });
 
   test('tags of the StackSet are tags of the StackSet resource and of its resources', () => {
@@ -2176,6 +2207,21 @@ describe('StackSet references to resources of a stack with an environment', () =
     const { logicalId, role } = auditRoleResource(stack);
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
       Parameters: [{ ParameterKey: parameterName, ParameterValue: { 'Fn::GetAtt': [logicalId, 'Arn'] } }],
+    });
+    expect(role.Properties.RoleName).toBeUndefined();
+  });
+
+  test('the name of a role is passed as a StackSet parameter, without a generated role name', () => {
+    const { stack, auditRole } = stackWithAuditRole();
+    const stackSet = new StackSet(stack, 'StackSet');
+    new CfnOutput(stackSet, 'AuditRoleName', { value: auditRole.roleName });
+
+    const template = stackSetTemplateOf(stackSet).toJSON();
+    const [parameterName] = Object.keys(template.Parameters);
+    expect(template.Outputs.AuditRoleName.Value).toEqual({ Ref: parameterName });
+    const { logicalId, role } = auditRoleResource(stack);
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
+      Parameters: [{ ParameterKey: parameterName, ParameterValue: { Ref: logicalId } }],
     });
     expect(role.Properties.RoleName).toBeUndefined();
   });

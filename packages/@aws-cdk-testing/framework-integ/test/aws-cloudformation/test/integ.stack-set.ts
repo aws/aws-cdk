@@ -135,7 +135,7 @@ class TestCase extends Stack {
 
     // A value of this stack, passed to the template as a StackSet parameter
     new CfnOutput(stackSet, 'AdminRoleId', { value: adminRole.roleId });
-    // The template is environment agnostic, so the ARN is formatted from the physical name of the role
+    // Also passed to the template as a StackSet parameter, so no physical name is generated for the role
     new CfnOutput(stackSet, 'AdminRoleArn', { value: adminRole.roleArn });
   }
 }

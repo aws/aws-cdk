@@ -54,9 +54,10 @@ A `StackSet` has a couple of special requirements and behaviors compared to a `S
   same way a `NestedStack` gets values from its parent
 - Other stacks can't reference the resources of a `StackSet`, because its template is deployed to many
   accounts and regions
-- The `description` is used for the StackSet and its template, and tags of the StackSet
-  (`Tags.of(stackSet).add(...)`) are tags of the StackSet resource, which CloudFormation propagates to
-  every stack instance
+- The `description` is the description of the StackSet resource. Set the description of its template
+  with `stackSet.templateOptions.description`
+- Tags of the StackSet (`Tags.of(stackSet).add(...)`) are tags of the StackSet resource, which
+  CloudFormation propagates to every stack instance
 - Each `StackSet` has its own template. To deploy the same template with different StackSet settings,
   instantiate the `StackSet` class twice
 
