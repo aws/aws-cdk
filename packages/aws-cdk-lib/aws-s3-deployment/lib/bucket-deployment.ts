@@ -97,8 +97,17 @@ export interface BucketDeploymentProps {
    * If this is set to "false", the destination files will be deleted when the
    * resource is deleted or the destination is updated.
    *
+   * However, for buckets defined in your CDK app, the files are not deleted when the
+   * destination bucket is deleted at the same time as this deployment (for example on stack
+   * deletion), or when another `BucketDeployment` still deploys to the same bucket with the
+   * same prefix or a prefix nested inside it.
+   *
+   * If the destination bucket is dedicated to this deployment (no `destinationKeyPrefix`), we
+   * recommend to keep this property `true` and configure `autoDeleteObjects` on the bucket
+   * instead, which empties the bucket when it is deleted.
+   *
    * NOTICE: Configuring this to "false" might have operational implications. Please
-   * visit to the package documentation referred below to make sure you fully understand those implications.
+   * see the package documentation linked below to make sure you fully understand those implications.
    *
    * @see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
@@ -534,7 +543,9 @@ export class BucketDeployment extends Construct {
      * 1. If the LogicalResourceId of the CustomResource changes (e.g. the crUniqueId changes)
      * CloudFormation will first issue a 'Create' to create the new CustomResource and will
      * update the Tag on the bucket. CloudFormation will then issue a 'Delete' on the old CustomResource
-     * and since the new CR "owns" the Bucket+keyPrefix it will not delete the contents of the bucket
+     * and since the new CR "owns" the Bucket+keyPrefix it will not delete the contents of the bucket.
+     * This does not apply to imported buckets (e.g. `Bucket.fromBucketName`): they are not tagged,
+     * so the old CR deletes the contents.
      *
      * 2. If the BucketDeployment resource is deleted _and_ it is the only CR for that bucket+keyPrefix
      * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the
