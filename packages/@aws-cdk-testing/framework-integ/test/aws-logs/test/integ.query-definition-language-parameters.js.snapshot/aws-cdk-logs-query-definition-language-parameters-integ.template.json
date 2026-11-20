@@ -1,0 +1,99 @@
+{
+ "Resources": {
+  "LogGroupF5B46931": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ParametersQuery262944FD": {
+   "Type": "AWS::Logs::QueryDefinition",
+   "Properties": {
+    "LogGroupNames": [
+     {
+      "Ref": "LogGroupF5B46931"
+     }
+    ],
+    "Name": "ErrorsByStatus",
+    "Parameters": [
+     {
+      "DefaultValue": "500",
+      "Description": "HTTP status code to filter on",
+      "Name": "status"
+     }
+    ],
+    "QueryLanguage": "CWLI",
+    "QueryString": "fields @timestamp, @message\n| filter status = {{status}}\n| sort @timestamp desc\n| limit 50"
+   }
+  },
+  "PplQuery1292683D": {
+   "Type": "AWS::Logs::QueryDefinition",
+   "Properties": {
+    "LogGroupNames": [
+     {
+      "Ref": "LogGroupF5B46931"
+     }
+    ],
+    "Name": "TopPaths",
+    "QueryLanguage": "PPL",
+    "QueryString": "fields `path` | stats count() as hits by `path` | sort - hits | head 10"
+   }
+  },
+  "SqlQuery5ADBC358": {
+   "Type": "AWS::Logs::QueryDefinition",
+   "Properties": {
+    "LogGroupNames": [],
+    "Name": "RecentErrors",
+    "QueryLanguage": "SQL",
+    "QueryString": {
+     "Fn::Join": [
+      "",
+      [
+       "SELECT `@timestamp`, `@message` FROM `logGroups(logGroupIdentifier: ['",
+       {
+        "Ref": "LogGroupF5B46931"
+       },
+       "'])` WHERE `@message` LIKE '%ERROR%' LIMIT 50"
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

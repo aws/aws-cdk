@@ -1,0 +1,20 @@
+{
+  "/logs-query-definition-language-parameters/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "logsquerydefinitionlanguageparametersDefaultTestDeployAssert2ACCB93F.template.json"
+    }
+  ],
+  "/logs-query-definition-language-parameters/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/logs-query-definition-language-parameters/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
