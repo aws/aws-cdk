@@ -469,6 +469,24 @@ const subnet = new ec2.Subnet(this, 'IpamSubnet', {
 });
 ```
 
+Similarly, a subnet can allocate its IPv6 CIDR block from an IPv6 IPAM pool at deploy time instead of specifying a concrete `ipv6CidrBlock`:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const ipv6Pool: ec2.CfnIPAMPool;
+
+const subnet = new ec2.Subnet(this, 'Ipv6IpamSubnet', {
+  vpcId: vpc.vpcId,
+  availabilityZone: vpc.availabilityZones[0],
+  cidrBlock: '10.0.0.0/24',
+  ipv6IpamAllocation: {
+    ipamPool: ipv6Pool,
+    netmaskLength: 64,
+  },
+  assignIpv6AddressOnCreation: true,
+});
+```
+
 The pool must be a resource planning pool for the subnet's VPC: its `sourceResource` is the VPC, and the CIDR block allocated from it must lie within the CIDR of the VPC. If the VPC's own CIDR is allocated from IPAM (`IpAddresses.awsIpamAllocation()`), also set the planning pool's `sourceIpamPoolId` to the pool that the VPC's CIDR comes from (see [Use VPC IP Address Manager to manage subnet CIDRs](https://aws.amazon.com/blogs/networking-and-content-delivery/use-vpc-ip-address-manager-to-manage-subnet-cidrs/)). Pools in a private scope require the [IPAM Advanced Tier](https://docs.aws.amazon.com/vpc/latest/ipam/mod-ipam-tier.html). To use a pool that is not defined in your CDK app (for example one shared with your account through AWS RAM), reference it by ID with `ec2.CfnIPAMPool.fromIpamPoolId(this, 'Pool', 'ipam-pool-0123456789abcdef0')`. If the pool's address space is provisioned through separate `CfnIPAMPoolCidr` resources, add a dependency from the subnet on them so the pool has space to allocate from when the subnet is created.
 
 IPAM must discover the VPC before a planning pool can be created for it, and for a new VPC this takes several minutes. Creating a new VPC and its planning pool in the same deployment therefore fails with "The source resource ... is not monitored in the IPAM scope". Create the pool after IPAM has discovered the VPC, for example in a later deployment, once IPAM has discovered the VPC (a stack deployed right after the VPC's stack, such as by the same `cdk deploy --all`, can still start before discovery finishes), or make the pool depend on a custom resource that waits until `GetIpamResourceCidrs` lists the VPC in the pool's IPAM scope.
