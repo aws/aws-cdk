@@ -1,0 +1,328 @@
+{
+ "Resources": {
+  "MemoryWithBuiltInFormatServiceRole768A9D4E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":memory/memory_record_expiry_builtin*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MemoryWithBuiltInFormatMemory599CC5F6": {
+   "Type": "AWS::BedrockAgentCore::Memory",
+   "Properties": {
+    "EventExpiryDuration": 90,
+    "MemoryExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MemoryWithBuiltInFormatServiceRole768A9D4E",
+      "Arn"
+     ]
+    },
+    "MemoryStrategies": [
+     {
+      "SemanticMemoryStrategy": {
+       "Name": "semanticStrategy",
+       "Namespaces": [
+        "/semantic/{actorId}"
+       ],
+       "RecordExpirySpecification": {
+        "RecordExpiryDurationDays": 90
+       }
+      }
+     },
+     {
+      "UserPreferenceMemoryStrategy": {
+       "Name": "preferenceStrategy",
+       "Namespaces": [
+        "/preferences/{actorId}"
+       ],
+       "RecordExpirySpecification": {
+        "RecordExpiryDurationDays": 90
+       }
+      }
+     },
+     {
+      "SummaryMemoryStrategy": {
+       "Name": "summaryStrategy",
+       "Namespaces": [
+        "/summaries/{actorId}/{sessionId}"
+       ],
+       "RecordExpirySpecification": {
+        "RecordExpiryDurationDays": 180
+       }
+      }
+     }
+    ],
+    "Name": "memory_record_expiry_builtin"
+   }
+  },
+  "MemoryWithEpisodicReflectionServiceRoleE877D2E1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":memory/memory_record_expiry_episodic*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MemoryWithEpisodicReflectionMemory29B5EAB8": {
+   "Type": "AWS::BedrockAgentCore::Memory",
+   "Properties": {
+    "EventExpiryDuration": 90,
+    "MemoryExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MemoryWithEpisodicReflectionServiceRoleE877D2E1",
+      "Arn"
+     ]
+    },
+    "MemoryStrategies": [
+     {
+      "EpisodicMemoryStrategy": {
+       "Name": "episodicStrategy",
+       "Namespaces": [
+        "/episodes/{actorId}/{sessionId}"
+       ],
+       "RecordExpirySpecification": {
+        "RecordExpiryDurationDays": 31
+       },
+       "ReflectionConfiguration": {
+        "Namespaces": [
+         "/episodes/{actorId}"
+        ]
+       }
+      }
+     }
+    ],
+    "Name": "memory_record_expiry_episodic"
+   }
+  },
+  "MemoryWithOverridesServiceRole066E2B90": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":memory/memory_record_expiry_override*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MemoryWithOverridesServiceRoleDefaultPolicy12DBF95C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "bedrock:InvokeModel*",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":bedrock:",
+          {
+           "Ref": "AWS::Region"
+          },
+          "::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MemoryWithOverridesServiceRoleDefaultPolicy12DBF95C",
+    "Roles": [
+     {
+      "Ref": "MemoryWithOverridesServiceRole066E2B90"
+     }
+    ]
+   }
+  },
+  "MemoryWithOverridesMemoryEB87807A": {
+   "Type": "AWS::BedrockAgentCore::Memory",
+   "Properties": {
+    "EventExpiryDuration": 90,
+    "MemoryExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MemoryWithOverridesServiceRole066E2B90",
+      "Arn"
+     ]
+    },
+    "MemoryStrategies": [
+     {
+      "CustomMemoryStrategy": {
+       "Configuration": {
+        "SemanticOverride": {
+         "Extraction": {
+          "AppendToPrompt": "Custom extraction prompt for semantic memory",
+          "ModelId": "anthropic.claude-3-sonnet-20240229-v1:0"
+         }
+        }
+       },
+       "Name": "customSemanticStrategy",
+       "Namespaces": [
+        "/custom/{actorId}"
+       ],
+       "RecordExpirySpecification": {
+        "RecordExpiryDurationDays": 365
+       }
+      }
+     }
+    ],
+    "Name": "memory_record_expiry_override"
+   },
+   "DependsOn": [
+    "MemoryWithOverridesServiceRoleDefaultPolicy12DBF95C"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
