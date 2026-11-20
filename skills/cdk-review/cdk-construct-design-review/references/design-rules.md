@@ -101,19 +101,9 @@ deprecate-and-add (`FooV2`), not mutate. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
 - **Scope split (doc-absent detail):** classifying an *existing-surface* break is outside construct-design's scope.
 
-**[CD-AWSLINT-SUPPRESSION] (RECOMMENDED)** — Flag every `awslint.exclude` entry the diff adds or broadens,
-and ask for a stated justification in the PR description or an adjacent comment. A suppression turns off an
-awslint rule that enforces a design guideline at build time, so an unjustified one silently drops that
-guardrail. See
-[`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint) for the
-build-time enforcement and
-[`awslint README § Saving State`](https://github.com/aws/aws-cdk/blob/main/packages/awslint/README.md#saving-state)
-for the `exclude` mechanism.
-- **Escalate to BLOCKING when the suppressed rule backs a MUST-level guideline (doc-absent detail):** the
-  suppression there silences the exact floor the design and regression lenses trust.
-
-**[CD-ENUMS] (RECOMMENDED)** — Model a closed known set as an `enum`, an open set as an enum-like class.
-See
+**[CD-ENUMS] (RECOMMENDED)** — A prop or attribute typed as a bare `string` (or `number`) whose values
+are a known set the service defines: model it as an `enum` or an enum-like class. Either is acceptable;
+do not flag the choice between the two. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Enums & Enum-Like Classes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#enums--enum-like-classes).
 
 **[CD-STATIC-TYPE-CHECK] (RECOMMENDED)** — Prefer a static `isFoo` over `instanceof`. See
@@ -127,6 +117,8 @@ and prefer extending an existing method over adding a new one. See
 affordance where the service supports it. See
 [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
 and the sections following it for the signatures.
+- **Facades (doc-absent detail):** grants and metrics exposed through a facade property (`foo.grants`,
+  `foo.metrics`) are the current pattern for new L2s; do not ask to move them onto the construct.
 - **Auto-wired affordances (doc-absent detail):** before flagging an absence, confirm the framework
   doesn't already provide it — tagging works through `Tags.of(x).add(...)` wherever the L1 is taggable, and
   `removalPolicy`, dependencies, and metadata come from `cdk.Resource`; flagging one of these as missing is
@@ -162,7 +154,3 @@ public surface.
 
 **[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID MUST NOT change.
 - **Scope split (doc-absent detail):** the resulting stack break is also outside construct-design's scope.
-
-**[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
-capability lands additively. See
-[`AGENTS_CONSTRUCT_DESIGN.md § Factory Methods for Secondary Resources`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#factory-methods-for-secondary-resources).

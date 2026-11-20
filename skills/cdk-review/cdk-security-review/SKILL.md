@@ -41,14 +41,11 @@ Work the changed surface in this order — a method, not a rigid script; adapt t
 2. **Check the diff against the rules.** Walk the changed surface family by family — **IAM
    least-privilege** (including trust-policy confused-deputy), **Network & resource access**,
    **Secrets & credentials**, **Secure defaults** — judging the implementation the change produces, not
-   the stated intent. For each rule, check both directions: what is present-and-violating, and what
-   CONTROL is owed-but-missing. From the KIND (step 1), check each control the change owes. Confirm the
-   service supports the control before flagging its absence.
+   the stated intent. Confirm the service supports a control before flagging its absence.
 
 3. **Rate by harm and stop.** Rate each finding by the impact if the exposure is reached, on the
-   `cdk-review-principles` BLOCKING/RECOMMENDED/OPTIONAL scale ("Confidence is not severity", "Politeness is
-   not severity"). Never demote a concrete exposure to OPTIONAL out of uncertainty a caller reaches it.
-   Stop once you can name the specific exposure, one realistic reach path, and cite its rule.
+   `cdk-review-principles` BLOCKING/RECOMMENDED/OPTIONAL scale. Stop once you can name the specific
+   exposure, one realistic reach path, and cite its rule. No realistic reach path, no finding.
 
 ## What NOT to flag
 
@@ -67,6 +64,9 @@ your scope.
 - **Suffix-wildcard actions** (`s3:GetObject*`) — acceptable per the repo Security Rules; the
   full-service `s3:*` is the finding.
 - **An already-scoped `grant*` helper**, and any permission/default the PR did not change.
+- **Extra defense-in-depth conditions** (`aws:ResourceAccount`, a tighter `aws:SourceArn`, an extra
+  `kms:ViaService`) on a statement that is already scoped to resources the construct owns, unless an
+  AWS-documented policy for this exact feature requires them.
 - **A benign ABAC tag-gate with no adjacent tag-write grant**, and an ordinary role that grants no
   IAM-mutating action — neither is a finding.
 

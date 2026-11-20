@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, the concrete-fix rule, the 3-7 comment budget, review tone, the shared what-NOT-to-flag exclusions, the finding-output contract (ruleId + reference fields), and the rules-lookup convention. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, the concrete-fix rule, the is-it-a-finding gate, the 7-comment cap, review tone, the shared what-NOT-to-flag exclusions, the finding-output contract (ruleId + reference fields), and the rules-lookup convention. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -32,31 +32,48 @@ you are it triggers. Three tiers, keyed to the *kind* of harm:
     prefer specific IAM actions over full-service wildcards (`s3:*`)." The resource is
     still scoped, so no door opens — but the grant is wider than the code path needs →
     RECOMMENDED.
-- **OPTIONAL** — the harm is **negligible**. Pure polish: a naming choice, a tidier
-  grouping with identical effect.
+- **OPTIONAL** — a small, real defect with a cheap fix: a doc comment that states something
+  false, a leftover debug statement, a typo in a public name. Preferences (a different name,
+  a tidier grouping, "consider") are not OPTIONAL findings; they are not findings.
 
 A finding's `severity` field takes exactly one of these three words —
 `BLOCKING` / `RECOMMENDED` / `OPTIONAL` — and there is no second vocabulary. If a source
 you ported used a High/Medium/Low, Critical/Major/Minor, or P0/P1/P2 palette, map it onto
 these three by harm and drop the palette.
 
-### Calibrate the harm honestly
+### Is it a finding at all?
 
-The tier is right only if you rate the harm honestly. Four ways it slips:
+Most of what a reviewer *could* say is not worth saying. Every comment costs the author
+time, and a wrong or unnecessary comment costs more than a missed nit. Post a finding only
+when all of these hold:
 
-- **Confidence is not severity.** Rate by the harm *when* the path is reached, not by how
-  sure you are it is reached. A concrete failure mechanism is BLOCKING or RECOMMENDED by
-  its blast radius — never demoted to OPTIONAL "to be safe." OPTIONAL means genuinely
-  negligible harm, not a hedge for a real defect you are unsure fires.
-- **Politeness is not severity.** A blocking issue raised as a gentle question — "Can we
-  scope this to a specific ARN?" — still blocks. Rate the harm the change asserts, not its
-  interrogative surface.
-- **No harm, no finding.** Clean code reports nothing — do not manufacture a nit. A change
-  that merely *mentions* IAM, encryption, or a secret is not a finding; a concrete new harm
-  is. Inventing a low-severity finding out of a non-finding is the most common way a review
-  inflates.
-- **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
-  *new* harm → not a finding. Rate what the diff adds, not the posture it inherited.
+- **It is true, and you checked.** You read the code the claim depends on: the definition
+  of the class or function you say is misused, the callers, the existing tests, the rosetta
+  fixture, the CI result. "There is no test for X" means you searched the test files for X.
+  If the author could refute the comment by pointing at a line you did not read, do not post
+  it. If you cannot verify a claim, drop it — do not post it as a question or at a lower
+  severity.
+- **It happens with realistic use of this PR's code.** Not "if a future change…", "if AWS
+  adds a field…", "when a second variant is added…", or an exotic setup nobody uses. Those
+  are speculation; the change does not have to defend against them.
+- **It is introduced by this PR.** A pre-existing problem the diff merely moved is not a
+  finding.
+- **It asks for a specific change to the code.** If your conclusion is "this is fine", "no
+  change required", "either is defensible", "confirm this is intentional", or "mention it
+  in the PR description", there is no finding — do not post it.
+- **It has not already been discussed.** If this point was raised on the PR before (by you
+  or by a human), do not raise it again. If the author answered a comment, accept the answer
+  unless you have new evidence. Never ask the author to undo something an earlier review
+  comment asked for.
+
+Never suggest:
+
+- **Catching, swallowing or falling back from errors** to make code "defensive". A broken
+  invariant or a malformed input must fail loudly; hiding it is a bug.
+- **A feature flag for a change that cannot break an existing deployment.** Flags are for
+  changes that alter what deployed stacks get in a way users may depend on.
+- **More validation, warnings or tests "for safety"** without a realistic failure they
+  prevent.
 
 When the finding is that the change violates a rule in the aws-cdk repo's own guides
 (`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
@@ -82,28 +99,27 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   linked by file + line) → CDK design guidelines (`docs/DESIGN_GUIDELINES.md`,
   `docs/AGENTS_CONSTRUCT_DESIGN.md`, `docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) →
   CloudFormation resource specification (property/enum correctness) → linked issue / PR
-  discussion (customer context) → existing tests (behavioral expectations). Prefer AWS
-  documentation when sources disagree. Skip a citation only for pure style, an obvious
-  typo or unused import, or a genuine question. **Verify before you cite:** when a finding
-  turns on whether an attribute, mode, default, enum value, or a service/CDK behavior is
-  REAL — or on what CDK's own API, testing, or README guidance says — you MUST search and
-  read the authoritative AWS and CDK documentation available to you and confirm the fact
-  against it before posting; never post from memory. An unverified "X isn't supported" or
-  "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
+  discussion (customer context) → existing tests (behavioral expectations). Skip a citation
+  only for an obvious typo or unused import. **Verify before you cite:** never post from
+  memory. When a finding turns on how CDK code behaves (a constructor signature, what
+  `addWarningV2` renders, what a fixture declares, whether a lint rule fires), read that
+  code in the repo. When it turns on how an AWS service behaves (a limit, a default, an
+  allowed value), read the AWS documentation and cite the page in `reference`. Service
+  documentation is sometimes wrong or incomplete; when the PR says the author tested the
+  service's behavior, do not contradict them from documentation alone.
 - **A concrete fix** — a code example, or a question framing a specific alternative
   ("What do you think about scoping this to the bucket ARN?"). Always offer a direction
   out; never just point at the problem.
 
-Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
-suggestions as questions where you can; stay direct but not harsh on blocking issues
-("this needs to change because…", not "this is wrong"); acknowledge good work; and drop
-"obviously" and "simply".
+Write it in a reviewer's voice: prefer "we" over "you should"; stay direct but not harsh
+on blocking issues ("this needs to change because…", not "this is wrong"); and drop
+"obviously" and "simply". Keep it short: state the problem, why it matters, and the fix.
 
 ## Keep the review to a tight, high-harm set
 
-Target **3-7 comments per review**. Keep every `BLOCKING` finding; then the highest-harm
-`RECOMMENDED` findings; add `OPTIONAL` ones only if the total stays within budget. More
-than seven dilutes the review and buries the damage under polish.
+Post **at most 7 comments per review**, and fewer is better. Zero comments is the right
+result for a clean PR. Keep every `BLOCKING` finding; then the highest-harm `RECOMMENDED`
+findings; add `OPTIONAL` ones only if the total stays within budget.
 
 A finding becomes a posted comment only when it is (1) tied to a specific line, (2)
 actionable, and (3) significant enough to stand alone. Keep high-level observations,
@@ -114,7 +130,7 @@ structured finding fields and how to write each one before you generate findings
 
 ## What NOT to flag — the shared exclusions
 
-Every dimension skill applies these five exclusions on top of its own dimension-specific
+Every dimension skill applies these exclusions on top of its own dimension-specific
 carve-outs. None is a finding, at any severity:
 
 - **Pre-existing / not introduced by this PR** — if the diff did not add or change it, the
@@ -130,9 +146,15 @@ carve-outs. None is a finding, at any severity:
 - **Release-tooling / monorepo markers** — `0.0.0` workspace or alpha versions, `V2NEXT`
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
+- **Choices the guidelines leave open** — when the guidelines allow more than one shape
+  (an enum or an enum-like class, a required or an optional physical name), or the same
+  module already uses the author's choice, the author's choice stands.
+- **Process paperwork** — asking the author to add a justification to the PR description,
+  a changelog note, or a comment explaining a decision. (The `BREAKING CHANGE:` callout and
+  the integ-test exemption label are required by PR tooling and are not paperwork.)
 
 Each dimension skill's own `## What NOT to flag` lists only its dimension-specific
-carve-outs; it applies these five in addition.
+carve-outs; it applies these in addition.
 
 ## Rules-lookup convention
 
