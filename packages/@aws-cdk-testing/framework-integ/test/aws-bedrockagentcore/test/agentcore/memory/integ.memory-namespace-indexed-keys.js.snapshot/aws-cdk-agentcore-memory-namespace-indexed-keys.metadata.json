@@ -1,0 +1,83 @@
+{
+  "/aws-cdk-agentcore-memory-namespace-indexed-keys": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-agentcore-memory-namespace-indexed-keys.template.json"
+    }
+  ],
+  "/aws-cdk-agentcore-memory-namespace-indexed-keys/MemoryWithKeys": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-agentcore-memory-namespace-indexed-keys/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-agentcore-memory-namespace-indexed-keys/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-agentcore-memory-namespace-indexed-keys/MemoryWithKeys/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-agentcore-memory-namespace-indexed-keys/MemoryWithKeys/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithKeysMemoryD26B16EC"
+    }
+  ],
+  "/aws-cdk-agentcore-memory-namespace-indexed-keys/Exports/Output{\"Fn::GetAtt\":[\"MemoryWithKeysMemoryD26B16EC\",\"MemoryId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMemoryWithKeysMemoryD26B16ECMemoryId68468A2C"
+    }
+  ],
+  "/aws-cdk-agentcore-memory-namespace-indexed-keys/MemoryWithKeys/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithKeysServiceRole5B3AB37A"
+    }
+  ]
+}

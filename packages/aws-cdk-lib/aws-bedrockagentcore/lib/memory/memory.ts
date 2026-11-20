@@ -28,10 +28,12 @@ import * as iam from '../../../aws-iam';
 import type * as kinesis from '../../../aws-kinesis';
 import * as kms from '../../../aws-kms';
 import { Arn, ArnFormat, Duration, Lazy, Resource, Stack, Token, Names } from '../../../core';
-import type { IResource, ResourceProps } from '../../../core';
+import type { IResolvable, IResource, ResourceProps } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { lit } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box, lit } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { validateFieldPattern, validateStringFieldLength, throwIfInvalid } from '../common/validation-helpers';
 // Internal Libs
@@ -73,6 +75,30 @@ const MEMORY_EXPIRATION_DAYS_MIN = 7;
  * @internal
  */
 const MEMORY_EXPIRATION_DAYS_MAX = 365;
+
+/**
+ * Maximum number of namespace keys on a memory
+ * @internal
+ */
+const MEMORY_NAMESPACE_KEYS_MAX = 5;
+
+/**
+ * Maximum number of indexed keys on a memory
+ * @internal
+ */
+const MEMORY_INDEXED_KEYS_MAX = 10;
+
+/**
+ * Maximum number of allowed values in a namespace key validation
+ * @internal
+ */
+const NAMESPACE_KEY_ALLOWED_VALUES_MAX = 10;
+
+/**
+ * Maximum length of a namespace key validation regex pattern
+ * @internal
+ */
+const NAMESPACE_KEY_REGEX_PATTERN_MAX_LENGTH = 64;
 
 /******************************************************************************
  *                         Stream Delivery Types
@@ -165,6 +191,97 @@ export class StreamDeliveryResource {
     this.stream = stream;
     this.contentConfigurations = contentConfigurations;
   }
+}
+
+/******************************************************************************
+ *                     Namespace Key and Indexed Key Types
+ *****************************************************************************/
+/**
+ * Validation rules for the values of a custom namespace variable.
+ *
+ * When both `allowedValues` and `regexPattern` are given, a value must pass both.
+ */
+export interface NamespaceKeyValidation {
+  /**
+   * The values the namespace variable may take.
+   *
+   * Between 1 and 10 values. Each value must start with a lowercase letter or a digit,
+   * contain only lowercase letters, digits, hyphens and underscores, and be at most
+   * 64 characters long.
+   *
+   * @default - Any value is allowed
+   */
+  readonly allowedValues?: string[];
+
+  /**
+   * A regular expression that the namespace variable value must match.
+   *
+   * Between 1 and 64 characters.
+   *
+   * @default - No pattern
+   */
+  readonly regexPattern?: string;
+}
+
+/**
+ * A custom namespace variable declared on a memory.
+ *
+ * A declared key can be used as a `{variable}` in the namespaces of the memory's
+ * strategies. Its value is supplied at runtime through
+ * `extractionConfig.namespaceVariables` on the `CreateEvent` API.
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/specify-long-term-memory-organization.html
+ */
+export interface NamespaceKey {
+  /**
+   * The name of the namespace variable.
+   *
+   * Must start with a lowercase letter, contain only lowercase letters and digits,
+   * and be at most 32 characters long. The built-in variables `actorId`, `sessionId`
+   * and `memoryStrategyId` can't be declared.
+   */
+  readonly key: string;
+
+  /**
+   * Validation rules for the values of this namespace variable.
+   *
+   * At least one of `allowedValues` and `regexPattern` must be given.
+   *
+   * @default - Values are not validated
+   */
+  readonly validation?: NamespaceKeyValidation;
+}
+
+/**
+ * The data type of an indexed metadata key.
+ */
+export enum IndexedKeyType {
+  /** A string value */
+  STRING = 'STRING',
+  /** A list of string values */
+  STRINGLIST = 'STRINGLIST',
+  /** A numeric value */
+  NUMBER = 'NUMBER',
+}
+
+/**
+ * A metadata key that the memory indexes so that memory records can be filtered by it.
+ *
+ * Indexed keys can't be removed from a memory once they are declared.
+ */
+export interface IndexedKey {
+  /**
+   * The name of the metadata key.
+   *
+   * Between 1 and 128 characters. Valid characters are letters, digits, whitespace
+   * and `. _ : / = + @ -`.
+   */
+  readonly key: string;
+
+  /**
+   * The data type of the metadata values.
+   */
+  readonly type: IndexedKeyType;
 }
 
 /******************************************************************************
@@ -638,6 +755,25 @@ export interface MemoryProps {
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-record-streaming.html
    */
   readonly streamDeliveryResources?: StreamDeliveryResource[];
+
+  /**
+   * Custom namespace variables that the memory's strategies can use in their namespaces.
+   *
+   * Up to 5 keys. A key that is still used in a strategy namespace can't be removed.
+   *
+   * @default - No custom namespace variables
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/specify-long-term-memory-organization.html
+   */
+  readonly namespaceKeys?: NamespaceKey[];
+
+  /**
+   * Metadata keys to index so that memory records can be filtered by them.
+   *
+   * Up to 10 keys. Indexed keys can't be removed from a memory once they are declared.
+   *
+   * @default - No indexed keys
+   */
+  readonly indexedKeys?: IndexedKey[];
 }
 
 /******************************************************************************
@@ -691,6 +827,7 @@ export interface MemoryAttributes {
  * @resource AWS::BedrockAgentCore::Memory
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Memory extends MemoryBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-bedrockagentcore.Memory';
@@ -802,6 +939,8 @@ export class Memory extends MemoryBase {
   // Internal Only
   // ------------------------------------------------------
   private readonly __resource: CfnMemory;
+  private readonly _namespaceKeys: IArrayBox<NamespaceKey> = Box.fromArray();
+  private readonly _indexedKeys: IArrayBox<IndexedKey> = Box.fromArray();
 
   // ------------------------------------------------------
   // CONSTRUCTOR
@@ -871,6 +1010,8 @@ export class Memory extends MemoryBase {
         { produce: () => this._renderStreamDeliveryResources() },
         { omitEmptyArray: true },
       ),
+      namespaceKeys: this._namespaceKeys.derive(keys => this._renderNamespaceKeys(keys)),
+      indexedKeys: this._indexedKeys.derive(keys => this._renderIndexedKeys(keys)),
       tags: this.tags,
     };
 
@@ -891,6 +1032,24 @@ export class Memory extends MemoryBase {
 
     // Add stream delivery resources to the memory
     for (const resource of props?.streamDeliveryResources ?? []) {this.addStreamDeliveryResource(resource);}
+
+    // Add namespace keys and indexed keys to the memory
+    for (const namespaceKey of props?.namespaceKeys ?? []) {this.addNamespaceKey(namespaceKey);}
+    for (const indexedKey of props?.indexedKeys ?? []) {this.addIndexedKey(indexedKey);}
+  }
+
+  /**
+   * The custom namespace variables declared on this memory.
+   */
+  public get namespaceKeys(): NamespaceKey[] {
+    return [...this._namespaceKeys];
+  }
+
+  /**
+   * The metadata keys indexed by this memory.
+   */
+  public get indexedKeys(): IndexedKey[] {
+    return [...this._indexedKeys];
   }
 
   // ------------------------------------------------------
@@ -948,6 +1107,51 @@ export class Memory extends MemoryBase {
 
     grant.applyBefore(this.__resource);
     describeGrant.applyBefore(this.__resource);
+  }
+
+  /**
+   * Declare a custom namespace variable on the memory.
+   *
+   * The key can then be used as a `{variable}` in the namespaces of the memory's strategies.
+   *
+   * @param namespaceKey - The namespace variable to declare
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/specify-long-term-memory-organization.html
+   */
+  @MethodMetadata()
+  public addNamespaceKey(namespaceKey: NamespaceKey): void {
+    if (this._namespaceKeys.length >= MEMORY_NAMESPACE_KEYS_MAX) {
+      throw new ValidationError(
+        lit`TooManyNamespaceKeys`,
+        `Memory supports at most ${MEMORY_NAMESPACE_KEYS_MAX} namespace keys`,
+        this,
+      );
+    }
+
+    throwIfInvalid(this._validateNamespaceKey, namespaceKey, this);
+
+    this._namespaceKeys.push(namespaceKey);
+  }
+
+  /**
+   * Index a metadata key on the memory so that memory records can be filtered by it.
+   *
+   * Indexed keys can't be removed from a memory once they are declared.
+   *
+   * @param indexedKey - The metadata key to index
+   */
+  @MethodMetadata()
+  public addIndexedKey(indexedKey: IndexedKey): void {
+    if (this._indexedKeys.length >= MEMORY_INDEXED_KEYS_MAX) {
+      throw new ValidationError(
+        lit`TooManyIndexedKeys`,
+        `Memory supports at most ${MEMORY_INDEXED_KEYS_MAX} indexed keys`,
+        this,
+      );
+    }
+
+    throwIfInvalid(this._validateIndexedKey, indexedKey, this);
+
+    this._indexedKeys.push(indexedKey);
   }
 
   /**
@@ -1082,6 +1286,94 @@ export class Memory extends MemoryBase {
     return errors;
   };
 
+  /**
+   * Validates a namespace key and its optional validation rules.
+   * Values that are unresolved tokens are not checked.
+   */
+  private _validateNamespaceKey = (namespaceKey: NamespaceKey, scope?: IConstruct): string[] => {
+    const errors: string[] = [];
+
+    // Same rule as the API model: (?!memoryStrategyId$|actorId$|sessionId$)[a-z][a-z0-9]*, 1-32 characters.
+    // The built-in variables contain uppercase letters, so the pattern already excludes them.
+    errors.push(...validateFieldPattern(
+      namespaceKey.key,
+      'Namespace key',
+      /^[a-z][a-z0-9]{0,31}$/,
+      `Namespace key "${namespaceKey.key}" must start with a lowercase letter, contain only lowercase letters and digits, and be at most 32 characters long (the built-in variables actorId, sessionId and memoryStrategyId can't be declared)`,
+      scope,
+    ));
+
+    if (!Token.isUnresolved(namespaceKey.key) &&
+      [...this._namespaceKeys].some(existing => existing.key === namespaceKey.key)) {
+      errors.push(`Namespace key "${namespaceKey.key}" is already declared on this memory`);
+    }
+
+    const validation = namespaceKey.validation;
+    if (validation && !Token.isUnresolved(validation)) {
+      if (validation.allowedValues === undefined && validation.regexPattern === undefined) {
+        errors.push(`Validation for namespace key "${namespaceKey.key}" must specify allowedValues, regexPattern, or both`);
+      }
+
+      const allowedValues = validation.allowedValues;
+      if (allowedValues !== undefined && !Token.isUnresolved(allowedValues)) {
+        if (allowedValues.length < 1 || allowedValues.length > NAMESPACE_KEY_ALLOWED_VALUES_MAX) {
+          errors.push(`allowedValues for namespace key "${namespaceKey.key}" must contain between 1 and ${NAMESPACE_KEY_ALLOWED_VALUES_MAX} values, got ${allowedValues.length}`);
+        }
+        for (const value of allowedValues) {
+          errors.push(...validateFieldPattern(
+            value,
+            'Namespace key allowed value',
+            /^[a-z0-9][a-z0-9_-]{0,63}$/,
+            `Allowed value "${value}" for namespace key "${namespaceKey.key}" must start with a lowercase letter or a digit, contain only lowercase letters, digits, hyphens and underscores, and be at most 64 characters long`,
+            scope,
+          ));
+        }
+      }
+
+      if (validation.regexPattern !== undefined) {
+        errors.push(...validateStringFieldLength({
+          value: validation.regexPattern,
+          fieldName: 'Namespace key regexPattern',
+          minLength: 1,
+          maxLength: NAMESPACE_KEY_REGEX_PATTERN_MAX_LENGTH,
+        }, scope));
+      }
+    }
+
+    return errors;
+  };
+
+  /**
+   * Validates an indexed key.
+   * Values that are unresolved tokens are not checked.
+   */
+  private _validateIndexedKey = (indexedKey: IndexedKey, scope?: IConstruct): string[] => {
+    const errors: string[] = [];
+
+    errors.push(...validateStringFieldLength({
+      value: indexedKey.key,
+      fieldName: 'Indexed key',
+      minLength: 1,
+      maxLength: 128,
+    }, scope));
+
+    // API model pattern: [a-zA-Z0-9\s._:/=+@-]*
+    errors.push(...validateFieldPattern(
+      indexedKey.key,
+      'Indexed key',
+      /^[a-zA-Z0-9\s._:/=+@-]*$/,
+      `Indexed key "${indexedKey.key}" can only contain letters, digits, whitespace and . _ : / = + @ -`,
+      scope,
+    ));
+
+    if (!Token.isUnresolved(indexedKey.key) &&
+      [...this._indexedKeys].some(existing => existing.key === indexedKey.key)) {
+      errors.push(`Indexed key "${indexedKey.key}" is already declared on this memory`);
+    }
+
+    return errors;
+  };
+
   // ------------------------------------------------------
   // RENDERERS
   // ------------------------------------------------------
@@ -1122,5 +1414,53 @@ export class Memory extends MemoryBase {
         },
       })),
     };
+  }
+
+  /**
+   * Render the namespace keys into CloudFormation format.
+   *
+   * Only called with a non-empty list: an empty box resolves to undefined.
+   *
+   * @returns Array of NamespaceKeyEntryProperty objects
+   * @internal This is an internal core function and should not be called directly.
+   */
+  private _renderNamespaceKeys(namespaceKeys: readonly NamespaceKey[]): CfnMemory.NamespaceKeyEntryProperty[] {
+    return namespaceKeys.map(namespaceKey => ({
+      key: namespaceKey.key,
+      validation: this._renderNamespaceKeyValidation(namespaceKey.validation),
+    }));
+  }
+
+  /**
+   * Render the validation rules of a namespace key. An unresolved token is passed through.
+   *
+   * @internal This is an internal core function and should not be called directly.
+   */
+  private _renderNamespaceKeyValidation(
+    validation?: NamespaceKeyValidation,
+  ): CfnMemory.NamespaceKeyValidationProperty | IResolvable | undefined {
+    if (!validation || Token.isUnresolved(validation)) {
+      return validation;
+    }
+
+    return {
+      allowedValues: validation.allowedValues,
+      regexPattern: validation.regexPattern,
+    };
+  }
+
+  /**
+   * Render the indexed keys into CloudFormation format.
+   *
+   * Only called with a non-empty list: an empty box resolves to undefined.
+   *
+   * @returns Array of IndexedKeyProperty objects
+   * @internal This is an internal core function and should not be called directly.
+   */
+  private _renderIndexedKeys(indexedKeys: readonly IndexedKey[]): CfnMemory.IndexedKeyProperty[] {
+    return indexedKeys.map(indexedKey => ({
+      key: indexedKey.key,
+      type: indexedKey.type,
+    }));
   }
 }
