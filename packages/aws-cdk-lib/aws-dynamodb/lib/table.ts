@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import type { CfnTableProps, ITableRef, TableReference } from './dynamodb.generated';
 import { CfnTable } from './dynamodb.generated';
+import { validateVectorIndexProps } from './private/vector-index';
 import { ReplicaProvider } from './replica-provider';
 import type { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
@@ -11,6 +12,7 @@ import type {
   LocalSecondaryIndexProps, WarmThroughput, PointInTimeRecoverySpecification,
   ContributorInsightsSpecification,
   KeySchema,
+  VectorIndexProps, SearchSchemaElement,
 } from './shared';
 import {
   Operation, BillingMode, ProjectionType, TableEncryption, StreamViewType,
@@ -33,6 +35,7 @@ import {
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
   CfnDeletionPolicy,
   FeatureFlags,
+  Validations,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IReadableBox } from '../../core/lib/helpers-internal';
@@ -1264,6 +1267,9 @@ export class Table extends TableBase {
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
   private readonly _globalSecondaryIndexes: IArrayBox<CfnTable.GlobalSecondaryIndexProperty>;
   private readonly _localSecondaryIndexes: IArrayBox<CfnTable.LocalSecondaryIndexProperty>;
+  private readonly _vectorIndexes: IArrayBox<CfnTable.VectorIndexProperty>;
+  private readonly _vectorIndexNames = new Set<string>();
+  private _searchSchemaAttributeDefinitionsAcknowledged = false;
   private readonly _hasIndexBox: IReadableBox<boolean>;
 
   /**
@@ -1310,9 +1316,10 @@ export class Table extends TableBase {
 
     this._globalSecondaryIndexes = Box.fromArray();
     this._localSecondaryIndexes = Box.fromArray();
+    this._vectorIndexes = Box.fromArray();
     this._hasIndexBox = Box.combine(
-      { gsi: this._globalSecondaryIndexes, lsi: this._localSecondaryIndexes },
-      ({ gsi, lsi }) => gsi.length + lsi.length > 0,
+      { gsi: this._globalSecondaryIndexes, lsi: this._localSecondaryIndexes, vector: this._vectorIndexes },
+      ({ gsi, lsi, vector }) => gsi.length + lsi.length + vector.length > 0,
     );
 
     if (!props?.partitionKey) {
@@ -1365,6 +1372,7 @@ export class Table extends TableBase {
       attributeDefinitions: this.attributeDefinitions,
       globalSecondaryIndexes: this._globalSecondaryIndexes,
       localSecondaryIndexes: this._localSecondaryIndexes,
+      vectorIndexes: this._vectorIndexes,
       pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
@@ -1505,6 +1513,52 @@ export class Table extends TableBase {
     });
 
     this.schemas.set(props.indexName, normalizedSchema);
+  }
+
+  /**
+   * Add a vector index to the table.
+   *
+   * Vector indexes enable similarity search over an embedding attribute and can
+   * only be used with tables in `PAY_PER_REQUEST` (on-demand) billing mode. The
+   * index name must be unique across all global secondary indexes, local
+   * secondary indexes, and vector indexes on the table.
+   *
+   * When the vector index has a search schema, the table acknowledges the
+   * CloudFormation-Validate rule E3039. The rule counts only key schema
+   * attributes, so it reports search schema attributes as unused attribute
+   * definitions. The acknowledgement covers every E3039 finding on the table.
+   *
+   * @param props the properties of the vector index
+   */
+  @MethodMetadata()
+  public addVectorIndex(props: VectorIndexProps) {
+    this.validateIndexName(props.indexName);
+    validateVectorIndexProps(props, this.billingMode, 'billingMode: BillingMode.PAY_PER_REQUEST', this);
+
+    // Search schema attributes require attribute definitions on the table. The
+    // vector attribute has an implicit type of List and is therefore not registered.
+    const searchSchema = props.searchSchema?.map((element: SearchSchemaElement) => {
+      this.registerAttribute(element.attribute);
+      return {
+        attributeName: element.attribute.name,
+        searchSchemaElementType: element.type,
+      };
+    });
+
+    if (searchSchema) {
+      this.acknowledgeSearchSchemaAttributeDefinitions();
+    }
+
+    this._vectorIndexes.push({
+      indexName: props.indexName,
+      vectorAttribute: { attributeName: props.vectorAttribute },
+      dimensions: props.dimensions,
+      distanceFunction: props.distanceFunction,
+      projection: this.buildIndexProjection(props),
+      searchSchema,
+    });
+
+    this._vectorIndexNames.add(props.indexName);
   }
 
   /**
@@ -1697,10 +1751,29 @@ export class Table extends TableBase {
    * @param indexName a name of global or local secondary index
    */
   private validateIndexName(indexName: string) {
-    if (this.schemas.has(indexName)) {
+    if (this.schemas.has(indexName) || this._vectorIndexNames.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new ValidationError(lit`DuplicateIndexName`, `a duplicate index name, ${indexName}, is not allowed`, this);
     }
+  }
+
+  /**
+   * DynamoDB requires every vector index search schema attribute to be declared
+   * in AttributeDefinitions, but the CloudFormation-Validate rule E3039 only
+   * counts key schema attributes and reports search schema attributes as unused
+   * definitions. Acknowledge the rule once for this table. The acknowledgement
+   * covers every E3039 finding on the table. TableV2 needs none, because the
+   * rule reports no finding for AWS::DynamoDB::GlobalTable.
+   */
+  private acknowledgeSearchSchemaAttributeDefinitions() {
+    if (this._searchSchemaAttributeDefinitionsAcknowledged) {
+      return;
+    }
+    Validations.of(this).acknowledge({
+      id: 'CloudFormation-Validate::E3039',
+      reason: 'Vector index search schema attributes must be declared in AttributeDefinitions even though no key schema references them',
+    });
+    this._searchSchemaAttributeDefinitionsAcknowledged = true;
   }
 
   /**
