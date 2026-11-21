@@ -699,24 +699,46 @@ You can also apply the mixin to a `CfnRecordSet` with a hosted zone ID. Set the
 zone, name, and type through the record's properties before applying the mixin.
 The mixin reads those properties directly and cannot see raw CloudFormation overrides.
 
-Apply the mixin before synthesis. One application protects every record with the
-same hosted zone ID, name, and type. For example, if blue and green are weighted
-A records for the same name in one stack, applying the mixin to blue makes
-CloudFormation create both records before enabling their shared protection.
-If you set a CloudFormation condition on a record, use the same condition on
-every record in the group.
+One protection covers every record with the same hosted zone ID, name, and type.
+For example, if blue and green are weighted A records for the same name in one
+stack, applying the mixin to blue makes CloudFormation create both records
+before enabling protection. If the records have a CloudFormation condition,
+use the same condition on every record in the group.
 
 ```ts
 declare const blue: route53.ARecord;
 blue.with(new route53.mixins.RecordSetProtection());
 ```
 
-You can also apply the mixin to a common scope to protect every record in that scope.
+To protect the records under a construct, apply the mixin after creating them.
+You can also apply it to a record from an Aspect during synthesis.
 
-CDK groups records within each stack using their zone ID, name, and type.
-If different CloudFormation expressions will have the same value only at deployment,
-define one `CfnRecordSetProtection` and call its `addResourceDependency` method
-with each `CfnRecordSet` in the group.
+```ts
+declare const endpoints: Construct;
+Mixins.of(endpoints).apply(new route53.mixins.RecordSetProtection());
+```
+
+Every `CfnRecordSet` selected by this call must specify `hostedZoneId`. If
+even one specifies only `hostedZoneName`, the call throws. Set the zone ID
+on that record or apply the mixin to individual records.
+
+CDK adds dependencies for matching `CfnRecordSet` resources in the same template.
+If an untargeted sibling specifies only a hosted zone name, CDK warns when its
+record name and type match. Set its `hostedZoneId` so CDK can check the zone
+and order creation.
+
+If the records span stacks, including nested stacks, choose one stack to own
+the protection. Deploy the records in the other stacks before enabling it.
+CDK warns when it finds a matching record in another stack in the same stage.
+Synthesis fails if two stacks in the app try to own a protection that CDK can
+identify as the same.
+
+Check deployment order yourself for records in other stages or apps. CDK can
+only compare identities available at synthesis. For example, two stacks can
+import a zone ID under the same export name, but the value depends on the
+account and Region where each is deployed. If different expressions in one
+template identify the same group only at deployment, define one
+`CfnRecordSetProtection` and call `addResourceDependency` for each record in the group.
 
 You can create new records and enable their protection in one deployment. For
 records that already exist in the stack, add protection in an update that leaves
