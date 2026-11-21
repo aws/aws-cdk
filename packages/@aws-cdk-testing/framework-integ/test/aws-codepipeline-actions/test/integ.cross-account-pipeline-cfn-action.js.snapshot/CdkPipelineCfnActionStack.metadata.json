@@ -1,4 +1,10 @@
 {
+  "/CdkPipelineCfnActionStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CdkPipelineCfnActionStack.template.json"
+    }
+  ],
   "/CdkPipelineCfnActionStack/SourceBucketKey": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -26,6 +32,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -202,6 +209,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],

@@ -1,0 +1,27 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "lambda-runtime-config/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-runtime-config"
+      ],
+      "hooks": {
+        "preDeploy": [
+          "aws ecr create-repository --repository-name cdk-integ-lambda-runtime-config"
+        ],
+        "postDestroy": [
+          "aws ecr delete-repository --repository-name cdk-integ-lambda-runtime-config --force"
+        ]
+      },
+      "regions": [
+        "us-east-1",
+        "us-west-2",
+        "eu-west-1"
+      ],
+      "assertionStack": "lambda-runtime-config/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaruntimeconfigDefaultTestDeployAssert6E948E16"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}
