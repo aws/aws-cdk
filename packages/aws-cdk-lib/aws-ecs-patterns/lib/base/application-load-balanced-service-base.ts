@@ -14,7 +14,7 @@ import {
 } from '../../../aws-ecs';
 import type {
   ApplicationListener, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, AddApplicationTargetsProps, SslPolicy,
+  CfnLoadBalancer, IApplicationLoadBalancer, AddApplicationTargetsProps, SslPolicy,
   IpAddressType,
   ApplicationLoadBalancerProps,
 } from '../../../aws-elasticloadbalancingv2';
@@ -26,6 +26,14 @@ import { LoadBalancerTarget } from '../../../aws-route53-targets';
 import { Annotations, CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
+
+/**
+ * Distributions this pattern has already wired a `/*` cache behavior into.
+ * CloudFront requires each path pattern to be unique, so a distribution can
+ * only be put in front of one service; tracking the distributions wired
+ * here fails fast at synth instead of at deploy time.
+ */
+const cloudFrontDistributionsWired = new WeakSet<Distribution>();
 
 /**
  * Describes the type of DNS record the service should create
@@ -205,13 +213,22 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    *
    * The origin protocol and port are taken from the listener this service
    * creates: HTTP on the listener port when the service uses HTTP, HTTPS
-   * on the listener port when it uses HTTPS. For HTTPS the viewer's Host
-   * header is forwarded to the origin, so the certificate on the load
-   * balancer must match the requested host.
+   * on the listener port when it uses HTTPS. For HTTPS the default origin
+   * request policy (ALL_VIEWER) forwards the viewer's Host header, so the
+   * certificate on the load balancer must match the requested host. If you
+   * override `originRequestPolicy` in `cloudFrontBehaviorOptions` for an
+   * HTTPS service, use a policy that still forwards the Host header;
+   * otherwise CloudFront validates the origin certificate against the load
+   * balancer's DNS name and returns 502.
    *
    * The distribution must be defined in the same app; an imported
-   * distribution cannot take on a new cache behavior. A load balancer
-   * supplied through `loadBalancer` must be internet-facing.
+   * distribution cannot take on a new cache behavior. A distribution can
+   * only be put in front of one service, and it must not already have a
+   * `/*` cache behavior (for example through `additionalBehaviors`). A load
+   * balancer supplied through `loadBalancer` must be internet-facing,
+   * because the pattern creates a public origin for it; an internal load
+   * balancer can be fronted by CloudFront through a VPC origin, but this
+   * pattern does not set that up.
    *
    * For HTTPS, the distribution needs an alias for a name covered by the
    * load balancer certificate, and the distribution's own certificate must
@@ -547,7 +564,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     const internetFacing = props.publicLoadBalancer ?? true;
 
     if (props.cloudFrontDistribution && props.publicLoadBalancer === false) {
-      throw new ValidationError(lit`CloudFrontInternalLoadBalancer`, 'A CloudFront distribution can only be put in front of a public (internet-facing) load balancer.', this);
+      throw new ValidationError(lit`CloudFrontInternalLoadBalancer`, 'This pattern creates a public origin for the load balancer, which ' +
+        'requires it to be internet-facing. To front an internal load balancer, use a VPC origin instead.', this);
     }
 
     if (props.cloudFrontBehaviorOptions !== undefined && props.cloudFrontDistribution === undefined) {
@@ -570,6 +588,20 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);
+
+    // A load balancer supplied through `loadBalancer` is used as-is, so this
+    // pattern never sets its scheme. When it was built in this app, read the
+    // scheme from its CfnLoadBalancer child and reject an internal one, which
+    // the public origin CloudFront creates cannot reach. An imported load
+    // balancer has no such child, so its scheme cannot be checked here and
+    // the documented requirement still applies to it.
+    if (props.cloudFrontDistribution && props.loadBalancer !== undefined) {
+      const cfnLoadBalancer = loadBalancer.node.tryFindChild('Resource') as CfnLoadBalancer | undefined;
+      if (cfnLoadBalancer?.scheme === 'internal') {
+        throw new ValidationError(lit`CloudFrontInternalLoadBalancer`, 'This pattern creates a public origin for the load balancer, which ' +
+          'requires it to be internet-facing. To front an internal load balancer, use a VPC origin instead.', this);
+      }
+    }
 
     if (props.certificate !== undefined && props.protocol !== undefined && props.protocol !== ApplicationProtocol.HTTPS) {
       throw new ValidationError(lit`ProtocolCertificateGiven`, 'The HTTPS protocol must be used when a certificate is given', this);
@@ -612,6 +644,14 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
 
     if (props.cloudFrontDistribution) {
+      // CloudFront requires each path pattern to be unique, so a
+      // distribution can only take one /* behavior. Fail at synth when this
+      // distribution was already wired by another service instead of
+      // failing at deploy time.
+      if (cloudFrontDistributionsWired.has(props.cloudFrontDistribution)) {
+        throw new ValidationError(lit`CloudFrontDuplicateBehavior`, 'This CloudFront distribution already has a /* cache behavior added by ' +
+          'another service. A distribution can only be put in front of one service.', this);
+      }
       const isHttps = protocol === ApplicationProtocol.HTTPS;
       const origin = new LoadBalancerV2Origin(loadBalancer, {
         protocolPolicy: isHttps ? OriginProtocolPolicy.HTTPS_ONLY : OriginProtocolPolicy.HTTP_ONLY,
@@ -629,12 +669,18 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
         originRequestPolicy: behaviorOptions.originRequestPolicy
           ?? (isHttps ? OriginRequestPolicy.ALL_VIEWER : OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER),
       });
+      cloudFrontDistributionsWired.add(props.cloudFrontDistribution);
       if (isHttps) {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:cloudFrontHttpsOrigin',
           'The distribution put in front of this HTTPS load balancer must have an alias for a name ' +
           'covered by the load balancer certificate, and the distribution certificate must be in ' +
           'us-east-1. Otherwise CloudFront cannot verify the origin certificate and returns 502 ' +
           'for every request.');
+      } else {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:cloudFrontHttpOrigin',
+          'CloudFront connects to this load balancer over HTTP, so viewer requests (including cookies, ' +
+          'query strings and headers) are not encrypted between CloudFront and the load balancer even ' +
+          'though viewers use HTTPS. Use an HTTPS listener (certificate) to encrypt the origin connection.');
       }
       if (props.openListener ?? defaultOpenListener) {
         Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:cloudFrontOpenListener',
