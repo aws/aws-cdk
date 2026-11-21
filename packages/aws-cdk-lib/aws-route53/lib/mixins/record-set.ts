@@ -2,13 +2,13 @@ import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
 import type { IAspect, IPostProcessor, IResolvable, IResolveContext } from '../../../core';
 import {
-  AspectPriority, Aspects, DefaultTokenResolver,
-  Mixin, Reference, Stack, Token, Tokenization, UnscopedValidationError, ValidationError,
+  Annotations, AspectPriority, Aspects, DefaultTokenResolver,
+  Mixin, Reference, Stack, Stage, Token, Tokenization, UnscopedValidationError, ValidationError,
 } from '../../../core';
 import { md5hash } from '../../../core/lib/helpers-internal';
 import { currentAspectVisitation } from '../../../core/lib/private/aspect-visitation';
 import { CloudFormationLang } from '../../../core/lib/private/cloudformation-lang';
-import { iterateTemplateCfnResources } from '../../../core/lib/private/construct-iteration';
+import { iterateDfsPreorderStopAtStage } from '../../../core/lib/private/construct-iteration';
 import { lit } from '../../../core/lib/private/literal-string';
 import { CfnRecordSet, CfnRecordSetProtection } from '../route53.generated';
 
@@ -28,12 +28,16 @@ export interface RecordSetProtectionProps {
 /**
  * Protects all records with the target's name and type in its hosted zone.
  *
- * Apply the mixin to a record or a common scope before synthesis.
- * Set the hosted zone ID, name, and type before applying it. A record that
- * specifies only a hosted zone name cannot be protected with this mixin.
+ * Apply the mixin to a record, to a scope containing records, or from an Aspect.
+ * Set the hosted zone ID, name, and type on every target before applying it.
+ * Scope-wide application throws if any selected record specifies only a hosted zone name.
  *
- * Records with the same zone ID, name, and type in a stack share one protection.
- * CloudFormation creates all matching records in the stack before enabling protection.
+ * CloudFormation creates matching records in the same template before enabling
+ * their shared protection. Use the same CloudFormation condition for those records.
+ * An untargeted record that specifies only a hosted zone name triggers a warning
+ * if its name and type match. Set its zone ID so CDK can order records in the same template.
+ * For records in other templates, including nested stacks, deploy those records
+ * first and manage the protection in one stack.
  * An application can supply a missing comment. If several applications supply
  * comments for the same protection, the comments must agree.
  *
@@ -66,27 +70,39 @@ export class RecordSetProtection extends Mixin {
 }
 
 const PROTECTION_GROUPS = Symbol.for('@aws-cdk/aws-route53.RecordSetProtectionGroups');
+const PROTECTION_IDENTITY = Symbol.for('@aws-cdk/aws-route53.RecordSetProtectionIdentity');
+const LINK_RECORDS = Symbol.for('@aws-cdk/aws-route53.LinkProtectedRecords');
+const PROTECTION_OWNERS = Symbol.for('@aws-cdk/aws-route53.RecordSetProtectionOwners');
+
+type ManagedProtection = CfnRecordSetProtection & { [PROTECTION_IDENTITY]: any[] };
 
 /** Wait until synthesis to group records whose names or zone IDs are lazy. */
 class ProtectionGroups implements IAspect {
   public static of(stack: Stack): ProtectionGroups {
-    const aspects = Aspects.of(stack);
-    const existing = aspects.all.find((aspect): aspect is ProtectionGroups => PROTECTION_GROUPS in aspect);
-    if (existing) return existing;
-
-    if (currentAspectVisitation(stack)) {
-      throw new ValidationError(lit`RecordSetProtectionAppliedDuringAspect`, 'apply RecordSetProtection to at least one record in the stack before synthesis, outside of an Aspect', stack);
+    const owner = stack as Stack & { [PROTECTION_GROUPS]?: ProtectionGroups };
+    const groups = owner[PROTECTION_GROUPS] ??= new ProtectionGroups(stack);
+    const visits = currentAspectVisitation(stack);
+    if (visits) {
+      // The stack may already have been visited. Bind now and install the aspect for future syntheses.
+      groups.visit(stack);
+      if (!groups.installed && !visits.includes(groups.install)) visits.push(groups.install);
+    } else {
+      groups.install();
     }
-    const groups = new ProtectionGroups(stack);
-    aspects.add(groups, { priority: AspectPriority.MUTATING });
     return groups;
   }
 
-  public readonly [PROTECTION_GROUPS] = true;
   private readonly pending: Array<(scope: Construct) => void> = [];
   private scope?: Construct;
+  private installed = false;
 
   private constructor(private readonly stack: Stack) {}
+
+  private readonly install = () => {
+    if (this.installed) return;
+    Aspects.of(this.stack).add(this, { priority: AspectPriority.MUTATING });
+    this.installed = true;
+  };
 
   public visit(node: IConstruct): void {
     if (node !== this.stack) return;
@@ -100,37 +116,13 @@ class ProtectionGroups implements IAspect {
       this.pending.length = 0;
     }
 
-    // A later aspect may add a record or change an untargeted sibling's name.
-    currentAspectVisitation(this.stack)!.push(() => this.linkMatchingRecords());
-  }
-
-  private linkMatchingRecords(): void {
-    const members = new Map<CfnRecordSetProtection, CfnRecordSet[]>();
-    for (const child of this.stack.node.children) {
-      for (const record of iterateTemplateCfnResources(child)) {
-        if (!CfnRecordSet.isCfnRecordSet(record) || record.hostedZoneId === undefined) continue;
-        const key = expressionKey(recordIdentity(record, record.hostedZoneId, record.name, record.type));
-        const protection = this.scope!.node.tryFindChild(md5hash(key)) as CfnRecordSetProtection | undefined;
-        if (!protection) continue;
-
-        const group = members.get(protection);
-        if (group) {
-          group.push(record);
-        } else {
-          members.set(protection, [record]);
-        }
-      }
-    }
-
-    for (const [protection, records] of members) {
-      const first = records[0];
-      const different = records.find(record => record.cfnOptions.condition !== first.cfnOptions.condition);
-      if (different) {
-        throw new ValidationError(lit`RecordSetProtectionConditionMismatch`,
-          `use the same CloudFormation condition for ${first.node.path} and ${different.node.path} so their shared protection is created whenever the records exist`, different);
-      }
-      protection.cfnOptions.condition ??= first.cfnOptions.condition;
-      for (const record of records) protection.addResourceDependency(record);
+    // All stacks in this assembly must finish applying aspects before matching records.
+    const visits = currentAspectVisitation(this.stack)! as Array<() => void> & { [LINK_RECORDS]?: boolean };
+    if (!visits[LINK_RECORDS]) {
+      visits[LINK_RECORDS] = true;
+      // A test can synthesize a single stack instead of its enclosing stage.
+      const root = this.stack.node.scopes.find(scope => currentAspectVisitation(scope) === visits)!;
+      visits.push(() => linkMatchingRecords(root));
     }
   }
 
@@ -148,6 +140,7 @@ class ProtectionGroups implements IAspect {
           recordType: type,
           comment,
         });
+        Object.defineProperty(protection, PROTECTION_IDENTITY, { value: identity });
       } else if (comment !== undefined) {
         if (protection.comment !== undefined &&
           expressionKey(resolveForGrouping(record, protection.comment)) !== expressionKey(resolveForGrouping(record, comment))) {
@@ -170,8 +163,89 @@ class ProtectionGroups implements IAspect {
   }
 }
 
-function recordIdentity(scope: IConstruct, zone: string, name: string, type: string): any[] {
-  const resolvedZone = resolveForGrouping(scope, zone);
+/** Compare records across templates without confusing stack-local references or changing logical IDs. */
+function comparableExpression(value: any, stack: Stack): any {
+  if (Array.isArray(value)) return value.map(item => comparableExpression(item, stack));
+  if (value === null || typeof value !== 'object') return value;
+  if (value.localReferencePath !== undefined) {
+    return { referencePath: stack.node.path + value.localReferencePath, attribute: value.attribute };
+  }
+  if (value.referencePath !== undefined) return value;
+  if (value['Fn::Join']) return { 'Fn::Join': comparableExpression(value['Fn::Join'], stack) };
+  if (value['Fn::ImportValue'] !== undefined && !Token.isUnresolved(stack.account) && !Token.isUnresolved(stack.region)) {
+    return { account: stack.account, region: stack.region, importValue: comparableExpression(value['Fn::ImportValue'], stack) };
+  }
+  // Other intrinsics may refer to stack parameters, mappings, or deployment-time values.
+  return { stack: stack.node.path, expression: value };
+}
+
+function linkMatchingRecords(assembly: IConstruct): void {
+  const protections = new Map<string, ManagedProtection>();
+  const protectedNames = new Set<string>();
+  const records: CfnRecordSet[] = [];
+  const root = assembly.node.root as IConstruct & { [PROTECTION_OWNERS]?: Map<string, ManagedProtection> };
+  const owners = root[PROTECTION_OWNERS] ??= new Map();
+  for (const node of iterateDfsPreorderStopAtStage(assembly)) {
+    if (CfnRecordSet.isCfnRecordSet(node)) {
+      records.push(node);
+    } else if (PROTECTION_IDENTITY in node) {
+      const protection = node as ManagedProtection;
+      const stack = Stack.of(protection);
+      const identity = comparableExpression(protection[PROTECTION_IDENTITY], stack);
+      const key = expressionKey(identity);
+      const previous = owners.get(key);
+      const existing = protections.get(key) ?? (previous && Stage.of(previous) !== assembly ? previous : undefined);
+      if (existing && existing !== protection) {
+        throw new ValidationError(lit`DuplicateRecordSetProtection`,
+          `protect this record group in only one stack: ${existing.node.path} and ${protection.node.path} both manage it`, protection);
+      }
+      protections.set(key, protection);
+      protectedNames.add(expressionKey(identity.slice(1)));
+    }
+  }
+
+  const members = new Map<ManagedProtection, CfnRecordSet[]>();
+  for (const record of records) {
+    const stack = Stack.of(record);
+    const identity = comparableExpression(recordIdentity(record, record.hostedZoneId, record.name, record.type), stack);
+    if (record.hostedZoneId === undefined) {
+      if (record.hostedZoneName !== undefined && protectedNames.has(expressionKey(identity.slice(1)))) {
+        Annotations.of(record).addWarningV2('@aws-cdk/aws-route53:recordSetProtectionHostedZoneName',
+          'a protected record has the same name and type. Set hostedZoneId so CDK can check whether this record must be deployed before the protection');
+      }
+      continue;
+    }
+    const protection = protections.get(expressionKey(identity));
+    if (!protection) continue;
+    if (Stack.of(protection) !== stack) {
+      Annotations.of(record).addWarningV2('@aws-cdk/aws-route53:recordSetProtectionCrossStack',
+        `deploy this record before enabling protection in ${Stack.of(protection).node.path}, or place the records in the same stack so CDK can order them`);
+      continue;
+    }
+    const group = members.get(protection);
+    if (group) group.push(record);
+    else members.set(protection, [record]);
+  }
+  for (const [protection, group] of members) {
+    const first = group[0];
+    const different = group.find(record => record.cfnOptions.condition !== first.cfnOptions.condition);
+    if (different) {
+      throw new ValidationError(lit`RecordSetProtectionConditionMismatch`,
+        `use the same CloudFormation condition for ${first.node.path} and ${different.node.path} so their shared protection is created whenever the records exist`, different);
+    }
+    protection.cfnOptions.condition ??= first.cfnOptions.condition;
+    for (const record of group) protection.addResourceDependency(record);
+  }
+
+  // Other stages synthesize separately. Publish ownership only after this assembly has been checked.
+  for (const [key, protection] of owners) {
+    if (Stage.of(protection) === assembly && !protections.has(key)) owners.delete(key);
+  }
+  for (const [key, protection] of protections) owners.set(key, protection);
+}
+
+function recordIdentity(scope: IConstruct, zone: string | undefined, name: string, type: string): any[] {
+  const resolvedZone = zone === undefined ? undefined : resolveForGrouping(scope, zone);
   const resolvedName = resolveForGrouping(scope, name);
   return [
     typeof resolvedZone === 'string' ? resolvedZone.replace(/^\/hostedzone\//, '') : resolvedZone,

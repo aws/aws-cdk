@@ -1,9 +1,11 @@
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import type { IResolveContext } from '../../core';
-import { App, Aspects, CfnCondition, CfnParameter, Fn, Lazy, Mixins, NestedStack, Stack, Token } from '../../core';
+import { App, Aspects, CfnCondition, CfnParameter, Fn, Lazy, Mixins, NestedStack, Stack, Stage, Token } from '../../core';
 import { ARecord, CfnHostedZone, CfnRecordSet, HostedZone, mixins, RecordTarget } from '../lib';
 
 const protectionType = 'AWS::Route53::RecordSetProtection';
+const crossStackWarning = Match.stringLikeRegexp('@aws-cdk/aws-route53:recordSetProtectionCrossStack');
+const zoneNameWarning = Match.stringLikeRegexp('@aws-cdk/aws-route53:recordSetProtectionHostedZoneName');
 
 test('records are unprotected by default', () => {
   const stack = new Stack();
@@ -136,7 +138,7 @@ test('includes untargeted matching records and keeps other groups and nested sta
   new CfnRecordSet(stack, 'OtherType', { ...props, type: 'AAAA' });
   new CfnRecordSet(stack, 'OtherName', { ...props, name: 'other.example.com.' });
   new CfnRecordSet(stack, 'OtherZone', { ...props, hostedZoneId: 'Z456' });
-  new CfnRecordSet(nested, 'OtherStack', { ...props, setIdentifier: 'Nested' });
+  const otherStack = new CfnRecordSet(nested, 'OtherStack', { ...props, setIdentifier: 'Nested' });
   blue.with(new mixins.RecordSetProtection());
 
   const template = Template.fromStack(stack);
@@ -148,6 +150,7 @@ test('includes untargeted matching records and keeps other groups and nested sta
     DependsOn: [stack.getLogicalId(blue), stack.getLogicalId(green)].sort(),
   });
   Template.fromStack(nested).resourceCountIs(protectionType, 0);
+  Annotations.fromStack(stack).hasWarning(`/${otherStack.node.path}`, crossStackWarning);
 });
 
 test.each([false, true])('keeps the protection logical ID when an aspect overrides the hosted zone logical ID (%s)', (overrideZoneId) => {
@@ -181,21 +184,24 @@ describe.each([false, true])('with aspect stabilization %s', (stabilization) => 
     return new Stack(app, 'TestStack');
   }
 
-  test('fails for first application inside an aspect and accepts an explicit target on retry', () => {
+  test('supports first and repeated application inside an aspect', () => {
     const stack = createStack();
     const props = { hostedZoneId: 'Z123', name: 'www.example.com.', type: 'A', weight: 50 };
     const blue = new CfnRecordSet(stack, 'Blue', { ...props, setIdentifier: 'Blue' });
     const green = new CfnRecordSet(stack, 'Green', { ...props, setIdentifier: 'Green' });
-    Aspects.of(green).add({ visit: () => green.with(new mixins.RecordSetProtection({ comment: 'Production' })) });
+    const protection = new mixins.RecordSetProtection({ comment: 'Production' });
+    Aspects.of(green).add({ visit: () => green.with(protection, protection) });
 
-    expect(() => Template.fromStack(stack)).toThrow('before synthesis, outside of an Aspect');
-    blue.with(new mixins.RecordSetProtection());
     const template = Template.fromStack(stack);
     template.resourceCountIs(protectionType, 1);
     template.hasResource(protectionType, {
       Properties: { Comment: 'Production' },
       DependsOn: [stack.getLogicalId(blue), stack.getLogicalId(green)].sort(),
     });
+
+    const assembly = Stage.of(stack)!.synth({ force: true });
+    const second = Template.fromJSON(assembly.getStackArtifact(stack.artifactId).template);
+    expect(second.findResources(protectionType)).toEqual(template.findResources(protectionType));
   });
 
   test('links an untargeted sibling that a later aspect moves into the protected group', () => {
@@ -245,11 +251,11 @@ test('stack-wide application groups records by hosted zone, name and type', () =
   }
 });
 
-test('keeps protections local to their stacks in the same app', () => {
+test('protects records with the same name and type in distinct zones in separate stacks', () => {
   const app = new App();
   const stacks = ['First', 'Second'].map(id => new Stack(app, id));
   const records = stacks.map(stack => {
-    const record = new CfnRecordSet(stack, `Record${stack.node.id}`, { name: 'example.com.', type: 'A', hostedZoneId: 'Z123' });
+    const record = new CfnRecordSet(stack, `Record${stack.node.id}`, { name: 'example.com.', type: 'A', hostedZoneId: `Z${stack.node.id}` });
     record.with(new mixins.RecordSetProtection({ comment: stack.stackName }));
     return record;
   });
@@ -263,6 +269,106 @@ test('keeps protections local to their stacks in the same app', () => {
       DependsOn: [stack.getLogicalId(record)],
     });
   }
+});
+
+test.each(['one stage', 'separate stages'])('fails when two stacks in %s protect the same DNS identity', (grouping) => {
+  const app = new App();
+  const stacks = ['First', 'Second'].map(id => new Stack(grouping === 'one stage' ? app : new Stage(app, id), `Stack${id}`));
+  stacks.forEach((stack, i) => new CfnRecordSet(stack, 'Record', {
+    name: ['WWW.example.com.', 'www.example.com'][i],
+    hostedZoneId: ['/hostedzone/Z123', 'Z123'][i],
+    type: 'A',
+  }).with(new mixins.RecordSetProtection()));
+
+  expect(() => { stacks.forEach(stack => Template.fromStack(stack)); }).toThrow('one stack');
+});
+
+test('fails when the hosted zone owner and a consumer both protect the same record group', () => {
+  const app = new App();
+  const owner = new Stack(app, 'Owner');
+  const consumer = new Stack(app, 'Consumer');
+  const zone = new HostedZone(owner, 'Zone', { zoneName: 'example.com' });
+  for (const stack of [owner, consumer]) {
+    new CfnRecordSet(stack, 'Record', { hostedZoneId: zone.hostedZoneId, name: 'www.example.com.', type: 'A' })
+      .with(new mixins.RecordSetProtection());
+  }
+
+  expect(() => Template.fromStack(owner)).toThrow('one stack');
+});
+
+test('warns only on an untargeted record in another stack that shares the managed zone and identity', () => {
+  const app = new App();
+  const owner = new Stack(app, 'Owner');
+  const consumer = new Stack(app, 'Consumer');
+  const zone = new HostedZone(owner, 'Zone', { zoneName: 'example.com' });
+  const props = { hostedZoneId: zone.hostedZoneId, name: 'www.example.com.', type: 'A', weight: 50 };
+  const blue = new CfnRecordSet(owner, 'Blue', { ...props, setIdentifier: 'Blue' });
+  const green = new CfnRecordSet(consumer, 'Green', { ...props, setIdentifier: 'Green' });
+  const other = new CfnRecordSet(consumer, 'Other', { ...props, type: 'AAAA' });
+  const otherZone = new CfnRecordSet(consumer, 'OtherZone', { ...props, hostedZoneId: 'Z456' });
+  blue.with(new mixins.RecordSetProtection());
+
+  Template.fromStack(owner).hasResource(protectionType, { DependsOn: [owner.getLogicalId(blue)] });
+  Template.fromStack(consumer).resourceCountIs(protectionType, 0);
+  const annotations = Annotations.fromStack(consumer);
+  annotations.hasWarning(`/${green.node.path}`, crossStackWarning);
+  for (const record of [other, otherZone]) annotations.hasNoWarning(`/${record.node.path}`, crossStackWarning);
+});
+
+test('warns about a name-only sibling with the same DNS name and type', () => {
+  const stack = new Stack();
+  const blue = new CfnRecordSet(stack, 'Blue', { hostedZoneId: 'Z123', name: 'www.example.com.', type: 'A' });
+  const props = { hostedZoneName: 'example.com.', name: 'WWW.example.com', type: 'A' };
+  const green = new CfnRecordSet(stack, 'Green', props);
+  const other = new CfnRecordSet(stack, 'Other', { ...props, name: 'other.example.com.' });
+  const ipv6 = new CfnRecordSet(stack, 'Ipv6', { ...props, type: 'AAAA' });
+  blue.with(new mixins.RecordSetProtection());
+
+  Template.fromStack(stack).hasResource(protectionType, { DependsOn: [stack.getLogicalId(blue)] });
+  const annotations = Annotations.fromStack(stack);
+  annotations.hasWarning(`/${green.node.path}`, zoneNameWarning);
+  for (const record of [blue, other, ipv6]) annotations.hasNoWarning(`/${record.node.path}`, zoneNameWarning);
+});
+
+test('fails when applying to a common scope also targets a hosted-zone-name-only record', () => {
+  const stack = new Stack();
+  new CfnRecordSet(stack, 'Blue', { hostedZoneId: 'Z123', name: 'www.example.com.', type: 'A' });
+  new CfnRecordSet(stack, 'Green', { hostedZoneName: 'example.com.', name: 'www.example.com.', type: 'A' });
+
+  expect(() => Mixins.of(stack).apply(new mixins.RecordSetProtection())).toThrow('set hostedZoneId');
+});
+
+test.each([
+  ['same export environment', 'us-east-1', 'us-east-1', true],
+  ['different export regions', 'us-east-1', 'us-west-2', false],
+  ['unknown export environments', undefined, undefined, false],
+] as const)('compares import values in %s', (_description, firstRegion, secondRegion, duplicate) => {
+  const app = new App();
+  const stacks = [firstRegion, secondRegion].map((region, i) => new Stack(app, `Stack${i}`, {
+    env: region ? { account: '111111111111', region } : undefined,
+  }));
+  for (const stack of stacks) {
+    new CfnRecordSet(stack, 'Record', { hostedZoneId: Fn.importValue('ZoneId'), name: 'www.example.com.', type: 'A' })
+      .with(new mixins.RecordSetProtection());
+  }
+
+  if (duplicate) {
+    expect(() => Template.fromStack(stacks[0])).toThrow('one stack');
+  } else {
+    for (const stack of stacks) Template.fromStack(stack).resourceCountIs(protectionType, 1);
+  }
+});
+
+test('treats zone parameters with the same logical ID in separate stacks as independent', () => {
+  const app = new App();
+  const stacks = ['Blue', 'Green'].map(id => new Stack(app, id));
+  for (const stack of stacks) {
+    const zone = new CfnParameter(stack, 'ZoneId');
+    new CfnRecordSet(stack, 'Record', { hostedZoneId: zone.valueAsString, name: 'www.example.com.', type: 'A' })
+      .with(new mixins.RecordSetProtection());
+  }
+
+  for (const stack of stacks) Template.fromStack(stack).resourceCountIs(protectionType, 1);
 });
 
 test('distinguishes hosted zones with the same logical ID in different producer stacks', () => {
