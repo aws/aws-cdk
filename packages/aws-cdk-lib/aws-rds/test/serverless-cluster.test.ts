@@ -144,7 +144,7 @@ describe('serverless cluster', () => {
     });
   });
 
-  test("sets the retention policy of the SubnetGroup to 'Retain' if the Serverless Cluster is created with 'Retain'", () => {
+  test("sets the retention policy of the SubnetGroup to 'Retain' and enables deletion protection if the Serverless Cluster is created with 'Retain'", () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -157,6 +157,66 @@ describe('serverless cluster', () => {
     Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DeletionProtection: true,
+    });
+  });
+
+  test("sets the retention policy of the SubnetGroup to 'Retain' and enables deletion protection if the Serverless Cluster is created with 'RetainOnUpdateOrDelete'", () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new ServerlessCluster(stack, 'Cluster', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
+      DeletionPolicy: 'RetainExceptOnCreate',
+      UpdateReplacePolicy: 'Retain',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DeletionProtection: true,
+    });
+  });
+
+  test("does not set the retention policy of the SubnetGroup or enable deletion protection if the Serverless Cluster is created with 'Destroy'", () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new ServerlessCluster(stack, 'Cluster', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
+      DeletionPolicy: Match.absent(),
+      UpdateReplacePolicy: Match.absent(),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DeletionProtection: Match.absent(),
+    });
+  });
+
+  test("explicit 'deletionProtection' takes precedence over the removal policy default", () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new ServerlessCluster(stack, 'Cluster', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      removalPolicy: cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+      deletionProtection: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DeletionProtection: false,
     });
   });
 
