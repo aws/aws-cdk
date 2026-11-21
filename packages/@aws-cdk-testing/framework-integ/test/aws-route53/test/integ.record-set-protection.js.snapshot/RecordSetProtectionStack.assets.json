@@ -1,16 +1,16 @@
 {
   "version": "55.0.0",
   "files": {
-    "6b78978d1fefd846702a304efff67499e1f747548eab63aab0460dee4808d3f0": {
+    "52428b26924056a15066e6bc098afeb4fa7c65c6a8a9de270a4331e5d1f3a7a8": {
       "displayName": "RecordSetProtectionStack Template",
       "source": {
         "path": "RecordSetProtectionStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-f27a36ca": {
+        "current_account-current_region-6766bcea": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6b78978d1fefd846702a304efff67499e1f747548eab63aab0460dee4808d3f0.json",
+          "objectKey": "52428b26924056a15066e6bc098afeb4fa7c65c6a8a9de270a4331e5d1f3a7a8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

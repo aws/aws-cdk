@@ -22,21 +22,6 @@
     "Weight": 50
    }
   },
-  "BlueProtectionF51E97A9": {
-   "Type": "AWS::Route53::RecordSetProtection",
-   "Properties": {
-    "Comment": "Production DNS",
-    "HostedZoneId": {
-     "Ref": "ZoneA5DE4B68"
-    },
-    "RecordName": "www.record-set-protection.cdk-integ-test.com.",
-    "RecordType": "A"
-   },
-   "DependsOn": [
-    "Blue10BB7880",
-    "Green9DCBBC03"
-   ]
-  },
   "Green9DCBBC03": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
@@ -52,6 +37,21 @@
     "Type": "A",
     "Weight": 50
    }
+  },
+  "Route53RecordSetProtectionsb4af11faa19df99557b6b971f8c76c2f115E29B2": {
+   "Type": "AWS::Route53::RecordSetProtection",
+   "Properties": {
+    "Comment": "Production DNS",
+    "HostedZoneId": {
+     "Ref": "ZoneA5DE4B68"
+    },
+    "RecordName": "www.record-set-protection.cdk-integ-test.com.",
+    "RecordType": "A"
+   },
+   "DependsOn": [
+    "Blue10BB7880",
+    "Green9DCBBC03"
+   ]
   }
  },
  "Outputs": {

@@ -16,12 +16,12 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "RecordSetProtectionStack/Blue/Resource/Protection",
+              "constructPath": "RecordSetProtectionStack/Route53RecordSetProtections/b4af11faa19df99557b6b971f8c76c2f",
               "constructFqn": "aws-cdk-lib.aws_route53.CfnRecordSetProtection",
               "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "RecordSetProtectionStack.template.json",
-                "logicalId": "BlueProtectionF51E97A9"
+                "logicalId": "Route53RecordSetProtectionsb4af11faa19df99557b6b971f8c76c2f115E29B2"
               }
             }
           ]

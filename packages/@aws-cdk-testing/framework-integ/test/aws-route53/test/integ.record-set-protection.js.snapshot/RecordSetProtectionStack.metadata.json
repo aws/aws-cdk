@@ -97,18 +97,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Green9DCBBC03"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_route53.mixins.RecordSetProtection"
+      }
+    }
+  ],
+  "/RecordSetProtectionStack/Route53RecordSetProtections/b4af11faa19df99557b6b971f8c76c2f": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route53RecordSetProtectionsb4af11faa19df99557b6b971f8c76c2f115E29B2"
     }
   ],
   "/RecordSetProtectionStack/Exports/Output{\"Ref\":\"ZoneA5DE4B68\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefZoneA5DE4B6864A9A0D8"
-    }
-  ],
-  "/RecordSetProtectionStack/Blue/Resource/Protection": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "BlueProtectionF51E97A9"
     }
   ]
 }
