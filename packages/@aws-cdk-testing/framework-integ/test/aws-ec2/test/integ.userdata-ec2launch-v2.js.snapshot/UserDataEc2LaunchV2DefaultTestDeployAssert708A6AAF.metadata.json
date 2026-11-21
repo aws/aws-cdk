@@ -1,0 +1,20 @@
+{
+  "/UserDataEc2LaunchV2/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "UserDataEc2LaunchV2DefaultTestDeployAssert708A6AAF.template.json"
+    }
+  ],
+  "/UserDataEc2LaunchV2/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/UserDataEc2LaunchV2/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
