@@ -12,6 +12,18 @@ export const RUNTIME_INVOKE_PERMS = ['bedrock-agentcore:InvokeAgentRuntime'];
  */
 export const RUNTIME_INVOKE_USER_PERMS = ['bedrock-agentcore:InvokeAgentRuntimeForUser'];
 
+/**
+ * Permissions to invoke the agent runtime via WebSocket stream
+ * Required when signing WebSocket connection requests to the agent runtime
+ */
+export const RUNTIME_INVOKE_WEBSOCKET_STREAM_PERMS = ['bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStream'];
+
+/**
+ * Permissions to invoke the agent runtime via WebSocket stream on behalf of a user
+ * Required when signing WebSocket connection requests with the X-Amzn-Bedrock-AgentCore-Runtime-User-Id header
+ */
+export const RUNTIME_INVOKE_WEBSOCKET_STREAM_USER_PERMS = ['bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStreamForUser'];
+
 /******************************************************************************
  *                         Control Plane Permissions
  *****************************************************************************/

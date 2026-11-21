@@ -362,7 +362,9 @@
       {
        "Action": [
         "bedrock-agentcore:InvokeAgentRuntime",
-        "bedrock-agentcore:InvokeAgentRuntimeForUser"
+        "bedrock-agentcore:InvokeAgentRuntimeForUser",
+        "bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStream",
+        "bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStreamForUser"
        ],
        "Effect": "Allow",
        "Resource": [
