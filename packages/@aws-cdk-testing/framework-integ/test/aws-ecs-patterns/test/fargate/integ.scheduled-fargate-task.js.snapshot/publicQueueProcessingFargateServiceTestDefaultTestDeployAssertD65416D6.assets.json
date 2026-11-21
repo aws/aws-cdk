@@ -1,16 +1,29 @@
 {
-  "version": "45.0.0",
+  "version": "55.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "852a038988032374560acf545c7bf1b9e910c843d05308832b8cddfc0b4ef4dd": {
+      "source": {
+        "path": "asset.852a038988032374560acf545c7bf1b9e910c843d05308832b8cddfc0b4ef4dd.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-71a85edf": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "852a038988032374560acf545c7bf1b9e910c843d05308832b8cddfc0b4ef4dd.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "8f7d7d7c74cf8ac5ebe5eeeefc6bfcb3b4ea068629ae714ab4a2f26384696e64": {
       "displayName": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6 Template",
       "source": {
         "path": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-ff81ec3f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "8f7d7d7c74cf8ac5ebe5eeeefc6bfcb3b4ea068629ae714ab4a2f26384696e64.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
