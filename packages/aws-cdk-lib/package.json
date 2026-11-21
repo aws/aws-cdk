@@ -493,6 +493,7 @@
     "./aws-route53": "./aws-route53/index.js",
     "./aws-route53-patterns": "./aws-route53-patterns/index.js",
     "./aws-route53-targets": "./aws-route53-targets/index.js",
+    "./aws-route53/mixins": "./aws-route53/lib/mixins/index.js",
     "./aws-route53globalresolver": "./aws-route53globalresolver/index.js",
     "./aws-route53profiles": "./aws-route53profiles/index.js",
     "./aws-route53recoverycontrol": "./aws-route53recoverycontrol/index.js",

@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "f85bcdef2ae21346f065ccdf94c7a3221f71b92b8400bb54219c3bb44394f461": {
+      "displayName": "RecordSetProtectionStack Template",
+      "source": {
+        "path": "RecordSetProtectionStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5c574762": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f85bcdef2ae21346f065ccdf94c7a3221f71b92b8400bb54219c3bb44394f461.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

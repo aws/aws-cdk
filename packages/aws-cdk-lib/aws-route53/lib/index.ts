@@ -4,6 +4,7 @@ export * from './hosted-zone-grants';
 export * from './hosted-zone-provider';
 export * from './hosted-zone-ref';
 export * from './key-signing-key';
+export * as mixins from './mixins';
 export * from './record-set';
 export * from './vpc-endpoint-service-domain-name';
 export * from './cidr-routing-config';
