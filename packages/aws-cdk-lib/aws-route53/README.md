@@ -680,3 +680,43 @@ new route53.VpcEndpointServiceDomainName(this, 'EndpointDomain', {
   publicHostedZone: zone,
 });
 ```
+
+## Mixins
+
+### Protecting DNS records from changes
+
+Apply `RecordSetProtection` to prevent changes to a Route 53 record. If you
+provide a comment, Route 53 includes it in the error when it rejects a change.
+
+```ts
+declare const mail: route53.MxRecord;
+mail.with(new route53.mixins.RecordSetProtection({
+  comment: 'Contact the mail team before changing this endpoint',
+}));
+```
+
+You can also apply the mixin to a `CfnRecordSet` with a hosted zone ID. Set the
+zone, name, and type through the record's properties before applying the mixin.
+The mixin reads those properties directly and cannot see raw CloudFormation overrides.
+
+One protection covers every record with the same name and type in the hosted
+zone, even when their set identifiers differ. For a weighted pair, apply the
+mixin to one record and pass the other in `additionalRecords` so CloudFormation
+creates both before enabling protection.
+
+```ts
+declare const blue: route53.ARecord;
+declare const green: route53.ARecord;
+blue.with(new route53.mixins.RecordSetProtection({ additionalRecords: [green] }));
+```
+
+You can create records and enable protection in one deployment. To change a
+protected record or add another weighted record to a protected group, use three
+deployments.
+
+1. Remove the protection.
+2. Update or add the record.
+3. Restore the protection.
+
+If you change the comment, CloudFormation replaces the protection and the
+records are unprotected during replacement. [CloudFormation record set protection update rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-route53-recordsetprotection.html#aws-resource-route53-recordsetprotection--remarks)
