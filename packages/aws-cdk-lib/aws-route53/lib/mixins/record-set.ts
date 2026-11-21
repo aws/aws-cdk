@@ -1,7 +1,13 @@
 import type { IConstruct } from 'constructs';
-import { Mixin, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../../core';
+import { Construct } from 'constructs';
+import type { IAspect, IPostProcessor, IResolvable, IResolveContext } from '../../../core';
+import {
+  AspectPriority, Aspects, DefaultTokenResolver,
+  Mixin, Reference, Stack, Token, Tokenization, UnscopedValidationError, ValidationError,
+} from '../../../core';
+import { md5hash } from '../../../core/lib/helpers-internal';
+import { CloudFormationLang } from '../../../core/lib/private/cloudformation-lang';
 import { lit } from '../../../core/lib/private/literal-string';
-import type { IRecordSetRef } from '../../../interfaces/generated/aws-route53-interfaces.generated';
 import { CfnRecordSet, CfnRecordSetProtection } from '../route53.generated';
 
 /**
@@ -15,30 +21,22 @@ export interface RecordSetProtectionProps {
    * @default - no comment
    */
   readonly comment?: string;
-
-  /**
-   * Other records that CloudFormation must create before enabling protection.
-   *
-   * Include records that share the target's hosted zone, name, and type, such as
-   * the other weighted records for an endpoint. One protection covers them all,
-   * regardless of their set identifiers.
-   * @default - CloudFormation waits only for the target record
-   */
-  readonly additionalRecords?: IRecordSetRef[];
 }
 
 /**
  * Protects all records with the target's name and type in its hosted zone.
  *
- * Set the hosted zone, name, and type on each record, then apply the mixin once
- * per group. If you apply it to another record with the same zone, name, and
- * type in the same stack, the existing protection also depends on that record.
+ * Apply the mixin to each record in a routing group, or to their common scope.
+ * Set the hosted zone ID, name, and type before applying it. A record that
+ * specifies only a hosted zone name cannot be protected with this mixin.
  *
- * To change a protected record, remove its protection in a separate deployment first.
+ * Records with the same zone ID, name, and type in a stack share one protection.
+ * An application can supply a missing comment. If several applications supply
+ * comments for the same protection, the comments must agree.
+ *
+ * To change or remove a protected record, remove its protection in a separate deployment first.
  */
 export class RecordSetProtection extends Mixin {
-  private static readonly protections = new WeakMap<Stack, Map<string, CfnRecordSetProtection>>();
-
   constructor(private readonly props: RecordSetProtectionProps = {}) {
     super();
     const comment = props.comment;
@@ -57,75 +55,109 @@ export class RecordSetProtection extends Mixin {
       throw new ValidationError(lit`RecordSetProtectionRequiresHostedZoneId`, 'set hostedZoneId on the record to enable record set protection', construct);
     }
 
-    const siblings = (this.props.additionalRecords ?? []).map(sibling => siblingDependency(construct, sibling));
-    const stack = Stack.of(construct);
-    let protections = RecordSetProtection.protections.get(stack);
-    if (!protections) {
-      protections = new Map();
-      RecordSetProtection.protections.set(stack, protections);
-    }
+    ProtectionGroups.of(Stack.of(construct)).register(construct, construct.hostedZoneId, construct.name, construct.type, this.props.comment);
+  }
+}
 
-    // The records share a lookup key. The first record's construct path determines the protection's logical ID.
-    const identity = recordIdentity(construct);
-    let protection = protections.get(identity);
-    if (!protection) {
-      protection = new CfnRecordSetProtection(construct, 'Protection', {
-        hostedZoneId: construct.hostedZoneId,
-        recordName: construct.name,
-        recordType: construct.type,
-        comment: this.props.comment,
-      });
-      protections.set(identity, protection);
-    } else if (this.props.comment !== undefined) {
-      if (protection.comment !== undefined && this.props.comment !== protection.comment) {
-        throw new ValidationError(lit`ConflictingRecordSetProtectionComment`, `use the same protection comment for all records sharing ${construct.name} and type ${construct.type}`, construct);
+const PROTECTION_GROUPS = Symbol.for('@aws-cdk/aws-route53.RecordSetProtectionGroups');
+
+/** Wait until synthesis to group records whose names or zone IDs are lazy. */
+class ProtectionGroups implements IAspect {
+  public static of(stack: Stack): ProtectionGroups {
+    const aspects = Aspects.of(stack);
+    const existing = aspects.all.find((aspect): aspect is ProtectionGroups => PROTECTION_GROUPS in aspect);
+    if (existing) return existing;
+
+    const groups = new ProtectionGroups(stack);
+    aspects.add(groups, { priority: AspectPriority.MUTATING });
+    return groups;
+  }
+
+  public readonly [PROTECTION_GROUPS] = true;
+  private readonly pending: Array<(scope: Construct) => void> = [];
+  private scope?: Construct;
+
+  private constructor(private readonly stack: Stack) {}
+
+  public visit(node: IConstruct): void {
+    if (node !== this.stack || this.scope) return;
+    // The app may already use this construct ID. Allocate our scope after the app is built.
+    const prefix = 'Route53RecordSetProtections';
+    let id = prefix;
+    for (let suffix = 2; this.stack.node.tryFindChild(id); suffix++) id = prefix + suffix;
+    this.scope = new Construct(this.stack, id);
+    for (const bind of this.pending) bind(this.scope);
+    this.pending.length = 0;
+  }
+
+  public register(record: CfnRecordSet, zone: string, name: string, type: string, comment?: string): void {
+    const bind = (scope: Construct) => {
+      const identity = recordIdentity(record, zone, name, type);
+      const key = expressionKey(identity);
+      const id = md5hash(key);
+      let protection = scope.node.tryFindChild(id) as CfnRecordSetProtection | undefined;
+      if (!protection) {
+        protection = new CfnRecordSetProtection(scope, id, {
+          hostedZoneId: typeof identity[0] === 'string' ? identity[0] : zone,
+          recordName: typeof identity[1] === 'string' ? identity[1] : name,
+          recordType: type,
+          comment,
+        });
+      } else if (comment !== undefined) {
+        if (protection.comment !== undefined &&
+          expressionKey(resolveForGrouping(record, protection.comment)) !== expressionKey(resolveForGrouping(record, comment))) {
+          throw new ValidationError(lit`ConflictingRecordSetProtectionComment`, `use the same protection comment for all records sharing ${record.name} and type ${record.type}`, record);
+        }
+        protection.comment = comment;
       }
-      protection.comment = this.props.comment;
-    }
-
-    for (const record of [construct, ...siblings]) {
-      if (CfnRecordSet.isCfnRecordSet(record)) {
-        const initialIdentity = recordIdentity(record);
-        record.node.addValidation({
-          validate: () => recordIdentity(record) === initialIdentity ? [] : [
+      protection.addResourceDependency(record);
+      record.node.addValidation({
+        validate: () => record.hostedZoneId !== undefined
+          && expressionKey(recordIdentity(record, record.hostedZoneId, record.name, record.type)) === key ? [] : [
             'record identity changed after protection was applied, set the hosted zone, name and type before applying RecordSetProtection',
           ],
-        });
-        protection.addResourceDependency(record);
-      } else {
-        protection.node.addDependency(record);
-      }
+      });
+    };
+    if (this.scope) {
+      bind(this.scope);
+    } else {
+      this.pending.push(bind);
     }
   }
 }
 
-function recordIdentity(record: CfnRecordSet): string {
-  return JSON.stringify([
-    record.hostedZoneId === undefined ? undefined : zoneId(record.hostedZoneId),
-    record.hostedZoneName === undefined ? undefined : dnsName(record.hostedZoneName),
-    dnsName(record.name),
-    record.type,
-  ]);
+function recordIdentity(scope: IConstruct, zone: string, name: string, type: string): any[] {
+  const resolvedZone = resolveForGrouping(scope, zone);
+  const resolvedName = resolveForGrouping(scope, name);
+  return [
+    typeof resolvedZone === 'string' ? resolvedZone.replace(/^\/hostedzone\//, '') : resolvedZone,
+    typeof resolvedName === 'string' ? resolvedName.toLowerCase().replace(/\.?$/, '.') : resolvedName,
+    resolveForGrouping(scope, type),
+  ];
 }
 
-function siblingDependency(target: CfnRecordSet, ref: IRecordSetRef): IConstruct {
-  const resource = CfnRecordSet.isCfnRecordSet(ref) ? ref : ref.node.defaultChild;
-  const record = CfnRecordSet.isCfnRecordSet(resource) ? resource : undefined;
-  const name = record?.name ?? ref.recordSetRef.recordSetName;
-  const type = record?.type ?? ref.recordSetRef.type;
-  if (Token.compareStrings(dnsName(target.name), dnsName(name)) === TokenComparison.DIFFERENT
-    || Token.compareStrings(target.type, type) === TokenComparison.DIFFERENT
-    || (target.hostedZoneId !== undefined && record?.hostedZoneId !== undefined
-      && Token.compareStrings(zoneId(target.hostedZoneId), zoneId(record.hostedZoneId)) === TokenComparison.DIFFERENT)) {
-    throw new ValidationError(lit`RecordSetProtectionSiblingMismatch`, `additional record ${ref.node.path} must share the protected record's hosted zone, name and type`, target);
+// Before cross-stack references are prepared, two producers can render the same Ref.
+class GroupingResolver extends DefaultTokenResolver {
+  public override resolveToken(token: IResolvable, context: IResolveContext, postProcessor: IPostProcessor): any {
+    if (Reference.isReference(token) && Stack.of(token.target) !== Stack.of(context.scope)) {
+      return { referencePath: token.target.node.path, attribute: token.displayName };
+    }
+    return super.resolveToken(token, context, postProcessor);
   }
-  return record ?? ref;
 }
 
-function dnsName(name: string): string {
-  return Token.isUnresolved(name) ? name : name.toLowerCase().replace(/\.$/, '');
+const groupingResolver = new GroupingResolver({ join: CloudFormationLang.concat });
+
+function resolveForGrouping(scope: IConstruct, value: string): any {
+  // CloudFormation renders resource properties in the consuming stack's scope.
+  return Tokenization.resolve(value, { scope: Stack.of(scope), resolver: groupingResolver });
 }
 
-function zoneId(id: string): string {
-  return id.replace(/^\/hostedzone\//, '');
+function expressionKey(expression: any): string {
+  return JSON.stringify(expression, (_, value) => {
+    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+      return Object.fromEntries(Object.keys(value).sort().map(key => [key, value[key]]));
+    }
+    return value;
+  });
 }
