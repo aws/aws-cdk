@@ -1,0 +1,34 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "dbd29777e53c892402466ba968e045cb96142e22282ab1cf6fb4c724618e8aae": {
+      "displayName": "client-vpn-endpoint-ip-address-type-stack/Custom::ACMImportCertificatesCustomResourceProvider Code",
+      "source": {
+        "path": "asset.dbd29777e53c892402466ba968e045cb96142e22282ab1cf6fb4c724618e8aae",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-9ee616a1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "dbd29777e53c892402466ba968e045cb96142e22282ab1cf6fb4c724618e8aae.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "3aaf7acc5a90e20f05203b42d4eb246d92aa5c63baa9c5b7feb98895bcb18560": {
+      "displayName": "client-vpn-endpoint-ip-address-type-stack Template",
+      "source": {
+        "path": "client-vpn-endpoint-ip-address-type-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-7f9a176e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3aaf7acc5a90e20f05203b42d4eb246d92aa5c63baa9c5b7feb98895bcb18560.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
