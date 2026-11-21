@@ -563,7 +563,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     const internetFacing = props.publicLoadBalancer ?? true;
 
-    if (props.cloudFrontDistribution && props.publicLoadBalancer === false) {
+    // publicLoadBalancer only sets internetFacing on the load balancer this
+    // pattern creates; a supplied loadBalancer is unaffected by it and is
+    // checked by scheme below instead.
+    if (props.cloudFrontDistribution && props.loadBalancer === undefined && props.publicLoadBalancer === false) {
       throw new ValidationError(lit`CloudFrontInternalLoadBalancer`, 'This pattern creates a public origin for the load balancer, which ' +
         'requires it to be internet-facing. To front an internal load balancer, use a VPC origin instead.', this);
     }
