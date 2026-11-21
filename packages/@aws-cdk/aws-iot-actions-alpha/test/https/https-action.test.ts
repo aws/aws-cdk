@@ -272,4 +272,66 @@ describe('batchConfig', () => {
       });
     }).toThrow(`maxBatchOpenDuration must be between 5 ms and 200 ms, got ${maxBatchOpenDuration.toMilliseconds()} ms`);
   });
+
+  test.each([true, false])('sets BatchAcrossTopics to %s when explicitly specified', (batchAcrossTopics) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topicRule = new iot.TopicRule(stack, 'TopicRule', {
+      sql: iot.IotSql.fromStringAsVer20160323(
+        "SELECT topic(2) as device_id FROM 'device/+/data'",
+      ),
+    });
+    const expectedUrl = 'https://example.com';
+
+    // WHEN
+    topicRule.addAction(
+      new actions.HttpsAction(expectedUrl, {
+        batchConfig: {
+          batchAcrossTopics,
+        },
+      }),
+    );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+      TopicRulePayload: Match.objectLike({
+        Actions: [Match.objectLike({
+          Http: Match.objectLike({
+            BatchConfig: Match.objectLike({ BatchAcrossTopics: batchAcrossTopics }),
+          }),
+        })],
+      }),
+    });
+  });
+
+  test('omits BatchAcrossTopics when not specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topicRule = new iot.TopicRule(stack, 'TopicRule', {
+      sql: iot.IotSql.fromStringAsVer20160323(
+        "SELECT topic(2) as device_id FROM 'device/+/data'",
+      ),
+    });
+    const expectedUrl = 'https://example.com';
+
+    // WHEN
+    topicRule.addAction(
+      new actions.HttpsAction(expectedUrl, {
+        batchConfig: {
+          maxBatchSize: 5,
+        },
+      }),
+    );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+      TopicRulePayload: Match.objectLike({
+        Actions: [Match.objectLike({
+          Http: Match.objectLike({
+            BatchConfig: Match.objectLike({ BatchAcrossTopics: Match.absent() }),
+          }),
+        })],
+      }),
+    });
+  });
 });
