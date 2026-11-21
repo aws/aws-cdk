@@ -699,31 +699,37 @@ You can also apply the mixin to a `CfnRecordSet` with a hosted zone ID. Set the
 zone, name, and type through the record's properties before applying the mixin.
 The mixin reads those properties directly and cannot see raw CloudFormation overrides.
 
-One protection covers every record with the same name and type in the hosted
-zone, even when their set identifiers differ. Apply the mixin to each weighted
-record so CloudFormation creates them all before enabling their shared protection.
-You can also apply it to a common scope to protect every record in that scope.
+Apply the mixin before synthesis. One application protects every record with the
+same hosted zone ID, name, and type. For example, if blue and green are weighted
+A records for the same name in one stack, applying the mixin to blue makes
+CloudFormation create both records before enabling their shared protection.
+If you set a CloudFormation condition on a record, use the same condition on
+every record in the group.
 
 ```ts
 declare const blue: route53.ARecord;
-declare const green: route53.ARecord;
-const protection = new route53.mixins.RecordSetProtection();
-blue.with(protection);
-green.with(protection);
+blue.with(new route53.mixins.RecordSetProtection());
 ```
+
+You can also apply the mixin to a common scope to protect every record in that scope.
 
 CDK groups records within each stack using their zone ID, name, and type.
 If different CloudFormation expressions will have the same value only at deployment,
 define one `CfnRecordSetProtection` and call its `addResourceDependency` method
 with each `CfnRecordSet` in the group.
 
-You can create records and enable protection in one deployment. To update or
-remove one protected record, or to add a record to a protected group, deploy
-each step separately.
+You can create new records and enable their protection in one deployment. For
+records that already exist in the stack, add protection in an update that leaves
+those records unchanged. Combining both changes can leave the stack in
+`UPDATE_ROLLBACK_FAILED` if CloudFormation needs to roll back.
 
-1. Remove the protection.
+To change or remove a protected record, or add a record to a protected group,
+deploy each step separately.
+
+1. Remove every application of the mixin that protects the group, including any
+   on a common scope. Check that `cdk diff` shows removal of the shared protection.
 2. Update, add, or remove the record.
-3. Restore protection for the remaining records if needed.
+3. Reapply the mixin if the remaining records need protection.
 
 If you change the comment, CloudFormation replaces the protection and the
 records are unprotected during replacement. [CloudFormation record set protection update rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-route53-recordsetprotection.html#aws-resource-route53-recordsetprotection--remarks)
