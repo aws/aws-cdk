@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_notifications"
+    },
+    "ruby": {
+      "module": "AWSCDK::Notifications"
     }
   }
 }
