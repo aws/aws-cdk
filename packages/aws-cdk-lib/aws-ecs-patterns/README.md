@@ -940,7 +940,7 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
 
 ### Set a custom IAM role for ScheduledFargateTask
 
-The role is the IAM role that EventBridge assumes to run the task. It is not the task role or the task execution role. The construct adds the `ecs:RunTask`, `ecs:TagResource` and `iam:PassRole` permissions it needs to this role.
+The role is the IAM role that EventBridge assumes to run the task. It is not the task role or the task execution role. The construct adds the `ecs:RunTask`, `ecs:TagResource` and `iam:PassRole` permissions it needs to this role. If the role is imported as immutable (for example with `Role.fromRoleArn(..., { mutable: false })`), these permissions are not added and the role must already grant them.
 
 ```ts
 declare const cluster: ecs.Cluster;
