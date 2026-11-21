@@ -7,7 +7,7 @@ import type { IInstanceEngine } from './instance-engine';
 import type { IOptionGroup } from './option-group';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, validateManagedPasswordCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, validateManagedPasswordCredentials, validateManagedPasswordSnapshotCredentials } from './private/util';
 import type { Credentials, EngineLifecycleSupport, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -1481,6 +1481,17 @@ export interface DatabaseInstanceFromSnapshotProps extends DatabaseInstanceSourc
    * @default - The existing username and password from the snapshot will be used.
    */
   readonly credentials?: SnapshotCredentials;
+
+  /**
+   * Whether to use RDS native integration with AWS Secrets Manager for master user password management.
+   *
+   * When enabled, RDS generates and manages the master user password in Secrets Manager.
+   * This allows migration to RDS-managed passwords when restoring from a snapshot.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html
+   */
+  readonly manageMasterUserPassword?: boolean;
 }
 
 /**
@@ -1520,27 +1531,55 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       throw new ValidationError(lit`CannotSpecifyBoth`, 'You cannot specify both `snapshotIdentifier` and `clusterSnapshotIdentifier`', this);
     }
 
-    let credentials = props.credentials;
-    let secret = credentials?.secret;
-    if (!secret && credentials?.generatePassword) {
-      if (!credentials.username) {
-        throw new ValidationError(lit`MustBeSpecifiedTrue`, '`credentials` `username` must be specified when `generatePassword` is set to true', this);
-      }
+    // manageMasterUserPassword is only supported for Oracle when restoring from a snapshot
+    // (RestoreDBInstanceFromDBSnapshot API limitation)
+    if (props.manageMasterUserPassword && !Token.isUnresolved(props.engine.engineType) && !props.engine.engineType.startsWith('oracle-')) {
+      throw new ValidationError(
+        lit`ManagedPasswordFromSnapshotOracleOnly`,
+        '`manageMasterUserPassword` is only supported for Oracle DB instances when restoring from a snapshot',
+        this,
+      );
+    }
 
-      secret = new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
-        replicaRegions: credentials.replicaRegions,
-      });
+    // Validate manageMasterUserPassword conflicts with unsupported credential properties
+    if (props.manageMasterUserPassword) {
+      validateManagedPasswordSnapshotCredentials(this, props.credentials);
+    }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
+
+    let secret: secretsmanager.ISecret | undefined;
+    let masterUserPassword: string | undefined;
+
+    if (!props.manageMasterUserPassword) {
+      const credentials = props.credentials;
+      let credSecret = credentials?.secret;
+      if (!credSecret && credentials?.generatePassword) {
+        if (!credentials.username) {
+          throw new ValidationError(lit`MustBeSpecifiedTrue`, '`credentials` `username` must be specified when `generatePassword` is set to true', this);
+        }
+
+        credSecret = new DatabaseSecret(this, 'Secret', {
+          username: credentials.username,
+          encryptionKey: credentials.encryptionKey,
+          excludeCharacters: credentials.excludeCharacters,
+          replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
+          replicaRegions: credentials.replicaRegions,
+        });
+      }
+      secret = credSecret;
+      masterUserPassword = credSecret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(); // Safe usage
     }
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
       dbClusterSnapshotIdentifier: props.clusterSnapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      masterUserPassword,
+      manageMasterUserPassword: props.manageMasterUserPassword || undefined,
+      masterUserSecret: props.manageMasterUserPassword && props.credentials?.encryptionKey
+        ? { kmsKeyId: props.credentials.encryptionKey.keyArn }
+        : undefined,
     });
 
     this._resource = instance;
@@ -1554,7 +1593,12 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
 
     instance.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
-    if (secret) {
+    if (props.manageMasterUserPassword) {
+      this.secret = secretsmanager.Secret.fromSecretAttributes(this, 'ManagedSecret', {
+        secretCompleteArn: instance.attrMasterUserSecretSecretArn,
+        encryptionKey: props.credentials?.encryptionKey,
+      });
+    } else if (secret) {
       this.secret = secret.attach(this);
     }
 
