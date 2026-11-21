@@ -940,9 +940,13 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
 
 ### Set a custom IAM role for ScheduledFargateTask
 
+The role is the IAM role that EventBridge assumes to run the task. It is not the task role or the task execution role. The construct adds the `ecs:RunTask`, `ecs:TagResource` and `iam:PassRole` permissions it needs to this role.
+
 ```ts
 declare const cluster: ecs.Cluster;
-declare const role: iam.Role;
+const role = new iam.Role(this, 'EventsRole', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+});
 const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
   cluster,
   scheduledFargateTaskImageOptions: {
@@ -953,6 +957,8 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
   role,
 });
 ```
+
+The same `role` property is also available on `ScheduledEc2Task`.
 
 ### Customize Container Name for ScheduledEc2Task
 
