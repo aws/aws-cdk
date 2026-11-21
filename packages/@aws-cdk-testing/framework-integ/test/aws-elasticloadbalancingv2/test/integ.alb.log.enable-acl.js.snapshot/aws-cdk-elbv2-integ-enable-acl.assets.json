@@ -1,0 +1,51 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92": {
+      "displayName": "aws-cdk-elbv2-integ-enable-acl/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
+      "source": {
+        "path": "asset.bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-us-west-2-6f74cfc4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92.zip",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    },
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "aws-cdk-elbv2-integ-enable-acl/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-us-west-2-1d67dd82": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    },
+    "557c218261be92a5ed129ffdb5260b2f473cb8d91cf5038800bf4c7e6a3c882f": {
+      "displayName": "aws-cdk-elbv2-integ-enable-acl Template",
+      "source": {
+        "path": "aws-cdk-elbv2-integ-enable-acl.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-west-2-32acca16": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
+          "objectKey": "557c218261be92a5ed129ffdb5260b2f473cb8d91cf5038800bf4c7e6a3c882f.json",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
