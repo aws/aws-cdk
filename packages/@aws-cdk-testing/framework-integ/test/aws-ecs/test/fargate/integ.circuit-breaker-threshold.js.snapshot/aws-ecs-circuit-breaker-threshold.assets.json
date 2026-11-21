@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "a7d9f7a85cc049134b88fa3c82c7415ab7576cac28b30b03132fd6409d0ad5df": {
+      "displayName": "aws-ecs-circuit-breaker-threshold Template",
+      "source": {
+        "path": "aws-ecs-circuit-breaker-threshold.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-eb87c71e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a7d9f7a85cc049134b88fa3c82c7415ab7576cac28b30b03132fd6409d0ad5df.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
