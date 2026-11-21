@@ -1,16 +1,16 @@
 {
   "version": "55.0.0",
   "files": {
-    "a71eca31209b91c0e659663ebc4ec002f7a41a41c1e7d7ea11f761c6a4ef8bcd": {
+    "ec00809f1ac23e9063598320445e2d3a2e651025dd1147a4f18fae801d65a94f": {
       "displayName": "aws-ecs-integ-alb-fg-cloudfront Template",
       "source": {
         "path": "aws-ecs-integ-alb-fg-cloudfront.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-79573f2d": {
+        "current_account-current_region-43e1c48b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a71eca31209b91c0e659663ebc4ec002f7a41a41c1e7d7ea11f761c6a4ef8bcd.json",
+          "objectKey": "ec00809f1ac23e9063598320445e2d3a2e651025dd1147a4f18fae801d65a94f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
