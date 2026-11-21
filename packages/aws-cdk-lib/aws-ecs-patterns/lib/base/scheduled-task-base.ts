@@ -7,6 +7,7 @@ import { AwsLogDriver, Cluster } from '../../../aws-ecs';
 import { Rule } from '../../../aws-events';
 import type { Tag } from '../../../aws-events-targets';
 import { EcsTask } from '../../../aws-events-targets';
+import type { IRole } from '../../../aws-iam';
 import { Stack, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 
@@ -89,6 +90,19 @@ export interface ScheduledTaskBaseProps {
    * @default - No tags are applied to the task
    */
   readonly tags?: Tag[];
+
+  /**
+   * The IAM role that EventBridge assumes to run the ECS task.
+   *
+   * This is not the task role or the task execution role. The construct adds the
+   * `ecs:RunTask`, `ecs:TagResource` and `iam:PassRole` permissions it needs to this role.
+   *
+   * [disable-awslint:prefer-ref-interface] EcsTask in aws-events-targets accepts IRole, so this prop uses the same type.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/CWE_IAM_role.html
+   * @default - A new IAM role is created
+   */
+  readonly role?: IRole;
 }
 
 export interface ScheduledTaskImageProps {
@@ -172,6 +186,11 @@ export abstract class ScheduledTaskBase extends Construct {
   private readonly _securityGroups?: ISecurityGroup[];
 
   /**
+   * The IAM role that EventBridge assumes to run the ECS task.
+   */
+  private readonly _role?: IRole;
+
+  /**
    * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
    *
    * @default - Tags will not be propagated
@@ -198,6 +217,7 @@ export abstract class ScheduledTaskBase extends Construct {
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE_WITH_EGRESS };
     this._securityGroups = props.securityGroups;
+    this._role = props.role;
     this.propagateTags = props.propagateTags;
     this.tags = props.tags;
 
@@ -227,6 +247,7 @@ export abstract class ScheduledTaskBase extends Construct {
       securityGroups: this._securityGroups,
       propagateTags: this.propagateTags,
       tags: this.tags,
+      role: this._role,
     });
 
     this.addTaskAsTarget(eventRuleTarget);
