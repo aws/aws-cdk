@@ -192,16 +192,16 @@ app, the objects are **not** deleted in these cases:
 - The destination bucket is defined in a different stack, and the deployment's stack removes the
   `BucketDeployment` before the bucket's stack is updated to reflect the removal (see
   **Cross-Stack Buckets** below).
-- Another `BucketDeployment` still deploys to the same bucket with the same prefix or a prefix
-  nested inside it. For example, removing a deployment to `assets/` does not delete its
-  objects while a deployment to `assets/images/` remains.
+- Another `BucketDeployment` still deploys to the same bucket with a prefix that starts with the
+  removed deployment's prefix (for example, `assets`, `assets/images/` or `assets-v2/` when that
+  prefix is `assets`), or with any prefix if the removed deployment has none.
 
 This is because each `BucketDeployment` (even with `retainOnDelete: true`) adds its own tag
 starting with `aws-cdk:cr-owned:<prefix>` to its destination bucket. When a deployment is
 later removed, its Lambda function does not delete the objects under its prefix if any tag on
 the bucket still **starts with** the same `aws-cdk:cr-owned:<prefix>`. In the example above,
-the `assets/images/` deployment's tag, `aws-cdk:cr-owned:assets/images/`, starts with
-`aws-cdk:cr-owned:assets/`, so the objects under `assets/` are kept.
+the tags `aws-cdk:cr-owned:assets/images/` and `aws-cdk:cr-owned:assets-v2/` both start with
+`aws-cdk:cr-owned:assets`, so the objects under `assets` are kept.
 
 `BucketDeployment` does not tag imported buckets (for example `s3.Bucket.fromBucketName()`),
 so removing a deployment deletes their objects, even if another deployment in your app still

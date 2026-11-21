@@ -103,8 +103,9 @@ export interface BucketDeploymentProps {
    *   stack deletion)
    * - the bucket is defined in a different stack, and the deployment's stack removes the
    *   deployment before the bucket's stack is updated to reflect the removal
-   * - another `BucketDeployment` still deploys to the same bucket with the same prefix or a
-   *   prefix nested inside it
+   * - another `BucketDeployment` still deploys to the same bucket with a prefix that starts
+   *   with this deployment's prefix (for example, `assets`, `assets/images/` or `assets-v2/`
+   *   when that prefix is `assets`), or with any prefix if this deployment has none
    *
    * If the destination bucket is dedicated to this deployment (no `destinationKeyPrefix`), we
    * recommend to keep this property `true` and configure `autoDeleteObjects` on the bucket
