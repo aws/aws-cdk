@@ -23,9 +23,9 @@
       ]
      }
     },
-    "expected": "{\"$ObjectLike\":{\"status\":200}}",
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":{\"$StringLike\":\"Your PHP application is now running on a container in Amazon ECS\"}}}",
     "flattenResponse": "false",
-    "salt": "1795275705930"
+    "salt": "1795283975535"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
