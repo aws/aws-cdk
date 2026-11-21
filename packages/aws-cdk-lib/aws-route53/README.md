@@ -700,23 +700,30 @@ zone, name, and type through the record's properties before applying the mixin.
 The mixin reads those properties directly and cannot see raw CloudFormation overrides.
 
 One protection covers every record with the same name and type in the hosted
-zone, even when their set identifiers differ. For a weighted pair, apply the
-mixin to one record and pass the other in `additionalRecords` so CloudFormation
-creates both before enabling protection.
+zone, even when their set identifiers differ. Apply the mixin to each weighted
+record so CloudFormation creates them all before enabling their shared protection.
+You can also apply it to a common scope to protect every record in that scope.
 
 ```ts
 declare const blue: route53.ARecord;
 declare const green: route53.ARecord;
-blue.with(new route53.mixins.RecordSetProtection({ additionalRecords: [green] }));
+const protection = new route53.mixins.RecordSetProtection();
+blue.with(protection);
+green.with(protection);
 ```
 
-You can create records and enable protection in one deployment. To change a
-protected record or add another weighted record to a protected group, use three
-deployments.
+CDK groups records within each stack using their zone ID, name, and type.
+If different CloudFormation expressions will have the same value only at deployment,
+define one `CfnRecordSetProtection` and call its `addResourceDependency` method
+with each `CfnRecordSet` in the group.
+
+You can create records and enable protection in one deployment. To update or
+remove one protected record, or to add a record to a protected group, deploy
+each step separately.
 
 1. Remove the protection.
-2. Update or add the record.
-3. Restore the protection.
+2. Update, add, or remove the record.
+3. Restore protection for the remaining records if needed.
 
 If you change the comment, CloudFormation replaces the protection and the
 records are unprotected during replacement. [CloudFormation record set protection update rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-route53-recordsetprotection.html#aws-resource-route53-recordsetprotection--remarks)
