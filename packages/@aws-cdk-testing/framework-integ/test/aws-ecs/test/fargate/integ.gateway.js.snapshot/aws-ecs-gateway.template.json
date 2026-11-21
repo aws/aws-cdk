@@ -504,6 +504,9 @@
     "EnableECSManagedTags": false,
     "GatewayConnectors": [
      {
+      "DeregistrationDelay": {
+       "TimeoutSeconds": 30
+      },
       "Filters": {
        "AccessTypes": [
         "PUBLIC"

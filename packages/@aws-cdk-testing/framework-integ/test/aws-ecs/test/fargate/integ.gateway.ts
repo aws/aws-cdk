@@ -31,6 +31,7 @@ const service = new ecs.FargateService(stack, 'Service', {
     portName: 'web',
     accessTypes: [ecs.GatewayAccessType.PUBLIC],
     healthCheck: { path: '/' },
+    deregistrationDelay: cdk.Duration.seconds(30),
   },
 });
 
@@ -52,7 +53,7 @@ const revisions = test.assertions.awsApiCall('ECS', 'describeServiceRevisions', 
   serviceRevisionArns: [services.getAttString('services.0.currentServiceRevisions.0.arn')],
 }).expect(integ.ExpectedResult.objectLike({
   serviceRevisions: [{
-    gatewayConnectors: [{ portName: 'web' }],
+    gatewayConnectors: [{ portName: 'web', deregistrationDelay: { timeoutSeconds: 30 } }],
     // the connection reports CREATE_IN_PROGRESS until its URL is ready
     ecsManagedResources: { gatewayConnections: [{ status: 'ACTIVE', accessType: 'PUBLIC' }] },
   }],

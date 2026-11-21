@@ -458,7 +458,34 @@ describe('gateway connector', () => {
     const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', arn);
 
     expect(() => envCluster.associateGateway(gateway)).toThrow(
-      `a gateway and the cluster it is associated with must be in the same account and Region, got ${detail}`);
+      `a gateway, the cluster it is associated with and the stack of the association must be in the same account and Region, got ${detail}`);
+  });
+
+  test.each([
+    ['Region', 'arn:aws:ecs:us-east-1:123456789012', 'cluster Region us-east-1 and stack Region us-west-2'],
+    ['account', 'arn:aws:ecs:us-west-2:210987654321', 'cluster account 210987654321 and stack account 123456789012'],
+  ])('fails to associate a gateway and a cluster that match each other but not the stack %s', (_name, prefix, detail) => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const imported = ecs.Cluster.fromClusterArn(envStack, 'Cluster', `${prefix}:cluster/my-cluster`);
+    const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', `${prefix}:gateway/gw/id`);
+
+    expect(() => new ecs.GatewayClusterAssociation(envStack, 'Association', { cluster: imported, gateway })).toThrow(
+      `a gateway, the cluster it is associated with and the stack of the association must be in the same account and Region, got ${detail}`);
+  });
+
+  test('accepts an imported gateway and cluster in the stack account and Region', () => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const imported = ecs.Cluster.fromClusterArn(envStack, 'Cluster', 'arn:aws:ecs:us-west-2:123456789012:cluster/my-cluster');
+    const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', GATEWAY_ARN);
+
+    new ecs.GatewayClusterAssociation(envStack, 'Association', { cluster: imported, gateway });
+
+    Template.fromStack(envStack).hasResourceProperties('AWS::ECS::GatewayClusterAssociations', {
+      Cluster: 'my-cluster',
+      Gateway: GATEWAY_ARN,
+    });
   });
 
   test('skips the environment check when the cluster environment is a token', () => {

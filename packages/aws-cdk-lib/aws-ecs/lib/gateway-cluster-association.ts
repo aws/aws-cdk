@@ -1,7 +1,7 @@
 import type { Construct, IConstruct } from 'constructs';
 import type { IClusterRef, IGatewayRef } from './ecs.generated';
 import { CfnGatewayClusterAssociations } from './ecs.generated';
-import { Resource, Token, ValidationError } from '../../core';
+import { Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -13,7 +13,7 @@ export interface GatewayClusterAssociationProps {
   /**
    * The cluster to associate the gateway with.
    *
-   * The cluster and the gateway must be in the same account and Region.
+   * The cluster, the gateway and the stack of the association must be in the same account and Region.
    */
   readonly cluster: IClusterRef;
 
@@ -45,6 +45,8 @@ function isGatewayAssociationTarget(x: IClusterRef): x is IClusterRef & IGateway
  * construct ID of the association; `cluster.associateGateway()` creates one under the cluster.
  * For a cluster created in this app, services with a gateway connector depend on the association
  * automatically; for an imported cluster, add the dependency yourself.
+ *
+ * @resource AWS::ECS::GatewayClusterAssociations
  */
 @propertyInjectable
 export class GatewayClusterAssociation extends Resource {
@@ -58,15 +60,20 @@ export class GatewayClusterAssociation extends Resource {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    // the environments can only be compared when both are known at synthesis time
-    const clusterEnv = props.cluster.env;
-    const gatewayEnv = props.gateway.env;
-    for (const [name, clusterValue, gatewayValue] of [
-      ['Region', clusterEnv.region, gatewayEnv.region],
-      ['account', clusterEnv.account, gatewayEnv.account],
-    ]) {
-      if (!Token.isUnresolved(clusterValue) && !Token.isUnresolved(gatewayValue) && clusterValue !== gatewayValue) {
-        throw new ValidationError(lit`GatewayClusterEnvMismatch`, `a gateway and the cluster it is associated with must be in the same account and Region, got gateway ${name} ${gatewayValue} and cluster ${name} ${clusterValue}`, this);
+    // the cluster, the gateway and the stack the association is deployed in must share an account
+    // and Region; values are only compared when both are known at synthesis time
+    const stack = Stack.of(this);
+    const checks: Array<[string, string, string, string, string]> = [
+      ['gateway', props.gateway.env.region, 'cluster', props.cluster.env.region, 'Region'],
+      ['gateway', props.gateway.env.account, 'cluster', props.cluster.env.account, 'account'],
+      ['cluster', props.cluster.env.region, 'stack', stack.region, 'Region'],
+      ['cluster', props.cluster.env.account, 'stack', stack.account, 'account'],
+      ['gateway', props.gateway.env.region, 'stack', stack.region, 'Region'],
+      ['gateway', props.gateway.env.account, 'stack', stack.account, 'account'],
+    ];
+    for (const [aName, aValue, bName, bValue, what] of checks) {
+      if (!Token.isUnresolved(aValue) && !Token.isUnresolved(bValue) && aValue !== bValue) {
+        throw new ValidationError(lit`GatewayClusterEnvMismatch`, `a gateway, the cluster it is associated with and the stack of the association must be in the same account and Region, got ${aName} ${what} ${aValue} and ${bName} ${what} ${bValue}`, this);
       }
     }
 

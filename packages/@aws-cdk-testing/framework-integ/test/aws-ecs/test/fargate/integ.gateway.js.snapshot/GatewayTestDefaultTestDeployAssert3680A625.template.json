@@ -45,7 +45,7 @@
     "outputPaths": [
      "services.0.currentServiceRevisions.0.arn"
     ],
-    "salt": "1795276183286"
+    "salt": "1795276644800"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -399,7 +399,7 @@
     },
     "service": "ECS",
     "api": "describeServiceRevisions",
-    "expected": "{\"$ObjectLike\":{\"serviceRevisions\":[{\"gatewayConnectors\":[{\"portName\":\"web\"}],\"ecsManagedResources\":{\"gatewayConnections\":[{\"status\":\"ACTIVE\",\"accessType\":\"PUBLIC\"}]}}]}}",
+    "expected": "{\"$ObjectLike\":{\"serviceRevisions\":[{\"gatewayConnectors\":[{\"portName\":\"web\",\"deregistrationDelay\":{\"timeoutSeconds\":30}}],\"ecsManagedResources\":{\"gatewayConnections\":[{\"status\":\"ACTIVE\",\"accessType\":\"PUBLIC\"}]}}]}}",
     "stateMachineArn": {
      "Ref": "AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7dWaitFor18283314"
     },
@@ -424,7 +424,7 @@
     "outputPaths": [
      "serviceRevisions.0.ecsManagedResources.gatewayConnections.0.serviceUrl"
     ],
-    "salt": "1795276183286"
+    "salt": "1795276644801"
    },
    "DependsOn": [
     "AwsApiCallECSdescribeServices9820d0d583e2951ba5c0648ef08bc95f",
@@ -601,7 +601,7 @@
      "Ref": "HttpApiCallf2a54194dbc8e2a52f535fcb82ab3c02WaitFor356D5268"
     },
     "flattenResponse": "false",
-    "salt": "1795276183287"
+    "salt": "1795276644801"
    },
    "DependsOn": [
     "AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7d",
