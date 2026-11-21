@@ -1,0 +1,46 @@
+{
+  "/integ-user-pool-issuer-type/UserPoolOriginal": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPoolName": "*",
+        "removalPolicy": "destroy",
+        "deletionProtection": false
+      }
+    }
+  ],
+  "/integ-user-pool-issuer-type/UserPoolUpdated": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPoolName": "*",
+        "removalPolicy": "destroy",
+        "deletionProtection": false
+      }
+    }
+  ],
+  "/integ-user-pool-issuer-type/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-user-pool-issuer-type/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-user-pool-issuer-type/UserPoolOriginal/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolOriginal0549AFA3"
+    }
+  ],
+  "/integ-user-pool-issuer-type/UserPoolUpdated/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPoolUpdated17140A03"
+    }
+  ]
+}
