@@ -307,6 +307,7 @@ export class WorkloadIdentity extends WorkloadIdentityBase {
     };
 
     this._resource = new CfnWorkloadIdentity(this, 'Resource', cfnProps);
+    this.node.defaultChild = this._resource;
 
     this.workloadIdentityArn = this._resource.attrWorkloadIdentityArn;
   }

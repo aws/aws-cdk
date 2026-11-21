@@ -212,6 +212,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     };
 
     this.endpointResource = new bedrockagentcore.CfnRuntimeEndpoint(this, 'Resource', cfnProps);
+    this.node.defaultChild = this.endpointResource;
 
     this.endpointId = this.endpointResource.attrId;
     this.agentRuntimeEndpointArn = this.endpointResource.attrAgentRuntimeEndpointArn;
