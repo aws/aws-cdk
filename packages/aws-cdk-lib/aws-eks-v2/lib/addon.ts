@@ -1,8 +1,9 @@
 import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import { CfnAddon } from './eks.generated';
+import type * as iam from '../../aws-iam';
 import type { IResource, RemovalPolicy } from '../../core';
-import { ArnFormat, Resource, Stack, Fn } from '../../core';
+import { Annotations, ArnFormat, Resource, Stack, Fn } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -59,6 +60,31 @@ export interface AddonProps {
    * @default - Use default configuration.
    */
   readonly configurationValues?: Record<string, any>;
+  /**
+   * The namespace configuration for the addon.
+   * This specifies the Kubernetes namespace where the addon is installed.
+   *
+   * @default - Use addon's default namespace.
+   */
+  readonly namespace?: string;
+  /**
+   * An array of EKS Pod Identity associations owned by the add-on.
+   *
+   * @default - No Pod Identity associations.
+   */
+  readonly podIdentityAssociations?: PodIdentityAssociation[];
+  /**
+   * How to resolve field value conflicts for an Amazon EKS add-on.
+   *
+   * @default - NONE (Conflicts are not resolved)
+   */
+  readonly resolveConflicts?: ResolveConflictsType;
+  /**
+   * The IAM role to bind to the add-on's service account.
+   *
+   * @default - No role is bound to the add-on's service account.
+   */
+  readonly serviceAccountRole?: iam.IRoleRef;
 
   /**
    * The removal policy applied to the EKS add-on.
@@ -88,6 +114,46 @@ export interface AddonAttributes {
    * The name of the Amazon EKS cluster the addon is associated with.
    */
   readonly clusterName: string;
+}
+
+/**
+ * How to resolve field value conflicts for an Amazon EKS add-on.
+ */
+export enum ResolveConflictsType {
+  /**
+   * If the self-managed version of the add-on is installed on your cluster,
+   * Amazon EKS doesn't change the value. Creation of the add-on might fail.
+   */
+  NONE = 'NONE',
+  /**
+   * If the self-managed version of the add-on is installed on your cluster
+   * and the Amazon EKS default value is different than the existing value,
+   * Amazon EKS changes the value to the Amazon EKS default value.
+   */
+  OVERWRITE = 'OVERWRITE',
+  /**
+   * This is similar to the NONE option.
+   * If the self-managed version of the add-on is installed on your cluster
+   * Amazon EKS doesn't change the add-on resource properties.
+   * Creation of the add-on might fail if conflicts are detected.
+   * This option works differently during the update operation.
+   */
+  PRESERVE = 'PRESERVE',
+}
+
+/**
+ * An EKS Pod Identity association that binds an IAM role to a Kubernetes service account for the add-on.
+ */
+export interface PodIdentityAssociation {
+  /**
+   * The IAM role to associate with the service account.
+   */
+  readonly role: iam.IRoleRef;
+
+  /**
+   * The name of the Kubernetes service account inside the cluster to associate the IAM credentials with.
+   */
+  readonly serviceAccount: string;
 }
 
 /**
@@ -175,12 +241,30 @@ export class Addon extends Resource implements IAddon {
 
     this.clusterName = props.cluster.clusterName;
 
+    if (props.podIdentityAssociations && props.serviceAccountRole) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-eks:addonPodIdentityAndServiceAccountRoleBothSpecified',
+        'Both podIdentityAssociations and serviceAccountRole are specified. These are alternative IAM-attachment mechanisms (EKS Pod Identity and IRSA); please select and implement one.',
+      );
+    }
+
+    const podIdentityAssociations = props.podIdentityAssociations?.map(value => {
+      return {
+        roleArn: value.role.roleRef.roleArn,
+        serviceAccount: value.serviceAccount,
+      };
+    });
+
     this.resource = new CfnAddon(this, 'Resource', {
       addonName: props.addonName,
       clusterName: this.clusterName,
       addonVersion: props.addonVersion,
       preserveOnDelete: props.preserveOnDelete,
       configurationValues: this.stack.toJsonString(props.configurationValues),
+      namespaceConfig: props.namespace ? { namespace: props.namespace } : undefined,
+      podIdentityAssociations: podIdentityAssociations,
+      resolveConflicts: props.resolveConflicts,
+      serviceAccountRoleArn: props.serviceAccountRole?.roleRef.roleArn,
     });
 
     if (props.removalPolicy) {
