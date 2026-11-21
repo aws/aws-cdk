@@ -295,7 +295,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
     }
     if (!config.preventSynthesis) {
       this._resource = new CfnManagedPolicy(this, 'Resource', {
-        policyDocument: this.document,
+        policyDocument: this.document._asIdentityPolicy(),
         managedPolicyName: this.physicalName,
         description: this.description,
         path: this.path,
