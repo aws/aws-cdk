@@ -1,4 +1,10 @@
 {
+  "/aws-cdk-codepipeline-commands": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-codepipeline-commands.template.json"
+    }
+  ],
   "/aws-cdk-codepipeline-commands/SourceBucketKey": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -28,6 +34,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -224,6 +231,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],

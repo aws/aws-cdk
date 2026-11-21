@@ -1,0 +1,59 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-56916888": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9b8fce7ae7f25ef82fdbaf6b72523b99d0875c0c9c826642819fb51f11d9b125.zip"
+        }
+      }
+    },
+    "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232": {
+      "displayName": "CustomRuntimeFunction/Code",
+      "source": {
+        "path": "asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-175af03c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232.zip"
+        }
+      }
+    },
+    "d71f2bcfbc6df505acebaf0b77e9e4c28236553223a246ff06dfeb20bc967ad4": {
+      "displayName": "aws-cdk-lambda-runtime-config Template",
+      "source": {
+        "path": "aws-cdk-lambda-runtime-config.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-88744d84": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d71f2bcfbc6df505acebaf0b77e9e4c28236553223a246ff06dfeb20bc967ad4.json"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "c7965e57e08119011d67566f9842f92b2aeb5755b2a52fccebd95f156e4051ce": {
+      "displayName": "RuntimeImage",
+      "source": {
+        "directory": "asset.c7965e57e08119011d67566f9842f92b2aeb5755b2a52fccebd95f156e4051ce",
+        "platform": "linux/amd64"
+      },
+      "destinations": {
+        "current_account-current_region-567c539a": {
+          "repositoryName": "cdk-integ-lambda-runtime-config",
+          "imageTag": "c7965e57e08119011d67566f9842f92b2aeb5755b2a52fccebd95f156e4051ce"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "/PipelineStack/Beta/Stack1": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PipelineStackBetaStack1E6541489.template.json"
+    }
+  ],
+  "/PipelineStack/Beta/Stack1/OtherQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PipelineStack/Beta/Stack1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PipelineStack/Beta/Stack1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/PipelineStack/Beta/Stack1/Asset/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PipelineStack/Beta/Stack1/Asset2/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PipelineStack/Beta/Stack1/OtherQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OtherQueue60B686DC"
+    }
+  ]
+}
