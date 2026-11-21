@@ -1,5 +1,6 @@
 export * from './action';
 export * from './artifact';
+export * from './environment-variable';
 export * from './pipeline';
 export * from './trigger';
 export * from './variable';

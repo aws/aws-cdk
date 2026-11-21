@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import type { Artifact } from './artifact';
+import type { EnvironmentVariable } from './environment-variable';
 import type * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import type * as iam from '../../aws-iam';
@@ -137,6 +138,13 @@ export interface ActionProperties {
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/limits.html
    */
   readonly timeout?: Duration;
+
+  /**
+   * The environment variables for the action.
+   *
+   * @default - no environment variables
+   */
+  readonly actionEnvironmentVariables?: EnvironmentVariable[];
 }
 
 export interface ActionBindOptions {
@@ -356,6 +364,13 @@ export interface CommonActionProps {
    *   no namespace will be set
    */
   readonly variablesNamespace?: string;
+
+  /**
+   * The environment variables for the action.
+   *
+   * @default - no environment variables
+   */
+  readonly actionEnvironmentVariables?: EnvironmentVariable[];
 }
 
 /**
@@ -438,6 +453,14 @@ export abstract class Action implements IAction {
     this._actualNamespace.set(this._customerProvidedNamespace.get() === undefined
       ? `${stage.stageName}_${this.actionProperties.actionName}_NS`
       : this._customerProvidedNamespace.get());
+
+    const envVars = this.actionProperties.actionEnvironmentVariables;
+    if (envVars && envVars.length > 10) {
+      throw new UnscopedValidationError(lit`TooManyEnvironmentVariables`, `The length of \`environmentVariables\` in action '${this.actionProperties.actionName}' must be less than or equal to 10, got: ${envVars.length}`);
+    }
+    envVars?.forEach(envVar => {
+      envVar._bind(scope, this.actionProperties, options);
+    });
 
     return this.bound(scope, stage, options);
   }
