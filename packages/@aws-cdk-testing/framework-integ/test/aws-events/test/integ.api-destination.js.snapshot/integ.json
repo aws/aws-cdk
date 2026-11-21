@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "testCases": {
     "events-api-destination-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,7 @@
       "assertionStack": "events-api-destination-integ/DefaultTest/DeployAssert",
       "assertionStackName": "eventsapidestinationintegDefaultTestDeployAssert460ADA7C"
     }
-  }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
 }
