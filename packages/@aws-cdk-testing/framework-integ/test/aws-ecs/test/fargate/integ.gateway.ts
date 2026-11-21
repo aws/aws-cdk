@@ -53,14 +53,16 @@ const revisions = test.assertions.awsApiCall('ECS', 'describeServiceRevisions', 
 }).expect(integ.ExpectedResult.objectLike({
   serviceRevisions: [{
     gatewayConnectors: [{ portName: 'web' }],
+    // the connection reports CREATE_IN_PROGRESS until its URL is ready
+    ecsManagedResources: { gatewayConnections: [{ status: 'ACTIVE', accessType: 'PUBLIC' }] },
   }],
-}));
+})).waitForAssertions({ totalTimeout: cdk.Duration.minutes(10) });
 services.next(revisions);
 
 // The service answers through the gateway.
 const url = test.assertions.httpApiCall(revisions.getAttString('serviceRevisions.0.ecsManagedResources.gatewayConnections.0.serviceUrl'));
 url.expect(integ.ExpectedResult.objectLike({ status: 200 }));
-// The service's certificate and DNS name can take a few minutes after the service is steady.
+// DNS for a new hostname can take a few minutes after the connection is active.
 url.waitForAssertions({ totalTimeout: cdk.Duration.minutes(10) });
 revisions.next(url);
 

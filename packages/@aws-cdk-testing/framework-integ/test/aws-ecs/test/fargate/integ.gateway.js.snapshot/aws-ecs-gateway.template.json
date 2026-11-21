@@ -358,7 +358,7 @@
   "ClusterEB0386A7": {
    "Type": "AWS::ECS::Cluster"
   },
-  "ClusterGatewayAssociationawsecsgatewayGatewayFD714A37C90D4B49": {
+  "ClusterGatewayAssociationawsecsgatewayGatewayFD714A3778859A74": {
    "Type": "AWS::ECS::GatewayClusterAssociations",
    "Properties": {
     "Cluster": {
@@ -542,7 +542,7 @@
     }
    },
    "DependsOn": [
-    "ClusterGatewayAssociationawsecsgatewayGatewayFD714A37C90D4B49",
+    "ClusterGatewayAssociationawsecsgatewayGatewayFD714A3778859A74",
     "TaskDefTaskRole1EDB4A67"
    ]
   },
@@ -562,7 +562,7 @@
     }
    },
    "DependsOn": [
-    "ClusterGatewayAssociationawsecsgatewayGatewayFD714A37C90D4B49",
+    "ClusterGatewayAssociationawsecsgatewayGatewayFD714A3778859A74",
     "TaskDefTaskRole1EDB4A67"
    ]
   }

@@ -13,8 +13,8 @@ import {
   CfnCluster,
   CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
-  CfnGatewayClusterAssociations,
 } from './ecs.generated';
+import { GatewayClusterAssociation } from './gateway-cluster-association';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type { InstanceRequirementsConfig } from '../../aws-ec2';
@@ -273,7 +273,10 @@ export class Cluster extends Resource implements ICluster {
    */
   private readonly _gatewayAssociations = new DependencyGroup();
 
-  private _gatewayAssociationCount = 0;
+  /**
+   * The ARNs of the gateways associated with this cluster.
+   */
+  private readonly _gatewayArns = new Set<string>();
 
   @memoizedGetter
   public get clusterArn(): string {
@@ -830,26 +833,42 @@ export class Cluster extends Resource implements ICluster {
    *
    * Services in this cluster with a `gatewayConnector` receive traffic through the gateways
    * associated with the cluster. Services created in this app depend on the association, so they
-   * are only created once it is active. Amazon ECS evaluates up to 5 gateways per cluster, and a
+   * are only created once it is active. A cluster can be associated with up to 5 gateways, and a
    * gateway can be associated with a cluster once.
    *
+   * The association is created under this cluster, with a construct ID derived from the gateway's
+   * construct path. To choose the construct ID, create a `GatewayClusterAssociation` instead.
+   *
    * @param gateway the gateway to associate with this cluster.
+   * @returns the association of the gateway with this cluster.
    */
   @MethodMetadata()
-  public associateGateway(gateway: IGatewayRef): void {
-    const id = `GatewayAssociation${Names.nodeUniqueId(gateway.node)}`;
-    if (this.node.tryFindChild(id)) {
-      throw new ValidationError(lit`GatewayAlreadyAssociated`, `gateway ${gateway.node.path} is already associated with this cluster`, this);
-    }
-    const association = new CfnGatewayClusterAssociations(this, id, {
-      cluster: this.clusterName,
-      gateway: gateway.gatewayRef.gatewayArn,
+  public associateGateway(gateway: IGatewayRef): GatewayClusterAssociation {
+    this.assertGatewayNotAssociated(gateway);
+    return new GatewayClusterAssociation(this, `GatewayAssociation${Names.nodeUniqueId(gateway.node)}`, {
+      cluster: this,
+      gateway,
     });
+  }
+
+  /**
+   * Record a gateway association of this cluster.
+   *
+   * @internal
+   */
+  public _addGatewayAssociation(association: IConstruct, gateway: IGatewayRef): void {
+    this.assertGatewayNotAssociated(gateway);
+    // https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_AssociateGatewayWithCluster.html
+    if (this._gatewayArns.size >= 5) {
+      throw new ValidationError(lit`ClusterGatewayLimit`, `a cluster can be associated with up to 5 gateways, cannot associate gateway ${gateway.node.path}`, this);
+    }
+    this._gatewayArns.add(gateway.gatewayRef.gatewayArn);
     this._gatewayAssociations.add(association);
-    this._gatewayAssociationCount++;
-    if (this._gatewayAssociationCount === 6) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:clusterGatewayLimit',
-        'Amazon ECS evaluates up to 5 gateways for the services of a cluster; more than 5 gateways are associated with this cluster.');
+  }
+
+  private assertGatewayNotAssociated(gateway: IGatewayRef) {
+    if (this._gatewayArns.has(gateway.gatewayRef.gatewayArn)) {
+      throw new ValidationError(lit`GatewayAlreadyAssociated`, `gateway ${gateway.node.path} is already associated with this cluster`, this);
     }
   }
 

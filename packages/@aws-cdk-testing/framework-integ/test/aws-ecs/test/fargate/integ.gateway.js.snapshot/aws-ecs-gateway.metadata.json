@@ -4,7 +4,15 @@
       "type": "aws:cdk:acknowledged-rules",
       "data": {
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
-      }
+      },
+      "trace": [
+        "    at Validations.acknowledge (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/validation/validations.js:106:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/stack.js:1391:47)",
+        "    at get availabilityZones (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/stack.js:764:18)",
+        "    at new Vpc (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:788:48)",
+        "    at <anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:42:13)",
+        "    ...node internals..."
+      ]
     },
     {
       "type": "aws:cdk:templateFile",
@@ -14,23 +22,17 @@
   "/aws-ecs-gateway/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "maxAzs": "*",
-        "natGateways": "*",
-        "restrictDefaultSecurityGroup": false
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Cluster": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Gateway": [
@@ -40,7 +42,21 @@
     },
     {
       "type": "aws:cdk:warning",
-      "data": "This gateway is internet-facing: services in its clusters with a gateway connector that does not limit accessTypes to PRIVATE can be reached from the internet. [ack: @aws-cdk/aws-ecs:gatewayInternetFacing]"
+      "data": "This gateway is internet-facing: services in its clusters with a gateway connector that does not limit accessTypes to PRIVATE can be reached from the internet. [ack: @aws-cdk/aws-ecs:gatewayInternetFacing]",
+      "trace": [
+        "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:259:29)",
+        "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:125:18)",
+        "new Gateway (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/gateway.js:287:45)",
+        "new Gateway (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:44:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1934:14)",
+        "Object..js (node:internal/modules/cjs/loader:2074:10)",
+        "Module.load (node:internal/modules/cjs/loader:1656:32)",
+        "Module._load (node:internal/modules/cjs/loader:1448:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     }
   ],
   "/aws-ecs-gateway/TaskDef": [
@@ -64,7 +80,23 @@
   "/aws-ecs-gateway/Service": [
     {
       "type": "aws:cdk:warning",
-      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]"
+      "data": "Enable the 'circuitBreaker' property to trigger a quicker deployment failure if tasks are failing to start up (without this setting deployments may take up to 3 hours to fail). [ack: @aws-cdk/aws-ecs:shouldUseCircuitBreaker]",
+      "trace": [
+        "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:259:29)",
+        "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:125:18)",
+        "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/base/base-service.js:469:45)",
+        "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:167:13)",
+        "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:56:17)",
+        "Module._compile (node:internal/modules/cjs/loader:1934:14)",
+        "Object..js (node:internal/modules/cjs/loader:2074:10)",
+        "Module.load (node:internal/modules/cjs/loader:1656:32)",
+        "Module._load (node:internal/modules/cjs/loader:1448:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
     },
     {
       "type": "aws:cdk:analytics:construct",
@@ -92,124 +124,61 @@
   "/aws-ecs-gateway/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*",
-          {
-            "maxDrainDuration": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Vpc/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Vpc/PrivateSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Vpc/IGW": [
@@ -232,24 +201,14 @@
   ],
   "/aws-ecs-gateway/Cluster/GatewayAssociationawsecsgatewayGatewayFD714A37": [
     {
-      "type": "aws:cdk:logicalId",
-      "data": "ClusterGatewayAssociationawsecsgatewayGatewayFD714A37C90D4B49"
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Gateway/InfrastructureRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Gateway/Resource": [
@@ -261,12 +220,7 @@
   "/aws-ecs-gateway/TaskDef/TaskRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/TaskDef/Resource": [
@@ -284,9 +238,7 @@
   "/aws-ecs-gateway/Service/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*"
-      }
+      "data": "*"
     }
   ],
   "/aws-ecs-gateway/Exports/Output{\"Ref\":\"ClusterEB0386A7\"}": [
@@ -407,6 +359,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    }
+  ],
+  "/aws-ecs-gateway/Cluster/GatewayAssociationawsecsgatewayGatewayFD714A37/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterGatewayAssociationawsecsgatewayGatewayFD714A3778859A74"
     }
   ],
   "/aws-ecs-gateway/Gateway/InfrastructureRole/Resource": [

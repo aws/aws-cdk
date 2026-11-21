@@ -123,9 +123,9 @@ export enum GatewayHealthCheckProtocol {
 /**
  * The health check a gateway runs against the tasks of a service.
  *
- * Changing the health check of a service that is already connected replaces its target group,
- * which fails for services with the `ROLLING` deployment strategy. Set the health check when the
- * service is first connected, or use the `BLUE_GREEN` or `CANARY` deployment strategy.
+ * Changing the health check or the deregistration delay of a service that is already connected
+ * replaces its target group, which fails for services with the `ROLLING` deployment strategy. Set
+ * them when the service is first connected, or use the `BLUE_GREEN` or `CANARY` deployment strategy.
  */
 export interface GatewayConnectorHealthCheck {
   /**
@@ -236,6 +236,19 @@ export interface GatewayConnectorOptions {
    * healthy on HTTP code 200
    */
   readonly healthCheck?: GatewayConnectorHealthCheck;
+
+  /**
+   * How long the gateway waits for requests in progress to finish before it removes a task from
+   * the service's target group. Between 0 and 3600 seconds.
+   *
+   * Changing the deregistration delay of a connected service replaces its target group, which
+   * fails for services with the `ROLLING` deployment strategy; see `GatewayConnectorHealthCheck`.
+   *
+   * A duration whose amount is a token must be created with `Duration.seconds()`.
+   *
+   * @default Duration.seconds(300)
+   */
+  readonly deregistrationDelay?: Duration;
 }
 
 /**
@@ -276,8 +289,8 @@ export interface GatewayProps {
    * cover every Availability Zone the services that use it run in. Changing the subnets replaces
    * the gateway.
    *
-   * @default - the VPC's public subnets for an internet-facing gateway, and its private subnets
-   * for an internal gateway
+   * @default - the VPC's public subnets (`SubnetType.PUBLIC`) for an internet-facing gateway, and its
+   * private subnets with egress (`SubnetType.PRIVATE_WITH_EGRESS`) for an internal gateway
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -456,6 +469,42 @@ export class Gateway extends Resource implements IGateway {
   public readonly scheme: GatewayScheme;
 
   /**
+   * The access type of the gateway: `PUBLIC` for an internet-facing gateway, `PRIVATE` for an
+   * internal one. A gateway connector's `accessTypes` filters on this value.
+   *
+   * @attribute
+   */
+  public readonly gatewayAccessType: string;
+
+  /**
+   * The status of the gateway, for example `ACTIVE`.
+   *
+   * @attribute
+   */
+  public readonly gatewayStatus: string;
+
+  /**
+   * The time the gateway was created.
+   *
+   * @attribute
+   */
+  public readonly gatewayCreatedAt: string;
+
+  /**
+   * The time the gateway was last updated.
+   *
+   * @attribute
+   */
+  public readonly gatewayUpdatedAt: string;
+
+  /**
+   * The number of Application Load Balancers that Amazon ECS has created for the gateway.
+   *
+   * @attribute
+   */
+  public readonly gatewayCurrentAlbCount: number;
+
+  /**
    * The name generated for the gateway, if no name was given.
    */
   private readonly generatedGatewayName?: string;
@@ -537,6 +586,11 @@ export class Gateway extends Resource implements IGateway {
     resource.node.addDependency(this.infrastructureRole);
 
     this.gatewayArn = resource.attrArn;
+    this.gatewayAccessType = resource.attrAccessType;
+    this.gatewayStatus = resource.attrStatus;
+    this.gatewayCreatedAt = resource.attrCreatedAt;
+    this.gatewayUpdatedAt = resource.attrUpdatedAt;
+    this.gatewayCurrentAlbCount = resource.attrConfigurationHostSharedAlbCurrentAlbCount;
   }
 
   protected generatePhysicalName(): string {

@@ -2271,8 +2271,9 @@ new ecs.FargateService(this, 'Service', {
 });
 ```
 
-A gateway is internal by default and is placed in the VPC's private subnets; an internet-facing
-gateway is placed in the public subnets. Use `vpcSubnets` to choose other subnets, in at least two
+A gateway is internal by default and is placed in the VPC's private subnets with egress
+(`SubnetType.PRIVATE_WITH_EGRESS`); an internet-facing gateway is placed in the public subnets.
+A VPC with only isolated private subnets needs `vpcSubnets`. Use `vpcSubnets` to choose other subnets, in at least two
 Availability Zones, and `ipAddressType` to change the load balancer's IP address type (dual-stack by default).
 
 The gateway listens for HTTPS on port 443, with a certificate that Amazon ECS requests and
@@ -2314,7 +2315,8 @@ Requirements and limits:
   and a service can have one gateway connector.
 - The gateway must be in the same VPC as the services, and its subnets must cover every
   Availability Zone the services run in.
-- Amazon ECS evaluates up to 5 gateways per cluster.
+- A cluster can be associated with up to 5 gateways, and a gateway and its clusters must be in
+  the same account and Region.
 - The gateway's name, scheme, subnets, IP address type can't be changed:
   changing them replaces the gateway.
 - Gateways have deletion protection on by default, so deleting the stack, or replacing the
@@ -2326,14 +2328,37 @@ associated with its cluster. For a service that must not be reachable from the i
 `accessTypes: [ecs.GatewayAccessType.PRIVATE]`.
 
 The health check defaults to HTTP on path `/` of the named port, every 30 seconds with a 5 second
-timeout, healthy on HTTP code 200. Changing the health check of a connected service replaces its
-target group, which fails for services with the `ROLLING` deployment strategy: set the health
-check when you first connect the service, or use the `BLUE_GREEN` or `CANARY` deployment strategy.
+timeout, healthy on HTTP code 200. `deregistrationDelay` sets how long the gateway lets requests in
+progress finish before it removes a task (300 seconds by default, between 0 and 3600 seconds).
+Changing the health check or the deregistration delay of a connected service replaces its target
+group, which fails for services with the `ROLLING` deployment strategy: set them when you first
+connect the service, or use the `BLUE_GREEN` or `CANARY` deployment strategy.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.FargateTaskDefinition;
+
+new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  gatewayConnector: {
+    portName: 'web',
+    healthCheck: { path: '/health', interval: Duration.seconds(15) },
+    deregistrationDelay: Duration.seconds(30),
+  },
+});
+```
+
+The gateway's access type, status, creation and update times and current number of load
+balancers are available as `gatewayAccessType`, `gatewayStatus`, `gatewayCreatedAt`,
+`gatewayUpdatedAt` and `gatewayCurrentAlbCount`.
 
 A gateway connector can only be added to a service once the cluster's gateway association is
 active. Services in a cluster created in the same app depend on the cluster's gateway
-associations automatically. For an imported cluster, create the association yourself and add the
-dependency:
+associations automatically. `cluster.associateGateway()` returns the association, and names it
+after the gateway's construct path; to choose its construct ID, or to associate a gateway with an
+imported cluster, create a `GatewayClusterAssociation`. For an imported cluster, add the
+dependency yourself:
 
 ```ts
 declare const vpc: ec2.IVpc;
@@ -2344,9 +2369,9 @@ const cluster = ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
   clusterName: 'my-cluster',
   vpc,
 });
-const association = new ecs.CfnGatewayClusterAssociations(this, 'Association', {
-  cluster: cluster.clusterName,
-  gateway: gateway.gatewayArn,
+const association = new ecs.GatewayClusterAssociation(this, 'Association', {
+  cluster,
+  gateway,
 });
 
 const service = new ecs.FargateService(this, 'Service', {

@@ -319,6 +319,17 @@ describe('gateway', () => {
       .toThrow(/a gateway needs subnets in at least 2 different Availability Zones, got \["us-east-1a"\]/);
   });
 
+  test('exposes the gateway attributes', () => {
+    const gateway = new ecs.Gateway(stack, 'Gateway', { vpc });
+
+    expect(stack.resolve(gateway.gatewayAccessType)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'AccessType'] });
+    expect(stack.resolve(gateway.gatewayStatus)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'Status'] });
+    expect(stack.resolve(gateway.gatewayCreatedAt)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'CreatedAt'] });
+    expect(stack.resolve(gateway.gatewayUpdatedAt)).toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'UpdatedAt'] });
+    expect(stack.resolve(gateway.gatewayCurrentAlbCount))
+      .toEqual({ 'Fn::GetAtt': ['Gateway43CB3636', 'Configuration.HostSharedAlb.CurrentAlbCount'] });
+  });
+
   test('imports a gateway from its ARN', () => {
     const gateway = ecs.Gateway.fromGatewayArn(stack, 'Imported', GATEWAY_ARN);
 
@@ -334,8 +345,15 @@ describe('gateway', () => {
 
     const gateway = ecs.Gateway.fromGatewayArn(stack, 'Imported', arn);
 
-    expect(cdk.Token.isUnresolved(gateway.gatewayName)).toBe(true);
-    expect(JSON.stringify(stack.resolve(gateway.gatewayName))).toContain('"Ref":"Arn"');
+    expect(stack.resolve(gateway.gatewayName)).toEqual({
+      'Fn::Select': [0, {
+        'Fn::Split': ['/', {
+          'Fn::Select': [1, {
+            'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { Ref: 'Arn' }] }] }],
+          }],
+        }],
+      }],
+    });
   });
 
   test.each([
@@ -382,12 +400,81 @@ describe('gateway connector', () => {
     expect(() => cluster.associateGateway(gateway)).toThrow(/gateway Default\/Gateway is already associated with this cluster/);
   });
 
-  test('warns when more than 5 gateways are associated', () => {
-    for (let i = 0; i < 6; i++) {
+  test('fails to associate a 6th gateway', () => {
+    for (let i = 0; i < 5; i++) {
       cluster.associateGateway(ecs.Gateway.fromGatewayArn(stack, `Gateway${i}`, `arn:aws:ecs:us-east-1:123456789012:gateway/gw${i}/id`));
     }
+    const sixth = ecs.Gateway.fromGatewayArn(stack, 'Gateway5', 'arn:aws:ecs:us-east-1:123456789012:gateway/gw5/id');
 
-    Annotations.fromStack(stack).hasWarning('/Default/Cluster', Match.stringLikeRegexp('up to 5 gateways'));
+    expect(() => cluster.associateGateway(sixth))
+      .toThrow('a cluster can be associated with up to 5 gateways, cannot associate gateway Default/Gateway5');
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::GatewayClusterAssociations', 5);
+  });
+
+  test('associateGateway returns the association', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+
+    const association = cluster.associateGateway(gateway);
+
+    expect(association).toBeInstanceOf(ecs.GatewayClusterAssociation);
+    expect(association.node.scope).toBe(cluster);
+    const cfn = association.node.defaultChild as ecs.CfnGatewayClusterAssociations;
+    expect(stack.resolve(cfn.cluster)).toEqual({ Ref: 'ClusterEB0386A7' });
+    expect(cfn.gateway).toEqual(GATEWAY_ARN);
+  });
+
+  test('associates a gateway with an imported cluster under a chosen construct ID', () => {
+    const imported = ecs.Cluster.fromClusterAttributes(stack, 'Imported', { clusterName: 'imported', vpc: cluster.vpc });
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+
+    const association = new ecs.GatewayClusterAssociation(stack, 'Association', { cluster: imported, gateway });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::GatewayClusterAssociations', {
+      Cluster: 'imported',
+      Gateway: GATEWAY_ARN,
+    });
+    expect(Object.keys(template.findResources('AWS::ECS::GatewayClusterAssociations')))
+      .toEqual([stack.getLogicalId(association.node.defaultChild as cdk.CfnElement)]);
+  });
+
+  test('a GatewayClusterAssociation on a cluster from this app counts toward the cluster and its services depend on it', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+    const association = new ecs.GatewayClusterAssociation(stack, 'Association', { cluster, gateway });
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition, gatewayConnector: { portName: 'web' } });
+
+    expect(() => cluster.associateGateway(gateway)).toThrow('gateway Default/Gateway is already associated with this cluster');
+    const logicalId = stack.getLogicalId(association.node.defaultChild as cdk.CfnElement);
+    Template.fromStack(stack).hasResource('AWS::ECS::Service', { DependsOn: Match.arrayWith([logicalId]) });
+  });
+
+  test.each([
+    ['Region', 'arn:aws:ecs:eu-west-1:123456789012:gateway/gw/id', 'gateway Region eu-west-1 and cluster Region us-west-2'],
+    ['account', 'arn:aws:ecs:us-west-2:210987654321:gateway/gw/id', 'gateway account 210987654321 and cluster account 123456789012'],
+  ])('fails to associate a gateway in another %s', (_name, arn, detail) => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const envCluster = new ecs.Cluster(envStack, 'Cluster', { vpc: new ec2.Vpc(envStack, 'Vpc') });
+    const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', arn);
+
+    expect(() => envCluster.associateGateway(gateway)).toThrow(
+      `a gateway and the cluster it is associated with must be in the same account and Region, got ${detail}`);
+  });
+
+  test('skips the environment check when the cluster environment is a token', () => {
+    // the stack is environment-agnostic, so its account and Region are tokens
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', 'arn:aws:ecs:eu-west-1:210987654321:gateway/gw/id');
+
+    expect(() => cluster.associateGateway(gateway)).not.toThrow();
+  });
+
+  test('skips the environment check when the gateway ARN is a token', () => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const envCluster = new ecs.Cluster(envStack, 'Cluster', { vpc: new ec2.Vpc(envStack, 'Vpc') });
+    const gateway = ecs.Gateway.fromGatewayArn(envStack, 'Gateway', new cdk.CfnParameter(envStack, 'Arn').valueAsString);
+
+    expect(() => envCluster.associateGateway(gateway)).not.toThrow();
   });
 
   test('renders the gateway connector and depends on the cluster gateway associations', () => {
@@ -461,6 +548,7 @@ describe('gateway connector', () => {
         PortName: 'web',
         Filters: Match.absent(),
         HealthCheck: Match.absent(),
+        DeregistrationDelay: Match.absent(),
       }],
     });
   });
@@ -536,6 +624,71 @@ describe('gateway connector', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       GatewayConnectors: [{ PortName: { Ref: 'PortName' }, HealthCheck: { HealthCheckPort: { Ref: 'Port' } } }],
+    });
+  });
+
+  test('renders the deregistration delay', () => {
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'DeregistrationDelay is a newly launched property not yet in the bundled schema' });
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', deregistrationDelay: cdk.Duration.minutes(1) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{ PortName: 'web', DeregistrationDelay: { TimeoutSeconds: 60 } }],
+    });
+  });
+
+  test.each([0, 3600])('accepts a deregistration delay of %d seconds', (seconds) => {
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'DeregistrationDelay is a newly launched property not yet in the bundled schema' });
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', deregistrationDelay: cdk.Duration.seconds(seconds) },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{ PortName: 'web', DeregistrationDelay: { TimeoutSeconds: seconds } }],
+    });
+  });
+
+  test.each([
+    ['too long', cdk.Duration.seconds(3601), 'got 3601 seconds'],
+    ['fractional', cdk.Duration.millis(1500), 'got 1.5 seconds'],
+  ])('fails for a %s deregistration delay', (_name, deregistrationDelay, got) => {
+    expect(() => new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', deregistrationDelay },
+    })).toThrow(`gatewayConnector deregistrationDelay must be a whole number of seconds between 0 and 3600, ${got}`);
+  });
+
+  test('skips validation of token health check interval, timeout and deregistration delay', () => {
+    cdk.Validations.of(stack).acknowledge({ id: 'CloudFormation-Validate::F3002', reason: 'DeregistrationDelay is a newly launched property not yet in the bundled schema' });
+    const interval = new cdk.CfnParameter(stack, 'Interval', { type: 'Number' }).valueAsNumber;
+    const timeout = new cdk.CfnParameter(stack, 'Timeout', { type: 'Number' }).valueAsNumber;
+    const delay = new cdk.CfnParameter(stack, 'Delay', { type: 'Number' }).valueAsNumber;
+
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: {
+        portName: 'web',
+        healthCheck: { interval: cdk.Duration.seconds(interval), timeout: cdk.Duration.seconds(timeout) },
+        deregistrationDelay: cdk.Duration.seconds(delay),
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{
+        PortName: 'web',
+        HealthCheck: {
+          HealthCheckIntervalSeconds: { Ref: 'Interval' },
+          HealthCheckTimeoutSeconds: { Ref: 'Timeout' },
+        },
+        DeregistrationDelay: { TimeoutSeconds: { Ref: 'Delay' } },
+      }],
     });
   });
 

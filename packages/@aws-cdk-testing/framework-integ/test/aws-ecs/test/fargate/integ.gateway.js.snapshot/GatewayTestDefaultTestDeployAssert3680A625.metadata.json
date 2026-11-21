@@ -2,7 +2,21 @@
   "/GatewayTest/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:warning",
-      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]"
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:259:29)",
+        "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:125:18)",
+        "resolveValue (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/private/refs.js:207:52)",
+        "resolveReferencesInElements (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/private/refs.js:131:30)",
+        "resolveReferences (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/private/refs.js:116:5)",
+        "prepareApp (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:34)",
+        "synthesize (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/stage.js:192:92)",
+        "App.synth (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/app.js:205:27)",
+        "process.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/app.js:161:51)",
+        "Object.onceWrapper (node:events:631:12)",
+        "process.emit (node:events:509:20)"
+      ]
     },
     {
       "type": "aws:cdk:templateFile",
@@ -157,6 +171,18 @@
       "data": "AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7d"
     }
   ],
+  "/GatewayTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7d/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7dWaitForRole0B026C4A"
+    }
+  ],
+  "/GatewayTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7d/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7dWaitFor18283314"
+    }
+  ],
   "/GatewayTest/DefaultTest/DeployAssert/HttpApiCallf2a54194dbc8e2a52f535fcb82ab3c02/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -185,6 +211,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallECSdescribeServices9820d0d583e2951ba5c0648ef08bc95fWaitForTimeoutProviderInvoke1C42BB11"
+    }
+  ],
+  "/GatewayTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7d/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7dWaitForIsCompleteProviderInvokeF773C6FB"
+    }
+  ],
+  "/GatewayTest/DefaultTest/DeployAssert/AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7d/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServiceRevisions52457b465b2bcc2fb1a452cc4783ec7dWaitForTimeoutProviderInvoke88A7502C"
     }
   ],
   "/GatewayTest/DefaultTest/DeployAssert/HttpApiCallf2a54194dbc8e2a52f535fcb82ab3c02/WaitFor/IsCompleteProvider/Invoke": [
