@@ -1,0 +1,33 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg UseCustomApprovalRolePipelineBC721617.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c8ea424011795218407464a4894c78848776b47531" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN StackStage" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END StackStage" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth" -> "BEGIN StackStage";
+"BEGIN StackStage.ProdStack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END StackStage.ProdStack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"StackStage.ApproveDeployment" -> "BEGIN StackStage.ProdStack";
+"StackStage.ProdStack.Deploy";
+"StackStage.ProdStack.Prepare" -> "StackStage.ProdStack.Deploy";
+"StackStage.ProdStack.Prepare";
+"Build.Synth" -> "StackStage.ProdStack.Prepare";
+"BEGIN StackStage.ProdStack" -> "StackStage.ProdStack.Prepare";
+"StackStage.ProdStack.Deploy" -> "END StackStage.ProdStack";
+"StackStage.ApproveDeployment";
+"BEGIN StackStage" -> "StackStage.ApproveDeployment";
+"END StackStage.ProdStack" -> "END StackStage";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c8ea424011795218407464a4894c78848776b47531";
+"BEGIN Source" -> "Source.c8ea424011795218407464a4894c78848776b47531";
+"Source.c8ea424011795218407464a4894c78848776b47531" -> "END Source";
+}
