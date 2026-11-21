@@ -99,8 +99,10 @@ export interface BucketDeploymentProps {
    *
    * However, for buckets defined in your CDK app, the files are not deleted when the
    * destination bucket is deleted at the same time as this deployment (for example on stack
-   * deletion), or when another `BucketDeployment` still deploys to the same bucket with the
-   * same prefix or a prefix nested inside it.
+   * deletion), when the bucket is defined in a different stack and the deployment's stack
+   * removes the deployment before the bucket's stack is updated to reflect the removal, or when
+   * another `BucketDeployment` still deploys to the same bucket with the same prefix or a
+   * prefix nested inside it.
    *
    * If the destination bucket is dedicated to this deployment (no `destinationKeyPrefix`), we
    * recommend to keep this property `true` and configure `autoDeleteObjects` on the bucket

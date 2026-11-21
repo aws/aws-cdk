@@ -185,19 +185,22 @@ By default, the contents of the destination bucket will **not** be deleted when 
 changed. You can use the option `retainOnDelete: false` to disable this behavior,
 in which case all objects under the destination (the `destinationKeyPrefix`, or the
 whole bucket if no prefix is set) will be deleted. However, for buckets defined in your CDK
-app, the objects are **not** deleted in two cases:
+app, the objects are **not** deleted in these cases:
 
-- The destination bucket is deleted at the same time as its `BucketDeployment` (for example
-  on stack deletion).
+- The destination bucket is deleted at the same time as its `BucketDeployment`, for example
+  on stack deletion (see **Stack Deletion** below).
+- The destination bucket is defined in a different stack, and the deployment's stack removes the
+  `BucketDeployment` before the bucket's stack is updated to reflect the removal (see
+  **Cross-Stack Buckets** below).
 - Another `BucketDeployment` still deploys to the same bucket with the same prefix or a prefix
   nested inside it. For example, removing a deployment to `assets/` does not delete its
   objects while a deployment to `assets/images/` remains.
 
 This is because each `BucketDeployment` (even with `retainOnDelete: true`) adds its own tag
 starting with `aws-cdk:cr-owned:<prefix>` to its destination bucket. When a deployment is
-later removed, it does not delete the objects under its prefix if any tag on the bucket still
-**starts with** the same `aws-cdk:cr-owned:<prefix>`. In the example above, the
-`assets/images/` deployment's tag, `aws-cdk:cr-owned:assets/images/`, starts with
+later removed, its Lambda function does not delete the objects under its prefix if any tag on
+the bucket still **starts with** the same `aws-cdk:cr-owned:<prefix>`. In the example above,
+the `assets/images/` deployment's tag, `aws-cdk:cr-owned:assets/images/`, starts with
 `aws-cdk:cr-owned:assets/`, so the objects under `assets/` are kept.
 
 `BucketDeployment` does not tag imported buckets (for example `s3.Bucket.fromBucketName()`),
@@ -213,6 +216,25 @@ Configuring `retainOnDelete: false` has a few implications you should be aware o
   Since the objects are not deleted upon stack deletion (see above), a destination bucket with
   `RemovalPolicy.DESTROY` fails to delete because it is not empty. To empty the bucket when
   it is deleted, see [Dedicated Bucket](#dedicated-bucket).
+
+- **Cross-Stack Buckets**
+
+  If the destination bucket and `BucketDeployment` are defined in different stacks, the
+  deployment's tag belongs to the bucket's stack. This means that once the deployment is removed
+  from your CDK app, the order in which you update the stacks decides whether the objects are
+  deleted:
+
+  - If the bucket's stack is updated first, the tag is removed, and updating the deployment's
+    stack then deletes the objects.
+  - If the deployment's stack is updated or deleted first, the tag is not removed, and its
+    Lambda function does **not** delete the objects. Updating the bucket's stack afterwards
+    removes the tag, but the objects will still remain.
+
+  > NOTE: When the destination bucket has a strong cross-stack reference (the default strength,
+  > unless changed with `@aws-cdk/core:defaultCrossStackReferences`) and both stacks are in the
+  > same region, updating the bucket's stack first **fails**. These apps will have to update or
+  > delete the deployment's stack first, meaning the objects will still remain. See
+  > [The deadly embrace](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#the-deadly-embrace).
 
 - **Logical ID Changes**
 
