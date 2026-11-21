@@ -13,7 +13,7 @@ import * as iam from '../../aws-iam';
 import type * as logs from '../../aws-logs';
 import * as s3_assets from '../../aws-s3-assets';
 import type { Duration, IResource } from '../../core';
-import { ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
+import { Annotations, ArnFormat, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -472,6 +472,9 @@ export class StateMachine extends StateMachineBase {
     if (props.logs) {
       this.validateLogOptions(props.logs);
     }
+    if (props.timeout !== undefined && !props.timeout.isUnresolved() && props.timeout.toSeconds() <= 0) {
+      throw new ValidationError(lit`TimeoutMustBePositive`, 'Timeout must be positive', this);
+    }
 
     // TrustPolicy - https://docs.aws.amazon.com/step-functions/latest/dg/procedure-create-iam-role.html#prevent-cross-service-confused-deputy
     const stack = Stack.of(this) ;
@@ -813,7 +816,19 @@ export class FileDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:fileDefinitionBodyTimeoutIgnored',
+        'timeout is ignored when using FileDefinitionBody. Set TimeoutSeconds directly in the ASL definition file.');
+    }
+    if (sfnProps.comment !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:fileDefinitionBodyCommentIgnored',
+        'comment is ignored when using FileDefinitionBody. Set Comment directly in the ASL definition file.');
+    }
+    if (sfnProps.queryLanguage !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:fileDefinitionBodyQueryLanguageIgnored',
+        'queryLanguage is ignored when using FileDefinitionBody. Set QueryLanguage directly in the ASL definition file.');
+    }
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
       path: this.path,
       ...this.options,
@@ -832,7 +847,34 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.comment !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:stringDefinitionBodyCommentIgnored',
+        'comment is ignored when using StringDefinitionBody. Set Comment directly in the ASL definition string.');
+    }
+    if (sfnProps.queryLanguage !== undefined) {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:stringDefinitionBodyQueryLanguageIgnored',
+        'queryLanguage is ignored when using StringDefinitionBody. Set QueryLanguage directly in the ASL definition string.');
+    }
+    if (sfnProps.timeout !== undefined) {
+      // Only a literal JSON object can be parsed at synth time. A body that is itself
+      // a token (e.g. the result of Fn.sub) is resolved by CloudFormation, so we cannot
+      // inject TimeoutSeconds into it.
+      if (!this.body.trimStart().startsWith('{')) {
+        Annotations.of(scope).addWarningV2('@aws-cdk/aws-stepfunctions:stringDefinitionBodyTimeoutIgnored',
+          'timeout is ignored because the StringDefinitionBody is not a literal JSON object. Set TimeoutSeconds directly in the ASL definition string.');
+        return { definitionString: this.body };
+      }
+      const definition = JSON.parse(this.body);
+      if (definition.TimeoutSeconds === undefined) {
+        definition.TimeoutSeconds = sfnProps.timeout.toSeconds();
+      }
+      return {
+        // toJsonString (not JSON.stringify) so that tokens, including a token-valued
+        // timeout, are rendered correctly.
+        definitionString: Stack.of(scope).toJsonString(definition),
+      };
+    }
     return {
       definitionString: this.body,
     };

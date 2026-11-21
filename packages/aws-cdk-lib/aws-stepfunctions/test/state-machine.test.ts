@@ -1,5 +1,5 @@
 import { FakeTask } from './private/fake-task';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
@@ -1585,5 +1585,189 @@ describe('State Machine', () => {
         Type: 'AWS_OWNED_KEY',
       }),
     });
+  });
+
+  test('StringDefinitionBody injects TimeoutSeconds when timeout is specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const body = '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}';
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString(body),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":3600}',
+    });
+  });
+
+  test('StringDefinitionBody does not override existing TimeoutSeconds in ASL', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const body = '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":7200}';
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString(body),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    // THEN — ASL-level TimeoutSeconds takes precedence
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":7200}',
+    });
+  });
+
+  test('FileDefinitionBody emits warning when timeout is specified', () => {
+    const stack = new cdk.Stack();
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromFile(`${__dirname}/simple.asl.json`),
+      timeout: cdk.Duration.hours(1),
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('timeout is ignored when using FileDefinitionBody'),
+    );
+  });
+
+  test('FileDefinitionBody emits warning when comment is specified', () => {
+    const stack = new cdk.Stack();
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromFile(`${__dirname}/simple.asl.json`),
+      comment: 'my comment',
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('comment is ignored when using FileDefinitionBody'),
+    );
+  });
+
+  test('FileDefinitionBody emits warning when queryLanguage is specified', () => {
+    const stack = new cdk.Stack();
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromFile(`${__dirname}/simple.asl.json`),
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('queryLanguage is ignored when using FileDefinitionBody'),
+    );
+  });
+
+  test('StringDefinitionBody throws when timeout is not positive', () => {
+    const stack = new cdk.Stack();
+    const body = '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}';
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        definitionBody: sfn.DefinitionBody.fromString(body),
+        timeout: cdk.Duration.seconds(0),
+      });
+    }).toThrow('Timeout must be positive');
+  });
+
+  test('accepts a token-valued timeout', () => {
+    const stack = new cdk.Stack();
+    const timeoutSeconds = new cdk.CfnParameter(stack, 'TimeoutSeconds', { type: 'Number' });
+
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+      timeout: cdk.Duration.seconds(timeoutSeconds.valueAsNumber),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': ['', [
+          '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"TimeoutSeconds":',
+          { Ref: 'TimeoutSeconds' },
+          '}',
+        ]],
+      },
+    });
+  });
+
+  test('accepts a token-valued timeout with a chain definition', () => {
+    const stack = new cdk.Stack();
+    const timeoutSeconds = new cdk.CfnParameter(stack, 'TimeoutSeconds', { type: 'Number' });
+
+    expect(() => new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
+      timeout: cdk.Duration.seconds(timeoutSeconds.valueAsNumber),
+    })).not.toThrow();
+  });
+
+  test('StringDefinitionBody injects TimeoutSeconds into a body containing tokens', () => {
+    const stack = new cdk.Stack();
+    const topic = new cdk.CfnResource(stack, 'Topic', { type: 'AWS::SNS::Topic' });
+    const body = JSON.stringify({
+      StartAt: 'Publish',
+      States: {
+        Publish: {
+          Type: 'Task',
+          Resource: 'arn:aws:states:::sns:publish',
+          Parameters: { TopicArn: topic.ref, Message: 'hello' },
+          End: true,
+        },
+      },
+    });
+
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString(body),
+      timeout: cdk.Duration.minutes(5),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: {
+        'Fn::Join': ['', [
+          '{"StartAt":"Publish","States":{"Publish":{"Type":"Task","Resource":"arn:aws:states:::sns:publish","Parameters":{"TopicArn":"',
+          { Ref: 'Topic' },
+          '","Message":"hello"},"End":true}},"TimeoutSeconds":300}',
+        ]],
+      },
+    });
+  });
+
+  test('StringDefinitionBody keeps a token body verbatim and warns when timeout is specified', () => {
+    const stack = new cdk.Stack();
+    const body = cdk.Fn.sub('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}');
+
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString(body),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: { 'Fn::Sub': '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}' },
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('timeout is ignored because the StringDefinitionBody is not a literal JSON object'),
+    );
+  });
+
+  test('StringDefinitionBody emits warning when comment is specified', () => {
+    const stack = new cdk.Stack();
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+      comment: 'my comment',
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('comment is ignored when using StringDefinitionBody'),
+    );
+  });
+
+  test('StringDefinitionBody emits warning when queryLanguage is specified', () => {
+    const stack = new cdk.Stack();
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
+    Annotations.fromStack(stack).hasWarning(
+      '/Default/MyStateMachine',
+      Match.stringLikeRegexp('queryLanguage is ignored when using StringDefinitionBody'),
+    );
   });
 });
