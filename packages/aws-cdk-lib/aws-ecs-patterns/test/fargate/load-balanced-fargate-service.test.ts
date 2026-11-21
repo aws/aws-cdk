@@ -17,6 +17,19 @@ import * as ecsPatterns from '../../lib';
 import { acknowledgeTestValidationRules } from '../util';
 
 describe('ApplicationLoadBalancedFargateService', () => {
+  // Returns the synthesized CloudFront distribution config, with the origin
+  // and cache behavior for the /* path linked by TargetOriginId.
+  function cloudFrontConfigForService(stack: cdk.Stack) {
+    const template = Template.fromStack(stack).toJSON();
+    const distribution = Object.values(template.Resources).find(
+      (resource: any) => resource.Type === 'AWS::CloudFront::Distribution',
+    ) as any;
+    const config = distribution.Properties.DistributionConfig;
+    const behavior = config.CacheBehaviors.find((b: any) => b.PathPattern === '/*');
+    const origin = config.Origins.find((o: any) => o.Id === behavior.TargetOriginId);
+    return { config, behavior, origin };
+  }
+
   test('setting healthCheckGracePeriod works', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -66,6 +79,138 @@ describe('ApplicationLoadBalancedFargateService', () => {
         ]),
       }),
     });
+  });
+
+  test('cloudFrontDistribution uses the listener protocol and safe behavior defaults', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      cloudFrontDistribution: distribution,
+    });
+
+    // THEN
+    const { behavior, origin } = cloudFrontConfigForService(stack);
+    // The default listener is HTTP:80, so CloudFront talks HTTP to the origin.
+    expect(origin.CustomOriginConfig.OriginProtocolPolicy).toEqual('http-only');
+    expect(origin.CustomOriginConfig.HTTPPort).toEqual(80);
+    // Safe defaults for a dynamic service: redirect viewers to HTTPS,
+    // allow every method, and do not cache responses.
+    expect(behavior.ViewerProtocolPolicy).toEqual('redirect-to-https');
+    expect([...behavior.AllowedMethods].sort()).toEqual(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
+    expect(behavior.CachePolicyId).toEqual('4135ea2d-6df8-44a3-9df3-4b5a84be39ad');
+    expect(behavior.OriginRequestPolicyId).toBeUndefined();
+  });
+
+  test('cloudFrontDistribution with a certificate uses HTTPS to the origin and forwards the Host header', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012'),
+      cloudFrontDistribution: distribution,
+    });
+
+    // THEN
+    const { behavior, origin } = cloudFrontConfigForService(stack);
+    // A certificate means an HTTPS listener, so CloudFront talks HTTPS to it.
+    expect(origin.CustomOriginConfig.OriginProtocolPolicy).toEqual('https-only');
+    expect(origin.CustomOriginConfig.HTTPSPort).toEqual(443);
+    // The viewer's Host header is forwarded so the certificate on the load
+    // balancer matches the requested host (ALL_VIEWER managed policy).
+    expect(behavior.OriginRequestPolicyId).toEqual('216adef6-5c7f-47e4-b989-5492eafa07d3');
+  });
+
+  test('cloudFrontDistribution with an imported load balancer uses its DNS name as the origin', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+    const loadBalancer = ApplicationLoadBalancer.fromApplicationLoadBalancerAttributes(stack, 'ImportedLB', {
+      loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-alb/1234567890abcdef',
+      loadBalancerDnsName: 'my-alb-1234567890.us-west-2.elb.amazonaws.com',
+      loadBalancerCanonicalHostedZoneId: 'Z1H1FL5HABSF5',
+      securityGroupId: 'sg-12345678',
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+    });
+
+    // WHEN / THEN — synthesizing with an imported load balancer must not throw
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        loadBalancer,
+        cloudFrontDistribution: distribution,
+      });
+    }).not.toThrow();
+    const { origin } = cloudFrontConfigForService(stack);
+    expect(origin.DomainName).toEqual('my-alb-1234567890.us-west-2.elb.amazonaws.com');
+  });
+
+  test('cloudFrontDistribution with an internal load balancer throws', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN / THEN — CloudFront cannot reach an internal load balancer
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        publicLoadBalancer: false,
+        cloudFrontDistribution: distribution,
+      });
+    }).toThrow(/internet-facing/);
+  });
+
+  test('cloudFrontBehaviorOptions overrides the safe defaults', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      cloudFrontDistribution: distribution,
+      cloudFrontBehaviorOptions: {
+        cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+      },
+    });
+
+    // THEN — the given options win, the untouched defaults stay in place
+    const { behavior } = cloudFrontConfigForService(stack);
+    expect(behavior.CachePolicyId).toEqual('658327ea-f89d-4fab-a63d-7e88639e58f6');
+    expect(behavior.ViewerProtocolPolicy).toEqual('https-only');
+    expect([...behavior.AllowedMethods].sort()).toEqual(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
   });
 
   test('without cloudFrontDistribution no distribution is created', () => {
