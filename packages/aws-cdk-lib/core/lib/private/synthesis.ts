@@ -1,5 +1,6 @@
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
+import { visitAspects } from './aspect-visitation';
 import { STACK_TYPE, STAGE_TYPE } from './core-construct-finders';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
@@ -32,11 +33,7 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): p
   // we start by calling "synth" on all nested assemblies (which will take care of all their children)
   synthNestedAssemblies(root, options);
 
-  if (options.aspectStabilization) {
-    invokeAspectsV2(root);
-  } else {
-    invokeAspects(root);
-  }
+  visitAspects(root, () => options.aspectStabilization ? invokeAspectsV2(root) : invokeAspects(root));
 
   injectMetadataResources(root);
 
