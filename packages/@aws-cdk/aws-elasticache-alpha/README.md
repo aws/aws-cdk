@@ -116,10 +116,7 @@ const serverlessCache = new elasticache.ServerlessCache(this, 'ServerlessCache',
     // enable automatic backups and set the retention period to 6 days
     backupRetentionLimit: 6,
     // set the backup window to 9:00 AM UTC
-    backupTime: events.Schedule.cron({
-      hour: '9',
-      minute: '0',
-    }),
+    backupTime: '09:00',
   },
   vpc,
 });
