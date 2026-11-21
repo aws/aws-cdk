@@ -489,6 +489,51 @@
     }
    }
   },
+  "MyVpcS3DualstackEndpoint72DA66B2": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "DnsOptions": {
+     "DnsRecordIpType": "dualstack"
+    },
+    "IpAddressType": "dualstack",
+    "RouteTableIds": [
+     {
+      "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
+     },
+     {
+      "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
+     },
+     {
+      "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
+     },
+     {
+      "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcEndpointType": "Gateway",
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
   "MyVpcEcrDockerEndpointSecurityGroup47BB9CC1": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -654,6 +699,100 @@
         "Ref": "AWS::Region"
        },
        ".dynamodb"
+      ]
+     ]
+    },
+    "SubnetIds": [
+     {
+      "Ref": "MyVpcPrivateSubnet1Subnet5057CF7E"
+     },
+     {
+      "Ref": "MyVpcPrivateSubnet2Subnet0040C983"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcEndpointType": "Interface",
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
+  "MyVpcSESEndpointSecurityGroup06F927CE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-ec2-vpc-endpoint/MyVpc/SESEndpoint/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "MyVpcF9F0CA6F",
+        "CidrBlock"
+       ]
+      },
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "MyVpcF9F0CA6F",
+           "CidrBlock"
+          ]
+         },
+         ":587"
+        ]
+       ]
+      },
+      "FromPort": 587,
+      "IpProtocol": "tcp",
+      "ToPort": 587
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
+  "MyVpcSESEndpointA308E10A": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "MyVpcSESEndpointSecurityGroup06F927CE",
+       "GroupId"
+      ]
+     }
+    ],
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".email-smtp"
       ]
      ]
     },
@@ -856,51 +995,6 @@
     "VpcEndpointType": "Interface",
     "VpcId": {
      "Ref": "MyVpcF9F0CA6F"
-    }
-   }
-  },
-  "MyVpcS3DualstackEndpoint72DA66B2": {
-   "Type": "AWS::EC2::VPCEndpoint",
-   "Properties": {
-    "RouteTableIds": [
-     {
-      "Ref": "MyVpcPrivateSubnet1RouteTable8819E6E2"
-     },
-     {
-      "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
-     },
-     {
-      "Ref": "MyVpcPublicSubnet1RouteTableC46AB2F4"
-     },
-     {
-      "Ref": "MyVpcPublicSubnet2RouteTable1DF17386"
-     }
-    ],
-    "ServiceName": {
-     "Fn::Join": [
-      "",
-      [
-       "com.amazonaws.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".s3"
-      ]
-     ]
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint/MyVpc"
-     }
-    ],
-    "VpcEndpointType": "Gateway",
-    "VpcId": {
-     "Ref": "MyVpcF9F0CA6F"
-    },
-    "IpAddressType": "dualstack",
-    "DnsOptions": {
-     "DnsRecordIpType": "dualstack"
     }
    }
   }
