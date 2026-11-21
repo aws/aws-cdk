@@ -1,0 +1,103 @@
+{
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
+        "Annotations.addWarningV2 (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:216:27)",
+        "Object.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/external/integ.external-service-imported-taskdef.js:81:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1854:14)",
+        "Object..js (node:internal/modules/cjs/loader:1985:10)",
+        "Module.load (node:internal/modules/cjs/loader:1577:32)",
+        "Module._load (node:internal/modules/cjs/loader:1379:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:255:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625"
+    }
+  ]
+}
