@@ -577,6 +577,7 @@
     "ResourcesVpcConfig": {
      "EndpointPrivateAccess": true,
      "EndpointPublicAccess": false,
+     "PublicAccessCidrs": [],
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
