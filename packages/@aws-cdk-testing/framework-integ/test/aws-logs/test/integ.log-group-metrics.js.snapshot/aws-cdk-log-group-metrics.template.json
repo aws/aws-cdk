@@ -26,7 +26,7 @@
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
     "EvaluationPeriods": 1,
-    "MetricName": "IncomingLogs",
+    "MetricName": "IncomingLogEvents",
     "Namespace": "AWS/Logs",
     "Period": 300,
     "Statistic": "Sum",
