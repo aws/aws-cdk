@@ -1,15 +1,18 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { BundlingFileAccess, DockerImage } from 'aws-cdk-lib';
+import { AssetStaging, BundlingFileAccess, DockerImage, Stack } from 'aws-cdk-lib';
 import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
-// Stub `DockerImage.fromBuild` so these unit tests never run a real `docker build`.
-// (The `child_process` mock below is bypassed intermittently in CI.) The spy still
-// records calls, so the argument/call-count assertions below are unaffected.
+// Stub `DockerImage.fromBuild` for the tests that build a custom bundling image with it, and
+// `buildImage()` for the bundling image that PythonFunction builds on demand, so these unit
+// tests never run a real `docker build`. (The `child_process` mock below is bypassed
+// intermittently in CI.) The spies still record calls, so the assertions below are unaffected.
 jest.spyOn(DockerImage, 'fromBuild').mockReturnValue(new DockerImage('cdk-bundling-image-stub'));
+jest.spyOn(DockerImage, 'fromBuildV2');
+const buildImage = jest.spyOn(DockerImage.prototype, 'buildImage').mockImplementation(() => {});
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => {
@@ -47,7 +50,7 @@ test('Bundling a function without dependencies', () => {
     }),
   }));
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-python/),
     }),
@@ -488,7 +491,7 @@ test('Bundling with custom build args', () => {
     buildArgs: { PIP_INDEX_URL: testPypi },
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
+  expect(DockerImage.fromBuildV2).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '..', 'lib')), expect.objectContaining({
     buildArgs: expect.objectContaining({
       PIP_INDEX_URL: testPypi,
     }),
@@ -628,10 +631,10 @@ test('Do not build docker image when skipping bundling', () => {
     skip: true,
   });
 
-  expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+  expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
 });
 
-test('Build docker image when bundling is not skipped', () => {
+test('Does not build the docker image when the bundling options are created', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
@@ -639,7 +642,28 @@ test('Build docker image when bundling is not skipped', () => {
     skip: false,
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalled();
+  expect(DockerImage.fromBuildV2).toHaveBeenCalled();
+  expect(buildImage).not.toHaveBeenCalled();
+});
+
+test('Builds the docker image when the asset is bundled', () => {
+  const run = jest.spyOn(DockerImage.prototype, 'run').mockImplementation((options) => {
+    const output = options?.volumes?.find(v => v.containerPath === AssetStaging.BUNDLING_OUTPUT_DIR);
+    if (!output) {
+      throw new Error('Expected an output volume');
+    }
+    fs.writeFileSync(path.join(output.hostPath, 'index.py'), '');
+  });
+
+  const code = Bundling.bundle({
+    entry: path.join(__dirname, 'lambda-handler'),
+    runtime: Runtime.PYTHON_3_12,
+    skip: false,
+  });
+  code.bind(new Stack());
+
+  expect(buildImage).toHaveBeenCalled();
+  run.mockRestore();
 });
 
 test('with command hooks', () => {
@@ -717,7 +741,7 @@ describe('local bundling wiring', () => {
   });
 
   test('local: true does not trigger docker build', () => {
-    (DockerImage.fromBuild as jest.Mock).mockClear();
+    (DockerImage.fromBuildV2 as jest.Mock).mockClear();
     const entry = path.join(__dirname, 'lambda-handler');
     Bundling.bundle({
       entry,
@@ -726,7 +750,7 @@ describe('local bundling wiring', () => {
       local: true,
     });
 
-    expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+    expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
   });
 
   test('local: false leaves local undefined', () => {

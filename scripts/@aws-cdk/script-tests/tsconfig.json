@@ -3,6 +3,7 @@
   "compilerOptions": {
     "noEmit": true,
     "esModuleInterop": true,
+    "isolatedModules": true,
     "types": [
       "jest"
     ],
@@ -10,6 +11,7 @@
   },
   "include": [
     "**/*.test.ts",
-    "../../pr-issue-check.ts"
+    "../../pr-issue-check.ts",
+    "../../request-response-on-idle-drafts.ts"
   ]
 }

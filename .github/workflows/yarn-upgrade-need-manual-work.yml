@@ -27,7 +27,7 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: "*"
+          node-version: "24"
         env:
           NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
@@ -116,7 +116,6 @@ jobs:
             ```
             See https://www.npmjs.com/package/@aws-cdk/integ-runner for more integ runner options.
           labels: contribution/core,dependencies
-          team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
           # Instead use a privileged token here, so further GH actions can be triggered on this PR.
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}

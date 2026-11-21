@@ -7,6 +7,8 @@ on:
 env:
   BRANCHES: main v2-release
 
+cache-mode: read
+
 jobs:
   # Check for the presence of a PROJEN_GITHUB_TOKEN secret.
   #
