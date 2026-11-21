@@ -84,6 +84,19 @@ export interface CodeBuildStepProps extends ShellStepProps {
   readonly actionRole?: iam.IRole;
 
   /**
+   * Role to assume before executing `commands`.
+   *
+   * The CodeBuild project's role is granted `sts:AssumeRole` on this role,
+   * and `commands` run with this role's credentials active (via `AWS_PROFILE`).
+   *
+   * Useful for cross-account actions such as invoking a Lambda function or
+   * creating test data in a deployed account.
+   *
+   * @default - Commands run under the CodeBuild project's own role
+   */
+  readonly assumeRole?: iam.IRole;
+
+  /**
    * Changes to environment
    *
    * This environment will be combined with the pipeline's default
@@ -195,6 +208,13 @@ export class CodeBuildStep extends ShellStep {
   readonly actionRole?: iam.IRole;
 
   /**
+   * Role to assume before executing `commands`.
+   *
+   * @default - Commands run under the CodeBuild project's own role
+   */
+  readonly assumeRole?: iam.IRole;
+
+  /**
    * Build environment
    *
    * @default - No value specified at construction time, use defaults
@@ -250,6 +270,7 @@ export class CodeBuildStep extends ShellStep {
     this.cache = props.cache;
     this.role = props.role;
     this.actionRole = props.actionRole;
+    this.assumeRole = props.assumeRole;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
