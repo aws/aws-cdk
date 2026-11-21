@@ -83,7 +83,10 @@ export class Choice extends State {
    * Use this to combine all possible choice paths back.
    */
   public afterwards(options: AfterwardsOptions = {}): Chain {
-    const endStates = State.filterNextables(State.findReachableEndStates(this, { includeErrorHandlers: options.includeErrorHandlers }));
+    const endStates = State.filterNextables(State.findReachableEndStates(this, {
+      includeErrorHandlers: options.includeErrorHandlers,
+      includeDefaultChoiceTransitions: options.includeOtherwise ?? false,
+    }));
     if (options.includeOtherwise && this.defaultChoice) {
       throw new UnscopedValidationError(lit`ChoiceStateAlreadyHasOtherwise`, `'includeOtherwise' set but Choice state ${this.stateId} already has an 'otherwise' transition`);
     }
