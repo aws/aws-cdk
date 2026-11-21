@@ -27,7 +27,7 @@ export function validateArchitecture(architecture: Architecture): void {
   if (ARCH_SLUG[architecture.dockerPlatform] === undefined) {
     throw new UnscopedValidationError(
       lit`PythonLocalBundlingUnsupportedArchitecture`,
-      `Local bundling supports only x86_64 and arm64 Lambda architectures; got dockerPlatform '${architecture.dockerPlatform}'. Use Docker bundling or provide 'platformTags' to bypass the default tag mapping.`,
+      `The default local bundling platform tags only support x86_64 and arm64 Lambda architectures; got dockerPlatform '${architecture.dockerPlatform}'. Use Docker bundling or provide 'platformTags' to bypass the default tag mapping.`,
     );
   }
 }

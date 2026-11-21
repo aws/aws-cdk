@@ -106,11 +106,18 @@ export class Bundling implements CdkBundlingOptions {
       assetExcludes = [],
     } = props;
 
-    if (props.platformTags !== undefined && props.local !== true) {
-      throw new UnscopedValidationError(
-        lit`PythonPlatformTagsRequiresLocalBundling`,
-        'platformTags only applies to local bundling, but local is not true. Set local: true, or remove platformTags',
-      );
+    if (props.localBundling) {
+      const dockerOptions = [
+        'buildArgs', 'bundlingFileAccess', 'command', 'entrypoint', 'image',
+        'network', 'platform', 'securityOpt', 'user', 'volumes', 'volumesFrom', 'workingDirectory',
+      ] as const;
+      const incompatible = dockerOptions.filter(option => props[option] !== undefined);
+      if (incompatible.length > 0) {
+        throw new UnscopedValidationError(
+          lit`PythonLocalBundlingDockerOptions`,
+          `localBundling cannot be combined with Docker options: ${incompatible.join(', ')}.`,
+        );
+      }
     }
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
@@ -128,7 +135,7 @@ export class Bundling implements CdkBundlingOptions {
     if (image) {
       // Use the user's image
       this.image = image;
-    } else if (props.local === true) {
+    } else if (props.localBundling) {
       // Local bundling skips Docker entirely. Reference the runtime's base
       // image lazily via fromRegistry so we still expose a valid `image`
       // without shelling out to `docker build` at synth time.
@@ -156,15 +163,17 @@ export class Bundling implements CdkBundlingOptions {
     this.network = props.network;
     this.bundlingFileAccess = props.bundlingFileAccess;
 
-    if (props.local === true) {
+    if (props.localBundling) {
       this.local = new LocalBundling({
         entry,
         runtime,
         architecture,
         packaging,
         excludes,
-        platformTags: props.platformTags,
+        outputPathSuffix: path.posix.relative(AssetStaging.BUNDLING_OUTPUT_DIR, outputPath),
+        platformTags: props.localBundling.platformTags,
         commandHooks,
+        environment: props.environment,
       });
     }
   }

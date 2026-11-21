@@ -54,6 +54,16 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly buildArgs?: { [key: string]: string };
 
   /**
+   * Environment variables for bundling.
+   *
+   * In local mode these override the host environment for pip, dependency
+   * exports, and command hooks.
+   *
+   * @default - No additional environment variables.
+   */
+  readonly environment?: { [key: string]: string };
+
+  /**
    * Determines how asset hash is calculated. Assets will get rebuild and
    * uploaded only if their hash has changed.
    *
@@ -107,7 +117,7 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly bundlingFileAccess?: BundlingFileAccess;
 
   /**
-   * Whether to bundle the function locally (on the host) instead of using Docker.
+   * Bundle the function or layer on the host instead of using Docker.
    *
    * When enabled, the host must have `python3` or `python` (with `pip`) on its
    * PATH — `python3` is preferred and `python` is tried as a fallback. If the
@@ -120,21 +130,28 @@ export interface BundlingOptions extends DockerRunOptions {
    * and `--only-binary=:all:` flags, so the resulting artifact is binary-compatible
    * with the Lambda runtime regardless of the host OS/architecture.
    *
-   * If local bundling fails (missing tools, no compatible wheel, etc.), synthesis
-   * fails — there is no silent fallback to Docker.
+   * Docker-only bundling options such as image, buildArgs, and network are
+   * rejected. Use environment or host pip configuration for private indexes.
+   * Hook commands run after sources are copied, from the staged output directory.
+   * For these commands, the hook receives the original entry as inputDir and
+   * the staging directory as outputDir. Write to outputDir to change the asset.
    *
-   * @default false
+   * A local bundling failure fails synthesis.
+   *
+   * @default - Use Docker bundling.
    */
-  readonly local?: boolean;
+  readonly localBundling?: LocalBundlingOptions;
+}
 
+/**
+ * Options for bundling on the host.
+ */
+export interface LocalBundlingOptions {
   /**
-   * Platform tags passed to `pip install --platform ...` when `local` is enabled.
+   * Platform tags passed to pip install --platform.
    *
-   * Use this to override the default tag list when a dependency is only published
-   * under an unusual tag (e.g. `musllinux_1_2_x86_64`). The first tag that has a
-   * matching wheel on the index wins; subsequent tags are fallbacks.
-   *
-   * Requires `local` to be `true` — setting this for a Docker build is an error.
+   * This replaces the default list. Include any default tags you still want pip
+   * to consider.
    *
    * @default - Derived from the target Python runtime's base image:
    *            `manylinux2014_{arch}` for Python 3.11 and below (Amazon Linux 2),

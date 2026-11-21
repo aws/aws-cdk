@@ -3,11 +3,12 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import os from 'os';
 import * as path from 'path';
-import { FileSystem, SymlinkFollowMode } from 'aws-cdk-lib';
+import { DockerImage, FileSystem, SymlinkFollowMode } from 'aws-cdk-lib';
 import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
 import type { ICommandHooks } from '../lib';
+import { Bundling } from '../lib/bundling';
 import { LocalBundling, _resetPythonCache } from '../lib/local-bundling';
-import { DependenciesFile, Packaging } from '../lib/packaging';
+import { Packaging } from '../lib/packaging';
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(),
@@ -69,6 +70,7 @@ interface BundlingFixtureOverrides {
   readonly entry: string;
   readonly runtime: Runtime;
   readonly architecture: Architecture;
+  readonly outputPathSuffix?: string;
   readonly platformTags?: string[];
   readonly assetExcludes?: string[];
   readonly commandHooks?: ICommandHooks;
@@ -76,16 +78,13 @@ interface BundlingFixtureOverrides {
 
 function makeLocalBundling(opts: BundlingFixtureOverrides): LocalBundling {
   const packaging = Packaging.fromEntry(opts.entry);
-  const excludes = [...(opts.assetExcludes ?? [])];
-  if (packaging.dependenciesFile === DependenciesFile.UV && !excludes.includes('.python-version')) {
-    excludes.push('.python-version');
-  }
   return new LocalBundling({
     entry: opts.entry,
     runtime: opts.runtime,
     architecture: opts.architecture,
     packaging,
-    excludes,
+    excludes: opts.assetExcludes ?? [],
+    outputPathSuffix: opts.outputPathSuffix,
     platformTags: opts.platformTags,
     commandHooks: opts.commandHooks,
   });
@@ -211,6 +210,37 @@ describe('parametrized sweeps', () => {
     // Lambda runtime).
     expect(args).toContain('--only-binary=:all:');
   });
+});
+
+test('local bundling receives the effective excludes, platform tags, and environment', () => {
+  const environment = { PIP_INDEX_URL: 'https://example.test/simple' };
+  const buildImage = jest.spyOn(DockerImage, 'fromBuildV2');
+  try {
+    const bundling = new Bundling({
+      entry: ENTRY_UV,
+      runtime: Runtime.PYTHON_3_11,
+      localBundling: { platformTags: ['musllinux_1_2_x86_64'] },
+      environment,
+      assetExcludes: ['.ignorefile'],
+      commandHooks: { beforeBundling: () => ['echo before'], afterBundling: () => ['echo after'] },
+    });
+
+    expect(bundling.image.image).toBe(Runtime.PYTHON_3_11.bundlingImage.image);
+    expect(buildImage).not.toHaveBeenCalled();
+    expect(bundling.local!.tryBundle(outputDir, bundling)).toBe(true);
+    expect(copyDirectorySpy).toHaveBeenCalledWith(ENTRY_UV, outputDir, expect.objectContaining({
+      exclude: ['.ignorefile', '.python-version'],
+    }));
+    expect(pipInstallCall()).toEqual(expect.arrayContaining(['--platform', 'musllinux_1_2_x86_64']));
+    for (const [, , options] of mockedSpawnSync.mock.calls) {
+      expect(options.env).toEqual(expect.objectContaining(environment));
+    }
+    expect(shellCall('echo before')).toBeDefined();
+    expect(shellCall('echo after')).toBeDefined();
+    expect(shellCall(Packaging.withUv().exportCommand!)).toBeDefined();
+  } finally {
+    buildImage.mockRestore();
+  }
 });
 
 describe('platformTags override', () => {
@@ -346,18 +376,21 @@ describe('command hooks', () => {
     expect(shellCall('echo nested')).toBeUndefined();
   });
 
-  test('hooks run with cwd=outputDir (not the user source tree)', () => {
+  test('hooks receive the source and staging paths and run from the staging directory', () => {
+    const beforeBundling = jest.fn(() => ['echo before']);
+    const afterBundling = jest.fn(() => ['echo after']);
+    const targetDir = path.join(outputDir, 'python', 'lib');
     const local = makeLocalBundling({
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_11,
       architecture: Architecture.X86_64,
-      commandHooks: {
-        beforeBundling: () => ['echo before'],
-        afterBundling: () => ['echo after'],
-      },
+      outputPathSuffix: 'python/lib',
+      commandHooks: { beforeBundling, afterBundling },
     });
     local.tryBundle(outputDir);
 
+    expect(beforeBundling).toHaveBeenCalledWith(ENTRY_PIP, targetDir);
+    expect(afterBundling).toHaveBeenCalledWith(ENTRY_PIP, targetDir);
     const before = shellCall('echo before')!;
     const after = shellCall('echo after')!;
     const beforeOpts = mockedSpawnSync.mock.calls.find(
@@ -368,11 +401,11 @@ describe('command hooks', () => {
     )![2];
     expect(before).toBeDefined();
     expect(after).toBeDefined();
-    expect(beforeOpts.cwd).toBe(outputDir);
-    expect(afterOpts.cwd).toBe(outputDir);
+    expect(beforeOpts.cwd).toBe(targetDir);
+    expect(afterOpts.cwd).toBe(targetDir);
   });
 
-  test('beforeBundling runs after copySources so the source tree is untouched', () => {
+  test('beforeBundling commands run after the source copy', () => {
     const local = makeLocalBundling({
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_11,
@@ -495,7 +528,9 @@ describe('Windows export guard', () => {
       architecture: Architecture.X86_64,
     });
 
-    expect(() => local.tryBundle(outputDir)).not.toThrow();
+    expect(local.tryBundle(outputDir)).toBe(true);
+    expect(copyDirectorySpy).toHaveBeenCalledWith(ENTRY_PIP, outputDir, expect.anything());
+    expect(pipInstallCall()).toEqual(expect.arrayContaining(['install', '-r', 'requirements.txt', '--target', outputDir]));
   });
 });
 
@@ -514,6 +549,17 @@ describe('validation', () => {
       runtime: Runtime.PYTHON_3_11,
       architecture: Architecture.custom('weird', 'linux/mips64'),
     })).toThrow(/linux\/mips64/);
+  });
+
+  test('explicit platform tags bypass validation for the default architecture mapping', () => {
+    const local = makeLocalBundling({
+      entry: ENTRY_PIP,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.custom('weird', 'linux/mips64'),
+      platformTags: ['linux_mips64'],
+    });
+    expect(local.tryBundle(outputDir)).toBe(true);
+    expect(pipInstallCall()).toEqual(expect.arrayContaining(['--platform', 'linux_mips64']));
   });
 });
 

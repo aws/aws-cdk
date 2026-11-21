@@ -174,7 +174,7 @@ new python.PythonFunction(this, 'function', {
   entry: '/path/to/function',
   runtime: Runtime.PYTHON_3_12,
   bundling: {
-    local: true,
+    localBundling: {},
   },
 });
 ```
@@ -197,20 +197,29 @@ If local bundling fails for any reason, synthesis fails — there is no silent f
 
 Note that this is the inverse of `aws-lambda-nodejs`, where local bundling is the default and `forceDockerBundling` opts out. Python dependency resolution relies on the target platform publishing compatible wheels, which fails far more often than an `esbuild` run, so Docker stays the default here and local bundling is opt-in.
 
+Local bundling rejects Docker-only options: `image`, `buildArgs`, `command`, `entrypoint`, `volumes`, `volumesFrom`, `user`, `securityOpt`, `network`, `workingDirectory`, `platform`, and `bundlingFileAccess`.
+
+For private package indexes, configure pip on the host or set `environment` in your bundling options (for example, `environment: { PIP_INDEX_URL: indexUrl }`). These variables override the host environment for pip, lockfile exports, and hook commands.
+
+Local hook commands run after the source is copied and use the staged output as their working directory. When preparing these commands, the hooks receive the original source directory as `inputDir` and the staged target as `outputDir`. Write to `outputDir` to change the bundle. Writing to `inputDir` modifies the source after it has been copied.
+
 **Overriding platform tags**
 
-For edge cases where a dependency is only published under a non-default tag (e.g. `musllinux`), you can override the tag list:
+If a dependency publishes a compatible wheel under an additional platform tag, include that tag in the list:
 
 ```ts
 new python.PythonFunction(this, 'function', {
   entry: '/path/to/function',
   runtime: Runtime.PYTHON_3_12,
   bundling: {
-    local: true,
-    platformTags: ['manylinux_2_28_x86_64', 'manylinux2014_x86_64'],
+    localBundling: {
+      platformTags: ['manylinux_2_28_x86_64', 'manylinux2014_x86_64', 'manylinux_2_17_x86_64'],
+    },
   },
 });
 ```
+
+`platformTags` replaces the default list. Include the default tags if you still want pip to consider them.
 
 When omitted, the default tags are derived from the runtime's base image:
 
@@ -219,7 +228,7 @@ When omitted, the default tags are derived from the runtime's base image:
 
 ## Custom Bundling
 
-Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies. The build args currently supported are:
+For Docker bundling, customization can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies. The build args currently supported are:
 
 - `PIP_INDEX_URL`
 - `PIP_EXTRA_INDEX_URL`
@@ -351,7 +360,7 @@ new python.PythonFunction(this, 'function', {
 
 The following hooks are available:
 
-- `beforeBundling`: runs before all bundling commands
+- `beforeBundling`: runs before any Docker bundling commands, or after staging sources in local mode
 - `afterBundling`: runs after all bundling commands
 
 They all receive the directory containing the dependencies file (`inputDir`) and the

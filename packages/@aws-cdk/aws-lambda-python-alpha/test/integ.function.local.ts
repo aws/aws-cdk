@@ -71,8 +71,7 @@ class TestStack extends Stack {
         runtime,
         architecture,
         bundling: {
-          local: true,
-          ...(platformTags ? { platformTags } : {}),
+          localBundling: { platformTags },
         },
       });
       this.functionNames.push(fn.functionName);
