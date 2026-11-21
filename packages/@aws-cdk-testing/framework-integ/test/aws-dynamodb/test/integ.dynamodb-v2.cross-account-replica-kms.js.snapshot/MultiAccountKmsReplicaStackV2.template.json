@@ -1,0 +1,156 @@
+{
+ "Resources": {
+  "ReplicaKey4DE8F013": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ReplicaTableV2C3057097": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "GlobalTableSourceArn": "arn:aws:dynamodb:eu-west-1:111111111111:table/MultiAccountGlobalTableKms",
+    "Replicas": [
+     {
+      "Region": "ca-central-1",
+      "ResourcePolicy": {
+       "PolicyDocument": {
+        "Statement": [
+         {
+          "Action": [
+           "dynamodb:ReadDataForReplication",
+           "dynamodb:ReplicateSettings",
+           "dynamodb:WriteDataForReplication"
+          ],
+          "Condition": {
+           "StringEquals": {
+            "aws:SourceAccount": [
+             "222222222222",
+             {
+              "Fn::Select": [
+               4,
+               {
+                "Fn::Split": [
+                 ":",
+                 "arn:aws:dynamodb:eu-west-1:111111111111:table/MultiAccountGlobalTableKms"
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          },
+          "Effect": "Allow",
+          "Principal": {
+           "Service": "replication.dynamodb.amazonaws.com"
+          },
+          "Resource": "*",
+          "Sid": {
+           "Fn::Join": [
+            "",
+            [
+             "AllowReplicationServiceReadWrite",
+             {
+              "Fn::Select": [
+               4,
+               {
+                "Fn::Split": [
+                 ":",
+                 "arn:aws:dynamodb:eu-west-1:111111111111:table/MultiAccountGlobalTableKms"
+                ]
+               }
+              ]
+             }
+            ]
+           ]
+          }
+         }
+        ],
+        "Version": "2012-10-17"
+       }
+      },
+      "SSESpecification": {
+       "KMSMasterKeyId": {
+        "Fn::GetAtt": [
+         "ReplicaKey4DE8F013",
+         "Arn"
+        ]
+       }
+      }
+     }
+    ],
+    "SSESpecification": {
+     "SSEEnabled": true,
+     "SSEType": "KMS"
+    },
+    "TableName": "MultiAccountGlobalTableKms"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
