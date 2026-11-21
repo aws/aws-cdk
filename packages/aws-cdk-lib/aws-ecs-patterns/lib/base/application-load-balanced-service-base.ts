@@ -233,10 +233,15 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * For HTTPS, the distribution needs an alias for a name covered by the
    * load balancer certificate, and the distribution's own certificate must
    * be in us-east-1; otherwise CloudFront cannot verify the origin
-   * certificate and returns 502 for every request. The Route 53 record and
-   * ServiceURL the pattern creates still point at the load balancer, so
-   * point your own DNS at the distribution if you want traffic to go
-   * through CloudFront.
+   * certificate and returns 502 for every request. The Route 53 record and ServiceURL the
+   * pattern creates still point at the load balancer. If you set `domainName` and `domainZone`,
+   * the record the pattern creates already uses that name, so creating a second record with the
+   * same name pointing at the distribution fails at deploy.
+   * To serve the domain through CloudFront instead, set `recordType:
+   * ApplicationLoadBalancedServiceRecordType.NONE` and create your own alias record pointing at
+   * the distribution, for example `new route53.ARecord(this, 'Alias', { zone, recordName:
+   * 'app.example.com', target: route53.RecordTarget.fromAlias(new
+   * targets.CloudFrontTarget(distribution)) })`.
    *
    * The load balancer stays directly reachable: with the default open
    * listener its security group allows 0.0.0.0/0 on the listener port, so
