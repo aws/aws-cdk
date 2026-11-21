@@ -1,0 +1,20 @@
+{
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "codebuildserviceroleoverridetestDefaultTestDeployAssertC177E1D3.template.json"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/codebuild-service-role-override-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
