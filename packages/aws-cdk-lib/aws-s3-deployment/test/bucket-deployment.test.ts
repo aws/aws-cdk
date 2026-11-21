@@ -114,18 +114,25 @@ test('deploy with log group', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
+  const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+    retention: logs.RetentionDays.ONE_WEEK,
+  });
 
   // WHEN
   new s3deploy.BucketDeployment(stack, 'Deploy', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
-    logGroup: new logs.LogGroup(stack, 'LogGroup', {
-      retention: logs.RetentionDays.ONE_WEEK,
-    }),
+    logGroup,
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 7 });
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 7 });
+  template.hasResource('AWS::Lambda::Function', {
+    DependsOn: Match.arrayWith([
+      stack.getLogicalId(logGroup.node.defaultChild as logs.CfnLogGroup),
+    ]),
+  });
 });
 
 test('deploy from local directory assets', () => {
