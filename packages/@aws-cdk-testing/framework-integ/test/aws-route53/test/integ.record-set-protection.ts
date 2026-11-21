@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Aspects, Stack } from 'aws-cdk-lib';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
@@ -14,7 +14,13 @@ const zone = new route53.PublicHostedZone(stack, 'Zone', { zoneName: 'record-set
     target: route53.RecordTarget.fromIpAddresses(`192.0.2.${i + 1}`),
   });
   if (id === 'Blue') {
-    record.with(new route53.mixins.RecordSetProtection({ comment: 'Production DNS' }));
+    Aspects.of(record).add({
+      visit(node) {
+        if (route53.CfnRecordSet.isCfnRecordSet(node)) {
+          node.with(new route53.mixins.RecordSetProtection({ comment: 'Production DNS' }));
+        }
+      },
+    });
   }
 });
 
