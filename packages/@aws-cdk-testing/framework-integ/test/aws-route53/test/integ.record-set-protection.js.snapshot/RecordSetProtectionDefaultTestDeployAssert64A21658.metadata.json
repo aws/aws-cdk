@@ -1,0 +1,62 @@
+{
+  "/RecordSetProtection/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]"
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "RecordSetProtectionDefaultTestDeployAssert64A21658.template.json"
+    }
+  ],
+  "/RecordSetProtection/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/RecordSetProtection/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/RecordSetProtection/DefaultTest/DeployAssert/AwsApiCallCloudControlgetResourceece0b38e5c3b6b82c3c8f1b0b1e393bb/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RecordSetProtection/DefaultTest/DeployAssert/AwsApiCallCloudControlgetResourceece0b38e5c3b6b82c3c8f1b0b1e393bb/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudControlgetResourceece0b38e5c3b6b82c3c8f1b0b1e393bb"
+    }
+  ],
+  "/RecordSetProtection/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/RecordSetProtection/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/RecordSetProtection/DefaultTest/DeployAssert/AwsApiCallCloudControlgetResourceece0b38e5c3b6b82c3c8f1b0b1e393bb/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudControlgetResourceece0b38e5c3b6b82c3c8f1b0b1e393bb"
+    }
+  ]
+}

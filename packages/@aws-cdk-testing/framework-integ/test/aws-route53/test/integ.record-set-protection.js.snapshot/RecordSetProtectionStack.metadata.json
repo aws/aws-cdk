@@ -1,0 +1,114 @@
+{
+  "/RecordSetProtectionStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "RecordSetProtectionStack.template.json"
+    }
+  ],
+  "/RecordSetProtectionStack/Zone": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zoneName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zoneName": "*"
+      }
+    }
+  ],
+  "/RecordSetProtectionStack/Blue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "setIdentifier": "*",
+        "weight": "*",
+        "target": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "setIdentifier": "*",
+        "weight": "*",
+        "target": "*"
+      }
+    }
+  ],
+  "/RecordSetProtectionStack/Green": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "setIdentifier": "*",
+        "weight": "*",
+        "target": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "setIdentifier": "*",
+        "weight": "*",
+        "target": "*"
+      }
+    }
+  ],
+  "/RecordSetProtectionStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/RecordSetProtectionStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/RecordSetProtectionStack/Zone/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZoneA5DE4B68"
+    }
+  ],
+  "/RecordSetProtectionStack/Blue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Blue10BB7880"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_route53.mixins.RecordSetProtection"
+      }
+    }
+  ],
+  "/RecordSetProtectionStack/Green/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Green9DCBBC03"
+    }
+  ],
+  "/RecordSetProtectionStack/Exports/Output{\"Ref\":\"ZoneA5DE4B68\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefZoneA5DE4B6864A9A0D8"
+    }
+  ],
+  "/RecordSetProtectionStack/Blue/Resource/Protection": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BlueProtectionF51E97A9"
+    }
+  ]
+}

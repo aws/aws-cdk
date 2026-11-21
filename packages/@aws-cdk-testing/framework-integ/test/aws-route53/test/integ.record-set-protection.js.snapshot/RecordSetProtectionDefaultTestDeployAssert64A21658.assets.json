@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "85c9a4796905ca74c57e8e73884396ca78221f94b98df81aae3d8befe2d1567e": {
+      "source": {
+        "path": "asset.85c9a4796905ca74c57e8e73884396ca78221f94b98df81aae3d8befe2d1567e.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-04b374c4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "85c9a4796905ca74c57e8e73884396ca78221f94b98df81aae3d8befe2d1567e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "ef8caf747ac647bef74e916b04bf5d37e599673f6844561869286f31c5c46e8e": {
+      "displayName": "RecordSetProtectionDefaultTestDeployAssert64A21658 Template",
+      "source": {
+        "path": "RecordSetProtectionDefaultTestDeployAssert64A21658.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-bc721884": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ef8caf747ac647bef74e916b04bf5d37e599673f6844561869286f31c5c46e8e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

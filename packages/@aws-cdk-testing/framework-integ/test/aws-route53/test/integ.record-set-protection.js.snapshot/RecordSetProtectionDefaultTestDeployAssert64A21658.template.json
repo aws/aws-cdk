@@ -1,0 +1,189 @@
+{
+ "Resources": {
+  "AwsApiCallCloudControlgetResourceece0b38e5c3b6b82c3c8f1b0b1e393bb": {
+   "Type": "Custom::DeployAssert@SdkCallCloudControlgetResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudControl",
+    "api": "getResource",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"ResourceDescription\":{\"Properties\":{\"$SerializedJson\":{\"HostedZoneId\":\"",
+       {
+        "Fn::ImportValue": "RecordSetProtectionStack:ExportsOutputRefZoneA5DE4B6864A9A0D8"
+       },
+       "\",\"RecordName\":\"www.record-set-protection.cdk-integ-test.com\",\"RecordType\":\"A\",\"Comment\":\"Production DNS\"}}}}}"
+      ]
+     ]
+    },
+    "parameters": {
+     "TypeName": "\"AWS::Route53::RecordSetProtection\"",
+     "Identifier": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "RecordSetProtectionStack:ExportsOutputRefZoneA5DE4B6864A9A0D8"
+        },
+        "|www.record-set-protection.cdk-integ-test.com|A\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795225921272"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudcontrolapi:GetResource"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudformation:GetResource"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "route53:ListResourceRecordSetProtections"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":route53:::hostedzone/",
+             {
+              "Fn::ImportValue": "RecordSetProtectionStack:ExportsOutputRefZoneA5DE4B6864A9A0D8"
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "85c9a4796905ca74c57e8e73884396ca78221f94b98df81aae3d8befe2d1567e.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudControlgetResourceece0b38e5c3b6b82c3c8f1b0b1e393bb": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudControlgetResourceece0b38e5c3b6b82c3c8f1b0b1e393bb",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

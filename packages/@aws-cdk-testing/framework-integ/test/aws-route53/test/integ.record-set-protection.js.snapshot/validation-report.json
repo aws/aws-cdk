@@ -1,0 +1,32 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3006",
+          "description": "Unknown resource type 'AWS::Route53::RecordSetProtection'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "RecordSetProtectionStack/Blue/Resource/Protection",
+              "constructFqn": "aws-cdk-lib.aws_route53.CfnRecordSetProtection",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "RecordSetProtectionStack.template.json",
+                "logicalId": "BlueProtectionF51E97A9"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
