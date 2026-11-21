@@ -33,7 +33,12 @@ const integTest = new integ.IntegTest(app, 'Integ', {
   testCases: [stack],
 });
 
-// The sample app answers on /, so a 200 through the distribution proves
-// traffic reaches the service through CloudFront.
+// The sample app answers on / with a page only it returns, so a 200 carrying
+// that text through the distribution proves traffic reaches the service
+// through CloudFront — a 200 from the example.com placeholder origin behind
+// the default behavior would not contain it.
 integTest.assertions.httpApiCall(`https://${distribution.distributionDomainName}/`)
-  .expect(integ.ExpectedResult.objectLike({ status: 200 }));
+  .expect(integ.ExpectedResult.objectLike({
+    status: 200,
+    body: integ.Match.stringLikeRegexp('Your PHP application is now running on a container in Amazon ECS'),
+  }));
