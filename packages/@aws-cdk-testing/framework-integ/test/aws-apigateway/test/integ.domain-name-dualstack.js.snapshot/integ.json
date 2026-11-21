@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "domain-name-dualstack-test/DefaultTest": {
+      "stacks": [
+        "integ-apigw-domain-name-dualstack"
+      ],
+      "assertionStack": "domain-name-dualstack-test/DefaultTest/DeployAssert",
+      "assertionStackName": "domainnamedualstacktestDefaultTestDeployAssert5F0AEE2C"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
