@@ -54,10 +54,32 @@
           {
             "viewerProtocolPolicy": "redirect-to-https",
             "allowedMethods": "*",
-            "cachePolicy": "*"
+            "cachePolicy": "*",
+            "originRequestPolicy": "*"
           }
         ]
       }
+    }
+  ],
+  "/aws-ecs-integ-alb-fg-cloudfront/CloudFrontService": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "The load balancer stays directly reachable: with the default open listener its security group allows 0.0.0.0/0 on the listener port, so traffic can bypass the CloudFront distribution. Set openListener to false and allow ingress only from the com.amazonaws.global.cloudfront.origin-facing managed prefix list, and/or require a secret origin header that a listener rule checks. [ack: @aws-cdk/aws-ecs-patterns:cloudFrontOpenListener]",
+      "trace": [
+        "Annotations.addMessage (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "new ApplicationLoadBalancedServiceBase (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/base/application-load-balanced-service-base.js:184:47)",
+        "new ApplicationLoadBalancedFargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ecs-patterns/lib/fargate/application-load-balanced-fargate-service.js:138:13)",
+        "new ApplicationLoadBalancedFargateService (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.application-load-balanced-fargate-service-cloudfront.js:53:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
+        "Object..js (node:internal/modules/cjs/loader:1913:10)",
+        "Module.load (node:internal/modules/cjs/loader:1505:32)",
+        "Function._load (node:internal/modules/cjs/loader:1309:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
     }
   ],
   "/aws-ecs-integ-alb-fg-cloudfront/BootstrapVersion": [
