@@ -75,7 +75,13 @@ The following example uses custom asset bundling to convert a markdown file to h
 [Example of using asset bundling](./test/integ.assets.bundling.lit.ts).
 
 The bundling docker image (`image`) can either come from a registry (`DockerImage.fromRegistry`)
-or it can be built from a `Dockerfile` located inside your project (`DockerImage.fromBuild`).
+or it can be built from a `Dockerfile` located inside your project.
+
+We recommend to use `DockerImage.fromBuildV2` for images you build yourself.
+The image is only built when an asset actually needs bundling. This way, a synth
+that reuses existing bundling output, or skips bundling altogether, doesn't wait
+for a Docker build. If you need the image right away, for example to run your own
+`docker` commands with it, call `buildImage()` on it first.
 
 You can set the `CDK_DOCKER` environment variable in order to provide a custom
 docker program to execute. This may sometime be needed when building in
