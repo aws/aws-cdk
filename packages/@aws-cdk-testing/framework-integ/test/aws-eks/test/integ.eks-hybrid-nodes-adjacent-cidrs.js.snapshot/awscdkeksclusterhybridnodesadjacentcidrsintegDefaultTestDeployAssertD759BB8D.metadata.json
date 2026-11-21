@@ -1,0 +1,56 @@
+{
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-hybrid-nodes-adjacent-cidrs.js:80:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:294:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:308: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:308:3)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:348:9)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:345:9)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:345:9)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:345:9)",
+        "synthesizeTree (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:301:5)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:5)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-hybrid-nodes-adjacent-cidrs-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:9)",
+        "DefaultStackSynthesizer.synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:335:18)",
+        "/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:308: (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:308:3)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:348:9)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:345:9)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:345:9)",
+        "visit (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:345:9)",
+        "synthesizeTree (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:301:5)",
+        "synthesize (/home/heidbrij/repositories/github.com/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:77:5)"
+      ]
+    }
+  ]
+}
