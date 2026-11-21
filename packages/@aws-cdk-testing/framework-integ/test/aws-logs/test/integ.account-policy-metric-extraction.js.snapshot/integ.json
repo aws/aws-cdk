@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "account-policy-metric-extraction/DefaultTest": {
+      "stacks": [
+        "aws-cdk-account-policy-metric-extraction-integ"
+      ],
+      "assertionStack": "account-policy-metric-extraction/DefaultTest/DeployAssert",
+      "assertionStackName": "accountpolicymetricextractionDefaultTestDeployAssertC4754780"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}
