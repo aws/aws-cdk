@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import type { IResolveContext } from '../../core';
-import { App, Aspects, CfnParameter, Fn, Lazy, Mixins, Stack, Token } from '../../core';
-import { ARecord, CfnRecordSet, HostedZone, mixins, RecordTarget } from '../lib';
+import { App, Aspects, CfnCondition, CfnParameter, Fn, Lazy, Mixins, NestedStack, Stack, Token } from '../../core';
+import { ARecord, CfnHostedZone, CfnRecordSet, HostedZone, mixins, RecordTarget } from '../lib';
 
 const protectionType = 'AWS::Route53::RecordSetProtection';
 
@@ -45,6 +45,31 @@ test('waits for both weighted A records before protecting their shared DNS name'
       Comment: 'Production DNS',
     },
     DependsOn: Object.keys(template.findResources('AWS::Route53::RecordSet')).sort(),
+  });
+});
+
+describe('conditionally created records', () => {
+  const props = { name: 'www.example.com.', hostedZoneId: 'Z123', type: 'A', weight: 50 };
+
+  function protectedGroup() {
+    const dns = new Stack();
+    const enabled = new CfnCondition(dns, 'EnableDns', { expression: Fn.conditionEquals('yes', 'yes') });
+    const blue = new CfnRecordSet(dns, 'Blue', { ...props, setIdentifier: 'blue' });
+    const green = new CfnRecordSet(dns, 'Green', { ...props, setIdentifier: 'green' });
+    green.cfnOptions.condition = enabled;
+    blue.with(new mixins.RecordSetProtection());
+    return { dns, enabled, blue };
+  }
+
+  test('waits for both records when they share a condition', () => {
+    const { dns, enabled, blue } = protectedGroup();
+    blue.cfnOptions.condition = enabled;
+    Template.fromStack(dns).hasResource(protectionType, { Condition: 'EnableDns', DependsOn: ['Blue', 'Green'] });
+  });
+
+  test('fails when a conditional sibling could leave the other record unprotected', () => {
+    const { dns } = protectedGroup();
+    expect(() => Template.fromStack(dns)).toThrow('use the same CloudFormation condition');
   });
 });
 
@@ -100,6 +125,94 @@ test.each(['literal', 'join'])('keeps the same %s protection when applications a
   }
 
   expect(synthesize(true)).toEqual(synthesize(false));
+});
+
+test('includes untargeted matching records and keeps other groups and nested stacks independent', () => {
+  const stack = new Stack();
+  const nested = new NestedStack(stack, 'Nested');
+  const props = { hostedZoneId: 'Z123', name: 'WWW.example.com', type: 'A', weight: 50 };
+  const blue = new CfnRecordSet(stack, 'Blue', { ...props, setIdentifier: 'Blue' });
+  const green = new CfnRecordSet(stack, 'Green', { ...props, name: 'www.example.com.', hostedZoneId: '/hostedzone/Z123', setIdentifier: 'Green' });
+  new CfnRecordSet(stack, 'OtherType', { ...props, type: 'AAAA' });
+  new CfnRecordSet(stack, 'OtherName', { ...props, name: 'other.example.com.' });
+  new CfnRecordSet(stack, 'OtherZone', { ...props, hostedZoneId: 'Z456' });
+  new CfnRecordSet(nested, 'OtherStack', { ...props, setIdentifier: 'Nested' });
+  blue.with(new mixins.RecordSetProtection());
+
+  const template = Template.fromStack(stack);
+  expect(Object.keys(template.findResources(protectionType))).toEqual([
+    'Route53RecordSetProtections7145ba6d393cf3e3d8029fcd671c03ac2242E74B',
+  ]);
+  template.hasResource(protectionType, {
+    Properties: { HostedZoneId: 'Z123', RecordName: 'www.example.com.', RecordType: 'A' },
+    DependsOn: [stack.getLogicalId(blue), stack.getLogicalId(green)].sort(),
+  });
+  Template.fromStack(nested).resourceCountIs(protectionType, 0);
+});
+
+test.each([false, true])('keeps the protection logical ID when an aspect overrides the hosted zone logical ID (%s)', (overrideZoneId) => {
+  const stack = new Stack();
+  const zone = new HostedZone(stack, 'Zone', { zoneName: 'example.com' });
+  const record = new CfnRecordSet(stack, 'Blue', { hostedZoneId: zone.hostedZoneId, name: 'WWW.example.com', type: 'A' });
+  record.with(new mixins.RecordSetProtection());
+  if (overrideZoneId) {
+    Aspects.of(zone).add({
+      visit(node) {
+        if (CfnHostedZone.isCfnHostedZone(node)) node.overrideLogicalId('RenamedZone');
+      },
+    });
+  }
+
+  const template = Template.fromStack(stack);
+  const [zoneId] = Object.keys(template.findResources('AWS::Route53::HostedZone'));
+  if (overrideZoneId) expect(zoneId).toBe('RenamedZone');
+  expect(Object.keys(template.findResources(protectionType))).toEqual([
+    'Route53RecordSetProtections1e1b357276f44c619133b62e276b67a29DD2776D',
+  ]);
+  template.hasResource(protectionType, {
+    Properties: { HostedZoneId: { Ref: zoneId }, RecordName: 'www.example.com.', RecordType: 'A' },
+    DependsOn: [stack.getLogicalId(record)],
+  });
+});
+
+describe.each([false, true])('with aspect stabilization %s', (stabilization) => {
+  function createStack() {
+    const app = new App({ context: { '@aws-cdk/core:aspectStabilization': stabilization } });
+    return new Stack(app, 'TestStack');
+  }
+
+  test('fails for first application inside an aspect and accepts an explicit target on retry', () => {
+    const stack = createStack();
+    const props = { hostedZoneId: 'Z123', name: 'www.example.com.', type: 'A', weight: 50 };
+    const blue = new CfnRecordSet(stack, 'Blue', { ...props, setIdentifier: 'Blue' });
+    const green = new CfnRecordSet(stack, 'Green', { ...props, setIdentifier: 'Green' });
+    Aspects.of(green).add({ visit: () => green.with(new mixins.RecordSetProtection({ comment: 'Production' })) });
+
+    expect(() => Template.fromStack(stack)).toThrow('before synthesis, outside of an Aspect');
+    blue.with(new mixins.RecordSetProtection());
+    const template = Template.fromStack(stack);
+    template.resourceCountIs(protectionType, 1);
+    template.hasResource(protectionType, {
+      Properties: { Comment: 'Production' },
+      DependsOn: [stack.getLogicalId(blue), stack.getLogicalId(green)].sort(),
+    });
+  });
+
+  test('links an untargeted sibling that a later aspect moves into the protected group', () => {
+    const stack = createStack();
+    const props = { hostedZoneId: 'Z123', type: 'A', weight: 50 };
+    const blue = new CfnRecordSet(stack, 'Blue', { ...props, name: 'www.example.com.', setIdentifier: 'Blue' });
+    const green = new CfnRecordSet(stack, 'Green', { ...props, name: 'old.example.com.', setIdentifier: 'Green' });
+    blue.with(new mixins.RecordSetProtection());
+    Aspects.of(green).add({ visit: () => { green.name = blue.name; } });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs(protectionType, 1);
+    template.hasResource(protectionType, {
+      Properties: { RecordName: blue.name },
+      DependsOn: [stack.getLogicalId(blue), stack.getLogicalId(green)].sort(),
+    });
+  });
 });
 
 test('stack-wide application groups records by hosted zone, name and type', () => {
@@ -222,13 +335,13 @@ test('fails if a later aspect changes a token used to group records', () => {
   expect(() => Template.fromStack(stack)).toThrow('set the hosted zone, name and type before applying RecordSetProtection');
 });
 
-test('allows the app to use the protection scope name after applying the mixin', () => {
+test('fails when the app uses the reserved stack scope for protections', () => {
   const stack = new Stack();
   const record = new CfnRecordSet(stack, 'Record', { name: 'www.example.com.', hostedZoneId: 'Z123', type: 'A' });
   record.with(new mixins.RecordSetProtection());
   new CfnParameter(stack, 'Route53RecordSetProtections');
 
-  Template.fromStack(stack).hasResource(protectionType, { DependsOn: [stack.getLogicalId(record)] });
+  expect(() => Template.fromStack(stack)).toThrow('rename the construct with ID Route53RecordSetProtections');
 });
 
 test('fails for conflicting comments on a shared protection', () => {
