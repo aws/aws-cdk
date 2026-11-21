@@ -1,6 +1,4 @@
 import type { Construct } from 'constructs';
-import type { Distribution } from '../../../aws-cloudfront';
-import { LoadBalancerV2Origin } from '../../../aws-cloudfront-origins';
 import type { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import type { HealthCheck } from '../../../aws-ecs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
@@ -60,24 +58,6 @@ export interface ApplicationLoadBalancedFargateServiceProps extends ApplicationL
    */
   readonly containerMemoryLimitMiB?: number;
 
-  /**
-   * A CloudFront distribution to put in front of the load balancer.
-   *
-   * When provided, the load balancer is added as an origin of the
-   * distribution, with a cache behavior that sends all requests (`/*`) to
-   * it, so the service is served through CloudFront. Any cache behaviors
-   * already added to the distribution are evaluated first.
-   *
-   * The distribution must be defined in the same app; an imported
-   * distribution cannot take on a new cache behavior.
-   *
-   * [disable-awslint:ref-via-interface] is needed because adding a cache
-   * behavior requires the concrete Distribution, an imported distribution
-   * cannot take one on.
-   *
-   * @default - No CloudFront distribution is used.
-   */
-  readonly cloudFrontDistribution?: Distribution;
 }
 
 /**
@@ -193,10 +173,6 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       capacityProviderStrategies: props.capacityProviderStrategies,
     });
     this.addServiceAsTarget(this.service);
-
-    if (props.cloudFrontDistribution) {
-      props.cloudFrontDistribution.addBehavior('/*', new LoadBalancerV2Origin(props.loadBalancer ?? this.loadBalancer));
-    }
   }
 
   /**
