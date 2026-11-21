@@ -96,6 +96,7 @@ export interface ScheduledTaskBaseProps {
    *
    * This is not the task role or the task execution role. The construct adds the
    * `ecs:RunTask`, `ecs:TagResource` and `iam:PassRole` permissions it needs to this role.
+   * If the role is imported as immutable (for example with `Role.fromRoleArn(..., { mutable: false })`), these permissions are not added and the role must already grant them.
    *
    * [disable-awslint:prefer-ref-interface] EcsTask in aws-events-targets accepts IRole, so this prop uses the same type.
    *
