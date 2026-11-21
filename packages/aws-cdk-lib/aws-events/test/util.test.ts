@@ -1,5 +1,5 @@
 import { assertNoPrototypePollution } from '../../core/test/prototype-pollution';
-import { mergeEventPattern } from '../lib/util';
+import { mergeEventPattern, renderEventPattern, validateEventPattern } from '../lib/util';
 
 describe('util', () => {
   describe('mergeEventPattern', () => {
@@ -93,6 +93,39 @@ describe('util', () => {
       assertNoPrototypePollution(() => {
         mergeEventPattern({}, { __proto__: { name: 'evil' } });
       });
+    });
+  });
+
+  describe('renderEventPattern', () => {
+    test('renders non-empty arrays unchanged', () => {
+      expect(renderEventPattern({ source: ['aws.source'] }))
+        .toEqual({ source: ['aws.source'] });
+    });
+
+    test('returns undefined for empty object', () => {
+      expect(renderEventPattern({})).toBeUndefined();
+    });
+  });
+
+  describe('validateEventPattern', () => {
+    test('reports an empty source array', () => {
+      expect(validateEventPattern({ source: [] })).toEqual([
+        "invalid event pattern field 'source': empty arrays are not allowed, specify at least one value or omit the field",
+      ]);
+    });
+
+    test('reports an empty detailType array using the EventPattern property name', () => {
+      expect(validateEventPattern({ detailType: [] })).toEqual([
+        "invalid event pattern field 'detailType': empty arrays are not allowed, specify at least one value or omit the field",
+      ]);
+    });
+
+    test('reports no errors for non-empty arrays', () => {
+      expect(validateEventPattern({ source: ['aws.source'], detailType: ['x'] })).toEqual([]);
+    });
+
+    test('reports no errors for detail object with arrays', () => {
+      expect(validateEventPattern({ detail: { foo: ['bar'] } })).toEqual([]);
     });
   });
 });

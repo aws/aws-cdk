@@ -2,12 +2,13 @@ import type { Construct } from 'constructs';
 import type { EventPattern } from './event-pattern';
 import type { IEventBusRef } from './events.generated';
 import { CfnArchive } from './events.generated';
-import { renderEventPattern } from './util';
+import { renderEventPattern, validateEventPattern } from './util';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type { Duration } from '../../core';
-import { Resource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -106,6 +107,11 @@ export class Archive extends Resource {
         sid: 'Allow EventBridge to call kms:DescribeKey',
         effect: iam.Effect.ALLOW,
       }));
+    }
+
+    const eventPatternErrors = validateEventPattern(props.eventPattern);
+    if (eventPatternErrors.length > 0) {
+      throw new ValidationError(lit`EventPatternEmptyArray`, eventPatternErrors.join('; '), this);
     }
 
     // When an empty string is supplied to the L1 template, it means to use an AWS managed key
