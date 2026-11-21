@@ -1,6 +1,9 @@
 import { Construct } from 'constructs';
 import type { ICertificate } from '../../../aws-certificatemanager';
 import { Certificate, CertificateValidation } from '../../../aws-certificatemanager';
+import type { AddBehaviorOptions, Distribution } from '../../../aws-cloudfront';
+import { AllowedMethods, CachePolicy, OriginProtocolPolicy, OriginRequestPolicy, ViewerProtocolPolicy } from '../../../aws-cloudfront';
+import { LoadBalancerV2Origin } from '../../../aws-cloudfront-origins';
 import type { IVpc } from '../../../aws-ec2';
 import type {
   BaseService, CloudMapOptions, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
@@ -187,6 +190,49 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - a new load balancer will be created.
    */
   readonly loadBalancer?: IApplicationLoadBalancer;
+
+  /**
+   * A CloudFront distribution to put in front of the load balancer.
+   *
+   * When provided, the load balancer is added as an origin of the
+   * distribution, with a cache behavior that sends all requests (`/*`) to
+   * it, so the service is served through CloudFront. The `/*` behavior
+   * matches every request path, so it takes over all requests not matched
+   * by cache behaviors added to the distribution before this service is
+   * created. The distribution's default behavior is never used for this
+   * service, and behaviors added after this service is created are not
+   * reached.
+   *
+   * The origin protocol and port are taken from the listener this service
+   * creates: HTTP on the listener port when the service uses HTTP, HTTPS
+   * on the listener port when it uses HTTPS. For HTTPS the viewer's Host
+   * header is forwarded to the origin, so the certificate on the load
+   * balancer must match the requested host.
+   *
+   * The distribution must be defined in the same app; an imported
+   * distribution cannot take on a new cache behavior. A load balancer
+   * supplied through `loadBalancer` must be internet-facing.
+   *
+   * [disable-awslint:ref-via-interface] is needed because adding a cache
+   * behavior requires the concrete Distribution, an imported distribution
+   * cannot take one on.
+   *
+   * @default - No CloudFront distribution is used.
+   */
+  readonly cloudFrontDistribution?: Distribution;
+
+  /**
+   * Options for the `/*` cache behavior added to `cloudFrontDistribution`.
+   *
+   * The defaults serve the service as a dynamic application: viewers are
+   * redirected to HTTPS, all HTTP methods are allowed, and responses are
+   * not cached. Any options given here override those defaults.
+   *
+   * @default - Viewer protocol policy REDIRECT_TO_HTTPS, all methods
+   * allowed, caching disabled. For HTTPS origins the viewer's Host header
+   * is forwarded by default.
+   */
+  readonly cloudFrontBehaviorOptions?: AddBehaviorOptions;
 
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
@@ -482,6 +528,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
 
     const internetFacing = props.publicLoadBalancer ?? true;
 
+    if (props.cloudFrontDistribution && props.publicLoadBalancer === false) {
+      throw new ValidationError(lit`CloudFrontInternalLoadBalancer`, 'A CloudFront distribution can only be put in front of a public (internet-facing) load balancer.', this);
+    }
+
     if (props.idleTimeout) {
       const idleTimeout = props.idleTimeout.toSeconds();
       if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
@@ -538,6 +588,21 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
     }
 
     this.targetGroup = this.listener.addTargets(targetGroupId, targetProps);
+
+    if (props.cloudFrontDistribution) {
+      const isHttps = protocol === ApplicationProtocol.HTTPS;
+      const origin = new LoadBalancerV2Origin(loadBalancer, {
+        protocolPolicy: isHttps ? OriginProtocolPolicy.HTTPS_ONLY : OriginProtocolPolicy.HTTP_ONLY,
+        ...(isHttps ? { httpsPort: this.listener.port } : { httpPort: this.listener.port }),
+      });
+      props.cloudFrontDistribution.addBehavior('/*', origin, {
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        allowedMethods: AllowedMethods.ALLOW_ALL,
+        cachePolicy: CachePolicy.CACHING_DISABLED,
+        ...(isHttps ? { originRequestPolicy: OriginRequestPolicy.ALL_VIEWER } : {}),
+        ...props.cloudFrontBehaviorOptions,
+      });
+    }
 
     if (protocol === ApplicationProtocol.HTTPS) {
       if (props.certificate !== undefined) {
