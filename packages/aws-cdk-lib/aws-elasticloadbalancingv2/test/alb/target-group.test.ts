@@ -1,9 +1,11 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Match, Template } from '../../../assertions';
+import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
+
+const PROTOCOL_AND_PORT_WARNING = Match.stringLikeRegexp('\\[ack: @aws-cdk/aws-elbv2:targetGroupProtocolAndPortNotSpecified\\]');
 
 let app: cdk.App;
 let stack: cdk.Stack;
@@ -69,6 +71,106 @@ describe('tests', () => {
       targetType: elbv2.TargetType.LAMBDA,
     });
     expect(() => app.synth()).toThrow(/port\/protocol should not be specified for Lambda targets/);
+  });
+
+  test('ApplicationTargetGroup shows warning when neither protocol nor port specified', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
+  });
+
+  test('ApplicationTargetGroup with port but no protocol does not show warning', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+      port: 80,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+    });
+  });
+
+  test('ApplicationTargetGroup with port and protocol synthesizes without warning', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+      port: 80,
+      protocol: elbv2.ApplicationProtocol.HTTP,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+    });
+  });
+
+  test('ApplicationTargetGroup with Lambda target does not require protocol or port', () => {
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      targetType: elbv2.TargetType.LAMBDA,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetType: 'lambda',
+      Port: Match.absent(),
+      Protocol: Match.absent(),
+    });
+  });
+
+  test('ApplicationTargetGroup with Lambda target passed via props.targets does not show warning', () => {
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      targets: [fakeLambdaTarget()],
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
+  });
+
+  test('ApplicationTargetGroup with Lambda target added after construction does not show warning', () => {
+    // GIVEN
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TG');
+
+    // WHEN
+    tg.addTarget(fakeLambdaTarget());
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/TG', PROTOCOL_AND_PORT_WARNING);
+  });
+
+  test('fails when neither protocol nor port specified and non-Lambda target added later', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      vpc,
+    });
+
+    // WHEN
+    tg.addTarget(new elbv2.InstanceTarget('i-1234'));
+
+    // THEN
+    expect(() => Template.fromStack(stack)).toThrow(/At least one of 'port' or 'protocol' is required for a non-Lambda TargetGroup/);
   });
 
   test('Can add self-registering target to imported TargetGroup', () => {
@@ -1098,3 +1200,12 @@ describe('tests', () => {
     });
   });
 });
+
+function fakeLambdaTarget(): elbv2.IApplicationLoadBalancerTarget {
+  return {
+    attachToApplicationTargetGroup: () => ({
+      targetType: elbv2.TargetType.LAMBDA,
+      targetJson: { id: 'arn:aws:lambda:us-east-1:123456789012:function:fn' },
+    }),
+  };
+}

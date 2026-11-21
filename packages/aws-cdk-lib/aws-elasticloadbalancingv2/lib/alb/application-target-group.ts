@@ -619,9 +619,15 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   protected validateTargetGroup(): string[] {
     const ret = super.validateTargetGroup();
 
-    if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
-      && (this.protocol === undefined || this.port === undefined)) {
-      ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
+    if (this.targetType !== TargetType.LAMBDA && this.protocol === undefined && this.port === undefined) {
+      if (this.targetType === undefined) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-elbv2:targetGroupProtocolAndPortNotSpecified',
+          'ApplicationTargetGroup protocol and port not specified. Please specify either protocol (e.g., ApplicationProtocol.HTTP or ApplicationProtocol.HTTPS) or port number. Note: Missing both will cause deployment failures.',
+        );
+      } else {
+        ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
+      }
     }
 
     if (this.healthCheck) {
