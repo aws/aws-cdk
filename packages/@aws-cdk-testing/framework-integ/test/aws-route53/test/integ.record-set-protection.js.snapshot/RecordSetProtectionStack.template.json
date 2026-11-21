@@ -38,7 +38,7 @@
     "Weight": 50
    }
   },
-  "Route53RecordSetProtectionsb4af11faa19df99557b6b971f8c76c2f115E29B2": {
+  "Route53RecordSetProtections163fef5247e32e6952a1b4d6ed6d1f8505225DC4": {
    "Type": "AWS::Route53::RecordSetProtection",
    "Properties": {
     "Comment": "Production DNS",

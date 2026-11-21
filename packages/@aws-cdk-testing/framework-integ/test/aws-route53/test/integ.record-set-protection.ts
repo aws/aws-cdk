@@ -5,7 +5,6 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 const app = new App({ stackTraces: false });
 const stack = new Stack(app, 'RecordSetProtectionStack');
 const zone = new route53.PublicHostedZone(stack, 'Zone', { zoneName: 'record-set-protection.cdk-integ-test.com' });
-const protection = new route53.mixins.RecordSetProtection({ comment: 'Production DNS' });
 ['Blue', 'Green'].forEach((id, i) => {
   const record = new route53.ARecord(stack, id, {
     zone,
@@ -14,7 +13,9 @@ const protection = new route53.mixins.RecordSetProtection({ comment: 'Production
     weight: 50,
     target: route53.RecordTarget.fromIpAddresses(`192.0.2.${i + 1}`),
   });
-  record.with(protection);
+  if (id === 'Blue') {
+    record.with(new route53.mixins.RecordSetProtection({ comment: 'Production DNS' }));
+  }
 });
 
 const test = new IntegTest(app, 'RecordSetProtection', { testCases: [stack] });
