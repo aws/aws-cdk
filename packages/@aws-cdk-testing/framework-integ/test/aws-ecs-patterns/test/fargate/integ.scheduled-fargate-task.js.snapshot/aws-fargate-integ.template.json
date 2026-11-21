@@ -296,6 +296,11 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Command": [
+       "python3",
+       "-c",
+       "print(\"hello from scheduled task\")"
+      ],
       "Environment": [
        {
         "Name": "TRIGGER",
@@ -546,7 +551,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
+        "Service": "events.amazonaws.com"
        }
       }
      ],
@@ -701,6 +706,11 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Command": [
+       "python3",
+       "-c",
+       "print(\"hello from scheduled task\")"
+      ],
       "Environment": [
        {
         "Name": "TRIGGER",
@@ -929,6 +939,11 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Command": [
+       "python3",
+       "-c",
+       "print(\"hello from scheduled task\")"
+      ],
       "Environment": [
        {
         "Name": "TRIGGER",
@@ -1168,6 +1183,19 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FargateCluster7CCD5F93",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-fargate-integ:ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182"
    }
   }
  },
