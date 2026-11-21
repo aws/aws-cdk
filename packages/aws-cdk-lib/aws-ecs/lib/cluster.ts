@@ -661,6 +661,8 @@ export class Cluster extends Resource implements ICluster {
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection or managed draining is enabled
       taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining) ? Duration.seconds(0) : options.taskDrainTime,
+      // The provider's enableTaskIamRole applies unless overridden in the options argument.
+      enableTaskIamRole: options.enableTaskIamRole ?? provider.enableTaskIamRole,
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
@@ -711,6 +713,11 @@ export class Cluster extends Resource implements ICluster {
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
       this.configureWindowsAutoScalingGroup(autoScalingGroup, optionsClone);
     } else {
+      if (optionsClone.enableTaskIamRole) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:enableTaskIamRoleWindowsOnly',
+          'enableTaskIamRole only applies to Windows container instances and is ignored for this Auto Scaling group.');
+      }
+
       // Tie instances to cluster
       switch (optionsClone.machineImageType) {
         // Bottlerocket AMI
@@ -862,7 +869,13 @@ export class Cluster extends Resource implements ICluster {
       autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")');
     }
 
-    autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
+    // enable task iam role
+    const enableTaskIamRole = options.enableTaskIamRole ?? false;
+    if (enableTaskIamRole) {
+      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
+    }
+
+    autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'${enableTaskIamRole ? ' -EnableTaskIAMRole' : ''}`);
   }
 
   /**
@@ -1173,6 +1186,20 @@ export interface AddAutoScalingGroupCapacityOptions {
    * @default false
    */
   readonly spotInstanceDraining?: boolean;
+
+  /**
+   * Whether to enable IAM roles for tasks on Windows container instances.
+   *
+   * Only applies to Windows container instances. It is ignored, with a warning,
+   * for Linux and Bottlerocket container instances.
+   *
+   * When enabled, the ECS credential proxy reserves host port 80 on the instance,
+   * so containers can't use host port 80 in their port mappings.
+   * For more information, see [Additional configuration for Windows IAM roles for tasks](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows_task_IAM_roles.html).
+   *
+   * @default false
+   */
+  readonly enableTaskIamRole?: boolean;
 
   /**
    * If `AddAutoScalingGroupCapacityOptions.taskDrainTime` is non-zero, then the ECS cluster creates an
@@ -2043,6 +2070,11 @@ export class AsgCapacityProvider extends Construct {
    */
   readonly enableManagedDraining?: boolean;
 
+  /**
+   * Whether IAM roles for tasks are enabled on Windows container instances.
+   */
+  readonly enableTaskIamRole?: boolean;
+
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);
     let capacityProviderName = props.capacityProviderName;
@@ -2050,6 +2082,7 @@ export class AsgCapacityProvider extends Construct {
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
     this.enableManagedTerminationProtection = props.enableManagedTerminationProtection ?? true;
     this.enableManagedDraining = props.enableManagedDraining;
+    this.enableTaskIamRole = props.enableTaskIamRole;
 
     let managedDraining = undefined;
     if (this.enableManagedDraining != undefined) {
