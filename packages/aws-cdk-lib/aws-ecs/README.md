@@ -2271,15 +2271,18 @@ new ecs.FargateService(this, 'Service', {
 });
 ```
 
-A gateway is internal by default and is placed in the VPC's private subnets with egress
-(`SubnetType.PRIVATE_WITH_EGRESS`); an internet-facing gateway is placed in the public subnets.
-A VPC with only isolated private subnets needs `vpcSubnets`. Use `vpcSubnets` to choose other subnets, in at least two
-Availability Zones, and `ipAddressType` to change the load balancer's IP address type (dual-stack by default).
+A gateway is internal by default and is placed in the VPC's default subnet selection (its private
+subnets with egress, or its isolated subnets if it has none); an internet-facing gateway is placed
+in the public subnets. Use `vpcSubnets` to choose other subnets, in at least two Availability Zones, and `ipAddressType` to change the load balancer's IP address type (dual-stack by default).
 
 The gateway listens for HTTPS on port 443, with a certificate that Amazon ECS requests and
 manages; Amazon ECS doesn't support other listener ports or protocols. Amazon ECS creates a security group for each
 connected service that lets the gateway reach its tasks, so you don't add rules for that traffic.
-Use `securityGroup` to control who can reach the gateway itself.
+By default, Amazon ECS also creates the gateway's own security group, which allows inbound HTTPS on
+port 443 from all IP addresses, even for an internal gateway. Use `securityGroup` to control who can
+reach the gateway: Amazon ECS then removes the inbound rules it managed and stops managing them, so
+your security group must allow HTTPS on port 443 from the clients of the connected services, or
+those services become unreachable.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -2324,8 +2327,10 @@ Requirements and limits:
   want to delete or replace with the stack.
 
 Without `accessTypes`, a service is eligible for both internal and internet-facing gateways
-associated with its cluster. For a service that must not be reachable from the internet, set
-`accessTypes: [ecs.GatewayAccessType.PRIVATE]`.
+associated with its cluster, as in CloudFormation. That includes gateways imported or associated
+outside the app, so a service whose connector leaves out `accessTypes` or includes `PUBLIC` gets
+the synthesis warning `@aws-cdk/aws-ecs:gatewayConnectorPublicAccess`. For a service that must not
+be reachable from the internet, set `accessTypes: [ecs.GatewayAccessType.PRIVATE]`.
 
 The health check defaults to HTTP on path `/` of the named port, every 30 seconds with a 5 second
 timeout, healthy on HTTP code 200. `deregistrationDelay` sets how long the gateway lets requests in
@@ -2346,6 +2351,20 @@ new ecs.FargateService(this, 'Service', {
     healthCheck: { path: '/health', interval: Duration.seconds(15) },
     deregistrationDelay: Duration.seconds(30),
   },
+});
+```
+
+The CloudFormation schema bundled with the CDK's template validation doesn't include
+`DeregistrationDelay` yet. Until it does, an app with the `@aws-cdk/core:validateAgainstDefaultRules`
+feature flag enabled fails synthesis when a service sets `deregistrationDelay`, and other apps get a
+warning. Acknowledge the finding on the service:
+
+```ts
+declare const service: ecs.FargateService;
+
+Validations.of(service).acknowledge({
+  id: 'CloudFormation-Validate::F3002',
+  reason: 'DeregistrationDelay is a valid property that the bundled schema does not include yet',
 });
 ```
 

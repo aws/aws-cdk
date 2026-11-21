@@ -220,7 +220,8 @@ export interface GatewayConnectorOptions {
    *
    * Without this, the service is also reachable through internet-facing (`PUBLIC`) gateways
    * associated with the cluster. Use `[GatewayAccessType.PRIVATE]` for a service that must not
-   * be reachable from the internet.
+   * be reachable from the internet. A service whose connector accepts `PUBLIC` gateways, including
+   * by leaving this out, gets a synthesis warning.
    *
    * @default - gateways of both access types
    */
@@ -245,6 +246,11 @@ export interface GatewayConnectorOptions {
    * fails for services with the `ROLLING` deployment strategy; see `GatewayConnectorHealthCheck`.
    *
    * A duration whose amount is a token must be created with `Duration.seconds()`.
+   *
+   * The CloudFormation schema bundled with the CDK's template validation doesn't include
+   * `DeregistrationDelay` yet. Until it does, apps with the `@aws-cdk/core:validateAgainstDefaultRules`
+   * feature flag enabled must acknowledge `CloudFormation-Validate::F3002` on the service, for
+   * example with `Validations.of(service).acknowledge()`.
    *
    * @default Duration.seconds(300)
    */
@@ -289,8 +295,9 @@ export interface GatewayProps {
    * cover every Availability Zone the services that use it run in. Changing the subnets replaces
    * the gateway.
    *
-   * @default - the VPC's public subnets (`SubnetType.PUBLIC`) for an internet-facing gateway, and its
-   * private subnets with egress (`SubnetType.PRIVATE_WITH_EGRESS`) for an internal gateway
+   * @default - the VPC's public subnets (`SubnetType.PUBLIC`) for an internet-facing gateway, and the
+   * VPC's default subnet selection for an internal gateway: its private subnets with egress, or its
+   * isolated subnets if it has none, or its public subnets if it has neither
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
@@ -315,10 +322,12 @@ export interface GatewayProps {
   /**
    * The security group that controls inbound traffic to the gateway's load balancer.
    *
-   * Amazon ECS manages the security group that lets the gateway reach the tasks of connected
-   * services.
+   * When you provide a security group, Amazon ECS removes the inbound rules it managed and
+   * stops managing inbound rules, so the security group must allow HTTPS (port 443) from the
+   * clients of the connected services, or those services become unreachable.
    *
-   * @default - a security group that Amazon ECS creates and manages
+   * @default - Amazon ECS creates a security group that allows inbound HTTPS on port 443 from
+   * all IP addresses
    */
   readonly securityGroup?: ec2.ISecurityGroupRef;
 
@@ -534,9 +543,9 @@ export class Gateway extends Resource implements IGateway {
         'This gateway is internet-facing: services in its clusters with a gateway connector that does not limit accessTypes to PRIVATE can be reached from the internet.');
     }
 
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? {
-      subnetType: this.scheme === GatewayScheme.INTERNET_FACING ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS,
-    });
+    // an internal gateway uses the VPC's default selection, as an internal elbv2 load balancer does
+    const subnets = props.vpc.selectSubnets(props.vpcSubnets
+      ?? (this.scheme === GatewayScheme.INTERNET_FACING ? { subnetType: ec2.SubnetType.PUBLIC } : {}));
     if (!Token.isUnresolved(subnets.subnetIds) && subnets.subnetIds.length < 2) {
       throw new ValidationError(lit`GatewayNeedsTwoSubnets`, `a gateway needs at least 2 subnets in different Availability Zones, got ${subnets.subnetIds.length} subnet(s)`, this);
     }

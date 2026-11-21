@@ -319,6 +319,29 @@ describe('gateway', () => {
       .toThrow(/a gateway needs subnets in at least 2 different Availability Zones, got \["us-east-1a"\]/);
   });
 
+  test('places an internal gateway in the isolated subnets of a VPC without egress subnets', () => {
+    const isolatedVpc = new ec2.Vpc(stack, 'IsolatedVpc', {
+      natGateways: 0,
+      subnetConfiguration: [{ name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+    });
+
+    new ecs.Gateway(stack, 'Gateway', { vpc: isolatedVpc });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Gateway', {
+      Configuration: {
+        HostSharedAlb: {
+          Scheme: 'internal',
+          NetworkConfiguration: {
+            Subnets: [
+              { Ref: 'IsolatedVpcIsolatedSubnet1SubnetB37DD975' },
+              { Ref: 'IsolatedVpcIsolatedSubnet2Subnet774D9F55' },
+            ],
+          },
+        },
+      },
+    });
+  });
+
   test('exposes the gateway attributes', () => {
     const gateway = new ecs.Gateway(stack, 'Gateway', { vpc });
 
@@ -598,12 +621,52 @@ describe('gateway connector', () => {
 
   test('a service in an imported cluster has no dependency on an association', () => {
     const imported = ecs.Cluster.fromClusterAttributes(stack, 'Imported', { clusterName: 'imported', vpc: cluster.vpc });
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+    const association = new ecs.GatewayClusterAssociation(stack, 'Association', { cluster: imported, gateway });
 
     new ecs.FargateService(stack, 'Service', { cluster: imported, taskDefinition, gatewayConnector: { portName: 'web' } });
 
-    const services = Template.fromStack(stack).findResources('AWS::ECS::Service');
-    const service = Object.values(services)[0] as { DependsOn?: string[] };
-    expect((service.DependsOn ?? []).filter((d) => d.includes('GatewayAssociation'))).toEqual([]);
+    const logicalId = stack.getLogicalId(association.node.defaultChild as cdk.CfnElement);
+    const service = Object.values(Template.fromStack(stack).findResources('AWS::ECS::Service'))[0] as { DependsOn?: string[] };
+    expect(service.DependsOn ?? []).not.toContain(logicalId);
+  });
+
+  const PUBLIC_ACCESS_WARNING = 'This service can receive traffic from internet-facing gateways associated with its cluster; '
+    + 'set gatewayConnector accessTypes to [GatewayAccessType.PRIVATE] if it must not be reachable from the internet. '
+    + '[ack: @aws-cdk/aws-ecs:gatewayConnectorPublicAccess]';
+
+  test.each<[string, ecs.GatewayAccessType[] | undefined]>([
+    ['omitted', undefined],
+    ['[PUBLIC]', [ecs.GatewayAccessType.PUBLIC]],
+    ['[PRIVATE, PUBLIC]', [ecs.GatewayAccessType.PRIVATE, ecs.GatewayAccessType.PUBLIC]],
+  ])('warns about public access when accessTypes is %s', (_name, accessTypes) => {
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition, gatewayConnector: { portName: 'web', accessTypes } });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Service', PUBLIC_ACCESS_WARNING);
+  });
+
+  test('does not warn about public access when accessTypes is [PRIVATE]', () => {
+    new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      gatewayConnector: { portName: 'web', accessTypes: [ecs.GatewayAccessType.PRIVATE] },
+    });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Service', Match.stringLikeRegexp('gatewayConnectorPublicAccess'));
+  });
+
+  test('does not warn about public access when accessTypes is a token', () => {
+    const accessTypes = new cdk.CfnParameter(stack, 'AccessTypes', { type: 'CommaDelimitedList' }).valueAsList as ecs.GatewayAccessType[];
+
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition, gatewayConnector: { portName: 'web', accessTypes } });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Service', Match.stringLikeRegexp('gatewayConnectorPublicAccess'));
+  });
+
+  test('does not warn about public access without a gateway connector', () => {
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+    Annotations.fromStack(stack).hasNoWarning('/Default/Service', Match.stringLikeRegexp('gatewayConnectorPublicAccess'));
   });
 
   test('without a gateway connector the service has no GatewayConnectors', () => {

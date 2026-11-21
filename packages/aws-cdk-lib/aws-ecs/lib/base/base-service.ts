@@ -48,6 +48,7 @@ import type { ContainerDefinition, Protocol } from '../container-definition';
 import type { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
 import type { GatewayConnectorOptions } from '../gateway';
+import { GatewayAccessType } from '../gateway';
 import type { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
 
 /**
@@ -1526,6 +1527,13 @@ export abstract class BaseService extends Resource
     if (accessTypes !== undefined && !Token.isUnresolved(accessTypes)
       && (accessTypes.length === 0 || new Set(accessTypes).size !== accessTypes.length)) {
       throw new ValidationError(lit`GatewayAccessTypesValid`, `gatewayConnector accessTypes must be a non-empty list without duplicates, got ${JSON.stringify(accessTypes)}`, this);
+    }
+    // any internet-facing gateway associated with the cluster, including one imported or associated
+    // outside this app, can serve a service that accepts PUBLIC gateways
+    if (accessTypes === undefined
+      || (!Token.isUnresolved(accessTypes) && accessTypes.includes(GatewayAccessType.PUBLIC))) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:gatewayConnectorPublicAccess',
+        'This service can receive traffic from internet-facing gateways associated with its cluster; set gatewayConnector accessTypes to [GatewayAccessType.PRIVATE] if it must not be reachable from the internet.');
     }
 
     const hc = connector.healthCheck;
