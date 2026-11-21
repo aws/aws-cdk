@@ -15,7 +15,7 @@ class TestStack extends Stack {
 
     const bucket = new s3.Bucket(this, 'Bucket', {
       removalPolicy: RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
+      autoDeleteObjects: true, // Note: Fix for #37257 adds s3:GetBucketTagging directly to the Lambda role
     });
 
     // Put objects in the bucket to ensure auto delete works as expected
