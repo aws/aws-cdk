@@ -10,8 +10,8 @@
         "    at EventStack._silenceLiteralAzWarning (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
         "    at get availabilityZones (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
         "    at new Vpc (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at new EventStack (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js:48:21)",
-        "    at <anonymous> (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js:107:17)",
+        "    at new EventStack (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js:49:21)",
+        "    at <anonymous> (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js:111:17)",
         "    ...node internals..."
       ]
     },
@@ -401,6 +401,12 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
+    }
+  ],
+  "/aws-fargate-integ/Exports/Output{\"Fn::GetAtt\":[\"FargateCluster7CCD5F93\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182"
     }
   ],
   "/aws-fargate-integ/Vpc/PublicSubnet1/Subnet": [
