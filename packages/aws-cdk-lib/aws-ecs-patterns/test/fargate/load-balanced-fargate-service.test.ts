@@ -246,6 +246,9 @@ describe('ApplicationLoadBalancedFargateService', () => {
     }).not.toThrow();
     const { origin } = cloudFrontConfigForService(stack);
     expect(origin.DomainName).toEqual('my-alb-1234567890.us-west-2.elb.amazonaws.com');
+    // Flag unset (default): a supplied load balancer still gets an open listener
+    Annotations.fromStack(stack).hasWarning('/Default/Service',
+      Match.stringLikeRegexp('@aws-cdk/aws-ecs-patterns:cloudFrontOpenListener'));
   });
 
   test('cloudFrontDistribution with an internal load balancer throws', () => {
@@ -391,6 +394,8 @@ describe('ApplicationLoadBalancedFargateService', () => {
       cloudFrontBehaviorOptions: {
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+        originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+        compress: false,
       },
     });
 
@@ -398,6 +403,8 @@ describe('ApplicationLoadBalancedFargateService', () => {
     const { behavior } = cloudFrontConfigForService(stack);
     expect(behavior.CachePolicyId).toEqual('658327ea-f89d-4fab-a63d-7e88639e58f6');
     expect(behavior.ViewerProtocolPolicy).toEqual('https-only');
+    expect(behavior.OriginRequestPolicyId).toEqual(cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN.originRequestPolicyId);
+    expect(behavior.Compress).toEqual(false);
     expect([...behavior.AllowedMethods].sort()).toEqual(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
   });
 
