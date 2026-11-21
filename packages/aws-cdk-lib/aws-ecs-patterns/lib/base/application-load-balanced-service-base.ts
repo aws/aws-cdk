@@ -23,7 +23,7 @@ import type { IRole } from '../../../aws-iam';
 import type { IHostedZone } from '../../../aws-route53';
 import { ARecord, RecordTarget, CnameRecord } from '../../../aws-route53';
 import { LoadBalancerTarget } from '../../../aws-route53-targets';
-import { CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
+import { Annotations, CfnOutput, Duration, FeatureFlags, Stack, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER, ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID } from '../../../cx-api';
 
@@ -213,6 +213,21 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * distribution cannot take on a new cache behavior. A load balancer
    * supplied through `loadBalancer` must be internet-facing.
    *
+   * For HTTPS, the distribution needs an alias for a name covered by the
+   * load balancer certificate, and the distribution's own certificate must
+   * be in us-east-1; otherwise CloudFront cannot verify the origin
+   * certificate and returns 502 for every request. The Route 53 record and
+   * ServiceURL the pattern creates still point at the load balancer, so
+   * point your own DNS at the distribution if you want traffic to go
+   * through CloudFront.
+   *
+   * The load balancer stays directly reachable: with the default open
+   * listener its security group allows 0.0.0.0/0 on the listener port, so
+   * traffic can bypass the distribution entirely. To lock it down, set
+   * `openListener: false` and allow ingress only from the
+   * `com.amazonaws.global.cloudfront.origin-facing` managed prefix list,
+   * and/or require a secret origin header that a listener rule checks.
+   *
    * [disable-awslint:ref-via-interface] is needed because adding a cache
    * behavior requires the concrete Distribution, an imported distribution
    * cannot take one on.
@@ -225,12 +240,15 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * Options for the `/*` cache behavior added to `cloudFrontDistribution`.
    *
    * The defaults serve the service as a dynamic application: viewers are
-   * redirected to HTTPS, all HTTP methods are allowed, and responses are
-   * not cached. Any options given here override those defaults.
+   * redirected to HTTPS, all HTTP methods are allowed, responses are not
+   * cached, and viewer query strings, cookies and headers are forwarded
+   * to the origin — all of them on HTTPS origins, all except the Host
+   * header on HTTP origins. Any options given here override those
+   * defaults, per key: a key passed as `undefined` keeps the default.
    *
    * @default - Viewer protocol policy REDIRECT_TO_HTTPS, all methods
-   * allowed, caching disabled. For HTTPS origins the viewer's Host header
-   * is forwarded by default.
+   * allowed, caching disabled, origin request policy ALL_VIEWER on HTTPS
+   * origins and ALL_VIEWER_EXCEPT_HOST_HEADER on HTTP origins.
    */
   readonly cloudFrontBehaviorOptions?: AddBehaviorOptions;
 
@@ -532,6 +550,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       throw new ValidationError(lit`CloudFrontInternalLoadBalancer`, 'A CloudFront distribution can only be put in front of a public (internet-facing) load balancer.', this);
     }
 
+    if (props.cloudFrontBehaviorOptions !== undefined && props.cloudFrontDistribution === undefined) {
+      throw new ValidationError(lit`CloudFrontBehaviorOptionsWithoutDistribution`, 'cloudFrontBehaviorOptions can only be used together with cloudFrontDistribution.', this);
+    }
+
     if (props.idleTimeout) {
       const idleTimeout = props.idleTimeout.toSeconds();
       if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
@@ -595,13 +617,33 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
         protocolPolicy: isHttps ? OriginProtocolPolicy.HTTPS_ONLY : OriginProtocolPolicy.HTTP_ONLY,
         ...(isHttps ? { httpsPort: this.listener.port } : { httpPort: this.listener.port }),
       });
+      // Defaults are applied per key, so a key passed explicitly as
+      // undefined keeps the default instead of falling back to
+      // CloudFront's own defaults.
+      const behaviorOptions = props.cloudFrontBehaviorOptions ?? {};
       props.cloudFrontDistribution.addBehavior('/*', origin, {
-        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        allowedMethods: AllowedMethods.ALLOW_ALL,
-        cachePolicy: CachePolicy.CACHING_DISABLED,
-        ...(isHttps ? { originRequestPolicy: OriginRequestPolicy.ALL_VIEWER } : {}),
-        ...props.cloudFrontBehaviorOptions,
+        ...behaviorOptions,
+        viewerProtocolPolicy: behaviorOptions.viewerProtocolPolicy ?? ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        allowedMethods: behaviorOptions.allowedMethods ?? AllowedMethods.ALLOW_ALL,
+        cachePolicy: behaviorOptions.cachePolicy ?? CachePolicy.CACHING_DISABLED,
+        originRequestPolicy: behaviorOptions.originRequestPolicy
+          ?? (isHttps ? OriginRequestPolicy.ALL_VIEWER : OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER),
       });
+      if (isHttps) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:cloudFrontHttpsOrigin',
+          'The distribution put in front of this HTTPS load balancer must have an alias for a name ' +
+          'covered by the load balancer certificate, and the distribution certificate must be in ' +
+          'us-east-1. Otherwise CloudFront cannot verify the origin certificate and returns 502 ' +
+          'for every request.');
+      }
+      if (props.openListener ?? defaultOpenListener) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs-patterns:cloudFrontOpenListener',
+          'The load balancer stays directly reachable: with the default open listener its security ' +
+          'group allows 0.0.0.0/0 on the listener port, so traffic can bypass the CloudFront ' +
+          'distribution. Set openListener to false and allow ingress only from the ' +
+          'com.amazonaws.global.cloudfront.origin-facing managed prefix list, and/or require a ' +
+          'secret origin header that a listener rule checks.');
+      }
     }
 
     if (protocol === ApplicationProtocol.HTTPS) {
