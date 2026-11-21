@@ -577,6 +577,51 @@ describe('ApplicationLoadBalancedEc2Service', () => {
       SecurityGroupIngress: Match.absent(),
     });
   });
+
+  test('cloudFrontDistribution adds the load balancer as an origin for all paths', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      cloudFrontDistribution: distribution,
+    });
+
+    // THEN — the EC2 variant gets the same /* behavior as the Fargate one
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: Match.objectLike({
+        Origins: Match.arrayWith([
+          Match.objectLike({
+            DomainName: { 'Fn::GetAtt': [Match.stringLikeRegexp('ServiceLB.*'), 'DNSName'] },
+          }),
+        ]),
+        CacheBehaviors: Match.arrayWith([
+          Match.objectLike({
+            PathPattern: '/*',
+            ViewerProtocolPolicy: 'redirect-to-https',
+          }),
+        ]),
+      }),
+    });
+  });
 });
 
 describe('NetworkLoadBalancedEc2Service', () => {
@@ -977,51 +1022,6 @@ describe('NetworkLoadBalancedEc2Service', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
       Port: 80,
       Protocol: 'TCP',
-    });
-  });
-
-  test('cloudFrontDistribution adds the load balancer as an origin for all paths', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    acknowledgeTestValidationRules(stack);
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
-    }));
-    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
-      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
-    });
-
-    // WHEN
-    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
-      cluster,
-      memoryLimitMiB: 1024,
-      taskImageOptions: {
-        image: ecs.ContainerImage.fromRegistry('test'),
-      },
-      cloudFrontDistribution: distribution,
-    });
-
-    // THEN — the EC2 variant gets the same /* behavior as the Fargate one
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
-      DistributionConfig: Match.objectLike({
-        Origins: Match.arrayWith([
-          Match.objectLike({
-            DomainName: { 'Fn::GetAtt': [Match.stringLikeRegexp('ServiceLB.*'), 'DNSName'] },
-          }),
-        ]),
-        CacheBehaviors: Match.arrayWith([
-          Match.objectLike({
-            PathPattern: '/*',
-            ViewerProtocolPolicy: 'redirect-to-https',
-          }),
-        ]),
-      }),
     });
   });
 });
