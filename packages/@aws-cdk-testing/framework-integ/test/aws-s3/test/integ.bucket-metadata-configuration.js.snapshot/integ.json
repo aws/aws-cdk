@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-bucket-metadata-configuration/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-metadata-configuration"
+      ],
+      "assertionStack": "cdk-integ-bucket-metadata-configuration/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegbucketmetadataconfigurationDefaultTestDeployAssert955D6E5F"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

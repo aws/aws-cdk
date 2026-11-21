@@ -3,7 +3,7 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
-import { BucketAutoDeleteObjects, BucketVersioning, BucketBlockPublicAccess, BucketPolicyStatements } from '../lib/mixins';
+import { BucketAutoDeleteObjects, BucketVersioning, BucketBlockPublicAccess, BucketPolicyStatements, BucketMetadataConfiguration } from '../lib/mixins';
 
 class TestConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -164,6 +164,59 @@ describe('S3 Mixins', () => {
     test('does not support non-S3 constructs', () => {
       const construct = new TestConstruct(stack, 'test');
       const mixin = new BucketVersioning();
+
+      expect(mixin.supports(construct)).toBe(false);
+    });
+  });
+
+  describe('BucketMetadataConfiguration', () => {
+    test('applies to an L1 bucket with defaults', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new BucketMetadataConfiguration();
+
+      expect(mixin.supports(bucket)).toBe(true);
+      mixin.applyTo(bucket);
+
+      const config = bucket.metadataConfiguration as any;
+      expect(config?.journalTableConfiguration?.recordExpiration?.expiration).toBe('DISABLED');
+      expect(config?.inventoryTableConfiguration).toBeUndefined();
+      expect(config?.annotationTableConfiguration).toBeUndefined();
+    });
+
+    test('applies record expiration and the optional tables', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('metadata.s3.amazonaws.com'),
+      });
+      const mixin = new BucketMetadataConfiguration({
+        journalTable: {
+          recordExpirationEnabled: true,
+          recordExpirationAfter: cdk.Duration.days(7),
+        },
+        inventoryTable: { enabled: true },
+        annotationTable: { enabled: true, role },
+      });
+
+      mixin.applyTo(bucket);
+
+      const config = bucket.metadataConfiguration as any;
+      expect(config?.journalTableConfiguration?.recordExpiration).toEqual({ expiration: 'ENABLED', days: 7 });
+      expect(config?.inventoryTableConfiguration?.configurationState).toBe('ENABLED');
+      expect(config?.annotationTableConfiguration?.configurationState).toBe('ENABLED');
+    });
+
+    test('fails when the annotation table is enabled without a role', () => {
+      const bucket = new s3.CfnBucket(stack, 'Bucket');
+      const mixin = new BucketMetadataConfiguration({
+        annotationTable: { enabled: true },
+      });
+
+      expect(() => mixin.applyTo(bucket)).toThrow(/'role' must be specified when the annotation table is enabled/);
+    });
+
+    test('does not support non-S3 constructs', () => {
+      const construct = new TestConstruct(stack, 'test');
+      const mixin = new BucketMetadataConfiguration();
 
       expect(mixin.supports(construct)).toBe(false);
     });
