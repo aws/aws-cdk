@@ -425,7 +425,11 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
 ### Serve an ApplicationLoadBalancedFargateService through CloudFront
 
 You can put a CloudFront distribution in front of the load balancer by passing it as `cloudFrontDistribution`.
-The load balancer is added to the distribution as an origin, with a cache behavior that sends all requests (`/*`) to it, so the service is served through CloudFront. Any cache behaviors you already added to the distribution are evaluated first.
+The load balancer is added to the distribution as an origin, with a cache behavior that sends all requests (`/*`) to it, so the service is served through CloudFront. The `/*` behavior matches every request path, so it takes over all requests not matched by cache behaviors you added to the distribution before creating the service. The distribution's default behavior is never used for this service — the `example.com` origin in the example below is only a placeholder, it never receives traffic.
+
+The origin talks to the load balancer on the listener's protocol and port — HTTP on port 80 by default, or HTTPS on port 443 when the service uses HTTPS (a certificate or `protocol: HTTPS`). The behavior redirects viewers to HTTPS, allows all HTTP methods, and disables caching, so the service behaves like a dynamic application behind CloudFront. You can override any of that with `cloudFrontBehaviorOptions`. The same props are available on `ApplicationLoadBalancedEc2Service`.
+
+The load balancer must be internet-facing. If you set a custom domain on the service, the Route 53 record the pattern creates still points at the load balancer, so point your DNS at the distribution yourself if you want traffic to go through CloudFront.
 
 ```ts
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
