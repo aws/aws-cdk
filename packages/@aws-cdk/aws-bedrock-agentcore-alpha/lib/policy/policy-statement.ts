@@ -137,6 +137,7 @@ class ConditionExpression {
  *
  * Conditions define when a policy statement should apply or not apply.
  * Supports logical operators (AND, OR) and various comparison operators.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ConditionBuilder {
   private conditions: ConditionExpression[] = [];
@@ -229,6 +230,7 @@ export class ConditionBuilder {
  * This class allows chaining condition methods and returning to the parent
  * PolicyStatement when done. It proxies condition building methods from
  * ConditionBuilder.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ConditionalPolicyStatement {
   constructor(
@@ -301,6 +303,7 @@ export class ConditionalPolicyStatement {
  * Accessor for building type-safe attribute comparisons within conditional statements.
  *
  * Returns ConditionalPolicyStatement to allow chaining back to policy building.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ConditionalAttributeAccessor {
   constructor(
@@ -409,6 +412,7 @@ export class ConditionalAttributeAccessor {
  * Accessor for building type-safe attribute comparisons.
  *
  * Provides methods for common comparison operators with proper type checking.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class AttributeAccessor {
   constructor(
@@ -615,6 +619,7 @@ export class AttributeAccessor {
  *     'forbid(principal, action, resource) when { resource.confidential == true };'
  *   ),
  * });
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class PolicyStatement {
   /**
