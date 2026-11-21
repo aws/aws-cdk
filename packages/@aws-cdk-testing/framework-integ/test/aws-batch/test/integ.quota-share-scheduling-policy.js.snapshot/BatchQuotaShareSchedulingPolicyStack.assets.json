@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "e3ee10d8962cade0cb7e9c6d933bffdc80c952746ceeb54258a1523e085e3af6": {
+      "displayName": "BatchQuotaShareSchedulingPolicyStack Template",
+      "source": {
+        "path": "BatchQuotaShareSchedulingPolicyStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-30b6b34f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e3ee10d8962cade0cb7e9c6d933bffdc80c952746ceeb54258a1523e085e3af6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
