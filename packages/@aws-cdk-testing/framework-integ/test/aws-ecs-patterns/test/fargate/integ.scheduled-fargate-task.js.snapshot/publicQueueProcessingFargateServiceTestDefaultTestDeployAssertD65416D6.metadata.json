@@ -1,6 +1,29 @@
 {
   "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert": [
     {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:234:27)",
+        "Object.<anonymous> (/home/ubuntu/muse-cdk-pr/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.scheduled-fargate-task.js:127:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1781:14)",
+        "Object..js (node:internal/modules/cjs/loader:1913:10)",
+        "Module.load (node:internal/modules/cjs/loader:1505:32)",
+        "Function._load (node:internal/modules/cjs/loader:1309:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:254:19)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    },
+    {
       "type": "aws:cdk:templateFile",
       "data": "publicQueueProcessingFargateServiceTestDefaultTestDeployAssertD65416D6.template.json"
     }
@@ -15,6 +38,92 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868WaitForRole176EDC2F"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868WaitFor2DAE38FA"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868WaitForIsCompleteProviderInvokeC6351964"
+    }
+  ],
+  "/publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSlistTasks0a9ff299f82107b1fbbcff1eb32eb868WaitForTimeoutProviderInvokeDD251E84"
     }
   ]
 }
