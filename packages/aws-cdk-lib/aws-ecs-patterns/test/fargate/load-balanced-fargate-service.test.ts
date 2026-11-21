@@ -171,6 +171,23 @@ describe('ApplicationLoadBalancedFargateService', () => {
     expect(origin.CustomOriginConfig.HTTPPort).toEqual(8080);
   });
 
+  test('cloudFrontDistribution uses a custom HTTPS listenerPort for the origin', () => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: { image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app') },
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-west-2:123456789012:certificate/12345678-1234-1234-1234-123456789012'),
+      listenerPort: 8443,
+      cloudFrontDistribution: distribution,
+    });
+    const { origin } = cloudFrontConfigForService(stack);
+    expect(origin.CustomOriginConfig.OriginProtocolPolicy).toEqual('https-only');
+    expect(origin.CustomOriginConfig.HTTPSPort).toEqual(8443);
+  });
+
   test('cloudFrontBehaviorOptions passed as undefined keeps the safe defaults', () => {
     // GIVEN
     const stack = new cdk.Stack();
