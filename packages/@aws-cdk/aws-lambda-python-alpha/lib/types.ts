@@ -135,6 +135,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * command for asset hashing. CDK does not execute the commands from that call.
    * The callbacks should return command strings without accessing either path.
    *
+   * Source symlinks must resolve within the entry directory.
    * A local bundling failure fails synthesis.
    *
    * @default - Use Docker bundling.
@@ -151,6 +152,7 @@ export interface LocalBundlingOptions {
    *
    * This replaces the default list. Include any default tags you still want pip
    * to consider, or use additionalPlatformTags to extend the defaults.
+   * The combined list must include at least one tag, and all tags must target Linux.
    * Tags ending in _x86_64 or _aarch64 must match the target architecture
    * when it is x86_64 or arm64. Versioned manylinux tags must be compatible
    * with the target runtime's glibc version.

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { FileSystem, SymlinkFollowMode, UnscopedValidationError } from 'aws-cdk-lib';
+import { FileSystem, IgnoreStrategy, SymlinkFollowMode, UnscopedValidationError } from 'aws-cdk-lib';
 import type { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
 import type * as cdk from 'aws-cdk-lib/core';
 import { lit, profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -39,6 +39,8 @@ export class LocalBundling implements cdk.ILocalBundling {
       ...(props.additionalPlatformTags ?? []),
     ];
     validatePlatformTags(props.runtime, props.architecture, tags);
+    // Check before asset staging so a previously bundled copy cannot bypass validation.
+    validateSourceSymlinks(props.entry, props.excludes);
     this.pipArgs = [
       ...tags.flatMap((tag) => ['--platform', tag]),
       '--python-version', pythonVersion,
@@ -145,6 +147,45 @@ export class LocalBundling implements cdk.ILocalBundling {
         windowsVerbatimArguments: isWindows,
       },
     );
+  }
+}
+
+function validateSourceSymlinks(entry: string, excludes: string[]): void {
+  const root = path.resolve(entry);
+  const realRoot = fs.realpathSync(root);
+  const ignore = IgnoreStrategy.glob(root, excludes);
+  const ancestors = new Set<string>();
+
+  visit(root, realRoot);
+
+  function visit(directory: string, realDirectory: string): void {
+    if (ancestors.has(realDirectory)) {
+      return;
+    }
+    ancestors.add(realDirectory);
+    for (const child of fs.readdirSync(realDirectory, { withFileTypes: true })) {
+      const source = path.join(directory, child.name);
+      if (ignore.ignores(source)) {
+        continue;
+      }
+      const realChild = path.join(realDirectory, child.name);
+      if (child.isSymbolicLink()) {
+        const target = fs.realpathSync(realChild);
+        const relative = path.relative(realRoot, target);
+        if (path.isAbsolute(relative) || relative === '..' || relative.startsWith('..' + path.sep)) {
+          throw new UnscopedValidationError(
+            lit`PythonLocalBundlingExternalSymlink`,
+            `Local bundling cannot follow symbolic link '${source}' outside the entry directory.`,
+          );
+        }
+        if (fs.statSync(target).isDirectory()) {
+          visit(source, target);
+        }
+      } else if (child.isDirectory()) {
+        visit(source, realChild);
+      }
+    }
+    ancestors.delete(realDirectory);
   }
 }
 

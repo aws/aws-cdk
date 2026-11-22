@@ -33,11 +33,24 @@ export function validateArchitecture(architecture: Architecture): void {
 }
 
 export function validatePlatformTags(runtime: Runtime, architecture: Architecture, platformTags: string[]): void {
+  if (platformTags.length === 0) {
+    throw new UnscopedValidationError(
+      lit`PythonLocalBundlingEmptyPlatformTags`,
+      'Local bundling requires at least one Linux platform tag. Omit platformTags to use the runtime defaults.',
+    );
+  }
+
   const expected = ARCH_SLUG[architecture.dockerPlatform];
   const pythonMinor = parsePythonMinor(runtime);
   const glibcMinor = pythonMinor >= AL2023_MIN_MINOR ? 34 : pythonMinor >= 8 ? 26 : 17;
 
   for (const tag of platformTags) {
+    if (!/^(manylinux(?:_\d+_\d+|1|2010|2014)|musllinux_\d+_\d+|linux)_.+$/.test(tag)) {
+      throw new UnscopedValidationError(
+        lit`PythonLocalBundlingPlatformTagNotLinux`,
+        `Platform tag '${tag}' does not target Linux. Lambda functions run on Amazon Linux.`,
+      );
+    }
     const suffix = /_(x86_64|aarch64)$/.exec(tag)?.[1];
     if (expected && suffix && suffix !== expected) {
       throw new UnscopedValidationError(

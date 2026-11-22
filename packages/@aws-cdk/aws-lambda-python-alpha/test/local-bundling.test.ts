@@ -583,6 +583,18 @@ describe('validation', () => {
   });
 
   test.each([
+    { tags: [], error: /at least one Linux platform tag/ },
+    { tags: ['macosx_11_0_arm64'], error: /does not target Linux/ },
+  ])('fails with platform tags $tags', ({ tags, error }) => {
+    expect(() => makeLocalBundling({
+      entry: ENTRY_PIP,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.ARM_64,
+      platformTags: tags,
+    })).toThrow(error);
+  });
+
+  test.each([
     [Architecture.ARM_64, 'manylinux_2_28_aarch64', 'manylinux_2_28_x86_64'],
     [Architecture.X86_64, 'manylinux2014_x86_64', 'musllinux_1_2_aarch64'],
   ])('rejects a conflicting platform tag for %s', (architecture, validTag, invalidTag) => {
@@ -668,8 +680,24 @@ describe('subprocess failures', () => {
       architecture: Architecture.X86_64,
     });
 
-    expect(() => local.tryBundle(outputDir)).toThrow(/pipenv/);
+    expect(() => local.tryBundle(outputDir)).toThrow(/bash -c .*pipenv requirements/);
   });
+});
+
+test('fails when a source symlink resolves outside the entry', () => {
+  const entry = path.join(outputDir, 'entry');
+  fs.mkdirSync(entry);
+  const sibling = path.join(outputDir, 'entry-other');
+  fs.mkdirSync(sibling);
+  fs.symlinkSync(sibling, path.join(entry, 'outside'), 'junction');
+
+  const options = {
+    entry,
+    runtime: Runtime.PYTHON_3_11,
+    architecture: Architecture.X86_64,
+  };
+  expect(() => makeLocalBundling(options)).toThrow(/symbolic link .*outside the entry directory/);
+  expect(() => makeLocalBundling({ ...options, assetExcludes: ['outside'] })).not.toThrow();
 });
 
 describe('assetExcludes', () => {
