@@ -677,11 +677,38 @@ describe('WebFunction template', () => {
     });
   });
 
-  test('throws when entryPoint is set for a non-Node.js runtime', () => {
+  test('throws when entryPoint is set for a runtime other than Node.js or Python', () => {
     expect(() => new WebFunction(stack, 'Test', minimalProps({
-      runtime: WebFunctionRuntime.of('python3.13'),
-      entryPoint: 'app.py',
-    }))).toThrow(/entryPoint is only supported for Node.js runtimes, got 'python3.13'/);
+      runtime: WebFunctionRuntime.of('provided.al2023'),
+      entryPoint: 'bootstrap',
+    }))).toThrow(/entryPoint is only supported for Node.js and Python runtimes, got 'provided.al2023'/);
+  });
+
+  test('entryPoint is injected as AWS_LAMBDA_PYTHON_ENTRYPOINT for a Python runtime', () => {
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.PYTHON_3_15,
+      entryPoint: 'api:application',
+      environment: { STAGE: 'prod' },
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      BuildConfig: {
+        RuntimeConfig: { Runtime: 'python3.15' },
+      },
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: {
+          STAGE: 'prod',
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: 'api:application',
+        },
+      }),
+    });
+  });
+
+  test('throws when entryPoint and AWS_LAMBDA_PYTHON_ENTRYPOINT env var are both set', () => {
+    expect(() => new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.PYTHON_3_15,
+      entryPoint: 'api:application',
+      environment: { AWS_LAMBDA_PYTHON_ENTRYPOINT: 'other:app' },
+    }))).toThrow(/entryPoint cannot be used together with an AWS_LAMBDA_PYTHON_ENTRYPOINT environment variable/);
   });
 
   test('entryPoint is accepted for a Node.js runtime given with of()', () => {
@@ -749,6 +776,29 @@ describe('WebFunction template', () => {
           Runtime: 'nodejs24.x',
         },
       },
+    });
+  });
+
+  test('WebFunctionRevision resolves PYTHON_3_15', () => {
+    new WebFunction(
+      stack,
+      'Test',
+      minimalProps({
+        webFunctionName: 'my-func',
+        runtime: WebFunctionRuntime.PYTHON_3_15,
+      }),
+    );
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      BuildConfig: {
+        RuntimeConfig: {
+          Runtime: 'python3.15',
+        },
+      },
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: Match.absent(),
+      }),
     });
   });
 

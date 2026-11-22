@@ -2632,9 +2632,11 @@ declare const fn: lambda.WebFunction;
 new CfnOutput(this, 'LogGroupName', { value: fn.logGroup.logGroupRef.logGroupName });
 ```
 
-By default the runtime executes `index.js` at the root of the deployment
-package. Use `entryPoint` to point it at a different file (surfaced to the
-runtime via the reserved `AWS_LAMBDA_NODEJS_ENTRYPOINT` environment variable):
+By default the runtime loads `index.js` at the root of the deployment package for
+Node.js, and the `app` callable in `main.py` for Python. Use `entryPoint` to point it
+somewhere else: a file path for Node.js, or `module:callable` for Python. It is surfaced
+to the runtime via the reserved `AWS_LAMBDA_NODEJS_ENTRYPOINT` or
+`AWS_LAMBDA_PYTHON_ENTRYPOINT` environment variable:
 
 ```ts
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -2646,6 +2648,14 @@ new lambda.WebFunction(this, 'MyWebFunction', {
   runtime: lambda.WebFunctionRuntime.NODEJS_24_X,
   defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
   entryPoint: 'src/server.js',
+});
+
+// Loads the `application` callable (ASGI or WSGI) from `api.py`
+new lambda.WebFunction(this, 'MyPythonWebFunction', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'python-app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.PYTHON_3_15,
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
+  entryPoint: 'api:application',
 });
 ```
 

@@ -20,6 +20,11 @@ export class WebFunctionRuntime {
   public static readonly NODEJS_LATEST = new WebFunctionRuntime('nodejs24.x');
 
   /**
+   * Python 3.15 runtime
+   */
+  public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15');
+
+  /**
    * Use a custom runtime string not yet supported by the CDK.
    *
    * This allows customers to use a newly released runtime without waiting
