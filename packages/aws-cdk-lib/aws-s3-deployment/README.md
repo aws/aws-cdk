@@ -244,10 +244,12 @@ Configuring `retainOnDelete: false` has a few implications you should be aware o
   `ephemeralStorageSize` or `vpc`. Run `cdk diff` before deploying to verify whether the
   deployment will be replaced.
 
-  If the destination bucket is defined in your CDK app, the objects are **retained**. If the
-  destination bucket is imported, the deletion of the old resource **will delete all objects
-  under the destination**, including the ones the new resource has just deployed (unless the
-  bucket already has a matching tag).
+  When the deployment is replaced, the objects in a destination bucket defined in your CDK app
+  are **retained**, because the new deployment's tag means the old deployment's Lambda function
+  does not delete them. If the destination bucket is imported, the new deployment does not tag
+  it, so the deletion of the old resource **will delete all objects under the destination**,
+  including the ones the new resource has just deployed (unless the bucket already has a
+  matching tag).
 
 - **Destination Changes**
 
@@ -271,6 +273,13 @@ in which case, we recommend to remove `retainOnDelete: false`, and instead, conf
 [`autoDeleteObjects`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_s3-readme.html#bucket-deletion)
 property on the destination bucket. Unlike `retainOnDelete: false`, `autoDeleteObjects` empties
 the bucket when the bucket itself is deleted, such as on stack deletion.
+
+#### Imported Bucket
+
+If the destination bucket **is imported** (for example `s3.Bucket.fromBucketName()`), we
+recommend keeping `retainOnDelete` set to `true`. With `retainOnDelete: false`, renaming or
+moving the construct, or changing certain properties, will delete all objects under the
+destination (see **Logical ID Changes** above).
 
 ## Prune
 
