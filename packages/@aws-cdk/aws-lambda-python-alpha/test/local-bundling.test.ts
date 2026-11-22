@@ -215,6 +215,8 @@ describe('parametrized sweeps', () => {
 test('local bundling receives the effective excludes, platform tags, and environment', () => {
   const environment = { PIP_INDEX_URL: 'https://example.test/simple' };
   const buildImage = jest.spyOn(DockerImage, 'fromBuildV2');
+  const hostIndex = process.env.PIP_INDEX_URL;
+  process.env.PIP_INDEX_URL = 'https://host.example/simple';
   try {
     const bundling = new Bundling({
       entry: ENTRY_UV,
@@ -233,12 +235,17 @@ test('local bundling receives the effective excludes, platform tags, and environ
     }));
     expect(pipInstallCall()).toEqual(expect.arrayContaining(['--platform', 'musllinux_1_2_x86_64']));
     for (const [, , options] of mockedSpawnSync.mock.calls) {
-      expect(options.env).toEqual(expect.objectContaining(environment));
+      expect(options.env.PIP_INDEX_URL).toBe(environment.PIP_INDEX_URL);
     }
     expect(shellCall('echo before')).toBeDefined();
     expect(shellCall('echo after')).toBeDefined();
     expect(shellCall(Packaging.withUv().exportCommand!)).toBeDefined();
   } finally {
+    if (hostIndex === undefined) {
+      delete process.env.PIP_INDEX_URL;
+    } else {
+      process.env.PIP_INDEX_URL = hostIndex;
+    }
     buildImage.mockRestore();
   }
 });

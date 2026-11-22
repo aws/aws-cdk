@@ -714,15 +714,26 @@ test('Bundling a function with uv dependencies', () => {
 });
 
 describe('local bundling wiring', () => {
-  test('rejects Docker-only options when local bundling is enabled', () => {
+  test.each([
+    ['buildArgs', { PIP_INDEX_URL: 'https://example.test/simple' }],
+    ['bundlingFileAccess', BundlingFileAccess.VOLUME_COPY],
+    ['command', ['bash']],
+    ['entrypoint', ['/bin/sh']],
+    ['image', DockerImage.fromRegistry('custom-image')],
+    ['network', 'host'],
+    ['platform', 'linux/amd64'],
+    ['securityOpt', 'no-new-privileges'],
+    ['user', '1000'],
+    ['volumes', [{ hostPath: '/host', containerPath: '/container' }]],
+    ['volumesFrom', ['container']],
+    ['workingDirectory', '/work'],
+  ])('rejects the Docker-only %s option in local mode', (option, value) => {
     expect(() => Bundling.bundle({
       entry: path.join(__dirname, 'lambda-handler'),
       runtime: Runtime.PYTHON_3_11,
       localBundling: {},
-      image: DockerImage.fromRegistry('custom-image'),
-      buildArgs: { PIP_INDEX_URL: 'https://example.test/simple' },
-      platform: 'linux/amd64',
-    })).toThrow(/localBundling cannot be combined with Docker options: buildArgs, image, platform/);
+      [option]: value,
+    })).toThrow('localBundling cannot be combined with Docker options: ' + option + '.');
     expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
   });
 

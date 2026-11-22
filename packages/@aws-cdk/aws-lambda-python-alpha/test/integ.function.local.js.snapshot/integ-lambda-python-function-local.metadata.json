@@ -309,6 +309,84 @@
       "data": "LocalFunctionArntagsoverridemanylinux2014"
     }
   ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py312-x86_64-uv": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py312x8664uv"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py312-x86_64-poetry": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py312x8664poetry"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "architecture": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py312-x86_64-pipenv": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py312x8664pipenv"
+    }
+  ],
   "/integ-lambda-python-function-local/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -563,6 +641,72 @@
       "data": "localtagsoverridemanylinux20141C2D5DA9"
     }
   ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664uvBE88161F"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664poetry1A94B7FF"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664pipenv5F6C85F2"
+    }
+  ],
   "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2py310x86649BDEE0EA\"}": [
     {
       "type": "aws:cdk:logicalId",
@@ -627,6 +771,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PublishOutputReflocaltagsoverridemanylinux20141C2D5DA9FA235D6A"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py312x8664uvBE88161F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py312x8664uvBE88161F0863966E"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py312x8664poetry1A94B7FF\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py312x8664poetry1A94B7FF815B236D"
+    }
+  ],
+  "/integ-lambda-python-function-local/Publish/Output{\"Ref\":\"localal2023py312x8664pipenv5F6C85F2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputReflocalal2023py312x8664pipenv5F6C85F293164E0B"
     }
   ],
   "/integ-lambda-python-function-local/local-al2-py310-x86_64/ServiceRole/Resource": [
@@ -756,6 +918,42 @@
     }
   ],
   "/integ-lambda-python-function-local/local-tags-override-manylinux2014/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664uvServiceRoleCBD98E4B"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-uv/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664poetryServiceRoleD8DE465E"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-poetry/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664pipenvServiceRole035202E1"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64-pipenv/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"

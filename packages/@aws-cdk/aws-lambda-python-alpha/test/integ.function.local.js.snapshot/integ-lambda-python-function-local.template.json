@@ -625,6 +625,174 @@
    "DependsOn": [
     "localtagsoverridemanylinux2014ServiceRoleBBAA1341"
    ]
+  },
+  "localal2023py312x8664uvServiceRoleCBD98E4B": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py312x8664uvBE88161F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e63721130e6382e8f2f145d4f6330d08a3cc173269176d38e8dbb1ba7e4c46e0.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py312x8664uvServiceRoleCBD98E4B",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localal2023py312x8664uvServiceRoleCBD98E4B"
+   ]
+  },
+  "localal2023py312x8664poetryServiceRoleD8DE465E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py312x8664poetry1A94B7FF": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "12372e87a6a5e911d058d6a20e4992d4d9e8b158a87c91f2b2f11e654a509fe7.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py312x8664poetryServiceRoleD8DE465E",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localal2023py312x8664poetryServiceRoleD8DE465E"
+   ]
+  },
+  "localal2023py312x8664pipenvServiceRole035202E1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "localal2023py312x8664pipenv5F6C85F2": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "aa578b14b19dc5cfa03a72db62d68142fa2b85930cc0cf9834a2dfed50ec1503.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "localal2023py312x8664pipenvServiceRole035202E1",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12"
+   },
+   "DependsOn": [
+    "localal2023py312x8664pipenvServiceRole035202E1"
+   ]
   }
  },
  "Outputs": {
@@ -716,6 +884,30 @@
     ]
    }
   },
+  "LocalFunctionArnal2023py312x8664uv": {
+   "Value": {
+    "Fn::GetAtt": [
+     "localal2023py312x8664uvBE88161F",
+     "Arn"
+    ]
+   }
+  },
+  "LocalFunctionArnal2023py312x8664poetry": {
+   "Value": {
+    "Fn::GetAtt": [
+     "localal2023py312x8664poetry1A94B7FF",
+     "Arn"
+    ]
+   }
+  },
+  "LocalFunctionArnal2023py312x8664pipenv": {
+   "Value": {
+    "Fn::GetAtt": [
+     "localal2023py312x8664pipenv5F6C85F2",
+     "Arn"
+    ]
+   }
+  },
   "PublishOutputReflocalal2py310x86649BDEE0EA6C8BF953": {
    "Value": {
     "Ref": "localal2py310x86649BDEE0EA"
@@ -769,6 +961,21 @@
   "PublishOutputReflocaltagsoverridemanylinux20141C2D5DA9FA235D6A": {
    "Value": {
     "Ref": "localtagsoverridemanylinux20141C2D5DA9"
+   }
+  },
+  "PublishOutputReflocalal2023py312x8664uvBE88161F0863966E": {
+   "Value": {
+    "Ref": "localal2023py312x8664uvBE88161F"
+   }
+  },
+  "PublishOutputReflocalal2023py312x8664poetry1A94B7FF815B236D": {
+   "Value": {
+    "Ref": "localal2023py312x8664poetry1A94B7FF"
+   }
+  },
+  "PublishOutputReflocalal2023py312x8664pipenv5F6C85F293164E0B": {
+   "Value": {
+    "Ref": "localal2023py312x8664pipenv5F6C85F2"
    }
   }
  },

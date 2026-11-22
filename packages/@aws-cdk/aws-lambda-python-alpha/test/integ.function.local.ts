@@ -17,10 +17,12 @@ import * as lambda from '../lib';
  *   AL2 (manylinux2014 only): python3.10, python3.11
  *   AL2023 (manylinux_2_28 with manylinux2014 fallback): python3.12, python3.13, python3.14
  *
- * Each handler imports a native extension. The arm64 Python 3.12 cases also
- * verify that the default tags and an explicit override select different wheels.
+ * The requirements.txt cases import a native extension. The arm64 Python 3.12
+ * cases verify that the default tags and an explicit override select distinct
+ * wheels. The lockfile cases exercise actual dependency exports and imports.
  *
- * Host requirements: `python3` or `python` (with pip) on PATH.
+ * Host requirements: Python with pip, pipenv, Poetry with its export plugin,
+ * and uv on PATH. The lockfile exports require a POSIX shell.
  *
  * Stack verification steps:
  * * aws lambda invoke --function-name <deployed fn name> --invocation-type Event --payload '"OK"' response.json
@@ -32,6 +34,7 @@ interface MatrixEntry {
   readonly architecture: Architecture;
   readonly platformTags?: string[];
   readonly expectedWheelTag?: string;
+  readonly fixture?: string;
 }
 
 class TestStack extends Stack {
@@ -39,8 +42,6 @@ class TestStack extends Stack {
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
-
-    const entry = path.join(__dirname, 'lambda-handler-native');
 
     const matrix: MatrixEntry[] = [
       // AL2 tier (manylinux2014)
@@ -69,11 +70,17 @@ class TestStack extends Stack {
         platformTags: ['manylinux2014_aarch64'],
         expectedWheelTag: 'manylinux2014_aarch64',
       },
+      ...['uv', 'poetry', 'pipenv'].map(tool => ({
+        id: 'al2023-py312-x86_64-' + tool,
+        fixture: 'lambda-handler-' + tool,
+        runtime: Runtime.PYTHON_3_12,
+        architecture: Architecture.X86_64,
+      })),
     ];
 
-    for (const { id: fnId, runtime, architecture, platformTags, expectedWheelTag } of matrix) {
+    for (const { id: fnId, runtime, architecture, platformTags, expectedWheelTag, fixture = 'lambda-handler-native' } of matrix) {
       const fn = new lambda.PythonFunction(this, `local-${fnId}`, {
-        entry,
+        entry: path.join(__dirname, fixture),
         runtime,
         architecture,
         environment: expectedWheelTag ? { EXPECTED_WHEEL_TAG: expectedWheelTag } : undefined,
