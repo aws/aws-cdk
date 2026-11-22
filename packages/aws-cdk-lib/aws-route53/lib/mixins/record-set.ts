@@ -130,7 +130,10 @@ class ProtectionGroups implements IAspect {
     const bind = (scope: Construct) => {
       const identity = recordIdentity(record, zone, name, type);
       const key = expressionKey(identity);
-      // This hash and its normalized input are part of the protection's CloudFormation logical ID.
+      // The construct ID becomes the protection's CloudFormation logical ID, so its input is frozen:
+      // the normalized zone ID, name and type, with a same-stack reference identified by the
+      // construct path of its target. CloudFormation rejects a second protection for the same
+      // records under a new logical ID, so changing this input requires a feature flag.
       const id = md5hash(key);
       let protection = scope.node.tryFindChild(id) as CfnRecordSetProtection | undefined;
       if (!protection) {

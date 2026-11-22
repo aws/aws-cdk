@@ -753,5 +753,14 @@ deploy each step separately.
 2. Update, add, or remove the record.
 3. Reapply the mixin if the remaining records need protection.
 
+CDK derives the protection's logical ID from the record name and type and from
+how your code identifies the hosted zone. The logical ID changes if you move the
+hosted zone to another construct or switch `hostedZoneId` between a literal ID
+and a reference to the zone, even though the records stay the same.
+CloudFormation rejects that deployment because the protection `already exists`,
+and the existing protection stays in place. Follow the steps above for these
+changes too. The records are unprotected from the deployment that removes the
+mixin until the one that reapplies it.
+
 If you change the comment, CloudFormation replaces the protection and the
 records are unprotected during replacement. [CloudFormation record set protection update rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-route53-recordsetprotection.html#aws-resource-route53-recordsetprotection--remarks)
