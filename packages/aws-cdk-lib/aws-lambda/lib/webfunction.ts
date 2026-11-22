@@ -569,7 +569,7 @@ export class WebFunction extends WebFunctionBase {
       const isPython = !Token.isUnresolved(runtimeName) && runtimeName.startsWith('python');
       if (!Token.isUnresolved(runtimeName) && !runtimeName.startsWith('nodejs') && !isPython) {
         throw new ValidationError(
-          lit`WebFunctionEntryPointRequiresNode`,
+          lit`WebFunctionEntryPointUnsupportedRuntime`,
           `entryPoint is only supported for Node.js and Python runtimes, got '${runtimeName}'`,
           this,
         );
