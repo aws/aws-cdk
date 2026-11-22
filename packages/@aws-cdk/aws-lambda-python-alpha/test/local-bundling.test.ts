@@ -551,6 +551,18 @@ describe('validation', () => {
     })).toThrow(/linux\/mips64/);
   });
 
+  test.each([
+    [Architecture.ARM_64, 'manylinux_2_28_aarch64', 'manylinux_2_28_x86_64'],
+    [Architecture.X86_64, 'manylinux2014_x86_64', 'musllinux_1_2_aarch64'],
+  ])('rejects a conflicting platform tag for %s', (architecture, validTag, invalidTag) => {
+    expect(() => makeLocalBundling({
+      entry: ENTRY_PIP,
+      runtime: Runtime.PYTHON_3_12,
+      architecture,
+      platformTags: [validTag, invalidTag],
+    })).toThrow(new RegExp(invalidTag + '.*' + architecture.name));
+  });
+
   test('explicit platform tags bypass validation for the default architecture mapping', () => {
     const local = makeLocalBundling({
       entry: ENTRY_PIP,

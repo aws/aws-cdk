@@ -183,7 +183,7 @@ The resulting artifact is binary-compatible with the Lambda runtime regardless o
 
 Prerequisites on the host:
 
-- `python3` (preferred) or `python` on `PATH`, with `pip >= 22.0` — multiple `--platform` flags (used for Python 3.12+ fall-through tag lists) were added in pip 22.0. Older pip versions will fail with an "unknown option" error. `python3` is tried first; `python` is used as a fallback.
+- `python3` (preferred) or `python` on `PATH`, with a pip version that supports your host Python. Use pip 20.3 or newer for repeated `--platform` flags and PEP 600 manylinux tags.
 - If your project uses a lockfile-based dependency manager, the matching tool must also be on `PATH`:
   - `pipenv >= 2022.4.8` (for `pipenv requirements`)
   - `poetry >= 1.2` (for `poetry export --with-credentials`)
@@ -201,7 +201,7 @@ Local bundling rejects Docker-only options: `image`, `buildArgs`, `command`, `en
 
 For private package indexes, configure pip on the host or set `environment` in your bundling options (for example, `environment: { PIP_INDEX_URL: indexUrl }`). These variables override the host environment for pip, lockfile exports, and hook commands.
 
-Local hook commands run after the source is copied and use the staged output as their working directory. When preparing these commands, the hooks receive the original source directory as `inputDir` and the staged target as `outputDir`. Write to `outputDir` to change the bundle. Writing to `inputDir` modifies the source after it has been copied.
+Local hook commands run after the source is copied and use the staged output as their working directory, so relative writes stay in the bundle. By default, Docker runs `beforeBundling` from its input directory before copying the sources. When preparing these commands, the hooks receive the original source directory as `inputDir` and the staged target as `outputDir`. Write to `outputDir` to change the bundle. Writing to `inputDir` modifies the source after it has been copied.
 
 **Overriding platform tags**
 
@@ -219,7 +219,7 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
-`platformTags` replaces the default list. Include the default tags if you still want pip to consider them.
+`platformTags` replaces the default list. Include the default tags if you still want pip to consider them. On x86_64 and arm64, tags ending in `_x86_64` or `_aarch64` must match the Lambda architecture.
 
 When omitted, the default tags are derived from the runtime's base image:
 

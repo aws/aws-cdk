@@ -32,6 +32,23 @@ export function validateArchitecture(architecture: Architecture): void {
   }
 }
 
+export function validatePlatformTags(architecture: Architecture, platformTags: string[]): void {
+  const expected = ARCH_SLUG[architecture.dockerPlatform];
+  if (expected === undefined) {
+    return;
+  }
+
+  for (const tag of platformTags) {
+    const suffix = /_(x86_64|aarch64)$/.exec(tag)?.[1];
+    if (suffix && suffix !== expected) {
+      throw new UnscopedValidationError(
+        lit`PythonLocalBundlingPlatformTagArchitectureMismatch`,
+        `Platform tag '${tag}' does not match Lambda architecture '${architecture.name}' (expected '_${expected}').`,
+      );
+    }
+  }
+}
+
 export function defaultPlatformTags(runtime: Runtime, architecture: Architecture): string[] {
   validateArchitecture(architecture);
   const archSlug = ARCH_SLUG[architecture.dockerPlatform];

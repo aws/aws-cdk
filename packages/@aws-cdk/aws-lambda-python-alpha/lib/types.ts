@@ -151,7 +151,8 @@ export interface LocalBundlingOptions {
    * Platform tags passed to pip install --platform.
    *
    * This replaces the default list. Include any default tags you still want pip
-   * to consider.
+   * to consider. Tags ending in _x86_64 or _aarch64 must match the function or
+   * layer architecture when it is x86_64 or arm64.
    *
    * @default - Derived from the target Python runtime's base image:
    *            `manylinux2014_{arch}` for Python 3.11 and below (Amazon Linux 2),
