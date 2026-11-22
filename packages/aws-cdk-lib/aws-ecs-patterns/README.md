@@ -429,7 +429,7 @@ The load balancer is added to the distribution as an origin, with a cache behavi
 
 The origin talks to the load balancer on the listener's protocol and port — HTTP on port 80 by default, or HTTPS on port 443 when the service uses HTTPS (a certificate or `protocol: HTTPS`). The behavior redirects viewers to HTTPS, allows all HTTP methods, and disables caching, and it forwards viewer query strings, cookies and headers to the service — all of them on HTTPS with the default origin request policy, all except the Host header on HTTP — so the service behaves like a dynamic application behind CloudFront. You can override any of that with `cloudFrontBehaviorOptions`. The same props are available on `ApplicationLoadBalancedEc2Service`. For HTTPS, give the distribution `domainNames` and a certificate in us-east-1, and make sure the load balancer certificate also covers those names — otherwise CloudFront cannot verify the origin certificate and returns 502 for every request.
 
-The load balancer must be internet-facing, because the pattern creates a public origin for it. An internal load balancer can be fronted by CloudFront through a VPC origin, but this pattern does not set that up. It also stays directly reachable: with the default open listener, its security group allows 0.0.0.0/0 on the listener port, so traffic can bypass the distribution entirely. To lock it down, set `openListener: false` and allow ingress only from the `com.amazonaws.global.cloudfront.origin-facing` managed prefix list, and/or require a secret origin header that a listener rule checks. If you set a custom domain on the service, the Route 53 record the pattern creates still points at the load balancer. The record already uses the domain name, so creating a second record with the same name pointing at the distribution fails at deploy — to serve the domain through CloudFront instead, set `recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.NONE` and create your own alias record pointing at the distribution, as in the HTTPS example below.
+The load balancer must be internet-facing, because the pattern creates a public origin for it. An internal load balancer can be fronted by CloudFront through a VPC origin, but this pattern does not set that up. It also stays directly reachable: with the default open listener, its security group allows 0.0.0.0/0 on the listener port, so traffic can bypass the distribution entirely. To lock it down, set `openListener: false` and allow ingress only from the `com.amazonaws.global.cloudfront.origin-facing` managed prefix list, and/or pass a secret header through `cloudFrontOriginOptions` (`customHeaders`) and require it in a listener rule. If you set a custom domain on the service, the Route 53 record the pattern creates still points at the load balancer. The record already uses the domain name, so creating a second record with the same name pointing at the distribution fails at deploy — to serve the domain through CloudFront instead, set `recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.NONE` and create your own alias record pointing at the distribution, as in the HTTPS example below.
 
 ```ts
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
@@ -445,6 +445,28 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargat
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
   cloudFrontDistribution: distribution,
+});
+```
+
+Caching is off by default — the behavior above does not cache responses. If the service serves static content, override the cache policy; any key you don't pass keeps the pattern default:
+
+```ts
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+
+declare const cluster: ecs.Cluster;
+const distribution = new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+});
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  cloudFrontDistribution: distribution,
+  cloudFrontBehaviorOptions: {
+    cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
+  },
 });
 ```
 
