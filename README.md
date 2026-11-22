@@ -72,6 +72,7 @@ in the CDK Developer Guide.
 [Developer Guide]: https://docs.aws.amazon.com/cdk/latest/guide
 [AWS CDK CLI]: https://docs.aws.amazon.com/cdk/latest/guide/tools.html
 [AWS Construct Library]: https://docs.aws.amazon.com/cdk/api/latest/docs/aws-construct-library.html
+[AWS CDK Blocks]: https://alpha.www.docs.aws.a2z.com/cdk/blocks/devguide/what-is-blocks.html
 
 ## Getting Started
 
