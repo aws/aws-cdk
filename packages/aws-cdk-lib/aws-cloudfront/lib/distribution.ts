@@ -375,6 +375,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: IArrayBox<CacheBehavior> = Box.fromArray();
+  private readonly behaviorPathPatterns = new Set<string>();
   private readonly boundOrigins: IArrayBox<BoundOrigin> = Box.fromArray([], { omitEmpty: false });
   private readonly originGroups: IArrayBox<CfnDistribution.OriginGroupProperty> = Box.fromArray();
 
@@ -692,6 +693,10 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Adds a new behavior to this distribution for the given pathPattern.
    *
+   * Each path pattern can only be used once; adding a second behavior with the same
+   * path pattern throws an error. CloudFront requires path patterns to be unique,
+   * so this fails fast at synth time instead of at deploy time.
+   *
    * @param pathPattern the path pattern (e.g., 'images/*') that specifies which requests to apply the behavior to.
    * @param origin the origin to use for this behavior
    * @param behaviorOptions the options for the behavior at this path.
@@ -701,6 +706,9 @@ export class Distribution extends Resource implements IDistribution {
     if (pathPattern === '*') {
       throw new ValidationError(lit`DefaultBehaviorCannotHavePathPattern`, 'Only the default behavior can have a path pattern of \'*\'', this);
     }
+    if (!Token.isUnresolved(pathPattern) && this.behaviorPathPatterns.has(pathPattern)) {
+      throw new ValidationError(lit`DuplicateCacheBehaviorPathPattern`, `A cache behavior with the path pattern '${pathPattern}' already exists on this distribution. Each path pattern can only be used once.`, this);
+    }
     this.validateGrpc(behaviorOptions);
     const originId = this.addOrigin(origin);
     this.additionalBehaviors.push(new CacheBehavior(originId, {
@@ -708,6 +716,7 @@ export class Distribution extends Resource implements IDistribution {
       ...behaviorOptions,
       viewerProtocolPolicy: this.resolveViewerProtocolPolicy(behaviorOptions.viewerProtocolPolicy),
     }));
+    this.behaviorPathPatterns.add(pathPattern);
   }
 
   /**
