@@ -396,6 +396,30 @@ test.each([
   }
 });
 
+test.each([
+  ['same export environment', 'us-east-1', 'us-east-1', true],
+  ['different export regions', 'us-east-1', 'us-west-2', false],
+  ['unknown export environments', undefined, undefined, false],
+] as const)('compares import values nested in a joined name in %s', (_description, firstRegion, secondRegion, duplicate) => {
+  const app = new App();
+  const stacks = [firstRegion, secondRegion].map((region, i) => new Stack(app, `Stack${i}`, {
+    env: region ? { account: '111111111111', region } : undefined,
+  }));
+  for (const stack of stacks) {
+    new CfnRecordSet(stack, 'Record', {
+      hostedZoneId: 'Z123',
+      name: Fn.join('', ['www.', Fn.importValue('ZoneName')]),
+      type: 'A',
+    }).with(new mixins.RecordSetProtection());
+  }
+
+  if (duplicate) {
+    expect(() => Template.fromStack(stacks[0])).toThrow('protect this record group in only one stack');
+  } else {
+    for (const stack of stacks) Template.fromStack(stack).resourceCountIs(protectionType, 1);
+  }
+});
+
 test('treats zone parameters with the same logical ID in separate stacks as independent', () => {
   const app = new App();
   const stacks = ['Blue', 'Green'].map(id => new Stack(app, id));
