@@ -178,6 +178,28 @@ test.each([false, true])('keeps the protection logical ID when an aspect overrid
   });
 });
 
+// Deployed stacks depend on these logical IDs. CloudFormation rejects a second protection for the
+// same records under a new logical ID, so a change here fails the next deployment of those stacks.
+test.each<[string, (stack: Stack) => string, string]>([
+  ['a literal zone ID', () => 'Z123', 'Route53RecordSetProtections7145ba6d393cf3e3d8029fcd671c03ac2242E74B'],
+  [
+    'a zone in the same stack',
+    stack => new HostedZone(stack, 'Zone', { zoneName: 'example.com' }).hostedZoneId,
+    'Route53RecordSetProtections1e1b357276f44c619133b62e276b67a29DD2776D',
+  ],
+  [
+    'a zone ID parameter',
+    stack => new CfnParameter(stack, 'ZoneId').valueAsString,
+    'Route53RecordSetProtections7f23ba48ef43eb96e4ce073d817989bb3A7D3B82',
+  ],
+])('keeps the frozen protection logical ID for %s', (_, zoneId, logicalId) => {
+  const stack = new Stack();
+  const record = new CfnRecordSet(stack, 'Blue', { hostedZoneId: zoneId(stack), name: 'www.example.com.', type: 'A' });
+  record.with(new mixins.RecordSetProtection());
+
+  expect(Object.keys(Template.fromStack(stack).findResources(protectionType))).toEqual([logicalId]);
+});
+
 describe.each([false, true])('with aspect stabilization %s', (stabilization) => {
   function createStack() {
     const app = new App({ context: { '@aws-cdk/core:aspectStabilization': stabilization } });
