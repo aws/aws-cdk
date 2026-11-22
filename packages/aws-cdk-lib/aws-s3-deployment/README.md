@@ -204,8 +204,8 @@ the tags `aws-cdk:cr-owned:assets/images/` and `aws-cdk:cr-owned:assets-v2/` bot
 `aws-cdk:cr-owned:assets`, so the objects under `assets` are kept.
 
 `BucketDeployment` does not tag imported buckets (for example `s3.Bucket.fromBucketName()`),
-so removing a deployment deletes their objects, even if another deployment in your app still
-deploys to the same prefix.
+so removing a deployment deletes their objects, unless the bucket already has a tag that still
+starts with the same `aws-cdk:cr-owned:<prefix>`.
 
 ### Implications
 
@@ -245,7 +245,8 @@ Configuring `retainOnDelete: false` has a few implications you should be aware o
 
   If the destination bucket is defined in your CDK app, the objects are **retained**. If the
   destination bucket is imported, the deletion of the old resource **will delete all objects
-  under the destination**, including the ones the new resource has just deployed.
+  under the destination**, including the ones the new resource has just deployed (unless the
+  bucket already has a matching tag).
 
 - **Destination Changes**
 
