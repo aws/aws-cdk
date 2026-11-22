@@ -248,8 +248,8 @@ Configuring `retainOnDelete: false` has a few implications you should be aware o
   are **retained**, because the new deployment's tag means the old deployment's Lambda function
   does not delete them. If the destination bucket is imported, the new deployment does not tag
   it, so the deletion of the old resource **will delete all objects under the destination**,
-  including the ones the new resource has just deployed (unless the bucket already has a
-  matching tag).
+  including the ones the new resource has just deployed (unless the bucket already has a tag
+  starting with the same `aws-cdk:cr-owned:<prefix>`).
 
 - **Destination Changes**
 

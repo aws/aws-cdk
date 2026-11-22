@@ -112,8 +112,9 @@ export interface BucketDeploymentProps {
    * deleted regardless of other deployments.
    *
    * For imported destination buckets, objects are deleted when this deployment is removed or
-   * replaced. Replacement occurs when you rename this deployment or change certain props, such
-   * as `memoryLimit`, `ephemeralStorageSize` or `vpc`.
+   * replaced, unless the bucket already has a tag starting with the same
+   * `aws-cdk:cr-owned:<prefix>`. Replacement occurs when you rename this deployment or change
+   * certain props, such as `memoryLimit`, `ephemeralStorageSize` or `vpc`.
    *
    * If the destination bucket is dedicated to this deployment (no `destinationKeyPrefix`), we
    * recommend keeping this property `true` and configuring `autoDeleteObjects` on the bucket
