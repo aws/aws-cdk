@@ -94,10 +94,11 @@ export interface BucketDeploymentProps {
   readonly prune?: boolean;
 
   /**
-   * If this is set to "false", the destination files will be deleted when the
-   * resource is deleted or the destination is updated.
+   * If this is set to "false", the destination objects will be deleted when this deployment
+   * is removed or when its `destinationBucket` or `destinationKeyPrefix` changes.
    *
-   * However, for buckets defined in your CDK app, the files are not deleted when:
+   * However, for buckets defined in your CDK app, removing this deployment does not delete the
+   * objects when:
    *
    * - the destination bucket is deleted at the same time as this deployment (for example on
    *   stack deletion)
@@ -107,15 +108,22 @@ export interface BucketDeploymentProps {
    *   with this deployment's prefix (for example, `assets`, `assets/images/` or `assets-v2/`
    *   when that prefix is `assets`), or with any prefix if this deployment has none
    *
+   * Note that when `destinationBucket` or `destinationKeyPrefix` changes, objects will be
+   * deleted regardless of other deployments.
+   *
+   * For imported destination buckets, objects are deleted when this deployment is removed or
+   * replaced. Replacement occurs when you rename this deployment or change certain props, such
+   * as `memoryLimit`, `ephemeralStorageSize` or `vpc`.
+   *
    * If the destination bucket is dedicated to this deployment (no `destinationKeyPrefix`), we
-   * recommend to keep this property `true` and configure `autoDeleteObjects` on the bucket
+   * recommend keeping this property `true` and configuring `autoDeleteObjects` on the bucket
    * instead, which empties the bucket when it is deleted.
    *
    * NOTICE: Configuring this to "false" might have operational implications. Please
    * see the package documentation linked below to make sure you fully understand those implications.
    *
    * @see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment#retain-on-delete
-   * @default true - when resource is deleted/updated, files are retained
+   * @default true - when resource is deleted/updated, objects are retained
    */
   readonly retainOnDelete?: boolean;
 
