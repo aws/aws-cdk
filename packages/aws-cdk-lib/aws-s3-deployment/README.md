@@ -240,8 +240,9 @@ Configuring `retainOnDelete: false` has a few implications you should be aware o
 
   Changing the logical ID of the `BucketDeployment` construct, without changing the destination,
   makes CloudFormation create a new deployment resource and then delete the old one. This happens
-  when you rename or move the construct, or change the `memoryLimit`, `ephemeralStorageSize` or
-  `vpc` property.
+  when you rename or move the construct, or change certain properties, such as `memoryLimit`,
+  `ephemeralStorageSize` or `vpc`. Run `cdk diff` before deploying to verify whether the
+  deployment will be replaced.
 
   If the destination bucket is defined in your CDK app, the objects are **retained**. If the
   destination bucket is imported, the deletion of the old resource **will delete all objects
