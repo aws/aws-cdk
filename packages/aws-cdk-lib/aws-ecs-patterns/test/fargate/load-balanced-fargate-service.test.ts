@@ -268,6 +268,57 @@ describe('ApplicationLoadBalancedFargateService', () => {
       Match.stringLikeRegexp('@aws-cdk/aws-ecs-patterns:cloudFrontOpenListener'));
   });
 
+  test('cloudFrontDistribution with a supplied internet-facing load balancer uses it as the origin', () => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+    const loadBalancer = new ApplicationLoadBalancer(stack, 'PublicLB', { vpc, internetFacing: true });
+
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster: new ecs.Cluster(stack, 'Cluster', { vpc }),
+      taskImageOptions: { image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app') },
+      loadBalancer,
+      cloudFrontDistribution: distribution,
+    });
+
+    const { origin } = cloudFrontConfigForService(stack);
+    expect(origin.DomainName).toEqual({
+      'Fn::GetAtt': [stack.getLogicalId(loadBalancer.node.defaultChild as cdk.CfnElement), 'DNSName'],
+    });
+  });
+
+  test('cloudFrontOriginOptions customHeaders reach the origin and the pattern still sets protocol and port', () => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      cloudFrontDistribution: distribution,
+      cloudFrontOriginOptions: {
+        customHeaders: { 'X-Origin-Verify': 'secret' },
+        protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+        httpPort: 9999,
+      },
+    });
+
+    const { origin } = cloudFrontConfigForService(stack);
+    expect(origin.OriginCustomHeaders).toEqual([
+      { HeaderName: 'X-Origin-Verify', HeaderValue: 'secret' },
+    ]);
+    // The pattern still sets protocol and port from the listener, ignoring
+    // the values passed for them.
+    expect(origin.CustomOriginConfig.OriginProtocolPolicy).toEqual('http-only');
+    expect(origin.CustomOriginConfig.HTTPPort).toEqual(80);
+  });
+
   test('cloudFrontDistribution with an internal load balancer throws', () => {
     // GIVEN
     const stack = new cdk.Stack();
