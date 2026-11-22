@@ -10,7 +10,7 @@
         "    at Stack._silenceLiteralAzWarning (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/stack.js:1503:47)",
         "    at get availabilityZones (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/stack.js:849:18)",
         "    at new Vpc (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:48)",
-        "    at <anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:43:13)",
+        "    at <anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:45:13)",
         "    ...node internals..."
       ]
     },
@@ -67,9 +67,9 @@
       "trace": [
         "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:271:29)",
         "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:137:18)",
-        "new Gateway (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/gateway.js:267:45)",
+        "new Gateway (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/gateway.js:279:45)",
         "new Gateway (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:50:17)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:52:17)",
         "Module._compile (node:internal/modules/cjs/loader:1934:14)",
         "Object..js (node:internal/modules/cjs/loader:2074:10)",
         "Module.load (node:internal/modules/cjs/loader:1656:32)",
@@ -110,7 +110,7 @@
         "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:188:13)",
         "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:63:17)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:65:17)",
         "Module._compile (node:internal/modules/cjs/loader:1934:14)",
         "Object..js (node:internal/modules/cjs/loader:2074:10)",
         "Module.load (node:internal/modules/cjs/loader:1656:32)",
@@ -130,7 +130,7 @@
         "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:188:13)",
         "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:63:17)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:65:17)",
         "Module._compile (node:internal/modules/cjs/loader:1934:14)",
         "Object..js (node:internal/modules/cjs/loader:2074:10)",
         "Module.load (node:internal/modules/cjs/loader:1656:32)",
@@ -143,6 +143,36 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    }
+  ],
+  "/aws-ecs-gateway/CheckGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "environment": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
     }
   ],
   "/aws-ecs-gateway/BootstrapVersion": [
@@ -401,6 +431,60 @@
       }
     }
   ],
+  "/aws-ecs-gateway/CheckGateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-gateway/CheckGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckGatewayE8FFB45C"
+    }
+  ],
+  "/aws-ecs-gateway/CheckGateway/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
   "/aws-ecs-gateway/Exports/Output{\"Ref\":\"ClusterEB0386A7\"}": [
     {
       "type": "aws:cdk:logicalId",
@@ -411,6 +495,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputFnGetAttServiceD69D759BName51127533"
+    }
+  ],
+  "/aws-ecs-gateway/Exports/Output{\"Ref\":\"CheckGatewayE8FFB45C\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCheckGatewayE8FFB45CC255BB8C"
     }
   ],
   "/aws-ecs-gateway/Vpc/PublicSubnet1/Subnet": [
@@ -561,6 +651,54 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ServiceSecurityGroupC96ED6A7"
+    }
+  ],
+  "/aws-ecs-gateway/CheckGateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckGatewayServiceRoleFD70DCEA"
+    }
+  ],
+  "/aws-ecs-gateway/CheckGateway/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-ecs-gateway/CheckGateway/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckGatewayLogGroupDE49C427"
+    }
+  ],
+  "/aws-ecs-gateway/CheckGateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckGatewayServiceRoleDefaultPolicyDA17C167"
     }
   ]
 }
