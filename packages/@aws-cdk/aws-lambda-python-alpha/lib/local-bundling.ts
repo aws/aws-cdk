@@ -23,6 +23,7 @@ export interface LocalBundlingProps {
   readonly excludes: string[];
   readonly outputPathSuffix?: string;
   readonly platformTags?: string[];
+  readonly additionalPlatformTags?: string[];
   readonly commandHooks?: ICommandHooks;
   readonly environment?: { [key: string]: string };
 }
@@ -32,11 +33,12 @@ export class LocalBundling implements cdk.ILocalBundling {
 
   constructor(private readonly props: LocalBundlingProps) {
     const pythonVersion = runtimeToPythonVersion(props.runtime);
-    if (props.platformTags) {
-      validatePlatformTags(props.architecture, props.platformTags);
-    }
     const abiTag = runtimeToAbiTag(props.runtime);
-    const tags = props.platformTags ?? defaultPlatformTags(props.runtime, props.architecture);
+    const tags = [
+      ...(props.platformTags ?? defaultPlatformTags(props.runtime, props.architecture)),
+      ...(props.additionalPlatformTags ?? []),
+    ];
+    validatePlatformTags(props.runtime, props.architecture, tags);
     this.pipArgs = [
       ...tags.flatMap((tag) => ['--platform', tag]),
       '--python-version', pythonVersion,

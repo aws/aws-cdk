@@ -203,7 +203,9 @@ For private package indexes, configure pip on the host or set `environment` in y
 
 Local hook commands run after the source is copied and use the staged output as their working directory, so relative writes stay in the bundle. By default, Docker runs `beforeBundling` from its input directory before copying the sources. When preparing these commands, the hooks receive the original source directory as `inputDir` and the staged target as `outputDir`. Write to `outputDir` to change the bundle. Writing to `inputDir` modifies the source after it has been copied.
 
-**Overriding platform tags**
+CDK also calls both hook callbacks with `/asset-input` and `/asset-output` (including any output suffix) to generate command strings for the asset hash. CDK does not execute those commands locally. Hook callbacks should return command strings without reading or writing the paths they receive.
+
+**Customizing platform tags**
 
 If a dependency publishes a compatible wheel under an additional platform tag, include that tag in the list:
 
@@ -213,13 +215,13 @@ new python.PythonFunction(this, 'function', {
   runtime: Runtime.PYTHON_3_12,
   bundling: {
     localBundling: {
-      platformTags: ['manylinux_2_28_x86_64', 'manylinux2014_x86_64', 'manylinux_2_17_x86_64'],
+      additionalPlatformTags: ['manylinux_2_17_x86_64'],
     },
   },
 });
 ```
 
-`platformTags` replaces the default list. Include the default tags if you still want pip to consider them. On x86_64 and arm64, tags ending in `_x86_64` or `_aarch64` must match the Lambda architecture.
+`additionalPlatformTags` appends tags after the defaults. Use `platformTags` to replace the defaults. If you set both, the extra tags follow your replacement list. On x86_64 and arm64, tags ending in `_x86_64` or `_aarch64` must match the Lambda architecture. Versioned manylinux tags must fit the target runtime's glibc version.
 
 When omitted, the default tags are derived from the runtime's base image:
 

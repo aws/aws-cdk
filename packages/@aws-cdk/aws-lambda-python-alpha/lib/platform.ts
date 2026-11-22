@@ -32,18 +32,24 @@ export function validateArchitecture(architecture: Architecture): void {
   }
 }
 
-export function validatePlatformTags(architecture: Architecture, platformTags: string[]): void {
+export function validatePlatformTags(runtime: Runtime, architecture: Architecture, platformTags: string[]): void {
   const expected = ARCH_SLUG[architecture.dockerPlatform];
-  if (expected === undefined) {
-    return;
-  }
+  const pythonMinor = parsePythonMinor(runtime);
+  const glibcMinor = pythonMinor >= AL2023_MIN_MINOR ? 34 : pythonMinor >= 8 ? 26 : 17;
 
   for (const tag of platformTags) {
     const suffix = /_(x86_64|aarch64)$/.exec(tag)?.[1];
-    if (suffix && suffix !== expected) {
+    if (expected && suffix && suffix !== expected) {
       throw new UnscopedValidationError(
         lit`PythonLocalBundlingPlatformTagArchitectureMismatch`,
         `Platform tag '${tag}' does not match Lambda architecture '${architecture.name}' (expected '_${expected}').`,
+      );
+    }
+    const glibc = /^manylinux_(\d+)_(\d+)_/.exec(tag);
+    if (glibc && (Number(glibc[1]) > 2 || (Number(glibc[1]) === 2 && Number(glibc[2]) > glibcMinor))) {
+      throw new UnscopedValidationError(
+        lit`PythonLocalBundlingPlatformTagGlibcMismatch`,
+        `Platform tag '${tag}' requires a newer glibc than Lambda runtime '${runtime.name}' (glibc 2.${glibcMinor}).`,
       );
     }
   }

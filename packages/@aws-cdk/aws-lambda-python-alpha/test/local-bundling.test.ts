@@ -217,14 +217,19 @@ test('local bundling receives the effective excludes, platform tags, and environ
   const buildImage = jest.spyOn(DockerImage, 'fromBuildV2');
   const hostIndex = process.env.PIP_INDEX_URL;
   process.env.PIP_INDEX_URL = 'https://host.example/simple';
+  const beforeBundling = jest.fn(() => ['echo before']);
+  const afterBundling = jest.fn(() => ['echo after']);
   try {
     const bundling = new Bundling({
       entry: ENTRY_UV,
       runtime: Runtime.PYTHON_3_11,
-      localBundling: { platformTags: ['musllinux_1_2_x86_64'] },
+      localBundling: {
+        platformTags: ['manylinux2014_x86_64'],
+        additionalPlatformTags: ['manylinux_2_26_x86_64'],
+      },
       environment,
       assetExcludes: ['.ignorefile'],
-      commandHooks: { beforeBundling: () => ['echo before'], afterBundling: () => ['echo after'] },
+      commandHooks: { beforeBundling, afterBundling },
     });
 
     expect(bundling.image.image).toBe(Runtime.PYTHON_3_11.bundlingImage.image);
@@ -233,7 +238,14 @@ test('local bundling receives the effective excludes, platform tags, and environ
     expect(copyDirectorySpy).toHaveBeenCalledWith(ENTRY_UV, outputDir, expect.objectContaining({
       exclude: ['.ignorefile', '.python-version'],
     }));
-    expect(pipInstallCall()).toEqual(expect.arrayContaining(['--platform', 'musllinux_1_2_x86_64']));
+    const pipArgs = pipInstallCall()!;
+    expect(pipArgs.filter((_, index) => pipArgs[index - 1] === '--platform')).toEqual([
+      'manylinux2014_x86_64', 'manylinux_2_26_x86_64',
+    ]);
+    for (const hook of [beforeBundling, afterBundling]) {
+      expect(hook).toHaveBeenNthCalledWith(1, '/asset-input', '/asset-output');
+      expect(hook).toHaveBeenNthCalledWith(2, ENTRY_UV, outputDir);
+    }
     for (const [, , options] of mockedSpawnSync.mock.calls) {
       expect(options.env.PIP_INDEX_URL).toBe(environment.PIP_INDEX_URL);
     }
@@ -271,59 +283,26 @@ describe('platformTags override', () => {
 });
 
 describe('dependency managers', () => {
-  test('pipenv: export runs before pip install', () => {
+  test.each([
+    [ENTRY_PIPENV, 'pipenv requirements', ['PIPENV_VENV_IN_PROJECT=1', '> requirements.txt', 'rm -rf .venv']],
+    [ENTRY_POETRY, 'poetry export', ['--without-hashes', '--format requirements.txt', '--output requirements.txt']],
+    [ENTRY_UV, 'uv export', ['--frozen', '-o requirements.txt']],
+  ])('%s runs its export before pip install', (entry, exportCommand, expectedArgs) => {
     const local = makeLocalBundling({
-      entry: ENTRY_PIPENV,
+      entry,
       runtime: Runtime.PYTHON_3_11,
       architecture: Architecture.X86_64,
     });
     local.tryBundle(outputDir);
-
-    const exportedVia = shellCall('PIPENV_VENV_IN_PROJECT=1 pipenv requirements > requirements.txt && rm -rf .venv');
-    expect(exportedVia).toBeDefined();
 
     const calls = mockedSpawnSync.mock.calls;
-    const exportIdx = calls.findIndex(
-      ([, args]: [string, string[]]) => args[1]?.includes('pipenv requirements'),
-    );
-    const pipInstallIdx = calls.findIndex(
-      ([cmd, args]: [string, string[]]) => isPythonCmd(cmd) && args[2] === 'install',
-    );
+    const exportIdx = calls.findIndex(([, args]) => args[1]?.includes(exportCommand));
+    const pipInstallIdx = calls.findIndex(([cmd, args]) => isPythonCmd(cmd) && args[2] === 'install');
     expect(exportIdx).toBeGreaterThanOrEqual(0);
     expect(pipInstallIdx).toBeGreaterThan(exportIdx);
-  });
-
-  test('poetry: export runs before pip install', () => {
-    const local = makeLocalBundling({
-      entry: ENTRY_POETRY,
-      runtime: Runtime.PYTHON_3_11,
-      architecture: Architecture.X86_64,
-    });
-    local.tryBundle(outputDir);
-
-    const poetryCall = mockedSpawnSync.mock.calls.find(
-      ([, args]: [string, string[]]) => args[1]?.includes('poetry export'),
-    );
-    expect(poetryCall).toBeDefined();
-    expect(poetryCall![1][1]).toContain('--without-hashes');
-    expect(poetryCall![1][1]).toContain('--format requirements.txt');
-    expect(poetryCall![1][1]).toContain('--output requirements.txt');
-  });
-
-  test('uv: export runs before pip install', () => {
-    const local = makeLocalBundling({
-      entry: ENTRY_UV,
-      runtime: Runtime.PYTHON_3_11,
-      architecture: Architecture.X86_64,
-    });
-    local.tryBundle(outputDir);
-
-    const uvCall = mockedSpawnSync.mock.calls.find(
-      ([, args]: [string, string[]]) => args[1]?.includes('uv export'),
-    );
-    expect(uvCall).toBeDefined();
-    expect(uvCall![1][1]).toContain('--frozen');
-    expect(uvCall![1][1]).toContain('-o requirements.txt');
+    for (const arg of expectedArgs) {
+      expect(calls[exportIdx][1][1]).toContain(arg);
+    }
   });
 
   test('no deps: pip install is not called', () => {
@@ -610,6 +589,32 @@ describe('validation', () => {
       architecture,
       platformTags: [validTag, invalidTag],
     })).toThrow(new RegExp(invalidTag + '.*' + architecture.name));
+  });
+
+  test.each([
+    [Runtime.PYTHON_3_7, 'manylinux_2_18_x86_64', 'platformTags'],
+    [Runtime.PYTHON_3_11, 'manylinux_2_28_x86_64', 'platformTags'],
+    [Runtime.PYTHON_3_12, 'manylinux_2_35_x86_64', 'additionalPlatformTags'],
+  ])('rejects %s tags that require a newer glibc (%s)', (runtime, tag, option) => {
+    expect(() => new Bundling({
+      entry: ENTRY_PIP,
+      runtime,
+      localBundling: { [option]: [tag] },
+    })).toThrow(/requires a newer glibc/);
+  });
+
+  test('appends extra platform tags after the runtime defaults', () => {
+    const bundling = new Bundling({
+      entry: ENTRY_PIP,
+      runtime: Runtime.PYTHON_3_12,
+      architecture: Architecture.ARM_64,
+      localBundling: { additionalPlatformTags: ['manylinux_2_34_aarch64'] },
+    });
+    expect(bundling.local!.tryBundle(outputDir, bundling)).toBe(true);
+    const pipArgs = pipInstallCall()!;
+    expect(pipArgs.filter((_, index) => pipArgs[index - 1] === '--platform')).toEqual([
+      'manylinux_2_28_aarch64', 'manylinux2014_aarch64', 'manylinux_2_34_aarch64',
+    ]);
   });
 
   test('explicit platform tags bypass validation for the default architecture mapping', () => {

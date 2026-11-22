@@ -54,16 +54,6 @@ export interface BundlingOptions extends DockerRunOptions {
   readonly buildArgs?: { [key: string]: string };
 
   /**
-   * Environment variables for bundling.
-   *
-   * In local mode these override the host environment for pip, dependency
-   * exports, and command hooks.
-   *
-   * @default - No additional environment variables.
-   */
-  readonly environment?: { [key: string]: string };
-
-  /**
    * Determines how asset hash is calculated. Assets will get rebuild and
    * uploaded only if their hash has changed.
    *
@@ -132,9 +122,15 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * Docker-only bundling options such as image, buildArgs, and network are
    * rejected. Use environment or host pip configuration for private indexes.
+   * Variables in environment override the host environment for pip, dependency
+   * exports, and command hooks.
+   *
    * Hook commands run after sources are copied, from the staged output directory.
    * For these commands, the hook receives the original entry as inputDir and
    * the staging directory as outputDir. Write to outputDir to change the asset.
+   * CDK also calls the callbacks with the Docker asset paths when it builds the
+   * command for asset hashing. CDK does not execute the commands from that call.
+   * The callbacks should return command strings without accessing either path.
    *
    * A local bundling failure fails synthesis.
    *
@@ -151,8 +147,10 @@ export interface LocalBundlingOptions {
    * Platform tags passed to pip install --platform.
    *
    * This replaces the default list. Include any default tags you still want pip
-   * to consider. Tags ending in _x86_64 or _aarch64 must match the function or
-   * layer architecture when it is x86_64 or arm64.
+   * to consider, or use additionalPlatformTags to extend the defaults.
+   * Tags ending in _x86_64 or _aarch64 must match the target architecture
+   * when it is x86_64 or arm64. Versioned manylinux tags must be compatible
+   * with the target runtime's glibc version.
    *
    * @default - Derived from the target Python runtime's base image:
    *            `manylinux2014_{arch}` for Python 3.11 and below (Amazon Linux 2;
@@ -161,6 +159,15 @@ export interface LocalBundlingOptions {
    *            Python 3.12 and above (Amazon Linux 2023).
    */
   readonly platformTags?: string[];
+
+  /**
+   * Platform tags to append after the default tags or the platformTags override.
+   *
+   * The same architecture and glibc requirements apply as for platformTags.
+   *
+   * @default - No additional tags.
+   */
+  readonly additionalPlatformTags?: string[];
 }
 
 /**

@@ -172,6 +172,7 @@ export class Bundling implements CdkBundlingOptions {
         excludes,
         outputPathSuffix: path.posix.relative(AssetStaging.BUNDLING_OUTPUT_DIR, outputPath),
         platformTags: props.localBundling.platformTags,
+        additionalPlatformTags: props.localBundling.additionalPlatformTags,
         commandHooks,
         environment: props.environment,
       });
