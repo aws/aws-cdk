@@ -236,6 +236,24 @@ describe('ApplicationLoadBalancedFargateService', () => {
     }).toThrow(/cloudFrontBehaviorOptions can only be used together with cloudFrontDistribution/);
   });
 
+  test('cloudFrontOriginOptions without a distribution throws', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+
+    // WHEN / THEN — origin options on their own would silently do nothing
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        cloudFrontOriginOptions: {
+          customHeaders: { 'X-Origin-Verify': 'secret' },
+        },
+      });
+    }).toThrow(/cloudFrontOriginOptions can only be used together with cloudFrontDistribution/);
+  });
+
   test('cloudFrontDistribution with an imported load balancer uses its DNS name as the origin', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -290,7 +308,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     });
   });
 
-  test('cloudFrontOriginOptions customHeaders reach the origin and the pattern still sets protocol and port', () => {
+  test('cloudFrontOriginOptions customHeaders reach the origin', () => {
     const stack = new cdk.Stack();
     acknowledgeTestValidationRules(stack);
     const distribution = new cloudfront.Distribution(stack, 'Distribution', {
@@ -304,8 +322,6 @@ describe('ApplicationLoadBalancedFargateService', () => {
       cloudFrontDistribution: distribution,
       cloudFrontOriginOptions: {
         customHeaders: { 'X-Origin-Verify': 'secret' },
-        protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
-        httpPort: 9999,
       },
     });
 
@@ -313,10 +329,52 @@ describe('ApplicationLoadBalancedFargateService', () => {
     expect(origin.OriginCustomHeaders).toEqual([
       { HeaderName: 'X-Origin-Verify', HeaderValue: 'secret' },
     ]);
-    // The pattern still sets protocol and port from the listener, ignoring
-    // the values passed for them.
     expect(origin.CustomOriginConfig.OriginProtocolPolicy).toEqual('http-only');
     expect(origin.CustomOriginConfig.HTTPPort).toEqual(80);
+  });
+
+  test('cloudFrontOriginOptions protocolPolicy, httpPort or httpsPort throws', () => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN / THEN — the pattern sets protocol and port itself, so passing
+    // them must fail instead of being silently ignored
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        cloudFrontDistribution: distribution,
+        cloudFrontOriginOptions: {
+          protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+          httpPort: 9999,
+          httpsPort: 8443,
+        },
+      });
+    }).toThrow(/cloudFrontOriginOptions must not set protocolPolicy, httpPort or httpsPort/);
+  });
+
+  test('cloudFrontDistribution with an unsupported listenerPort throws', () => {
+    const stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: new origins.HttpOrigin('example.com') },
+    });
+
+    // WHEN / THEN — 81 is outside the 80 / 443 / 1024-65535 range HttpOrigin
+    // accepts, so the pattern must fail with an error naming listenerPort
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        },
+        listenerPort: 81,
+        cloudFrontDistribution: distribution,
+      });
+    }).toThrow(/cloudFrontDistribution requires listenerPort to be 80, 443, or between 1024 and 65535/);
   });
 
   test('cloudFrontDistribution with an internal load balancer throws', () => {
@@ -463,6 +521,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
         cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
         originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
         compress: false,
       },
     });
@@ -473,7 +532,7 @@ describe('ApplicationLoadBalancedFargateService', () => {
     expect(behavior.ViewerProtocolPolicy).toEqual('https-only');
     expect(behavior.OriginRequestPolicyId).toEqual(cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN.originRequestPolicyId);
     expect(behavior.Compress).toEqual(false);
-    expect([...behavior.AllowedMethods].sort()).toEqual(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
+    expect([...behavior.AllowedMethods].sort()).toEqual(['GET', 'HEAD']);
   });
 
   test('without cloudFrontDistribution no distribution is created', () => {
@@ -490,6 +549,12 @@ describe('ApplicationLoadBalancedFargateService', () => {
 
     // THEN
     Template.fromStack(stack).resourceCountIs('AWS::CloudFront::Distribution', 0);
+    // The pattern never creates a distribution, so also assert none of the
+    // CloudFront warnings fire for a service without one.
+    const annotations = Annotations.fromStack(stack);
+    for (const id of ['cloudFrontHttpOrigin', 'cloudFrontHttpsOrigin', 'cloudFrontOpenListener']) {
+      annotations.hasNoWarning('/Default/Service', Match.stringLikeRegexp(`@aws-cdk/aws-ecs-patterns:${id}`));
+    }
   });
 
   test('setting healthCheck works', () => {
