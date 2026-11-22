@@ -249,8 +249,10 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * traffic can bypass the distribution entirely. To lock it down, set
    * `openListener: false` and allow ingress only from the
    * `com.amazonaws.global.cloudfront.origin-facing` managed prefix list,
-   * and/or pass a secret header through `cloudFrontOriginOptions`
-   * (`customHeaders`) and require it in a listener rule.
+   * and/or, when the load balancer uses an HTTPS listener, pass a secret
+   * header through `cloudFrontOriginOptions` (`customHeaders`) and require
+   * it in a listener rule. The header only stays secret over HTTPS; over
+   * HTTP it is sent unencrypted.
    *
    * [disable-awslint:ref-via-interface] is needed because adding a cache
    * behavior requires the concrete Distribution, an imported distribution
@@ -283,8 +285,9 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * set things like `customHeaders` — for example a secret header that only your distribution
    * sends, which a listener rule on the load balancer can check to prove the traffic came
    * through your distribution and not any other CloudFront distribution. The pattern always
-   * sets the origin protocol and port itself from the listener, so values passed for
-   * `protocolPolicy`, `httpPort` or `httpsPort` here are ignored.
+   * sets the origin protocol and port itself from the listener, so `protocolPolicy`, `httpPort`
+   * and `httpsPort` must not be set here; passing them throws a validation error. This prop can
+   * only be used together with `cloudFrontDistribution`.
    *
    * @default - No extra origin options.
    */
@@ -596,6 +599,10 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       throw new ValidationError(lit`CloudFrontBehaviorOptionsWithoutDistribution`, 'cloudFrontBehaviorOptions can only be used together with cloudFrontDistribution.', this);
     }
 
+    if (props.cloudFrontOriginOptions !== undefined && props.cloudFrontDistribution === undefined) {
+      throw new ValidationError(lit`CloudFrontOriginOptionsWithoutDistribution`, 'cloudFrontOriginOptions can only be used together with cloudFrontDistribution.', this);
+    }
+
     if (props.idleTimeout) {
       const idleTimeout = props.idleTimeout.toSeconds();
       if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
@@ -676,9 +683,30 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
         throw new ValidationError(lit`CloudFrontDuplicateBehavior`, 'This CloudFront distribution already has a /* cache behavior added by ' +
           'another service. A distribution can only be put in front of one service.', this);
       }
+      // The pattern sets the origin protocol and port itself from the
+      // listener, so those keys must not be set here; silently ignoring
+      // them would let a user believe the origin behaves differently
+      // than it does.
+      const originOptions = props.cloudFrontOriginOptions ?? {};
+      if (originOptions.protocolPolicy !== undefined || originOptions.httpPort !== undefined ||
+        originOptions.httpsPort !== undefined) {
+        throw new ValidationError(lit`CloudFrontOriginOptionsProtocolPort`, 'cloudFrontOriginOptions must not set ' +
+          'protocolPolicy, httpPort or httpsPort; the pattern sets the origin protocol and port itself from ' +
+          'the listener.', this);
+      }
+      // HttpOrigin only accepts 80, 443 or 1024-65535, and the listener
+      // port is passed through as the origin port, so fail here with an
+      // error that names listenerPort instead of surfacing the unscoped
+      // HttpOrigin error.
+      const originPort = this.listener.port;
+      if (!Token.isUnresolved(originPort) &&
+        !(originPort === 80 || originPort === 443 || (originPort >= 1024 && originPort <= 65535))) {
+        throw new ValidationError(lit`CloudFrontUnsupportedListenerPort`, 'cloudFrontDistribution requires ' +
+          'listenerPort to be 80, 443, or between 1024 and 65535; received ' + originPort, this);
+      }
       const isHttps = protocol === ApplicationProtocol.HTTPS;
       const origin = new LoadBalancerV2Origin(loadBalancer, {
-        ...(props.cloudFrontOriginOptions ?? {}),
+        ...originOptions,
         protocolPolicy: isHttps ? OriginProtocolPolicy.HTTPS_ONLY : OriginProtocolPolicy.HTTP_ONLY,
         ...(isHttps ? { httpsPort: this.listener.port } : { httpPort: this.listener.port }),
       });
@@ -712,8 +740,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           'The load balancer stays directly reachable: with the default open listener its security ' +
           'group allows 0.0.0.0/0 on the listener port, so traffic can bypass the CloudFront ' +
           'distribution. Set openListener to false and allow ingress only from the ' +
-          'com.amazonaws.global.cloudfront.origin-facing managed prefix list, and/or pass a secret ' +
-          'header through cloudFrontOriginOptions (customHeaders) and require it in a listener rule.');
+          'com.amazonaws.global.cloudfront.origin-facing managed prefix list. A secret header passed ' +
+          'through cloudFrontOriginOptions (customHeaders) and required in a listener rule only stays ' +
+          'secret when the load balancer uses an HTTPS listener; over HTTP it is sent unencrypted.');
       }
     }
 
