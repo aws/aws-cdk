@@ -9,6 +9,12 @@ export class WebFunctionRuntime {
 
   /**
    * Python 3.15 runtime
+   *
+   * This runtime is in public preview for Lambda Web Functions. Preview runtimes are not
+   * covered by the Lambda SLA or Technical Support, should not be used for production
+   * workloads, and may still receive breaking changes.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/web-functions-runtimes.html
    */
   public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15');
 

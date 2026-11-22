@@ -1,0 +1,664 @@
+{
+  "/WebFunctionPythonStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "WebFunctionPythonStack.template.json"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/AWSCDKWebFunctionAssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/WebFunctionPythonStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logGroup",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-logGroup",
+      "data": true
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/Signer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/WebFunctionPythonStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/Function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultEntryPointFunctionC96B7E7E"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/Revision": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultEntryPointRevisionB4AC2511"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultEntryPointResourcePolicyBD8079C1"
+    }
+  ],
+  "/WebFunctionPythonStack/AWSCDKWebFunctionAssetBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKWebFunctionAssetBucket5B596593"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/AWSCDKWebFunctionAssetBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/AWSCDKWebFunctionAssetBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/WebFunctionPythonStack/S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3ObjectCopyLogGroupe2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312A8C41E5C"
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312E813A085"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/Function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEntryPointFunction3A20F64D"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/Revision": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEntryPointRevisionFAC01B47"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEntryPointResourcePolicy95543E8E"
+    }
+  ],
+  "/WebFunctionPythonStack/Signer/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/Signer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Signer046C0E68"
+    }
+  ],
+  "/WebFunctionPythonStack/Signer/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/Exports/Output{\"Ref\":\"Signer046C0E68\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefSigner046C0E68BB08D0D9"
+    }
+  ],
+  "/WebFunctionPythonStack/Exports/Output{\"Fn::GetAtt\":[\"DefaultEntryPointEndpointD1FC4D61\",\"DomainName\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDefaultEntryPointEndpointD1FC4D61DomainName1139DF00"
+    }
+  ],
+  "/WebFunctionPythonStack/Exports/Output{\"Fn::GetAtt\":[\"CustomEntryPointEndpointFC08AB16\",\"DomainName\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttCustomEntryPointEndpointFC08AB16DomainNameF0B5301F"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultEntryPointServiceRole0DFE7D2A"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/CodeCopyd6190910/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/CodeCopyd6190910/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultEntryPointLogGroup60FCB69B"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/Endpoint/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultEntryPointEndpointD1FC4D61"
+    }
+  ],
+  "/WebFunctionPythonStack/AWSCDKWebFunctionAssetBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKWebFunctionAssetBucketPolicy406CF5E7"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/AWSCDKWebFunctionAssetBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKWebFunctionAssetBucketAutoDeleteObjectsCustomResource7C95046A"
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleFA1CFFCE"
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEntryPointServiceRole4D1F8C87"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/CodeCopyd6190910/CustomResourceHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/CodeCopyd6190910/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEntryPointLogGroup2FA63BF3"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/Endpoint/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEntryPointEndpointFC08AB16"
+    }
+  ],
+  "/WebFunctionPythonStack/Signer/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SignerServiceRole18A0DCD3"
+    }
+  ],
+  "/WebFunctionPythonStack/Signer/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SignerLogGroup0DE99B5E"
+    }
+  ],
+  "/WebFunctionPythonStack/DefaultEntryPoint/CodeCopyd6190910/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultEntryPointCodeCopyd6190910343BCE7E"
+    }
+  ],
+  "/WebFunctionPythonStack/Custom::S3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3ObjectCopye2f8cf6b1b0f4b3f9a2c6f1f5b6d4a71dest438c09a9673f2abad1d402b3095f4312ServiceRoleDefaultPolicy05646207"
+    }
+  ],
+  "/WebFunctionPythonStack/CustomEntryPoint/CodeCopyd6190910/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEntryPointCodeCopyd61909101385402C"
+    }
+  ]
+}

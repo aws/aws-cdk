@@ -708,6 +708,21 @@ describe('WebFunction template', () => {
     });
   });
 
+  test('entryPoint with a deploy-time runtime is passed as AWS_LAMBDA_NODEJS_ENTRYPOINT', () => {
+    // The runtime family can't be determined at synthesis time, so the Node.js variable is kept
+    const runtimeName = new CfnParameter(stack, 'Runtime').valueAsString;
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of(runtimeName),
+      entryPoint: 'api:application',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      BuildConfig: Match.objectLike({ RuntimeConfig: { Runtime: { Ref: 'Runtime' } } }),
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: { AWS_LAMBDA_NODEJS_ENTRYPOINT: 'api:application' },
+      }),
+    });
+  });
+
   test.each([
     [WebFunctionRuntime.NODEJS_24_X, 'AWS_LAMBDA_NODEJS_ENTRYPOINT', 'app.js'],
     [WebFunctionRuntime.PYTHON_3_15, 'AWS_LAMBDA_PYTHON_ENTRYPOINT', 'main:app'],

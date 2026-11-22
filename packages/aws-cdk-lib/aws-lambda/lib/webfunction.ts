@@ -136,12 +136,20 @@ export interface WebFunctionProps {
    * - Node.js runtimes: the file the runtime executes, relative to the root of the deployment
    *   package. Passed to the runtime in the reserved `AWS_LAMBDA_NODEJS_ENTRYPOINT`
    *   environment variable.
-   * - Python runtimes: the application object the runtime imports and serves, in the form
-   *   `[asgi:|wsgi:]module:attribute`. Passed to the runtime in the reserved
+   * - Python runtimes: the module and callable the runtime serves, in the form
+   *   `module:callable` without the `.py` extension, such as `api:application`. The runtime
+   *   detects whether the callable uses ASGI or WSGI; prefix `asgi:` or `wsgi:` to set the
+   *   interface explicitly. Passed to the runtime in the reserved
    *   `AWS_LAMBDA_PYTHON_ENTRYPOINT` environment variable.
    *
    * Not supported for other runtimes. Do not set the same variable through `environment` as
    * well.
+   *
+   * If `runtime` is a deploy-time value (a token), the runtime family cannot be determined at
+   * synthesis time and `entryPoint` is passed via `AWS_LAMBDA_NODEJS_ENTRYPOINT`. For a
+   * deploy-time Python runtime, set `AWS_LAMBDA_PYTHON_ENTRYPOINT` through `environment` instead.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/web-functions-python.html
    *
    * @default - the runtime's default entry point: `index.js` for Node.js, `main:app` for Python
    */
