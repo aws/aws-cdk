@@ -162,7 +162,7 @@ describe('gateway', () => {
       vpc,
       securityGroup,
       maxAlbCount: 2,
-      httpDesync: ecs.GatewayHttpDesyncMitigationMode.STRICTEST,
+      httpDesync: elbv2.DesyncMitigationMode.STRICTEST,
       webAcl,
       accessLogs: { bucket, prefix: 'gateway' },
       tags: { team: 'web' },
@@ -182,6 +182,94 @@ describe('gateway', () => {
         },
       },
     });
+  });
+
+  test('lets Elastic Load Balancing write the access logs and creates the bucket policy first', () => {
+    const bucket = new s3.Bucket(stack, 'Logs');
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket, prefix: 'gateway' } });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      Bucket: { Ref: 'Logs6819BB44' },
+      PolicyDocument: {
+        Statement: Match.arrayWith([{
+          Action: 's3:PutObject',
+          Effect: 'Allow',
+          Principal: { Service: 'logdelivery.elasticloadbalancing.amazonaws.com' },
+          Resource: {
+            'Fn::Join': ['', [
+              { 'Fn::GetAtt': ['Logs6819BB44', 'Arn'] },
+              '/gateway/AWSLogs/',
+              { Ref: 'AWS::AccountId' },
+              '/*',
+            ]],
+          },
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':elasticloadbalancing:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':loadbalancer/*',
+                ]],
+              },
+            },
+          },
+        }]),
+      },
+    });
+    template.hasResource('AWS::ECS::Gateway', { DependsOn: Match.arrayWith(['LogsPolicy90DB40C9']) });
+  });
+
+  test('grants access log delivery without a prefix', () => {
+    const envStack = new cdk.Stack(undefined, 'EnvStack', { env: { account: '123456789012', region: 'us-west-2' } });
+    acknowledgeTestValidationRules(envStack);
+    const bucket = new s3.Bucket(envStack, 'Logs');
+
+    new ecs.Gateway(envStack, 'Gateway', { vpc: new ec2.Vpc(envStack, 'Vpc'), accessLogs: { bucket } });
+
+    Template.fromStack(envStack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Principal: { Service: 'logdelivery.elasticloadbalancing.amazonaws.com' },
+          Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Logs6819BB44', 'Arn'] }, '/AWSLogs/123456789012/*']] },
+          Condition: {
+            ArnLike: {
+              'aws:SourceArn': { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':elasticloadbalancing:us-west-2:123456789012:loadbalancer/*']] },
+            },
+          },
+        })]),
+      },
+    });
+  });
+
+  test('warns when the access log bucket policy cannot be changed', () => {
+    const bucket = s3.Bucket.fromBucketName(stack, 'Logs', 'my-logs');
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } });
+
+    Annotations.fromStack(stack).hasWarning('/Default/Gateway', Match.stringLikeRegexp(
+      '^The policy of the access log bucket can\'t be changed by this app; allow logdelivery\\.elasticloadbalancing\\.amazonaws\\.com'));
+    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
+  });
+
+  test('fails for an access log bucket encrypted with a KMS key', () => {
+    const bucket = new s3.Bucket(stack, 'Logs', { encryption: s3.BucketEncryption.KMS });
+
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } })).toThrow(
+      'the access log bucket of a gateway must use Amazon S3-managed keys (SSE-S3); a bucket encrypted with a KMS key is not supported');
+  });
+
+  test('fails for an access log prefix containing AWSLogs', () => {
+    const bucket = new s3.Bucket(stack, 'Logs');
+
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket, prefix: 'x/AWSLogs' } })).toThrow(
+      'the access log prefix of a gateway must not contain "AWSLogs", got "x/AWSLogs"');
   });
 
   test('Tags.of() tags the gateway', () => {

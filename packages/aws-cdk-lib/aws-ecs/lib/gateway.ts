@@ -7,7 +7,7 @@ import * as iam from '../../aws-iam';
 import type * as s3 from '../../aws-s3';
 import type * as wafv2 from '../../aws-wafv2';
 import type { Duration, IResource } from '../../core';
-import { Annotations, Arn, ArnFormat, Fn, Names, PhysicalName, Resource, Stack, Token, ValidationError } from '../../core';
+import { Annotations, Arn, ArnFormat, CfnResource, Fn, Names, PhysicalName, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { isGeneratedWhenNeededMarker } from '../../core/lib/private/physical-name-generator';
@@ -26,27 +26,6 @@ export enum GatewayScheme {
    * The load balancer has only private IP addresses and routes requests from inside the VPC.
    */
   INTERNAL = 'internal',
-}
-
-/**
- * How the load balancer of an Amazon ECS gateway handles requests that might pose an HTTP desync
- * security risk.
- */
-export enum GatewayHttpDesyncMitigationMode {
-  /**
-   * Allow all requests, and only record the ones that might pose a risk.
-   */
-  MONITOR = 'monitor',
-
-  /**
-   * Block requests that pose a high risk, and allow the others.
-   */
-  DEFENSIVE = 'defensive',
-
-  /**
-   * Allow only requests that comply with RFC 7230.
-   */
-  STRICTEST = 'strictest',
 }
 
 /**
@@ -72,14 +51,20 @@ export enum GatewayPropagateTags {
  */
 export interface GatewayAccessLogs {
   /**
-   * The S3 bucket for the access logs.
+   * The S3 bucket for the access logs, in the gateway's Region.
    *
-   * The bucket policy must allow Elastic Load Balancing to write the logs.
+   * The gateway adds a statement to the bucket policy that lets the Elastic Load Balancing log
+   * delivery service (`logdelivery.elasticloadbalancing.amazonaws.com`) write objects under
+   * `<prefix>/AWSLogs/<account>/`. For a bucket whose policy this app can't change, such as an
+   * imported bucket, add that statement yourself. The bucket must use Amazon S3-managed keys
+   * (SSE-S3); a bucket encrypted with a KMS key is not supported.
+   *
+   * [disable-awslint:prefer-ref-interface] the gateway adds a statement to the bucket's resource policy
    */
-  readonly bucket: s3.IBucketRef;
+  readonly bucket: s3.IBucket;
 
   /**
-   * The key prefix for the access logs.
+   * The key prefix for the access logs. Must not contain `AWSLogs`.
    *
    * @default - no prefix
    */
@@ -293,7 +278,10 @@ export interface GatewayProps {
    *
    * At least two subnets in different Availability Zones are required, and the gateway must
    * cover every Availability Zone the services that use it run in. Changing the subnets replaces
-   * the gateway.
+   * the gateway, and so does a change to the VPC that changes the default selection, such as a new
+   * subnet group. Because the gateway always has a name, a change that replaces it also needs a new
+   * `gatewayName` (or, without `gatewayName`, a new construct ID): CloudFormation can't replace a
+   * resource with a custom name, and the name must be unique in the account and Region.
    *
    * @default - the VPC's public subnets (`SubnetType.PUBLIC`) for an internet-facing gateway, and the
    * VPC's default subnet selection for an internal gateway: its private subnets with egress, or its
@@ -304,7 +292,10 @@ export interface GatewayProps {
   /**
    * Whether the gateway's load balancer is reachable from the internet.
    *
-   * Changing the scheme replaces the gateway.
+   * Changing the scheme replaces the gateway. Because the gateway always has a name, a change
+   * that replaces it also needs a new `gatewayName` (or, without `gatewayName`, a new construct ID):
+   * CloudFormation can't replace a resource with a custom name, and the name must be unique in the
+   * account and Region.
    *
    * @default GatewayScheme.INTERNAL
    */
@@ -313,7 +304,10 @@ export interface GatewayProps {
   /**
    * The IP address type of the gateway's load balancer.
    *
-   * Changing the IP address type replaces the gateway.
+   * Changing the IP address type replaces the gateway. Because the gateway always has a name, a change
+   * that replaces it also needs a new `gatewayName` (or, without `gatewayName`, a new construct ID):
+   * CloudFormation can't replace a resource with a custom name, and the name must be unique in the
+   * account and Region.
    *
    * @default - IpAddressType.DUAL_STACK (the Amazon ECS default)
    */
@@ -342,9 +336,9 @@ export interface GatewayProps {
   /**
    * How the load balancer handles requests that might pose an HTTP desync security risk.
    *
-   * @default GatewayHttpDesyncMitigationMode.DEFENSIVE
+   * @default elbv2.DesyncMitigationMode.DEFENSIVE
    */
-  readonly httpDesync?: GatewayHttpDesyncMitigationMode;
+  readonly httpDesync?: elbv2.DesyncMitigationMode;
 
   /**
    * The AWS WAF web ACL to associate with the gateway's load balancer.
@@ -384,7 +378,10 @@ export interface GatewayProps {
    * Up to 255 letters, numbers and hyphens. Changing the name replaces the gateway.
    *
    * CloudFormation requires a name, so `PhysicalName.GENERATE_IF_NEEDED` and no name both give the
-   * gateway a name generated from the construct path, which is known at synthesis time.
+   * gateway a name generated from the construct path, which is known at synthesis time. The name
+   * doesn't change when `scheme`, `vpcSubnets` or `ipAddressType` changes, so a change that replaces
+   * the gateway fails unless you also give it a new name or construct ID: CloudFormation can't
+   * replace a resource with a custom name.
    *
    * @default - a name generated from the construct path
    */
@@ -402,7 +399,8 @@ export interface GatewayProps {
    * Whether the gateway is protected from deletion.
    *
    * While deletion protection is on, deleting or replacing the gateway, including through a stack
-   * delete or a change to a property that replaces the gateway, fails.
+   * delete or a change to a property that replaces the gateway, fails. Turning it off is not enough
+   * to replace the gateway: the replacement also needs a new `gatewayName` or construct ID.
    *
    * @default true
    */
@@ -563,6 +561,10 @@ export class Gateway extends Resource implements IGateway {
       ],
     });
 
+    if (props.accessLogs) {
+      this.grantAccessLogDelivery(props.accessLogs);
+    }
+
     const resource = new CfnGateway(this, 'Resource', {
       gatewayName: this.gatewayName,
       infrastructureRoleArn: this.infrastructureRole.roleRef.roleArn,
@@ -593,6 +595,12 @@ export class Gateway extends Resource implements IGateway {
     });
     // a policy added to the role (for example its DefaultPolicy) must exist before the gateway
     resource.node.addDependency(this.infrastructureRole);
+    // the load balancer checks that it can write to the access log bucket when logging is turned on
+    // (https://github.com/aws/aws-cdk/issues/1633); an L1 dependency avoids a dependency cycle
+    const bucketPolicy = props.accessLogs?.bucket.policy?.node.defaultChild;
+    if (bucketPolicy && CfnResource.isCfnResource(bucketPolicy)) {
+      resource.addResourceDependency(bucketPolicy);
+    }
 
     this.gatewayArn = resource.attrArn;
     this.gatewayAccessType = resource.attrAccessType;
@@ -600,6 +608,43 @@ export class Gateway extends Resource implements IGateway {
     this.gatewayCreatedAt = resource.attrCreatedAt;
     this.gatewayUpdatedAt = resource.attrUpdatedAt;
     this.gatewayCurrentAlbCount = resource.attrConfigurationHostSharedAlbCurrentAlbCount;
+  }
+
+  /**
+   * Let Elastic Load Balancing write the access logs of the gateway's load balancers to the bucket.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+   */
+  private grantAccessLogDelivery(accessLogs: GatewayAccessLogs) {
+    const { bucket, prefix } = accessLogs;
+    // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#access-log-create-bucket
+    if (bucket.encryptionKey) {
+      throw new ValidationError(lit`GatewayAccessLogsKmsUnsupported`, 'the access log bucket of a gateway must use Amazon S3-managed keys (SSE-S3); a bucket encrypted with a KMS key is not supported', this);
+    }
+    if (prefix !== undefined && !Token.isUnresolved(prefix) && prefix.includes('AWSLogs')) {
+      throw new ValidationError(lit`GatewayAccessLogsPrefixValid`, `the access log prefix of a gateway must not contain "AWSLogs", got ${JSON.stringify(prefix)}`, this);
+    }
+
+    const stack = Stack.of(this);
+    const { statementAdded } = bucket.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['s3:PutObject'],
+      principals: [new iam.ServicePrincipal('logdelivery.elasticloadbalancing.amazonaws.com')],
+      resources: [bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${stack.account}/*`)],
+      conditions: {
+        ArnLike: {
+          'aws:SourceArn': stack.formatArn({
+            service: 'elasticloadbalancing',
+            resource: 'loadbalancer',
+            resourceName: '*',
+            arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+          }),
+        },
+      },
+    }));
+    if (!statementAdded) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:gatewayAccessLogsBucketPolicy',
+        'The policy of the access log bucket can\'t be changed by this app; allow logdelivery.elasticloadbalancing.amazonaws.com to put objects under <prefix>/AWSLogs/<account>/ in the bucket policy, or the gateway can\'t write its access logs.');
+    }
   }
 
   protected generatePhysicalName(): string {

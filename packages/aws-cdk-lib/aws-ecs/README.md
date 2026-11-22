@@ -2292,14 +2292,19 @@ declare const logBucket: s3.Bucket;
 new ecs.Gateway(this, 'Gateway', {
   vpc,
   securityGroup,
-  httpDesync: ecs.GatewayHttpDesyncMitigationMode.STRICTEST,
+  httpDesync: elbv2.DesyncMitigationMode.STRICTEST,
   maxAlbCount: 2,
   accessLogs: { bucket: logBucket, prefix: 'gateway' },
   tags: { team: 'web' },
 });
 ```
 
-The access log bucket's policy must allow Elastic Load Balancing to write the logs. Test traffic
+The gateway adds a statement to the access log bucket's policy that lets the Elastic Load
+Balancing log delivery service (`logdelivery.elasticloadbalancing.amazonaws.com`) write under
+`<prefix>/AWSLogs/<account>/`, limited to load balancers in the stack's account and Region. For a
+bucket whose policy the app can't change, such as an imported bucket, the gateway warns and you add
+that statement yourself. The bucket must be in the gateway's Region and use Amazon S3-managed keys
+(SSE-S3). Test traffic
 rules for blue/green deployments aren't modeled yet; set them on the `CfnGateway` with an escape
 hatch.
 
@@ -2322,9 +2327,13 @@ Requirements and limits:
   the same account and Region.
 - The gateway's name, scheme, subnets, IP address type can't be changed:
   changing them replaces the gateway.
+- A gateway always has a name (one is generated from the construct path if you don't set
+  `gatewayName`), and CloudFormation can't replace a resource with a custom name. A change that
+  replaces the gateway, including a change to the VPC that changes the default subnets, therefore
+  also needs a new `gatewayName` or construct ID.
 - Gateways have deletion protection on by default, so deleting the stack, or replacing the
   gateway, fails while the gateway exists. Set `deletionProtection: false` for gateways that you
-  want to delete or replace with the stack.
+  want to delete with the stack, or replace with a new name.
 
 Without `accessTypes`, a service is eligible for both internal and internet-facing gateways
 associated with its cluster, as in CloudFormation. That includes gateways imported or associated

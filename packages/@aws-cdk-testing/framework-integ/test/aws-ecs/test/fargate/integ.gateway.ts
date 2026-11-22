@@ -39,31 +39,36 @@ const test = new integ.IntegTest(app, 'GatewayTest', {
   testCases: [stack],
 });
 
+// getAttString() limits a call's response to the requested paths, so a call that is matched with
+// expect() and a call whose attributes are read are separate calls.
+
 // The primary check works with any SDK version: the service is active and its task is running.
-const services = test.assertions.awsApiCall('ECS', 'describeServices', {
-  cluster: cluster.clusterName,
-  services: [service.serviceName],
-}).expect(integ.ExpectedResult.objectLike({
-  services: [{ status: 'ACTIVE', runningCount: 1 }],
-})).waitForAssertions({ totalTimeout: cdk.Duration.minutes(15) });
+const describeParams = { cluster: cluster.clusterName, services: [service.serviceName] };
+const serviceActive = test.assertions.awsApiCall('ECS', 'describeServices', describeParams)
+  .expect(integ.ExpectedResult.objectLike({ services: [{ status: 'ACTIVE', runningCount: 1 }] }))
+  .waitForAssertions({ totalTimeout: cdk.Duration.minutes(15) });
+const serviceInfo = test.assertions.awsApiCall('ECS', 'describeServices', describeParams);
+serviceActive.next(serviceInfo);
 
 // DescribeServices doesn't return gateway connectors; they are in the service revision. An SDK that
 // predates gateways drops these fields, so these checks need a recent SDK in the Lambda runtime.
-const revisions = test.assertions.awsApiCall('ECS', 'describeServiceRevisions', {
-  serviceRevisionArns: [services.getAttString('services.0.currentServiceRevisions.0.arn')],
-}).expect(integ.ExpectedResult.objectLike({
-  serviceRevisions: [{
-    gatewayConnectors: [{ portName: 'web', deregistrationDelay: { timeoutSeconds: 30 } }],
-    // the connection reports CREATE_IN_PROGRESS until its URL is ready
-    ecsManagedResources: { gatewayConnections: [{ status: 'ACTIVE', accessType: 'PUBLIC' }] },
-  }],
-})).waitForAssertions({ totalTimeout: cdk.Duration.minutes(10) });
-services.next(revisions);
+const revisionParams = { serviceRevisionArns: [serviceInfo.getAttString('services.0.currentServiceRevisions.0.arn')] };
+const revisionActive = test.assertions.awsApiCall('ECS', 'describeServiceRevisions', revisionParams)
+  .expect(integ.ExpectedResult.objectLike({
+    serviceRevisions: [{
+      gatewayConnectors: [{ portName: 'web', deregistrationDelay: { timeoutSeconds: 30 } }],
+      // the connection reports CREATE_IN_PROGRESS until its URL is ready
+      ecsManagedResources: { gatewayConnections: [{ status: 'ACTIVE', accessType: 'PUBLIC' }] },
+    }],
+  }))
+  .waitForAssertions({ totalTimeout: cdk.Duration.minutes(10) });
+const revisionInfo = test.assertions.awsApiCall('ECS', 'describeServiceRevisions', revisionParams);
+revisionActive.next(revisionInfo);
 
 // The service answers through the gateway.
-const url = test.assertions.httpApiCall(revisions.getAttString('serviceRevisions.0.ecsManagedResources.gatewayConnections.0.serviceUrl'));
+const url = test.assertions.httpApiCall(
+  revisionInfo.getAttString('serviceRevisions.0.ecsManagedResources.gatewayConnections.0.serviceUrl'));
 url.expect(integ.ExpectedResult.objectLike({ status: 200 }));
 // DNS for a new hostname can take a few minutes after the connection is active.
 url.waitForAssertions({ totalTimeout: cdk.Duration.minutes(10) });
-revisions.next(url);
-
+revisionInfo.next(url);

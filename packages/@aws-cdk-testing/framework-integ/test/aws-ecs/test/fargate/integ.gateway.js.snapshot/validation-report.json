@@ -17,8 +17,8 @@
           "violatingConstructs": [
             {
               "constructPath": "aws-ecs-gateway/Service/Service",
-              "constructFqn": "constructs.Construct",
-              "libraryVersion": "10.8.1",
+              "constructFqn": "aws-cdk-lib.aws_ecs.CfnService",
+              "libraryVersion": "0.0.0",
               "cloudFormationResource": {
                 "templatePath": "aws-ecs-gateway.template.json",
                 "logicalId": "ServiceD69D759B",
