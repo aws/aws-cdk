@@ -112,9 +112,12 @@ export interface BundlingOptions extends DockerRunOptions {
    * When enabled, the host must have `python3` or `python` (with `pip`) on its
    * PATH — `python3` is preferred and `python` is tried as a fallback. If the
    * project uses `pipenv`, `poetry`, or `uv`, the corresponding tool must also be
-   * on PATH so its lockfile can be exported to a `requirements.txt`. On Windows,
-   * local bundling rejects pipenv, Poetry and uv projects at synthesis and supports
-   * plain `requirements.txt` projects.
+   * on PATH so its lockfile can be exported to a `requirements.txt`. For
+   * Poetry projects, the `poetry export` command must be available. Poetry 2.0
+   * and later require installing `poetry-plugin-export` separately by default.
+   *
+   * On Windows, local bundling rejects pipenv, Poetry and uv projects at
+   * synthesis and supports plain `requirements.txt` projects.
    *
    * Cross-platform wheels are selected via pip's `--platform`, `--python-version`,
    * and `--only-binary=:all:` flags, so the resulting artifact is binary-compatible

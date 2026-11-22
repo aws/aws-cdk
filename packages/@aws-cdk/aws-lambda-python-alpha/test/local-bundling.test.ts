@@ -432,7 +432,10 @@ describe('command hooks', () => {
       ([cmd, args]) => cmd === 'cmd' && args[0] === '/c' && args[1] === 'echo hi',
     );
     expect(bashCall).toBeUndefined();
-    expect(cmdCall).toBeDefined();
+    expect(cmdCall?.[2]).toEqual(expect.objectContaining({
+      cwd: outputDir,
+      windowsVerbatimArguments: true,
+    }));
   });
 });
 

@@ -186,7 +186,7 @@ Prerequisites on the host:
 - `python3` (preferred) or `python` on `PATH`, with a pip version that supports your host Python. Use pip 20.3 or newer for repeated `--platform` flags and PEP 600 manylinux tags.
 - If your project uses a lockfile-based dependency manager, the matching tool must also be on `PATH`:
   - `pipenv >= 2022.4.8` (for `pipenv requirements`)
-  - `poetry >= 1.2` (for `poetry export --with-credentials`)
+  - `poetry >= 1.2` with `poetry export` available. Install `poetry-plugin-export` if it is missing. Poetry 2.0 and later do not include the plugin by default.
   - `uv >= 0.4` (for `uv export --frozen --no-emit-workspace --no-dev --no-editable`)
 - Every dependency must publish a compatible wheel for the target platform. Source-only distributions are rejected (a source build would target the host OS/arch and not the Lambda runtime).
 - On Windows hosts, local bundling supports plain `requirements.txt` projects. It rejects `pipenv`, `poetry` and `uv` projects at synthesis regardless of the shell. Use Docker bundling for lockfile-based projects on Windows.
