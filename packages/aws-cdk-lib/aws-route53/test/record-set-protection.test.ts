@@ -153,6 +153,21 @@ test('includes untargeted matching records and keeps other groups and nested sta
   Annotations.fromStack(stack).hasWarning(`/${otherStack.node.path}`, crossStackWarning);
 });
 
+test('protects weighted records inside a nested stack in the nested template', () => {
+  const stack = new Stack();
+  const nested = new NestedStack(stack, 'Nested');
+  const props = { hostedZoneId: 'Z123', name: 'www.example.com.', type: 'A', weight: 50 };
+  const blue = new CfnRecordSet(nested, 'Blue', { ...props, setIdentifier: 'Blue' });
+  const green = new CfnRecordSet(nested, 'Green', { ...props, setIdentifier: 'Green' });
+  blue.with(new mixins.RecordSetProtection());
+
+  Template.fromStack(stack).resourceCountIs(protectionType, 0);
+  Template.fromStack(nested).hasResource(protectionType, {
+    Properties: { HostedZoneId: 'Z123', RecordName: 'www.example.com.', RecordType: 'A' },
+    DependsOn: [nested.getLogicalId(blue), nested.getLogicalId(green)].sort(),
+  });
+});
+
 test.each([false, true])('keeps the protection logical ID when an aspect overrides the hosted zone logical ID (%s)', (overrideZoneId) => {
   const stack = new Stack();
   const zone = new HostedZone(stack, 'Zone', { zoneName: 'example.com' });
