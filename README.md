@@ -55,6 +55,8 @@ how to use AWS. The AWS Construct Library aims to reduce the complexity and
 glue-logic required when integrating various AWS services to achieve your goals
 on AWS.
 
+[AWS CDK Blocks](https://docs.aws.amazon.com/cdk/blocks/latest/devguide/what-is-blocks.html) build upon CDK constructs. Each Block packages a CDK construct along with the connecting code applications need to use that infrastructure, incorporating AWS service-specific best practices, such as safe retries, dead-letter routing and partial-batch failures, and a local testing setup. Developers can build and test their applications locally and deploy the same code unchanged to their own AWS account. Platform teams can also create and share custom Blocks that incorporate their organization's requirements. The source code is in the [CDK Blocks GitHub repository](https://github.com/aws/cdk-blocks).
+
 Modules in the AWS Construct Library are designated Experimental while we build
 them; experimental modules may have breaking API changes in any release.  After
 a module is designated Stable, it adheres to [semantic versioning](https://semver.org/),
@@ -158,6 +160,11 @@ this capability, please see the [developer guide](https://docs.aws.amazon.com/cd
 
 * [AWS CDK Immersion Day Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/10141411-0192-4021-afa8-2436f3c66bd8/en-US)
 * [Construct Hub](https://constructs.dev) - Find and use open-source Cloud Development Kit (CDK) libraries
+* AWS CDK Blocks
+  * [What is AWS CDK Blocks?](https://docs.aws.amazon.com/cdk/blocks/latest/devguide/what-is-blocks.html) - Blocks build upon CDK constructs, packaging each construct along with the connecting code applications need to use that infrastructure, and its local implementation.
+  * [Getting started with AWS CDK Blocks](https://docs.aws.amazon.com/cdk/blocks/latest/devguide/getting-started.html) - Build and test an application locally, then deploy the same code to your own AWS account
+  * [CDK Blocks GitHub repository](https://github.com/aws/cdk-blocks) - Source code for the CDK Blocks that AWS provides
+
 * Best Practices
   * [Best practices for developing cloud applications with AWS CDK](https://aws.amazon.com/blogs/devops/best-practices-for-developing-cloud-applications-with-aws-cdk/)
   * [Align with best practices while creating infrastructure using cdk aspects](https://aws.amazon.com/blogs/devops/align-with-best-practices-while-creating-infrastructure-using-cdk-aspects/)
