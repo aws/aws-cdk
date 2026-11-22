@@ -705,6 +705,18 @@ describe('gateway connector', () => {
     });
   });
 
+  test('leaves GatewayConnectors out without a connector, and the documented override disconnects', () => {
+    const noConnector = new ecs.FargateService(stack, 'NoConnector', { cluster, taskDefinition });
+    const disconnected = new ecs.FargateService(stack, 'Disconnected', { cluster, taskDefinition });
+    (disconnected.node.defaultChild as ecs.CfnService).addPropertyOverride('GatewayConnectors', []);
+
+    const template = Template.fromStack(stack);
+    const services = template.findResources('AWS::ECS::Service');
+    const id = (service: ecs.FargateService) => stack.getLogicalId(service.node.defaultChild as ecs.CfnService);
+    expect(services[id(noConnector)].Properties).not.toHaveProperty('GatewayConnectors');
+    expect(services[id(disconnected)].Properties.GatewayConnectors).toEqual([]);
+  });
+
   test('two services can share one gateway', () => {
     const gateway = new ecs.Gateway(stack, 'Gateway', { vpc: cluster.vpc });
     cluster.associateGateway(gateway);

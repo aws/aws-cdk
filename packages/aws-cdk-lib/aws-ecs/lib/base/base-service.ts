@@ -559,6 +559,12 @@ export interface BaseServiceOptions {
    * this app, the service depends on the cluster's gateway associations, because a gateway
    * connector can only be added once an association is active.
    *
+   * Removing this property from a connected service doesn't disconnect it: `GatewayConnectors` is
+   * left out of the template, and Amazon ECS keeps the current connector. To disconnect the service,
+   * set `GatewayConnectors` to an empty list on the `CfnService` with
+   * `addPropertyOverride('GatewayConnectors', [])` and deploy. The override can be removed after that
+   * deployment.
+   *
    * @default - the service does not receive traffic through a gateway
    */
   readonly gatewayConnector?: GatewayConnectorOptions;

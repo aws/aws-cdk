@@ -2377,6 +2377,22 @@ Validations.of(service).acknowledge({
 });
 ```
 
+Removing `gatewayConnector` from a connected service doesn't disconnect it. The CDK then leaves
+`GatewayConnectors` out of the template, and Amazon ECS keeps the service's current connector.
+To disconnect the service, set `GatewayConnectors` to an empty list with an escape hatch and
+deploy. Once that deployment finishes you can remove the override, and the service stays
+disconnected:
+
+```ts
+declare const service: ecs.FargateService;
+
+const cfnService = service.node.defaultChild as ecs.CfnService;
+cfnService.addPropertyOverride('GatewayConnectors', []);
+```
+
+The service keeps serving traffic through its gateways until the deployment that disconnects it
+finishes. After that, its gateway hostnames stop working.
+
 The gateway's access type, status, creation and update times and current number of load
 balancers are available as `gatewayAccessType`, `gatewayStatus`, `gatewayCreatedAt`,
 `gatewayUpdatedAt` and `gatewayCurrentAlbCount`.
