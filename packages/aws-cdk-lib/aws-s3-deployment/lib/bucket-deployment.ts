@@ -97,24 +97,28 @@ export interface BucketDeploymentProps {
    * If this is set to "false", the destination objects will be deleted when this deployment
    * is removed or when its `destinationBucket` or `destinationKeyPrefix` changes.
    *
-   * However, for buckets defined in your CDK app, removing this deployment does not delete the
-   * objects when:
+   * However, removing this deployment does not delete the objects while the bucket has a tag
+   * starting with this deployment's `aws-cdk:cr-owned:<prefix>`. Each `BucketDeployment` (even
+   * with `retainOnDelete: true`) adds its own tag when `destinationBucket` is created with
+   * `new s3.Bucket()` in your CDK app, directly or by another construct, so the objects are not
+   * deleted when:
    *
    * - the destination bucket is deleted at the same time as this deployment (for example on
    *   stack deletion)
-   * - the bucket is defined in a different stack, and the deployment's stack removes the
+   * - the bucket is defined in a different stack, and the deployment's stack removes this
    *   deployment before the bucket's stack is updated to reflect the removal
    * - another `BucketDeployment` still deploys to the same bucket with a prefix that starts
    *   with this deployment's prefix (for example, `assets`, `assets/images/` or `assets-v2/`
    *   when that prefix is `assets`), or with any prefix if this deployment has none
    *
    * Note that when `destinationBucket` or `destinationKeyPrefix` changes, objects will be
-   * deleted regardless of other deployments.
+   * deleted regardless of tags.
    *
-   * For imported destination buckets, objects are deleted when this deployment is removed or
-   * replaced, unless the bucket already has a tag starting with the same
-   * `aws-cdk:cr-owned:<prefix>`. Replacement occurs when you rename this deployment or change
-   * certain props, such as `memoryLimit`, `ephemeralStorageSize` or `vpc`.
+   * Imported buckets (for example `s3.Bucket.fromBucketName()`, even if another CDK app created
+   * the bucket) and buckets converted with `s3.Bucket.fromCfnBucket()` are not tagged by this
+   * deployment, so their objects are deleted when this deployment is removed or replaced,
+   * unless the bucket already has such a tag. Replacement occurs when you rename this
+   * deployment or change certain props, such as `memoryLimit`, `ephemeralStorageSize` or `vpc`.
    *
    * If the destination bucket is dedicated to this deployment (no `destinationKeyPrefix`), we
    * recommend keeping this property `true` and configuring `autoDeleteObjects` on the bucket

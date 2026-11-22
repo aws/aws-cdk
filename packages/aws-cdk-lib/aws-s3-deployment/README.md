@@ -184,8 +184,9 @@ By default, the contents of the destination bucket will **not** be deleted when 
 `BucketDeployment` resource is removed from the stack or when the destination is
 changed. You can use the option `retainOnDelete: false` to disable this behavior,
 in which case all objects under the destination (the `destinationKeyPrefix`, or the
-whole bucket if no prefix is set) will be deleted. However, for buckets defined in your CDK
-app, the objects are **not** deleted in these cases:
+whole bucket if no prefix is set) will be deleted. However, if the destination bucket is
+created with `new s3.Bucket()` in your CDK app, directly or by another construct, the objects
+are **not** deleted in these cases:
 
 - The destination bucket is deleted at the same time as its `BucketDeployment`, for example
   on stack deletion (see **Stack Deletion** below).
@@ -203,9 +204,10 @@ the bucket still **starts with** the same `aws-cdk:cr-owned:<prefix>`. In the ex
 the tags `aws-cdk:cr-owned:assets/images/` and `aws-cdk:cr-owned:assets-v2/` both start with
 `aws-cdk:cr-owned:assets`, so the objects under `assets` are kept.
 
-`BucketDeployment` does not tag imported buckets (for example `s3.Bucket.fromBucketName()`),
-so removing a deployment deletes their objects, unless the bucket already has a tag that still
-starts with the same `aws-cdk:cr-owned:<prefix>`.
+`BucketDeployment` does not tag imported buckets (for example `s3.Bucket.fromBucketName()`,
+even if another CDK app created the bucket) or buckets converted with
+`s3.Bucket.fromCfnBucket()`, so removing a deployment deletes their objects, unless the bucket
+already has a tag that still starts with the same `aws-cdk:cr-owned:<prefix>`.
 
 ### Implications
 
@@ -244,12 +246,13 @@ Configuring `retainOnDelete: false` has a few implications you should be aware o
   `ephemeralStorageSize` or `vpc`. Run `cdk diff` before deploying to verify whether the
   deployment will be replaced.
 
-  When the deployment is replaced, the objects in a destination bucket defined in your CDK app
-  are **retained**, because the new deployment's tag means the old deployment's Lambda function
-  does not delete them. If the destination bucket is imported, the new deployment does not tag
-  it, so the deletion of the old resource **will delete all objects under the destination**,
-  including the ones the new resource has just deployed (unless the bucket already has a tag
-  starting with the same `aws-cdk:cr-owned:<prefix>`).
+  When the deployment is replaced, the objects in a destination bucket created with
+  `new s3.Bucket()` in your CDK app are **retained**, because the new deployment's tag means the
+  old deployment's Lambda function does not delete them. If the destination bucket is imported
+  or converted with `s3.Bucket.fromCfnBucket()`, the new deployment does not tag it, so the
+  deletion of the old resource **will delete all objects under the destination**, including the
+  ones the new resource has just deployed (unless the bucket already has a tag starting with the
+  same `aws-cdk:cr-owned:<prefix>`).
 
 - **Destination Changes**
 
@@ -274,12 +277,12 @@ in which case, we recommend to remove `retainOnDelete: false`, and instead, conf
 property on the destination bucket. Unlike `retainOnDelete: false`, `autoDeleteObjects` empties
 the bucket when the bucket itself is deleted, such as on stack deletion.
 
-#### Imported Bucket
+#### Imported or L1 Bucket
 
-If the destination bucket **is imported** (for example `s3.Bucket.fromBucketName()`), we
-recommend keeping `retainOnDelete` set to `true`. With `retainOnDelete: false`, renaming or
-moving the construct, or changing certain properties, will delete all objects under the
-destination (see **Logical ID Changes** above).
+If the destination bucket **is imported** (for example `s3.Bucket.fromBucketName()`) or
+converted with `s3.Bucket.fromCfnBucket()`, we recommend keeping `retainOnDelete` set to
+`true`. With `retainOnDelete: false`, renaming or moving the construct, or changing certain
+properties, will delete all objects under the destination (see **Logical ID Changes** above).
 
 ## Prune
 
