@@ -173,6 +173,14 @@ export class RegionInfo {
   }
 
   /**
+   * The ID of the AWS account that owns the private ECR repositories containing the
+   * Amazon EKS add-on images (such as the AWS Load Balancer Controller) in this region.
+   */
+  public get eksAddonRepositoryAccount(): string | undefined {
+    return Fact.find(this.name, FactName.EKS_ADDON_ECR_ACCOUNT);
+  }
+
+  /**
    * The CIDR block used by Amazon Data Firehose servers.
    */
   public get firehoseCidrBlock(): string | undefined {

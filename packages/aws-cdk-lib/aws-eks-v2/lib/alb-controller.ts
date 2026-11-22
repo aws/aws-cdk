@@ -8,8 +8,21 @@ import * as iam from '../../aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Aws, Duration, Names, RemovalPolicy, Stack, ValidationError } from '../../core';
+import { Aws, Duration, FeatureFlags, Names, RemovalPolicy, Stack, Token, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
+import * as cxapi from '../../cx-api';
+import { FactName, RegionInfo } from '../../region-info';
+
+/**
+ * The name of the controller image in the Amazon EKS add-on image registries.
+ */
+const IMAGE_NAME = 'amazon/aws-load-balancer-controller';
+
+/**
+ * The repository the controller image is pulled from when the
+ * `@aws-cdk/aws-eks:albControllerRegionalImageRepository` feature flag is disabled.
+ */
+const LEGACY_REPOSITORY = `602401143452.dkr.ecr.us-west-2.amazonaws.com/${IMAGE_NAME}`;
 
 /**
  * Controller version.
@@ -372,11 +385,22 @@ export interface AlbControllerOptions {
   /**
    * The repository to pull the controller image from.
    *
-   * Note that the default repository works for most regions, but not all.
-   * If the repository is not applicable to your region, use a custom repository
+   * When the `@aws-cdk/aws-eks:albControllerRegionalImageRepository` feature flag is enabled,
+   * the default repository is in the Amazon EKS add-on image registry of the stack's region
+   * (see https://docs.aws.amazon.com/eks/latest/userguide/add-ons-images.html). If the stack's
+   * region is known at synthesis time but has no registry known to the CDK, the `us-west-2`
+   * repository is used. If the stack's region is not known at synthesis time, the repository is
+   * looked up at deployment time, and the deployment fails in a region that is not known to the CDK.
+   *
+   * When the feature flag is disabled, the default repository is always in `us-west-2`. It works
+   * for most regions, but not all.
+   *
+   * If the default repository is not applicable to your region, use a custom repository
    * according to the information here: https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases.
    *
-   * @default '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller'
+   * @default - the Amazon EKS add-on image registry of the stack's region if the
+   * `@aws-cdk/aws-eks:albControllerRegionalImageRepository` feature flag is enabled, otherwise
+   * '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller'
    */
   readonly repository?: string;
 
@@ -511,7 +535,7 @@ export class AlbController extends Construct {
         region: Stack.of(this).region,
         vpcId: props.cluster.vpc.vpcId,
         image: {
-          repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
+          repository: props.repository ?? this.defaultRepository(),
           tag: props.version.version,
         },
         ...props.additionalHelmChartValues,
@@ -522,6 +546,23 @@ export class AlbController extends Construct {
     // the controller relies on permissions deployed using these resources.
     chart.node.addDependency(serviceAccount);
     chart.node.addDependency(props.cluster.openIdConnectProvider);
+  }
+
+  /**
+   * The repository to pull the controller image from when `repository` is not specified.
+   */
+  private defaultRepository(): string {
+    if (!FeatureFlags.of(this).isEnabled(cxapi.EKS_ALB_CONTROLLER_REGIONAL_IMAGE_REPOSITORY)) {
+      return LEGACY_REPOSITORY;
+    }
+
+    const stack = Stack.of(this);
+    if (!Token.isUnresolved(stack.region) && RegionInfo.get(stack.region).eksAddonRepositoryAccount === undefined) {
+      return LEGACY_REPOSITORY;
+    }
+
+    const account = stack.regionalFact(FactName.EKS_ADDON_ECR_ACCOUNT);
+    return `${account}.dkr.ecr.${stack.region}.${stack.urlSuffix}/${IMAGE_NAME}`;
   }
 
   private rewritePolicyResources(resources: string | string[] | undefined): string | string[] | undefined {

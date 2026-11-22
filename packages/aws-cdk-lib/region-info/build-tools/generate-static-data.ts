@@ -5,6 +5,7 @@ import {
   APPMESH_ECR_ACCOUNTS,
   CLOUDWATCH_LAMBDA_INSIGHTS_ARNS,
   DLC_REPOSITORY_ACCOUNTS,
+  EKS_ADDON_ECR_ACCOUNTS,
   ELBV2_ACCOUNTS,
   FIREHOSE_CIDR_BLOCKS,
   PARTITION_MAP,
@@ -27,6 +28,7 @@ import {
 export async function main(): Promise<void> {
   checkRegions(APPMESH_ECR_ACCOUNTS);
   checkRegions(DLC_REPOSITORY_ACCOUNTS);
+  checkRegions(EKS_ADDON_ECR_ACCOUNTS);
   checkRegions(ELBV2_ACCOUNTS);
   checkRegions(FIREHOSE_CIDR_BLOCKS);
   checkRegions(ROUTE_53_BUCKET_WEBSITE_ZONE_IDS);
@@ -84,6 +86,8 @@ export async function main(): Promise<void> {
     registerFact(region, 'DLC_REPOSITORY_ACCOUNT', DLC_REPOSITORY_ACCOUNTS[region]);
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
+
+    registerFact(region, 'EKS_ADDON_ECR_ACCOUNT', EKS_ADDON_ECR_ACCOUNTS[region]);
 
     registerFact(region, 'SAML_SIGN_ON_URL', PARTITION_SAML_SIGN_ON_URL[partition] || '');
 

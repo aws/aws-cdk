@@ -67,3 +67,14 @@ test.each([
 ])('%p should be opt-in: %p', (region, expected) => {
   expect(RegionInfo.get(region).isOptInRegion).toEqual(expected);
 });
+
+test.each([
+  ['us-east-1', '602401143452'],
+  ['af-south-1', '877085696533'],
+  ['cn-north-1', '918309763551'],
+  ['us-gov-west-1', '013241004608'],
+  ['eusc-de-east-1', '877088126301'],
+  ['us-iso-east-1', undefined],
+])('eksAddonRepositoryAccount for %p is %p', (region, expected) => {
+  expect(RegionInfo.get(region).eksAddonRepositoryAccount).toEqual(expected);
+});

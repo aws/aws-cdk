@@ -826,6 +826,34 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+By default, the controller image is pulled from the `602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller`
+repository. When the `@aws-cdk/aws-eks:albControllerRegionalImageRepository` feature flag is enabled, it is pulled from the
+[Amazon EKS add-on image registry](https://docs.aws.amazon.com/eks/latest/userguide/add-ons-images.html) of the stack's region
+instead, such as `602401143452.dkr.ecr.us-east-2.amazonaws.com` in `us-east-2` or `918309763551.dkr.ecr.cn-north-1.amazonaws.com.cn`
+in `cn-north-1`. This lets the nodes pull the image through Amazon ECR VPC endpoints, which do not support cross-region requests,
+and in partitions other than `aws`.
+
+With the feature flag enabled:
+
+* If the stack's region is known at synthesis time but has no registry known to the CDK, the `us-west-2` repository is used.
+* If the stack's region is not known at synthesis time (the stack has no `env`), the repository is looked up at deployment time,
+  and the deployment fails in a region that is not known to the CDK.
+
+To use another repository, such as a copy of the image in your own account, use the `repository` property:
+
+```ts
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
+
+new eks.Cluster(this, 'HelloEKS', {
+  version: eks.KubernetesVersion.V1_37,
+  albController: {
+    version: eks.AlbControllerVersion.V3_2_2,
+    repository: '123456789012.dkr.ecr.us-east-2.amazonaws.com/aws-load-balancer-controller',
+  },
+  kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
+});
+```
+
 The `albController` requires `defaultCapacity` or at least one nodegroup. If there's no `defaultCapacity` or available
 nodegroup for the cluster, the `albController` deployment would fail.
 
