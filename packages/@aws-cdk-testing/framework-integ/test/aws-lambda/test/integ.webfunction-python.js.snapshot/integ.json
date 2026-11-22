@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "WebFunctionPythonTest/DefaultTest": {
+      "stacks": [
+        "WebFunctionPythonStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "WebFunctionPythonTest/DefaultTest/DeployAssert",
+      "assertionStackName": "WebFunctionPythonTestDefaultTestDeployAssertCEF25695"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

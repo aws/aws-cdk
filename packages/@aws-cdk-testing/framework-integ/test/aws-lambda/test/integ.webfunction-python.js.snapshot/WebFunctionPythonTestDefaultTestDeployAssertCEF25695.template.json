@@ -1,0 +1,162 @@
+{
+ "Resources": {
+  "HttpApiCall98867ec230a0ca2d3f11ca2f2ee3282e": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "WebFunctionPythonStack:ExportsOutputFnGetAttDefaultEntryPointEndpointD1FC4D61DomainName1139DF00"
+        },
+        "/"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":{\"entry\":\"main\"}}}",
+    "flattenResponse": "false",
+    "salt": "1795350518220"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "075de0d8a32f6637f1b2aa2be507ad953c5c33cdc9f6a688ac713160f08fda41.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "HttpApiCall2495011c6c4760ae31ee0775ea8ac87f": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "WebFunctionPythonStack:ExportsOutputFnGetAttCustomEntryPointEndpointFC08AB16DomainNameF0B5301F"
+        },
+        "/"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"body\":{\"entry\":\"api\"}}}",
+    "flattenResponse": "false",
+    "salt": "1795350518227"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsHttpApiCall98867ec230a0ca2d3f11ca2f2ee3282e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall98867ec230a0ca2d3f11ca2f2ee3282e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall2495011c6c4760ae31ee0775ea8ac87f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall2495011c6c4760ae31ee0775ea8ac87f",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
