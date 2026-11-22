@@ -1,0 +1,20 @@
+{
+  "/integ-distribution-behavior-path-patterns/distribution-behavior-path-patterns-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integdistributionbehaviorpathpatternsdistributionbehaviorpathpatternstestDefaultTestDeployAssertE28DCC5E.template.json"
+    }
+  ],
+  "/integ-distribution-behavior-path-patterns/distribution-behavior-path-patterns-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-distribution-behavior-path-patterns/distribution-behavior-path-patterns-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
