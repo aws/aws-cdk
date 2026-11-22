@@ -753,6 +753,13 @@ deploy each step separately.
 2. Update, add, or remove the record.
 3. Reapply the mixin if the remaining records need protection.
 
+Synthesis fails if a removal policy such as `RemovalPolicies.of(scope).retain()`
+gives the protection a deletion policy other than `Delete`. A retained protection
+stays in Route 53 after step 1 and blocks changes to its records, including
+deletion, until you delete it outside CloudFormation. To retain the other
+resources in the scope, pass
+`excludeResourceTypes: ['AWS::Route53::RecordSetProtection']` to `retain()`.
+
 CDK derives the protection's logical ID from the record name and type and from
 how your code identifies the hosted zone. The logical ID changes if you move the
 hosted zone to another construct or switch `hostedZoneId` between a literal ID
