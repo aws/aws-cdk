@@ -4,6 +4,7 @@ import { Certificate, CertificateValidation } from '../../../aws-certificatemana
 import type { AddBehaviorOptions, Distribution } from '../../../aws-cloudfront';
 import { AllowedMethods, CachePolicy, OriginProtocolPolicy, OriginRequestPolicy, ViewerProtocolPolicy } from '../../../aws-cloudfront';
 import { LoadBalancerV2Origin } from '../../../aws-cloudfront-origins';
+import type { LoadBalancerV2OriginProps } from '../../../aws-cloudfront-origins';
 import type { IVpc } from '../../../aws-ec2';
 import type {
   BaseService, CloudMapOptions, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
@@ -248,7 +249,8 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * traffic can bypass the distribution entirely. To lock it down, set
    * `openListener: false` and allow ingress only from the
    * `com.amazonaws.global.cloudfront.origin-facing` managed prefix list,
-   * and/or require a secret origin header that a listener rule checks.
+   * and/or pass a secret header through `cloudFrontOriginOptions`
+   * (`customHeaders`) and require it in a listener rule.
    *
    * [disable-awslint:ref-via-interface] is needed because adding a cache
    * behavior requires the concrete Distribution, an imported distribution
@@ -273,6 +275,20 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * origins and ALL_VIEWER_EXCEPT_HOST_HEADER on HTTP origins.
    */
   readonly cloudFrontBehaviorOptions?: AddBehaviorOptions;
+
+  /**
+   * Options for the CloudFront origin created for the load balancer.
+   *
+   * These are passed through to the `LoadBalancerV2Origin` the pattern creates, so you can
+   * set things like `customHeaders` — for example a secret header that only your distribution
+   * sends, which a listener rule on the load balancer can check to prove the traffic came
+   * through your distribution and not any other CloudFront distribution. The pattern always
+   * sets the origin protocol and port itself from the listener, so values passed for
+   * `protocolPolicy`, `httpPort` or `httpsPort` here are ignored.
+   *
+   * @default - No extra origin options.
+   */
+  readonly cloudFrontOriginOptions?: LoadBalancerV2OriginProps;
 
   /**
    * Listener port of the application load balancer that will serve traffic to the service.
@@ -662,6 +678,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       }
       const isHttps = protocol === ApplicationProtocol.HTTPS;
       const origin = new LoadBalancerV2Origin(loadBalancer, {
+        ...(props.cloudFrontOriginOptions ?? {}),
         protocolPolicy: isHttps ? OriginProtocolPolicy.HTTPS_ONLY : OriginProtocolPolicy.HTTP_ONLY,
         ...(isHttps ? { httpsPort: this.listener.port } : { httpPort: this.listener.port }),
       });
@@ -695,8 +712,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
           'The load balancer stays directly reachable: with the default open listener its security ' +
           'group allows 0.0.0.0/0 on the listener port, so traffic can bypass the CloudFront ' +
           'distribution. Set openListener to false and allow ingress only from the ' +
-          'com.amazonaws.global.cloudfront.origin-facing managed prefix list, and/or require a ' +
-          'secret origin header that a listener rule checks.');
+          'com.amazonaws.global.cloudfront.origin-facing managed prefix list, and/or pass a secret ' +
+          'header through cloudFrontOriginOptions (customHeaders) and require it in a listener rule.');
       }
     }
 
