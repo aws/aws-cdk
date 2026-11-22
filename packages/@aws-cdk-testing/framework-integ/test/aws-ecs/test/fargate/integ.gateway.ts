@@ -117,9 +117,14 @@ exports.handler = async () => {
 };
 `),
 });
+// DescribeServiceRevisions is authorized on both the service and its revisions
 checkGateway.addToRolePolicy(new iam.PolicyStatement({
   actions: ['ecs:DescribeServices', 'ecs:DescribeServiceRevisions'],
-  resources: ['*'],
+  resources: [service.serviceArn, stack.formatArn({
+    service: 'ecs',
+    resource: 'service-revision',
+    resourceName: `${cluster.clusterName}/${service.serviceName}/*`,
+  })],
 }));
 
 // The connection reports CREATE_IN_PROGRESS until its URL is ready, and the service then answers

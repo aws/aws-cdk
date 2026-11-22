@@ -813,7 +813,42 @@
         "ecs:DescribeServices"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":ecs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":service-revision/",
+           {
+            "Ref": "ClusterEB0386A7"
+           },
+           "/",
+           {
+            "Fn::GetAtt": [
+             "ServiceD69D759B",
+             "Name"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Ref": "ServiceD69D759B"
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"
