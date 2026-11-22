@@ -10,7 +10,7 @@
         "    at Stack._silenceLiteralAzWarning (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/stack.js:1503:47)",
         "    at get availabilityZones (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/stack.js:849:18)",
         "    at new Vpc (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:48)",
-        "    at <anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:42:13)",
+        "    at <anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:43:13)",
         "    ...node internals..."
       ]
     },
@@ -41,6 +41,21 @@
       "data": {}
     }
   ],
+  "/aws-ecs-gateway/GatewayLogs": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/aws-ecs-gateway/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
   "/aws-ecs-gateway/Gateway": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -52,9 +67,9 @@
       "trace": [
         "Annotations.addMessage (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:271:29)",
         "Annotations.addWarningV2 (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/annotations.js:137:18)",
-        "new Gateway (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/gateway.js:268:45)",
+        "new Gateway (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/gateway.js:267:45)",
         "new Gateway (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:44:17)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:50:17)",
         "Module._compile (node:internal/modules/cjs/loader:1934:14)",
         "Object..js (node:internal/modules/cjs/loader:2074:10)",
         "Module.load (node:internal/modules/cjs/loader:1656:32)",
@@ -95,7 +110,7 @@
         "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:188:13)",
         "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:56:17)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:63:17)",
         "Module._compile (node:internal/modules/cjs/loader:1934:14)",
         "Object..js (node:internal/modules/cjs/loader:2074:10)",
         "Module.load (node:internal/modules/cjs/loader:1656:32)",
@@ -115,7 +130,7 @@
         "new BaseService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/aws-ecs/lib/fargate/fargate-service.js:188:13)",
         "new FargateService (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:56:17)",
+        "Object.<anonymous> (/Users/vampiremac/workspace/oss/aws-cdk-ecs-gateway/packages/@aws-cdk-testing/framework-integ/test/aws-ecs/test/fargate/integ.gateway.js:63:17)",
         "Module._compile (node:internal/modules/cjs/loader:1934:14)",
         "Object..js (node:internal/modules/cjs/loader:2074:10)",
         "Module.load (node:internal/modules/cjs/loader:1656:32)",
@@ -295,6 +310,44 @@
       "data": "*"
     }
   ],
+  "/aws-ecs-gateway/GatewayLogs/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayLogs64F6314F"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/aws-ecs-gateway/GatewayLogs/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-ecs-gateway/GatewayLogs/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-ecs-gateway/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/aws-ecs-gateway/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
   "/aws-ecs-gateway/Gateway/InfrastructureRole": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -472,6 +525,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ClusterGatewayAssociationawsecsgatewayGatewayFD714A3778859A74"
+    }
+  ],
+  "/aws-ecs-gateway/GatewayLogs/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayLogsPolicyBD91364A"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/aws-ecs-gateway/GatewayLogs/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayLogsAutoDeleteObjectsCustomResource2CDE5297"
     }
   ],
   "/aws-ecs-gateway/Gateway/InfrastructureRole/Resource": [

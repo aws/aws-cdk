@@ -426,7 +426,9 @@ export class Gateway extends Resource implements IGateway {
   /**
    * Import an existing gateway from its ARN.
    *
-   * The ARN has the form `arn:<partition>:ecs:<region>:<account>:gateway/<name>/<id>`.
+   * The ARN has the form `arn:<partition>:ecs:<region>:<account>:gateway/<name>/<id>`. The gateway
+   * name is the first part of the resource name; for an ARN without a resource name, it is empty.
+   * The ARN is not validated.
    */
   public static fromGatewayArn(scope: Construct, id: string, gatewayArn: string): IGateway {
     const arn = Arn.split(gatewayArn, ArnFormat.SLASH_RESOURCE_NAME);
@@ -434,10 +436,7 @@ export class Gateway extends Resource implements IGateway {
     if (Token.isUnresolved(gatewayArn)) {
       gatewayName = Fn.select(0, Fn.split('/', arn.resourceName!));
     } else {
-      if (arn.service !== 'ecs' || arn.resource !== 'gateway' || !arn.resourceName) {
-        throw new ValidationError(lit`InvalidGatewayArn`, `gatewayArn must be an ARN of the form arn:<partition>:ecs:<region>:<account>:gateway/<name>/<id>, got ${JSON.stringify(gatewayArn)}`, scope);
-      }
-      gatewayName = arn.resourceName.split('/')[0];
+      gatewayName = arn.resourceName ? arn.resourceName.split('/')[0] : '';
     }
 
     class Import extends Resource implements IGateway {

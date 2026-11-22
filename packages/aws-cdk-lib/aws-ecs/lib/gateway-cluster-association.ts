@@ -55,6 +55,28 @@ export class GatewayClusterAssociation extends Resource {
    */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ecs.GatewayClusterAssociation';
 
+  /**
+   * The status of the association: `ACTIVE`, or `DISASSOCIATING` while it is being removed.
+   * Services can connect to the gateway once the association is `ACTIVE`.
+   *
+   * @attribute
+   */
+  public readonly gatewayClusterAssociationStatus: string;
+
+  /**
+   * The ARN of the associated cluster.
+   *
+   * @attribute
+   */
+  public readonly gatewayClusterAssociationClusterArn: string;
+
+  /**
+   * The ARN of the associated gateway.
+   *
+   * @attribute
+   */
+  public readonly gatewayClusterAssociationGatewayArn: string;
+
   constructor(scope: Construct, id: string, props: GatewayClusterAssociationProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -81,9 +103,12 @@ export class GatewayClusterAssociation extends Resource {
       props.cluster._addGatewayAssociation(this, props.gateway);
     }
 
-    new CfnGatewayClusterAssociations(this, 'Resource', {
+    const resource = new CfnGatewayClusterAssociations(this, 'Resource', {
       cluster: props.cluster.clusterRef.clusterName,
       gateway: props.gateway.gatewayRef.gatewayArn,
     });
+    this.gatewayClusterAssociationStatus = resource.attrStatus;
+    this.gatewayClusterAssociationClusterArn = resource.attrClusterArn;
+    this.gatewayClusterAssociationGatewayArn = resource.attrGatewayArn;
   }
 }

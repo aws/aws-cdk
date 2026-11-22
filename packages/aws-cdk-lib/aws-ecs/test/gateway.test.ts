@@ -468,11 +468,14 @@ describe('gateway', () => {
   });
 
   test.each([
-    'arn:aws:ecs:us-west-2:123456789012:cluster/my-cluster',
-    'arn:aws:sqs:us-west-2:123456789012:gateway/name/id',
-    'arn:aws:ecs:us-west-2:123456789012:gateway',
-  ])('fails to import malformed gateway ARN %s', (arn) => {
-    expect(() => ecs.Gateway.fromGatewayArn(stack, 'Imported', arn)).toThrow(/gatewayArn must be an ARN of the form/);
+    ['arn:aws:ecs:us-west-2:123456789012:cluster/my-cluster', 'my-cluster'],
+    ['arn:aws:sqs:us-west-2:123456789012:gateway/name/id', 'name'],
+    ['arn:aws:ecs:us-west-2:123456789012:gateway', ''],
+  ])('imports %s without validating it', (arn, name) => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Imported', arn);
+
+    expect(gateway.gatewayArn).toEqual(arn);
+    expect(gateway.gatewayName).toEqual(name);
   });
 });
 
@@ -532,6 +535,17 @@ describe('gateway connector', () => {
     const cfn = association.node.defaultChild as ecs.CfnGatewayClusterAssociations;
     expect(stack.resolve(cfn.cluster)).toEqual({ Ref: 'ClusterEB0386A7' });
     expect(cfn.gateway).toEqual(GATEWAY_ARN);
+  });
+
+  test('exposes the association attributes', () => {
+    const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+
+    const association = cluster.associateGateway(gateway);
+
+    const logicalId = stack.getLogicalId(association.node.defaultChild as cdk.CfnElement);
+    expect(stack.resolve(association.gatewayClusterAssociationStatus)).toEqual({ 'Fn::GetAtt': [logicalId, 'Status'] });
+    expect(stack.resolve(association.gatewayClusterAssociationClusterArn)).toEqual({ 'Fn::GetAtt': [logicalId, 'ClusterArn'] });
+    expect(stack.resolve(association.gatewayClusterAssociationGatewayArn)).toEqual({ 'Fn::GetAtt': [logicalId, 'GatewayArn'] });
   });
 
   test('associates a gateway with an imported cluster under a chosen construct ID', () => {
@@ -935,6 +949,23 @@ describe('gateway connector', () => {
       taskDefinition,
       gatewayConnector: { portName: 'web', accessTypes },
     })).toThrow(/gatewayConnector accessTypes must be a non-empty list without duplicates/);
+  });
+
+  test.each<[string, ecs.GatewayConnectorHealthCheck, Record<string, number>]>([
+    ['minimum interval and timeout', { interval: cdk.Duration.seconds(5), timeout: cdk.Duration.seconds(2) },
+      { HealthCheckIntervalSeconds: 5, HealthCheckTimeoutSeconds: 2 }],
+    ['maximum interval and timeout', { interval: cdk.Duration.seconds(300), timeout: cdk.Duration.seconds(120) },
+      { HealthCheckIntervalSeconds: 300, HealthCheckTimeoutSeconds: 120 }],
+    ['minimum thresholds', { healthyThresholdCount: 2, unhealthyThresholdCount: 2 },
+      { HealthyThresholdCount: 2, UnhealthyThresholdCount: 2 }],
+    ['maximum thresholds', { healthyThresholdCount: 10, unhealthyThresholdCount: 10 },
+      { HealthyThresholdCount: 10, UnhealthyThresholdCount: 10 }],
+  ])('accepts %s', (_name, healthCheck, expected) => {
+    new ecs.FargateService(stack, 'Service', { cluster, taskDefinition, gatewayConnector: { portName: 'web', healthCheck } });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      GatewayConnectors: [{ PortName: 'web', HealthCheck: Match.objectLike(expected) }],
+    });
   });
 
   test.each<[string, ecs.GatewayConnectorHealthCheck, RegExp]>([

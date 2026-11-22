@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -9,11 +10,17 @@ const stack = new cdk.Stack(app, 'aws-ecs-gateway');
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
+// the gateway's load balancers write access logs here; the HTTP check below runs with logging on
+const logs = new s3.Bucket(stack, 'GatewayLogs', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
 const gateway = new ecs.Gateway(stack, 'Gateway', {
   vpc,
   scheme: ecs.GatewayScheme.INTERNET_FACING,
   deletionProtection: false,
   propagateTags: ecs.GatewayPropagateTags.NONE,
+  accessLogs: { bucket: logs, prefix: 'gateway' },
 });
 cluster.associateGateway(gateway);
 
