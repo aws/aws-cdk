@@ -195,21 +195,54 @@ test.each([false, true])('keeps the protection logical ID when an aspect overrid
 
 // Deployed stacks depend on these logical IDs. CloudFormation rejects a second protection for the
 // same records under a new logical ID, so a change here fails the next deployment of those stacks.
-test.each<[string, (stack: Stack) => string, string]>([
-  ['a literal zone ID', () => 'Z123', 'Route53RecordSetProtections7145ba6d393cf3e3d8029fcd671c03ac2242E74B'],
+test.each<[string, () => { stack: Stack; hostedZoneId: string; name?: string }, string]>([
+  [
+    'a literal zone ID',
+    () => ({ stack: new Stack(), hostedZoneId: 'Z123' }),
+    'Route53RecordSetProtections7145ba6d393cf3e3d8029fcd671c03ac2242E74B',
+  ],
   [
     'a zone in the same stack',
-    stack => new HostedZone(stack, 'Zone', { zoneName: 'example.com' }).hostedZoneId,
+    () => {
+      const stack = new Stack();
+      return { stack, hostedZoneId: new HostedZone(stack, 'Zone', { zoneName: 'example.com' }).hostedZoneId };
+    },
     'Route53RecordSetProtections1e1b357276f44c619133b62e276b67a29DD2776D',
   ],
   [
     'a zone ID parameter',
-    stack => new CfnParameter(stack, 'ZoneId').valueAsString,
+    () => {
+      const stack = new Stack();
+      return { stack, hostedZoneId: new CfnParameter(stack, 'ZoneId').valueAsString };
+    },
     'Route53RecordSetProtections7f23ba48ef43eb96e4ce073d817989bb3A7D3B82',
   ],
-])('keeps the frozen protection logical ID for %s', (_, zoneId, logicalId) => {
-  const stack = new Stack();
-  const record = new CfnRecordSet(stack, 'Blue', { hostedZoneId: zoneId(stack), name: 'www.example.com.', type: 'A' });
+  [
+    'a zone in a sibling stack',
+    () => {
+      const app = new App();
+      const zone = new HostedZone(new Stack(app, 'Zones'), 'Zone', { zoneName: 'example.com' });
+      return { stack: new Stack(app, 'Records'), hostedZoneId: zone.hostedZoneId };
+    },
+    'Route53RecordSetProtections7cb7c7a1e1f347ebc641876a71e7ab3aEB7795CE',
+  ],
+  [
+    'a joined record name',
+    () => {
+      const stack = new Stack();
+      const suffix = new CfnParameter(stack, 'Suffix');
+      return { stack, hostedZoneId: 'Z123', name: Fn.join('', ['www.', suffix.valueAsString, '.']) };
+    },
+    'Route53RecordSetProtections9f7e131ca756c0079dc7779c7022d8624D8D3F52',
+  ],
+  [
+    'an imported zone ID',
+    () => ({ stack: new Stack(), hostedZoneId: Fn.importValue('ZoneId') }),
+    'Route53RecordSetProtections2158249aad5f585b9642094457f6f3d24FDDB7B4',
+  ],
+])('keeps the frozen protection logical ID for %s', (_, build, logicalId) => {
+  const { stack, hostedZoneId, name = 'www.example.com.' } = build();
+  const record = new CfnRecordSet(stack, 'Blue', { hostedZoneId, name, type: 'A' });
   record.with(new mixins.RecordSetProtection());
 
   expect(Object.keys(Template.fromStack(stack).findResources(protectionType))).toEqual([logicalId]);
