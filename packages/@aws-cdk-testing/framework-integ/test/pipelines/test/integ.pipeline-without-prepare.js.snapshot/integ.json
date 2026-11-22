@@ -10,6 +10,5 @@
       "assertionStackName": "PreparelessPipelineTestDefaultTestDeployAssert7B7DD2C6"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1147.0"
+  "enableLookups": true
 }

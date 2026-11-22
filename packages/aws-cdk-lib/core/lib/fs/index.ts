@@ -16,6 +16,7 @@ export * from './options';
 export class FileSystem {
   /**
    * Copies an entire directory structure.
+   *
    * @param srcDir Source directory
    * @param destDir Destination directory
    * @param options options
@@ -23,6 +24,27 @@ export class FileSystem {
    */
   public static copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
     return copyDirectory(srcDir, destDir, options, rootDir);
+  }
+
+  /**
+   * Copies an entire directory structure.
+   *
+   * Protects against interruption by copying to a temporary directory first and then renaming the directory into place.
+   * Both the target directory and the temporary directory will be overwritten if they already exist.
+   *
+   * The temporary directory is deleted if an error occurs.
+   */
+  public static copyDirectoryAtomic(srcDir: string, destDir: string, options: CopyOptions = { }) {
+    const tmpDest = `${destDir}.tmp`;
+    FileSystem.rmrf(tmpDest);
+    try {
+      fs.mkdirSync(tmpDest, { recursive: true });
+      copyDirectory(srcDir, tmpDest, options);
+      FileSystem.rmrf(destDir);
+      fs.renameSync(tmpDest, destDir);
+    } finally {
+      FileSystem.rmrf(tmpDest);
+    }
   }
 
   /**

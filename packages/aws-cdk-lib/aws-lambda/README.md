@@ -810,7 +810,7 @@ By default, permissions are granted to the capacity provider to manage instances
 
 ### Configuring Scaling Policies
 
-You can configure target tracking scaling policies to automatically scale your capacity provider based on CPU utilization:
+You can configure target tracking scaling policies to automatically scale your capacity provider based on CPU utilization, or on GPU utilization for GPU instance types (`TargetTrackingScalingPolicy.gpuUtilization()`, see [Lambda with Accelerator Configuration](#lambda-with-accelerator-configuration)):
 
 ```ts
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -938,6 +938,55 @@ Note that once you use a capacity provider in a function, it cannot be removed, 
 | ------------------------ | ------ | -------- | ------------------------------------------------------------- |
 | minExecutionEnvironments | number | No       | Minimum execution environments for $LATEST.PUBLISHED version. |
 | maxExecutionEnvironments | number | No       | Maximum execution environments for $LATEST.PUBLISHED version. |
+
+### Lambda with Accelerator Configuration
+
+Lambda functions using [Capacity Providers](#capacity-providers) can be configured with accelerator resources,
+such as GPUs. The `acceleratorConfig` property specifies the minimum amount of memory of each accelerator device
+exposed to the execution environment. Lambda might allocate more, depending on the accelerator instance types available.
+
+The capacity provider must allow GPU instance types on x86_64. It can scale on GPU utilization:
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'MyVpc');
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+
+const gpuCapacityProvider = new lambda.CapacityProvider(this, 'GpuCapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  architectures: [lambda.Architecture.X86_64],
+  instanceTypeFilter: lambda.InstanceTypeFilter.allow([
+    ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.XLARGE),
+  ]),
+  scalingOptions: lambda.ScalingOptions.manual([
+    lambda.TargetTrackingScalingPolicy.gpuUtilization(60),
+  ]),
+});
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.FROM_IMAGE,
+  handler: lambda.Handler.FROM_IMAGE,
+  code: lambda.Code.fromAssetImage(path.join(__dirname, 'lambda-handler')),
+  memorySize: 2048,
+  acceleratorConfig: {
+    acceleratorMemorySize: lambda.AcceleratorMemorySize.GIB_24,
+  },
+});
+
+gpuCapacityProvider.addFunction(fn);
+```
+
+**Important considerations:**
+
+* **Requires Capacity Provider**: Accelerator configuration is only supported for functions using a capacity provider. Use `capacityProvider.addFunction(fn)` to attach the function.
+* **Valid accelerator memory sizes**: 3, 6, 12, 16, 24, 48 GiB.
+* **Minimum memory size**: `memorySize` must be at least 2048 MiB when `acceleratorConfig` is set.
+* **Image package type only**: Only container image functions (`Runtime.FROM_IMAGE`) are supported.
+* **x86_64 only**: ARM64 architecture is not supported for GPU functions.
+* **Ephemeral storage**: LMI functions with accelerator configuration can support up to 32 GiB ephemeral storage (vs 10 GiB for LMI function without the configuration).
+* **Updates cause interruption**: Changing `acceleratorConfig` on an existing function updates it in place with some interruption.
 
 ### Capacity Provider Versions
 
@@ -2089,6 +2138,44 @@ new lambda.Function(this, 'Lambda', {
 });
 ```
 
+## Customer-managed runtimes
+
+A customer-managed runtime is a Lambda runtime
+that you publish and version yourself from a container image, instead of using a Lambda-managed runtime such as `nodejs22.x`.
+The runtime is identified by its ARN, and a runtime *alias* (for example `stable`) selects which published version the
+function runs on. Moving the alias to a new version rolls every function on that alias that uses the default `AUTO` runtime
+management mode forward on its next cold start, with no function redeploy.
+
+To run a function on a customer-managed runtime, use the `custom` runtime and apply the
+[`FunctionRuntimeConfig` mixin](#functionruntimeconfig), which names the runtime and alias:
+
+```ts
+new lambda.Function(this, 'MyFunction', {
+  runtime: new lambda.Runtime('custom', lambda.RuntimeFamily.OTHER),
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+}).with(new lambda.mixins.FunctionRuntimeConfig({
+  runtimeArn: 'arn:aws:lambda:us-east-1:123456789012:runtime/my-python-runtime',
+  runtimeAlias: 'stable',
+}));
+```
+
+**Considerations:**
+
+* `runtimeArn` and `runtimeAlias` are both required.
+* The function's runtime must be `custom`; the mixin reports any other runtime as an error at synthesis time. A runtime
+  that is only known at deployment, such as a `CfnParameter` value, isn't checked. A function that uses the `custom`
+  runtime without the mixin is rejected by the service at deployment.
+* The mixin cannot be used with a container image function (`Runtime.FROM_IMAGE`); the image supplies its own runtime.
+* Inline code (`Code.fromInline`) and SnapStart are not supported with the `custom` runtime. Use an asset, bucket, or
+  Docker-built asset for the code.
+* Layers are checked against `compatibleRuntimes` at synthesis time, as for any other runtime. A layer that lists
+  compatible runtimes must include a `custom` runtime built the same way as the function's, for example
+  `new lambda.Runtime('custom', lambda.RuntimeFamily.OTHER)`; runtimes are matched on name, family, and inline-code
+  support. Layers without `compatibleRuntimes`, and layers imported with `LayerVersion.fromLayerVersionArn`, are accepted.
+* Which runtime versions and architectures a runtime supports, and whether the calling account may use it, are validated
+  by the service at deployment time.
+
 ## Exclude Patterns for Assets
 
 When using `lambda.Code.fromAsset(path)` an `exclude` property allows you to ignore particular files for assets by providing patterns for file paths to exclude. Note that this has no effect on `Assets` bundled using the `bundling` property.
@@ -2693,3 +2780,43 @@ revisions, use the L1 constructs (`CfnWebFunction`, `CfnWebFunctionRevision` and
 
 Metrics are not modeled yet. The endpoint publishes them in the `AWS/Lambda/Web` namespace with
 the `FunctionName` and `EndpointName` dimensions; use `cloudwatch.Metric` to reference them.
+
+## Mixins
+
+Lambda provides [mixins](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#mixins) that can be applied to L1 and L2 constructs.
+
+### FunctionRuntimeConfig
+
+Runs a function on a [customer-managed runtime](#customer-managed-runtimes) by setting its `RuntimeConfig`. The function's
+runtime must be `custom`:
+
+```ts
+new lambda.Function(this, 'MyFunction', {
+  runtime: new lambda.Runtime('custom', lambda.RuntimeFamily.OTHER),
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+}).with(new lambda.mixins.FunctionRuntimeConfig({
+  runtimeArn: 'arn:aws:lambda:us-east-1:123456789012:runtime/my-python-runtime',
+  runtimeAlias: 'stable',
+}));
+
+declare const role: iam.IRole;
+new lambda.CfnFunction(this, 'MyCfnFunction', {
+  runtime: 'custom',
+  handler: 'index.handler',
+  code: { s3Bucket: 'my-bucket', s3Key: 'function.zip' },
+  role: role.roleArn,
+}).with(new lambda.mixins.FunctionRuntimeConfig({
+  runtimeArn: 'arn:aws:lambda:us-east-1:123456789012:runtime/my-python-runtime',
+  runtimeAlias: 'stable',
+}));
+```
+
+Applying the mixin:
+
+* Sets `RuntimeConfig` on the function, replacing any existing `RuntimeConfig`.
+* Fails synthesis if the function's runtime is not `custom`, or if the function is a container image function. The check
+  runs at synthesis, so a runtime set after the mixin is applied is also checked. A runtime that is only known at
+  deployment isn't checked.
+* Applies to every function in the scope it is applied to, so apply it to the function rather than to a stack.
+* Leaves the runtime's versions, architectures, and account access to be validated by the service at deployment.

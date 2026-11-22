@@ -7,6 +7,7 @@ import { version as delayVersion } from 'delay/package.json';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
 import { App, AssetHashType, BundlingFileAccess, DockerImage, Stack } from '../../core';
+import { readPerfCounters, resetCounters } from '../../core/lib/private/perf';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
@@ -207,7 +208,7 @@ test('esbuild bundling with externals and dependencies', () => {
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
           "cp '/asset-input/package-lock.json' '/asset-output/package-lock.json'",
-          'cd "/asset-output"',
+          "cd '/asset-output'",
           'npm ci',
         ].join(' && '),
       ],
@@ -680,7 +681,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f '\/asset-output\/node_modules\/.modules.yaml'/),
       ]),
     }),
   });
@@ -810,6 +811,31 @@ test('Local bundling', () => {
   spawnSyncMock.mockRestore();
 });
 
+test('Local bundling counts the esbuild run by the program that starts it', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+  resetCounters();
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+  });
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  expect(readPerfCounters({ telemetry: true })).toMatchObject({ 'NodejsFunction#esbuild:yarn': { count: 1 } });
+
+  spawnSyncMock.mockRestore();
+});
+
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
     isWorkspacePackage: true,
@@ -929,7 +955,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
           `'esbuild' '--bundle' '/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
           "cp '/asset-input/common/package-lock.json' '/asset-output/package-lock.json'",
-          'cd "/asset-output"',
+          "cd '/asset-output'",
           'npm ci',
         ].join(' && '),
       ],
