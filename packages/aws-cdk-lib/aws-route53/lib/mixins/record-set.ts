@@ -2,7 +2,7 @@ import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
 import type { IAspect, IPostProcessor, IResolvable, IResolveContext } from '../../../core';
 import {
-  Annotations, AspectPriority, Aspects, DefaultTokenResolver,
+  Annotations, AspectPriority, Aspects, CfnDeletionPolicy, DefaultTokenResolver,
   Mixin, Reference, Stack, Stage, Token, Tokenization, UnscopedValidationError, ValidationError,
 } from '../../../core';
 import { md5hash } from '../../../core/lib/helpers-internal';
@@ -19,6 +19,8 @@ export interface RecordSetProtectionProps {
   /**
    * The message Route 53 includes in the error when it blocks a change.
    *
+   * Route 53 accepts at most 256 UTF-16 code units. A character outside the Basic
+   * Multilingual Plane, such as an emoji, counts as two.
    * CloudFormation replaces the protection if you change this comment.
    * @default - no comment
    */
@@ -50,8 +52,9 @@ export class RecordSetProtection extends Mixin {
   constructor(private readonly props: RecordSetProtectionProps = {}) {
     super();
     const comment = props.comment;
-    if (comment !== undefined && !Token.isUnresolved(comment) && Array.from(comment).length > 256) {
-      throw new UnscopedValidationError(lit`RecordSetProtectionCommentTooLong`, `protection comment must be at most 256 characters, got ${JSON.stringify(comment)}`);
+    // Route 53 counts UTF-16 code units, which is what String.length returns.
+    if (comment !== undefined && !Token.isUnresolved(comment) && comment.length > 256) {
+      throw new UnscopedValidationError(lit`RecordSetProtectionCommentTooLong`, `protection comment must be at most 256 UTF-16 code units, got ${comment.length} in ${JSON.stringify(comment)}`);
     }
   }
 
@@ -235,6 +238,13 @@ function linkMatchingRecords(assembly: IConstruct): void {
     if (different) {
       throw new ValidationError(lit`RecordSetProtectionConditionMismatch`,
         `use the same CloudFormation condition for ${first.node.path} and ${different.node.path} so their shared protection is created whenever the records exist`, different);
+    }
+    // Removal policy aspects have run by now. A retained protection stays in Route 53 after it
+    // leaves the template and keeps blocking changes to its records.
+    const policy = protection.cfnOptions.deletionPolicy;
+    if (policy !== undefined && policy !== CfnDeletionPolicy.DELETE) {
+      throw new ValidationError(lit`RecordSetProtectionRetained`,
+        `record set protection must use the Delete deletion policy, got ${JSON.stringify(policy)}; exclude AWS::Route53::RecordSetProtection from the removal policy, because a retained protection keeps blocking changes to its records after it leaves the template`, protection);
     }
     protection.cfnOptions.condition ??= first.cfnOptions.condition;
     for (const record of group) protection.addResourceDependency(record);

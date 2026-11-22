@@ -1,6 +1,6 @@
 import { Annotations, Match, Template } from '../../assertions';
 import type { IResolveContext } from '../../core';
-import { App, Aspects, CfnCondition, CfnParameter, Fn, Lazy, Mixins, NestedStack, Stack, Stage, Token } from '../../core';
+import { App, Aspects, CfnCondition, CfnParameter, Fn, Lazy, Mixins, NestedStack, RemovalPolicies, Stack, Stage, Token } from '../../core';
 import { ARecord, CfnHostedZone, CfnRecordSet, HostedZone, mixins, RecordTarget } from '../lib';
 
 const protectionType = 'AWS::Route53::RecordSetProtection';
@@ -529,7 +529,47 @@ test('fails when the record only specifies a hosted zone name', () => {
   expect(() => record.with(new mixins.RecordSetProtection())).toThrow('set hostedZoneId on the record');
 });
 
-test('accepts 256 characters and fails for a longer comment', () => {
-  expect(() => new mixins.RecordSetProtection({ comment: 'a'.repeat(256) })).not.toThrow();
-  expect(() => new mixins.RecordSetProtection({ comment: 'a'.repeat(257) })).toThrow('protection comment must be at most 256 characters');
+// Route 53 counts UTF-16 code units, so it accepts 128 emoji and rejects 129.
+test.each([
+  ['a', 256],
+  ['😀', 128],
+])('accepts a comment of %s repeated %d times and fails for one more', (char, max) => {
+  expect(() => new mixins.RecordSetProtection({ comment: char.repeat(max) })).not.toThrow();
+  expect(() => new mixins.RecordSetProtection({ comment: char.repeat(max + 1) }))
+    .toThrow(`protection comment must be at most 256 UTF-16 code units, got ${(max + 1) * char.length} in`);
+});
+
+describe('removal policies on the stack', () => {
+  function protectedRecord() {
+    const stack = new Stack();
+    const record = new CfnRecordSet(stack, 'Blue', { hostedZoneId: 'Z123', name: 'www.example.com.', type: 'A' });
+    record.with(new mixins.RecordSetProtection());
+    return stack;
+  }
+
+  test.each<[string, (policies: RemovalPolicies) => void, string]>([
+    ['retain', policies => policies.retain(), 'Retain'],
+    ['retainOnUpdateOrDelete', policies => policies.retainOnUpdateOrDelete(), 'RetainExceptOnCreate'],
+  ])('fails when %s reaches the protection', (_, apply, policy) => {
+    const stack = protectedRecord();
+    apply(RemovalPolicies.of(stack));
+
+    expect(() => Template.fromStack(stack)).toThrow(`record set protection must use the Delete deletion policy, got "${policy}"`);
+  });
+
+  test('accepts retain when it excludes the protection', () => {
+    const stack = protectedRecord();
+    RemovalPolicies.of(stack).retain({ excludeResourceTypes: [protectionType] });
+
+    const template = Template.fromStack(stack);
+    template.hasResource(protectionType, { DeletionPolicy: Match.absent() });
+    template.hasResource('AWS::Route53::RecordSet', { DeletionPolicy: 'Retain' });
+  });
+
+  test('accepts destroy', () => {
+    const stack = protectedRecord();
+    RemovalPolicies.of(stack).destroy();
+
+    Template.fromStack(stack).hasResource(protectionType, { DeletionPolicy: 'Delete' });
+  });
 });
