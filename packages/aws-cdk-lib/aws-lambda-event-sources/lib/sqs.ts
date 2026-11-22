@@ -13,6 +13,8 @@ export interface SqsEventSourceProps {
    *
    * Valid Range: Minimum value of 1. Maximum value of 10.
    * If `maxBatchingWindow` is configured, this value can go up to 10,000.
+   * For FIFO queues, the batch size can go up to 10,000 when both `maxBatchingWindow`
+   * and `provisionedPollerConfig` are configured.
    *
    * @default 10
    */
@@ -22,6 +24,7 @@ export interface SqsEventSourceProps {
    * The maximum amount of time to gather records before invoking the function.
    *
    * Valid Range: Minimum value of 0 minutes. Maximum value of 5 minutes.
+   * For FIFO queues, `provisionedPollerConfig` must be configured to set a batching window.
    *
    * @default - no batching window. The lambda function will be invoked immediately with the records that are available.
    */
@@ -100,8 +103,8 @@ export class SqsEventSource implements lambda.IEventSource {
 
   constructor(readonly queue: sqs.IQueue, private readonly props: SqsEventSourceProps = { }) {
     if (this.props.maxBatchingWindow !== undefined) {
-      if (queue.fifo) {
-        throw new ValidationError(lit`BatchingWindowSupportedQueues`, 'Batching window is not supported for FIFO queues', queue);
+      if (queue.fifo && !this.props.provisionedPollerConfig) {
+        throw new ValidationError(lit`BatchingWindowSupportedQueues`, 'Batching window is not supported for FIFO queues without provisionedPollerConfig', queue);
       }
       if (!this.props.maxBatchingWindow.isUnresolved() && this.props.maxBatchingWindow.toSeconds() > 300) {
         throw new ValidationError(lit`MaximumBatchingWindowSecondsLess`, `Maximum batching window must be 300 seconds or less (given ${this.props.maxBatchingWindow.toHumanString()})`, queue);

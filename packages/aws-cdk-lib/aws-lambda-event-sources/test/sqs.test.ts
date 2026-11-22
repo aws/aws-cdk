@@ -179,7 +179,7 @@ describe('SQSEventSource', () => {
     });
   });
 
-  test('fails if batch window defined for FIFO queue', () => {
+  test('fails if batch window defined for FIFO queue without provisionedPollerConfig', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -190,7 +190,91 @@ describe('SQSEventSource', () => {
     // WHEN/THEN
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       maxBatchingWindow: cdk.Duration.minutes(5),
-    }))).toThrow(/Batching window is not supported for FIFO queues/);
+    }))).toThrow(/Batching window is not supported for FIFO queues without provisionedPollerConfig/);
+  });
+
+  test('allows batch window and batchSize up to 10000 for FIFO queue when provisionedPollerConfig is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q', {
+      fifo: true,
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      batchSize: 1000,
+      maxBatchingWindow: cdk.Duration.seconds(5),
+      provisionedPollerConfig: {
+        minimumPollers: 2,
+        maximumPollers: 10,
+      },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'BatchSize': 1000,
+      'MaximumBatchingWindowInSeconds': 5,
+      'ProvisionedPollerConfig': {
+        'MinimumPollers': 2,
+        'MaximumPollers': 10,
+      },
+    });
+  });
+
+  test('fails if batch window > 300 seconds for FIFO queue when provisionedPollerConfig is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q', {
+      fifo: true,
+    });
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      maxBatchingWindow: cdk.Duration.minutes(7),
+      provisionedPollerConfig: {
+        minimumPollers: 2,
+        maximumPollers: 10,
+      },
+    }))).toThrow(/Maximum batching window must be 300 seconds or less/i);
+  });
+
+  test('fails if batchSize > 10000 for FIFO queue when provisionedPollerConfig is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q', {
+      fifo: true,
+    });
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      batchSize: 10001,
+      maxBatchingWindow: cdk.Duration.seconds(5),
+      provisionedPollerConfig: {
+        minimumPollers: 2,
+        maximumPollers: 10,
+      },
+    }))).toThrow(/Maximum batch size must be between 1 and 10000 inclusive/i);
+  });
+
+  test('fails if batchSize > 10 for FIFO queue with provisionedPollerConfig when maxBatchingWindow is not specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q', {
+      fifo: true,
+    });
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      batchSize: 50,
+      provisionedPollerConfig: {
+        minimumPollers: 2,
+        maximumPollers: 10,
+      },
+    }))).toThrow(/Maximum batch size must be between 1 and 10 inclusive/i);
   });
 
   test('fails if batch window is > 5', () => {
