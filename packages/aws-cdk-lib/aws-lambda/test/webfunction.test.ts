@@ -9,6 +9,7 @@ import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration } from '../..
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfiguration, NetworkConnectorProtocol } from '../lib/network-connector';
+import { RuntimeFamily } from '../lib/runtime';
 import { WebFunction } from '../lib/webfunction';
 import type { WebFunctionProps } from '../lib/webfunction';
 import { WebFunctionCode } from '../lib/webfunction-code';
@@ -706,6 +707,47 @@ describe('WebFunction template', () => {
         EnvironmentVariables: Match.objectLike({ AWS_LAMBDA_NODEJS_ENTRYPOINT: 'app.js' }),
       }),
     });
+  });
+
+  test('entryPoint with a deploy-time Python runtime and its family is passed as AWS_LAMBDA_PYTHON_ENTRYPOINT', () => {
+    const runtimeName = new CfnParameter(stack, 'Runtime').valueAsString;
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of(runtimeName, RuntimeFamily.PYTHON),
+      entryPoint: 'api:application',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      BuildConfig: Match.objectLike({ RuntimeConfig: { Runtime: { Ref: 'Runtime' } } }),
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: { AWS_LAMBDA_PYTHON_ENTRYPOINT: 'api:application' },
+      }),
+    });
+  });
+
+  test('the runtime family takes precedence over the runtime name', () => {
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of('python3.15', RuntimeFamily.NODEJS),
+      entryPoint: 'app.js',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: { AWS_LAMBDA_NODEJS_ENTRYPOINT: 'app.js' },
+      }),
+    });
+  });
+
+  test('throws when entryPoint is set for a runtime family other than Node.js or Python', () => {
+    const runtimeName = new CfnParameter(stack, 'Runtime').valueAsString;
+    expect(() => new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of(runtimeName, RuntimeFamily.JAVA),
+      entryPoint: 'app.jar',
+    }))).toThrow(/entryPoint is only supported for Node.js and Python runtimes/);
+  });
+
+  test('the built-in runtimes carry their family', () => {
+    expect(WebFunctionRuntime.NODEJS_24_X.family).toEqual(RuntimeFamily.NODEJS);
+    expect(WebFunctionRuntime.NODEJS_LATEST.family).toEqual(RuntimeFamily.NODEJS);
+    expect(WebFunctionRuntime.PYTHON_3_15.family).toEqual(RuntimeFamily.PYTHON);
+    expect(WebFunctionRuntime.of('nodejs26.x').family).toBeUndefined();
   });
 
   test('entryPoint with a deploy-time runtime is passed as AWS_LAMBDA_NODEJS_ENTRYPOINT', () => {

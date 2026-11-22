@@ -10,6 +10,7 @@ import type { IWebFunctionRef, WebFunctionReference } from './lambda.generated';
 import { NetworkConnectorComputeType } from './network-connector';
 import type { INetworkConnector } from './network-connector';
 import { endpointShapeHash, FUNCTIONS_WITH_EGRESS_CONNECTOR, hasTokens, validateResourceName } from './private/webfunction-util';
+import { RuntimeFamily } from './runtime';
 import type { WebFunctionCode } from './webfunction-code';
 import { WebFunctionEndpoint, WebFunctionEndpointLocation, WebFunctionEndpointType, WebFunctionTraffic } from './webfunction-endpoint';
 import type { WebFunctionAuthType, WebFunctionDefaultEndpointOptions, WebFunctionEndpointOptions } from './webfunction-endpoint';
@@ -69,15 +70,17 @@ function topLevelStack(stack: Stack): Stack {
 /**
  * The reserved environment variable the runtime reads `entryPoint` from.
  *
- * A runtime that is a token can't be inspected; it keeps the Node.js variable, which is what
+ * The runtime's family decides it. Without a family, it is inferred from the runtime name; a
+ * name that is a token can't be inspected and keeps the Node.js variable, which is what
  * `entryPoint` mapped to before Python runtimes were supported.
  */
 function entryPointEnvironmentVariable(runtime: WebFunctionRuntime, scope: Construct): string {
   const name = runtime.name;
-  if (Token.isUnresolved(name) || name.startsWith('nodejs')) {
+  const family = runtime.family ?? inferredFamily(name);
+  if (family === RuntimeFamily.NODEJS) {
     return 'AWS_LAMBDA_NODEJS_ENTRYPOINT';
   }
-  if (name.startsWith('python')) {
+  if (family === RuntimeFamily.PYTHON) {
     return 'AWS_LAMBDA_PYTHON_ENTRYPOINT';
   }
   throw new ValidationError(
@@ -85,6 +88,17 @@ function entryPointEnvironmentVariable(runtime: WebFunctionRuntime, scope: Const
     `entryPoint is only supported for Node.js and Python runtimes, got '${name}'`,
     scope,
   );
+}
+
+/** The runtime family inferred from a runtime name; a name that is a token is treated as Node.js. */
+function inferredFamily(name: string): RuntimeFamily | undefined {
+  if (Token.isUnresolved(name) || name.startsWith('nodejs')) {
+    return RuntimeFamily.NODEJS;
+  }
+  if (name.startsWith('python')) {
+    return RuntimeFamily.PYTHON;
+  }
+  return undefined;
 }
 
 /**
@@ -145,9 +159,10 @@ export interface WebFunctionProps {
    * Not supported for other runtimes. Do not set the same variable through `environment` as
    * well.
    *
-   * If `runtime` is a deploy-time value (a token), the runtime family cannot be determined at
-   * synthesis time and `entryPoint` is passed via `AWS_LAMBDA_NODEJS_ENTRYPOINT`. For a
-   * deploy-time Python runtime, set `AWS_LAMBDA_PYTHON_ENTRYPOINT` through `environment` instead.
+   * The variable is chosen from the runtime's family. For a runtime name that is a deploy-time
+   * value (a token), pass the family to `WebFunctionRuntime.of()`, for example
+   * `WebFunctionRuntime.of(param.valueAsString, RuntimeFamily.PYTHON)`; without it, `entryPoint`
+   * is passed via `AWS_LAMBDA_NODEJS_ENTRYPOINT`.
    *
    * @see https://docs.aws.amazon.com/lambda/latest/dg/web-functions-python.html
    *

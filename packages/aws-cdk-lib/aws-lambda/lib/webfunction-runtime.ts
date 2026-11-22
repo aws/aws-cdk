@@ -1,3 +1,5 @@
+import { RuntimeFamily } from './runtime';
+
 /**
  * Runtime environment for WebFunction
  */
@@ -5,7 +7,7 @@ export class WebFunctionRuntime {
   /**
    * Node.js 24.x runtime
    */
-  public static readonly NODEJS_24_X = new WebFunctionRuntime('nodejs24.x');
+  public static readonly NODEJS_24_X = new WebFunctionRuntime('nodejs24.x', RuntimeFamily.NODEJS);
 
   /**
    * Python 3.15 runtime
@@ -16,7 +18,7 @@ export class WebFunctionRuntime {
    *
    * @see https://docs.aws.amazon.com/lambda/latest/dg/web-functions-runtimes.html
    */
-  public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15');
+  public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15', RuntimeFamily.PYTHON);
 
   /**
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
@@ -28,7 +30,7 @@ export class WebFunctionRuntime {
    * new revision on it and shifts the endpoint's traffic there — without any change to your
    * code. Use a specific version such as `NODEJS_24_X` to control when that happens.
    */
-  public static readonly NODEJS_LATEST = new WebFunctionRuntime('nodejs24.x');
+  public static readonly NODEJS_LATEST = new WebFunctionRuntime('nodejs24.x', RuntimeFamily.NODEJS);
 
   /**
    * Use a custom runtime string not yet supported by the CDK.
@@ -36,10 +38,15 @@ export class WebFunctionRuntime {
    * This allows customers to use a newly released runtime without waiting
    * for a CDK library update.
    *
+   * Pass `family` when `name` is a deploy-time value (a token), such as a CloudFormation
+   * parameter, so that `entryPoint` is passed in the variable that the runtime reads.
+   *
    * @param name The runtime identifier (e.g. 'nodejs26.x')
+   * @param family The runtime family. If omitted, it is inferred from the start of `name`
+   * (`nodejs` or `python`) when `name` is known at synthesis time.
    */
-  public static of(name: string): WebFunctionRuntime {
-    return new WebFunctionRuntime(name);
+  public static of(name: string, family?: RuntimeFamily): WebFunctionRuntime {
+    return new WebFunctionRuntime(name, family);
   }
 
   /**
@@ -47,8 +54,16 @@ export class WebFunctionRuntime {
    */
   public readonly name: string;
 
-  private constructor(name: string) {
+  /**
+   * The runtime family, if it was given.
+   *
+   * @default - not given; inferred from `name` where needed
+   */
+  public readonly family?: RuntimeFamily;
+
+  private constructor(name: string, family?: RuntimeFamily) {
     this.name = name;
+    this.family = family;
   }
 
   /**
