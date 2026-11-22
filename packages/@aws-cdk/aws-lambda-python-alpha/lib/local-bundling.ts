@@ -50,7 +50,14 @@ export class LocalBundling implements cdk.ILocalBundling {
     // AssetStaging hashes the serialized bundler. Leave out the absolute entry
     // path and keep options that can change the staged files.
     const { packaging, excludes, outputPathSuffix } = this.props;
-    return { packaging, excludes, outputPathSuffix, pipArgs: this.pipArgs };
+    return {
+      packaging,
+      excludes,
+      outputPathSuffix,
+      pipArgs: this.pipArgs,
+      // Invalidate staged assets that may contain exported index credentials.
+      discardExportedRequirements: packaging.exportCommand ? true : undefined,
+    };
   }
 
   public tryBundle(outputDir: string): boolean {
@@ -69,7 +76,7 @@ export class LocalBundling implements cdk.ILocalBundling {
     if (packaging.exportCommand && osPlatform === 'win32') {
       throw new UnscopedValidationError(
         lit`PythonLocalBundlingWindowsExportUnsupported`,
-        'Local bundling on Windows does not support pipenv/poetry/uv projects — their export commands require a POSIX shell. Use Docker bundling, or generate a requirements.txt manually.',
+        'Local bundling on Windows does not support pipenv/poetry/uv projects. Use Docker bundling, or generate a requirements.txt manually.',
       );
     }
 
@@ -84,19 +91,26 @@ export class LocalBundling implements cdk.ILocalBundling {
 
     this.runHookCommands(commandHooks?.beforeBundling(entry, targetDir), targetDir, osPlatform, env);
 
-    if (packaging.exportCommand) {
-      this.runShellCommand(packaging.exportCommand, targetDir, osPlatform, env);
-    }
+    try {
+      if (packaging.exportCommand) {
+        this.runShellCommand(packaging.exportCommand, targetDir, osPlatform, env);
+      }
 
-    if (packaging.dependenciesFile !== DependenciesFile.NONE) {
-      runCommand(
-        python,
-        ['-m', 'pip', 'install', '-r', DependenciesFile.PIP, '--target', targetDir, ...this.pipArgs],
-        { cwd: targetDir, stdio: 'pipe', env },
-      );
-    }
+      if (packaging.dependenciesFile !== DependenciesFile.NONE) {
+        runCommand(
+          python,
+          ['-m', 'pip', 'install', '-r', DependenciesFile.PIP, '--target', targetDir, ...this.pipArgs],
+          { cwd: targetDir, stdio: 'pipe', env },
+        );
+      }
 
-    this.runHookCommands(commandHooks?.afterBundling(entry, targetDir), targetDir, osPlatform, env);
+      this.runHookCommands(commandHooks?.afterBundling(entry, targetDir), targetDir, osPlatform, env);
+    } finally {
+      // Poetry can write configured index credentials into the exported file.
+      if (packaging.exportCommand) {
+        fs.rmSync(path.join(targetDir, DependenciesFile.PIP), { force: true });
+      }
+    }
 
     return true;
   }

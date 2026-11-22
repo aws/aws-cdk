@@ -509,6 +509,33 @@ describe('python binary resolution', () => {
   });
 });
 
+test.each([false, true])('removes the generated Poetry requirements after bundling (pip failure: %s)', pipFails => {
+  const requirements = path.join(outputDir, 'requirements.txt');
+  mockedSpawnSync.mockImplementation((_cmd: string, args: string[]) => {
+    if (args[1] === Packaging.withPoetry().exportCommand) {
+      fs.writeFileSync(requirements, '--index-url https://user:placeholder@example.test/simple');
+    }
+    if (args[2] === 'install') {
+      expect(fs.existsSync(requirements)).toBe(true);
+      if (pipFails) {
+        return fail('pip install failed');
+      }
+    }
+    return OK;
+  });
+  const local = makeLocalBundling({
+    entry: ENTRY_POETRY,
+    runtime: Runtime.PYTHON_3_12,
+    architecture: Architecture.X86_64,
+  });
+  if (pipFails) {
+    expect(() => local.tryBundle(outputDir)).toThrow(/pip install failed/);
+  } else {
+    expect(local.tryBundle(outputDir)).toBe(true);
+  }
+  expect(fs.existsSync(requirements)).toBe(false);
+});
+
 describe('Windows export guard', () => {
   test.each([
     ['pipenv', ENTRY_PIPENV],
@@ -523,7 +550,7 @@ describe('Windows export guard', () => {
       architecture: Architecture.X86_64,
     });
 
-    expect(() => local.tryBundle(outputDir)).toThrow(/Windows.*POSIX shell/i);
+    expect(() => local.tryBundle(outputDir)).toThrow(/Windows does not support pipenv\/poetry\/uv/i);
   });
 
   test('plain requirements.txt projects still work on Windows', () => {
@@ -542,6 +569,21 @@ describe('Windows export guard', () => {
 });
 
 describe('validation', () => {
+  test.each(['..', '../escape', path.resolve(os.tmpdir(), 'outside-bundling')])(
+    'rejects output suffix %s before writing outside staging',
+    outputPathSuffix => {
+      const local = makeLocalBundling({
+        entry: ENTRY_PIP,
+        runtime: Runtime.PYTHON_3_11,
+        architecture: Architecture.X86_64,
+        outputPathSuffix,
+      });
+      expect(() => local.tryBundle(outputDir)).toThrow(/outputPathSuffix should not escape the local bundling output directory/);
+      expect(copyDirectorySpy).not.toHaveBeenCalled();
+      expect(mockedSpawnSync).not.toHaveBeenCalled();
+    },
+  );
+
   test('non-Python runtime throws at construction', () => {
     expect(() => makeLocalBundling({
       entry: ENTRY_PIP,

@@ -189,7 +189,7 @@ Prerequisites on the host:
   - `poetry >= 1.2` (for `poetry export --with-credentials`)
   - `uv >= 0.4` (for `uv export --frozen --no-emit-workspace --no-dev --no-editable`)
 - Every dependency must publish a compatible wheel for the target platform. Source-only distributions are rejected (a source build would target the host OS/arch and not the Lambda runtime).
-- On Windows hosts, only plain `requirements.txt` projects are supported. The `pipenv`/`poetry`/`uv` export commands embed POSIX shell syntax (`&&`, `rm -rf`, `>` redirection) and will fail under `cmd.exe`; use Docker bundling for lockfile-based projects on Windows.
+- On Windows hosts, local bundling supports plain `requirements.txt` projects. It rejects `pipenv`, `poetry` and `uv` projects at synthesis regardless of the shell. Use Docker bundling for lockfile-based projects on Windows.
 
 Symlinks under `entry` are always followed (dereferenced into their targets) when bundling locally, regardless of any asset symlink-follow configuration.
 
@@ -199,7 +199,7 @@ Note that this is the inverse of `aws-lambda-nodejs`, where local bundling is th
 
 Local bundling rejects Docker-only options: `image`, `buildArgs`, `command`, `entrypoint`, `volumes`, `volumesFrom`, `user`, `securityOpt`, `network`, `workingDirectory`, `platform`, and `bundlingFileAccess`.
 
-For private package indexes, configure pip on the host or set `environment` in your bundling options (for example, `environment: { PIP_INDEX_URL: indexUrl }`). These variables override the host environment for pip, lockfile exports, and hook commands.
+For private package indexes, configure pip on the host or set `environment` in your bundling options (for example, `environment: { PIP_INDEX_URL: indexUrl }`). These variables override the host environment for pip, lockfile exports, and hook commands. Poetry also uses the host's configured repository credentials. Local bundling removes the generated requirements file before packaging the asset.
 
 Local hook commands run after the source is copied and use the staged output as their working directory, so relative writes stay in the bundle. By default, Docker runs `beforeBundling` from its input directory before copying the sources. When preparing these commands, the hooks receive the original source directory as `inputDir` and the staged target as `outputDir`. Write to `outputDir` to change the bundle. Writing to `inputDir` modifies the source after it has been copied.
 
@@ -223,7 +223,7 @@ new python.PythonFunction(this, 'function', {
 
 When omitted, the default tags are derived from the runtime's base image:
 
-- Python 3.11 and below (Amazon Linux 2): `manylinux2014_{arch}`
+- Python 3.11 and below use `manylinux2014_{arch}`. Python 3.6 and 3.7 use Amazon Linux, and Python 3.8 through 3.11 use Amazon Linux 2.
 - Python 3.12 and above (Amazon Linux 2023): `manylinux_2_28_{arch}` falling back to `manylinux2014_{arch}`
 
 ## Custom Bundling

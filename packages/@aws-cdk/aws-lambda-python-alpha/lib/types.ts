@@ -123,8 +123,8 @@ export interface BundlingOptions extends DockerRunOptions {
    * PATH — `python3` is preferred and `python` is tried as a fallback. If the
    * project uses `pipenv`, `poetry`, or `uv`, the corresponding tool must also be
    * on PATH so its lockfile can be exported to a `requirements.txt`. On Windows,
-   * only plain `requirements.txt` projects are supported — pipenv/poetry/uv export
-   * commands assume a POSIX shell.
+   * local bundling rejects pipenv, Poetry and uv projects at synthesis and supports
+   * plain `requirements.txt` projects.
    *
    * Cross-platform wheels are selected via pip's `--platform`, `--python-version`,
    * and `--only-binary=:all:` flags, so the resulting artifact is binary-compatible
@@ -155,7 +155,8 @@ export interface LocalBundlingOptions {
    * layer architecture when it is x86_64 or arm64.
    *
    * @default - Derived from the target Python runtime's base image:
-   *            `manylinux2014_{arch}` for Python 3.11 and below (Amazon Linux 2),
+   *            `manylinux2014_{arch}` for Python 3.11 and below (Amazon Linux 2;
+   *            Amazon Linux for Python 3.6 and 3.7),
    *            `manylinux_2_28_{arch}` falling back to `manylinux2014_{arch}` for
    *            Python 3.12 and above (Amazon Linux 2023).
    */

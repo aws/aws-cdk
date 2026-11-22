@@ -393,6 +393,32 @@
       "data": "AssertionResultsLambdaInvoke9681507829b97f5959e93f78587563c7"
     }
   ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokea3362a6553e011ccf155f408c562d10b/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokea3362a6553e011ccf155f408c562d10b/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokea3362a6553e011ccf155f408c562d10bInvoke03D0CE77"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokea3362a6553e011ccf155f408c562d10b/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokea3362a6553e011ccf155f408c562d10b"
+    }
+  ],
   "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvoke8491b98f835e3db011a3740073aa772d/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -475,6 +501,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "LambdaInvoke9681507829b97f5959e93f78587563c7"
+    }
+  ],
+  "/lambda-python-function-local/DefaultTest/DeployAssert/LambdaInvokea3362a6553e011ccf155f408c562d10b/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokea3362a6553e011ccf155f408c562d10b"
     }
   ]
 }

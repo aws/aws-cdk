@@ -5,8 +5,8 @@ import * as path from 'path';
 import type { IApiCall } from '@aws-cdk/integ-tests-alpha';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import type { StackProps } from 'aws-cdk-lib';
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
-import { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { App, Stack } from 'aws-cdk-lib';
+import { Architecture, Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import type { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -89,11 +89,26 @@ class TestStack extends Stack {
         },
       });
       this.functionNames.push(fn.functionName);
-
-      new CfnOutput(this, `LocalFunctionArn-${fnId}`, {
-        value: fn.functionArn,
-      });
     }
+
+    const layer = new lambda.PythonLayerVersion(this, 'LocalNativeLayer', {
+      entry: path.join(__dirname, 'lambda-handler-native'),
+      compatibleRuntimes: [Runtime.PYTHON_3_12],
+      bundling: { localBundling: {} },
+    });
+    const fn = new Function(this, 'ImportNativeLayer', {
+      runtime: Runtime.PYTHON_3_12,
+      handler: 'index.handler',
+      layers: [layer],
+      code: Code.fromInline([
+        'import ujson',
+        '',
+        'def handler(event, context):',
+        '    assert ujson.__file__.startswith("/opt/python/"), ujson.__file__',
+        '    return ujson.loads("200")',
+      ].join('\n')),
+    });
+    this.functionNames.push(fn.functionName);
   }
 }
 
@@ -118,5 +133,3 @@ for (const functionName of testCase.functionNames) {
   previous?.next(invoke);
   previous = invoke;
 }
-
-app.synth();
