@@ -5,11 +5,13 @@ import type { Construct } from 'constructs';
 import { Node } from 'constructs';
 import { CfnStackSet } from './cloudformation.generated';
 import { StackSetSynthesizer } from './private/stackset-synthesizer';
+import type { StackSetAssetBuckets, StackSetAssets } from './stackset-assets';
+import { StackSetGrants } from './stackset-grants';
 import * as iam from '../../aws-iam';
-import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import type { IResource, ISynthesisSession, RemovalPolicy, ResourceEnvironment } from '../../core';
 import {
+  Annotations,
   Arn,
   ArnFormat,
   Aws,
@@ -626,23 +628,13 @@ export interface StackSetProps {
   readonly description?: string;
 
   /**
-   * An array of Buckets can be passed to store assets, enabling StackSet Asset support
+   * The buckets that hold the file assets of the StackSet, one per target region
    *
-   * One Bucket is required per target region. The name must be `${assetBucketPrefix}-<region>`, where
-   * `<region>` is the region targeted by the StackSet.
+   * Use `stackSet.grants.readAssets()` to allow the target accounts to read the assets.
    *
-   * @default - No Buckets provided and Assets will not be supported.
+   * @default - no asset buckets. File assets will not be supported.
    */
-  readonly assetBuckets?: s3.IBucket[];
-
-  /**
-   * The common prefix for the asset bucket names used by this StackSet.
-   *
-   * Required if `assetBuckets` is provided.
-   *
-   * @default - No Buckets provided and Assets will not be supported.
-   */
-  readonly assetBucketPrefix?: string;
+  readonly assetBuckets?: StackSetAssets;
 
   /**
    * The type of deployment for this StackSet. The deployment can either be managed by
@@ -991,6 +983,11 @@ export class StackSet extends Stack implements IStackSet {
   public readonly stackSetId: string;
 
   /**
+   * Collection of grant methods for this StackSet
+   */
+  public readonly grants: StackSetGrants = StackSetGrants.fromStackSet(this);
+
+  /**
    * The admin role that CloudFormation uses to perform StackSet operations.
    *
    * This is the `adminRole` passed to `DeploymentType.selfManaged()`, or the role the StackSet
@@ -1030,7 +1027,7 @@ export class StackSet extends Stack implements IStackSet {
    */
   constructor(scope: Construct, id: string, props: StackSetProps = {}) {
     const hostStack = findHostStack(scope);
-    const synthesizer = new StackSetSynthesizer(props.assetBuckets, props.assetBucketPrefix);
+    const synthesizer = new StackSetSynthesizer();
 
     super(scope, id, {
       // The template is deployed to the accounts and regions targeted by the StackSet
@@ -1051,8 +1048,14 @@ export class StackSet extends Stack implements IStackSet {
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${Names.uniqueId(this)}.stackset.template.json`;
 
-    // The host stack stages the file assets of the template, in the scope of this StackSet
-    synthesizer.bindHost({ stack: hostStack, scope, id });
+    // The host stack stages the file assets of the template, in the scope of this StackSet,
+    // and copies them to the asset buckets
+    const assetBuckets = props.assetBuckets?._bind(this);
+    synthesizer.bindHost({ stack: hostStack, scope, id, assetBuckets });
+    if (assetBuckets) {
+      // Targets can be added after construction, so check the regions at synth
+      this.node.addValidation({ validate: () => this.validateAssetBuckets(assetBuckets) });
+    }
 
     const deploymentTypeConfig = (props.deploymentType ?? DeploymentType.selfManaged())._bind(this);
 
@@ -1301,6 +1304,24 @@ export class StackSet extends Stack implements IStackSet {
     return hasResources
       ? ['a StackSet with a \'template\' must not contain resources, define the resources in the StackSet or use the template, not both']
       : [];
+  }
+
+  /**
+   * Checks the asset buckets against the regions the StackSet deploys to
+   */
+  private validateAssetBuckets(assetBuckets: StackSetAssetBuckets): string[] {
+    const regionGroups = this.stackInstances.map(instances => instances.regions);
+    const anyUnresolved = regionGroups.some(regions => Token.isUnresolved(regions) || regions.some(region => Token.isUnresolved(region)));
+    const targetRegions = new Set(regionGroups
+      .filter(regions => !Token.isUnresolved(regions))
+      .flat()
+      .filter(region => !Token.isUnresolved(region)));
+
+    const { errors, warnings } = assetBuckets.validate([...targetRegions], !anyUnresolved);
+    for (const warning of warnings) {
+      Annotations.of(this).addWarningV2(warning.id, warning.message);
+    }
+    return errors;
   }
 
   /**

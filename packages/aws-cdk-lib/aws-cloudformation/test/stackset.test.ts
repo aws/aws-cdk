@@ -6,7 +6,6 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as organizations from '../../aws-organizations';
 import * as s3 from '../../aws-s3';
-import * as s3_assets from '../../aws-s3-assets';
 import * as sns from '../../aws-sns';
 import * as core from '../../core';
 import {
@@ -15,7 +14,6 @@ import {
   CfnCapabilities,
   CfnOutput,
   CfnParameter,
-  DefaultStackSynthesizer,
   LegacyStackSynthesizer,
   NestedStack,
   RemovalPolicy,
@@ -25,8 +23,6 @@ import {
   Tags,
   Validations,
 } from '../../core';
-import type { StackSynthesizer } from '../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 import * as cxapi from '../../cx-api';
 import type { OperationPreferences, StackSetProps } from '../lib';
 import {
@@ -34,6 +30,7 @@ import {
   RegionConcurrencyType,
   StackSet,
   StackSetAccountFilter,
+  StackSetAssets,
   StackSetConcurrencyMode,
   StackSetFailureTolerance,
   StackSetMaxConcurrency,
@@ -513,38 +510,6 @@ test('has IAM capabilities', () => {
   });
 });
 
-test.each([
-  [['integ-assets']],
-  [['integ-assets', 'integ-assets2']],
-])('copies lambda assets from the staging bucket to each asset bucket of %j', (bucketNames) => {
-  const app = new App({
-    context: {
-      [cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT]: true,
-    },
-  });
-  const stack = new Stack(app);
-  new LambdaStackSet(stack, 'StackSet', {
-    assetBuckets: bucketNames.map((name, i) => s3.Bucket.fromBucketName(stack, `AssetBucket${i}`, name)),
-    assetBucketPrefix: 'prefix',
-    targets: [StackSetTarget.fromAccounts({
-      regions: ['us-east-1'],
-      accounts: ['11111111111'],
-    })],
-    capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
-  });
-
-  const template = Template.fromStack(stack);
-  template.resourceCountIs('Custom::CDKBucketDeployment', bucketNames.length);
-  for (const name of bucketNames) {
-    template.hasResourceProperties('Custom::CDKBucketDeployment', {
-      SourceBucketNames: [
-        { 'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}' },
-      ],
-      DestinationBucketName: name,
-    });
-  }
-});
-
 test('stackset without target', () => {
   const app = new App();
   const stack = new Stack(app);
@@ -981,231 +946,6 @@ test('GovCloud partition - self managed stackset with specific environment', () 
         },
       ],
     },
-  });
-});
-
-test('lambda asset bucket name resolves the region dynamically in the stackset template', () => {
-  const app = new App({
-    context: {
-      [cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT]: true,
-    },
-  });
-  const stage = new Stage(app, 'Stage', { env: { account: '123456789012', region: 'us-east-1' } });
-  const stack = new Stack(stage, 'Parent');
-  const lambdaStack = new LambdaStackSet(stack, 'StackSet', {
-    assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-    assetBucketPrefix: 'prefix',
-    targets: [StackSetTarget.fromAccounts({
-      regions: ['us-east-1'],
-      accounts: ['11111111111'],
-    })],
-    capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
-  });
-
-  stackSetTemplateOf(lambdaStack).hasResourceProperties('AWS::Lambda::Function', {
-    Code: {
-      S3Bucket: {
-        'Fn::Join': ['-', ['prefix', { Ref: 'AWS::Region' }]],
-      },
-    },
-  });
-});
-
-describe('StackSet template asset object keys', () => {
-  interface AssetKeysOptions {
-    readonly synthesizer?: StackSynthesizer;
-    readonly context?: Record<string, unknown>;
-    readonly addAssets: (scope: Construct) => void;
-  }
-
-  function addLambda(scope: Construct, id: string, code: lambda.Code) {
-    new lambda.Function(scope, id, {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code,
-    });
-  }
-
-  function synthAssetKeys(options: AssetKeysOptions) {
-    const app = new App({ context: options.context });
-    const stack = new Stack(app, 'Parent', { synthesizer: options.synthesizer });
-    const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
-      targets: [StackSetTarget.fromAccounts({
-        regions: ['us-east-1'],
-        accounts: ['11111111111'],
-      })],
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
-    });
-
-    options.addAssets(stackSet);
-
-    app.synth();
-    const stackSetTemplate = JSON.parse(
-      fs.readFileSync(path.join(Stage.of(stack)!.outdir, stackSet.templateFile), 'utf-8'),
-    );
-    const templateKeys = [
-      ...Object.values(Template.fromJSON(stackSetTemplate).findResources('AWS::Lambda::Function'))
-        .map((resource) => resource.Properties.Code.S3Key),
-      ...Object.values(stackSetTemplate.Outputs ?? {}).map((output: any) => output.Value),
-    ];
-    const parentTemplate = Template.fromStack(stack);
-    const sourceKeys = Object.values(parentTemplate.findResources('Custom::CDKBucketDeployment'))
-      .flatMap((resource) => resource.Properties.SourceObjectKeys);
-
-    return { templateKeys, sourceKeys, parentTemplate };
-  }
-
-  // The handler (extract: false) writes each source object under its file name only
-  function expectKeysMatchCopiedFileNames(templateKeys: string[], sourceKeys: string[]) {
-    expect(templateKeys.length).toBeGreaterThan(0);
-    expect([...templateKeys].sort()).toEqual(sourceKeys.map((key) => path.posix.basename(key)).sort());
-  }
-
-  test.each([
-    ['no bucket prefix', new DefaultStackSynthesizer()],
-    ['a bucket prefix with a slash', new DefaultStackSynthesizer({ bucketPrefix: 'assets/' })],
-    ['a bucket with deploy-time/ prefix', new DefaultStackSynthesizer({ bucketPrefix: 'deploy-time/' })],
-    ['a bucket prefix without a slash', new DefaultStackSynthesizer({ bucketPrefix: 'myapp-' })],
-  ])('reference the file names the bucket deployment copies to, with %s', (_name, synthesizer) => {
-    const { templateKeys, sourceKeys } = synthAssetKeys({
-      synthesizer,
-      addAssets: (scope) => {
-        addLambda(scope, 'Lambda', lambda.Code.fromAsset(path.join(__dirname, 'lambda'), { assetHash: 'custom-hash' }));
-        const script = new s3_assets.Asset(scope, 'Script', { path: path.join(__dirname, 'stackset-script', 'script.py') });
-        new CfnOutput(scope, 'ScriptKey', { value: script.s3ObjectKey });
-      },
-    });
-
-    expect(sourceKeys).toHaveLength(2);
-    expectKeysMatchCopiedFileNames(templateKeys, sourceKeys);
-    expect(templateKeys.some((key: string) => key.endsWith('.py'))).toBe(true);
-  });
-
-  test('reference the file names the bucket deployment copies to, with an AwsCustomResource handler', () => {
-    const { templateKeys, sourceKeys } = synthAssetKeys({
-      addAssets: (scope) => {
-        addLambda(scope, 'Lambda', lambda.Code.fromAsset(path.join(__dirname, 'lambda'), { assetHash: 'custom-hash' }));
-        new AwsCustomResource(scope, 'CustomResource', {
-          onCreate: {
-            service: 'S3',
-            action: 'listBuckets',
-            physicalResourceId: PhysicalResourceId.of('id'),
-          },
-          policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-        });
-      },
-    });
-
-    expect(sourceKeys).toHaveLength(2);
-    expectKeysMatchCopiedFileNames(templateKeys, sourceKeys);
-  });
-
-  test('reference the file names the bucket deployment copies to, with asset staging disabled', () => {
-    const { templateKeys, sourceKeys } = synthAssetKeys({
-      context: { [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: true },
-      addAssets: (scope) => addLambda(scope, 'Lambda', lambda.Code.fromAsset(path.join(__dirname, 'lambda'))),
-    });
-
-    expectKeysMatchCopiedFileNames(templateKeys, sourceKeys);
-  });
-
-  test('reference the file names the bucket deployment copies to, with bundling skipped', () => {
-    const { templateKeys, sourceKeys } = synthAssetKeys({
-      context: { [cxapi.BUNDLING_STACKS]: [] },
-      addAssets: (scope) => addLambda(scope, 'Lambda', lambda.Code.fromAsset(path.join(__dirname, 'lambda'), {
-        bundling: {
-          image: lambda.Runtime.NODEJS_18_X.bundlingImage,
-          command: ['bash', '-c', 'cp -r /asset-input/. /asset-output'],
-        },
-      })),
-    });
-
-    expectKeysMatchCopiedFileNames(templateKeys, sourceKeys);
-  });
-});
-
-describe('StackSet asset bucket deployment dependencies', () => {
-  function bucketDeploymentIdFor(template: Template, destinationBucketName: string): string {
-    const deployments = template.findResources('Custom::CDKBucketDeployment', {
-      Properties: { DestinationBucketName: destinationBucketName },
-    });
-    const ids = Object.keys(deployments);
-    expect(ids).toHaveLength(1);
-    return ids[0];
-  }
-
-  function dependsOnOf(template: Template, stackSetName: string): string[] {
-    const stackSets = template.findResources('AWS::CloudFormation::StackSet', {
-      Properties: { StackSetName: stackSetName },
-    });
-    const resources = Object.values(stackSets);
-    expect(resources).toHaveLength(1);
-    return resources[0].DependsOn ?? [];
-  }
-
-  test('each StackSet depends only on the bucket deployments of its own template', () => {
-    const app = new App();
-    const stack = new Stack(app);
-    new LambdaStackSet(stack, 'FirstStackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'FirstBucket', 'first-us-east-1')],
-      assetBucketPrefix: 'first',
-      stackSetName: 'first',
-      deploymentType: DeploymentType.serviceManaged(),
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
-    });
-    new LambdaStackSet(stack, 'SecondStackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'SecondBucket', 'second-us-east-1')],
-      assetBucketPrefix: 'second',
-      stackSetName: 'second',
-      deploymentType: DeploymentType.serviceManaged(),
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
-    });
-
-    const template = Template.fromStack(stack);
-    const firstDeployment = bucketDeploymentIdFor(template, 'first-us-east-1');
-    const secondDeployment = bucketDeploymentIdFor(template, 'second-us-east-1');
-    const firstDependsOn = dependsOnOf(template, 'first');
-    const secondDependsOn = dependsOnOf(template, 'second');
-
-    expect(firstDependsOn).toContain(firstDeployment);
-    expect(firstDependsOn).not.toContain(secondDeployment);
-    expect(secondDependsOn).toContain(secondDeployment);
-    expect(secondDependsOn).not.toContain(firstDeployment);
-  });
-
-  test('depends on bucket deployments for assets added after the StackSet is created', () => {
-    const app = new App();
-    const stack = new Stack(app);
-    const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'late-us-east-1')],
-      assetBucketPrefix: 'late',
-      stackSetName: 'late',
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
-    });
-    new lambda.Function(stackSet, 'Lambda', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
-    });
-
-    const template = Template.fromStack(stack);
-    expect(dependsOnOf(template, 'late')).toContain(bucketDeploymentIdFor(template, 'late-us-east-1'));
-  });
-
-  test('a StackSet in a nested scope depends on the bucket deployments of its template', () => {
-    const app = new App();
-    const stack = new Stack(app);
-    new LambdaStackSet(new Construct(stack, 'Group'), 'StackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'nested-us-east-1')],
-      assetBucketPrefix: 'nested',
-      stackSetName: 'nested',
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
-    });
-
-    const template = Template.fromStack(stack);
-    expect(dependsOnOf(template, 'nested')).toContain(bucketDeploymentIdFor(template, 'nested-us-east-1'));
   });
 });
 
@@ -1720,8 +1460,7 @@ describe('StackSet placement', () => {
     const app = new App();
     const stack = new Stack(app, 'Admin');
     new LambdaStackSet(stack, 'Baseline', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
+      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
 
     const children = stack.node.children.map((child) => child.node.id);
@@ -1729,9 +1468,14 @@ describe('StackSet placement', () => {
       'Baseline',
       'Baseline.Resource',
       'Baseline.AdminRole',
-      'Baseline.HostAssetBucket',
-      'Baseline.AssetBucketDeployment0',
+      'Baseline.Assets',
     ]));
+    expect(children).not.toContain('Baseline.HostAssetBucket');
+    expect(children).not.toContain('Baseline.AssetBucketDeployment0');
+    expect(stack.node.findChild('Baseline.Assets').node.children.map((child) => child.node.id)).toEqual([
+      'HostAssetBucket',
+      'us-east-1',
+    ]);
   });
 
   test('a StackSet is not a deployable artifact', () => {
@@ -2050,8 +1794,7 @@ describe('StackSet references to resources of a stack with an environment', () =
   test('the ARN of a role is passed through the StackSet to a nested stack in it', () => {
     const { stack, auditRole } = stackWithAuditRole();
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
+      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
     const nested = new core.NestedStack(stackSet, 'Nested');
     new CfnOutput(nested, 'AuditRoleArn', { value: auditRole.roleArn });
@@ -2128,14 +1871,13 @@ describe('nested stacks in a StackSet', () => {
     const app = new App();
     const stack = new Stack(app, 'Admin');
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
+      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
     const nested = new NestedStack(stackSet, 'Nested');
     return { app, stack, stackSet, nested };
   }
 
-  test('the nested template is copied to the asset bucket of each region', () => {
+  test('a nested stack in the StackSet references the copied template through the mapping', () => {
     const { stack, stackSet, nested } = stackSetWithNestedStack();
     new iam.Role(nested, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
 
@@ -2143,8 +1885,8 @@ describe('nested stacks in a StackSet', () => {
     expect(nestedStackResource.Properties.TemplateURL).toEqual({
       'Fn::Join': ['', [
         'https://s3.', { Ref: 'AWS::Region' }, '.', { Ref: 'AWS::URLSuffix' }, '/',
-        { 'Fn::Join': ['-', ['prefix', { Ref: 'AWS::Region' }]] },
-        `/${copiedTemplateKey(stack)}`,
+        { 'Fn::FindInMap': ['StackSetAssetBuckets', { Ref: 'AWS::Region' }, 'BucketName'] },
+        `/cdk-stackset-assets/${copiedTemplateKey(stack)}`,
       ]],
     });
   });
@@ -2389,25 +2131,11 @@ describe('StackSet validation errors', () => {
     }));
   });
 
-  test('fails with an error code when a file asset is used without an asset bucket prefix', () => {
-    const app = new App();
-    const stack = new Stack(app);
-
-    expect(() => new LambdaStackSet(stack, 'LambdaStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-    })).toThrow(expect.objectContaining({
-      name: 'AssetBucketPrefixRequired',
-      message: 'an asset bucket prefix must be provided to use file assets, set \'assetBucketPrefix\' in the StackSet props',
-      constructPath: 'Default/LambdaStack',
-    }));
-  });
-
   test('fails with an error code when a file asset has no file name', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSet = new StackSet(stack, 'AssetStack', {
-      assetBuckets: [s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1')],
-      assetBucketPrefix: 'prefix',
+      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
 
     expect(() => stackSet.synthesizer.addFileAsset({ sourceHash: 'hash', executable: ['build.sh'] })).toThrow(expect.objectContaining({

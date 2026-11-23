@@ -1,5 +1,13 @@
 {
   "Resources": {
+    "LogGroupF5B46931": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "LambdaServiceRoleA8ED4D3B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -36,49 +44,41 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Fn::Join": [
-              "-",
-              [
-                "asset-bucket-12345678",
-                {
-                  "Ref": "AWS::Region"
-                }
-              ]
+            "Fn::FindInMap": [
+              "StackSetAssetBuckets",
+              {
+                "Ref": "AWS::Region"
+              },
+              "BucketName"
             ]
           },
-          "S3Key": "e56263bd51a9cda3a5920a2b978d8827ae857776a6807cbe4ac9b2115dfed690.zip"
+          "S3Key": "cdk-stackset-assets/4bd6a08ceb34cf921408c6b87ea219494f1dd04505cd39a90e95a87fd8abecde.zip"
         },
+        "FunctionName": "integ-stackset-assets-echo",
         "Handler": "index.handler",
+        "LoggingConfig": {
+          "LogGroup": {
+            "Ref": "LogGroupF5B46931"
+          }
+        },
         "Role": {
           "Fn::GetAtt": [
             "LambdaServiceRoleA8ED4D3B",
             "Arn"
           ]
         },
-        "Runtime": "nodejs16.x"
+        "Runtime": "nodejs24.x"
       },
       "DependsOn": [
         "LambdaServiceRoleA8ED4D3B"
       ]
-    },
-    "LambdaLogGroupB7A19430": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "LambdaD247545B"
-              }
-            ]
-          ]
-        },
-        "RetentionInDays": 731
-      },
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
+    }
+  },
+  "Mappings": {
+    "StackSetAssetBuckets": {
+      "us-west-2": {
+        "BucketName": "integ-stackset-assets-12345678-us-west-2"
+      }
     }
   }
 }

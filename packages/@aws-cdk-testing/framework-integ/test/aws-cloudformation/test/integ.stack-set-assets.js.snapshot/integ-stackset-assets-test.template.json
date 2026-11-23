@@ -1,37 +1,12 @@
 {
  "Resources": {
-  "StackSetAdminRole60BC89F6": {
+  "AdminRole38563C57": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Condition": {
-        "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
-         }
-        },
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":cloudformation:*:",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":stackset/*"
-           ]
-          ]
-         }
-        }
-       },
        "Effect": "Allow",
        "Principal": {
         "Service": "cloudformation.amazonaws.com"
@@ -39,10 +14,26 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sts:AssumeRole",
+         "Effect": "Allow",
+         "Resource": "arn:aws:iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-assets"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AssumeExecutionRole"
+     }
+    ],
+    "RoleName": "AWSCloudFormationStackSetAdministrationRole-integ-assets"
    }
   },
-  "StackSetAdminRoleDefaultPolicyA86F14C6": {
+  "AdminRoleDefaultPolicy1C2AB961": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -58,7 +49,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-test"
+          ":iam::*:role/AWSCloudFormationStackSetExecutionRole-integ-assets"
          ]
         ]
        }
@@ -66,10 +57,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "StackSetAdminRoleDefaultPolicyA86F14C6",
+    "PolicyName": "AdminRoleDefaultPolicy1C2AB961",
     "Roles": [
      {
-      "Ref": "StackSetAdminRole60BC89F6"
+      "Ref": "AdminRole38563C57"
      }
     ]
    }
@@ -79,14 +70,14 @@
    "Properties": {
     "AdministrationRoleARN": {
      "Fn::GetAtt": [
-      "StackSetAdminRole60BC89F6",
+      "AdminRole38563C57",
       "Arn"
      ]
     },
     "Capabilities": [
      "CAPABILITY_IAM"
     ],
-    "ExecutionRoleName": "AWSCloudFormationStackSetExecutionRole-integ-test",
+    "ExecutionRoleName": "AWSCloudFormationStackSetExecutionRole-integ-assets",
     "ManagedExecution": {
      "Active": true
     },
@@ -99,35 +90,33 @@
        ]
       },
       "Regions": [
-       "us-east-1"
+       "us-west-2"
       ]
      }
     ],
-    "StackSetName": "integ-stackset-asset-test",
+    "StackSetName": "integ-stackset-assets",
     "TemplateURL": {
-     "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/147420c35dcbb51ba513d30eff74af65afc29109d0bdd13b45558a8e08c9de0f.json"
+     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/d0bd4553e0044b39aced6ee90a74fb48829a099e3cff75a0da27d87aa16d05c6.json"
     }
    },
    "DependsOn": [
-    "StackSetAdminRoleDefaultPolicyA86F14C6",
-    "StackSetAdminRole60BC89F6",
-    "StackSetAssetBucketDeployment0AwsCliLayer1DC61731",
-    "StackSetAssetBucketDeployment0CustomResource3D83B472"
+    "AdminRoleDefaultPolicy1C2AB961",
+    "AdminRole38563C57",
+    "StackSetAssetsuswest2AwsCliLayerF7970B18",
+    "StackSetAssetsuswest2CustomResourceC276576F"
    ]
   },
-  "StackSetAssetBucketDeployment0AwsCliLayer1DC61731": {
+  "StackSetAssetsuswest2AwsCliLayerF7970B18": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
      "S3Key": "98f62bef9320f8c0a0a7be21d7c746f069131f196f51ffe3008a6bb730b368ec.zip"
     },
     "Description": "/opt/awscli/aws"
    }
   },
-  "StackSetAssetBucketDeployment0CustomResource3D83B472": {
+  "StackSetAssetsuswest2CustomResourceC276576F": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -137,14 +126,13 @@
      ]
     },
     "SourceBucketNames": [
-     {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     }
+     "cdk-hnb659fds-assets-12345678-test-region"
     ],
     "SourceObjectKeys": [
-     "e56263bd51a9cda3a5920a2b978d8827ae857776a6807cbe4ac9b2115dfed690.zip"
+     "4bd6a08ceb34cf921408c6b87ea219494f1dd04505cd39a90e95a87fd8abecde.zip"
     ],
-    "DestinationBucketName": "asset-bucket-12345678-us-east-1",
+    "DestinationBucketName": "integ-stackset-assets-12345678-us-west-2",
+    "DestinationBucketKeyPrefix": "cdk-stackset-assets/",
     "WaitForDistributionInvalidation": true,
     "Extract": false,
     "Prune": false,
@@ -205,11 +193,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::",
-           {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-           },
-           "/*"
+           ":s3:::cdk-hnb659fds-assets-12345678-test-region"
           ]
          ]
         },
@@ -221,10 +205,7 @@
            {
             "Ref": "AWS::Partition"
            },
-           ":s3:::",
-           {
-            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-           }
+           ":s3:::cdk-hnb659fds-assets-12345678-test-region/*"
           ]
          ]
         }
@@ -245,30 +226,8 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::asset-bucket-12345678-us-east-1"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":s3:::asset-bucket-12345678-us-east-1/*"
-          ]
-         ]
-        }
+        "arn:aws:s3:::integ-stackset-assets-12345678-us-west-2",
+        "arn:aws:s3:::integ-stackset-assets-12345678-us-west-2/*"
        ]
       }
      ],
@@ -289,9 +248,7 @@
      "arm64"
     ],
     "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
+     "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
      "S3Key": "35328da138f26fbd9160297abc9a2522d93dbf75878cd5114a9c050419fc1ce0.zip"
     },
     "Environment": {
@@ -302,7 +259,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "StackSetAssetBucketDeployment0AwsCliLayer1DC61731"
+      "Ref": "StackSetAssetsuswest2AwsCliLayerF7970B18"
      }
     ],
     "MemorySize": 1024,

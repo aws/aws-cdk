@@ -18,7 +18,7 @@
      "StackInstanceRegion": "\"us-east-1\""
     },
     "flattenResponse": "false",
-    "salt": "1795199699472"
+    "salt": "1795444493893"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -57,24 +57,6 @@
          "Resource": [
           "*"
          ]
-        },
-        {
-         "Action": [
-          "cloudformation:DescribeStackInstance"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "cloudformation:DescribeStackInstance"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -105,52 +87,6 @@
      "ApplicationLogLevel": "FATAL"
     }
    }
-  },
-  "AwsApiCallCloudFormationdescribeStackInstance9ff6e76651b7d30c6c3dc7c5646acc21": {
-   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStackInsta",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "CloudFormation",
-    "api": "describeStackInstance",
-    "expected": "{\"$ObjectLike\":{\"StackInstance\":{\"Status\":\"CURRENT\",\"ParameterOverrides\":[{\"ParameterKey\":\"TopicDisplayName\",\"ParameterValue\":\"integ-stackset-topic-second-region\"}]}}}",
-    "parameters": {
-     "StackSetName": "\"integ-stackset-test\"",
-     "StackInstanceAccount": "\"12345678\"",
-     "StackInstanceRegion": "\"us-west-2\""
-    },
-    "flattenResponse": "false",
-    "salt": "1795199699473"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallCloudFormationdescribeStackInstance57d27af84c5791c46ce6a64c07b9b668": {
-   "Type": "Custom::DeployAssert@SdkCallCloudFormationdescribeStackInsta",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "CloudFormation",
-    "api": "describeStackInstance",
-    "expected": "{\"$ObjectLike\":{\"StackInstance\":{\"Status\":\"CURRENT\"}}}",
-    "parameters": {
-     "StackSetName": "\"integ-stackset-asset-test\"",
-     "StackInstanceAccount": "\"12345678\"",
-     "StackInstanceRegion": "\"us-east-1\""
-    },
-    "flattenResponse": "false",
-    "salt": "1795199699473"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -158,22 +94,6 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallCloudFormationdescribeStackInstance022df512df70993e9ed6d80586b9025e",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallCloudFormationdescribeStackInstance9ff6e76651b7d30c6c3dc7c5646acc21": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallCloudFormationdescribeStackInstance9ff6e76651b7d30c6c3dc7c5646acc21",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallCloudFormationdescribeStackInstance57d27af84c5791c46ce6a64c07b9b668": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallCloudFormationdescribeStackInstance57d27af84c5791c46ce6a64c07b9b668",
      "assertion"
     ]
    }

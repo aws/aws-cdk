@@ -1,9 +1,7 @@
-import * as path from 'path';
 import type { Construct } from 'constructs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import {
   App,
-  CfnCapabilities,
   CfnOutput,
   CfnParameter,
   Stack,
@@ -11,8 +9,6 @@ import {
 import type { CfnResource, StackProps } from 'aws-cdk-lib';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cfn from 'aws-cdk-lib/aws-cloudformation';
 
 /**
@@ -21,14 +17,22 @@ import * as cfn from 'aws-cdk-lib/aws-cloudformation';
  *
  * - 2 accounts:
  *  - A "deployment" account which will be the account that the test case runs in and
- *    deploys the stackset. It must have the asset s3 bucket named `asset-bucket-${deploymentAccount}-${targetRegion}`.
+ *    deploys the stackset.
  *  - A "target" account which is where the stackset will deploy into
  *
- * - The target account must be bootstrapped to trust the deployment account
+ * - The deployment account must be bootstrapped in its region
+ * - The target account must be bootstrapped in the target region to trust the deployment account
  * - The below environment variables must be set appropriately:
+ *  - `INTEG_DEPLOYMENT_ACCOUNT` and `INTEG_TARGET_ACCOUNT`: the accounts. `CDK_INTEG_ACCOUNT`
+ *    takes precedence over both, so it must be unset for a real deployment
+ *  - `CDK_INTEG_REGION` (or `CDK_DEFAULT_REGION`): the region of the stack that contains the StackSet
  *  - `INTEG_TARGET_REGION` (default `us-east-1`): the region of the first target
  *  - `INTEG_SECOND_TARGET_REGION` (default `us-west-2`): the region of a second target in the
  *    same target account, with its own parameter override. It must differ from `INTEG_TARGET_REGION`
+ *
+ * A StackSet with file assets is tested in `integ.stack-set-assets.ts`.
+ *
+ * The snapshot must be recorded by a real deployment of this test.
  */
 
 const deploymentAccount = process.env.CDK_INTEG_ACCOUNT ?? process.env.INTEG_DEPLOYMENT_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT;
@@ -40,7 +44,6 @@ const secondRegionTopicDisplayName = 'integ-stackset-topic-second-region';
 const executionRoleName = 'AWSCloudFormationStackSetExecutionRole-integ-test';
 const adminRoleName = 'AWSCloudFormationStackSetAdministrationRole-integ-test';
 const stackSetName = 'integ-stackset-test';
-const assetStackSetName = 'integ-stackset-asset-test';
 
 const app = new App({
   postCliContext: {
@@ -79,21 +82,6 @@ class MyStackSet extends cfn.StackSet {
 
     const displayName = new CfnParameter(this, 'TopicDisplayName', { type: 'String' });
     new sns.Topic(this, 'IntegStackSetSNSTopic', { displayName: displayName.valueAsString });
-  }
-}
-
-/**
- * Create a StackSet that has file assets
- */
-class LambdaStackSet extends cfn.StackSet {
-  constructor(scope: Construct, id: string, props: cfn.StackSetProps) {
-    super(scope, id, props);
-
-    new lambda.Function(this, 'Lambda', {
-      runtime: lambda.Runtime.NODEJS_16_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
-    });
   }
 }
 
@@ -157,29 +145,6 @@ class TestCase extends Stack {
   }
 }
 
-/**
- * Create the stack which will create the StackSet resource
- */
-class AssetTestCase extends Stack {
-  constructor(scope: Construct, id: string, props: TestCaseProps) {
-    super(scope, id);
-
-    new LambdaStackSet(this, 'StackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(this, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
-      assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
-      stackSetName: assetStackSetName,
-      targets: [cfn.StackSetTarget.fromAccounts({
-        accounts: [targetAccount!],
-        regions: [targetRegion],
-      })],
-      deploymentType: cfn.DeploymentType.selfManaged({
-        executionRoleName: props.executionRole.roleName,
-      }),
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
-    });
-  }
-}
-
 const supportStack = new SupportStack(app, 'integ-stack-set-support', {
   env: {
     account: targetAccount,
@@ -197,14 +162,8 @@ const testCase = new TestCase(app, 'integ-stackset-test', {
 
 testCase.addStackDependency(supportStack);
 
-const assetTestCase = new AssetTestCase(app, 'integ-stackset-asset-test', {
-  executionRole: supportStack.executionRole,
-});
-
-assetTestCase.addStackDependency(supportStack);
-
 const integ = new IntegTest(app, 'integ-test', {
-  testCases: [testCase, assetTestCase],
+  testCases: [testCase],
   enableLookups: true,
 });
 
@@ -225,12 +184,4 @@ integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {
     Status: 'CURRENT',
     ParameterOverrides: [{ ParameterKey: 'TopicDisplayName', ParameterValue: secondRegionTopicDisplayName }],
   },
-}));
-
-integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {
-  StackSetName: assetStackSetName,
-  StackInstanceAccount: targetAccount,
-  StackInstanceRegion: targetRegion,
-}).expect(ExpectedResult.objectLike({
-  StackInstance: { Status: 'CURRENT' },
 }));

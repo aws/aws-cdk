@@ -1,0 +1,64 @@
+{
+  "/integ-stackset-assets-assertions": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-stackset-assets-assertions.template.json"
+    }
+  ],
+  "/integ-stackset-assets-assertions/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-stackset-assets-assertions/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-stackset-assets-assertions/LambdaInvokedc1b0be6ac1b4c4dc78a6be78fa8cbb0/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stackset-assets-assertions/LambdaInvokedc1b0be6ac1b4c4dc78a6be78fa8cbb0/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokedc1b0be6ac1b4c4dc78a6be78fa8cbb0InvokeF015EE0F"
+    }
+  ],
+  "/integ-stackset-assets-assertions/LambdaInvokedc1b0be6ac1b4c4dc78a6be78fa8cbb0/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokedc1b0be6ac1b4c4dc78a6be78fa8cbb0"
+    }
+  ],
+  "/integ-stackset-assets-assertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integ-stackset-assets-assertions/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integ-stackset-assets-assertions/LambdaInvokedc1b0be6ac1b4c4dc78a6be78fa8cbb0/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokedc1b0be6ac1b4c4dc78a6be78fa8cbb0"
+    }
+  ]
+}
