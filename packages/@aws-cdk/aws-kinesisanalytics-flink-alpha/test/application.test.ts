@@ -21,7 +21,7 @@ describe('Application', () => {
     stack = new core.Stack();
     bucket = new s3.Bucket(stack, 'CodeBucket');
     requiredProps = {
-      runtime: flink.Runtime.FLINK_2_2,
+      runtime: flink.Runtime.FLINK_2_3,
       code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
     };
   });
@@ -36,6 +36,7 @@ describe('Application', () => {
     flink.Runtime.FLINK_1_19,
     flink.Runtime.FLINK_1_20,
     flink.Runtime.FLINK_2_2,
+    flink.Runtime.FLINK_2_3,
   ];
 
   test.each(flinkRuntimes)('Flink Application with %s', (runtime) => {

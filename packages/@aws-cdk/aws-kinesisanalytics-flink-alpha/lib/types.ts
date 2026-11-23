@@ -98,6 +98,9 @@ export class Runtime {
   /** Flink Version 2.2 */
   public static readonly FLINK_2_2 = Runtime.of('FLINK-2_2');
 
+  /** Flink Version 2.3 */
+  public static readonly FLINK_2_3 = Runtime.of('FLINK-2_3');
+
   /** Zeppelin Flink Version 3.0 */
   public static readonly ZEPPELIN_FLINK_3_0 = Runtime.of('ZEPPELIN-FLINK-3_0');
 
