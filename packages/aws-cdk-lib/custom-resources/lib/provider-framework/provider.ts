@@ -29,7 +29,9 @@ export interface ProviderProps {
    * This function is responsible to begin the requested resource operation
    * (CREATE/UPDATE/DELETE) and return any additional properties to add to the
    * event, which will later be passed to `isComplete`. The `PhysicalResourceId`
-   * property must be included in the response.
+   * property is optional: when it is omitted, the framework uses the event's
+   * `RequestId` for CREATE and the current physical ID for UPDATE and DELETE.
+   * Returning it explicitly is still recommended.
    */
   readonly onEventHandler: lambda.IFunction;
 

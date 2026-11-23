@@ -4,19 +4,15 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
 <!--END STABILITY BANNER-->
 
-> The **Policy** submodule is the only submodule that remains in alpha. All other constructs have graduated to stable in `aws-cdk-lib/aws-bedrockagentcore` and we recommend migrating to the stable versions.
+All constructs moved to aws-cdk-lib/aws-bedrockagentcore.
 
 | **Language**                                                                                   | **Package**                             |
 | :--------------------------------------------------------------------------------------------- | --------------------------------------- |
@@ -24,7 +20,7 @@
 
 ## Migration to Stable
 
-All constructs except Policy have moved to `aws-cdk-lib/aws-bedrockagentcore`:
+All constructs in this module, including the Policy submodule, have moved to `aws-cdk-lib/aws-bedrockagentcore`:
 
 ```ts nofixture
 // Before
@@ -32,7 +28,7 @@ import * as agentcore from '@aws-cdk/aws-bedrock-agentcore-alpha';
 ```
 
 ```ts nofixture
-// After (for all non-Policy constructs)
+// After
 import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 ```
 
@@ -44,16 +40,15 @@ The following constructs are now in stable:
 - **Memory**: `Memory`, `MemoryStrategy`
 - **Evaluation**: `OnlineEvaluationConfig`, `Evaluator`, `EvaluatorSelector`
 - **Identity**: `OAuth2CredentialProvider`, `ApiKeyCredentialProvider`, `WorkloadIdentity`
+- **Policy**: `PolicyEngine`, `Policy`, `PolicyStatement`, `PolicyValidationMode`, `PolicyEngineMode`
 
-## What Remains in Alpha
+The stable Policy submodule has API changes from this module:
 
-The Policy submodule remains experimental:
+- `PolicyStatement` is a props object instead of a fluent builder. Conditions are passed as the `when` array.
+- A stable `Gateway` associates a policy engine through the `policyEngineConfiguration` prop, and grants the gateway role evaluate permissions automatically.
+- The default gateway enforcement mode is `PolicyEngineMode.ENFORCE` instead of `LOG_ONLY`.
 
-- `PolicyEngine`
-- `Policy`
-- `PolicyStatement`
-- `PolicyValidationMode`
-- `PolicyEngineMode`
+See the `aws-cdk-lib/aws-bedrockagentcore` README for the stable Policy documentation.
 
 ## Policy Engine
 
@@ -455,42 +450,4 @@ policyEngine.grantRead(lambdaRole);
 
 // Grant evaluation permissions
 policyEngine.grantEvaluate(lambdaRole);
-```
-
-## Using Policy with Stable Gateway
-
-Since Gateway is now in `aws-cdk-lib/aws-bedrockagentcore` but Policy remains in alpha, use the L1 escape hatch to associate a policy engine with a stable gateway:
-
-> Proper L2 integration will be added in a future update.
-
-```ts fixture=policy
-import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import * as agentcoreAlpha from '@aws-cdk/aws-bedrock-agentcore-alpha';
-
-// Create policy engine (alpha)
-const policyEngine = new agentcoreAlpha.PolicyEngine(this, 'Engine', {
-  policyEngineName: 'my_engine',
-});
-
-// Create gateway (stable)
-const gateway = new agentcore.Gateway(this, 'Gateway', {
-  gatewayName: 'my-gateway',
-});
-
-// Wire policy engine to gateway via the L1 construct
-const cfnGateway = gateway.node.defaultChild as agentcore.CfnGateway;
-cfnGateway.policyEngineConfiguration = {
-  arn: policyEngine.policyEngineArn,
-  mode: agentcoreAlpha.PolicyEngineMode.ENFORCE.value,
-};
-
-// Grant evaluate permissions to the gateway role
-gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
-  actions: ['bedrock-agentcore:GetPolicyEngine'],
-  resources: [policyEngine.policyEngineArn],
-}));
-gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
-  actions: ['bedrock-agentcore:AuthorizeAction', 'bedrock-agentcore:PartiallyAuthorizeActions'],
-  resources: [policyEngine.policyEngineArn, gateway.gatewayArn],
-}));
 ```

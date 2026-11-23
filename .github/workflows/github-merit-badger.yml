@@ -4,6 +4,8 @@ on:
     types:
       - opened
 
+cache-mode: read
+
 jobs:
   call-action:
     runs-on: ubuntu-latest

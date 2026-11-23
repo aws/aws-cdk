@@ -13,7 +13,7 @@ import * as cdk from '../../core';
 import { AssumptionError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import { profileFn, profileSpan } from '../../core/lib/private/perf';
-import { posixShellEscape } from '../../core/lib/private/shell-escape';
+import { posixShellEscape, powershellEscape } from '../../core/lib/private/shell-escape';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -465,7 +465,11 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.buildEsbuildArgs(scope, options.inputDir, options.outputDir, options.pathJoin),
       ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
-    steps.push({ type: 'spawn', command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs] });
+    steps.push({
+      type: 'spawn',
+      command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs],
+      counter: esbuildCounter(options.esbuildRunner),
+    });
 
     // 4-5. Node modules installation
     if (this.props.nodeModules) {
@@ -524,7 +528,9 @@ export class Bundling implements cdk.BundlingOptions {
             }
           }
           break;
-        case 'spawn':
+        case 'spawn': {
+          using _span = step.counter ? profileSpan(step.counter, { telemetry: true }) : undefined;
+
           // On Windows, spawnSync fails with EINVAL when invoking .cmd shims
           // (e.g. npx.cmd, npx.bat) directly. We need to route through a shell.
           // Powershell.exe instead of cmd.exe because the quoting rules are saner.
@@ -541,6 +547,7 @@ export class Bundling implements cdk.BundlingOptions {
             });
           }
           break;
+        }
         case 'callback':
           try {
             step.operation();
@@ -558,8 +565,25 @@ export class Bundling implements cdk.BundlingOptions {
  */
 type BundlingStep =
   | { type: 'shell'; commands: string[] }
-  | { type: 'spawn'; command: string[]; cwd?: string }
+  | {
+    type: 'spawn';
+    command: string[];
+    cwd?: string;
+    /** Telemetry counter for the time this step takes when it runs locally */
+    counter?: string;
+  }
   | { type: 'callback'; operation: () => void };
+
+/**
+ * The telemetry counter for running esbuild, named after the program that starts it
+ *
+ * Separates running the esbuild binary directly from running it through a package manager.
+ */
+function esbuildCounter(esbuildRunner: string[]): string {
+  const program = esbuildRunner[0].replace(/\.cmd$/, '');
+  const known = ['esbuild', 'npx', 'yarn', 'pnpm', 'bun'];
+  return `NodejsFunction#esbuild:${known.includes(program) ? program : 'other'}`;
+}
 
 interface BundlingCommandOptions {
   readonly inputDir: string;
@@ -665,7 +689,10 @@ class OsCommand {
   }
 
   public changeDirectory(dir: string): string {
-    return `cd "${dir}"`;
+    if (this.osPlatform === 'win32') {
+      return `cd "${dir}"`;
+    }
+    return `cd ${posixShellEscape(dir)}`;
   }
 
   public remove(filePath: string, force: boolean = false): string {
@@ -674,7 +701,7 @@ class OsCommand {
     }
 
     const opts = force ? ['-f'] : [];
-    return `rm ${opts.join(' ')} "${filePath}"`;
+    return `rm ${opts.join(' ')} ${posixShellEscape(filePath)}`;
   }
 
   public removeDir(dir: string): string {
@@ -682,7 +709,7 @@ class OsCommand {
       return `rmdir /s /q "${dir}"`;
     }
 
-    return `rm -rf "${dir}"`;
+    return `rm -rf ${posixShellEscape(dir)}`;
   }
 }
 
@@ -694,10 +721,6 @@ class OsCommand {
  */
 function preparePosixShellCommand(argv: string[]): string {
   return argv.map(posixShellEscape).join(' ');
-}
-
-function powershellEscape(arg: string): string {
-  return "'" + arg.replace(/'/g, "''") + "'";
 }
 
 /**

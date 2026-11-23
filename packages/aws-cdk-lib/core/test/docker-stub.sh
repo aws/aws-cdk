@@ -31,7 +31,7 @@ fi
 
 if echo "$@" | grep "DOCKER_STUB_SUCCESS"; then
   outdir=$(echo "$@" | xargs -n1 | grep "/asset-output" | head -n1 | cut -d":" -f1)
-  touch ${outdir}/test.txt
+  echo did_run > ${outdir}/test.txt
   exit 0
 fi
 
@@ -65,7 +65,7 @@ fi
 if echo "$@" | grep "DOCKER_STUB_DIR_WITH_LOCAL_SYMLINK"; then
   outdir=$(echo "$@" | xargs -n1 | grep "/asset-output" | head -n1 | cut -d":" -f1)
   copy_input_to_output "$@"
-  touch ${outdir}/test.txt
+  echo did_run > ${outdir}/test.txt
   ln -s test.txt ${outdir}/local-link.txt # resolves inside the output directory
   exit 0
 fi
@@ -103,7 +103,7 @@ fi
 
 if echo "$@" | grep "DOCKER_STUB_SINGLE_FILE"; then
   outdir=$(echo "$@" | xargs -n1 | grep "/asset-output" | head -n1 | cut -d":" -f1)
-  touch ${outdir}/test.txt
+  echo did_run > ${outdir}/test.txt
   exit 0
 fi
 
