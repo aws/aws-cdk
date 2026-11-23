@@ -54,6 +54,34 @@ export interface BundlingProps extends BundlingOptions {
   bundlingFileAccess?: BundlingFileAccess;
 }
 
+const LOCAL_BUNDLING_SUPPORT: Readonly<Record<keyof BundlingProps, boolean>> = {
+  entry: true,
+  runtime: true,
+  architecture: true,
+  skip: true,
+  outputPathSuffix: true,
+  assetExcludes: true,
+  poetryIncludeHashes: true,
+  poetryWithoutUrls: true,
+  assetHashType: true,
+  assetHash: true,
+  commandHooks: true,
+  environment: true,
+  localBundling: true,
+  image: false,
+  buildArgs: false,
+  bundlingFileAccess: false,
+  entrypoint: false,
+  command: false,
+  volumes: false,
+  volumesFrom: false,
+  workingDirectory: false,
+  user: false,
+  securityOpt: false,
+  network: false,
+  platform: false,
+};
+
 /**
  * Produce bundled Lambda asset code
  */
@@ -107,13 +135,8 @@ export class Bundling implements CdkBundlingOptions {
     } = props;
 
     if (props.localBundling) {
-      const localOptions = new Set<string>([
-        'entry', 'runtime', 'architecture', 'skip', 'outputPathSuffix', 'assetExcludes',
-        'poetryIncludeHashes', 'poetryWithoutUrls', 'assetHashType', 'assetHash',
-        'commandHooks', 'environment', 'localBundling',
-      ]);
       const incompatible = Object.entries(props)
-        .filter(([key, value]) => value !== undefined && !localOptions.has(key))
+        .filter(([key, value]) => value !== undefined && LOCAL_BUNDLING_SUPPORT[key as keyof BundlingProps] !== true)
         .map(([key]) => key);
       if (incompatible.length > 0) {
         throw new UnscopedValidationError(

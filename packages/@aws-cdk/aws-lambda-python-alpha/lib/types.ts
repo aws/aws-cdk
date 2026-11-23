@@ -152,7 +152,9 @@ export interface LocalBundlingOptions {
    *
    * This replaces the default list. Include any default tags you still want pip
    * to consider, or use additionalPlatformTags to extend the defaults.
-   * The combined list must include at least one glibc-compatible Linux tag.
+   * The combined list must contain at least one tag. Every tag must be a
+   * glibc-compatible Linux tag (`manylinux_X_Y_*`, `manylinux1_*`,
+   * `manylinux2010_*`, `manylinux2014_*`, or `linux_*`).
    * Tags must match the target architecture for x86_64 and arm64.
    * Versioned manylinux tags must be compatible with the target runtime's glibc version.
    *

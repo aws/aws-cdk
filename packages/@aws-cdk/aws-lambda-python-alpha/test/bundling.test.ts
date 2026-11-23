@@ -3,7 +3,7 @@ import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { App, AssetStaging, BundlingFileAccess, DockerImage, Stack } from 'aws-cdk-lib';
+import { App, AssetHashType, AssetStaging, BundlingFileAccess, DockerImage, Stack } from 'aws-cdk-lib';
 import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 import { PythonLayerVersion } from '../lib/layer';
@@ -735,6 +735,26 @@ describe('local bundling wiring', () => {
       localBundling: {},
       [option]: value,
     })).toThrow('localBundling cannot be combined with Docker options: ' + option + '.');
+    expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['assetHash', 'custom-hash'],
+    ['assetHashType', AssetHashType.SOURCE],
+    ['poetryIncludeHashes', true],
+    ['poetryWithoutUrls', true],
+    ['outputPathSuffix', 'python'],
+    ['skip', false],
+    ['environment', { PIP_INDEX_URL: 'https://example.test/simple' }],
+  ])('accepts the supported %s option in local mode', (option, value) => {
+    const bundling = new Bundling({
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_11,
+      localBundling: {},
+      [option]: value,
+    });
+
+    expect(bundling.local).toBeDefined();
     expect(DockerImage.fromBuildV2).not.toHaveBeenCalled();
   });
 
