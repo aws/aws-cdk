@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, when to offer a fix, the bar a finding must meet to be posted, review tone, the shared what-not-to-flag exclusions, the finding-output contract (ruleId + reference fields), and the rules-lookup convention. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, when to offer a fix, the bar a finding must meet to be posted, review tone, the shared what-not-to-flag exclusions, the finding-output contract (ruleId + reference fields), and how a rule's conditional severity reads. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -31,7 +31,8 @@ harm:
   grouping with identical effect.
 
 A finding's `severity` field takes exactly one of these three words —
-`BLOCKING` / `RECOMMENDED` / `OPTIONAL`.
+`BLOCKING` / `RECOMMENDED` / `OPTIONAL`. A rule with a conditional severity is one rule: its
+header carries the primary severity, and its body states when it up- or down-tiers.
 
 ### Calibrate the harm honestly
 
@@ -130,14 +131,6 @@ carve-outs. None is a finding, at any severity:
 - **Release-tooling / monorepo markers** — `0.0.0` workspace or alpha versions, `V2NEXT`
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
-
-## Rules-lookup convention
-
-Each dimension skill keeps its detailed rules in a `references/*-rules.md` lookup. Every
-lookup shares one shape so they never drift: rows grouped by family, sorted
-BLOCKING → RECOMMENDED → OPTIONAL within each family, `[id]`s stable. A conditional
-severity is one rule — the row header carries the primary severity, the body states when it
-up- or down-tiers. All aws/aws-cdk links reference `main`.
 
 ## Sources
 

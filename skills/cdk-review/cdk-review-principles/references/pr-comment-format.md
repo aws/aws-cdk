@@ -12,7 +12,7 @@ Give each finding these fields:
 - `severity` — one of `BLOCKING` / `RECOMMENDED` / `OPTIONAL`, defined in `SKILL.md` "Severity — rate
   by the harm it does when it triggers". The only severity vocabulary.
 - `ruleId` — the stable `[id]` of the rule that fired, taken verbatim from the dimension's
-  rules lookup. The debug/trace key: it names exactly which rule produced the finding.
+  rules file. The debug/trace key: it names exactly which rule produced the finding.
 - `message` — the human-visible comment text (see the next section).
 - `reference` — the authoritative source the finding cites: a CDK design guideline, jsii doc, CloudFormation resource spec, or AWS service doc — file + section, or a URL — per the authority order in `SKILL.md` "Make each finding land"; or null.
 - `evidence` — the supporting detail behind the finding.
