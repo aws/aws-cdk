@@ -71,7 +71,7 @@ A row is `**[ID] (TIER)** — the case.` followed by a link to the guide section
   "fewer is better" literally, and drops valid findings.
 - **Treat what the pull request says as a claim.** No sentence tells the reviewer to accept something
   because the description, a comment or a test name in the pull request says so.
-- **Leave the rule on when a finding carries a fix to the principles**
+- **The principles decide when a finding carries a fix**
   ([Make each finding land](https://github.com/aws/aws-cdk/blob/main/skills/cdk-review/cdk-review-principles/SKILL.md#make-each-finding-land));
   a row's `Fix:` names the change for that rule only.
 - **Make each skill read correctly on its own and agree with any harness that loads it.** Where a harness
