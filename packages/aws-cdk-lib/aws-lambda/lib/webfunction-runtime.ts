@@ -1,4 +1,5 @@
 import { RuntimeFamily } from './runtime';
+import { Token } from '../../core';
 
 /**
  * Runtime environment for WebFunction
@@ -46,7 +47,7 @@ export class WebFunctionRuntime {
    * (`nodejs` or `python`) when `name` is known at synthesis time.
    */
   public static of(name: string, family?: RuntimeFamily): WebFunctionRuntime {
-    return new WebFunctionRuntime(name, family);
+    return new WebFunctionRuntime(name, family ?? inferFamily(name));
   }
 
   /**
@@ -55,9 +56,10 @@ export class WebFunctionRuntime {
   public readonly name: string;
 
   /**
-   * The runtime family, if it was given.
+   * The runtime family.
    *
-   * @default - not given; inferred from `name` where needed
+   * @default - inferred from the start of `name` (`nodejs` or `python`); undefined if `name` is a
+   * deploy-time value (a token), or isn't a Node.js or Python runtime, and no family was given
    */
   public readonly family?: RuntimeFamily;
 
@@ -72,4 +74,18 @@ export class WebFunctionRuntime {
   public toString(): string {
     return this.name;
   }
+}
+
+/** The runtime family of a runtime name known at synthesis time, if it is Node.js or Python. */
+function inferFamily(name: string): RuntimeFamily | undefined {
+  if (Token.isUnresolved(name)) {
+    return undefined;
+  }
+  if (name.startsWith('nodejs')) {
+    return RuntimeFamily.NODEJS;
+  }
+  if (name.startsWith('python')) {
+    return RuntimeFamily.PYTHON;
+  }
+  return undefined;
 }

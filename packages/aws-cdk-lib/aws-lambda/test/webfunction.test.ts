@@ -5,7 +5,7 @@ import { Alias, Key } from '../../aws-kms';
 import { LogGroup } from '../../aws-logs';
 import { Bucket } from '../../aws-s3';
 import * as ssm from '../../aws-ssm';
-import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Duration } from '../../core';
+import { App, CfnParameter, Fn, NestedStack, Stack, Tags, Token, Duration } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { lit } from '../../core/lib/private/literal-string';
 import { NetworkConnector, NetworkConnectorComputeType, NetworkConnectorConfiguration, NetworkConnectorProtocol } from '../lib/network-connector';
@@ -772,7 +772,12 @@ describe('WebFunction template', () => {
     expect(WebFunctionRuntime.NODEJS_24_X.family).toEqual(RuntimeFamily.NODEJS);
     expect(WebFunctionRuntime.NODEJS_LATEST.family).toEqual(RuntimeFamily.NODEJS);
     expect(WebFunctionRuntime.PYTHON_3_15.family).toEqual(RuntimeFamily.PYTHON);
-    expect(WebFunctionRuntime.of('nodejs26.x').family).toBeUndefined();
+    expect(WebFunctionRuntime.of('nodejs26.x').family).toEqual(RuntimeFamily.NODEJS);
+    expect(WebFunctionRuntime.of('python3.16').family).toEqual(RuntimeFamily.PYTHON);
+    expect(WebFunctionRuntime.of('java21').family).toBeUndefined();
+    expect(WebFunctionRuntime.of(Token.asString({ Ref: 'Runtime' })).family).toBeUndefined();
+    expect(WebFunctionRuntime.of(Token.asString({ Ref: 'Runtime' }), RuntimeFamily.PYTHON).family)
+      .toEqual(RuntimeFamily.PYTHON);
   });
 
   test('entryPoint with a deploy-time runtime is passed as AWS_LAMBDA_NODEJS_ENTRYPOINT', () => {

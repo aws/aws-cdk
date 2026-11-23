@@ -70,9 +70,9 @@ function topLevelStack(stack: Stack): Stack {
 /**
  * The reserved environment variable the runtime reads `entryPoint` from.
  *
- * The runtime's family decides it. Without a family, it is inferred from the runtime name; a
- * name that is a token can't be inspected and keeps the Node.js variable, which is what
- * `entryPoint` mapped to before Python runtimes were supported.
+ * The runtime's family decides it. A runtime whose name is a token and that has no family can't
+ * be inspected and keeps the Node.js variable, which is what `entryPoint` mapped to before
+ * Python runtimes were supported.
  */
 function entryPointEnvironmentVariable(runtime: WebFunctionRuntime, scope: Construct): string {
   const name = runtime.name;
@@ -84,7 +84,7 @@ function entryPointEnvironmentVariable(runtime: WebFunctionRuntime, scope: Const
       'WebFunctionRuntime.of(name, RuntimeFamily.PYTHON)',
     );
   }
-  const family = runtime.family ?? inferredFamily(name);
+  const family = runtime.family ?? (Token.isUnresolved(name) ? RuntimeFamily.NODEJS : undefined);
   if (family === RuntimeFamily.NODEJS) {
     return 'AWS_LAMBDA_NODEJS_ENTRYPOINT';
   }
@@ -96,17 +96,6 @@ function entryPointEnvironmentVariable(runtime: WebFunctionRuntime, scope: Const
     `entryPoint is only supported for Node.js and Python runtimes, got '${name}'`,
     scope,
   );
-}
-
-/** The runtime family inferred from a runtime name; a name that is a token is treated as Node.js. */
-function inferredFamily(name: string): RuntimeFamily | undefined {
-  if (Token.isUnresolved(name) || name.startsWith('nodejs')) {
-    return RuntimeFamily.NODEJS;
-  }
-  if (name.startsWith('python')) {
-    return RuntimeFamily.PYTHON;
-  }
-  return undefined;
 }
 
 /**
