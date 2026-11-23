@@ -101,7 +101,10 @@ async function filesFromArchive(archive: yauzl.ZipFile, source: SourceSpec, sour
     sourceIndex,
     markers: source.markers,
     markersConfig: source.markersConfig,
-    isAlreadyInDestination: (destination) => destination.objectUpToDate(entry.fileName, entry.uncompressedSize, entry.getLastModDate()),
+    // A marker value can change while the archive stays the same, and the substituted
+    // object's size and timestamp say nothing about the value it was rendered with.
+    isAlreadyInDestination: (destination) => Object.keys(source.markers).length === 0
+      && destination.objectUpToDate(entry.fileName, entry.uncompressedSize, entry.getLastModDate()),
     openStream: async () => ({ body: await archive.openReadStreamPromise(entry), contentLength: entry.uncompressedSize }),
   } satisfies CopyableFile));
 }

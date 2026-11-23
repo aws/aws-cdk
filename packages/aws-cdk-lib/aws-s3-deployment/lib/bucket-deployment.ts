@@ -389,10 +389,11 @@ export class BucketDeployment extends Construct {
       this.node.addDependency(props.vpc);
     }
 
-    // Pick between the two BucketDeployment implementations based on the feature flag.
+    // Pick between the two BucketDeployment implementations based on the feature flag. Read at
+    // stack scope: the handler is a per-stack singleton, so all deployments in a stack must agree.
     let customResourceConstructor: typeof BucketDeploymentSingletonFunction | typeof BucketDeploymentTsSingletonFunction;
     let layers: lambda.ILayerVersion[] = [];
-    const useModernBucketDeployment = cdk.FeatureFlags.of(this).isEnabled(BUCKET_DEPLOYMENT_MODERN_RESOURCE);
+    const useModernBucketDeployment = cdk.FeatureFlags.of(cdk.Stack.of(this)).isEnabled(BUCKET_DEPLOYMENT_MODERN_RESOURCE);
     if (useModernBucketDeployment) {
       // The modern BucketDeployment resource has no dependencies.
       customResourceConstructor = BucketDeploymentTsSingletonFunction;

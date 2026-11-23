@@ -110,9 +110,10 @@ export class S3Deployment {
    * Two known holes come with it, both inherited from the AWS CLI's strategy:
    *
    * - **A same-size edit whose timestamp is not newer is silently skipped.** For an
-   *   extracted archive the timestamp comes from the zip entry, and CDK asset zips use a
-   *   fixed one, so a marker substitution that preserves length can leave stale content at
-   *   the destination. A content hash would catch this; size and time cannot.
+   *   extracted archive the timestamp comes from the zip entry. CDK asset zips use a fixed
+   *   placeholder timestamp, which `S3ObjectSet` recognizes and never skips on, so this only
+   *   affects archives that carry real timestamps. A content hash would catch this; size
+   *   and time cannot.
    * - **Metadata changes alone do not trigger a rewrite.** Adding `cache-control` to an
    *   otherwise-unchanged deployment leaves existing objects as they were, because the
    *   LIST response carries no metadata to compare against.
@@ -135,11 +136,13 @@ export class S3Deployment {
   }
 
   /**
-   * Put one file, buffering it only if its markers have to be substituted.
+   * Put one file, buffering it only if its markers have to be substituted or its content
+   * has to be signed.
    *
    * A file with markers has to be read in full: a substitution can change its length, so
-   * there is nothing to stream. Non-substituted files are piped from its source straight into the
-   * upload.
+   * there is nothing to stream. A signed upload has to be read in full too, because the
+   * SDK only hashes a payload it holds in memory and sends a stream as `UNSIGNED-PAYLOAD`.
+   * Other files are piped from their source straight into the upload.
    */
   private async upload(file: CopyableFile, action: CopySourcesAction): Promise<string | undefined> {
     const key = `${action.destination.keyPrefix}${file.relativeKey}`;
@@ -151,9 +154,10 @@ export class S3Deployment {
     return retryWithS3Throttles(async () => {
       const { body, contentLength } = await file.openStream();
 
-      if (Object.keys(file.markers).length > 0) {
+      const hasMarkers = Object.keys(file.markers).length > 0;
+      if (hasMarkers || action.signContent) {
         const entireFile = await readEntireStream(body);
-        const updatedBody = replaceMarkers(entireFile, file.markers, file.markersConfig);
+        const updatedBody = hasMarkers ? replaceMarkers(entireFile, file.markers, file.markersConfig) : entireFile;
         const response = await this.s3.putObject({
           Bucket: action.destination.bucketName,
           Key: key,

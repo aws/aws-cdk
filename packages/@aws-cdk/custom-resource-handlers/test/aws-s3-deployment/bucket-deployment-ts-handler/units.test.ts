@@ -128,6 +128,17 @@ describe('expanding a source', () => {
     });
   });
 
+  test.each([
+    new Date(1980, 0, 1),
+    new Date(Date.UTC(1999, 11, 31, 23, 59, 58)),
+  ])('an entry timestamped %s is a placeholder and never up to date', async (mtime) => {
+    await expand([{ path: 'f.txt', body: 'x', mtime }], async ([file]) => {
+      const identical = new S3ObjectSet();
+      identical.add('f.txt', 1, new Date('2030-01-01'));
+      expect(file.isAlreadyInDestination(identical)).toBe(false);
+    });
+  });
+
   test('streams an entry larger than one chunk', async () => {
     const body = 'chunky '.repeat(5000);
 
@@ -763,6 +774,7 @@ describe('parsing a request into actions', () => {
 
       expect(copy.extract).toBe(true);
       expect(copy.prune).toBe(true);
+      expect(copy.signContent).toBe(false);
       // No patterns given, so nothing is filtered out.
       expect(copy.filters.accepts('anything/at/all.txt')).toBe(true);
       expect(copy.destination.keyPrefix).toBe('');

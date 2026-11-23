@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
@@ -100,6 +101,32 @@ test('modern resource uses no AWS CLI layer', () => {
   t.hasResourceProperties('AWS::Lambda::Function', Match.objectLike({
     Layers: Match.absent(),
   }));
+});
+
+test('modern resource flag is read at stack scope, so deployments sharing a handler agree', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const scope = new Construct(stack, 'Scope');
+  scope.node.setContext('@aws-cdk/aws-s3-deployment:modernResource', true);
+
+  // WHEN - the deployment under the flagged scope comes first, so it would create the handler
+  new s3deploy.BucketDeployment(scope, 'Deploy1', {
+    sources: [s3deploy.Source.jsonData('f.json', { a: 1 })],
+    destinationBucket: bucket,
+  });
+  new s3deploy.BucketDeployment(stack, 'Deploy2', {
+    sources: [s3deploy.Source.jsonData('g.json', { a: 1 })],
+    destinationBucket: bucket,
+  });
+
+  // THEN - both use the legacy handler, which carries the AWS CLI layer
+  const t = Template.fromStack(stack);
+  t.resourceCountIs('AWS::Lambda::Function', 1);
+  t.hasResourceProperties('AWS::Lambda::Function', {
+    Layers: [{ Ref: Match.stringLikeRegexp('AwsCliLayer') }],
+  });
 });
 
 test('empty sources array is preserved', () => {

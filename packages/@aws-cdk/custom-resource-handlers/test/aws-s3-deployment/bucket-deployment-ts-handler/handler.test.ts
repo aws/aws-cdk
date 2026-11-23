@@ -20,6 +20,11 @@ const SRC = 'source-bucket';
 const DST = 'destination-bucket';
 const DST_VERSIONED = 'destination-versioned';
 const DISTRIBUTION = 'E1EXAMPLE';
+/**
+ * A real archive timestamp. Entries without one get the 1980 placeholder CDK asset zips
+ * carry, which the provider never skips on, so tests of the skip rule need this.
+ */
+const REAL_MTIME = new Date(2021, 5, 1, 12, 0, 0);
 
 let fakeS3: FakeS3;
 let fakeCloudFront: FakeCloudFront;
@@ -183,7 +188,7 @@ describe('deployment', () => {
     // to the comparison. Pinned so that nobody mistakes it for a bug in the skip logic —
     // the fix is a content hash, which costs a request per object.
     fakeS3.seed(DST, 'web/index.html', 'AAAA');
-    seedZip('a.zip', [{ path: 'index.html', body: 'BBBB' }]);
+    seedZip('a.zip', [{ path: 'index.html', body: 'BBBB', mtime: REAL_MTIME }]);
 
     await onEvent(cfnEvent('Create', props({ DestinationBucketKeyPrefix: 'web/' })));
 
@@ -194,7 +199,7 @@ describe('deployment', () => {
     // The other hole: the LIST response carries no metadata, so an object that looks
     // unchanged never learns about a new `cache-control`.
     fakeS3.seed(DST, 'web/f.txt', 'same');
-    seedZip('a.zip', [{ path: 'f.txt', body: 'same' }]);
+    seedZip('a.zip', [{ path: 'f.txt', body: 'same', mtime: REAL_MTIME }]);
 
     await onEvent(cfnEvent('Create', props({
       DestinationBucketKeyPrefix: 'web/',
@@ -236,6 +241,24 @@ describe('deployment', () => {
 
       expect(fakeS3.wasStreamed(DST, 'f.txt')).toBe(false);
       expect(fakeS3.text(DST, 'f.txt')).toBe('a value b');
+    });
+
+    test.each([
+      ['an archive entry', 'a.zip', {}],
+      ['an object deployed whole', 'blob.bin', { Extract: 'false' }],
+    ])('%s is buffered when SignContent is on, so the SDK signs its payload', async (_, key, extra) => {
+      // The SDK sends a streamed body as UNSIGNED-PAYLOAD and only hashes one it holds.
+      if (key.endsWith('.zip')) {
+        seedZip(key, [{ path: 'f.txt', body: 'signed' }]);
+      } else {
+        fakeS3.seed(SRC, key, 'signed');
+      }
+      const written = key.endsWith('.zip') ? 'f.txt' : key;
+
+      await onEvent(cfnEvent('Create', props({ ...extra, SignContent: 'true' }, [key])));
+
+      expect(fakeS3.wasStreamed(DST, written)).toBe(false);
+      expect(fakeS3.text(DST, written)).toBe('signed');
     });
 
     test('an object deployed whole with no markers is streamed', async () => {
@@ -284,9 +307,9 @@ describe('deployment', () => {
       // the first claim would make the later sources upload needlessly.
       const when = new Date('2030-01-01T00:00:00Z');
       fakeS3.seed(DST, 'web/index.html', 'AAAA', { lastModified: when });
-      seedZip('a.zip', [{ path: 'index.html', body: 'BBBB' }]);
-      seedZip('b.zip', [{ path: 'index.html', body: 'CCCC' }]);
-      seedZip('c.zip', [{ path: 'index.html', body: 'DDDD' }]);
+      seedZip('a.zip', [{ path: 'index.html', body: 'BBBB', mtime: REAL_MTIME }]);
+      seedZip('b.zip', [{ path: 'index.html', body: 'CCCC', mtime: REAL_MTIME }]);
+      seedZip('c.zip', [{ path: 'index.html', body: 'DDDD', mtime: REAL_MTIME }]);
 
       await onEvent(cfnEvent('Create', {
         SourceBucketNames: [SRC, SRC, SRC],
@@ -338,7 +361,7 @@ describe('deployment', () => {
     });
 
     test('a redeployment that changes nothing writes nothing', async () => {
-      seedZip('a.zip', [{ path: 'one.txt', body: '1' }, { path: 'two.txt', body: '2' }]);
+      seedZip('a.zip', [{ path: 'one.txt', body: '1', mtime: REAL_MTIME }, { path: 'two.txt', body: '2', mtime: REAL_MTIME }]);
       const event = cfnEvent('Create', props({ DestinationBucketKeyPrefix: 'web/' }));
       await onEvent(event);
 
@@ -351,7 +374,7 @@ describe('deployment', () => {
     test('a skipped entry is never decompressed', async () => {
       // The skip decision comes from the central directory and the LIST response, so a
       // redeployment of an unchanged site reads no entry contents at all.
-      seedZip('a.zip', [{ path: 'f.txt', body: 'same' }]);
+      seedZip('a.zip', [{ path: 'f.txt', body: 'same', mtime: REAL_MTIME }]);
       const event = cfnEvent('Create', props({ DestinationBucketKeyPrefix: 'web/' }));
 
       await onEvent(event);
@@ -375,7 +398,7 @@ describe('deployment', () => {
     });
 
     test('redeploying identical content writes no new version', async () => {
-      seedZip('a.zip', [{ path: 'f.txt', body: 'same' }]);
+      seedZip('a.zip', [{ path: 'f.txt', body: 'same', mtime: REAL_MTIME }]);
 
       await onEvent(cfnEvent('Create', versionedProps()));
       await onEvent(cfnEvent('Create', versionedProps()));
@@ -418,12 +441,35 @@ describe('deployment', () => {
       expect(fakeS3.text(DST_VERSIONED, 'web/f.txt')).toBe('AAAA');
     });
 
-    test('a same-size content change is skipped — a known hole', async () => {
+    test('a CDK asset zip with placeholder timestamps is always rewritten', async () => {
+      // CDK resets entry timestamps to 1980 for reproducible asset hashes, so the timestamp
+      // says nothing and a same-size edit would otherwise be lost.
       seedZip('a.zip', [{ path: 'f.txt', body: 'AAAA' }]);
       await onEvent(cfnEvent('Create', versionedProps()));
 
-      // Same length, same archive timestamp: indistinguishable from no change.
       seedZip('a.zip', [{ path: 'f.txt', body: 'BBBB' }]);
+      await onEvent(cfnEvent('Create', versionedProps()));
+
+      expect(fakeS3.versions(DST_VERSIONED, 'web/f.txt')).toHaveLength(2);
+      expect(fakeS3.text(DST_VERSIONED, 'web/f.txt')).toBe('BBBB');
+    });
+
+    test('a file from a source with markers is always rewritten', async () => {
+      // A marker value can change while the archive does not.
+      seedZip('a.zip', [{ path: 'f.txt', body: '<<m>>', mtime: REAL_MTIME }]);
+      await onEvent(cfnEvent('Create', versionedProps({ SourceMarkers: [{ '<<m>>': 'AAAA' }] })));
+      await onEvent(cfnEvent('Create', versionedProps({ SourceMarkers: [{ '<<m>>': 'BBBB' }] })));
+
+      expect(fakeS3.versions(DST_VERSIONED, 'web/f.txt')).toHaveLength(2);
+      expect(fakeS3.text(DST_VERSIONED, 'web/f.txt')).toBe('BBBB');
+    });
+
+    test('a same-size content change is skipped — a known hole', async () => {
+      seedZip('a.zip', [{ path: 'f.txt', body: 'AAAA', mtime: REAL_MTIME }]);
+      await onEvent(cfnEvent('Create', versionedProps()));
+
+      // Same length, same archive timestamp: indistinguishable from no change.
+      seedZip('a.zip', [{ path: 'f.txt', body: 'BBBB', mtime: REAL_MTIME }]);
       await onEvent(cfnEvent('Create', versionedProps()));
 
       expect(fakeS3.versions(DST_VERSIONED, 'web/f.txt')).toHaveLength(1);
@@ -431,7 +477,7 @@ describe('deployment', () => {
     });
 
     test('a metadata-only change is skipped — a known hole', async () => {
-      seedZip('a.zip', [{ path: 'f.txt', body: 'same' }]);
+      seedZip('a.zip', [{ path: 'f.txt', body: 'same', mtime: REAL_MTIME }]);
       await onEvent(cfnEvent('Create', versionedProps()));
 
       await onEvent(cfnEvent('Create', versionedProps({
@@ -547,6 +593,35 @@ describe('markers', () => {
 
     expect(fakeS3.text(DST, 'config.yaml')).toBe('flag: "yes"\nname: plain');
     expect(fakeS3.text(DST, 'b.txt')).toBe('<<flag>>');
+  });
+
+  test.each([
+    ['LITERAL', 'a"b', 'a"b'],
+    ['UNQUOTED_JSON_VALUE', 'a"b', 'a\\"b'],
+    ['UNQUOTED_JSON_VALUE', ['x'], '["x"]'],
+    ['JSON_VALUE', 'a"b', '"a\\"b"'],
+    ['JSON_VALUE', { k: 1 }, '{"k":1}'],
+    ['YAML_STRING', 'plain', 'plain'],
+    ['YAML_STRING', 'yes', '"yes"'],
+    ['YAML_STRING', 'a: b', '"a: b"'],
+  ])('%s encodes %j as %s', async (encoding, value, expected) => {
+    seedZip('a.zip', [{ path: 'f.txt', body: '<<m>>' }]);
+
+    await onEvent(cfnEvent('Create', props({
+      SourceMarkers: [{ '<<m>>': value }],
+      SourceMarkersConfig: [{ markerEncodings: { '<<m>>': encoding } }],
+    })));
+
+    expect(fakeS3.text(DST, 'f.txt')).toBe(expected);
+  });
+
+  test('fails for LITERAL with a non-string value', async () => {
+    seedZip('a.zip', [{ path: 'f.txt', body: '<<m>>' }]);
+
+    await expect(onEvent(cfnEvent('Create', props({
+      SourceMarkers: [{ '<<m>>': 42 }],
+      SourceMarkersConfig: [{ markerEncodings: { '<<m>>': 'LITERAL' } }],
+    })))).rejects.toThrow(/Expected a string for LITERAL encoding for marker <<m>>, got number/);
   });
 });
 

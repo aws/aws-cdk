@@ -68,6 +68,8 @@ export interface CopySourcesAction {
    */
   readonly filters: Filters;
   readonly putObjectSettings: PartialPutObjectRequest;
+  /** Sign each object's payload, rather than uploading it as `UNSIGNED-PAYLOAD`. */
+  readonly signContent: boolean;
   /**
    * When set, the version ids of the deployed objects are reported under this response
    * key, positionally aligned with `sources`.
@@ -233,6 +235,7 @@ function parseCopySources(
     extract,
     destination,
     prune: parseBoolean(props.Prune, true),
+    signContent: parseBoolean(props.SignContent, false),
     filters: compileFilters(
       optionalStringList(props, 'Exclude'),
       optionalStringList(props, 'Include'),

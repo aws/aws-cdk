@@ -10,6 +10,9 @@
  * the first question, or a path carried by several sources would stop being comparable
  * after the first one looked at it — and the later sources would upload needlessly.
  */
+/** Timestamps before this are reset placeholders, not real modification times. */
+const PLACEHOLDER_TIMESTAMP_CUTOFF = Date.UTC(2000, 0, 1);
+
 export class S3ObjectSet {
   private readonly objects = new Map<string, { size: number; lastModified: Date }>();
   private readonly claimed = new Set<string>();
@@ -32,10 +35,18 @@ export class S3ObjectSet {
    * Content is never hashed and metadata is never compared, which is what keeps the
    * decision to a single LIST. The two holes that buys are documented on `snapshot`.
    *
+   * A candidate timestamp before 2000 is never trusted. CDK resets every entry of the asset
+   * zips it builds to a fixed placeholder (the 1980 DOS epoch) to keep them reproducible, so
+   * for those the timestamp carries no information and a same-size edit would otherwise be
+   * skipped. Such files are always treated as changed. Archives produced elsewhere that
+   * carry real timestamps still get the optimization.
+   *
    * Answers from the listing alone, so it is unaffected by anything this deployment has
    * written and gives every source the same answer.
    */
   public objectUpToDate(relativeKey: string, size: number, lastModified: Date): boolean {
+    if (lastModified.getTime() < PLACEHOLDER_TIMESTAMP_CUTOFF) { return false; }
+
     const existing = this.objects.get(relativeKey);
     if (!existing) { return false; }
     if (existing.size !== size) { return false; }
