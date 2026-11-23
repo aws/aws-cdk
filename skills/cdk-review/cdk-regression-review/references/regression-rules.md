@@ -8,19 +8,22 @@ BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-seve
 
 ## Input validation
 
-**[REG-VALIDATION-FALSE-POSITIVE] (BLOCKING)** — New validation must not reject a value CDK accepts today;
-an over-strict check turns a working stack into one that stops synthesizing. Confirm the real constraint
-against the authoritative AWS service docs before rating.
+**[REG-VALIDATION-FALSE-POSITIVE] (BLOCKING)** — New validation must not reject a value CDK accepts today,
+meaning input that deploys successfully; an over-strict check turns a working stack into one that stops
+synthesizing. Confirm the real constraint against the authoritative AWS service docs before rating. See
+[`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
+for the two cases of new validation: input that previously deployed, and input that always failed at deploy
+time.
 - **Detection (doc-absent detail):** for every new `throw` / rejection / bound / regex, name one concrete
-  input that was valid before the PR and is rejected after (a negative-vs-preserved-valid comparison).
+  input that deployed before the PR and is rejected after (a negative-vs-previously-deployed comparison).
   Signals: an **over-narrow regex** (a new `if (!/^[a-z]+$/.test(props.name)) throw …` rejecting a
-  hyphenated, numeric, or uppercase name the construct previously synthesized); an **off-by-one / too-tight
+  hyphenated, numeric, or uppercase name that previously deployed); an **off-by-one / too-tight
   bound** (a new min/max/length narrower than the service's real limit); an **enum-membership check
-  omitting a live value** (a new allowlist / `switch`-with-throw missing a value the construct synthesizes
+  omitting a live value** (a new allowlist / `switch`-with-throw missing a value that deploys
   today); a **newly-required prop or non-null assertion** on a prop that was optional or defaulted,
   breaking callers that relied on the old default. A check that only tightens against genuinely-invalid
   input is an improvement, not a regression; a validation that only worsens the error message on an
-  already-invalid input rejects no previously-valid value — at most OPTIONAL. A new validation that also
+  already-invalid input rejects no value that previously deployed — at most OPTIONAL. A new validation that also
   skips `Token.isUnresolved()` false-rejects any token-valued input — pair this with
   [REG-TOKEN-UNRESOLVED-GUARD].
 
@@ -151,9 +154,9 @@ return). *(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation)
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
-- **Also breaking, not enumerated by the doc (doc-absent detail):** deprecating (`@deprecated`) a still-used
-  stable API, and removing an enum member. (Moving a public member between files is its own rule —
-  [REG-JSII-TYPE-MOVE].)
+- **Also breaking:** removing an enum member, listed in
+  `AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`. (Moving a public member between
+  files is its own rule — [REG-JSII-TYPE-MOVE].)
 - **✅ Non-breaking guard (doc-absent detail):** adding optional input props, new methods/classes, and
   return props is additive.
 
@@ -164,10 +167,13 @@ error: an update that cannot be applied, a change that causes service interrupti
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for the construct-ID/logical-ID→data-loss rule; [`CONTRIBUTING.md § Behavior changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#behavior-changes)
 for the definitional test of which template changes are breaking.
-- **Also breaking, not enumerated by the doc (doc-absent detail):** a `@default` change that alters an
-  existing stack's synthesized template, and a noop→real-policy change without a feature flag.
+- **Tier:** RECOMMENDED for a `@default` change or a noop→real-policy change that alters an existing
+  stack's synthesized template but applies cleanly, without service interruption or data loss, because
+  `CONTRIBUTING.md § Behavior changes` does not count such a change as breaking. Ask for a feature flag for
+  it, following [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags)
+  and [`CONTRIBUTING.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#feature-flags).
 - **✅ Non-breaking guard (doc-absent detail):** an update that applies cleanly with no replacement and only
-  additive template changes is safe.
+  additive template changes is not breaking.
 
 **[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
 breaking change still requires an explicit `BREAKING CHANGE:` callout in the PR body (before the `---`
