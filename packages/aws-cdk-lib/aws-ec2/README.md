@@ -2725,7 +2725,8 @@ The factory methods of `Ec2LaunchV2Task` are named after the tasks they produce,
 
 Adding `executeScript` (with `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()`), `executeProgram`,
 `writeFile`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again appends to the inputs of the
-existing task. Adding any other task with inputs twice is an error.
+existing task. Adding `initializeVolume` again with other devices adds them to the task; adding the same device twice,
+or both all volumes and specific devices, is an error. Adding any other task with inputs twice is an error.
 
 EC2Launch v2 (tested with version 2.5.2) does not load user data with a `writeFile` task whose destination is under
 `C:\Windows`, so `Ec2LaunchV2Task.writeFile()` rejects such destinations. Write those files with a command instead.

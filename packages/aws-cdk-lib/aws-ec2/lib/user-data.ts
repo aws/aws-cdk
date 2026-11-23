@@ -954,8 +954,11 @@ export class Ec2LaunchV2UserData extends UserData {
    * Add an EC2Launch v2 task to the user data
    *
    * Adding a task whose inputs are a list (`executeScript`, `executeProgram`,
-   * `writeFile`) again appends to its inputs. Adding a task without inputs again has no
-   * effect. Adding any other task again throws an error.
+   * `writeFile`) again appends to its inputs. Adding `initializeVolume` again
+   * with other devices adds them to the task, and adding it again for all
+   * volumes has no effect; adding the same device twice, or both all volumes
+   * and specific devices, throws an error. Adding a task without inputs again
+   * has no effect. Adding any other task again throws an error.
    */
   public addTask(task: Ec2LaunchV2Task): void {
     this.mergeTask(task.taskName, task._inputs);
@@ -1057,10 +1060,42 @@ export class Ec2LaunchV2UserData extends UserData {
     const existing = this.tasks.get(task);
     if (Array.isArray(existing) && Array.isArray(inputs)) {
       existing.push(...inputs);
+    } else if (task === 'initializeVolume' && isInitializeVolumeInputs(existing) && isInitializeVolumeInputs(inputs)) {
+      // Setting an existing key keeps its position in the task order
+      this.tasks.set(task, mergeInitializeVolumeInputs(existing, inputs));
     } else if (existing !== undefined || inputs !== undefined) {
       throw new UnscopedValidationError(lit`Ec2LaunchV2DuplicateTask`, `task ${JSON.stringify(task)} has already been added, EC2Launch v2 allows each task only once in user data`);
     }
   }
+}
+
+/**
+ * Whether the inputs of a task are those of an `initializeVolume` task
+ */
+function isInitializeVolumeInputs(inputs: any): boolean {
+  return inputs?.initialize === 'all' || (inputs?.initialize === 'devices' && Array.isArray(inputs.devices));
+}
+
+/**
+ * Combine the inputs of two `initializeVolume` tasks
+ *
+ * Returns new inputs, so that the inputs of the tasks themselves are not
+ * changed.
+ */
+function mergeInitializeVolumeInputs(existing: any, inputs: any): any {
+  if (existing.initialize === 'all' && inputs.initialize === 'all') {
+    return existing;
+  }
+  if (existing.initialize !== inputs.initialize) {
+    throw new UnscopedValidationError(lit`Ec2LaunchV2InitializeVolumeConflict`, 'initializeVolume has been added both for all volumes and for specific devices, add it either without devices or only with devices');
+  }
+  const devices = [...existing.devices, ...inputs.devices];
+  const names = devices.map(device => device.device).filter(name => typeof name === 'string' && !Token.isUnresolved(name));
+  const duplicate = names.find((name, i) => names.indexOf(name) !== i);
+  if (duplicate !== undefined) {
+    throw new UnscopedValidationError(lit`Ec2LaunchV2InitializeVolumeDuplicateDevice`, `device ${JSON.stringify(duplicate)} has already been added to initializeVolume, add each device only once`);
+  }
+  return { ...existing, devices };
 }
 
 /**

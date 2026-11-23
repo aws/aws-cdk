@@ -732,6 +732,63 @@ describe('EC2Launch v2 user data', () => {
     }]);
   });
 
+  test('merges the devices of initializeVolume tasks added again, keeping their position', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    const first = ec2.Ec2LaunchV2Task.initializeVolume({ devices: [{ device: 'xvdf', letter: 'D' }] });
+
+    // WHEN
+    userData.addTask(first);
+    userData.addTask(ec2.Ec2LaunchV2Task.startSsm());
+    userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({ devices: [{ device: 'xvdg', letter: 'E' }] }));
+
+    // THEN
+    expect(parse(userData).tasks).toEqual([
+      { task: 'initializeVolume', inputs: { initialize: 'devices', devices: [{ device: 'xvdf', letter: 'D' }, { device: 'xvdg', letter: 'E' }] } },
+      { task: 'startSsm' },
+    ]);
+    const other = ec2.UserData.forWindowsEc2LaunchV2();
+    other.addTask(first);
+    expect(parse(other).tasks).toEqual([
+      { task: 'initializeVolume', inputs: { initialize: 'devices', devices: [{ device: 'xvdf', letter: 'D' }] } },
+    ]);
+  });
+
+  test('ignores initializeVolume for all volumes added again', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume());
+    userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume());
+
+    // THEN
+    expect(parse(userData).tasks).toEqual([{ task: 'initializeVolume', inputs: { initialize: 'all' } }]);
+  });
+
+  test.each([
+    ['all volumes, then devices', undefined, [{ device: 'xvdf' }]],
+    ['devices, then all volumes', [{ device: 'xvdf' }], undefined],
+  ])('fails to add initializeVolume for %s', (_, firstDevices, secondDevices) => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({ devices: firstDevices }));
+
+    // THEN
+    expect(() => userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({ devices: secondDevices })))
+      .toThrow('initializeVolume has been added both for all volumes and for specific devices, add it either without devices or only with devices');
+  });
+
+  test('fails to add the same device to initializeVolume twice', () => {
+    // GIVEN
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({ devices: [{ device: 'xvdf', letter: 'D' }] }));
+
+    // THEN
+    expect(() => userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({ devices: [{ device: 'xvdf', letter: 'E' }] })))
+      .toThrow('device "xvdf" has already been added to initializeVolume, add each device only once');
+  });
+
   test('fails to initialize an empty list of devices', () => {
     expect(() => ec2.Ec2LaunchV2Task.initializeVolume({ devices: [] }))
       .toThrow(/devices must not be empty/);
