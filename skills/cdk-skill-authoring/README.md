@@ -1,6 +1,6 @@
 # CDK skill authoring
 
-Skills for writing and editing the skills in this repository.
+A skill for writing and editing the review skills in [`skills/cdk-review/`](../cdk-review/README.md).
 
 | Skill | Use |
 |---|---|
@@ -9,7 +9,7 @@ Skills for writing and editing the skills in this repository.
 ## Install
 
 ```sh
-npx skills add aws/aws-cdk --skill cdk-review-skill-authoring -g
+npx skills add https://github.com/aws/aws-cdk/tree/main/skills/cdk-skill-authoring --skill '*' -g
 ```
 
 From an aws-cdk checkout:
