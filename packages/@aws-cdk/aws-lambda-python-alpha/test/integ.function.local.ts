@@ -14,8 +14,8 @@ import * as lambda from '../lib';
  * Exercises the local (Docker-less) bundling path across the two Lambda Python
  * base-image tiers and both architectures:
  *
- *   AL2 (manylinux2014 only): python3.10, python3.11
- *   AL2023 (manylinux_2_28 with manylinux2014 fallback): python3.12, python3.13, python3.14
+ *   Amazon Linux 2: python3.10, python3.11
+ *   Amazon Linux 2023: python3.12, python3.13, python3.14
  *
  * The requirements.txt cases import a native extension. The arm64 Python 3.12
  * cases verify that the default tags and an explicit override select distinct
@@ -44,13 +44,13 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const matrix: MatrixEntry[] = [
-      // AL2 tier (manylinux2014)
+      // Amazon Linux 2
       { id: 'al2-py310-x86_64', runtime: Runtime.PYTHON_3_10, architecture: Architecture.X86_64 },
       { id: 'al2-py310-arm64', runtime: Runtime.PYTHON_3_10, architecture: Architecture.ARM_64 },
       { id: 'al2-py311-x86_64', runtime: Runtime.PYTHON_3_11, architecture: Architecture.X86_64 },
       { id: 'al2-py311-arm64', runtime: Runtime.PYTHON_3_11, architecture: Architecture.ARM_64 },
 
-      // AL2023 tier (manylinux_2_28 falling back to manylinux2014)
+      // Amazon Linux 2023
       { id: 'al2023-py312-x86_64', runtime: Runtime.PYTHON_3_12, architecture: Architecture.X86_64 },
       {
         id: 'al2023-py312-arm64',

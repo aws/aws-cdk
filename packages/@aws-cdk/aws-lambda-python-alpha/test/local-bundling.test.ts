@@ -104,7 +104,7 @@ function shellCall(command: string): [string, string[]] | undefined {
 }
 
 describe('AL2-base pip path', () => {
-  test('PYTHON_3_11 + X86_64 emits a single manylinux2014 x86_64 tag', () => {
+  test('PYTHON_3_11 + X86_64 passes the AL2 wheel tags to pip', () => {
     const local = makeLocalBundling({
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_11,
@@ -119,6 +119,7 @@ describe('AL2-base pip path', () => {
       '-m', 'pip', 'install',
       '-r', 'requirements.txt',
       '--target', outputDir,
+      ...[26, 25, 24, 23, 22, 21, 20, 19, 18, 17].flatMap(minor => ['--platform', `manylinux_2_${minor}_x86_64`]),
       '--platform', 'manylinux2014_x86_64',
       '--python-version', '3.11',
       '--only-binary=:all:',
@@ -127,7 +128,7 @@ describe('AL2-base pip path', () => {
     ]);
   });
 
-  test('PYTHON_3_11 + ARM_64 emits a single manylinux2014 aarch64 tag', () => {
+  test('PYTHON_3_11 + ARM_64 passes the AL2 wheel tags to pip', () => {
     const local = makeLocalBundling({
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_11,
@@ -138,14 +139,14 @@ describe('AL2-base pip path', () => {
 
     const args = pipInstallCall()!;
     const platformCount = args.filter((a) => a === '--platform').length;
-    expect(platformCount).toBe(1);
+    expect(platformCount).toBe(11);
     expect(args).toEqual(expect.arrayContaining(['--platform', 'manylinux2014_aarch64']));
     expect(args).not.toEqual(expect.arrayContaining(['manylinux2014_x86_64']));
   });
 });
 
 describe('AL2023-base pip path', () => {
-  test('PYTHON_3_12 + X86_64 emits manylinux_2_28 then manylinux2014', () => {
+  test('PYTHON_3_12 + X86_64 passes the AL2023 wheel tags to pip', () => {
     const local = makeLocalBundling({
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_12,
@@ -156,14 +157,14 @@ describe('AL2023-base pip path', () => {
 
     const args = pipInstallCall()!;
     const platformIdx1 = args.indexOf('--platform');
-    const platformIdx2 = args.indexOf('--platform', platformIdx1 + 1);
-    expect(args[platformIdx1 + 1]).toBe('manylinux_2_28_x86_64');
-    expect(args[platformIdx2 + 1]).toBe('manylinux2014_x86_64');
+    const lastPlatformIdx = args.lastIndexOf('--platform');
+    expect(args[platformIdx1 + 1]).toBe('manylinux_2_34_x86_64');
+    expect(args[lastPlatformIdx + 1]).toBe('manylinux2014_x86_64');
     expect(args).toEqual(expect.arrayContaining(['--python-version', '3.12']));
     expect(args).toEqual(expect.arrayContaining(['--abi', 'cp312']));
   });
 
-  test('PYTHON_3_13 + ARM_64 emits manylinux_2_28 then manylinux2014 aarch64', () => {
+  test('PYTHON_3_13 + ARM_64 passes the AL2023 wheel tags to pip', () => {
     const local = makeLocalBundling({
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_13,
@@ -174,9 +175,9 @@ describe('AL2023-base pip path', () => {
 
     const args = pipInstallCall()!;
     const platformIdx1 = args.indexOf('--platform');
-    const platformIdx2 = args.indexOf('--platform', platformIdx1 + 1);
-    expect(args[platformIdx1 + 1]).toBe('manylinux_2_28_aarch64');
-    expect(args[platformIdx2 + 1]).toBe('manylinux2014_aarch64');
+    const lastPlatformIdx = args.lastIndexOf('--platform');
+    expect(args[platformIdx1 + 1]).toBe('manylinux_2_34_aarch64');
+    expect(args[lastPlatformIdx + 1]).toBe('manylinux2014_aarch64');
     expect(args).toEqual(expect.arrayContaining(['--python-version', '3.13']));
     expect(args).toEqual(expect.arrayContaining(['--abi', 'cp313']));
   });
@@ -268,7 +269,7 @@ describe('platformTags override', () => {
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_12,
       architecture: Architecture.X86_64,
-      platformTags: ['musllinux_1_2_x86_64'],
+      platformTags: ['manylinux_2_24_x86_64'],
     });
 
     local.tryBundle(outputDir);
@@ -278,7 +279,7 @@ describe('platformTags override', () => {
       if (args[idx - 1] === '--platform') acc.push(value);
       return acc;
     }, []);
-    expect(platformValues).toEqual(['musllinux_1_2_x86_64']);
+    expect(platformValues).toEqual(['manylinux_2_24_x86_64']);
   });
 });
 
@@ -584,7 +585,8 @@ describe('validation', () => {
 
   test.each([
     { tags: [], error: /at least one Linux platform tag/ },
-    { tags: ['macosx_11_0_arm64'], error: /does not target Linux/ },
+    { tags: ['macosx_11_0_arm64'], error: /is not a glibc-compatible Linux tag/ },
+    { tags: ['musllinux_1_2_aarch64'], error: /is not a glibc-compatible Linux tag/ },
   ])('fails with platform tags $tags', ({ tags, error }) => {
     expect(() => makeLocalBundling({
       entry: ENTRY_PIP,
@@ -596,7 +598,8 @@ describe('validation', () => {
 
   test.each([
     [Architecture.ARM_64, 'manylinux_2_28_aarch64', 'manylinux_2_28_x86_64'],
-    [Architecture.X86_64, 'manylinux2014_x86_64', 'musllinux_1_2_aarch64'],
+    [Architecture.X86_64, 'manylinux2014_x86_64', 'manylinux2014_aarch64'],
+    [Architecture.X86_64, 'manylinux2014_x86_64', 'manylinux2014_i686'],
   ])('rejects a conflicting platform tag for %s', (architecture, validTag, invalidTag) => {
     expect(() => makeLocalBundling({
       entry: ENTRY_PIP,
@@ -623,13 +626,13 @@ describe('validation', () => {
       entry: ENTRY_PIP,
       runtime: Runtime.PYTHON_3_12,
       architecture: Architecture.ARM_64,
-      localBundling: { additionalPlatformTags: ['manylinux_2_34_aarch64'] },
+      localBundling: { additionalPlatformTags: ['linux_aarch64'] },
     });
     expect(bundling.local!.tryBundle(outputDir, bundling)).toBe(true);
     const pipArgs = pipInstallCall()!;
-    expect(pipArgs.filter((_, index) => pipArgs[index - 1] === '--platform')).toEqual([
-      'manylinux_2_28_aarch64', 'manylinux2014_aarch64', 'manylinux_2_34_aarch64',
-    ]);
+    const tags = pipArgs.filter((_, index) => pipArgs[index - 1] === '--platform');
+    expect(tags[0]).toBe('manylinux_2_34_aarch64');
+    expect(tags.slice(-2)).toEqual(['manylinux2014_aarch64', 'linux_aarch64']);
   });
 
   test('explicit platform tags bypass validation for the default architecture mapping', () => {
@@ -698,6 +701,37 @@ test('fails when a source symlink resolves outside the entry', () => {
   };
   expect(() => makeLocalBundling(options)).toThrow(/symbolic link .*outside the entry directory/);
   expect(() => makeLocalBundling({ ...options, assetExcludes: ['outside'] })).not.toThrow();
+});
+
+test('accepts symlinks that stay inside the entry, including a directory cycle', () => {
+  const entry = path.join(outputDir, 'entry');
+  const pkg = path.join(entry, 'pkg');
+  fs.mkdirSync(pkg, { recursive: true });
+  fs.symlinkSync(pkg, path.join(entry, 'alias'), 'junction');
+  fs.symlinkSync(entry, path.join(pkg, 'loop'), 'junction');
+
+  expect(() => makeLocalBundling({
+    entry,
+    runtime: Runtime.PYTHON_3_11,
+    architecture: Architecture.X86_64,
+  })).not.toThrow();
+});
+
+test('fails when a link escapes through an included alias of an excluded directory', () => {
+  const entry = path.join(outputDir, 'entry');
+  const pkg = path.join(entry, 'pkg');
+  const outside = path.join(outputDir, 'entry-other');
+  fs.mkdirSync(pkg, { recursive: true });
+  fs.mkdirSync(outside);
+  fs.symlinkSync(outside, path.join(pkg, 'out'), 'junction');
+  fs.symlinkSync(pkg, path.join(entry, 'alias'), 'junction');
+
+  expect(() => makeLocalBundling({
+    entry,
+    runtime: Runtime.PYTHON_3_11,
+    architecture: Architecture.X86_64,
+    assetExcludes: ['pkg'],
+  })).toThrow(/symbolic link .*alias.*outside the entry directory/);
 });
 
 describe('assetExcludes', () => {

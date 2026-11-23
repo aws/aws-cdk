@@ -152,16 +152,13 @@ export interface LocalBundlingOptions {
    *
    * This replaces the default list. Include any default tags you still want pip
    * to consider, or use additionalPlatformTags to extend the defaults.
-   * The combined list must include at least one tag, and all tags must target Linux.
-   * Tags ending in _x86_64 or _aarch64 must match the target architecture
-   * when it is x86_64 or arm64. Versioned manylinux tags must be compatible
-   * with the target runtime's glibc version.
+   * The combined list must include at least one glibc-compatible Linux tag.
+   * Tags must match the target architecture for x86_64 and arm64.
+   * Versioned manylinux tags must be compatible with the target runtime's glibc version.
    *
-   * @default - Derived from the target Python runtime's base image:
-   *            `manylinux2014_{arch}` for Python 3.11 and below (Amazon Linux 2;
-   *            Amazon Linux for Python 3.6 and 3.7),
-   *            `manylinux_2_28_{arch}` falling back to `manylinux2014_{arch}` for
-   *            Python 3.12 and above (Amazon Linux 2023).
+   * @default - Versioned manylinux tags from the runtime's glibc version
+   *            (2.34 for Python 3.12+, 2.26 for 3.8 to 3.11, 2.17 for 3.6 and 3.7)
+   *            down to 2.17, followed by manylinux2014.
    */
   readonly platformTags?: string[];
 

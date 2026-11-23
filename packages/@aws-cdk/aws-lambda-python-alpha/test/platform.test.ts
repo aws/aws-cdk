@@ -58,38 +58,18 @@ describe('validateArchitecture', () => {
 });
 
 describe('defaultPlatformTags', () => {
-  describe('AL2-base runtimes (python3.7 .. python3.11) use single manylinux2014 tag', () => {
-    test.each([
-      [Runtime.PYTHON_3_7, Architecture.X86_64, ['manylinux2014_x86_64']],
-      [Runtime.PYTHON_3_9, Architecture.ARM_64, ['manylinux2014_aarch64']],
-      [Runtime.PYTHON_3_11, Architecture.X86_64, ['manylinux2014_x86_64']],
-      [Runtime.PYTHON_3_11, Architecture.ARM_64, ['manylinux2014_aarch64']],
-    ])('%s + %s', (runtime, arch, expected) => {
-      expect(defaultPlatformTags(runtime, arch)).toEqual(expected);
-    });
-  });
-
-  describe('AL2023-base runtimes (python3.12+) use manylinux_2_28 then manylinux2014', () => {
-    test.each([
-      [Runtime.PYTHON_3_12, Architecture.X86_64, ['manylinux_2_28_x86_64', 'manylinux2014_x86_64']],
-      [Runtime.PYTHON_3_12, Architecture.ARM_64, ['manylinux_2_28_aarch64', 'manylinux2014_aarch64']],
-      [Runtime.PYTHON_3_13, Architecture.X86_64, ['manylinux_2_28_x86_64', 'manylinux2014_x86_64']],
-      [Runtime.PYTHON_3_14, Architecture.ARM_64, ['manylinux_2_28_aarch64', 'manylinux2014_aarch64']],
-    ])('%s + %s', (runtime, arch, expected) => {
-      expect(defaultPlatformTags(runtime, arch)).toEqual(expected);
-    });
-  });
-
-  test('boundary: python3.11 is AL2 rule, python3.12 is AL2023 rule', () => {
-    expect(defaultPlatformTags(Runtime.PYTHON_3_11, Architecture.X86_64)).toEqual(['manylinux2014_x86_64']);
-    expect(defaultPlatformTags(Runtime.PYTHON_3_12, Architecture.X86_64)).toEqual([
-      'manylinux_2_28_x86_64',
-      'manylinux2014_x86_64',
+  test.each([
+    [Runtime.PYTHON_3_6, Architecture.X86_64, 'x86_64', [17]],
+    [Runtime.PYTHON_3_7, Architecture.X86_64, 'x86_64', [17]],
+    [Runtime.PYTHON_3_8, Architecture.ARM_64, 'aarch64', [26, 25, 24, 23, 22, 21, 20, 19, 18, 17]],
+    [Runtime.PYTHON_3_11, Architecture.X86_64, 'x86_64', [26, 25, 24, 23, 22, 21, 20, 19, 18, 17]],
+    [Runtime.PYTHON_3_12, Architecture.X86_64, 'x86_64', [34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17]],
+    [Runtime.PYTHON_3_14, Architecture.ARM_64, 'aarch64', [34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17]],
+  ])('%s + %s uses the compatible glibc range then the legacy alias', (runtime, arch, suffix, minors) => {
+    expect(defaultPlatformTags(runtime, arch)).toEqual([
+      ...minors.map(minor => `manylinux_2_${minor}_${suffix}`),
+      `manylinux2014_${suffix}`,
     ]);
-  });
-
-  test('legacy python3.6 falls back to manylinux2014 single tag', () => {
-    expect(defaultPlatformTags(Runtime.PYTHON_3_6, Architecture.X86_64)).toEqual(['manylinux2014_x86_64']);
   });
 
   test('throws for unsupported architecture', () => {

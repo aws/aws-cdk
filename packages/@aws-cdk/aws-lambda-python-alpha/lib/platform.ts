@@ -41,18 +41,17 @@ export function validatePlatformTags(runtime: Runtime, architecture: Architectur
   }
 
   const expected = ARCH_SLUG[architecture.dockerPlatform];
-  const pythonMinor = parsePythonMinor(runtime);
-  const glibcMinor = pythonMinor >= AL2023_MIN_MINOR ? 34 : pythonMinor >= 8 ? 26 : 17;
+  const glibcMinor = runtimeGlibcMinor(runtime);
 
   for (const tag of platformTags) {
-    if (!/^(manylinux(?:_\d+_\d+|1|2010|2014)|musllinux_\d+_\d+|linux)_.+$/.test(tag)) {
+    const linux = /^(?:manylinux(?:_\d+_\d+|1|2010|2014)|linux)_(.+)$/.exec(tag);
+    if (!linux) {
       throw new UnscopedValidationError(
         lit`PythonLocalBundlingPlatformTagNotLinux`,
-        `Platform tag '${tag}' does not target Linux. Lambda functions run on Amazon Linux.`,
+        `Platform tag '${tag}' is not a glibc-compatible Linux tag. Lambda functions run on Amazon Linux.`,
       );
     }
-    const suffix = /_(x86_64|aarch64)$/.exec(tag)?.[1];
-    if (expected && suffix && suffix !== expected) {
+    if (expected && linux[1] !== expected) {
       throw new UnscopedValidationError(
         lit`PythonLocalBundlingPlatformTagArchitectureMismatch`,
         `Platform tag '${tag}' does not match Lambda architecture '${architecture.name}' (expected '_${expected}').`,
@@ -71,12 +70,18 @@ export function validatePlatformTags(runtime: Runtime, architecture: Architectur
 export function defaultPlatformTags(runtime: Runtime, architecture: Architecture): string[] {
   validateArchitecture(architecture);
   const archSlug = ARCH_SLUG[architecture.dockerPlatform];
-  const minor = parsePythonMinor(runtime);
-
-  if (minor >= AL2023_MIN_MINOR) {
-    return [`manylinux_2_28_${archSlug}`, `manylinux2014_${archSlug}`];
+  const tags: string[] = [];
+  // pip only expands the legacy aliases. List each compatible PEP 600 tag.
+  for (let minor = runtimeGlibcMinor(runtime); minor >= 17; minor--) {
+    tags.push(`manylinux_2_${minor}_${archSlug}`);
   }
-  return [`manylinux2014_${archSlug}`];
+  tags.push(`manylinux2014_${archSlug}`);
+  return tags;
+}
+
+function runtimeGlibcMinor(runtime: Runtime): number {
+  const pythonMinor = parsePythonMinor(runtime);
+  return pythonMinor >= AL2023_MIN_MINOR ? 34 : pythonMinor >= 8 ? 26 : 17;
 }
 
 function assertPythonRuntime(runtime: Runtime): void {

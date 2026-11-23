@@ -18,7 +18,7 @@
 
 This library provides constructs for Python Lambda functions.
 
-To use this module, you will need to have Docker installed.
+Docker is required by default. You can opt in to [local bundling](#local-bundling-docker-less) to use the module without Docker.
 
 ## Python Function
 
@@ -65,7 +65,7 @@ new python.PythonFunction(this, 'MyFunction', {
 
 ## Packaging
 
-If `requirements.txt`, `Pipfile`, `uv.lock` or `poetry.lock` exists at the entry path, the construct will handle installing all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.13) according to the `runtime` and with the Docker platform based on the target architecture of the Lambda function.
+If `requirements.txt`, `Pipfile`, `uv.lock` or `poetry.lock` exists at the entry path, the construct installs all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.13) by default according to the `runtime` and with the Docker platform based on the target architecture of the Lambda function.
 
 Python bundles are only recreated and published when a file in a source directory has changed.
 Therefore (and as a general best-practice), it is highly recommended to commit a lockfile with a
@@ -191,7 +191,7 @@ Prerequisites on the host:
 - Every dependency must publish a compatible wheel for the target platform. Source-only distributions are rejected (a source build would target the host OS/arch and not the Lambda runtime).
 - On Windows hosts, local bundling supports plain `requirements.txt` projects. It rejects `pipenv`, `poetry` and `uv` projects at synthesis regardless of the shell. Use Docker bundling for lockfile-based projects on Windows.
 
-Symlinks under `entry` are always followed (dereferenced into their targets) when bundling locally, regardless of any asset symlink-follow configuration.
+Local bundling dereferences symlinks under `entry`, regardless of the asset's symlink-follow configuration. Every symlink left after applying `assetExcludes` must resolve inside `entry`. A link that resolves outside `entry` fails synthesis.
 
 If local bundling fails for any reason, synthesis fails — there is no silent fallback to Docker.
 
@@ -215,18 +215,19 @@ new python.PythonFunction(this, 'function', {
   runtime: Runtime.PYTHON_3_12,
   bundling: {
     localBundling: {
-      additionalPlatformTags: ['manylinux_2_17_x86_64'],
+      additionalPlatformTags: ['linux_x86_64'],
     },
   },
 });
 ```
 
-`additionalPlatformTags` appends tags after the defaults. Use `platformTags` to replace the defaults. If you set both, the extra tags follow your replacement list. On x86_64 and arm64, tags ending in `_x86_64` or `_aarch64` must match the Lambda architecture. Versioned manylinux tags must fit the target runtime's glibc version.
+`additionalPlatformTags` appends tags after the defaults. Use `platformTags` to replace the defaults. If you set both, the extra tags follow your replacement list. Use glibc-compatible Linux tags that match the Lambda architecture. Only add a generic `linux_{arch}` tag after verifying that the wheel works on the target runtime.
 
-When omitted, the default tags are derived from the runtime's base image:
+The defaults list the runtime's versioned manylinux tags from newest to oldest and finish with `manylinux2014_{arch}`.
 
-- Python 3.11 and below use `manylinux2014_{arch}`. Python 3.6 and 3.7 use Amazon Linux, and Python 3.8 through 3.11 use Amazon Linux 2.
-- Python 3.12 and above (Amazon Linux 2023): `manylinux_2_28_{arch}` falling back to `manylinux2014_{arch}`
+- Python 3.12 and above (Amazon Linux 2023) use `manylinux_2_34_{arch}` through `manylinux_2_17_{arch}`.
+- Python 3.8 through 3.11 (Amazon Linux 2) use `manylinux_2_26_{arch}` through `manylinux_2_17_{arch}`.
+- Python 3.6 and 3.7 (Amazon Linux) use `manylinux_2_17_{arch}`.
 
 ## Custom Bundling
 
