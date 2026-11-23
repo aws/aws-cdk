@@ -452,7 +452,9 @@ const testAction = new codepipeline_actions.CodeBuildAction({
 Pass `serviceRoleOverride` to override the CodeBuild project's default service role for
 builds triggered by this action — useful when a project is shared across pipelines and you
 want to grant each one custom permissions without making the shared service role overly
-permissive. CDK grants the pipeline role `iam:PassRole` on it automatically.
+permissive. CDK grants the action's role (the pipeline role when `usePipelineRoleForActions`
+is set) `iam:PassRole` on it automatically. The identity that deploys the pipeline, for CDK
+the CloudFormation execution role, must also have `iam:PassRole` on the override role.
 
 CDK adds no other permissions to the override role. The permissions CDK grants to the
 project's role, such as the pipeline artifact bucket, CloudWatch Logs, source connections,
@@ -463,9 +465,12 @@ account as the project.
 
 An action with `serviceRoleOverride` also stops granting the project's role access to the
 pipeline artifact bucket, the action's source connections and CodeCommit repositories, and
-its environment variable secrets, so a shared project's role does not collect permissions
-for builds it never runs. Other actions that use the same project without an override still
-grant these to the project's role as before.
+its environment variable secrets, so a shared project's role does not collect bucket, source
+or secret permissions for builds it never runs. Other actions that use the same project without
+an override still grant these to the project's role as before. If the artifact bucket uses a
+customer-managed KMS key, CDK still sets that key as the project's encryption key and grants
+the project's role encrypt/decrypt on it, because CodeBuild encrypts the outputs of every
+build of the project with that key.
 
 For example, to scope a shared project's builds to one repository:
 

@@ -116,7 +116,10 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * project's default service role for builds triggered by this pipeline action.
    *
    * Maps to the CodePipeline `ServiceRoleArnOverride` action configuration property.
-   * When supplied, the pipeline role is granted `iam:PassRole` on this role.
+   * When supplied, the action's role (the pipeline role when `usePipelineRoleForActions`
+   * is set) is granted `iam:PassRole` on this role, limited to CodeBuild. The identity
+   * that deploys the pipeline (for CDK, the CloudFormation execution role) must also
+   * have `iam:PassRole` on this role.
    *
    * CDK does not add any other permissions to this role. It must grant everything
    * the build needs, such as access to the pipeline artifact bucket, build logs,
@@ -125,7 +128,10 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * When supplied, this action does not grant the project's service role access to
    * the pipeline artifact bucket, source connections, CodeCommit repositories or
-   * environment variable secrets, since its builds do not run as that role.
+   * environment variable secrets, since its builds do not run as that role. If the
+   * artifact bucket uses a customer-managed KMS key, CDK still sets that key as the
+   * project's encryption key and grants the project's role encrypt/decrypt on it,
+   * because CodeBuild encrypts the outputs of every build of the project with that key.
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeBuild.html
    *
@@ -259,6 +265,15 @@ export class CodeBuildAction extends Action {
       }
     }
     if (this.props.serviceRoleOverride) {
+      const roleAccount = this.props.serviceRoleOverride.env.account;
+      const projectAccount = cdk.Stack.of(this.props.project).account;
+      if (cdk.Token.compareStrings(roleAccount, projectAccount) === cdk.TokenComparison.DIFFERENT) {
+        throw new cdk.ValidationError(
+          lit`ServiceRoleOverrideAccountMismatch`,
+          `serviceRoleOverride must be in the same account as the CodeBuild project (${projectAccount}), got a role in account ${roleAccount}`,
+          scope,
+        );
+      }
       configuration.ServiceRoleArnOverride = this.props.serviceRoleOverride.roleRef.roleArn;
       options.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['iam:PassRole'],

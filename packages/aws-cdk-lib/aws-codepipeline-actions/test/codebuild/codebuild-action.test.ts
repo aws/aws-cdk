@@ -449,6 +449,7 @@ describe('CodeBuild Action', () => {
         const connectionOutput = new codepipeline.Artifact('ConnectionOutput');
         const codeCommitOutput = new codepipeline.Artifact('CodeCommitOutput');
         new codepipeline.Pipeline(stack, 'Pipeline', {
+          crossAccountKeys: true,
           stages: [
             {
               stageName: 'Source',
@@ -510,6 +511,8 @@ describe('CodeBuild Action', () => {
         }
         // grants the Project construct itself makes are unaffected
         expect(actions).toContain('logs:PutLogEvents');
+        // the artifact key is still set as the project's encryption key, and granted with it
+        expect(actions).toContain('kms:Decrypt');
       });
 
       test('when not provided: grants the project role the action\'s bucket, source and secret permissions', () => {
@@ -518,6 +521,7 @@ describe('CodeBuild Action', () => {
         for (const action of ACTION_GRANTS) {
           expect(actions).toContain(action);
         }
+        expect(actions).toContain('kms:Decrypt');
       });
 
       test('shared project: an action without an override still grants the project role its permissions', () => {
@@ -526,6 +530,32 @@ describe('CodeBuild Action', () => {
         for (const action of ACTION_GRANTS) {
           expect(actions).toContain(action);
         }
+      });
+
+      test('fails when the role is in a different account than the project', () => {
+        const stack = new Stack(undefined, 'Stack', { env: { account: '123456789012', region: 'us-east-1' } });
+        const sourceOutput = new codepipeline.Artifact();
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [{
+            stageName: 'Source',
+            actions: [new cpactions.S3SourceAction({
+              actionName: 'S3_Source',
+              bucket: new s3.Bucket(stack, 'Bucket'),
+              bucketKey: 'key',
+              output: sourceOutput,
+            })],
+          }],
+        });
+
+        expect(() => pipeline.addStage({
+          stageName: 'Build',
+          actions: [new cpactions.CodeBuildAction({
+            actionName: 'CodeBuild',
+            input: sourceOutput,
+            project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+            serviceRoleOverride: iam.Role.fromRoleArn(stack, 'OverrideRole', 'arn:aws:iam::234567890123:role/MyCodeBuildRole'),
+          })],
+        })).toThrow(/serviceRoleOverride must be in the same account as the CodeBuild project \(123456789012\), got a role in account 234567890123/);
       });
     });
 
