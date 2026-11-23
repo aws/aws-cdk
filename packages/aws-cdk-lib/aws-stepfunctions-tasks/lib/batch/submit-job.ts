@@ -3,7 +3,7 @@ import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import type { Size } from '../../../core';
-import { Stack, ValidationError, withResolved } from '../../../core';
+import { ArnFormat, Stack, Token, ValidationError, withResolved } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
@@ -309,15 +309,16 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
     return [
-      // Resource level access control for job-definition requires revision which batch does not support yet
-      // Using the alternative permissions as mentioned here:
+      // Scope the `batch:SubmitJob` permission to the job definition this task
+      // submits (any revision), instead of allowing submission of any job
+      // definition in the account. See
       // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
         resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn) ? ['*'] : [
           Stack.of(this).formatArn({
             service: 'batch',
             resource: 'job-definition',
-            resourceName: '*',
+            resourceName: `${this.jobDefinitionName}:*`,
           }),
           this.props.jobQueueArn,
         ],
@@ -333,6 +334,21 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
         actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
       }),
     ];
+  }
+
+  /**
+   * The name of the job definition this task submits, as it appears in the job
+   * definition ARN (`arn:<partition>:batch:<region>:<account>:job-definition/<name>`).
+   *
+   * If the job definition ARN is not statically resolvable to a name, `*` is
+   * returned, keeping the previous behavior of allowing any job definition.
+   */
+  private get jobDefinitionName(): string {
+    const resourceName = Stack.of(this).splitArn(this.props.jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    if (resourceName === undefined) {
+      return '*';
+    }
+    return Token.isUnresolved(resourceName) ? resourceName : resourceName.split(':')[0];
   }
 
   private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {
