@@ -15,7 +15,8 @@ import { buildZip, cfnEvent, renameEntry } from './helpers';
 import { rechunk } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/chunking';
 import { S3ObjectSet } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/file-set';
 import { compileFilters, globToRegExp } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/filters';
-import { encodeMarkerValue, replaceMarkers } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/markers';
+import { encodeMarkerValue, hasMarkers, replaceMarkers } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/markers';
+import { guessContentType } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/metadata';
 import type { DeploymentAction } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/request';
 import { normalizePrefix, parseBoolean, parseRequest } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/request';
 import type { CopyableFile } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/staging';
@@ -384,6 +385,13 @@ describe('marker substitution', () => {
     expect(replace('unchanged', {})).toBe('unchanged');
   });
 
+  test('treats absent and empty marker maps alike', () => {
+    expect(hasMarkers(undefined)).toBe(false);
+    expect(hasMarkers({})).toBe(false);
+    expect(hasMarkers({ m: 'x' })).toBe(true);
+    expect(replaceMarkers(Buffer.from('<<m>>'), undefined, undefined).toString()).toBe('<<m>>');
+  });
+
   test('matches a marker that spans a line break', () => {
     expect(replace('AB\nCD', { 'AB\nCD': 'X' })).toBe('X');
   });
@@ -498,6 +506,36 @@ describe('marker substitution', () => {
       }).toString();
       expect(body).toBe('a: "yes"\nb: x');
     });
+  });
+});
+
+describe('guessing a content type', () => {
+  test.each([
+    ['index.html', undefined, 'text/html'],
+    ['DIR/PHOTO.JPG', undefined, 'image/jpeg'],
+    ['captions.vtt', undefined, 'text/vtt'],
+    ['image.avif', undefined, 'image/avif'],
+    ['site.webmanifest', undefined, 'application/manifest+json'],
+    ['font.woff2', undefined, 'font/woff2'],
+    ['noextension', undefined, undefined],
+    ['.bashrc', undefined, undefined],
+    ['blob.unknown', undefined, undefined],
+    // Compressed files: the archive type, unless the matching encoding is declared.
+    ['app.js.gz', undefined, 'application/gzip'],
+    ['app.js.gz', 'gzip', 'text/javascript'],
+    ['app.js.gz', ' GZIP ', 'text/javascript'],
+    ['app.js.gz', 'br', 'application/gzip'],
+    ['app.js.br', 'br', 'text/javascript'],
+    ['app.js.br', undefined, undefined],
+    ['logo.svgz', 'gzip', 'image/svg+xml'],
+    ['backup.tgz', undefined, 'application/gzip'],
+    ['backup.tgz', 'gzip', 'application/x-tar'],
+    ['data.Z', 'compress', undefined],
+    ['plain.gz', 'gzip', undefined],
+    // Not a compression suffix.
+    ['logo.png', 'gzip', 'image/png'],
+  ])('%s with content-encoding %j is %j', (key, contentEncoding, expected) => {
+    expect(guessContentType(key, contentEncoding)).toBe(expected);
   });
 });
 
@@ -797,6 +835,8 @@ describe('parsing a request into actions', () => {
 
       expect(paths('web/')).toEqual(['/web/*']);
       expect(paths('web')).toEqual(['/web/*']);
+      // A leading slash is not doubled, as in the previous implementation.
+      expect(paths('/web')).toEqual(['/web/*']);
       expect(paths()).toEqual(['/*']);
     });
 

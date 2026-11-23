@@ -559,12 +559,27 @@ describe('markers', () => {
   });
 
   test('markers do not apply when Extract is off', async () => {
-    const body = buildZip([{ path: 'f.txt', body: '<<m>>' }]);
-    fakeS3.seed(SRC, 'a.zip', body);
+    // The marker is visible in the object's bytes, so a substitution would show.
+    fakeS3.seed(SRC, 'blob.txt', 'a <<m>> b');
 
-    await onEvent(cfnEvent('Create', props({ Extract: 'false', SourceMarkers: [{ '<<m>>': 'value' }] })));
+    await onEvent(cfnEvent('Create', props({ Extract: 'false', SourceMarkers: [{ '<<m>>': 'value' }] }, ['blob.txt'])));
 
-    expect(fakeS3.bytes(DST, 'a.zip').equals(body)).toBe(true);
+    expect(fakeS3.text(DST, 'blob.txt')).toBe('a <<m>> b');
+    expect(fakeS3.wasStreamed(DST, 'blob.txt')).toBe(true);
+  });
+
+  test('an empty marker map behaves like no markers', async () => {
+    // Streamed rather than buffered, and still eligible for skipping.
+    seedZip('a.zip', [{ path: 'f.txt', body: '<<m>>', mtime: REAL_MTIME }]);
+    const event = cfnEvent('Create', props({ SourceMarkers: [{}] }));
+
+    await onEvent(event);
+    const puts = fakeS3.callCount('PutObject');
+    await onEvent(event);
+
+    expect(fakeS3.text(DST, 'f.txt')).toBe('<<m>>');
+    expect(fakeS3.wasStreamed(DST, 'f.txt')).toBe(true);
+    expect(fakeS3.callCount('PutObject')).toBe(puts);
   });
 
   test('jsonEscape keeps a document parseable', async () => {
@@ -779,7 +794,7 @@ describe('metadata', () => {
       { path: 'index.html', body: 'h' },
       { path: 'style.css', body: 'c' },
       { path: 'data.json', body: '{}' },
-      { path: 'blob.bin', body: 'b' },
+      { path: 'blob.unknown', body: 'b' },
     ]);
 
     await onEvent(cfnEvent('Create', props()));
@@ -788,7 +803,23 @@ describe('metadata', () => {
     expect(fakeS3.object(DST, 'style.css')?.contentType).toBe('text/css');
     expect(fakeS3.object(DST, 'data.json')?.contentType).toBe('application/json');
     // Unknown extensions are left unset, which S3 renders as binary/octet-stream.
-    expect(fakeS3.object(DST, 'blob.bin')?.contentType).toBeUndefined();
+    expect(fakeS3.object(DST, 'blob.unknown')?.contentType).toBeUndefined();
+  });
+
+  test.each([
+    [undefined, 'application/gzip'],
+    ['gzip', 'text/javascript'],
+    ['br', 'application/gzip'],
+  ])('with content-encoding %s, a .js.gz file is served as %s', async (contentEncoding, expected) => {
+    // Only a declared, matching encoding makes clients decode the file before reading it
+    // by its type; otherwise they receive the archive itself.
+    seedZip('a.zip', [{ path: 'app.js.gz', body: 'compressed' }]);
+
+    await onEvent(cfnEvent('Create', props(
+      contentEncoding ? { SystemMetadata: { 'content-encoding': contentEncoding } } : {},
+    )));
+
+    expect(fakeS3.object(DST, 'app.js.gz')?.contentType).toBe(expected);
   });
 
   test('an unsupported system metadata key is rejected by name', async () => {

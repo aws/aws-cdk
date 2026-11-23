@@ -15,7 +15,7 @@ import { pipeline } from 'stream/promises';
 import type { S3 } from '@aws-sdk/client-s3';
 import * as yauzl from 'yauzl';
 import type { S3ObjectSet } from './file-set';
-import type { MarkersConfig } from './markers';
+import { hasMarkers, type MarkersConfig } from './markers';
 import type { SourceSpec } from './request';
 
 /** A stream plus the length S3 needs in order to sign an upload of it. */
@@ -32,8 +32,8 @@ export interface CopyableFile {
   /** Which source it came from, for positional version-id reporting. */
   readonly sourceIndex: number;
 
-  /** Substitutions to apply, empty when there are none. */
-  readonly markers: Record<string, unknown>;
+  /** Substitutions to apply to this file. Absent or empty means none. */
+  readonly markers?: Record<string, unknown>;
   readonly markersConfig?: MarkersConfig;
 
   /** Whether what is already at the destination makes this file's upload unnecessary. */
@@ -103,7 +103,7 @@ async function filesFromArchive(archive: yauzl.ZipFile, source: SourceSpec, sour
     markersConfig: source.markersConfig,
     // A marker value can change while the archive stays the same, and the substituted
     // object's size and timestamp say nothing about the value it was rendered with.
-    isAlreadyInDestination: (destination) => Object.keys(source.markers).length === 0
+    isAlreadyInDestination: (destination) => !hasMarkers(source.markers)
       && destination.objectUpToDate(entry.fileName, entry.uncompressedSize, entry.getLastModDate()),
     openStream: async () => ({ body: await archive.openReadStreamPromise(entry), contentLength: entry.uncompressedSize }),
   } satisfies CopyableFile));
@@ -112,9 +112,12 @@ async function filesFromArchive(archive: yauzl.ZipFile, source: SourceSpec, sour
 /**
  * Describe a source object deployed as-is, keyed by its basename.
  *
- * Nothing is fetched here. Such an object is never skipped: the previous implementation
- * downloaded it to a local file whose mtime was therefore "now", which always beat the
- * destination's, so this implementation mimics that behavior.
+ * Nothing is fetched here, and no markers apply: the object is copied byte-for-byte, as
+ * the previous implementation only substituted in extracted files.
+ *
+ * Such an object is never skipped: the previous implementation downloaded it to a local
+ * file whose mtime was therefore "now", which always beat the destination's, so this
+ * implementation mimics that behavior.
  *
  * Potentially an optimization we could perform but for now we are mimicking the old
  * behavior.
@@ -123,8 +126,6 @@ function fileFromS3Object(s3: S3, source: SourceSpec, sourceIndex: number): Copy
   return {
     relativeKey: basename(source.objectKey),
     sourceIndex,
-    markers: source.markers,
-    markersConfig: source.markersConfig,
     isAlreadyInDestination: () => false,
     openStream: () => streamFromS3(s3, source.bucketName, source.objectKey),
   };

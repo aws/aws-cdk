@@ -76,6 +76,11 @@ function requireString(markerName: string, value: unknown, encoding: string): st
   return value;
 }
 
+/** Whether there is anything to substitute. Absent and empty mean the same: nothing. */
+export function hasMarkers(markers: Record<string, unknown> | undefined): markers is Record<string, unknown> {
+  return Object.keys(markers ?? {}).length > 0;
+}
+
 /** Whether a `jsonEscape` flag is on. Accepts any casing; absent means off. */
 export function isJsonEscape(config: MarkersConfig | undefined): boolean {
   return String(config?.jsonEscape ?? 'false').toLowerCase() === 'true';
@@ -89,11 +94,11 @@ export function isJsonEscape(config: MarkersConfig | undefined): boolean {
  */
 export function replaceMarkers(
   contents: Buffer,
-  markers: Record<string, unknown>,
+  markers: Record<string, unknown> | undefined,
   config: MarkersConfig | undefined,
 ): Buffer {
+  if (!hasMarkers(markers)) { return contents; }
   const keys = Object.keys(markers);
-  if (keys.length === 0) { return contents; }
 
   const replacements = keys
     .map((key) => ({

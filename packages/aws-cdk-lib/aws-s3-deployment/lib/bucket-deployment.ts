@@ -208,6 +208,15 @@ export interface BucketDeploymentProps {
   readonly contentDisposition?: string;
   /**
    * System-defined content-encoding metadata to be set on all objects in the deployment.
+   *
+   * The deployment does not compress anything, and this value is applied to every object
+   * alike. So the only correct use is a deployment in which every file was already
+   * compressed with this encoding before packaging, for example a dedicated deployment of
+   * gzipped assets. Anywhere else, it tells clients to decode bytes that are not encoded.
+   *
+   * When the content type is guessed, a compression suffix matching this encoding is looked
+   * through: with `gzip`, `app.js.gz` is served as `text/javascript`.
+   *
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */

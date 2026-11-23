@@ -22,7 +22,7 @@ import { makeHandler } from '../../nodejs-entrypoint';
 export async function onEvent(event: AWSLambda.CloudFormationCustomResourceEvent, context?: AWSLambda.Context) {
   const actions = parseRequest(event);
 
-  const s3 = new S3Deployment(new S3({}));
+  const s3 = new S3Deployment(new S3({ followRegionRedirects: true }));
   const data: Record<string, unknown> = {};
   let physicalResourceId: string | undefined;
 

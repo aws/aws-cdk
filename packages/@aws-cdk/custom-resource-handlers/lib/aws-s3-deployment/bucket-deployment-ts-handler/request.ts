@@ -186,7 +186,10 @@ export function parseRequest(event: AWSLambda.CloudFormationCustomResourceEvent)
     actions.push({
       type: 'invalidate-cloudfront',
       distributionId,
-      paths: optionalStringList(props, 'DistributionPaths', [`/${destination.keyPrefix}*`]),
+      // A prefix that already starts with `/` gets no second one, as in the previous
+      // implementation. That keeps `/web` invalidating `/web/*`, even though its keys start
+      // with `/` and are therefore served from `//web/...`.
+      paths: optionalStringList(props, 'DistributionPaths', [`/${destination.keyPrefix.replace(/^\//, '')}*`]),
       wait: parseBoolean(props.WaitForDistributionInvalidation, true),
       requestId: event.RequestId,
     });

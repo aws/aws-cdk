@@ -8,7 +8,7 @@ import pLimit from 'p-limit';
 import { rechunk } from './chunking';
 import { S3ObjectSet } from './file-set';
 import type { Filters } from './filters';
-import { replaceMarkers } from './markers';
+import { hasMarkers, replaceMarkers } from './markers';
 import { guessContentType } from './metadata';
 import type { CopySourcesAction, Destination } from './request';
 import { withScratchDirectory } from './scratch';
@@ -148,16 +148,15 @@ export class S3Deployment {
     const key = `${action.destination.keyPrefix}${file.relativeKey}`;
     const metadata = {
       ...action.putObjectSettings,
-      ContentType: action.putObjectSettings.ContentType ?? guessContentType(file.relativeKey),
+      ContentType: action.putObjectSettings.ContentType ?? guessContentType(file.relativeKey, action.putObjectSettings.ContentEncoding),
     };
 
     return retryWithS3Throttles(async () => {
       const { body, contentLength } = await file.openStream();
 
-      const hasMarkers = Object.keys(file.markers).length > 0;
-      if (hasMarkers || action.signContent) {
+      if (hasMarkers(file.markers) || action.signContent) {
         const entireFile = await readEntireStream(body);
-        const updatedBody = hasMarkers ? replaceMarkers(entireFile, file.markers, file.markersConfig) : entireFile;
+        const updatedBody = replaceMarkers(entireFile, file.markers, file.markersConfig);
         const response = await this.s3.putObject({
           Bucket: action.destination.bucketName,
           Key: key,
