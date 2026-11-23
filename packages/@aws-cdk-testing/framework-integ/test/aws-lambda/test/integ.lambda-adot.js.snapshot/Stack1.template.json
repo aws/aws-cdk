@@ -158,6 +158,9 @@
   "MyFunc242557A97": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "ZipFile": "def handler(event, context): pass"
     },
@@ -176,7 +179,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-python-amd64-ver-1-32-0:7"
+        ":901920570463:layer:aws-otel-python-arm64-ver-1-32-0:7"
        ]
       ]
      }
@@ -352,6 +355,9 @@
   "MyFunc4B88F85C6": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "ZipFile": "def handler(event, context): pass"
     },
@@ -370,7 +376,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-32-0:9"
+        ":901920570463:layer:aws-otel-java-agent-arm64-ver-1-32-0:9"
        ]
       ]
      }
@@ -449,6 +455,9 @@
   "MyFunc586573B53": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "arm64"
+    ],
     "Code": {
      "ZipFile": "def handler(event, context): pass"
     },
@@ -467,7 +476,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-collector-amd64-ver-0-156-0:4"
+        ":901920570463:layer:aws-otel-collector-arm64-ver-0-156-0:4"
        ]
       ]
      }

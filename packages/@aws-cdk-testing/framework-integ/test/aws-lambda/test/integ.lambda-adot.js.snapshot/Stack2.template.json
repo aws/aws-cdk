@@ -158,6 +158,9 @@
   "MyFunc242557A97": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
     "Code": {
      "ZipFile": "def handler(event, context): pass"
     },
@@ -355,6 +358,9 @@
   "MyFunc4B88F85C6": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
     "Code": {
      "ZipFile": "def handler(event, context): pass"
     },
@@ -452,6 +458,9 @@
   "MyFunc586573B53": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
+    "Architectures": [
+     "x86_64"
+    ],
     "Code": {
      "ZipFile": "def handler(event, context): pass"
     },

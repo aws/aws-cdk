@@ -44,6 +44,7 @@
         "runtime": "*",
         "handler": "*",
         "code": "*",
+        "architecture": "*",
         "adotInstrumentation": {
           "layerVersion": "*",
           "execWrapper": "/opt/otel-instrument"
@@ -107,6 +108,7 @@
         "runtime": "*",
         "handler": "*",
         "code": "*",
+        "architecture": "*",
         "adotInstrumentation": {
           "layerVersion": "*",
           "execWrapper": "/opt/otel-instrument"
@@ -138,6 +140,7 @@
         "runtime": "*",
         "handler": "*",
         "code": "*",
+        "architecture": "*",
         "adotInstrumentation": {
           "layerVersion": "*",
           "execWrapper": "/opt/otel-instrument"
