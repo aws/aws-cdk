@@ -1630,8 +1630,8 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 *Note:* If adding the `durableConfig` property to an existing lambda function, a resource replacement will be triggered.
-For the resource replacement to succeed, you cannot explicitly set the `functionName` parameter, or else it will
-result in CloudFormation deployment errors. Modifying the parameters within `durableConfig` will not trigger a resource replacement.
+For the resource replacement to succeed, you cannot keep the same explicitly set `functionName`. Use a new name or
+omit it, or else it will result in CloudFormation deployment errors. Modifying the parameters within `durableConfig` will not trigger a resource replacement.
 
 *Further Note:* Deletion for durable functions will wait for all running executions to complete. CloudFormation will wait up to 1 hour,
 after which the stack update or deletion will timeout. If you have functions that are stuck deleting, please check if there
@@ -1676,7 +1676,8 @@ statements and emits a warning. Add all the statements from the guide to the key
 CDK grants the execution role through a condition when the role ARN is known at synth time, for
 example a role with a literal `roleName` (and `path`, if set), or one imported with a literal ARN.
 Otherwise it names the role ARN only when that adds no stack dependency: the key is in the function's
-stack and the role is not in a nested stack, or the role is in the key's stack. In any other layout,
+stack and the role is not in a nested stack, or a role defined in your app is in the key's stack or in
+the parent of the key's nested stack. In any other layout,
 CDK skips the execution role statement and emits a warning. Pass a role with a literal `roleName`, or
 add the statement yourself. If the key
 policy names a role that itself depends on the key, CloudFormation reports a circular dependency, so
