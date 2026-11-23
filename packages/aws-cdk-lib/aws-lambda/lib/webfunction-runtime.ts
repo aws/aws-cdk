@@ -56,11 +56,19 @@ export class WebFunctionRuntime {
    */
   public static of(name: string, family?: RuntimeFamily): WebFunctionRuntime {
     const inferred = inferFamily(name);
-    if (family !== undefined && inferred !== undefined && family !== inferred) {
-      throw new UnscopedValidationError(
-        lit`WebFunctionRuntimeFamilyMismatch`,
-        `Runtime '${name}' is a ${RuntimeFamily[inferred]} runtime, but family ${RuntimeFamily[family]} was given`,
-      );
+    if (family !== undefined && !Token.isUnresolved(name) && family !== inferred) {
+      if (inferred !== undefined) {
+        throw new UnscopedValidationError(
+          lit`WebFunctionRuntimeFamilyMismatch`,
+          `Runtime '${name}' is a ${RuntimeFamily[inferred]} runtime, but family ${RuntimeFamily[family]} was given`,
+        );
+      }
+      if (family === RuntimeFamily.NODEJS || family === RuntimeFamily.PYTHON) {
+        throw new UnscopedValidationError(
+          lit`WebFunctionRuntimeFamilyMismatch`,
+          `Runtime '${name}' is not a NODEJS or PYTHON runtime, but family ${RuntimeFamily[family]} was given`,
+        );
+      }
     }
     return new WebFunctionRuntime(name, family ?? inferred);
   }

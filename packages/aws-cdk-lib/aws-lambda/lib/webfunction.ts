@@ -80,8 +80,9 @@ function entryPointEnvironmentVariable(runtime: WebFunctionRuntime, scope: Const
     Annotations.of(scope).addWarningV2(
       '@aws-cdk/aws-lambda:webFunctionEntryPointRuntimeFamilyUnknown',
       'entryPoint is passed via AWS_LAMBDA_NODEJS_ENTRYPOINT because the runtime name is a deploy-time value and ' +
-      'no runtime family was given; pass the family to WebFunctionRuntime.of(), for example ' +
-      'WebFunctionRuntime.of(name, RuntimeFamily.PYTHON)',
+      'no runtime family was given; pass the family to WebFunctionRuntime.of(): ' +
+      'WebFunctionRuntime.of(name, RuntimeFamily.NODEJS) keeps this behavior, ' +
+      'WebFunctionRuntime.of(name, RuntimeFamily.PYTHON) is needed for a Python runtime',
     );
   }
   const family = runtime.family ?? (Token.isUnresolved(name) ? RuntimeFamily.NODEJS : undefined);

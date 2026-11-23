@@ -750,10 +750,15 @@ describe('WebFunction template', () => {
       .toThrow(/Runtime 'python3.15' is a PYTHON runtime, but family NODEJS was given/);
     expect(() => WebFunctionRuntime.of('nodejs26.x', RuntimeFamily.PYTHON))
       .toThrow(/Runtime 'nodejs26.x' is a NODEJS runtime, but family PYTHON was given/);
+    expect(() => WebFunctionRuntime.of('java21', RuntimeFamily.PYTHON))
+      .toThrow(/Runtime 'java21' is not a NODEJS or PYTHON runtime, but family PYTHON was given/);
+    expect(() => WebFunctionRuntime.of('java21', RuntimeFamily.NODEJS))
+      .toThrow(/Runtime 'java21' is not a NODEJS or PYTHON runtime, but family NODEJS was given/);
   });
 
   test('of() accepts a family that matches the runtime name', () => {
     expect(WebFunctionRuntime.of('python3.15', RuntimeFamily.PYTHON).family).toEqual(RuntimeFamily.PYTHON);
+    expect(WebFunctionRuntime.of('java21', RuntimeFamily.JAVA).family).toEqual(RuntimeFamily.JAVA);
   });
 
   test('throws when entryPoint is set for a runtime family other than Node.js or Python', () => {
@@ -787,11 +792,17 @@ describe('WebFunction template', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
       BuildConfig: Match.objectLike({ RuntimeConfig: { Runtime: { Ref: 'Runtime' } } }),
       ServiceConfig: Match.objectLike({
-        EnvironmentVariables: { AWS_LAMBDA_NODEJS_ENTRYPOINT: 'api:application' },
+        EnvironmentVariables: {
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: 'api:application',
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: Match.absent(),
+        },
       }),
     });
     Annotations.fromStack(stack).hasWarning('/Default/Test', Match.stringLikeRegexp(
       'entryPoint is passed via AWS_LAMBDA_NODEJS_ENTRYPOINT because the runtime name is a deploy-time value',
+    ));
+    Annotations.fromStack(stack).hasWarning('/Default/Test', Match.stringLikeRegexp(
+      'RuntimeFamily.NODEJS\\) keeps this behavior',
     ));
   });
 
