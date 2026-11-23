@@ -121,11 +121,9 @@ template. `SecretValue` defers resolution and keeps plaintext out of source and 
 finding, even though the map's prop is named `environment`. The value still lands in the template,
 recoverable via `cloudformation:GetTemplate` / `lambda:GetFunctionConfiguration`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
-- **Doc-absent detail:** the trigger is the **value** matching a recognizable secret shape —
-  `sk_live_`/`sk_test_` (Stripe), `AKIA[0-9A-Z]{16}` (AWS access key), `-----BEGIN … PRIVATE KEY-----`
-  (PEM), an obvious bearer / long-hex / base64 token — **not the key name**: a secret-shaped key with a
-  non-secret value (`PARTITION_KEY`, `SORT_KEY`, `IDEMPOTENCY_KEY`) is not a finding. Fix: reference the
-  value via `SecretValue.secretsManager(...)` / SSM `ssmSecure` so plaintext never enters the template.
+- **Doc-absent detail:** the trigger is a **value** that is a credential, **not the key name**: a
+  secret-shaped key with a non-secret value (`PARTITION_KEY`, `SORT_KEY`, `IDEMPOTENCY_KEY`) is not a
+  finding. Fix: reference the value via `SecretValue.secretsManager(...)` / SSM `ssmSecure` so plaintext never enters the template.
 
 **[SEC-SECRET-TYPE] (RECOMMENDED)** — A secret-shaped prop (`password`, `*token*`) typed as a plain
 `string` instead of `SecretValue` signals that embedding the secret in code/template is acceptable. See

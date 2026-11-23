@@ -13,9 +13,6 @@ for new validation on existing constructs.
 **[REG-INPUT-VALIDATION] (RECOMMENDED)** — Missing input validation: the CDK never validates a
 configuration property, letting an invalid value through. *(Conditional — BLOCKING when the unvalidated
 value flows into a working stack and breaks its update.)*
-- **The three failure modes (doc-absent detail):** an unvalidated value can **fail at deployment**
-  (CloudFormation rejects the configuration), **create a misconfigured resource** (created but does not
-  work as expected), or be **silently ignored** (no error, but the property has no effect).
 
 **[REG-CFN-TYPE-LEAK] (RECOMMENDED)** — A change to an existing public API that newly exposes an
 L1/CFN-layer type where it did not before, breaking or coupling existing consumers to CloudFormation. (The

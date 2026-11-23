@@ -2,10 +2,8 @@
 
 ## Unit tests
 
-**[TEST-UNIT-NO-ASSERTION] (BLOCKING)** — A non-asserting test — the path runs but nothing asserts the outcome that matters:
-no assertion, `Match.anyValue()`, a whole-template snapshot, a bare "does not throw", a return-value-only
-(`statementAdded === false`) or count-only assertion, a `toContain` on a shared prefix, a no-op statement
-(`tablePolicy;`), or a test named for a behavior it never exercises. See
+**[TEST-UNIT-NO-ASSERTION] (BLOCKING)** — A non-asserting test — the path runs but nothing asserts the
+outcome that matters — or a test named for a behavior it never exercises. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the `Match`
 rules.
 - **Conditional (doc-absent detail):** down-tier RECOMMENDED when the core outcome is asserted elsewhere
@@ -23,10 +21,8 @@ flag mechanics and
 for new validation on existing constructs.
 - **Conditional (doc-absent detail):** down-tier RECOMMENDED when only the new state is untested and the
   preserved old default is covered.
-- **Detection method (doc-absent detail):** if the diff touches `FeatureFlags.of(this).isEnabled(...)` or
-  adds a flag in `cx-api`, two behaviors are reachable (flag on / flag off) and both need a test. BLOCKING
-  when the untested state is the one existing apps depend on — a regression there breaks deployed stacks
-  with the suite green.
+- **Detection method (doc-absent detail):** a diff that touches `FeatureFlags.of(this).isEnabled(...)` or
+  adds a flag in `cx-api` has two reachable states.
 
 **[TEST-UNIT-MISSING-REGRESSION] (RECOMMENDED)** — A behavior the PR adds that a user relies on has no test
 that would fail if it broke. See
@@ -111,18 +107,8 @@ for the breaking-change rule.
 `*.snapshot/`, but the snapshot does not reflect the test change (or a brand-new `integ.*.ts` arrives with
 no `*.snapshot/` at all). The snapshot is the synthesized template, so a test change that alters synthesis
 must change the snapshot too; when it does not, the committed snapshot no longer proves the test deploys.
-
-```
-# Flag only when the .ts change alters synthesis (new or changed resources, props or stacks)
-# and the snapshot the diff shows does not reflect it
-packages/.../test/integ.my-feature.ts           (changed)
-packages/.../test/integ.my-feature.js.snapshot/  (unchanged — no companion update)
-
-# Do not flag a .ts edit that cannot alter synthesis (comment, rename, reorder,
-# import or formatting change) — it correctly produces a byte-identical snapshot
-```
-
-See
+A `.ts` edit that cannot alter synthesis (a comment, rename, reorder, import or formatting change)
+correctly leaves the snapshot byte-identical and is not this finding. See
 [`INTEGRATION_TESTS.md § What are CDK Integration Tests`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#what-are-cdk-integration-tests)
 for the snapshot-as-template fact and
 [`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
