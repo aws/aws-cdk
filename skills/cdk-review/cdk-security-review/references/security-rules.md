@@ -123,7 +123,8 @@ recoverable via `cloudformation:GetTemplate` / `lambda:GetFunctionConfiguration`
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 - **Doc-absent detail:** the trigger is a **value** that is a credential, **not the key name**: a
   secret-shaped key with a non-secret value (`PARTITION_KEY`, `SORT_KEY`, `IDEMPOTENCY_KEY`) is not a
-  finding. Fix: reference the value via `SecretValue.secretsManager(...)` / SSM `ssmSecure` so plaintext never enters the template.
+  finding. Fix: reference the value via `SecretValue.secretsManager(...)` / SSM `ssmSecure` so plaintext
+  never enters the template.
 
 **[SEC-SECRET-TYPE] (RECOMMENDED)** — A secret-shaped prop (`password`, `*token*`) typed as a plain
 `string` instead of `SecretValue` signals that embedding the secret in code/template is acceptable. See

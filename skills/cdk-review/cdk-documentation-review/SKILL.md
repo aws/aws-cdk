@@ -75,9 +75,9 @@ another dimension, leave it — it's outside your scope.
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
-`message` as the complete posted comment (observation, impact, concrete fix, guideline cited inline by
-file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
-Public-API doc completeness, Migration notes. The `suggestedFix` (folded into `message`) shows the doc or
+`message` as the complete posted comment (observation, impact, a fix when you have one, guideline cited
+inline by file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
+Public-API doc completeness, Migration notes. A `suggestedFix` (folded into `message`) shows the doc or
 snippet as written and its corrected form.
 
 ## Apply cdk-review-principles

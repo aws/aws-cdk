@@ -38,8 +38,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    `cdk-review-principles` ("Confidence is not severity"); rate a wrong abstraction, an L1 leak, or a
    footgun at that cost even when you are unsure it fires. When several defects share one code cause, give
    one finding with the `ruleId`, `category` and `severity` of its most severe defect, since each field
-   takes one value. Stop once you can name the defect and cite its rule — file + section — with the concrete
-   fix.
+   takes one value. Stop once you can name the defect and cite its rule — file + section.
 
 ## What not to flag
 
@@ -59,7 +58,7 @@ the changed surface. When a defect belongs to a different dimension, leave it �
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
-`message` as the complete posted comment (observation, impact, concrete fix, and the guideline cited
+`message` as the complete posted comment (observation, impact, a fix when you have one, and the guideline cited
 inline by file + section). This dimension's `category` is one of: Feature placement & abstraction,
 Design Guidelines conformance, Clarity/simplicity/consistency, Footgun-free & ages-well interface
 quality.

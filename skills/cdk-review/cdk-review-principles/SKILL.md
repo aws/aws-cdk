@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, the concrete-fix rule, the bar a finding must meet to be posted, review tone, the shared what-not-to-flag exclusions, the finding-output contract (ruleId + reference fields), and the rules-lookup convention. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, when to offer a fix, the bar a finding must meet to be posted, review tone, the shared what-not-to-flag exclusions, the finding-output contract (ruleId + reference fields), and the rules-lookup convention. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -61,7 +61,8 @@ code once, as a must-fix or as a design nicety; reporting it as both double-coun
 
 ## Make each finding land
 
-A correctly-rated finding still has to be actionable. Every finding carries three things:
+A correctly-rated finding still has to be actionable. Every finding carries a location and evidence, and
+a fix once you have checked one:
 
 - **An exact location** — `path/to/file.ts:L42`, or a range `path/to/file.ts:L42-L50`. A
   finding with no code location stays in the report as a high-level observation; it cannot
@@ -81,9 +82,12 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   by reading that code, and what CDK's testing or README guidance says by reading that
   guide; post only what you have read. An unverified "X isn't supported" or
   "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
-- **A concrete fix** — a code example, or a question framing a specific alternative ("What
-  do you think about scoping this to the bucket ARN?"). A fix you suggest follows the same
-  guides as the code under review.
+- **A fix, once you have checked it** — a code example, or a question framing a specific
+  alternative ("What do you think about scoping this to the bucket ARN?"). You have checked a
+  fix when you have read that what it uses exists at the reviewed commit and that the code
+  depending on what it changes still fits it, because an unchecked fix can break where it is
+  applied. Without a checked fix, report the problem and its evidence and leave `suggestedFix`
+  null. A fix you suggest follows the same guides as the code under review.
 
 Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
 suggestions as questions where you can; stay direct and constructive on blocking issues

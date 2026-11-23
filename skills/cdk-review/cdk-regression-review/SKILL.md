@@ -25,9 +25,9 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
 1. **Orient and load your rules.** Name the public surface the PR changes. Establish first whether its
    module is stable or experimental, since the breaking-change rows rate by it. Read
    [`regression-rules.md`](references/regression-rules.md): its rows are your checklist. Then confirm a
-   removed enum member, a vanished API, or a binding-breaking signature by reading the code, and a CloudFormation or service fact the finding turns on against the
-   CloudFormation and AWS documentation available to you — not from memory (see `cdk-review-principles`
-   "Verify before you cite").
+   removed enum member, a vanished API, or a binding-breaking signature by reading the code, and a
+   CloudFormation or service fact the finding turns on against the CloudFormation and AWS documentation
+   available to you — not from memory (see `cdk-review-principles` "Verify before you cite").
 
 2. **Check the diff against the rules.** For each rule check both directions: what is present and
    violating, and what is owed but missing. The owed-but-missing scan catches an omission the changed
@@ -56,9 +56,9 @@ program. When a defect is in another dimension, leave it — it's outside your s
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines. Write
-`message` as the complete posted comment: observation, impact, concrete fix, guideline cited inline by
-file + section. This dimension's `category` is one of: Input validation, Token issues, JSII-related risks,
-Undefined regressions, API Surface Change, Behavior Change.
+`message` as the complete posted comment: observation, impact, a fix when you have one, guideline cited
+inline by file + section. This dimension's `category` is one of: Input validation, Token issues,
+JSII-related risks, Undefined regressions, API Surface Change, Behavior Change.
 
 ## Apply cdk-review-principles
 
