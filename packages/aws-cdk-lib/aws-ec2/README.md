@@ -2770,7 +2770,8 @@ Earlier launch agents (EC2Launch v1 and EC2Config) do not understand this format
   `exit`, no signal is sent, as with `UserData.forWindows()`.
 * Switching an existing instance to the new format is a user data change like any other: the instance is
   replaced if `userDataCausesReplacement` is `true`, which is the default when `initOptions` is passed to the
-  `Instance`. Otherwise it is updated in place, and a script with frequency `once` does not run again on it.
+  `Instance`. Otherwise CloudFormation updates the user data and restarts the instance (an instance with an
+  instance store root volume is replaced), and a script with frequency `once` does not run again on it.
 
 ## Importing existing subnet
 
