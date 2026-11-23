@@ -1,0 +1,106 @@
+{
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "NetworkConnectorElasticIpTestDefaultTestDeployAssert83FA29CA.template.json"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938abWaitForRoleC8ABD319"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938abWaitFor9173007B"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938abWaitForIsCompleteProviderInvoke11C8D5E7"
+    }
+  ],
+  "/NetworkConnectorElasticIpTest/DefaultTest/DeployAssert/AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938ab/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeAddressesf3bace8a39667eafcf8948f53a6938abWaitForTimeoutProviderInvokeE95D40BD"
+    }
+  ]
+}

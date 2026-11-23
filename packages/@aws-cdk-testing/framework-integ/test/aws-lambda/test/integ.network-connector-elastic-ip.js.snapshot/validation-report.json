@@ -1,0 +1,35 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F3002",
+          "description": "Configuration.VpcEgressConfiguration.ElasticIpConfiguration: Additional properties are not allowed ('ElasticIpConfiguration' was unexpected)",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "NetworkConnectorElasticIpStack/Connector/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnNetworkConnector",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "NetworkConnectorElasticIpStack.template.json",
+                "logicalId": "ConnectorC537A2FB",
+                "propertyPaths": [
+                  "Properties.Configuration.VpcEgressConfiguration.ElasticIpConfiguration"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -2701,6 +2701,44 @@ gains the permissions to manage network interfaces in the VPC. A function's exec
 for example, already trusts `lambda.amazonaws.com`, so passing it as the operator role would
 give that function's code those permissions.
 
+#### Internet egress with service-managed Elastic IP addresses
+
+By default a connector's network interfaces have only private IP addresses, so internet
+traffic goes through a NAT gateway. As an alternative, set `elasticIpConfiguration` with type
+`SERVICE_MANAGED` to have Lambda allocate an Elastic IP address in your account for each
+network interface. Outbound traffic then reaches the internet through the VPC's internet
+gateway, from addresses that belong to your account.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+
+new lambda.NetworkConnector(this, 'PublicEgress', {
+  configuration: lambda.NetworkConnectorConfiguration.vpcEgress({
+    computeType: lambda.NetworkConnectorComputeType.WEB_FUNCTION,
+    vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    securityGroups: [securityGroup],
+    elasticIpConfiguration: { type: lambda.NetworkConnectorElasticIpType.SERVICE_MANAGED },
+  }),
+});
+```
+
+The connector's subnets must route `0.0.0.0/0` to an internet gateway, so select them with
+`vpcSubnets`, as in the example. Lambda owns the addresses' lifecycle:
+each stays the same for the life of its network interface, and Lambda releases it when it
+deletes the interface. Every update to the connector creates a new version with new network
+interfaces and new addresses, and earlier versions keep theirs until they are deleted. If a
+destination allowlists your addresses, add the new version's addresses before moving traffic
+to it.
+
+The operator role needs `ec2:AllocateAddress` and `ec2:AssociateAddress`, which the
+`AWSLambdaNetworkConnectorOperatorPolicy` managed policy doesn't include. They are added to
+the role the connector creates, and to a role you pass that is defined in the same app. For
+an imported role, a warning is emitted and the role must already allow them.
+
 #### Connector versions and how the function follows them
 
 Every update to a connector produces a new, immutable version, and a WebFunction revision
