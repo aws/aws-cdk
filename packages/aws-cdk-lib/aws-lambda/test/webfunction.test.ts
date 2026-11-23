@@ -692,7 +692,25 @@ describe('WebFunction template', () => {
     }));
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
       ServiceConfig: Match.objectLike({
-        EnvironmentVariables: { AWS_LAMBDA_PYTHON_ENTRYPOINT: 'wsgi:app:application' },
+        EnvironmentVariables: {
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: 'wsgi:app:application',
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: Match.absent(),
+        },
+      }),
+    });
+  });
+
+  test('entryPoint is injected as AWS_LAMBDA_PYTHON_ENTRYPOINT for a Python runtime given with of()', () => {
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of('python3.16'),
+      entryPoint: 'api:application',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: {
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: 'api:application',
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: Match.absent(),
+        },
       }),
     });
   });
@@ -718,9 +736,13 @@ describe('WebFunction template', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
       BuildConfig: Match.objectLike({ RuntimeConfig: { Runtime: { Ref: 'Runtime' } } }),
       ServiceConfig: Match.objectLike({
-        EnvironmentVariables: { AWS_LAMBDA_PYTHON_ENTRYPOINT: 'api:application' },
+        EnvironmentVariables: {
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: 'api:application',
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: Match.absent(),
+        },
       }),
     });
+    Annotations.fromStack(stack).hasNoWarning('/Default/Test', Match.stringLikeRegexp('no runtime family was given'));
   });
 
   test('the runtime family takes precedence over the runtime name', () => {
@@ -730,7 +752,10 @@ describe('WebFunction template', () => {
     }));
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
       ServiceConfig: Match.objectLike({
-        EnvironmentVariables: { AWS_LAMBDA_NODEJS_ENTRYPOINT: 'app.js' },
+        EnvironmentVariables: {
+          AWS_LAMBDA_NODEJS_ENTRYPOINT: 'app.js',
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: Match.absent(),
+        },
       }),
     });
   });
@@ -763,6 +788,9 @@ describe('WebFunction template', () => {
         EnvironmentVariables: { AWS_LAMBDA_NODEJS_ENTRYPOINT: 'api:application' },
       }),
     });
+    Annotations.fromStack(stack).hasWarning('/Default/Test', Match.stringLikeRegexp(
+      'entryPoint is passed via AWS_LAMBDA_NODEJS_ENTRYPOINT because the runtime name is a deploy-time value',
+    ));
   });
 
   test.each([

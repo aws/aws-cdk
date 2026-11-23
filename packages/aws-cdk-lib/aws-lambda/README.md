@@ -2656,6 +2656,25 @@ the interface explicitly. The value is surfaced to the runtime via the reserved
 `AWS_LAMBDA_PYTHON_ENTRYPOINT` environment variable. For how to package and write a Python
 Web Function, see [Building Lambda Web Functions with Python](https://docs.aws.amazon.com/lambda/latest/dg/web-functions-python.html).
 
+The variable is chosen from the runtime's family. When the runtime name is only known at
+deployment, such as a `CfnParameter`, pass the family to `WebFunctionRuntime.of()`;
+otherwise `entryPoint` is passed via `AWS_LAMBDA_NODEJS_ENTRYPOINT`:
+
+```ts
+import { CfnParameter } from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const codeBucket: s3.IBucket;
+const runtimeName = new CfnParameter(this, 'Runtime', { default: 'python3.15' });
+
+new lambda.WebFunction(this, 'MyParameterizedWebFunction', {
+  code: lambda.WebFunctionCode.fromBucket(codeBucket, 'app.zip', 'version-id'),
+  runtime: lambda.WebFunctionRuntime.of(runtimeName.valueAsString, lambda.RuntimeFamily.PYTHON),
+  defaultEndpointAuth: lambda.WebFunctionAuthType.IAM_AUTH,
+  entryPoint: 'api:application',
+});
+```
+
 `python3.15` is in public preview for Lambda Web Functions: it is not covered by the Lambda
 SLA or Technical Support, should not be used for production workloads, and may still receive
 breaking changes.

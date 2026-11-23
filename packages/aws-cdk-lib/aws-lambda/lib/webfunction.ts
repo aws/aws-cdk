@@ -76,6 +76,14 @@ function topLevelStack(stack: Stack): Stack {
  */
 function entryPointEnvironmentVariable(runtime: WebFunctionRuntime, scope: Construct): string {
   const name = runtime.name;
+  if (runtime.family === undefined && Token.isUnresolved(name)) {
+    Annotations.of(scope).addWarningV2(
+      '@aws-cdk/aws-lambda:webFunctionEntryPointRuntimeFamilyUnknown',
+      'entryPoint is passed via AWS_LAMBDA_NODEJS_ENTRYPOINT because the runtime name is a deploy-time value and ' +
+      'no runtime family was given; pass the family to WebFunctionRuntime.of(), for example ' +
+      'WebFunctionRuntime.of(name, RuntimeFamily.PYTHON)',
+    );
+  }
   const family = runtime.family ?? inferredFamily(name);
   if (family === RuntimeFamily.NODEJS) {
     return 'AWS_LAMBDA_NODEJS_ENTRYPOINT';
