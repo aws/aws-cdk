@@ -55,12 +55,13 @@ TypeScript accepts. Fix: move the new field into the struct as an optional `read
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
 
 **[REG-JSII-INTERFACE-NAMING] (BLOCKING)** — A data-only interface (only `readonly` properties) named with
-the `I` prefix, which jsii generates as a behavioral interface instead of a struct. See
+the `I` prefix that callers are meant to pass as data (a props, options or result object), not a type
+classes implement: jsii generates it as a behavioral interface instead of a struct. See
 [`jsii § Naming › Interfaces`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#interfaces).
 
 **[REG-JSII-NO-UNION] (BLOCKING)** — A union type in a method parameter, a return type, a class property, or
 any struct other than a construct's `<Name>Props`; use an enum-like class, separate props, or factory
-methods. See
+methods. *(doc-absent detail)* See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
 **[REG-JSII-UNSUPPORTED-TS] (BLOCKING)** — A generic method in the public surface: jsii erases its type
@@ -68,8 +69,7 @@ parameter to `any` in the target languages. See
 [`jsii § Mapped Types`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#typescript-mapped-types).
 
 **[REG-JSII-TYPE-MOVE] (BLOCKING)** — An exported function or const moved to another submodule: existing
-imports of it break. See
-[`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
+imports of it break. *(doc-absent detail)*
 
 **[REG-JSII-INHERITANCE] (BLOCKING)** — A `protected` member of a base class made `public`: existing C#
 subclasses that override it break. See
