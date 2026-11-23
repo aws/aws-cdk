@@ -2005,7 +2005,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Disable this flag to keep using the log group `Arn` attribute as the destination ARN.',
   },
   [BUCKET_DEPLOYMENT_MODERN_RESOURCE]: {
-    type: FlagType.BugFix,
+    type: FlagType.Temporary,
     summary: 'Use the new BucketDeployment resource',
     detailsMd: `
       When this flag is enabled, bucket deployments use the modern resource implementation.
