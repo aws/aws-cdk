@@ -31,8 +31,7 @@ guards a not-yet-reachable path)* — A refactor that drops scoping is a real ex
 converting `PolicyStatement`s to grants you MUST preserve conditions, effect, and principals. See
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants).
 - **Doc-absent detail:** a moved statement that loses a `Condition`, flips `Effect`, or widens a
-  `Principal` while "just moving code" is a finding — this is the highest-value refactor signal and the
-  source does not frame it as a review target.
+  `Principal` while "just moving code" is a finding.
 
 **[SEC-IAM-DEFAULT-WILDCARD] (BLOCKING)** *(conditional — RECOMMENDED when bounded)* — An optional prop
 that defaults to a wildcard when omitted (an `iamResources?` defaulting to `['*']`, a default `'*'` id):

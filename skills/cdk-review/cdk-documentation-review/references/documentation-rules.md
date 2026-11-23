@@ -22,8 +22,7 @@ code actually does when the prop is omitted (e.g. `@default false` on a prop the
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design) for the
 `@default` format rule and
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior)
-for why the default *behavior* is a design decision the tag documents (so a wrong `@default` often signals
-a real behavioral surprise).
+for the default behavior the tag documents.
 
 ## Public-API doc completeness
 

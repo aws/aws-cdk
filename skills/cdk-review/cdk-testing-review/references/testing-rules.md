@@ -12,8 +12,6 @@ rules.
   and only a facet is loose.
 - **Detection method (doc-absent detail):** ask **if I broke the behavior this test covers, would this
   test turn red?** If not, it is a non-asserting test.
-  Close it by asserting the specific property/value with `Match.objectLike` (or `objectEquals` /
-  `arrayWith`); reserve `Match.stringLikeRegexp()` for genuinely non-deterministic parts.
 
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
 optional prop that changes a default with no backward-compat test locking the old default in. Both
@@ -22,9 +20,7 @@ ships with the suite still green. See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags) for the
 flag mechanics and
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
-for the backward-compat-validation rule: input that previously deployed successfully MUST gate behind a
-flag — both states then owe a test; synth-accepted-but-always-deploy-failing input owes fail-fast
-synth-time validation and a negative-case test.
+for new validation on existing constructs.
 - **Conditional (doc-absent detail):** down-tier RECOMMENDED when only the new state is untested and the
   preserved old default is covered.
 - **Detection method (doc-absent detail):** if the diff touches `FeatureFlags.of(this).isEnabled(...)` or
@@ -53,8 +49,8 @@ regresses. See
 `test.each` / `"fails"`-prefix / specific-message convention,
 [`assertions/README.md § Asserting Annotations`](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/assertions/README.md#asserting-annotations)
 for the `hasWarning`/`hasNoWarning`/`hasError` API, and
-[`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Mixin Testing`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#mixin-testing),
-which lists rejection and validation-failure as required tests.
+[`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Mixin Testing`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#mixin-testing)
+for a mixin's required tests.
 - **Conditional (doc-absent detail):** up-tier BLOCKING when the diagnostic / reject arm is a security- or
   correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
 
@@ -65,9 +61,8 @@ test-naming convention.
 
 ## Integration tests
 
-**[TEST-INTEG-MISSING-REQUIRED] (BLOCKING)** — An integ test the gate marked owed (a feature/fix, a
-previously-unused CFN resource or property, a cross-service integration, a new supported version, or a
-Custom Resource) is absent with no valid exemption. See
+**[TEST-INTEG-MISSING-REQUIRED] (BLOCKING)** — An integ test the gate marked owed is absent with no valid
+exemption. See
 [`AGENTS.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#integration-tests) and
 [`INTEGRATION_TESTS.md § When are Integration Tests Required`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#when-are-integration-tests-required)
 for the required-scenario list,

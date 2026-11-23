@@ -57,7 +57,7 @@ wrong parameter. *(doc-absent detail)*
 props) MUST be the last positional parameter. jsii explodes it into keyword/named arguments in Python,
 Java, C#, and Go, so any parameter after a struct breaks the generated bindings — even an optional one
 TypeScript accepts. Fix: move the new field into the struct as an optional `readonly` property.
-*(doc-absent detail — the jsii spec states the primitive; this is the applied diff-review consequence.)*
+*(doc-absent detail)*
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
 
 **[REG-JSII-INTERFACE-NAMING] (BLOCKING)** — A data-only interface (only `readonly` properties) named with
@@ -85,10 +85,9 @@ subclasses that override it break. See
 point. See
 [`jsii § non-jsii dependencies`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#non-jsii-dependencies).
 
-**[REG-JSII-NO-FLUENT] (RECOMMENDED)** — A public method that returns `this` for chaining.
-[`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
-calls it "a consistency rule, not a jsii limitation" and asks to raise it "as a warning, not as a blocking
-issue". Ask for the props-based shape, or for the written justification the guide requires.
+**[REG-JSII-NO-FLUENT] (RECOMMENDED)** — A public method that returns `this` for chaining. Ask for the
+props-based shape, or for a written justification. See
+[`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
 
 ## Undefined runtime behavior
 
@@ -96,7 +95,7 @@ issue". Ask for the props-based shape, or for the written justification the guid
 logic refactor that changes what the code does on an edge case, or a
 shared base-class/helper side effect (a spurious `CfnCondition`, a token-keyed cache) that flows into every
 consumer of that method. *(Conditional — BLOCKING when it reaches every consumer or fails an existing
-stack's update. doc-absent detail — a runtime-logic heuristic no single AWS doc frames as a review target.)*
+stack's update.)* *(doc-absent detail)*
 
 ## Library stability & breaking changes
 
