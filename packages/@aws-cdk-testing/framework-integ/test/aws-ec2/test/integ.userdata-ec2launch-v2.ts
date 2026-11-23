@@ -30,7 +30,9 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 const createdDir = `C:\\cdk-integ-${cdk.Aws.STACK_NAME}`;
 const userData = ec2.UserData.forWindowsEc2LaunchV2();
 userData.addTask(ec2.Ec2LaunchV2Task.initializeVolume({ devices: [{ device: 'xvdf', letter: 'D', name: 'Data' }] }));
-userData.addTask(ec2.Ec2LaunchV2Task.hostName({ hostName: 'cdk-integ' }));
+// The reboot after setting the host name happens before the scripts run, so
+// the signal also verifies that they run after it
+userData.addTask(ec2.Ec2LaunchV2Task.hostName({ hostName: 'cdk-integ', reboot: true }));
 userData.addTask(ec2.Ec2LaunchV2Task.wallpaper({
   attributes: [ec2.Ec2LaunchV2WallpaperAttribute.INSTANCE_ID],
   instanceTags: ec2.Ec2LaunchV2WallpaperTags.all(),
@@ -52,6 +54,7 @@ userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({
 }));
 userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: 'Write-Output detached', detach: true }));
 userData.addCommands(
+  'if ($env:COMPUTERNAME -ne \'cdk-integ\') { throw \'setHostName task did not run\' }',
   'if (-not (Test-Path -Path \'D:\\\')) { throw \'initializeVolume task did not run\' }',
   'if (-not (Test-Path -Path \'C:\\cdk-integ-powershell.txt\')) { throw \'PowerShell script did not run before the commands\' }',
   `if (-not (Test-Path -Path '${createdDir}' -PathType Container)) { throw 'executeProgram task did not run' }`,
