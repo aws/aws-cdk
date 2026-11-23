@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { App, AssetStaging, DockerBuildSecret, DockerImage, FileSystem } from '../lib';
 import { FakeDocker } from './fake-docker';
+import { readPerfCounters, resetCounters } from '../lib/private/perf';
 
 const dockerCmd = process.env.CDK_DOCKER ?? 'docker';
 
@@ -95,6 +96,19 @@ describe('bundling', () => {
         'run', '--rm',
         tag,
       ]);
+    });
+
+    test('counts the build by host and target architecture', () => {
+      const arch = process.arch;
+      Object.defineProperty(process, 'arch', { value: 'x64' });
+      try {
+        resetCounters();
+        DockerImage.fromBuild('docker-path', { platform: 'linux/arm64' });
+
+        expect(readPerfCounters({ telemetry: true })).toMatchObject({ 'DockerImage.build:amd64:arm64': { count: 1 } });
+      } finally {
+        Object.defineProperty(process, 'arch', { value: arch });
+      }
     });
 
     test('with cache-to & cache-from', () => {

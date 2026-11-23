@@ -1,5 +1,6 @@
 import * as crypto from 'crypto';
 import * as path from 'path';
+import { performance } from 'perf_hooks';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { Annotations } from './annotations';
@@ -17,7 +18,7 @@ import { clearKnownDockerImages } from './private/bundling';
 import { Cache } from './private/cache';
 import { stackOf, stageOf } from './private/core-construct-finders';
 import { lit } from './private/literal-string';
-import { profileSpan } from './private/perf';
+import { profileSpan, recordPerformanceEntry } from './private/perf';
 import type { Stack } from './stack';
 import * as cxapi from '../../cx-api';
 import { walkDirectory } from './fs/utils';
@@ -410,6 +411,7 @@ export class AssetStaging extends Construct {
       hash.update(Names.uniqueId(this));
       const fakeAssetHash = hash.digest('hex');
 
+      countBundlingOutcome(bundling, 'skipped');
       return {
         assetHash: fakeAssetHash,
         stagedPath: this.sourcePath,
@@ -453,6 +455,8 @@ export class AssetStaging extends Construct {
       // Success, rename the tempDir into place (removing the old directory if it exists)
       FileSystem.rmrf(bundleDir);
       fs.renameSync(tempDir, bundleDir);
+    } else {
+      countBundlingOutcome(bundling, 'reused');
     }
 
     // Pick the asset from the bundling directory
@@ -552,6 +556,7 @@ export class AssetStaging extends Construct {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
 
       using _span = timerSpanFromOptions(options);
+      const start = performance.now();
 
       localBundling = options.local?.tryBundle(tempDir, options);
       if (!localBundling) {
@@ -574,6 +579,8 @@ export class AssetStaging extends Construct {
             break;
         }
       }
+
+      timeBundlingMode(options, localBundling ? 'local' : 'docker', performance.now() - start);
     } catch (err) {
       throw new ValidationError(lit`FailedToBundleAsset`, `Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`, this);
     }
@@ -817,19 +824,33 @@ function getExtension(source: string): string {
   return path.extname(source);
 }
 
-function timerSpanFromOptions(x: any): Disposable | undefined {
-  const src = bundlingSourceFromOptions(x);
-  return src ? profileSpan(`bundle:${src}`, { telemetry: true }) : undefined;
+function timerSpanFromOptions(x: any): Disposable {
+  return profileSpan(`bundle:${bundlingSourceFromOptions(x)}`, { telemetry: true });
+}
+
+/**
+ * Record the time it took to bundle an asset locally or in Docker
+ */
+function timeBundlingMode(x: any, mode: 'local' | 'docker', durationMs: number) {
+  recordPerformanceEntry(`bundle:${bundlingSourceFromOptions(x)}:${mode}`, { durationMs, telemetry: true });
+}
+
+/**
+ * Count an asset whose bundling was skipped, or whose bundled output already existed
+ */
+function countBundlingOutcome(x: any, outcome: 'skipped' | 'reused') {
+  recordPerformanceEntry(`bundle:${bundlingSourceFromOptions(x)}:${outcome}`, { telemetry: true });
 }
 
 /**
  * Get the bundling source from the options object
  *
- * If this is a built-in CDK bundling source, it will have a value here we use to log a timer
+ * Built-in CDK bundlers set this to their construct name. All other bundling,
+ * such as `Code.fromAsset()` with bundling options, counts as `Custom`.
  */
-function bundlingSourceFromOptions(x: any): string | undefined {
+function bundlingSourceFromOptions(x: any): string {
   const value = x[PERF_BUNDLING_SRC_SYM];
-  return typeof value === 'string' ? value : undefined;
+  return typeof value === 'string' ? value : 'Custom';
 }
 
 /**
