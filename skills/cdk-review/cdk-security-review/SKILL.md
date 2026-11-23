@@ -67,13 +67,6 @@ your scope.
 - **A benign ABAC tag-gate with no adjacent tag-write grant**, and an ordinary role that grants no
   IAM-mutating action — neither is a finding.
 
-**The base rate is mostly "no finding."** Across real CDK review threads, only a small fraction of
-security-*adjacent* comments (roughly 1 in 20) are actual security findings — the rest are questions,
-naming/wording nits, and API-design points that merely mention IAM/KMS/encryption/secret/public. A
-mention of a security concept is not itself a finding: the discriminator is whether the change asserts
-a concrete new exposure the diff introduces. If the changed surface is clean
-across all four families, report nothing — do not reach for a hardening nit to have something to say.
-
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines for a finding — write
