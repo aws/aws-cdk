@@ -5,13 +5,13 @@ import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { STAGE_TYPE, stageOf } from './private/core-construct-finders';
+import { lit } from './private/literal-string';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
 import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
-import { lit } from './private/literal-string';
 
 /**
  * Initialization props for a stage.

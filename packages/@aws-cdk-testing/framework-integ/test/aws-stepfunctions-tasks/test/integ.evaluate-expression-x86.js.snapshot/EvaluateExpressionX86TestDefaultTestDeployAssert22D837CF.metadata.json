@@ -1,4 +1,10 @@
 {
+  "/EvaluateExpressionX86Test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EvaluateExpressionX86TestDefaultTestDeployAssert22D837CF.template.json"
+    }
+  ],
   "/EvaluateExpressionX86Test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",

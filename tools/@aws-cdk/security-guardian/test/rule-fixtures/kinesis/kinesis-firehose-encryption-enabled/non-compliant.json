@@ -1,0 +1,11 @@
+{
+  "Description": "KINESIS_FIREHOSE_ENCRYPTION_ENABLED fires: the delivery stream has no server-side encryption",
+  "Resources": {
+    "UnencryptedDeliveryStream": {
+      "Type": "AWS::KinesisFirehose::DeliveryStream",
+      "Properties": {
+        "DeliveryStreamType": "DirectPut"
+      }
+    }
+  }
+}

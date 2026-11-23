@@ -1,0 +1,11 @@
+{
+  "Description": "NEPTUNE_ENCRYPTION_ENABLED fires: the cluster disables storage encryption",
+  "Resources": {
+    "UnencryptedCluster": {
+      "Type": "AWS::Neptune::DBCluster",
+      "Properties": {
+        "StorageEncrypted": false
+      }
+    }
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:234:29)",
+        "Annotations.addWarningV2 (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:103:18)",
+        "resolveValue (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:207:52)",
+        "resolveReferencesInElements (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:30)",
+        "resolveReferences (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:5)",
+        "prepareApp (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:34)",
+        "synthesize (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:192:92)",
+        "App.synth (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:188:27)",
+        "process.<anonymous> (/Users/naveenkumar/Documents/Learning/Code/OpenSourceContributions/aws-cdk-naveen/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:144:51)",
+        "Object.onceWrapper (node:events:639:26)",
+        "process.emit (node:events:524:28)"
+      ]
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution28063f534025cd201089ec811bf81d9d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc1/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallEmrdescribeCluster6d999c6fa52ccf37836c55e645bf1b0f/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallEmrdescribeCluster6d999c6fa52ccf37836c55e645bf1b0f/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallEmrdescribeCluster6d999c6fa52ccf37836c55e645bf1b0f"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallEmrgetManagedScalingPolicy6d999c6fa52ccf37836c55e645bf1b0f/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallEmrgetManagedScalingPolicy6d999c6fa52ccf37836c55e645bf1b0f/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallEmrgetManagedScalingPolicy6d999c6fa52ccf37836c55e645bf1b0f"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution28063f534025cd201089ec811bf81d9d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsstartExecution28063f534025cd201089ec811bf81d9d"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860eccWaitForRole99094368"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860eccWaitForB0B29668"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc1/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc1"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallEmrdescribeCluster6d999c6fa52ccf37836c55e645bf1b0f/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEmrdescribeCluster6d999c6fa52ccf37836c55e645bf1b0f"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallEmrgetManagedScalingPolicy6d999c6fa52ccf37836c55e645bf1b0f/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEmrgetManagedScalingPolicy6d999c6fa52ccf37836c55e645bf1b0f"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860eccWaitForIsCompleteProviderInvokeB93B7AC3"
+    }
+  ],
+  "/emr-create-cluster-ebs-integ/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860ecc/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallStepFunctionsdescribeExecution2ea528220ff6857aa27abd3aab860eccWaitForTimeoutProviderInvoke6D741F95"
+    }
+  ]
+}

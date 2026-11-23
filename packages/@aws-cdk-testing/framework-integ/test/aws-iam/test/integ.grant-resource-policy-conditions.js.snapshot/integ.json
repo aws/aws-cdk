@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "GrantResourcePolicyConditionsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-iam-grant-resource-policy-conditions"
+      ],
+      "assertionStack": "GrantResourcePolicyConditionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GrantResourcePolicyConditionsTestDefaultTestDeployAssertFCCD86E7"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

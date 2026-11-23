@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.networksecuritymanager"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.NetworkSecurityManager"
+    },
+    "python": {
+      "module": "aws_cdk.aws_networksecuritymanager"
+    }
+  }
+}

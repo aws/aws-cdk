@@ -1,0 +1,29 @@
+{
+  "Conditions": {
+    "HasTags": {
+      "Fn::Equals": [
+        "true",
+        "true"
+      ]
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "Tags": {
+          "Fn::If": [
+            "HasTags",
+            [
+              {
+                "Key": "Environment",
+                "Value": "Test"
+              }
+            ],
+            []
+          ]
+        }
+      }
+    }
+  }
+}

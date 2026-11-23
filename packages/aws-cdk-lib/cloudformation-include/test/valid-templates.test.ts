@@ -245,6 +245,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template using Fn::If as the Tags property, and output it unchanged', () => {
+    includeTestTemplate(stack, 'if-tags-property.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('if-tags-property.json'),
+    );
+  });
+
   test('can ingest a UserData script, and output it unchanged', () => {
     includeTestTemplate(stack, 'user-data.json');
 
@@ -528,6 +536,10 @@ describe('CDK Include', () => {
   });
 
   test('correctly parses templates with parameters', () => {
+    core.Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W1030',
+      reason: 'This test validates parameter ingestion, not the fixture bucket name',
+    });
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-parameters.json');
     const param = cfnTemplate.getParameter('BucketName');
     new s3.CfnBucket(stack, 'NewBucket', {

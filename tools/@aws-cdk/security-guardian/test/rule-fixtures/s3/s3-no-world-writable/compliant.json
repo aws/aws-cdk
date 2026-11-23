@@ -1,0 +1,22 @@
+{
+  "Description": "S3_NO_WORLD_WRITABLE passes: only one named role can write objects",
+  "Resources": {
+    "ScopedWriteBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": "example-bucket",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "AWS": "arn:aws:iam::123456789012:role/Writer" },
+              "Action": "s3:PutObject",
+              "Resource": "arn:aws:s3:::example-bucket/*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

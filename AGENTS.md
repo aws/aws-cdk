@@ -32,6 +32,7 @@ Principles:
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
 | Lint with auto-fix | `yarn lint --fix` | repo root |
+| Check skills | `node scripts/check-skills.js` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
 | Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
@@ -53,6 +54,7 @@ Principles:
 | Mixin guidelines | `docs/MIXINS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | Facade & Trait guidelines | `docs/FACADES_AND_TRAITS_DESIGN_GUIDELINES.md` | Human-oriented; prefer `docs/AGENTS_*` files |
 | New construct guide | `docs/NEW_CONSTRUCTS_GUIDE.md` | Human-oriented; prefer `docs/AGENTS_*` files |
+| Review skills | [`skills/cdk-review/`](./skills/cdk-review/README.md) | Skills for reviewing changes to AWS CDK code, locally or on a pull request, with any agent |
 
 ## Architecture — The Layer Model
 
@@ -171,6 +173,7 @@ public static isFoo(x: any): x is Foo {
 - Error messages: lowercase, no period, include wrong value via `JSON.stringify()`, expected values, what to change
 - Three mechanisms: (1) eagerly throw for API misuse, (2) `node.addValidation()` for post-init checks, (3) `Annotations.of(construct).addError()` for environmental issues
 - Never catch exceptions — all CDK errors are unrecoverable. Model recoverable errors in return values instead.
+- Don't pre-check-and-swallow either: when a value self-identifies as a type (e.g. a string starting with `arn:`), a malformed instance is a caller error — let the parse/validation fail fast. A hand-rolled check that returns `undefined` for both "not that type" and "malformed" hides the bug. Branch on the discriminator (`startsWith('arn:')`, then `Token.isUnresolved`) to decide whether the value is yours to parse
 
 ### Token Safety
 

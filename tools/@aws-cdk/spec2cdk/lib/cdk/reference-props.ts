@@ -2,7 +2,7 @@ import type { Resource } from '@aws-cdk/service-spec-types';
 import type { Expression, PropertySpec } from '@cdklabs/typewriter';
 import { $this, expr, Type } from '@cdklabs/typewriter';
 import { propertyNameFromCloudFormation, referencePropertyName } from '../naming';
-import { extractResourceVariablesFromArnFormat, findArnProperty, findNonIdentifierArnProperty } from './arn';
+import { extractResourceVariablesFromArnFormat, findArnProperty } from './arn';
 import { attributePropertyNames } from './attribute-name-conflict-resolutions';
 import { CDK_CORE } from './cdk';
 
@@ -102,8 +102,10 @@ export class ResourceReference {
       });
     }
 
-    // Arn identifier
-    const arnProp = findNonIdentifierArnProperty(this.resource);
+    // Arn identifier. Include it unless it is already part of the reference shape. The
+    // CloudFormation Ref can return an ARN while the CC-API primary identifier is
+    // more specific, in which case the reference shape still needs both.
+    const arnProp = findArnProperty(this.resource, name => !this.referenceFields.includes(name));
     if (arnProp) {
       const name = referencePropertyName(arnProp, this.resource.name);
       this._referenceProps.setIfAbsent(name, {

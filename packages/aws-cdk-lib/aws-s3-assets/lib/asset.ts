@@ -199,6 +199,15 @@ export class Asset extends Construct implements cdk.IAsset {
       displayName: props.displayName ?? cdk.Names.stackRelativeConstructPath(this),
     });
 
+    // Check the contract, because there are potentially multiple implementors of
+    // this and they might make mistakes.
+    contract(`${stack.synthesizer.constructor.name}.addFileAsset()`, (c) => {
+      c.assertString(location, 'bucketName');
+      c.assertString(location, 'objectKey');
+      c.assertString(location, 's3ObjectUrl');
+      c.assertString(location, 'httpUrl');
+    });
+
     this.s3BucketName = location.bucketName;
     this.s3ObjectKey = location.objectKey;
     this.s3ObjectUrl = location.s3ObjectUrl;
@@ -257,4 +266,18 @@ export class Asset extends Construct implements cdk.IAsset {
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
   }
+}
+
+interface Contract {
+  assertString<A extends object, K extends keyof A>(obj: A, key: K): void;
+}
+
+function contract(contractName: string, block: (c: Contract) => void) {
+  block({
+    assertString<A extends object, K extends keyof A>(obj: A, key: K) {
+      if (typeof obj[key] !== 'string') {
+        throw new cdk.AssumptionError(lit`InvalidType`, `${contractName}: ${String(key)} should be a string, got ${JSON.stringify(obj[key])}`);
+      }
+    },
+  });
 }

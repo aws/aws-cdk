@@ -1,0 +1,151 @@
+{
+  "/test-step-functions-start-state-machine-action-stack/TopicRule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:acknowledged-rules",
+      "data": {
+        "CloudFormation-Validate::W9009": "topicRulePayload is deprecated, but we are using it for historical reasons"
+      },
+      "trace": [
+        "    at Validations.acknowledge (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at new TopicRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-iot-alpha/lib/topic-rule.js:126:41)",
+        "    at <anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-iot-actions-alpha/test/step-functions/integ.step-functions-start-state-machine.js:43:19)",
+        "    ...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/SM": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*"
+      }
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/TopicRule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRule40A4EA44"
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/TopicRule/TopicRuleActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/SM/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/SM/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SM934E715A"
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/TopicRule/TopicRuleActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRuleTopicRuleActionRole246C4F77"
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/SM/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SMRole49C19C48"
+    }
+  ],
+  "/test-step-functions-start-state-machine-action-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687"
+    }
+  ]
+}

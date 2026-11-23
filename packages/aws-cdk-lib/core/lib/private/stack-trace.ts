@@ -1,3 +1,5 @@
+import { StackFrame } from '@aws-cdk/cloud-assembly-api';
+
 /**
  * Captures the current process' stack trace.
  *
@@ -76,7 +78,7 @@ function withExternalTrace(internal: string[]) {
  * It's easier for us to render a regular stacktrace as a string, have source map support
  * do the right thing, and then pick it apart, than to try and reconstruct it.
  */
-export function captureCallStack(upTo: Function | undefined): CallSite[] {
+export function captureCallStack(upTo: Function | undefined): StackFrame[] {
   const obj: { stack: string } = {} as any;
   Error.captureStackTrace(obj, upTo);
   let trace = parseErrorStack(obj.stack);
@@ -112,72 +114,14 @@ function formatExternalFrame(trace: [string, number, number, string]): string {
  *
  * `<file>` can be `node:internal/modules/whatever`.
  */
-export function parseErrorStack(stack: string): CallSite[] {
+export function parseErrorStack(stack: string): StackFrame[] {
   const lines = stack.split('\n');
 
   const framePrefix = '    at ';
 
   return lines
     .filter(line => line.startsWith(framePrefix))
-    .map(line => {
-      line = line.slice(framePrefix.length);
-
-      const frame = parseStackFrame(line);
-
-      // Make this easier to read
-      if (frame.functionName === 'Object.<anonymous>') {
-        frame.functionName = '<anonymous>';
-      }
-
-      return frame;
-    });
-}
-
-/**
- * Parse a single line of a stack frame into a structured object
- *
- * Parses all of these:
- *
- * ```
- * <function> (<file>:<line>:<col>)
- * <class>.<function> (<file>:<line>:<col>)
- * Object.<anonymous> (<file>:<line>:<col>)
- * <function> [as somethingElse] (<file>:<line>:<col>)
- * new <constructor> (<file>:<line>:<col>)
- * <file>:<line>:<col>
- * ```
- */
-function parseStackFrame(frame: string): CallSite {
-  let fileName;
-  let functionName;
-  let sourceLocation;
-
-  // line = <function> (<source>) | <source>
-  const paren = frame.indexOf('(');
-  if (paren) {
-    functionName = frame.slice(0, paren - 1);
-    frame = frame.slice(paren + 1, -1);
-  } else {
-    functionName = '<entry>';
-  }
-
-  let asI = functionName.indexOf(' [as ');
-  if (asI > -1) {
-    functionName = functionName.slice(0, asI);
-  }
-
-  // line = <file>:<line>:<col>, but file can contain : as well.
-  // Grab at most 2 groups of only digits from the end of the string for source location
-  const m = frame.match(/(:[0-9]+){0,2}$/);
-
-  fileName = m ? frame.slice(0, -m[0].length) : frame;
-  sourceLocation = m ? m[0].slice(1) : '';
-
-  return {
-    fileName,
-    functionName,
-    sourceLocation,
-  };
+    .map(line => StackFrame.parse(line.slice(framePrefix.length)));
 }
 
 // Look for `/node_modules/` followed by either
@@ -200,7 +144,7 @@ const DECORATOR_RE = /(\/|\\)(prop-injectable|no-box-stack-traces)\./;
  * If `indent` is enabled, we will prefix stack frames of actual files with "  at ", just like
  * Node does for its stack frames.
  */
-export function renderCallStackJustMyCode(stack: CallSite[], indent = true): string[] {
+export function renderCallStackJustMyCode(stack: StackFrame[], indent = true): string[] {
   const lines = [];
   let skipped = new Array<{ functionName?: string; fileName: string }>();
 
@@ -266,47 +210,10 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
 }
 
 /**
- * Return the first user frame from a "Just My Code" call stack
- *
- * With all the NON-"my code" call frames redacted, the top level frame should
- * be the last user frame that is associated with the given call stack.
- *
- * May return `undefined` if no such call frame is found. We recognize
- * "actual" call frames by them containing ` (` and ending in `)`.
- */
-export function topUserFrame(stackTrace: string[]): CallSite | undefined {
-  for (const frame of stackTrace) {
-    if (frame.includes(' (') && frame.endsWith(')')) {
-      return parseStackFrame(frame);
-    }
-  }
-  return undefined;
-}
-
-/**
  * Whether the call site comes from the internals of the host that sent us the stack trace
  */
-function isHostInternalFrame(frame: CallSite): boolean {
+function isHostInternalFrame(frame: StackFrame): boolean {
   const hostDirName = (global as any)[Symbol.for('jsii.context.hostDirName')];
   return frame.fileName.includes(hostDirName);
-}
-
-export interface CallSite {
-  /**
-   * Name of the function this call frame is in
-   */
-  functionName: string;
-
-  /**
-   * The file name this call frame is in
-   */
-  fileName: string;
-
-  /**
-   * The line and optionally column number this call frame is in
-   *
-   * Formatted as `<line> [':' <column>]`.
-   */
-  sourceLocation: string;
 }
 

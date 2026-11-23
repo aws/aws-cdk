@@ -1,0 +1,15 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "WebFunctionStagedAssetTest/DefaultTest": {
+      "stacks": [
+        "WebFunctionStagedAssetStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "WebFunctionStagedAssetTest/DefaultTest/DeployAssert",
+      "assertionStackName": "WebFunctionStagedAssetTestDefaultTestDeployAssert64B155E5"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}
