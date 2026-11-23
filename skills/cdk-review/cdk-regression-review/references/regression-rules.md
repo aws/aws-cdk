@@ -49,17 +49,9 @@ the *why*, see the
 [jsii TypeScript restrictions guide](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/).
 A change that compiles in TypeScript can still break another language's bindings.
 
-**[REG-JSII-SIGNATURE-CHANGE] (BLOCKING)** — For every changed signature of a public function, method, or
-constructor, enumerate the before→after parameter delta (count, order, types, optionality, and whether any
-parameter is a struct/data interface) and check each against the matrix.
-- **The signature matrix (doc-absent detail):**
-  - Add an optional parameter at the end: safe only if no parameter before it is a struct (data
-    interface); if a struct precedes it, breaking (see [REG-JSII-STRUCT-LAST]).
-  - Remove a parameter: breaking.
-  - Change a parameter type: breaking.
-  - Reorder parameters: breaking.
-  - Convert individual params to an options object, or an options object back to individual params:
-    breaking.
+**[REG-JSII-SIGNATURE-CHANGE] (BLOCKING)** — Parameters of the same type that change order in a public
+function, method, or constructor: existing positional calls still compile and pass each argument to the
+wrong parameter. *(doc-absent detail)*
 
 **[REG-JSII-STRUCT-LAST] (BLOCKING)** — A struct argument (a data interface: no `I` prefix, `readonly`-only
 props) MUST be the last positional parameter. jsii explodes it into keyword/named arguments in Python,
@@ -68,37 +60,26 @@ TypeScript accepts. Fix: move the new field into the struct as an optional `read
 *(doc-absent detail — the jsii spec states the primitive; this is the applied diff-review consequence.)*
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
 
-**[REG-JSII-INTERFACE-NAMING] (BLOCKING)** — A behavioral interface MUST start with the `I` prefix; a
-struct (data-only interface) MUST NOT, and may hold only `readonly` properties (no methods, no mutable
-properties). See
+**[REG-JSII-INTERFACE-NAMING] (BLOCKING)** — A data-only interface (only `readonly` properties) named with
+the `I` prefix, which jsii generates as a behavioral interface instead of a struct. See
 [`jsii § Naming › Interfaces`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#interfaces).
 
-**[REG-JSII-NO-UNION] (BLOCKING)** — No union types in the public API; use an enum-like class, separate
-props, or factory methods. See
+**[REG-JSII-NO-UNION] (BLOCKING)** — A union type in a method parameter, a return type, a class property, or
+any struct other than a construct's `<Name>Props`; use an enum-like class, separate props, or factory
+methods. See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
-**[REG-JSII-UNSUPPORTED-TS] (BLOCKING)** — No unsupported TypeScript in the public surface: an index
-signature, a generic/parameterized type, `Pick`/`Omit`, a mapped/conditional type, or a type alias — these
-are unsupported or de-sugared in the target languages. See
-[`jsii § Index Signatures`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#index-signatures),
-[`§ Mapped Types`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#typescript-mapped-types),
-and [`§ Type Aliases`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#type-aliases).
+**[REG-JSII-UNSUPPORTED-TS] (BLOCKING)** — A generic method in the public surface: jsii erases its type
+parameter to `any` in the target languages. See
+[`jsii § Mapped Types`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#typescript-mapped-types).
 
-**[REG-JSII-TYPE-MOVE] (BLOCKING)** — A public member (type, function, or const) MUST NOT move to a
-different file or module. File location is part of the external contract in jsii bindings, so a move breaks
-existing imports even when the symbol is unchanged. See
+**[REG-JSII-TYPE-MOVE] (BLOCKING)** — An exported function or const moved to another submodule: existing
+imports of it break. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
 
-**[REG-JSII-MEMBER-NAME-CONFLICT] (BLOCKING)** — A class member MUST NOT share the same PascalCased name as
-its declaring class — it generates invalid C#. See
-[`jsii § Class Members`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#class-members).
-
-**[REG-JSII-INHERITANCE] (BLOCKING)** — Structs extend only structs. Widening member visibility
-(protected → public) is breaking. Override parameter types are invariant; return types and `readonly`
-property types may be covariant. See
-[`jsii § Inheritance`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#inheritance),
-[`§ Covariant Overrides`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#covariant-overrides-parameter-list-changes),
-and [`§ Member Visibility`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#member-visibility).
+**[REG-JSII-INHERITANCE] (BLOCKING)** — A `protected` member of a base class made `public`: existing C#
+subclasses that override it break. See
+[`jsii § Member Visibility`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#member-visibility).
 
 **[REG-JSII-DEPENDENCY-EXPOSURE] (BLOCKING)** — Non-jsii dependencies MUST be bundled
 (`bundleDependencies`); a bundled-dependency type MUST NOT be exposed in the public API; a file with
@@ -137,8 +118,7 @@ return). *(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation)
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
-- **Also breaking:** removing an enum member. (Moving a public member between files is its own rule —
-  [REG-JSII-TYPE-MOVE].)
+- **Also breaking:** removing an enum member.
 - **Non-breaking guard (doc-absent detail):** adding optional input props, new methods/classes, and
   return props is additive.
 
