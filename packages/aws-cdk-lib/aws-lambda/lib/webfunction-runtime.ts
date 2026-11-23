@@ -24,6 +24,11 @@ export class WebFunctionRuntime {
   public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15', RuntimeFamily.PYTHON);
 
   /**
+   * Node.js 26.x runtime
+   */
+  public static readonly NODEJS_26_X = new WebFunctionRuntime('nodejs26.x');
+
+  /**
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    *
