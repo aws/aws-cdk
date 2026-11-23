@@ -13,7 +13,7 @@ resource the code touches) where a scoped ARN exists. See
 **[SEC-IAM-WILDCARD-ACTION-ALL] (BLOCKING)** — An all-services action wildcard (`Action: "*"`), even
 on a scoped resource. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
-- **Doc-absent detail:** `"*"` grants every action of every service against that resource — including
+- **Harm:** `"*"` grants every action of every service against that resource — including
   destructive and policy-rewriting actions (`DeleteTable`, `PutResourcePolicy`) — so a scoped resource
   does not contain the exposure. This is strictly broader than a single-service `service:*` and is an
   open door, not a hardening gap.
@@ -22,14 +22,14 @@ on a scoped resource. See
 reachable)* — Missing confused-deputy condition (`aws:SourceAccount`/`aws:SourceArn`) on a
 cross-*service* trust policy (a trusted `ServicePrincipal`). See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
-- **Doc-absent detail:** these keys are the control for a trusted *service*, not for a trusted external
+- **Scope split:** these keys are the control for a trusted *service*, not for a trusted external
   account.
 
 **[SEC-IAM-REFACTOR-SCOPE-DROP] (BLOCKING)** *(conditional — RECOMMENDED when the dropped scoping
 guards a not-yet-reachable path)* — A refactor that drops scoping is a real exposure, not a no-op: when
 converting `PolicyStatement`s to grants you MUST preserve conditions, effect, and principals. See
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants).
-- **Doc-absent detail:** a moved statement that loses a `Condition`, flips `Effect`, or widens a
+- **Detection:** a moved statement that loses a `Condition`, flips `Effect`, or widens a
   `Principal` while "just moving code" is a finding.
 
 **[SEC-IAM-DEFAULT-WILDCARD] (BLOCKING)** *(conditional — RECOMMENDED when bounded)* — An optional prop
@@ -52,7 +52,7 @@ encrypted resources). See
 for the grant-helper MUST and
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § grants.json Auto-Generation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grantsjson-auto-generation)
 for the grant's field semantics.
-- **Doc-absent detail:** the inverse is also a finding — an over-broad grant helper (`grantFullAccess`,
+- **Over-broad grants:** the inverse is also a finding — an over-broad grant helper (`grantFullAccess`,
   or a `grant*` including actions the code path does not need, e.g. `grantEncryptDecrypt` where only
   `kms:Decrypt` + `kms:GenerateDataKey*` are used), or an AWS-managed-policy attachment whose actions
   apply to `*` (e.g. `CloudWatchAgentServerPolicy`) where a scoped `PolicyStatement` would serve.
@@ -64,7 +64,7 @@ reachable)* — Missing `sts:ExternalId` condition on cross-*account* trust to a
 (external) account — an `assumedBy` `AccountPrincipal`/`ArnPrincipal` for an account outside your org.
 `ExternalId` is the third-party control. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
-- **Doc-absent detail:** inside the org boundary (same-org / internal-Amazon cross-account trust) the two
+- **Exemption:** inside the org boundary (same-org / internal-Amazon cross-account trust) the two
   accounts share a trust domain and `ExternalId` is not required.
 
 **[SEC-KMS-VIASERVICE] (RECOMMENDED)** — Missing `kms:ViaService` on an otherwise-scoped KMS grant
@@ -77,7 +77,7 @@ A role whose `inlinePolicies`/`managedPolicies` grant IAM-mutating actions (`iam
 re-permission other roles; a `permissionsBoundary` caps what those minted roles may do
 (privilege-escalation containment). See
 [`AGENTS_CONSTRUCT_DESIGN.md § IAM Role Integration`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#iam-role-integration).
-- **Doc-absent detail:** gate on the IAM-mutating action set — this fires only when the role grants one
+- **Trigger:** gate on the IAM-mutating action set — this fires only when the role grants one
   of those actions.
 
 **[SEC-IAM-ABAC-TAGWRITE] (RECOMMENDED)** — Tag-based access control (ABAC) without tag-write
@@ -85,7 +85,7 @@ separation. When a `PolicyStatement` gates access on `aws:ResourceTag`/`aws:Prin
 `aws:RequestTag`, an adjacent grant of `Tag*`/`Untag*` on the tagged resource lets the same principal
 rewrite the governing tag and self-grant. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
-- **Doc-absent detail:** RECOMMENDED-only (defense-in-depth) — fire only when both halves are present.
+- **Tier:** RECOMMENDED-only (defense-in-depth) — fire only when both halves are present.
 
 **[SEC-IAM-OVERBROAD-PRINCIPAL] (RECOMMENDED)** *(conditional — BLOCKING when it opens access)* — A role
 `assumedBy` an `AccountRootPrincipal()` (or a cross-account root) where a specific `ServicePrincipal`
@@ -121,7 +121,7 @@ template. `SecretValue` defers resolution and keeps plaintext out of source and 
 finding, even though the map's prop is named `environment`. The value still lands in the template,
 recoverable via `cloudformation:GetTemplate` / `lambda:GetFunctionConfiguration`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
-- **Doc-absent detail:** the trigger is a **value** that is a credential, **not the key name**: a
+- **Detection:** the trigger is a **value** that is a credential, **not the key name**: a
   secret-shaped key with a non-secret value (`PARTITION_KEY`, `SORT_KEY`, `IDEMPOTENCY_KEY`) is not a
   finding. Fix: reference the value via `SecretValue.secretsManager(...)` / SSM `ssmSecure` so plaintext
   never enters the template.
@@ -143,5 +143,5 @@ new/changed feature flag whose enabled behavior *loosens* trust or permissions (
 access, weakens a default) is a *Secure defaults* finding here — even though the flag mechanism is
 otherwise a breaking-change concern outside this dimension. See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
-- **Doc-absent detail:** suspect a flag whose `unconfiguredBehavesLike`/`recommendedValue` defaults
+- **Detection:** suspect a flag whose `unconfiguredBehavesLike`/`recommendedValue` defaults
   existing apps to the *looser* behavior rather than the old (tighter) one.

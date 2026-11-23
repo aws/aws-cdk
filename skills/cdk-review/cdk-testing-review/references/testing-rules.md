@@ -6,9 +6,9 @@
 outcome that matters — or a test named for a behavior it never exercises. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the `Match`
 rules.
-- **Conditional (doc-absent detail):** down-tier RECOMMENDED when the core outcome is asserted elsewhere
+- **Conditional:** down-tier RECOMMENDED when the core outcome is asserted elsewhere
   and only a facet is loose.
-- **Detection method (doc-absent detail):** ask **if I broke the behavior this test covers, would this
+- **Detection method:** ask **if I broke the behavior this test covers, would this
   test turn red?** If not, it is a non-asserting test.
 
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
@@ -19,16 +19,16 @@ ships with the suite still green. See
 flag mechanics and
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for new validation on existing constructs.
-- **Conditional (doc-absent detail):** down-tier RECOMMENDED when only the new state is untested and the
+- **Conditional:** down-tier RECOMMENDED when only the new state is untested and the
   preserved old default is covered.
-- **Detection method (doc-absent detail):** a diff that touches `FeatureFlags.of(this).isEnabled(...)` or
+- **Detection method:** a diff that touches `FeatureFlags.of(this).isEnabled(...)` or
   adds a flag in `cx-api` has two reachable states.
 
 **[TEST-UNIT-MISSING-REGRESSION] (RECOMMENDED)** — A behavior the PR adds that a user relies on has no test
 that would fail if it broke. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for how to assert
 the outcome.
-- **Conditional (doc-absent detail):** up-tier BLOCKING when the untested behavior is a security- or
+- **Conditional:** up-tier BLOCKING when the untested behavior is a security- or
   correctness-critical guardrail the change adds. Such a guardrail is a check the change adds whose silent
   failure would let a security exposure or a wrong deployment through, for example a validation that
   rejects a configuration which would otherwise deploy and be exposed or wrong. A check whose silent
@@ -47,7 +47,7 @@ regresses. See
 for the `hasWarning`/`hasNoWarning`/`hasError` API, and
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Mixin Testing`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#mixin-testing)
 for a mixin's required tests.
-- **Conditional (doc-absent detail):** up-tier BLOCKING when the diagnostic / reject arm is a security- or
+- **Conditional:** up-tier BLOCKING when the diagnostic / reject arm is a security- or
   correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
 
 **[TEST-UNIT-DOC-NAME] (OPTIONAL)** — A test name that describes nothing (`'works'`, `'test 2'`), so the
@@ -66,11 +66,11 @@ for the required-scenario list,
 for the feat/fix default, and the `pr-linter/exempt-integ-test` label in
 [`prlint/constants.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/constants.ts) for
 the exempt terminal.
-- **Exemption heuristic (doc-absent detail):** a simple property pass-through (a value threaded straight
+- **Exemption heuristic:** a simple property pass-through (a value threaded straight
   to an L1 with no new behavior) is the canonical exemption — **but** a pass-through exposing a
   previously-unused or untested CFN property requires a test, which takes precedence over the
   pass-through intuition.
-- **Conditional (doc-absent detail):** down-tier RECOMMENDED when a unit test already asserts the change's
+- **Conditional:** down-tier RECOMMENDED when a unit test already asserts the change's
   synthesized-template effect and only the owed integ test is absent (a gap in test depth, not shipped
   damage — ask for the integ test or the exempt label).
 
@@ -81,7 +81,7 @@ a snapshot diff is a template diff. See
 for the snapshot-as-template fact and
 [`CONTRIBUTING.md § Behavior changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#behavior-changes)
 for the breaking-change rule.
-- **Dangerous-diff signatures (doc-absent detail):** BLOCKING when hidden in a "benign" refresh — name the
+- **Dangerous-diff signatures:** BLOCKING when hidden in a "benign" refresh — name the
   specific template line (resource logical ID + property) and the consequence:
   - **Stateful-resource replacement** — a replacement-triggering property changed on a stateful resource
     (`AWS::RDS::DBInstance`, `AWS::DynamoDB::Table`, `AWS::S3::Bucket`, `AWS::EFS::FileSystem`,
@@ -93,10 +93,10 @@ for the breaking-change rule.
     production code is outside your scope, but flag it here when the *snapshot diff* reveals the widening as a benign refresh.
   - **Removal/retention-policy weakening** — `DeletionPolicy` / `UpdateReplacePolicy` moving `Retain` →
     `Delete` (or dropped) on a stateful resource.
-- **Snapshot-reading budget (doc-absent detail):** focus on the `integ.*.ts` file and scan the template
+- **Snapshot-reading budget:** focus on the `integ.*.ts` file and scan the template
   diff only for the signatures above; skip `manifest.json`, `tree.json`, and asset files — they carry no
   review value. The goal is catching a dangerous template change hiding in the regeneration.
-- **Mechanical churn is out of scope (doc-absent detail):** tooling-driven, no semantic template change —
+- **Mechanical churn is out of scope:** tooling-driven, no semantic template change —
   asset hashes, CDK version strings / `aws:cdk:version` metadata, bootstrap/synthesizer boilerplate
   (`CDKMetadata`, `BootstrapVersion` SSM lookups), pure metadata / ordering churn (`aws:cdk:path`,
   key-order, `Rules`/`Parameters` reshuffles with no property change). Rule of thumb: if no resource's
@@ -123,7 +123,7 @@ the `IntegTest`/`testCases` pattern,
 [`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
 for the no-`--dry-run` hard rule, and the
 [`IntegTest` construct](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts).
-- **Placement (doc-absent detail):** Stable modules' integ tests live in
+- **Placement:** Stable modules' integ tests live in
   `@aws-cdk-testing/framework-integ/test/MODULE/test/integ.*.ts`; alpha modules (`@aws-cdk/<service>-alpha`)
   keep theirs in the alpha package's own `test/` dir, not in `framework-integ`. An alpha test in its own
   `test/` dir is placed correctly.
@@ -137,7 +137,7 @@ whether or not the change's category owed an assertion. See
 for the assertion-owed cases and the `awsApiCall` → `ExpectedResult` API. Also assert the
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a
 `403`/error `ExpectedResult`).
-- **Calibration (doc-absent detail):** a successful deploy validates a single-property that just renders
+- **Calibration:** a successful deploy validates a single-property that just renders
   into the template.
 
 **[TEST-INTEG-REDUNDANT] (OPTIONAL)** — N resources created to exercise N enum values when one reconfigured
@@ -147,8 +147,8 @@ suffices to prove the enum renders. See
 and
 [`§ Existing L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#existing-l2-constructs)
 for the tests a new/existing L2 owes.
-- **Conditional (doc-absent detail):** up-tier RECOMMENDED when the multiplication is large.
-- **Module-norm technique (doc-absent detail):** when judging over-/under-testing, compare against 2-3
+- **Conditional:** up-tier RECOMMENDED when the multiplication is large.
+- **Module-norm technique:** when judging over-/under-testing, compare against 2-3
   similar integ tests in the same module (stable in
   `@aws-cdk-testing/framework-integ/test/MODULE/test/integ.*.ts`, alpha in the alpha package's own
   `test/`) and cite them as evidence — a test far heavier than its peers likely warrants simplification;

@@ -20,9 +20,9 @@ CfnPropsMixin / Facade / Trait) first, and only as an L2 method if none fits. Se
 for the first-match-wins table and
 [`AGENTS.md § L2 Building Blocks`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#l2-building-blocks)
 for each block.
-- **Tier (doc-absent detail):** RECOMMENDED: a feature placed in L2 code still works for that L2's users;
+- **Tier:** RECOMMENDED: a feature placed in L2 code still works for that L2's users;
   only reuse is lost.
-- **Detection cue (doc-absent detail):** the "feature" to place is feature *logic* — input validation,
+- **Detection cue:** the "feature" to place is feature *logic* — input validation,
   auxiliary-resource creation, or computed behavior — living in L2 glue code, or a grant/metric/event
   helper implemented as a bare method rather than a building block.
 
@@ -39,13 +39,13 @@ interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`
 **[CD-PROPS-DEFAULT] (BLOCKING)** — A `@default` that contradicts what the code does is a real
 behavioral surprise. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior).
-- **Scope split (doc-absent detail):** the default *behavior* is yours; whether the tag is merely present
+- **Scope split:** the default *behavior* is yours; whether the tag is merely present
   or reads well is outside your scope.
 
 **[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token/secret, must be typed
 `SecretValue` so a plaintext secret can't pass through the API. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
-- **Scope split (doc-absent detail):** the type choice is design (yours); whether a specific value leaks
+- **Scope split:** the type choice is design (yours); whether a specific value leaks
   is outside your scope.
 
 **[CD-NAMING] (BLOCKING)** — Name the resource and its props in official AWS/CloudFormation terminology,
@@ -55,7 +55,7 @@ and derive related type names (`FooProps`, `IFoo`). See
 **[CD-ATTRIBUTES] (BLOCKING)** — Expose every CloudFormation attribute as a `readonly`,
 type-name-prefixed (`bucketArn`, not `arn`) opaque token. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Resource Attributes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#resource-attributes).
-- **Scope split (doc-absent detail):** the surface design is yours; grading the tag/`@returns` prose is
+- **Scope split:** the surface design is yours; grading the tag/`@returns` prose is
   outside your scope.
 
 **[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Use the standard constructor and extend only
@@ -80,9 +80,9 @@ See [`AGENTS_CONSTRUCT_DESIGN.md § Tags`](https://github.com/aws/aws-cdk/blob/m
 deprecate-and-add (`FooV2`), not mutate. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
 - **Tier:** RECOMMENDED for an implementation-detail type left exported instead of `@internal`.
-- **Tier (doc-absent detail):** RECOMMENDED for a `@deprecated` prop in a newly introduced interface: it
+- **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface: it
   breaks no existing program, since none uses the interface yet.
-- **Scope split (doc-absent detail):** classifying an *existing-surface* break is outside construct-design's scope.
+- **Scope split:** classifying an *existing-surface* break is outside construct-design's scope.
 
 **[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop mapping to a CloudFormation property whose
 `UpdateType` is `Immutable` (or `Conditional`) is a replacement footgun: setting it later triggers a
@@ -94,11 +94,11 @@ CloudFormation resource specification before you flag. See
 for the update-behavior classes and
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy)
 for the stateful classification.
-- **Tier (doc-absent detail):** RECOMMENDED when the user sets the value, since only the user's own later
+- **Tier:** RECOMMENDED when the user sets the value, since only the user's own later
   change replaces the resource. Up-tier BLOCKING when the L2 computes the value, so a change elsewhere
   replaces a stateful resource. A stateless resource is not up-tiered: replacement costs downtime and a new
   name, not data.
-- **Scope split (doc-absent detail):** flag only the *new* surface a future user mutates. A break in an
+- **Scope split:** flag only the *new* surface a future user mutates. A break in an
   *existing* consumer's synthesis, and the committed snapshot diff of this PR's own synth, are outside
   construct-design's scope.
 
@@ -110,7 +110,7 @@ guardrail. See
 build-time enforcement and
 [`awslint README § Saving State`](https://github.com/aws/aws-cdk/blob/main/packages/awslint/README.md#saving-state)
 for the `exclude` mechanism.
-- **Escalate to BLOCKING when the suppressed rule backs a MUST-level guideline (doc-absent detail):** the
+- **Escalate to BLOCKING when the suppressed rule backs a MUST-level guideline:** the
   suppression there silences the exact floor the design and regression lenses trust.
 
 **[CD-ENUMS] (RECOMMENDED)** — Model a closed known set as an `enum`, an open set as an enum-like class.
@@ -128,7 +128,7 @@ and prefer extending an existing method over adding a new one. See
 affordance where the service supports it. See
 [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
 and the sections following it for the signatures.
-- **Auto-wired affordances (doc-absent detail):** before flagging an absence, confirm the framework
+- **Auto-wired affordances:** before flagging an absence, confirm the framework
   doesn't already provide it — tagging works through `Tags.of(x).add(...)` wherever the L1 is taggable, and
   `removalPolicy`, dependencies, and metadata come from `cdk.Resource`.
 
@@ -143,7 +143,7 @@ rather than declaring a parallel one. See
 **[CD-PREFER-DEFAULT] (RECOMMENDED)** — Prefer inferring a sensible default over raising an error: error
 only when no default exists or the user gave an explicitly contradictory config. See
 [`AGENTS.md § Error Handling`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#error-handling).
-- **Application (doc-absent detail):** when two or more props jointly control one behavior, trace every
+- **Application:** when two or more props jointly control one behavior, trace every
   combination (both / one / conflicting) against this ordering. Infer a value derivable from another prop
   or the service rather than require it.
 - **Escalate to BLOCKING only when the same shape also breaks a cited codified mandate — cite it.**
@@ -161,7 +161,7 @@ no consumer today.
 public surface.
 
 **[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID MUST NOT change.
-- **Scope split (doc-absent detail):** the resulting stack break is also outside construct-design's scope.
+- **Scope split:** the resulting stack break is also outside construct-design's scope.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
 capability lands additively. See

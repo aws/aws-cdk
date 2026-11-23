@@ -7,7 +7,7 @@ meaning input that deploys successfully; an over-strict check turns a working st
 synthesizing. Confirm the real constraint against the authoritative AWS service docs before rating. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for new validation on existing constructs.
-- **Detection (doc-absent detail):** for each new rejection, name one concrete input that deployed before
+- **Detection:** for each new rejection, name one concrete input that deployed before
   the PR and is rejected after.
 
 **[REG-INPUT-VALIDATION] (RECOMMENDED)** — Missing input validation: the CDK never validates a
@@ -27,7 +27,7 @@ is actually a `Ref`/`Fn::` at synth) emits invalid CloudFormation or throws for 
 Guard with `Token.isUnresolved()` before validating or comparing. See
 [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety) and the
 [CDK Tokens guide](https://docs.aws.amazon.com/cdk/v2/guide/tokens.html).
-- **Boolean-token false-positive guard (doc-absent detail):** tokens encode only as string, number, or
+- **Boolean-token false-positive guard:** tokens encode only as string, number, or
   string-list (`Token.asString`/`asNumber`/`asList` — there is no `asBoolean`), so a `boolean`-typed value
   can never be an unresolved token. Do not flag a missing `Token.isUnresolved()` guard on a boolean prop,
   and do not report that a boolean "could be a token." The same fact validates the opposite finding: a
@@ -41,13 +41,12 @@ A change that compiles in TypeScript can still break another language's bindings
 
 **[REG-JSII-SIGNATURE-CHANGE] (BLOCKING)** — Parameters of the same type that change order in a public
 function, method, or constructor: existing positional calls still compile and pass each argument to the
-wrong parameter. *(doc-absent detail)*
+wrong parameter.
 
 **[REG-JSII-STRUCT-LAST] (BLOCKING)** — A struct argument (a data interface: no `I` prefix, `readonly`-only
 props) MUST be the last positional parameter. jsii explodes it into keyword/named arguments in Python,
 Java, C#, and Go, so any parameter after a struct breaks the generated bindings — even an optional one
 TypeScript accepts. Fix: move the new field into the struct as an optional `readonly` property.
-*(doc-absent detail)*
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
 
 **[REG-JSII-INTERFACE-NAMING] (BLOCKING)** — A data-only interface (only `readonly` properties) named with
@@ -57,7 +56,7 @@ classes implement: jsii generates it as a behavioral interface instead of a stru
 
 **[REG-JSII-NO-UNION] (BLOCKING)** — A union type in a method parameter, a return type, a class property, or
 any struct other than a construct's `<Name>Props`; use an enum-like class, separate props, or factory
-methods. *(doc-absent detail)* See
+methods. See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
 **[REG-JSII-UNSUPPORTED-TS] (BLOCKING)** — A generic method in the public surface: jsii erases its type
@@ -65,7 +64,7 @@ parameter to `any` in the target languages. See
 [`jsii § Mapped Types`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#typescript-mapped-types).
 
 **[REG-JSII-TYPE-MOVE] (BLOCKING)** — An exported function or const moved to another submodule: existing
-imports of it break. *(doc-absent detail)*
+imports of it break.
 
 **[REG-JSII-INHERITANCE] (BLOCKING)** — A `protected` member of a base class made `public`: existing C#
 subclasses that override it break. See
@@ -85,7 +84,7 @@ props-based shape, or for a written justification. See
 logic refactor that changes what the code does on an edge case, or a
 shared base-class/helper side effect (a spurious `CfnCondition`, a token-keyed cache) that flows into every
 consumer of that method. *(Conditional — BLOCKING when it reaches every consumer or fails an existing
-stack's update.)* *(doc-absent detail)*
+stack's update.)*
 
 ## Library stability & breaking changes
 
@@ -107,7 +106,7 @@ return). *(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
 - **Also breaking:** removing an enum member.
-- **Non-breaking guard (doc-absent detail):** adding optional input props, new methods/classes, and
+- **Non-breaking guard:** adding optional input props, new methods/classes, and
   return props is additive.
 
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
@@ -122,13 +121,13 @@ for the definitional test of which template changes are breaking.
   feature flag for it. See
   [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags) and
   [`CONTRIBUTING.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#feature-flags).
-- **Non-breaking guard (doc-absent detail):** an update that applies cleanly with no replacement and only
+- **Non-breaking guard:** an update that applies cleanly with no replacement and only
   additive template changes is not breaking.
 
 **[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
 breaking change still requires an explicit `BREAKING CHANGE:` callout in the PR body (before the `---`
 line) — the *missing* callout is the finding. A permitted experimental break that already carries the
-callout is at most an OPTIONAL note, not a finding *(doc-absent detail)*. For a mitigation, prefer opt-in
+callout is at most an OPTIONAL note, not a finding. For a mitigation, prefer opt-in
 via a new API element (add
 it and mark the old one `@deprecated` with a descriptive error) over a feature flag, whose effects are
 non-local. See

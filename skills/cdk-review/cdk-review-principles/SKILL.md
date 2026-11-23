@@ -137,8 +137,7 @@ Each dimension skill keeps its detailed rules in a `references/*-rules.md` looku
 lookup shares one shape so they never drift: rows grouped by family, sorted
 BLOCKING → RECOMMENDED → OPTIONAL within each family, `[id]`s stable. A conditional
 severity is one rule — the row header carries the primary severity, the body states when it
-up- or down-tiers. A row marked `(doc-absent detail)` carries reviewer calibration the source
-doc does not state, kept in full. All aws/aws-cdk links reference `main`.
+up- or down-tiers. All aws/aws-cdk links reference `main`.
 
 ## Sources
 
