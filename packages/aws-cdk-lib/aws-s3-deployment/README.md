@@ -234,8 +234,9 @@ Configuring `retainOnDelete: false` has a few implications you should be aware o
 
   > NOTE: When the destination bucket has a strong cross-stack reference (the default strength,
   > unless changed with `@aws-cdk/core:defaultCrossStackReferences`) and both stacks are in the
-  > same region, updating the bucket's stack first **fails**. These apps will have to update or
-  > delete the deployment's stack first, meaning the objects will still remain. See
+  > same region, updating the bucket's stack first **fails**, unless another
+  > `BucketDeployment` to the same bucket remains in the deployment's stack. These apps will have
+  > to update or delete the deployment's stack first, meaning the objects will still remain. See
   > [The deadly embrace](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#the-deadly-embrace).
 
 - **Logical ID Changes**
