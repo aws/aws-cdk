@@ -129,8 +129,8 @@ issue". Ask for the props-based shape, or for the written justification the guid
 
 ## Undefined runtime behavior
 
-**[REG-UNDEFINED-BEHAVIOR] (RECOMMENDED)** — Any other runtime-behavior risk that fits none of the families
-above: a default-value change, a logic refactor that changes what the code does on an edge case, or a
+**[REG-UNDEFINED-BEHAVIOR] (RECOMMENDED)** — Any other runtime-behavior risk that fits no other family: a
+logic refactor that changes what the code does on an edge case, or a
 shared base-class/helper side effect (a spurious `CfnCondition`, a token-keyed cache) that flows into every
 consumer of that method. *(Conditional — BLOCKING when it reaches every consumer or fails an existing
 stack's update. doc-absent detail — a runtime-logic heuristic no single AWS doc frames as a review target.)*
