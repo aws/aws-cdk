@@ -21,7 +21,7 @@ for the first-match-wins table and
 [`AGENTS.md § L2 Building Blocks`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#l2-building-blocks)
 for each block.
 - **Tier (doc-absent detail):** RECOMMENDED: a feature placed in L2 code still works for that L2's users;
-  only reuse is lost. A feature method on `IFoo` is `CD-IFOO-NO-FEATURE-METHODS`.
+  only reuse is lost.
 - **Detection cue (doc-absent detail):** the "feature" to place is feature *logic* — input validation,
   auxiliary-resource creation, or computed behavior — living in L2 glue code, or a grant/metric/event
   helper implemented as a bare method rather than a building block.

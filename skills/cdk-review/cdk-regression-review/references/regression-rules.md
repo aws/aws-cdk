@@ -21,7 +21,7 @@ value flows into a working stack and breaks its update.)*
 L1/CFN-layer type where it did not before, breaking or coupling existing consumers to CloudFormation. (The
 same leak on a *brand-new* L2 surface is not a regression — outside your scope.) See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design)
-(`awslint:props-no-cfn-types`). Apply it with the false-positive scan in [REG-VALIDATION-FALSE-POSITIVE].
+(`awslint:props-no-cfn-types`).
 
 ## Token handling
 

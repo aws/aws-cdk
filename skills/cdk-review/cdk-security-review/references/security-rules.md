@@ -22,9 +22,8 @@ on a scoped resource. See
 reachable)* — Missing confused-deputy condition (`aws:SourceAccount`/`aws:SourceArn`) on a
 cross-*service* trust policy (a trusted `ServicePrincipal`). See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
-- **Doc-absent detail:** BLOCKING if it opens a currently-reachable confused-deputy path, RECOMMENDED
-  if it is a defense-in-depth gap on a not-yet-reachable path. These keys are the control for a trusted
-  *service*, not for a trusted external account (see SEC-IAM-CONFUSED-DEPUTY-ACCOUNT).
+- **Doc-absent detail:** these keys are the control for a trusted *service*, not for a trusted external
+  account.
 
 **[SEC-IAM-REFACTOR-SCOPE-DROP] (BLOCKING)** *(conditional — RECOMMENDED when the dropped scoping
 guards a not-yet-reachable path)* — A refactor that drops scoping is a real exposure, not a no-op: when
