@@ -1,5 +1,5 @@
 import * as YAML from 'yaml';
-import { Match, Template } from '../../assertions';
+import { Template } from '../../assertions';
 import { Bucket } from '../../aws-s3';
 import { Aws, CfnResource, Fn, Lazy, Stack, Token } from '../../core';
 import * as ec2 from '../lib';
@@ -551,16 +551,38 @@ describe('EC2Launch v2 user data', () => {
     // THEN
     const tasks = parse(userData).tasks;
     expect(tasks.map((t: any) => t.task)).toEqual(['initializeVolume', 'executeScript']);
+    expect(tasks[1].inputs).toHaveLength(1);
     expect(tasks[1].inputs[0].content).toMatch(/^# fingerprint: .*\ncfn-init\.exe -v .*\ncfn-signal\.exe -e \$LASTEXITCODE /);
+    expect(tasks[1].inputs[0].content.match(/cfn-init\.exe/g)).toHaveLength(1);
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
-      UserData: {
-        'Fn::Base64': {
-          'Fn::Join': ['', Match.arrayWith([
-            Match.stringLikeRegexp('^version: 1\\.1\ntasks:\n  - task: initializeVolume\n'),
-            { Ref: 'AWS::Region' },
-          ])],
-        },
-      },
+      UserData: { 'Fn::Base64': stack.resolve(userData.render()) },
+    });
+  });
+
+  test('renders the same document on every call', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const userData = ec2.UserData.forWindowsEc2LaunchV2();
+    const instance = new ec2.Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new ec2.InstanceType('t3.medium'),
+      machineImage: ec2.MachineImage.genericWindows({ 'us-east-1': 'ami-12345678' }),
+      userData,
+      userDataCausesReplacement: true,
+    });
+
+    // WHEN
+    userData.addTask(ec2.Ec2LaunchV2Task.executePowerShell({ content: 'script' }));
+    userData.addCommands('command1');
+    userData.addSignalOnExitCommand(instance);
+
+    // THEN
+    const first = stack.resolve(userData.render());
+    expect(stack.resolve(userData.render())).toEqual(first);
+    expect(parse(userData).tasks[0].inputs).toHaveLength(2);
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      UserData: { 'Fn::Base64': first },
     });
   });
 
