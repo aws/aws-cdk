@@ -562,8 +562,8 @@ export class BucketDeployment extends Construct {
      * CloudFormation will first issue a 'Create' to create the new CustomResource and will
      * update the Tag on the bucket. CloudFormation will then issue a 'Delete' on the old CustomResource
      * and since the new CR "owns" the Bucket+keyPrefix it will not delete the contents of the bucket.
-     * This does not apply to imported buckets (e.g. `Bucket.fromBucketName`): they are not tagged,
-     * so the old CR deletes the contents.
+     * This does not apply to imported buckets (e.g. `Bucket.fromBucketName`) or L1 buckets
+     * (`Bucket.fromCfnBucket`) because `Tags.of(this.destinationBucket)` doesn't tag them.
      *
      * 2. If the BucketDeployment resource is deleted _and_ it is the only CR for that bucket+keyPrefix
      * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the
