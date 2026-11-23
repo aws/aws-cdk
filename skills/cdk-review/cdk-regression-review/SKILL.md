@@ -15,7 +15,8 @@ Judge the implementation: a well-meant bug fix, added validation, or optimizatio
 regression or a break.
 
 **You own regression + breaking-change, including JSII.** A change that breaks a non-TypeScript binding is
-yours — it breaks the existing cross-language surface. (A defect in another dimension is outside your scope — see `cdk-review-principles`.)
+yours — it breaks the existing cross-language surface. (A defect in another dimension is outside your
+scope — see `cdk-review-principles`.)
 
 ## The review process
 
@@ -23,8 +24,8 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
 
 1. **Orient and load your rules.** Name the public surface the PR changes. Establish first whether its
    module is stable or experimental, since the breaking-change rows rate by it. Read
-   [`regression-rules.md`](references/regression-rules.md): its rows are your checklist. Then confirm a removed enum member, a vanished API, or a binding-breaking
-   signature by reading the code, and a CloudFormation or service fact the finding turns on against the
+   [`regression-rules.md`](references/regression-rules.md): its rows are your checklist. Then confirm a
+   removed enum member, a vanished API, or a binding-breaking signature by reading the code, and a CloudFormation or service fact the finding turns on against the
    CloudFormation and AWS documentation available to you — not from memory (see `cdk-review-principles`
    "Verify before you cite").
 

@@ -40,11 +40,8 @@ encodings and the `Token.asString/asList/asNumber` conversions — read the
 
 ## JSII cross-language compatibility
 
-Every rule here but `REG-JSII-NO-FLUENT` is BLOCKING — the public surface MUST transpile cleanly to
-Python, Java, C#, and Go. For
-the *why*, see the
+A change that compiles in TypeScript can still break another language's bindings; see the
 [jsii TypeScript restrictions guide](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/).
-A change that compiles in TypeScript can still break another language's bindings.
 
 **[REG-JSII-SIGNATURE-CHANGE] (BLOCKING)** — Parameters of the same type that change order in a public
 function, method, or constructor: existing positional calls still compile and pass each argument to the
