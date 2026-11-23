@@ -2717,9 +2717,12 @@ in user data. Tasks run in the order they were first added, with two exceptions:
   `detach: true` are the exception: they run concurrently, so the signal does not wait for them to finish.
 * EC2Launch v2 always runs `sysprep` last.
 
+The factory methods of `Ec2LaunchV2Task` are named after the tasks they produce, except `hostName()` for the
+`setHostName` task and `wallpaper()` for the `setWallpaper` task. Tasks without a factory method can be added with
+`Ec2LaunchV2Task.custom()`.
+
 Adding `executeProgram`, `writeFile`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again
-appends to the inputs of the existing task. Adding any other task with inputs twice is an error. Tasks without a factory
-method in `Ec2LaunchV2Task` can be added with `Ec2LaunchV2Task.custom()`.
+appends to the inputs of the existing task. Adding any other task with inputs twice is an error.
 
 EC2Launch v2 (tested with version 2.5.2) does not load user data with a `writeFile` task whose destination is under
 `C:\Windows`, so `Ec2LaunchV2Task.writeFile()` rejects such destinations. Write those files with a command instead.
@@ -2728,7 +2731,7 @@ Values that CloudFormation substitutes into the document at deploy time, such as
 are inserted as they are. Strings that contain them are written as YAML literal blocks, so the values need no escaping,
 but every line of a literal block must be indented, and only the first line of a multi-line value would be. So these
 values must be single line, and a string that contains one must not contain carriage returns or other control
-characters. Use LF line endings in scripts that contain such values. To pass a multi-line value to a script, encode it
+characters, or end with a line that contains only whitespace. Use LF line endings in scripts that contain such values. To pass a multi-line value to a script, encode it
 with `Fn.base64()` and decode it in the script:
 
 ```ts
