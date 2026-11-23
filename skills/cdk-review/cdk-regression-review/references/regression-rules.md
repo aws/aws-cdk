@@ -59,13 +59,13 @@ A change that compiles in TypeScript can still break another language's bindings
 constructor, enumerate the before→after parameter delta (count, order, types, optionality, and whether any
 parameter is a struct/data interface) and check each against the matrix.
 - **The signature matrix (doc-absent detail):**
-  - Add an optional parameter at the end: ✅ safe only if no parameter before it is a struct (data
-    interface); if a struct precedes it, ❌ breaking (see [REG-JSII-STRUCT-LAST]).
-  - Remove a parameter: ❌ breaking.
-  - Change a parameter type: ❌ breaking.
-  - Reorder parameters: ❌ breaking.
+  - Add an optional parameter at the end: safe only if no parameter before it is a struct (data
+    interface); if a struct precedes it, breaking (see [REG-JSII-STRUCT-LAST]).
+  - Remove a parameter: breaking.
+  - Change a parameter type: breaking.
+  - Reorder parameters: breaking.
   - Convert individual params to an options object, or an options object back to individual params:
-    ❌ breaking.
+    breaking.
 
 **[REG-JSII-STRUCT-LAST] (BLOCKING)** — A struct argument (a data interface: no `I` prefix, `readonly`-only
 props) MUST be the last positional parameter. jsii explodes it into keyword/named arguments in Python,
@@ -145,7 +145,7 @@ for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://git
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
 - **Also breaking:** removing an enum member. (Moving a public member between files is its own rule —
   [REG-JSII-TYPE-MOVE].)
-- **✅ Non-breaking guard (doc-absent detail):** adding optional input props, new methods/classes, and
+- **Non-breaking guard (doc-absent detail):** adding optional input props, new methods/classes, and
   return props is additive.
 
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
@@ -160,7 +160,7 @@ for the definitional test of which template changes are breaking.
   feature flag for it. See
   [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags) and
   [`CONTRIBUTING.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#feature-flags).
-- **✅ Non-breaking guard (doc-absent detail):** an update that applies cleanly with no replacement and only
+- **Non-breaking guard (doc-absent detail):** an update that applies cleanly with no replacement and only
   additive template changes is not breaking.
 
 **[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
