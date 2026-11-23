@@ -4,12 +4,12 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
           "ruleName": "W2531",
-          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'nodejs24.x'",
+          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation will be disabled on '2027-07-29', and updates will be disabled on '2027-08-31'. Please consider updating to 'nodejs24.x'",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Deprecation"

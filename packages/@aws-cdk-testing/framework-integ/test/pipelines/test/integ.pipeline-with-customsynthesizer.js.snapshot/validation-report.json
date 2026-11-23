@@ -4,12 +4,46 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'python3.10' was deprecated on '2026-10-31'. Creation will be disabled on '2027-07-29', and updates will be disabled on '2027-08-31'. Please consider updating to 'python3.14'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "pipeline-asset-stack/Staging/dev-lambda-stack/LambdaFN/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "assembly-pipeline-asset-stack-Staging/pipelineassetstackStagingdevlambdastackEC748226.template.json",
+                "logicalId": "LambdaFNC3761C8C",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            },
+            {
+              "constructPath": "pipeline-asset-stack/Production/prd-lambda-stack/LambdaFN/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "assembly-pipeline-asset-stack-Production/pipelineassetstackProductionprdlambdastack4E5ABBC0.template.json",
+                "logicalId": "LambdaFNC3761C8C",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
+          "description": "Resources: Resources section must exist and be non-empty",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Structure"

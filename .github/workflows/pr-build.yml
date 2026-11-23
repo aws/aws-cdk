@@ -55,18 +55,6 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v4
 
-      - name: Load Docker images
-        id: docker-cache
-        uses: actions/cache/restore@v6
-        with:
-          path: |
-            ~/.docker-images.tar
-          key: docker-cache-${{ runner.os }}
-
-      - name: Restore Docker images
-        if: ${{ steps.docker-cache.outputs.cache-hit }}
-        run: docker image load --input ~/.docker-images.tar
-
       - name: Restore build artifacts
         id: s3buildcache
         uses: actions/cache/restore@v6
@@ -103,15 +91,3 @@ jobs:
           path: |
             ~/.s3buildcache
           key: s3buildcache-${{ runner.os }}
-
-      - name: Export Docker images
-        if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        run: docker image save --output ~/.docker-images.tar $(docker image list --format '{{ if ne .Repository "<none>" }}{{ .Repository }}{{ if ne .Tag "<none>" }}:{{ .Tag }}{{ end }}{{ else }}{{ .ID }}{{ end }}')
-
-      - name: Cache Docker images
-        if: ${{ github.event_name == 'push' && github.ref_name == 'main' }}
-        uses: actions/cache/save@v6
-        with:
-          path: |
-            ~/.docker-images.tar
-          key: docker-cache-${{ runner.os }}
