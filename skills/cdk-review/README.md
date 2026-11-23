@@ -19,7 +19,7 @@ The skills follow the aws-cdk [contributor guide](../../CONTRIBUTING.md),
 Install all six together, because the other five apply `cdk-review-principles`.
 
 ```sh
-npx skills add aws/aws-cdk --skill '*' -g
+npx skills add https://github.com/aws/aws-cdk/tree/main/skills/cdk-review --skill '*' -g
 ```
 
 `-g` installs for your user instead of into the current directory. From an aws-cdk checkout:
