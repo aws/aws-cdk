@@ -82,8 +82,8 @@ A correctly-rated finding still has to be actionable. Every finding carries thre
   guide; post only what you have read. An unverified "X isn't supported" or
   "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
 - **A concrete fix** — a code example, or a question framing a specific alternative ("What
-  do you think about scoping this to the bucket ARN?"). Always offer a direction out. A fix
-  you suggest follows the same guides as the code under review.
+  do you think about scoping this to the bucket ARN?"). A fix you suggest follows the same
+  guides as the code under review.
 
 Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
 suggestions as questions where you can; stay direct and constructive on blocking issues

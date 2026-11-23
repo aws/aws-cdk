@@ -1,10 +1,8 @@
 # Finding & Comment Format Reference
 
-Produce **structured findings**.
-
 ## The structured finding contract
 
-Produce each finding as a structured object with these fields:
+Give each finding these fields:
 
 - `file` — repo-relative path of the file the finding is on.
 - `lineRange: { startLine, endLine }` — the line or line span the finding is about.
