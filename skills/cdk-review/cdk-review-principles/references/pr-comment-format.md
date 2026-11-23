@@ -50,7 +50,7 @@ review `summary`.
 
 Keep these out of the findings (put them in the `summary` text if they matter):
 high-level design observations not tied to a line, positive feedback, clusters of
-related nits (consolidate into one finding on the first occurrence), findings already
+related nits, findings already
 surfaced by automated PR analysis (unless you add new context), and philosophical
 questions.
 

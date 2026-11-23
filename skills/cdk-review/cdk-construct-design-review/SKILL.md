@@ -28,10 +28,9 @@ Work the changed surface in this order; adapt to what the diff touches.
    durable (see `cdk-review-principles` "Verify before you cite"). Then read
    [`design-rules.md`](references/design-rules.md): its rows are your checklist.
 
-2. **Check the diff against the rules.** Walk the changed surface family by family — **Feature placement**,
-   **Abstraction / L1 leak**, **Conformance**, **Footgun / ages-well** — judging the shape it produces. For
-   each rule check both directions: what is present and violating, and what the kind owes but the diff
-   omits. Before flagging an absence, confirm the service supports the affordance in the authoritative AWS
+2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule
+   check both directions: what is present and violating, and what the kind owes but the diff omits.
+   Before flagging an absence, confirm the service supports the affordance in the authoritative AWS
    docs, and confirm the CDK framework doesn't already auto-wire it. Rate a missing affordance exactly as a
    declared defect.
 

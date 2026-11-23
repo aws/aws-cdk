@@ -21,18 +21,16 @@ yours — it breaks the existing cross-language surface. (A defect in another di
 
 Work the changed surface rules-first. Adapt it to what the diff touches.
 
-1. **Orient and load your rules.** Name the public surface the PR changes. Establish its stability tier
-   first — the row sets the verdict by tier. Read [`regression-rules.md`](references/regression-rules.md):
-   its rows are your checklist. Then confirm a removed enum member, a vanished API, or a binding-breaking
+1. **Orient and load your rules.** Name the public surface the PR changes. Establish first whether its
+   module is stable or experimental, since the breaking-change rows rate by it. Read
+   [`regression-rules.md`](references/regression-rules.md): its rows are your checklist. Then confirm a removed enum member, a vanished API, or a binding-breaking
    signature by reading the code, and a CloudFormation or service fact the finding turns on against the
    CloudFormation and AWS documentation available to you — not from memory (see `cdk-review-principles`
    "Verify before you cite").
 
-2. **Check the diff against the rules.** Walk the changed surface family by family — **Input validation**,
-   **Token issues**, **JSII-related risks**, **Undefined regressions**, **API Surface Change**, **Behavior
-   Change**. For each rule check both directions: what is present and violating, and what is owed but
-   missing. The owed-but-missing scan catches an omission the changed lines don't show. Enumerate what the
-   change owes; flag each owed item that is absent.
+2. **Check the diff against the rules.** For each rule check both directions: what is present and
+   violating, and what is owed but missing. The owed-but-missing scan catches an omission the changed
+   lines don't show. Enumerate what the change owes; flag each owed item that is absent.
 
 3. **Rate by harm and stop.** Rate every finding by the harm when its mechanism triggers, per
    `cdk-review-principles` (its severity scale, "Confidence is not severity") — rate a concrete regression
