@@ -54,11 +54,6 @@ the `I` prefix that callers are meant to pass as data (a props, options or resul
 classes implement: jsii generates it as a behavioral interface instead of a struct. See
 [`jsii § Naming › Interfaces`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#interfaces).
 
-**[REG-JSII-NO-UNION] (BLOCKING)** — A union type in a method parameter, a return type, a class property, or
-any struct other than a construct's `<Name>Props`; use an enum-like class, separate props, or factory
-methods. See
-[`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
-
 **[REG-JSII-UNSUPPORTED-TS] (BLOCKING)** — A generic method in the public surface: jsii erases its type
 parameter to `any` in the target languages. See
 [`jsii § Mapped Types`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#typescript-mapped-types).
@@ -73,6 +68,11 @@ subclasses that override it break. See
 **[REG-JSII-DEPENDENCY-EXPOSURE] (BLOCKING)** — A file with non-jsii imports exported from the main entry
 point. See
 [`jsii § non-jsii dependencies`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#non-jsii-dependencies).
+
+**[REG-JSII-NO-UNION] (RECOMMENDED)** — A union type in a method parameter, a return type, a class property,
+or any struct other than a construct's `<Name>Props`; use an enum-like class, separate props, or factory
+methods. See
+[`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
 **[REG-JSII-NO-FLUENT] (RECOMMENDED)** — A public method that returns `this` for chaining. Ask for the
 props-based shape, or for a written justification. See
@@ -92,9 +92,11 @@ stack's update.)*
 allowed. In an **experimental** library (an `-alpha` suffix and `"stability": "experimental"` in
 `package.json`) a breaking change is permitted but needs an explicit `BREAKING CHANGE:` callout. The one
 legitimate stable break is an existing API that was a bug *blocking* the feature (nobody could use it),
-recorded in `allowed-breaking-changes.txt` at the repo root — a break paired with an entry there is not a
-finding. Confirm the module's stability from its `package.json` before rating. See
-[`CONTRIBUTING.md § Breaking Changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#breaking-changes)
+recorded in `allowed-breaking-changes.txt` at the repo root. A break with an entry there is not a finding
+when the API was unusable before the change; an entry the PR itself adds does not by itself exempt the
+break. Confirm the module's stability from its `package.json` before rating. See
+[`CONTRIBUTING.md § Breaking Changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#breaking-changes),
+[`§ API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 and
 [`AGENTS.md § PR Conventions`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#pr-conventions).
 
