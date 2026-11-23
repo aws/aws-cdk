@@ -123,7 +123,7 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 | [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | 2.278.0 | fix |
-| [@aws-cdk/aws-s3-deployment:modernResource](#aws-cdkaws-s3-deploymentmodernresource) | Use the new BucketDeployment resource | V2NEXT | fix |
+| [@aws-cdk/aws-s3-deployment:modernResource](#aws-cdkaws-s3-deploymentmodernresource) | Use the new BucketDeployment resource | V2NEXT | temporary |
 
 <!-- END table -->
 
@@ -2696,7 +2696,7 @@ that stack is deployed too.
 
 *Use the new BucketDeployment resource*
 
-Flag type: Backwards incompatible bugfix
+Flag type: Temporary flag
 
 When this flag is enabled, bucket deployments use the modern resource implementation.
 

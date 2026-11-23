@@ -288,6 +288,15 @@ export interface BucketDeploymentProps {
    * If set to true, uploads will precompute the value of `x-amz-content-sha256`
    * and include it in the signed S3 request headers.
    *
+   * Use this if the bucket has been configured to require file content
+   * to be part of the SigV4 signature.
+   *
+   * `BucketDeployment` does not currently support signed streaming
+   * (`STREAMING-AWS4-HMAC-SHA256-PAYLOAD`), so switching this on requires
+   * in-memory buffering of every file that is being copied, which increases
+   * memory usage and upload latency.
+   *
+   *
    * @default - `x-amz-content-sha256` will not be computed
    */
   readonly signContent?: boolean;
