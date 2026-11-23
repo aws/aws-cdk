@@ -1,0 +1,44 @@
+{
+  "/aws-cdk-loggroup-grantreads-integ": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-loggroup-grantreads-integ.template.json"
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupF5B46931"
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/LogGroup/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-loggroup-grantreads-integ/LogGroup/Policy/ResourcePolicy": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LogGroupPolicyResourcePolicy6FA18555"
+    }
+  ]
+}

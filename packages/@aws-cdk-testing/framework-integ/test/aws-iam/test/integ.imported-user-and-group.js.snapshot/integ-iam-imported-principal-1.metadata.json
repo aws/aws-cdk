@@ -1,0 +1,86 @@
+{
+  "/integ-iam-imported-principal-1": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:259:29)",
+        "Annotations.addWarningV2 (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:125:18)",
+        "resolveValue (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:207:52)",
+        "resolveReferencesInElements (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:30)",
+        "resolveReferences (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:5)",
+        "prepareApp (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:34)",
+        "synthesize (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:64:34)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:192:92)",
+        "App.synth (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:202:27)",
+        "process.<anonymous> (/Users/syasoda/Develop/cdk/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:158:51)",
+        "Object.onceWrapper (node:events:622:26)",
+        "process.emit (node:events:507:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-iam-imported-principal-1.template.json"
+    }
+  ],
+  "/integ-iam-imported-principal-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-iam-imported-principal-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-iam-imported-principal-1/User/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-iam-imported-principal-1/Group/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-iam-imported-principal-1/User/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPolicy7D689AB7"
+    }
+  ],
+  "/integ-iam-imported-principal-1/Group/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupDefaultPolicy402C318A"
+    }
+  ]
+}

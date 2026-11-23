@@ -1,4 +1,10 @@
 {
+  "/LambdaTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "LambdaTestDefaultTestDeployAssert1AF2B360.template.json"
+    }
+  ],
   "/LambdaTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
