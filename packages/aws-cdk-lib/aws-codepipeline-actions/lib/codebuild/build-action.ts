@@ -275,6 +275,8 @@ export class CodeBuildAction extends Action {
         );
       }
       configuration.ServiceRoleArnOverride = this.props.serviceRoleOverride.roleRef.roleArn;
+      // CodePipeline starts the build as the action's role, so that role passes the override. IAM only
+      // allows passing a role within its own account, which for cross-account actions is the action role's.
       options.role.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['iam:PassRole'],
         resources: [this.props.serviceRoleOverride.roleRef.roleArn],
