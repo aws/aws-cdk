@@ -1596,6 +1596,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 
 const kmsKey = new kms.Key(this, 'MyKey');
 const fn = new lambda.Function(this, 'MyFunction', {
+  functionName: 'my-durable-function',
   runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
