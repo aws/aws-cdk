@@ -474,6 +474,9 @@ export interface Ec2LaunchV2PowerShellOptions extends Ec2LaunchV2ScriptOptions {
   /**
    * Arguments passed to PowerShell (not to the script itself)
    *
+   * EC2Launch v2 only adds `-ExecutionPolicy Unrestricted` when no arguments
+   * are passed, so include it in this list if you still need it.
+   *
    * @default - EC2Launch v2 passes `-ExecutionPolicy Unrestricted`
    */
   readonly arguments?: string[];
@@ -759,7 +762,7 @@ export class Ec2LaunchV2Task {
   public static writeFile(options: Ec2LaunchV2WriteFileOptions): Ec2LaunchV2Task {
     // EC2Launch v2 matches the path case-insensitively, and with either kind of slash
     if (!Token.isUnresolved(options.destination) && /^c:[\\/]+windows(?:[\\/]|$)/i.test(options.destination)) {
-      throw new UnscopedValidationError(lit`Ec2LaunchV2WriteFileWindowsDirectory`, `destination must not be under C:\\Windows, EC2Launch v2 does not load user data that writes there, got ${JSON.stringify(options.destination)}`);
+      throw new UnscopedValidationError(lit`Ec2LaunchV2WriteFileWindowsDirectory`, `destination must not be under C:\\Windows, EC2Launch v2 (tested with version 2.5.2) does not load user data that writes there, use Ec2LaunchV2Task.custom('writeFile', [...]) to bypass this check, got ${JSON.stringify(options.destination)}`);
     }
     return new Ec2LaunchV2Task('writeFile', [{
       frequency: options.frequency ?? Ec2LaunchV2Frequency.ONCE,

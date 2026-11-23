@@ -477,7 +477,7 @@ describe('EC2Launch v2 user data', () => {
     'C:/Windows/Temp/a.txt',
   ])('fails to write a file under C:\\Windows: %s', (destination) => {
     expect(() => ec2.Ec2LaunchV2Task.writeFile({ destination, content: 'a' }))
-      .toThrow(`destination must not be under C:\\Windows, EC2Launch v2 does not load user data that writes there, got ${JSON.stringify(destination)}`);
+      .toThrow(`destination must not be under C:\\Windows, EC2Launch v2 (tested with version 2.5.2) does not load user data that writes there, use Ec2LaunchV2Task.custom('writeFile', [...]) to bypass this check, got ${JSON.stringify(destination)}`);
   });
 
   test.each([
@@ -751,6 +751,43 @@ describe('EC2Launch v2 user data', () => {
     other.addTask(first);
     expect(parse(other).tasks).toEqual([
       { task: 'initializeVolume', inputs: { initialize: 'devices', devices: [{ device: 'xvdf', letter: 'D' }] } },
+    ]);
+  });
+
+  test('does not change a list-input task added to more than one user data', () => {
+    // GIVEN
+    const shared = ec2.Ec2LaunchV2Task.executeProgram({ path: 'C:\\a.exe' });
+    const first = ec2.UserData.forWindowsEc2LaunchV2();
+    first.addTask(shared);
+    first.addTask(ec2.Ec2LaunchV2Task.executeProgram({ path: 'C:\\b.exe' }));
+    first.addCommands('command1');
+
+    // WHEN
+    const second = ec2.UserData.forWindowsEc2LaunchV2();
+    second.addTask(shared);
+
+    // THEN
+    expect(parse(second).tasks).toEqual([
+      { task: 'executeProgram', inputs: [{ frequency: 'once', path: 'C:\\a.exe', runAs: 'localSystem' }] },
+    ]);
+  });
+
+  test('does not change a script task added to more than one user data', () => {
+    // GIVEN
+    const shared = ec2.Ec2LaunchV2Task.executePowerShell({ content: 'script' });
+    const first = ec2.UserData.forWindowsEc2LaunchV2();
+    first.addTask(shared);
+    first.addTask(ec2.Ec2LaunchV2Task.executeBatch({ content: 'batch' }));
+    first.addCommands('command1');
+    first.render();
+
+    // WHEN
+    const second = ec2.UserData.forWindowsEc2LaunchV2();
+    second.addTask(shared);
+
+    // THEN
+    expect(parse(second).tasks).toEqual([
+      { task: 'executeScript', inputs: [{ frequency: 'once', type: 'powershell', runAs: 'localSystem', content: 'script' }] },
     ]);
   });
 
