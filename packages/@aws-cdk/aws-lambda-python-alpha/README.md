@@ -179,7 +179,7 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
-The resulting artifact is binary-compatible with the Lambda runtime regardless of your host OS or CPU architecture — `pip` is invoked with `--platform`, `--python-version`, `--abi`, and `--only-binary=:all:` to select pre-built wheels for the target environment. Cross-compilation (e.g. building `arm64` on an `x86_64` dev machine) works out of the box.
+Local bundling uses pip's `--platform`, `--python-version`, `--abi`, and `--only-binary=:all:` flags to select pre-built wheels for the target runtime and architecture. For example, you can bundle for `arm64` on an `x86_64` host.
 
 Prerequisites on the host:
 
@@ -228,6 +228,18 @@ The defaults list the runtime's versioned manylinux tags from newest to oldest a
 - Python 3.12 and above (Amazon Linux 2023) use `manylinux_2_34_{arch}` through `manylinux_2_17_{arch}`.
 - Python 3.8 through 3.11 (Amazon Linux 2) use `manylinux_2_26_{arch}` through `manylinux_2_17_{arch}`.
 - Python 3.6 and 3.7 (Amazon Linux) use `manylinux_2_17_{arch}`.
+
+For `PythonLayerVersion`, local bundling targets the first entries of `compatibleRuntimes` and `compatibleArchitectures`. The defaults are Python 3.7 and `x86_64`. Set these properties to match the functions that use the layer so pip selects compatible wheels.
+
+```ts
+new python.PythonLayerVersion(this, 'MyLayer', {
+  entry: '/path/to/my/layer',
+  compatibleRuntimes: [Runtime.PYTHON_3_12],
+  bundling: {
+    localBundling: {},
+  },
+});
+```
 
 ## Custom Bundling
 

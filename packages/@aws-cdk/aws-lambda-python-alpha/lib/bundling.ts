@@ -107,11 +107,14 @@ export class Bundling implements CdkBundlingOptions {
     } = props;
 
     if (props.localBundling) {
-      const dockerOptions = [
-        'buildArgs', 'bundlingFileAccess', 'command', 'entrypoint', 'image',
-        'network', 'platform', 'securityOpt', 'user', 'volumes', 'volumesFrom', 'workingDirectory',
-      ] as const;
-      const incompatible = dockerOptions.filter(option => props[option] !== undefined);
+      const localOptions = new Set<string>([
+        'entry', 'runtime', 'architecture', 'skip', 'outputPathSuffix', 'assetExcludes',
+        'poetryIncludeHashes', 'poetryWithoutUrls', 'assetHashType', 'assetHash',
+        'commandHooks', 'environment', 'localBundling',
+      ]);
+      const incompatible = Object.entries(props)
+        .filter(([key, value]) => value !== undefined && !localOptions.has(key))
+        .map(([key]) => key);
       if (incompatible.length > 0) {
         throw new UnscopedValidationError(
           lit`PythonLocalBundlingDockerOptions`,

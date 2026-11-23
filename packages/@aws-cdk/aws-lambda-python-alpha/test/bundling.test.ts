@@ -727,7 +727,8 @@ describe('local bundling wiring', () => {
     ['volumes', [{ hostPath: '/host', containerPath: '/container' }]],
     ['volumesFrom', ['container']],
     ['workingDirectory', '/work'],
-  ])('rejects the Docker-only %s option in local mode', (option, value) => {
+    ['futureDockerOption', true],
+  ])('rejects the unsupported %s option in local mode', (option, value) => {
     expect(() => Bundling.bundle({
       entry: path.join(__dirname, 'lambda-handler'),
       runtime: Runtime.PYTHON_3_11,

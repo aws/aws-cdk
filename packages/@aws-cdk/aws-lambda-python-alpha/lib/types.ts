@@ -119,9 +119,9 @@ export interface BundlingOptions extends DockerRunOptions {
    * On Windows, local bundling rejects pipenv, Poetry and uv projects at
    * synthesis and supports plain `requirements.txt` projects.
    *
-   * Cross-platform wheels are selected via pip's `--platform`, `--python-version`,
-   * and `--only-binary=:all:` flags, so the resulting artifact is binary-compatible
-   * with the Lambda runtime regardless of the host OS/architecture.
+   * pip selects pre-built wheels for the function's runtime and architecture,
+   * or for the layer's first compatible runtime and architecture, regardless of
+   * the host OS or architecture.
    *
    * Docker-only bundling options such as image, buildArgs, and network are
    * rejected. Use environment or host pip configuration for private indexes.
@@ -156,7 +156,8 @@ export interface LocalBundlingOptions {
    * Tags must match the target architecture for x86_64 and arm64.
    * Versioned manylinux tags must be compatible with the target runtime's glibc version.
    *
-   * @default - Versioned manylinux tags from the runtime's glibc version
+   * @default - Versioned manylinux tags from the target runtime's glibc version
+   *            (the first compatible runtime for a layer):
    *            (2.34 for Python 3.12+, 2.26 for 3.8 to 3.11, 2.17 for 3.6 and 3.7)
    *            down to 2.17, followed by manylinux2014.
    */
