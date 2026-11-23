@@ -467,10 +467,13 @@ An action with `serviceRoleOverride` also stops granting the project's role acce
 pipeline artifact bucket, the action's source connections and CodeCommit repositories, and
 its environment variable secrets, so a shared project's role does not collect bucket, source
 or secret permissions for builds it never runs. Other actions that use the same project without
-an override still grant these to the project's role as before. If the artifact bucket uses a
-customer-managed KMS key, CDK still sets that key as the project's encryption key and grants
-the project's role encrypt/decrypt on it, because CodeBuild encrypts the outputs of every
-build of the project with that key.
+an override still grant these to the project's role as before.
+
+CodeBuild encrypts build outputs with the project's encryption key. If the artifact bucket uses
+a customer-managed KMS key and the project has no `encryptionKey` of its own, CDK still sets the
+bucket key as the project's encryption key and grants the project's role encrypt/decrypt on it.
+If the project has its own `encryptionKey`, CodeBuild uses that key instead, so grant the
+override role access to it too.
 
 For example, to scope a shared project's builds to one repository:
 
@@ -484,7 +487,8 @@ const buildRole = new iam.Role(this, 'BuildRole', {
   assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
 });
 
-// Read the input artifacts (use grantReadWrite if the action has outputs)
+// Read the input artifacts (use grantReadWrite if the action has outputs). If the
+// project has its own encryptionKey, also call key.grantEncryptDecrypt(buildRole).
 pipeline.artifactBucket.grantRead(buildRole);
 
 // Write the build logs

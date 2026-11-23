@@ -128,10 +128,13 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    *
    * When supplied, this action does not grant the project's service role access to
    * the pipeline artifact bucket, source connections, CodeCommit repositories or
-   * environment variable secrets, since its builds do not run as that role. If the
-   * artifact bucket uses a customer-managed KMS key, CDK still sets that key as the
-   * project's encryption key and grants the project's role encrypt/decrypt on it,
-   * because CodeBuild encrypts the outputs of every build of the project with that key.
+   * environment variable secrets, since its builds do not run as that role.
+   *
+   * CodeBuild encrypts build outputs with the project's encryption key. If the artifact
+   * bucket uses a customer-managed KMS key and the project has no `encryptionKey` of its
+   * own, CDK still sets the bucket key as the project's encryption key and grants the
+   * project's role encrypt/decrypt on it. If the project has its own `encryptionKey`,
+   * CodeBuild uses that key instead, so grant this role access to it too.
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeBuild.html
    *
