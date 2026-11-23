@@ -18,17 +18,6 @@ export class WebFunctionRuntime {
   public static readonly NODEJS_26_X = new WebFunctionRuntime('nodejs26.x', RuntimeFamily.NODEJS);
 
   /**
-   * Python 3.15 runtime
-   *
-   * This runtime is in public preview for Lambda Web Functions. Preview runtimes are not
-   * covered by the Lambda SLA or Technical Support, should not be used for production
-   * workloads, and may still receive breaking changes.
-   *
-   * @see https://docs.aws.amazon.com/lambda/latest/dg/web-functions-runtimes.html
-   */
-  public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15', RuntimeFamily.PYTHON);
-
-  /**
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    *
@@ -39,6 +28,17 @@ export class WebFunctionRuntime {
    * code. Use a specific version such as `NODEJS_24_X` to control when that happens.
    */
   public static readonly NODEJS_LATEST = new WebFunctionRuntime('nodejs24.x', RuntimeFamily.NODEJS);
+
+  /**
+   * Python 3.15 runtime
+   *
+   * This runtime is in public preview for Lambda Web Functions. Preview runtimes are not
+   * covered by the Lambda SLA or Technical Support, should not be used for production
+   * workloads, and may still receive breaking changes.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/web-functions-runtimes.html
+   */
+  public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15', RuntimeFamily.PYTHON);
 
   /**
    * Use a custom runtime string not yet supported by the CDK.
