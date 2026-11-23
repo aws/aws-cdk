@@ -1439,10 +1439,12 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       **What changes in the template when you enable it**
 
-      - The \`Custom::UserPoolCloudFrontDomainName\` resource is removed, along with the IAM
-        policy statement granting \`cognito-idp:DescribeUserPoolDomain\`. That statement is
+      - The \`Custom::UserPoolCloudFrontDomainName\` resource is removed, along with its
+        \`AWS::IAM::Policy\` granting \`cognito-idp:DescribeUserPoolDomain\`. That permission is
         scoped to \`*\`, because the action does not support resource-level permissions, so
-        enabling the flag also drops a wildcard permission.
+        enabling the flag also drops a wildcard permission. Both stay in the template if your
+        code also reads the deprecated \`UserPoolDomain.cloudFrontDomainName\` directly; switch
+        those reads to \`cloudFrontEndpoint\` to remove them.
       - The record's \`DNSName\` becomes an \`Fn::GetAtt\` on the user pool domain instead of an
         attribute of the custom resource.
       - The shared \`AwsCustomResource\` provider Lambda and its role are removed only if
