@@ -7,7 +7,7 @@ import { dockerExec } from './private/asset-staging';
 import { dockerImageExists, dockerImageIsMissing, isBuiltInCurrentApp, isKnownDockerImage, markBuiltInCurrentApp, rememberDockerImage } from './private/bundling';
 import { quiet, reset } from './private/jsii-deprecated';
 import { lit } from './private/literal-string';
-import { profileFn } from './private/perf';
+import { profileFn, profileSpan } from './private/perf';
 
 /**
  * Methods to build Docker CLI arguments for builds using secrets.
@@ -479,7 +479,7 @@ export class DockerImage extends BundlingDockerImage {
       path,
     ];
 
-    return { dockerArgs, usingBuildContexts };
+    return { dockerArgs, usingBuildContexts, platform: options.platform };
   }
 
   /**
@@ -491,6 +491,7 @@ export class DockerImage extends BundlingDockerImage {
     // The tag is content-addressed from the build context and all options,
     // so an existing image with this tag is guaranteed to be up-to-date.
     if (dockerBuild.usingBuildContexts || !dockerImageExists(tag)) {
+      using _span = profileSpan(dockerBuildCounter(dockerBuild.platform), { telemetry: true });
       dockerExec([...dockerBuild.dockerArgs]);
     }
 
@@ -826,6 +827,34 @@ interface DockerBuild {
   readonly dockerArgs: readonly string[];
   /** Whether the build uses build contexts, which the image's tag doesn't cover */
   readonly usingBuildContexts: boolean;
+  /** The platform the image is built for, if one was given */
+  readonly platform?: string;
+}
+
+/**
+ * The telemetry counter for running `docker build`, named after the host and target architecture
+ *
+ * Only well-known architectures are named, so the counter never contains text from the build options.
+ */
+function dockerBuildCounter(platform: string | undefined): string {
+  const host = knownArchitecture(process.arch);
+  const target = platform === undefined ? 'native' : knownArchitecture(platform.toLowerCase().split('/')[1]);
+  return `DockerImage.build:${host}:${target}`;
+}
+
+/**
+ * Normalize a Node.js or Docker architecture name to `amd64`, `arm64` or `other`
+ */
+function knownArchitecture(arch: string | undefined): string {
+  switch (arch) {
+    case 'x64':
+    case 'amd64':
+      return 'amd64';
+    case 'arm64':
+      return 'arm64';
+    default:
+      return 'other';
+  }
 }
 
 /**
