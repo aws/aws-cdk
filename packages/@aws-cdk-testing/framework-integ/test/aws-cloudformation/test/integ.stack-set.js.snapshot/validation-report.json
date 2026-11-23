@@ -60,6 +60,28 @@
               }
             }
           ]
+        },
+        {
+          "ruleName": "F3031",
+          "description": "StackInstancesGroup.1.DeploymentTargets.Accounts.0: '12345678' does not match pattern '^[0-9]{12}$'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-stackset-test/StackSet.Resource",
+              "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-stackset-test.template.json",
+                "logicalId": "StackSetResource",
+                "propertyPaths": [
+                  "Properties.StackInstancesGroup.1.DeploymentTargets.Accounts.0"
+                ]
+              }
+            }
+          ]
         }
       ]
     }

@@ -50,6 +50,10 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
     }
   ],
   "/integ-stackset-test/StackSet.Resource": [
@@ -106,10 +110,18 @@
       }
     }
   ],
+  "/integ-stackset-test/StackSet/TopicDisplayName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicDisplayName"
+    }
+  ],
   "/integ-stackset-test/StackSet/IntegStackSetSNSTopic": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "displayName": "*"
+      }
     }
   ],
   "/integ-stackset-test/StackSet/AdminRoleId": [

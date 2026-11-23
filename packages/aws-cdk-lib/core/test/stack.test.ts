@@ -2349,14 +2349,16 @@ describe('stack', () => {
     }
 
     /**
-     * A resource whose ARN is formatted from its physical name when referenced across environments
+     * A resource whose name and ARN are formatted from its physical name when referenced across environments
      */
-    class ArnResource extends Resource {
+    class NamedResource extends Resource {
+      public readonly name: string;
       public readonly arn: string;
 
       constructor(scope: Construct, id: string) {
         super(scope, id, { physicalName: PhysicalName.GENERATE_IF_NEEDED });
         const resource = new CfnResource(this, 'Resource', { type: 'Resource::Producer', properties: { Name: this.physicalName } });
+        this.name = this.getResourceNameAttribute(resource.ref);
         this.arn = this.getResourceArnAttribute(resource.getAtt('Arn').toString(), {
           service: 'test',
           resource: 'thing',
@@ -2417,7 +2419,7 @@ describe('stack', () => {
       const app = makeCrossStackApp();
       const host = new Stack(app, 'Host', { env: { account: '111111111111', region: 'us-east-1' } });
       const deployed = new DeployedStack(host, 'Deployed', host);
-      const producer = new ArnResource(host, 'Producer');
+      const producer = new NamedResource(host, 'Producer');
       new CfnResource(deployed, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.arn } });
 
       const deployedTemplate = toCloudFormation(deployed);
@@ -2429,11 +2431,27 @@ describe('stack', () => {
       expect(hostTemplate.Resources.ProducerD8AA94EB.Properties?.Name).toBeUndefined();
     });
 
+    test('the name of a resource of a host with an environment is referenced through a parameter, not as its physical name', () => {
+      const app = makeCrossStackApp();
+      const host = new Stack(app, 'Host', { env: { account: '111111111111', region: 'us-east-1' } });
+      const deployed = new DeployedStack(host, 'Deployed', host);
+      const producer = new NamedResource(host, 'Producer');
+      new CfnResource(deployed, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.name } });
+
+      const deployedTemplate = toCloudFormation(deployed);
+      const [parameterName] = Object.keys(deployedTemplate.Parameters);
+      const hostTemplate = toCloudFormation(host);
+      expect(hostTemplate.Resources.DeployedDeployer.Properties).toEqual({
+        Parameters: { [parameterName]: { Ref: 'ProducerD8AA94EB' } },
+      });
+      expect(hostTemplate.Resources.ProducerD8AA94EB.Properties?.Name).toBeUndefined();
+    });
+
     test('a resource of such a stack referenced in the same stack is not referenced across environments', () => {
       const app = makeCrossStackApp();
       const host = new Stack(app, 'Host', { env: { account: '111111111111', region: 'us-east-1' } });
       const deployed = new DeployedStack(host, 'Deployed', host);
-      const producer = new ArnResource(deployed, 'Producer');
+      const producer = new NamedResource(deployed, 'Producer');
       new CfnResource(deployed, 'Consumer', { type: 'Resource::Consumer', properties: { Prop: producer.arn } });
 
       const deployedTemplate = toCloudFormation(deployed);

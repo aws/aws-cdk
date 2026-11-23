@@ -25,13 +25,13 @@ const app = new App();
 const stack = new Stack(app, 'Admin');
 
 new MyStackSet(stack, 'MyStackSet', {
-  target: StackSetTarget.fromAccounts({
+  targets: [StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
     accounts: ['111111111111'],
     parameterOverrides: {
       SomeParam: 'overrideValue',
     },
-  }),
+  })],
 });
 ```
 
@@ -54,9 +54,10 @@ A `StackSet` has a couple of special requirements and behaviors compared to a `S
   same way a `NestedStack` gets values from its parent
 - Other stacks can't reference the resources of a `StackSet`, because its template is deployed to many
   accounts and regions
-- The `description` is used for the StackSet and its template, and tags of the StackSet
-  (`Tags.of(stackSet).add(...)`) are tags of the StackSet resource, which CloudFormation propagates to
-  every stack instance
+- The `description` is the description of the StackSet resource. Set the description of its template
+  with `stackSet.templateOptions.description`
+- Tags of the StackSet (`Tags.of(stackSet).add(...)`) are tags of the StackSet resource, which
+  CloudFormation propagates to every stack instance
 - Each `StackSet` has its own template. To deploy the same template with different StackSet settings,
   instantiate the `StackSet` class twice
 
@@ -89,10 +90,13 @@ class MyStackSet extends StackSet {
 declare const stack: Stack;
 new MyStackSet(stack, 'OrgStackSet', {
   deploymentType: DeploymentType.serviceManaged(),
-  target: StackSetTarget.fromOrganizationalUnits({ regions: ['us-east-1'], organizationalUnits: ['ou-1'] }),
+  targets: [StackSetTarget.fromOrganizationalUnits({
+    regions: ['us-east-1'],
+    organizationalUnits: ['ou-1111-11111111'],
+  })],
 });
 new MyStackSet(stack, 'ManagementStackSet', {
-  target: StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['11111111111'] }),
+  targets: [StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['111111111111'] })],
 });
 ```
 
@@ -153,6 +157,20 @@ you can define AWS Organizations organizational units. The target must match the
 
 The StackSet throws an error when it gets a target that doesn't match its permission model.
 
+A StackSet takes several targets through the `targets` property or `addTarget()`. Each target
+becomes one group of stack instances.
+
+```ts
+declare const stack: Stack;
+
+const usEast1Target = StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['111111111111'] });
+const euWest1Target = StackSetTarget.fromAccounts({ regions: ['eu-west-1'], accounts: ['222222222222'] });
+
+new StackSet(stack, 'StackSet', {
+  targets: [usEast1Target, euWest1Target],
+});
+```
+
 #### Deploying to individual accounts
 
 Deploying to individual accounts requires you to specify the account IDs. If you later want to deploy to additional accounts,
@@ -162,10 +180,10 @@ or remove the StackSet from accounts, add or remove the account ID in the list.
 declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromAccounts({
+  targets: [StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
     accounts: ['111111111111'],
-  }),
+  })],
 });
 ```
 
@@ -202,10 +220,10 @@ You could deploy to all AWS accounts under OUs `ou-1`, `ou-3`, `ou-4` by specify
 declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromOrganizationalUnits({
+  targets: [StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
-  }),
+  })],
   deploymentType: DeploymentType.serviceManaged(),
 });
 ```
@@ -219,11 +237,11 @@ to exclude, this can be done by specifying an `accountFilter` with `StackSetAcco
 declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromOrganizationalUnits({
+  targets: [StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
     organizationalUnits: ['ou-1'],
     accountFilter: StackSetAccountFilter.difference(['account-2']),
-  }),
+  })],
   deploymentType: DeploymentType.serviceManaged(),
 });
 ```
@@ -235,8 +253,8 @@ with the accounts to deploy to.
 
 Automatic deployments, which `DeploymentType.serviceManaged()` enables by default, don't apply
 account filters: an account that joins the OU later gets the stack even if the filter leaves it out.
-To deploy only to the accounts the filter selects, set `autoDeployEnabled: false` in
-`DeploymentType.serviceManaged()`. See
+To deploy only to the accounts the filter selects, set
+`autoDeployment: StackSetAutoDeployment.disabled()` in `DeploymentType.serviceManaged()`. See
 [automatic deployment considerations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html#stacksets-orgs-auto-deployment-considerations).
 
 To also deploy the StackSet to accounts in another OU, add another target with `addTarget()`. For
@@ -269,12 +287,17 @@ account within the organization. In addition, the StackSet will be able to creat
 ```ts
 declare const stack: Stack;
 
+const ou = new organizations.CfnOrganizationalUnit(stack, 'Workloads', {
+  name: 'Workloads',
+  parentId: 'r-a1b2',
+});
+
 new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromOrganizationalUnits({
+  targets: [StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
-    organizationalUnits: ['ou-1'],
-  }),
-  deploymentType: DeploymentType.serviceManaged(),
+    organizationalUnits: [ou.attrId],
+  })],
+  deploymentType: DeploymentType.serviceManaged({ callAs: StackSetCallAs.SELF }),
 });
 ```
 
@@ -291,11 +314,16 @@ account instead.
 ```ts
 declare const stack: Stack;
 
+const ou = new organizations.CfnOrganizationalUnit(stack, 'Workloads', {
+  name: 'Workloads',
+  parentId: 'r-a1b2',
+});
+
 new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromOrganizationalUnits({
+  targets: [StackSetTarget.fromOrganizationalUnits({
     regions: ['us-east-1'],
-    organizationalUnits: ['ou-1'],
-  }),
+    organizationalUnits: [ou.attrId],
+  })],
   deploymentType: DeploymentType.serviceManaged({
     autoDeployment: StackSetAutoDeployment.enabled({ retainStacksOnAccountRemoval: false }),
     callAs: StackSetCallAs.SELF,
@@ -323,10 +351,10 @@ region to assume it, with the same conditions.
 declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromAccounts({
+  targets: [StackSetTarget.fromAccounts({
     regions: ['us-east-1'],
     accounts: ['111111111111'],
-  }),
+  })],
   deploymentType: DeploymentType.selfManaged({
     executionRoleName: 'MyStackSetExecutionRole',
   }),
@@ -343,10 +371,10 @@ percentage of accounts, and choose how failures affect the concurrency with `con
 declare const stack: Stack;
 
 new StackSet(stack, 'StackSet', {
-  target: StackSetTarget.fromAccounts({
+  targets: [StackSetTarget.fromAccounts({
     regions: ['us-east-1', 'eu-west-1'],
     accounts: ['111111111111', '222222222222'],
-  }),
+  })],
   operationPreferences: {
     failureTolerance: StackSetFailureTolerance.count(1),
     maxConcurrency: StackSetMaxConcurrency.percentage(50),
@@ -379,24 +407,33 @@ Here's an example that creates the buckets in the same CDK app, with one stack p
 
 ```ts
 declare const app: App;
-const regions = ['us-east-1', 'eu-west-1'];
 
-const assetBuckets = regions.map((region) => {
-  const bucketStack = new Stack(app, `StackSetAssets-${region}`, { env: { account: '111111111111', region } });
-  const bucket = new s3.Bucket(bucketStack, 'Assets', { bucketName: `my-stackset-assets-${region}` });
-  bucket.addToResourcePolicy(new iam.PolicyStatement({
-    actions: ['s3:GetObject'],
-    resources: [bucket.arnForObjects('*')],
-    principals: [new iam.OrganizationPrincipal('o-xyz')],
-  }));
-  return bucket;
-});
+const usEast1Stack = new Stack(app, 'StackSetAssets-us-east-1', { env: { account: '111111111111', region: 'us-east-1' } });
+const usEast1Bucket = new s3.Bucket(usEast1Stack, 'Assets', { bucketName: 'my-stackset-assets-us-east-1' });
+const usEast1Objects = usEast1Bucket.arnForObjects('*');
+usEast1Bucket.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: [usEast1Objects],
+  principals: [new iam.OrganizationPrincipal('o-xyz')],
+}));
+
+const euWest1Stack = new Stack(app, 'StackSetAssets-eu-west-1', { env: { account: '111111111111', region: 'eu-west-1' } });
+const euWest1Bucket = new s3.Bucket(euWest1Stack, 'Assets', { bucketName: 'my-stackset-assets-eu-west-1' });
+const euWest1Objects = euWest1Bucket.arnForObjects('*');
+euWest1Bucket.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: [euWest1Objects],
+  principals: [new iam.OrganizationPrincipal('o-xyz')],
+}));
 
 const stack = new Stack(app, 'Admin', { env: { account: '111111111111', region: 'us-east-1' } });
 new StackSet(stack, 'MyStackSet', {
-  assetBuckets,
+  assetBuckets: [usEast1Bucket, euWest1Bucket],
   assetBucketPrefix: 'my-stackset-assets',
-  target: StackSetTarget.fromOrganizationalUnits({ regions, organizationalUnits: ['ou-1'] }),
+  targets: [StackSetTarget.fromOrganizationalUnits({
+    regions: ['us-east-1', 'eu-west-1'],
+    organizationalUnits: ['ou-1111-11111111'],
+  })],
   deploymentType: DeploymentType.serviceManaged(),
 });
 ```
@@ -444,7 +481,7 @@ class BootstrapStage extends Stage {
     const stack = new Stack(this, 'BootstrapStackSet');
 
     new Bootstrap(stack, 'CDKToolkit', {
-      target: props.initialBootstrapTarget,
+      targets: [props.initialBootstrapTarget],
       capabilities: [CfnCapabilities.NAMED_IAM],
       managedExecution: true,
       stackSetName: props.stacksetName,

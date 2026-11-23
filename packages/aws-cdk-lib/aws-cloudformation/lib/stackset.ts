@@ -16,7 +16,6 @@ import {
   CfnCapabilities,
   CfnResource,
   FileAssetPackaging,
-  Lazy,
   Names,
   Resource,
   Stack,
@@ -24,12 +23,13 @@ import {
   UnscopedValidationError,
   ValidationError,
 } from '../../core';
-import type { IBox, IMapBox } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox, IMapBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { undefinedIfAllValuesAreEmpty } from '../../core/lib/util';
 import type { IStackSetRef, StackSetReference } from '../../interfaces/generated/aws-cloudformation-interfaces.generated';
 import { RegionInfo } from '../../region-info';
 
@@ -145,7 +145,7 @@ export abstract class StackSetAccountFilter {
    * @param accounts the AWS account IDs to deploy to
    */
   public static intersection(accounts: string[]): StackSetAccountFilter {
-    return new AccountFilter('intersection', AccountFilterType.INTERSECTION, accounts);
+    return new AccountFilter(AccountFilterType.INTERSECTION, accounts);
   }
 
   /**
@@ -154,7 +154,7 @@ export abstract class StackSetAccountFilter {
    * @param accounts the AWS account IDs to skip
    */
   public static difference(accounts: string[]): StackSetAccountFilter {
-    return new AccountFilter('difference', AccountFilterType.DIFFERENCE, accounts);
+    return new AccountFilter(AccountFilterType.DIFFERENCE, accounts);
   }
 
   /**
@@ -166,11 +166,11 @@ export abstract class StackSetAccountFilter {
 }
 
 class AccountFilter extends StackSetAccountFilter {
-  constructor(factory: string, private readonly accountFilterType: AccountFilterType, private readonly accounts: string[]) {
+  constructor(private readonly accountFilterType: AccountFilterType, private readonly accounts: string[]) {
     super();
 
     if (!Token.isUnresolved(accounts) && accounts.length === 0) {
-      throw new UnscopedValidationError(lit`StackSetAccountFilterAccountsRequired`, `StackSetAccountFilter.${factory}() requires at least one account, omit 'accountFilter' to deploy to every account in the organizational units`);
+      throw new UnscopedValidationError(lit`StackSetAccountFilterAccountsRequired`, "StackSetAccountFilter requires at least one account, omit 'accountFilter' to deploy to every account in the organizational units");
     }
   }
 
@@ -186,9 +186,7 @@ export interface StackSetTargetOptions {
   /**
    * A list of regions the Stack should be deployed to.
    *
-   * By default the StackSet is deployed to the regions sequentially. Set
-   * `regionConcurrencyType` to `RegionConcurrencyType.PARALLEL` in
-   * {@link StackSetProps.operationPreferences} to deploy to them in parallel.
+   * At least one region is required.
    */
   readonly regions: string[];
 
@@ -205,8 +203,8 @@ export interface StackSetTargetOptions {
  */
 export interface OrganizationsTargetOptions extends StackSetTargetOptions {
   /**
-   * A list of organizational unit ids to deploy to. The StackSet will
-   * deploy the provided Stack template to all accounts in the OU.
+   * The IDs of the organizational units (`ou-...`) or of the organization root (`r-...`) to
+   * deploy to. The StackSet will deploy the provided Stack template to all accounts in the OU.
    * This can be further filtered by specifying `accountFilter`.
    *
    * If the service managed `deploymentType` has `autoDeployment` enabled (the default),
@@ -220,7 +218,8 @@ export interface OrganizationsTargetOptions extends StackSetTargetOptions {
    *
    * Automatic deployments, on by default with `DeploymentType.serviceManaged()`, don't apply the
    * filter, so accounts that join the organizational units later get the stack even if the filter
-   * leaves them out. Set `autoDeployEnabled: false` to deploy only to the accounts the filter selects.
+   * leaves them out. Set `autoDeployment: StackSetAutoDeployment.disabled()` to deploy only to the
+   * accounts the filter selects.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacksets-orgs-manage-auto-deployment.html#stacksets-orgs-auto-deployment-considerations
    * @default - deploys to every account in the organizational units
@@ -289,26 +288,11 @@ export abstract class StackSetTarget {
    * @example
    * StackSetTarget.fromOrganizationalUnits({
    *   regions: ['us-east-1', 'us-east-2'],
-   *   organizationalUnits: ['ou-1111111', 'ou-2222222'],
+   *   organizationalUnits: ['ou-a1b2-c3d4e5f6', 'ou-a1b2-f6e5d4c3'],
    * });
    */
   public static fromOrganizationalUnits(options: OrganizationsTargetOptions): StackSetTarget {
     return new OrganizationsTarget(options);
-  }
-
-  /**
-   * @internal
-   */
-  protected _renderParameters(parameters?: { [key: string]: string }): Parameter[] | undefined {
-    if (!parameters) return undefined;
-    const overrides: Parameter[] = [];
-    for (const [key, value] of Object.entries(parameters ?? {})) {
-      overrides.push({
-        parameterKey: key,
-        parameterValue: value,
-      });
-    }
-    return overrides;
   }
 
   /**
@@ -323,15 +307,18 @@ class AccountsTarget extends StackSetTarget {
   constructor(private readonly options: AccountsTargetOptions) {
     super();
 
-    if (!this.options.accounts || this.options.accounts.length === 0) {
-      throw new UnscopedValidationError(lit`StackSetAccountsRequired`, 'fromAccounts requires at least one account');
+    if (isEmptyList(this.options.accounts)) {
+      throw new UnscopedValidationError(lit`StackSetAccountsRequired`, 'fromAccounts requires at least one account, set `accounts` to the account IDs to deploy to');
+    }
+    if (isEmptyList(this.options.regions)) {
+      throw new UnscopedValidationError(lit`StackSetRegionsRequired`, 'fromAccounts requires at least one region, set `regions` to the regions to deploy to');
     }
   }
 
   public _bind(_scope: Construct, _options: TargetBindOptions = {}): StackSetTargetConfig {
     return {
       regions: this.options.regions,
-      parameterOverrides: this._renderParameters(this.options.parameterOverrides),
+      parameterOverrides: renderParameters(this.options.parameterOverrides),
       accounts: this.options.accounts,
     };
   }
@@ -341,9 +328,11 @@ class OrganizationsTarget extends StackSetTarget {
   constructor(private readonly options: OrganizationsTargetOptions) {
     super();
 
-    const organizationalUnits = this.options.organizationalUnits;
-    if (organizationalUnits === undefined || (!Token.isUnresolved(organizationalUnits) && organizationalUnits.length === 0)) {
-      throw new UnscopedValidationError(lit`StackSetOrganizationalUnitsRequired`, 'fromOrganizationalUnits requires at least one organizational unit');
+    if (isEmptyList(this.options.organizationalUnits)) {
+      throw new UnscopedValidationError(lit`StackSetOrganizationalUnitsRequired`, 'fromOrganizationalUnits requires at least one organizational unit, set `organizationalUnits` to the OUs to deploy to');
+    }
+    if (isEmptyList(this.options.regions)) {
+      throw new UnscopedValidationError(lit`StackSetRegionsRequired`, 'fromOrganizationalUnits requires at least one region, set `regions` to the regions to deploy to');
     }
   }
 
@@ -351,7 +340,7 @@ class OrganizationsTarget extends StackSetTarget {
     const filter = this.options.accountFilter?._bind();
     return {
       regions: this.options.regions,
-      parameterOverrides: this._renderParameters(this.options.parameterOverrides),
+      parameterOverrides: renderParameters(this.options.parameterOverrides),
       accountFilterType: filter?.accountFilterType ?? AccountFilterType.NONE,
       organizationalUnits: this.options.organizationalUnits,
       accounts: filter?.accounts,
@@ -458,7 +447,7 @@ export interface ServiceManagedOptions {
    * added to a target organizational unit, and whether it retains the Stack in
    * accounts that are removed from it.
    *
-   * This has no effect if {@link StackSetTarget.fromAccounts} is used
+   * Applies only to service-managed organizational unit targets.
    *
    * @default - automatic deployment is enabled and stacks are retained in removed accounts
    */
@@ -606,9 +595,12 @@ export interface StackSetProps {
   /**
    * Which accounts/OUs and regions to deploy the StackSet to
    *
-   * @default - no targets. You can use `addTarget()` after construction to add targets.
+   * Each target becomes one group of stack instances. Use `addTarget()` to add more targets after
+   * construction.
+   *
+   * @default - no targets
    */
-  readonly target?: StackSetTarget;
+  readonly targets?: StackSetTarget[];
 
   /**
    * If you already have an existing CloudFormation template that you would like to use, you can pass the template defined in S3 or a local file
@@ -625,7 +617,9 @@ export interface StackSetProps {
   readonly stackSetName?: string;
 
   /**
-   * A description of the StackSet, also used as the description of its template
+   * A description of the StackSet resource
+   *
+   * Must be 1 to 1024 characters long.
    *
    * @default - none
    */
@@ -701,6 +695,8 @@ export interface StackSetProps {
    * If you deploy a stack that requires certain capabilities and they are
    * not specified, the deployment will fail with a `InsufficientCapabilities` error.
    *
+   * `CfnCapabilities.NONE` is not accepted; omit `capabilities` to specify no capabilities.
+   *
    * @default - no specific capabilities
    */
   readonly capabilities?: CfnCapabilities[];
@@ -750,7 +746,7 @@ export interface OperationPreferences {
   /**
    * Whether to deploy multiple regions sequentially or in parallel.
    *
-   * @default RegionConcurrencyType.SEQUENTIAL
+   * @default - the CloudFormation default
    */
   readonly regionConcurrencyType?: RegionConcurrencyType;
   /**
@@ -768,8 +764,6 @@ export class RegionConcurrencyType {
   /**
    * Deploy the StackSet to regions sequentially in the order specified in
    * {@link OperationPreferences.regionOrder}.
-   *
-   * This is the default behavior.
    */
   public static readonly SEQUENTIAL = new RegionConcurrencyType('SEQUENTIAL');
 
@@ -1018,13 +1012,12 @@ export class StackSet extends Stack implements IStackSet {
    */
   public readonly templateFile: string;
 
-  private readonly stackInstances: CfnStackSet.StackInstancesProperty[] = [];
+  private readonly stackInstances: IArrayBox<CfnStackSet.StackInstancesProperty> = Box.fromArray();
   private readonly templateParameters: IMapBox<string, string> = Box.fromMap<string, string>();
   private readonly _templateUrl: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
   private readonly hostStack: Stack;
   private readonly externalTemplate: boolean;
   private readonly userParameters: { [key: string]: string };
-
   private readonly permissionModel: PermissionModel;
   private readonly resource: CfnStackSet;
 
@@ -1043,7 +1036,9 @@ export class StackSet extends Stack implements IStackSet {
       // The template is deployed to the accounts and regions targeted by the StackSet
       env: { account: Aws.ACCOUNT_ID, region: Aws.REGION },
       synthesizer,
-      description: props.description,
+      // With an external template, the StackSet's own template is never deployed, so it must
+      // not get the AWS::CDK::Metadata resource that version reporting adds to every stack
+      analyticsReporting: props.template ? false : undefined,
     });
     Object.defineProperty(this, STACK_SET_SYMBOL, { value: true });
 
@@ -1060,6 +1055,21 @@ export class StackSet extends Stack implements IStackSet {
     synthesizer.bindHost({ stack: hostStack, scope, id });
 
     const deploymentTypeConfig = (props.deploymentType ?? DeploymentType.selfManaged())._bind(this);
+
+    if (props.capabilities?.includes(CfnCapabilities.AUTO_EXPAND) && deploymentTypeConfig.permissionsModel === PermissionModel.SERVICE_MANAGED) {
+      throw new ValidationError(lit`StackSetAutoExpandNotSupported`, 'service managed stacksets do not currently support the "AUTO_EXPAND" capability', this);
+    }
+
+    if (props.capabilities && !Token.isUnresolved(props.capabilities)
+      && props.capabilities.some((capability) => !Token.isUnresolved(capability) && capability === CfnCapabilities.NONE)) {
+      throw new ValidationError(lit`StackSetCapabilityNoneNotSupported`, 'a StackSet does not accept CfnCapabilities.NONE, remove it from \'capabilities\'', this);
+    }
+
+    if (props.description !== undefined && !Token.isUnresolved(props.description)
+      && (props.description.length < 1 || props.description.length > 1024)) {
+      throw new ValidationError(lit`StackSetDescriptionLength`, `a StackSet description must be 1 to 1024 characters long, got ${props.description.length} characters, change 'description' or omit it`, this);
+    }
+
     if (deploymentTypeConfig.permissionsModel === PermissionModel.SELF_MANAGED) {
       this.adminRole = deploymentTypeConfig.adminRole ?? new iam.Role(scope, `${id}.AdminRole`, {
         assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com', {
@@ -1082,14 +1092,10 @@ export class StackSet extends Stack implements IStackSet {
       }));
     }
 
-    if (props.capabilities?.includes(CfnCapabilities.AUTO_EXPAND) && deploymentTypeConfig.permissionsModel === PermissionModel.SERVICE_MANAGED) {
-      throw new ValidationError(lit`StackSetAutoExpandNotSupported`, 'service managed stacksets do not currently support the "AUTO_EXPAND" capability', this);
-    }
-
     this.permissionModel = deploymentTypeConfig.permissionsModel;
 
-    if (props.target) {
-      this.addTarget(props.target);
+    for (const target of props.targets ?? []) {
+      this.addTarget(target);
     }
 
     const stackSetName = props.stackSetName ?? Names.uniqueResourceName(this, { maxLength: 128 });
@@ -1105,7 +1111,7 @@ export class StackSet extends Stack implements IStackSet {
       managedExecution: {
         Active: props.managedExecution ?? true,
       },
-      operationPreferences: props.operationPreferences ? undefinedIfNoKeys({
+      operationPreferences: props.operationPreferences ? undefinedIfAllValuesAreEmpty({
         ...props.operationPreferences.failureTolerance?._render(),
         ...props.operationPreferences.maxConcurrency?._render(),
         concurrencyMode: props.operationPreferences.concurrencyMode?.value,
@@ -1117,12 +1123,8 @@ export class StackSet extends Stack implements IStackSet {
       permissionModel: deploymentTypeConfig.permissionsModel,
       callAs: deploymentTypeConfig.callAs,
       templateUrl,
-      stackInstancesGroup: Lazy.any({
-        produce: () => {
-          return this.stackInstances;
-        },
-      }, { omitEmptyArray: true }),
-      parameters: Token.asAny(this.templateParameters.derive((templateParameters) => this.renderParameters(templateParameters))),
+      stackInstancesGroup: Token.asAny(this.stackInstances),
+      parameters: Token.asAny(this.templateParameters.derive((templateParameters) => this.renderStackSetParameters(templateParameters))),
     });
     this.resource = stackSet;
     this.stackSetId = stackSet.attrStackSetId;
@@ -1280,7 +1282,7 @@ export class StackSet extends Stack implements IStackSet {
     fs.writeFileSync(join(session.assembly.outdir, this.templateFile), JSON.stringify(this._toCloudFormation(), undefined, 2));
   }
 
-  private renderParameters(templateParameters: ReadonlyMap<string, string>): CfnStackSet.ParameterProperty[] | undefined {
+  private renderStackSetParameters(templateParameters: ReadonlyMap<string, string>): CfnStackSet.ParameterProperty[] | undefined {
     const parameters: { [key: string]: string } = { ...this.userParameters };
     for (const [name, value] of templateParameters) {
       // the names of the parameters passed for references are logical IDs, which are tokens until resolved
@@ -1291,8 +1293,7 @@ export class StackSet extends Stack implements IStackSet {
       }
       parameters[parameterKey] = value;
     }
-    const rendered = Object.entries(parameters).map(([parameterKey, parameterValue]) => ({ parameterKey, parameterValue }));
-    return rendered.length > 0 ? rendered : undefined;
+    return Object.keys(parameters).length > 0 ? renderParameters(parameters) : undefined;
   }
 
   private validateNoResources(): string[] {
@@ -1324,6 +1325,25 @@ export class StackSet extends Stack implements IStackSet {
   }
 }
 
+function renderParameters(parameters?: { [key: string]: string }): Parameter[] | undefined {
+  if (!parameters) return undefined;
+  const parameterList: Parameter[] = [];
+  for (const [key, value] of Object.entries(parameters ?? {})) {
+    parameterList.push({
+      parameterKey: key,
+      parameterValue: value,
+    });
+  }
+  return parameterList;
+}
+
+/**
+ * Whether a required list is missing or empty, treating an unresolved token list as not empty
+ */
+function isEmptyList(list: readonly any[] | undefined): boolean {
+  return !list || (!Token.isUnresolved(list) && list.length === 0);
+}
+
 /**
  * Finds the stack that contains a StackSet
  */
@@ -1343,9 +1363,4 @@ function isIntegerInRange(value: number, min: number, max?: number): boolean {
     return true;
   }
   return Number.isInteger(value) && value >= min && (max === undefined || value <= max);
-}
-
-function undefinedIfNoKeys<A extends Object>(obj: A): A | undefined {
-  const allUndefined = Object.values(obj).every(val => val === undefined);
-  return allUndefined ? undefined : obj;
 }

@@ -85,6 +85,10 @@
     },
     "Parameters": [
      {
+      "ParameterKey": "TopicDisplayName",
+      "ParameterValue": "integ-stackset-topic"
+     },
+     {
       "ParameterKey": "referencetointegstacksettestAdminRoleD699F605RoleId",
       "ParameterValue": {
        "Fn::GetAtt": [
@@ -114,11 +118,27 @@
       "Regions": [
        "us-east-1"
       ]
+     },
+     {
+      "DeploymentTargets": {
+       "Accounts": [
+        "12345678"
+       ]
+      },
+      "ParameterOverrides": [
+       {
+        "ParameterKey": "TopicDisplayName",
+        "ParameterValue": "integ-stackset-topic-second-region"
+       }
+      ],
+      "Regions": [
+       "us-west-2"
+      ]
      }
     ],
     "StackSetName": "integ-stackset-test",
     "TemplateURL": {
-     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/da87d45514430d7fd05c48fd2f620eff53356f93c0e5c49e11d0f9eb322b78e9.json"
+     "Fn::Sub": "https://s3.test-region.${AWS::URLSuffix}/cdk-hnb659fds-assets-12345678-test-region/866fc51934c9f1147cf509bc2e1c8088ccb6f49df3484028c698fed1337ba613.json"
     }
    },
    "DependsOn": [

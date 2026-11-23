@@ -87,10 +87,10 @@ class TestCase extends Stack {
 
     new cfn.StackSet(this, 'StackSet', {
       stackSetName,
-      target: cfn.StackSetTarget.fromAccounts({
+      targets: [cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
-      }),
+      })],
       template: cfn.StackSetTemplate.fromAsset(path.join(__dirname, 'stack-set-template', 'template.json')),
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
