@@ -457,8 +457,17 @@ permissive. CDK grants the pipeline role `iam:PassRole` on it automatically.
 CDK adds no other permissions to the override role. The permissions CDK grants to the
 project's role, such as the pipeline artifact bucket, CloudWatch Logs, source connections,
 VPC access and anything added with `project.addToRolePolicy()`, do not apply to builds that
-use the override, so grant the role everything the build needs. The role must be in the same
-account as the project. For example, to scope a shared project's builds to one repository:
+use the override, so grant the role everything the build needs, including access to any
+`PARAMETER_STORE` or `SECRETS_MANAGER` environment variables. The role must be in the same
+account as the project.
+
+An action with `serviceRoleOverride` also stops granting the project's role access to the
+pipeline artifact bucket, the action's source connections and CodeCommit repositories, and
+its environment variable secrets, so a shared project's role does not collect permissions
+for builds it never runs. Other actions that use the same project without an override still
+grant these to the project's role as before.
+
+For example, to scope a shared project's builds to one repository:
 
 ```ts
 declare const pipeline: codepipeline.Pipeline;

@@ -112,41 +112,6 @@
          ]
         ]
        }
-      },
-      {
-       "Action": [
-        "s3:GetBucket*",
-        "s3:GetObject*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "PipelineArtifactsBucket22248F97",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "PipelineArtifactsBucket22248F97",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "codestar-connections:UseConnection",
-       "Effect": "Allow",
-       "Resource": "arn:aws:codeconnections:us-east-1:123456789012:connection/MOCK"
       }
      ],
      "Version": "2012-10-17"

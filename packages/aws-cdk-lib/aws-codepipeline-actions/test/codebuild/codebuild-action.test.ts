@@ -439,6 +439,94 @@ describe('CodeBuild Action', () => {
           }
         }
       });
+
+      // Builds a pipeline whose CodeBuild actions all use `project`, with a Full Clone CodeConnections
+      // source, a Full Clone CodeCommit source, an output and secret environment variables.
+      // Returns the actions of the project's role's policies.
+      function projectRoleActions(overrides: Array<iam.IRoleRef | undefined>): string[] {
+        const stack = new Stack();
+        const project = new codebuild.PipelineProject(stack, 'Project');
+        const connectionOutput = new codepipeline.Artifact('ConnectionOutput');
+        const codeCommitOutput = new codepipeline.Artifact('CodeCommitOutput');
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [
+                new cpactions.CodeStarConnectionsSourceAction({
+                  actionName: 'Connection',
+                  connectionArn: 'arn:aws:codeconnections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                  owner: 'my-org',
+                  repo: 'my-repo',
+                  output: connectionOutput,
+                  codeBuildCloneOutput: true,
+                }),
+                new cpactions.CodeCommitSourceAction({
+                  actionName: 'CodeCommit',
+                  repository: codecommit.Repository.fromRepositoryName(stack, 'Repo', 'repo-name'),
+                  output: codeCommitOutput,
+                  codeBuildCloneOutput: true,
+                }),
+              ],
+            },
+            {
+              stageName: 'Build',
+              actions: overrides.map((serviceRoleOverride, i) => new cpactions.CodeBuildAction({
+                actionName: `CodeBuild${i}`,
+                project,
+                input: connectionOutput,
+                extraInputs: [codeCommitOutput],
+                outputs: [new codepipeline.Artifact(`BuildOutput${i}`)],
+                environmentVariables: {
+                  PARAM: { type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE, value: '/my/param' },
+                  SECRET: { type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER, value: 'my-secret' },
+                },
+                serviceRoleOverride,
+              })),
+            },
+          ],
+        });
+
+        const template = Template.fromStack(stack);
+        const roleRef = { 'Ref': stack.getLogicalId(project.role!.node.defaultChild as any) };
+        return Object.values(template.findResources('AWS::IAM::Policy', { Properties: { Roles: Match.arrayWith([roleRef]) } }))
+          .flatMap(policy => policy.Properties.PolicyDocument.Statement)
+          .flatMap((statement: any) => [statement.Action].flat());
+      }
+
+      const ACTION_GRANTS = [
+        's3:PutObject',
+        'codestar-connections:UseConnection',
+        'codecommit:GitPull',
+        'ssm:GetParameters',
+        'secretsmanager:GetSecretValue',
+      ];
+
+      test('when provided: does not grant the project role the action\'s bucket, source and secret permissions', () => {
+        const actions = projectRoleActions([iam.Role.fromRoleArn(new Stack(), 'OverrideRole', ROLE_ARN)]);
+
+        for (const action of ACTION_GRANTS) {
+          expect(actions).not.toContain(action);
+        }
+        // grants the Project construct itself makes are unaffected
+        expect(actions).toContain('logs:PutLogEvents');
+      });
+
+      test('when not provided: grants the project role the action\'s bucket, source and secret permissions', () => {
+        const actions = projectRoleActions([undefined]);
+
+        for (const action of ACTION_GRANTS) {
+          expect(actions).toContain(action);
+        }
+      });
+
+      test('shared project: an action without an override still grants the project role its permissions', () => {
+        const actions = projectRoleActions([iam.Role.fromRoleArn(new Stack(), 'OverrideRole', ROLE_ARN), undefined]);
+
+        for (const action of ACTION_GRANTS) {
+          expect(actions).toContain(action);
+        }
+      });
     });
 
     describe('environment variables', () => {

@@ -119,8 +119,13 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * When supplied, the pipeline role is granted `iam:PassRole` on this role.
    *
    * CDK does not add any other permissions to this role. It must grant everything
-   * the build needs, such as access to the pipeline artifact bucket, build logs and
-   * source connections. The role must be in the same account as the CodeBuild project.
+   * the build needs, such as access to the pipeline artifact bucket, build logs,
+   * source connections and any `PARAMETER_STORE` or `SECRETS_MANAGER` environment
+   * variables. The role must be in the same account as the CodeBuild project.
+   *
+   * When supplied, this action does not grant the project's service role access to
+   * the pipeline artifact bucket, source connections, CodeCommit repositories or
+   * environment variable secrets, since its builds do not run as that role.
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeBuild.html
    *
@@ -191,10 +196,14 @@ export class CodeBuildAction extends Action {
       ],
     }));
 
+    // When the builds run as an override role, the project's role does not need
+    // the grants below for this action; the override role must carry them instead.
+    const grantProjectRole = !this.props.serviceRoleOverride;
+
     // allow the Project access to the Pipeline's artifact Bucket
     // but only if the project is not imported
     // (ie., has a role) - otherwise, the IAM library throws an error
-    if (this.props.project.role) {
+    if (grantProjectRole && this.props.project.role) {
       if ((this.actionProperties.outputs || []).length > 0) {
         options.bucket.grantReadWrite(this.props.project);
       } else {
@@ -213,7 +222,7 @@ export class CodeBuildAction extends Action {
       // with codeBuildCloneOutput=true,
       // grant the Project's Role to use the connection
       const connectionArn = inputArtifact.getMetadata(CodeStarConnectionsSourceAction._CONNECTION_ARN_PROPERTY);
-      if (connectionArn) {
+      if (grantProjectRole && connectionArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
           actions: ['codestar-connections:UseConnection'],
           resources: [connectionArn],
@@ -224,7 +233,7 @@ export class CodeBuildAction extends Action {
       // with codeBuildCloneOutput=true,
       // grant the Project's Role git pull access to the repository
       const codecommitRepositoryArn = inputArtifact.getMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY);
-      if (codecommitRepositoryArn) {
+      if (grantProjectRole && codecommitRepositoryArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
           actions: ['codecommit:GitPull'],
           resources: [codecommitRepositoryArn],
@@ -236,7 +245,7 @@ export class CodeBuildAction extends Action {
       ProjectName: this.props.project.projectName,
       EnvironmentVariables: this.props.environmentVariables &&
         cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
-          this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
+          this.props.checkSecretsInPlainTextEnvVariables ?? true, grantProjectRole ? this.props.project : undefined)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       configuration.PrimarySource = this.props.input._artifactNameBox;
