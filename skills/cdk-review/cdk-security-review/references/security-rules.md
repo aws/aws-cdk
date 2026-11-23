@@ -1,10 +1,5 @@
 # Security rules
 
-Rows are grouped by defect family (IAM least-privilege, network & resource access, secrets &
-credentials, secure defaults). See the `cdk-review-principles` skill for the
-shared lookup convention (the BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the
-conditional-severity encoding, the `(doc-absent detail)` marker, and links referencing `main`).
-
 The repo Security Rules these distill live at
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules) —
 the primary security citation.

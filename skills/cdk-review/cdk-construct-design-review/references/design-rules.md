@@ -1,10 +1,5 @@
 # Construct design rules
 
-Rows are grouped by defect family (feature placement & abstraction, Design Guidelines conformance,
-ages-well anti-patterns). See the `cdk-review-principles` skill for the shared
-lookup convention (the BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-severity
-encoding, the `(doc-absent detail)` marker, and links referencing `main`).
-
 ## Feature placement & abstraction
 
 **[CD-IFOO-NO-FEATURE-METHODS] (BLOCKING)** — A feature method or config-mutation method added to the

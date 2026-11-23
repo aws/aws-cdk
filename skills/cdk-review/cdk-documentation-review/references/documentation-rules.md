@@ -1,14 +1,5 @@
 # Documentation review rules
 
-Rows group by defect family — the four `category` values (README examples, `@default` accuracy,
-public-API doc completeness, migration notes). See
-the `cdk-review-principles` skill for the shared lookup convention (the
-BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-severity encoding, the
-`(doc-absent detail)` marker, and links referencing `main`).
-
-Severity across these rows is set by shipped-doc consumer impact: a doc that is *wrong*, or a new L2
-with no usage example at all, is BLOCKING; a doc *thin* on a required facet is RECOMMENDED.
-
 ## README examples
 
 **[DOC-README-STALE-SNIPPET] (RECOMMENDED)** — A public API changed (prop/method/construct

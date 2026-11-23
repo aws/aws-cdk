@@ -1,10 +1,5 @@
 # Test review rules
 
-Rows are grouped by family — unit tests, then integration tests. See the `cdk-review-principles`
-skill for the shared lookup convention: the
-BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-severity encoding, the
-`(doc-absent detail)` marker, and links referencing `main`.
-
 ## Unit tests
 
 **[TEST-UNIT-NO-ASSERTION] (BLOCKING)** — A non-asserting test — the path runs but nothing asserts the outcome that matters:
