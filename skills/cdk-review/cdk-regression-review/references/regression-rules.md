@@ -81,9 +81,8 @@ imports of it break. See
 subclasses that override it break. See
 [`jsii § Member Visibility`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#member-visibility).
 
-**[REG-JSII-DEPENDENCY-EXPOSURE] (BLOCKING)** — Non-jsii dependencies MUST be bundled
-(`bundleDependencies`); a bundled-dependency type MUST NOT be exposed in the public API; a file with
-non-jsii imports MUST NOT be exported from the main entry point. See
+**[REG-JSII-DEPENDENCY-EXPOSURE] (BLOCKING)** — A file with non-jsii imports exported from the main entry
+point. See
 [`jsii § non-jsii dependencies`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#non-jsii-dependencies).
 
 **[REG-JSII-NO-FLUENT] (RECOMMENDED)** — A public method that returns `this` for chaining.
