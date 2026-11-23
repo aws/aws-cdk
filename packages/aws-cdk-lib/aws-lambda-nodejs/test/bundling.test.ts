@@ -7,6 +7,7 @@ import { version as delayVersion } from 'delay/package.json';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
 import { App, AssetHashType, BundlingFileAccess, DockerImage, Stack } from '../../core';
+import { readPerfCounters, resetCounters } from '../../core/lib/private/perf';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
@@ -806,6 +807,31 @@ test('Local bundling', () => {
 
   // Docker image is not built
   expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+
+  spawnSyncMock.mockRestore();
+});
+
+test('Local bundling counts the esbuild run by the program that starts it', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+    status: 0,
+    stderr: Buffer.from('stderr'),
+    stdout: Buffer.from('stdout'),
+    pid: 123,
+    output: ['stdout', 'stderr'],
+    signal: null,
+  });
+  resetCounters();
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+  });
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  expect(readPerfCounters({ telemetry: true })).toMatchObject({ 'NodejsFunction#esbuild:yarn': { count: 1 } });
 
   spawnSyncMock.mockRestore();
 });
