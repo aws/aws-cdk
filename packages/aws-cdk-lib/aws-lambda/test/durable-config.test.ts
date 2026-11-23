@@ -397,7 +397,6 @@ describe('durable config', () => {
   test.each([
     ['a literal ARN', 'arn:aws:iam::123456789012:role/DurableRole', (scope: Construct) =>
       iam.Role.fromRoleArn(scope, 'Role', 'arn:aws:iam::123456789012:role/DurableRole')],
-    ['a role name', literalRoleArn('DurableRole'), (scope: Construct) => iam.Role.fromRoleName(scope, 'Role', 'DurableRole')],
   ])('DurableConfig with a kmsKey in another stack matches an execution role imported from %s by aws:PrincipalArn', (_, roleArn, importRole) => {
     const app = new cdk.App();
     const keyStack = new cdk.Stack(app, 'KeyStack');
@@ -452,6 +451,8 @@ describe('durable config', () => {
       newRole(fnStack, { roleName: 'DurableRole', path: new cdk.CfnParameter(fnStack, 'RolePath').valueAsString }), false],
     ['a role imported into the key stack with a token ARN from the function stack', (_app: cdk.App, keyStack: cdk.Stack, fnStack: cdk.Stack) =>
       iam.Role.fromRoleArn(keyStack, 'ImportedRole', newRole(fnStack).roleArn), false],
+    ['a role imported by name', (_app: cdk.App, _keyStack: cdk.Stack, fnStack: cdk.Stack) =>
+      iam.Role.fromRoleName(fnStack, 'ImportedRole', 'DurableRole'), false],
     ['a named role imported with a token account', (_app: cdk.App, _keyStack: cdk.Stack, fnStack: cdk.Stack) =>
       iam.Role.fromRoleArn(fnStack, 'ImportedRole', `arn:aws:iam::${new cdk.CfnParameter(fnStack, 'Account').valueAsString}:role/DurableRole`), false],
     ['an unnamed role in a nested stack of the function stack', (_app: cdk.App, _keyStack: cdk.Stack, fnStack: cdk.Stack) =>
@@ -555,8 +556,16 @@ describe('durable config', () => {
 
     expectStatements(stack, [
       Match.objectLike({ Principal: { AWS: 'arn:aws:iam::123456789012:root' }, Action: 'kms:*' }),
-      Match.objectLike({ Principal: { Service: 'lambda.amazonaws.com' }, Action: ['kms:Decrypt', 'kms:GenerateDataKey'] }),
-      Match.objectLike({ Principal: executionRole, Action: 'kms:Decrypt' }),
+      Match.objectLike({
+        Principal: { Service: 'lambda.amazonaws.com' },
+        Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        Condition: Match.objectEquals({
+          StringEquals: {
+            'aws:SourceAccount': { Ref: 'AWS::AccountId' }, 'aws:SourceArn': functionArn('my-durable-fn'), [encryptionContextKey]: functionArn('my-durable-fn'),
+          },
+        }),
+      }),
+      roleArnStatement(executionRole.AWS),
       Match.objectLike({ Principal: accountRoot, Action: 'kms:DescribeKey' }),
       Match.objectLike({ Principal: accountRoot, Action: ['kms:Decrypt', 'kms:GenerateDataKey'] }),
     ]);
@@ -574,8 +583,16 @@ describe('durable config', () => {
 
     expectStatements(stack, [
       Match.objectLike({ Principal: { AWS: 'arn:aws:iam::123456789012:root' }, Action: 'kms:*' }),
-      Match.objectLike({ Principal: { Service: 'lambda.amazonaws.com' }, Action: ['kms:Decrypt', 'kms:GenerateDataKey'] }),
-      Match.objectLike({ Principal: executionRole, Action: 'kms:Decrypt' }),
+      Match.objectLike({
+        Principal: { Service: 'lambda.amazonaws.com' },
+        Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        Condition: Match.objectEquals({
+          StringEquals: {
+            'aws:SourceAccount': { Ref: 'AWS::AccountId' }, 'aws:SourceArn': functionArn('my-durable-fn'), [encryptionContextKey]: functionArn('my-durable-fn'),
+          },
+        }),
+      }),
+      roleArnStatement(executionRole.AWS),
       Match.objectLike({ Principal: accountRoot, Action: 'kms:DescribeKey' }),
       Match.objectLike({ Principal: accountRoot, Action: ['kms:Decrypt', 'kms:GenerateDataKey'] }),
     ]);
@@ -637,8 +654,42 @@ describe('durable config', () => {
     const nested = new cdk.NestedStack(fnStack, 'Nested');
     newDurableFunction(fnStack, { functionName: 'my-durable-fn', kmsKey: new kms.Key(nested, 'DurableKey') });
 
-    expect(executionRoleGrants(nested)).toHaveLength(1);
+    expectKeyPolicy(nested, roleArnStatement({ Ref: Match.stringLikeRegexp('^referencetoFnStackLambdaServiceRole.*Arn$') }));
     Annotations.fromStack(fnStack).hasNoWarning('/FnStack/Lambda', warningId('durableConfigKmsKeyExecutionRoleNotGranted'));
+  });
+
+  test('DurableConfig with a kmsKey in the function stack grants a role imported by name by ARN', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'stack');
+    newDurableFunction(stack, { functionName: 'my-durable-fn', role: iam.Role.fromRoleName(stack, 'Role', 'DurableRole'), kmsKey: new kms.Key(stack, 'DurableKey') });
+
+    expectKeyPolicy(stack, roleArnStatement(literalRoleArn('DurableRole')));
+  });
+
+  test.each([
+    ['an explicit SYMMETRIC_DEFAULT kms.Key', (stack: cdk.Stack) => new kms.Key(stack, 'DurableKey', { keySpec: kms.KeySpec.SYMMETRIC_DEFAULT })],
+    ['a kms.CfnKey with a token keySpec', (stack: cdk.Stack) => new kms.CfnKey(stack, 'DurableKey', {
+      keySpec: new cdk.CfnParameter(stack, 'KeySpec').valueAsString,
+      keyPolicy: { Version: '2012-10-17', Statement: [] },
+    })],
+  ])('DurableConfig accepts %s', (_, keyOf) => {
+    const stack = new cdk.Stack(new cdk.App(), 'stack');
+    const kmsKey = keyOf(stack);
+
+    expect(() => newDurableFunction(stack, { functionName: 'my-durable-fn', kmsKey })).not.toThrow();
+  });
+
+  test('fails when the kmsKey is from Key.fromCfnKey with a non-symmetric key spec', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'stack');
+    const cfnKey = new kms.CfnKey(stack, 'DurableKey', { keySpec: 'HMAC_256', keyUsage: 'GENERATE_VERIFY_MAC', keyPolicy: { Version: '2012-10-17', Statement: [] } });
+
+    expect(() => newDurableFunction(stack, { kmsKey: kms.Key.fromCfnKey(cfnKey) })).toThrow(/must be a symmetric encryption key/);
+  });
+
+  test('fails when the kmsKey is a kms.CfnKey with a non-symmetric key spec', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'stack');
+    const key = new kms.CfnKey(stack, 'DurableKey', { keySpec: 'RSA_2048', keyUsage: 'SIGN_VERIFY', keyPolicy: { Version: '2012-10-17', Statement: [] } });
+
+    expect(() => newDurableFunction(stack, { kmsKey: key })).toThrow(/must be a symmetric encryption key/);
   });
 
   test('fails when the kmsKey is not a symmetric encryption key', () => {

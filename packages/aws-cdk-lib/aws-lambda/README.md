@@ -1606,27 +1606,41 @@ const fn = new lambda.Function(this, 'MyFunction', {
 The key must be a symmetric encryption key in the function's Region, not an alias. For a key defined
 in your app, CDK adds the statements from
 [Encrypting Lambda durable execution data](https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html)
-to the key policy, and nothing to the execution role's identity policy. The function author and
-operator statements use the account principal, so they defer to IAM.
+to the key policy, and nothing to the execution role's identity policy.
+
+The function author and operator statements use the account principal, gated by `kms:ViaService`.
+On a key policy with the default root statement this changes nothing, so the identity that deploys
+the function and any durable execution operators need `kms:DescribeKey`, `kms:Decrypt` and
+`kms:GenerateDataKey` in their IAM policies. On a key policy without the root statement, these
+statements let IAM policies in the account grant these actions through Lambda, which the key policy
+did not allow before. The identities still need the IAM permissions above.
 
 Set `functionName` to a literal string to scope the statements to the function. Without it, they
-match every function in the account and Region, and CDK emits a warning.
+match every function in the account and Region, and CDK emits a warning. Adding `durableConfig` to an
+existing function replaces it, so you can set a new literal `functionName` in the same deployment.
+Don't keep an existing custom name, as the note above describes.
 
-CDK emits a warning and skips a statement it cannot add safely, so add it to the key policy yourself
-when:
+If the key is imported, or is a `kms.CfnKey` whose `keyPolicy` is not a JSON object, CDK adds no
+statements and emits a warning. Add all the statements from the guide to the key policy yourself.
 
-- The key is imported, or is a `kms.CfnKey` whose `keyPolicy` is not a JSON object.
-- The key is in another stack, and the execution role has no literal `roleName`. Referencing the role
-  could create a circular dependency. Pass a role with a literal `roleName`, or define the key in the
-  function's stack.
-- The key is in another account, which also needs IAM permissions in the function's account.
+CDK grants the execution role through a condition when the role ARN is known at synth time, for
+example a role with a literal `roleName` (and `path`, if set), or one imported with a literal ARN.
+Otherwise it names the role ARN only when that adds no stack dependency: the key is in the function's
+stack and the role is not in a nested stack, or the role is in the key's stack. In any other layout,
+CDK skips the execution role statement and emits a warning. Pass a role with a literal `roleName`, or
+add the statement yourself. If the key
+policy names a role that itself depends on the key, CloudFormation reports a circular dependency, so
+give that role a literal `roleName`.
 
-If the key policy names a role that itself depends on the key, CloudFormation reports a circular
-dependency. Give that role a literal `roleName`.
+If a key defined in your app is in another account, CDK still adds the key policy statements, but emits a warning: the
+function's account also needs IAM permissions on the key.
 
-A durable execution keeps the key it started with. Before you remove or switch `kmsKey`, keep the old
-key's statements until executions on it finish and their retention ends. Each function adds about
-1.5 KB to the key policy, which is limited to 32 KB.
+CDK adds these statements only for the key currently set in `durableConfig.kmsKey`. Removing or
+switching it removes them from the old key's policy on the next deployment, and running executions
+keep the key they started with. Before you do, add equivalent statements to the old key yourself, for
+example with `oldKey.addToResourcePolicy(...)`, and keep them until executions on it finish and their
+retention ends. Each function with a literal `functionName` adds about 1.3 KB to the key policy, which
+is limited to 32 KB, so use more than one key for about 24 or more such functions.
 
 ## AutoScaling
 

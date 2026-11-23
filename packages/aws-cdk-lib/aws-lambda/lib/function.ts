@@ -1727,7 +1727,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    */
   private grantDurableExecutionKeyAccess(key: kms.IKeyRef, role: iam.IRole) {
     const stack = Stack.of(this);
-    // A durable execution keeps the key it started with, and an alias can be repointed.
+    // CDK edits the alias target's key policy at synth, so repointing the alias would give new executions a key without it.
     const keyArn = key.keyRef.keyArn;
     if ('aliasName' in key || (!Token.isUnresolved(keyArn) && !keyArn.includes(':key/'))) {
       throw new ValidationError(lit`DurableConfigKmsKeyIsAlias`, `durableConfig.kmsKey must be a KMS key, not an alias (${JSON.stringify(key.node.path)}); pass the key itself`, this);
@@ -1735,7 +1735,8 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (!Token.isUnresolved(key.env.region) && !Token.isUnresolved(stack.region) && key.env.region !== stack.region) {
       throw new ValidationError(lit`DurableConfigKmsKeyMustBeSameRegion`, `durableConfig.kmsKey is in Region ${JSON.stringify(key.env.region)} but the function is in ${JSON.stringify(stack.region)}; use a key in the function's Region`, this);
     }
-    const cfnKey = kms.CfnKey.isCfnKey(key) ? key : key.node.defaultChild;
+    // Key.fromCfnKey returns a child of the CfnKey, so look at the scope too.
+    const cfnKey = kms.CfnKey.isCfnKey(key) ? key : kms.CfnKey.isCfnKey(key.node.scope) ? key.node.scope : key.node.defaultChild;
     const keySpec = kms.CfnKey.isCfnKey(cfnKey) ? cfnKey.keySpec : undefined;
     if (keySpec !== undefined && !Token.isUnresolved(keySpec) && keySpec !== kms.KeySpec.SYMMETRIC_DEFAULT) {
       throw new ValidationError(lit`DurableConfigKmsKeyNotSymmetric`, `durableConfig.kmsKey must be a symmetric encryption key, got key spec ${JSON.stringify(keySpec)}; use KeySpec.SYMMETRIC_DEFAULT`, this);
@@ -1785,17 +1786,13 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       'kms:GenerateDataKey',
     );
 
-    // Match the role by an aws:PrincipalArn condition when its ARN references no resource: that cannot create a cycle,
-    // and KMS does not require the role to exist yet.
+    // Match the role by an aws:PrincipalArn condition when its ARN is known without a resource reference: that cannot
+    // create a cycle, and KMS does not require the role to exist yet.
     const isOwnedRole = Resource.isOwnedResource(role);
     const cfnRole = role.node.defaultChild;
     let resourceFreeRoleArn: string | undefined;
     if (!isOwnedRole) {
-      const resolved = stack.resolve(role.roleArn);
-      const parts: unknown[] = resolved?.['Fn::Join']?.[0] === '' ? resolved['Fn::Join'][1] : [resolved];
-      const isLiteralOrPseudo = (part: any) => typeof part === 'string'
-        || ['AWS::Partition', 'AWS::AccountId', 'AWS::Region', 'AWS::URLSuffix'].includes(part?.Ref);
-      resourceFreeRoleArn = parts.every(isLiteralOrPseudo) ? role.roleArn : undefined;
+      resourceFreeRoleArn = Token.isUnresolved(role.roleArn) ? undefined : role.roleArn;
     } else if (iam.CfnRole.isCfnRole(cfnRole) && cfnRole.roleName !== undefined
       && !Token.isUnresolved(cfnRole.roleName) && !Token.isUnresolved(cfnRole.path)) {
       resourceFreeRoleArn = stack.formatArn({
@@ -1814,13 +1811,13 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         .withConditions({ ArnEquals: { 'aws:PrincipalArn': resourceFreeRoleArn } })
         .withConditions(encryptionContextCondition)), 'kms:Decrypt');
     } else if (canReferenceRole) {
-      // ArnPrincipal keeps the grant on the key policy; passing the role would put it on the role's identity policy.
+      // IRole has no withConditions, so wrap its ARN.
       keyGrants.actions(new kms.ViaServicePrincipal(lambdaViaService,
         new iam.ArnPrincipal(role.roleArn).withConditions(encryptionContextCondition)), 'kms:Decrypt');
     } else {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyExecutionRoleNotGranted',
         'CDK did not grant the execution role kms:Decrypt on durableConfig.kmsKey, because referencing the role could create a circular ' +
-        `dependency. Pass a role with a literal roleName, or define the key in the function's stack. See ${DURABLE_ENCRYPTION_DOC_URL}.`);
+        `dependency. Pass a role with a literal roleName, or add the statement yourself. See ${DURABLE_ENCRYPTION_DOC_URL}.`);
     }
 
     // Function author validation. DescribeKey carries no encryption context.
