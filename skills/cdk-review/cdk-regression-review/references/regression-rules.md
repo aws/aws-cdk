@@ -14,11 +14,11 @@ for new validation on existing constructs.
 configuration property, letting an invalid value through. *(Conditional — BLOCKING when the unvalidated
 value flows into a working stack and breaks its update.)*
 
-**[REG-CFN-TYPE-LEAK] (RECOMMENDED)** — A change to an existing public API that newly exposes an
-L1/CFN-layer type where it did not before, breaking or coupling existing consumers to CloudFormation. (The
+**[REG-CFN-TYPE-LEAK] (RECOMMENDED)** — A change to an existing public API that newly exposes an L1
+property type (`CfnFoo.BarProperty`) anywhere, or a `Cfn*` type in a method, a class member, or a struct
+other than the construct's `<Name>Props`, breaking or coupling existing consumers to CloudFormation. (The
 same leak on a *brand-new* L2 surface is not a regression — outside your scope.) See
-[`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design)
-(`awslint:props-no-cfn-types`).
+[`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
 ## Token handling
 

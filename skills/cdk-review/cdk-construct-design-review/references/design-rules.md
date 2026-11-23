@@ -32,7 +32,7 @@ example is a design miss. See
 
 ## Design Guidelines conformance
 
-**[CD-PROPS-SHAPE] (BLOCKING)** — Props must be `readonly`, flat, concise, and strongly typed (construct
+**[CD-PROPS-SHAPE] (BLOCKING)** — Props must be flat, concise, and strongly typed (construct
 interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`). See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
@@ -49,17 +49,16 @@ behavioral surprise. See
   is outside your scope.
 
 **[CD-NAMING] (BLOCKING)** — Name the resource and its props in official AWS/CloudFormation terminology,
-and derive related type names (`FooProps`, `IFoo`). See
+and derive its resource interface name (`IFoo`). See
 [`AGENTS_CONSTRUCT_DESIGN.md § Property Naming`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#property-naming).
 
-**[CD-ATTRIBUTES] (BLOCKING)** — Expose every CloudFormation attribute as a `readonly`,
-type-name-prefixed (`bucketArn`, not `arn`) opaque token. See
+**[CD-ATTRIBUTES] (BLOCKING)** — Expose every CloudFormation attribute as a type-name-prefixed
+(`bucketArn`, not `arn`) opaque token. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Resource Attributes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#resource-attributes).
 - **Scope split:** the surface design is yours; grading the tag/`@returns` prose is
   outside your scope.
 
-**[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Use the standard constructor and extend only
-`Resource`/`Construct`/`{Foo}Base`. See
+**[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Extend only `Resource`/`Construct`/`{Foo}Base`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Base Classes & Inheritance`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#base-classes--inheritance).
 
 **[CD-FROM-METHODS] (BLOCKING)** — Give a resource at least one `from{Attribute}` importer (a resource
