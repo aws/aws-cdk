@@ -13,6 +13,11 @@ export class WebFunctionRuntime {
   public static readonly NODEJS_24_X = new WebFunctionRuntime('nodejs24.x', RuntimeFamily.NODEJS);
 
   /**
+   * Node.js 26.x runtime
+   */
+  public static readonly NODEJS_26_X = new WebFunctionRuntime('nodejs26.x', RuntimeFamily.NODEJS);
+
+  /**
    * Python 3.15 runtime
    *
    * This runtime is in public preview for Lambda Web Functions. Preview runtimes are not
@@ -22,11 +27,6 @@ export class WebFunctionRuntime {
    * @see https://docs.aws.amazon.com/lambda/latest/dg/web-functions-runtimes.html
    */
   public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15', RuntimeFamily.PYTHON);
-
-  /**
-   * Node.js 26.x runtime
-   */
-  public static readonly NODEJS_26_X = new WebFunctionRuntime('nodejs26.x');
 
   /**
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version

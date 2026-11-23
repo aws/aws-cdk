@@ -766,6 +766,7 @@ describe('WebFunction template', () => {
 
   test('the built-in runtimes carry their family', () => {
     expect(WebFunctionRuntime.NODEJS_24_X.family).toEqual(RuntimeFamily.NODEJS);
+    expect(WebFunctionRuntime.NODEJS_26_X.family).toEqual(RuntimeFamily.NODEJS);
     expect(WebFunctionRuntime.NODEJS_LATEST.family).toEqual(RuntimeFamily.NODEJS);
     expect(WebFunctionRuntime.PYTHON_3_15.family).toEqual(RuntimeFamily.PYTHON);
     expect(WebFunctionRuntime.of('nodejs26.x').family).toEqual(RuntimeFamily.NODEJS);
