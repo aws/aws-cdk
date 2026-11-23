@@ -1,5 +1,7 @@
 import { RuntimeFamily } from './runtime';
 import { Token } from '../../core';
+import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Runtime environment for WebFunction
@@ -44,10 +46,18 @@ export class WebFunctionRuntime {
    *
    * @param name The runtime identifier (e.g. 'nodejs26.x')
    * @param family The runtime family. If omitted, it is inferred from the start of `name`
-   * (`nodejs` or `python`) when `name` is known at synthesis time.
+   * (`nodejs` or `python`) when `name` is known at synthesis time. If both are known, they must
+   * agree.
    */
   public static of(name: string, family?: RuntimeFamily): WebFunctionRuntime {
-    return new WebFunctionRuntime(name, family ?? inferFamily(name));
+    const inferred = inferFamily(name);
+    if (family !== undefined && inferred !== undefined && family !== inferred) {
+      throw new UnscopedValidationError(
+        lit`WebFunctionRuntimeFamilyMismatch`,
+        `Runtime '${name}' is a ${RuntimeFamily[inferred]} runtime, but family ${RuntimeFamily[family]} was given`,
+      );
+    }
+    return new WebFunctionRuntime(name, family ?? inferred);
   }
 
   /**

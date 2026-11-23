@@ -745,19 +745,15 @@ describe('WebFunction template', () => {
     Annotations.fromStack(stack).hasNoWarning('/Default/Test', Match.stringLikeRegexp('no runtime family was given'));
   });
 
-  test('the runtime family takes precedence over the runtime name', () => {
-    new WebFunction(stack, 'Test', minimalProps({
-      runtime: WebFunctionRuntime.of('python3.15', RuntimeFamily.NODEJS),
-      entryPoint: 'app.js',
-    }));
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
-      ServiceConfig: Match.objectLike({
-        EnvironmentVariables: {
-          AWS_LAMBDA_NODEJS_ENTRYPOINT: 'app.js',
-          AWS_LAMBDA_PYTHON_ENTRYPOINT: Match.absent(),
-        },
-      }),
-    });
+  test('of() rejects a family that contradicts the runtime name', () => {
+    expect(() => WebFunctionRuntime.of('python3.15', RuntimeFamily.NODEJS))
+      .toThrow(/Runtime 'python3.15' is a PYTHON runtime, but family NODEJS was given/);
+    expect(() => WebFunctionRuntime.of('nodejs26.x', RuntimeFamily.PYTHON))
+      .toThrow(/Runtime 'nodejs26.x' is a NODEJS runtime, but family PYTHON was given/);
+  });
+
+  test('of() accepts a family that matches the runtime name', () => {
+    expect(WebFunctionRuntime.of('python3.15', RuntimeFamily.PYTHON).family).toEqual(RuntimeFamily.PYTHON);
   });
 
   test('throws when entryPoint is set for a runtime family other than Node.js or Python', () => {
