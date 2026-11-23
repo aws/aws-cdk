@@ -479,6 +479,31 @@ describe('validations', () => {
     expect(report).toContain('ERROR Validation plugin \'broken-plugin\' failed: Something went wrong');
   });
 
+  test('plugin on a Stage nested under a regular construct is invoked', () => {
+    // A Stage does not have to be a direct child of the App; finding assemblies
+    // must recurse through the regular constructs in between.
+    const mockValidate = jest.fn().mockImplementation(() => ({ success: true, violations: [] }));
+    const app = new NonStrictApp();
+    const wrapper = new Construct(app, 'Wrapper');
+    const stage = new core.Stage(wrapper, 'Stage', {
+      policyValidationBeta1: [
+        {
+          name: 'test-plugin',
+          validate: mockValidate,
+        },
+      ],
+    });
+    const stack = new core.Stack(stage, 'stack1');
+    new FailResource(stack, 'DefaultResource');
+    app.synth();
+
+    expect(mockValidate).toHaveBeenCalledWith(expect.objectContaining({
+      templatePaths: [
+        expect.stringMatching(/assembly-Wrapper-Stage\/WrapperStagestack1.*\.template\.json/),
+      ],
+    }));
+  });
+
   test.each([false, true])('plugin tries to modify a template with confirmValidationPluginsDoNotMutate: %s', (confirmValidationPluginsDoNotMutate) => {
     const app = new NonStrictApp({
       policyValidationBeta1: [

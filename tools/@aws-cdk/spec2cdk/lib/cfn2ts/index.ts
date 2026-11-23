@@ -41,6 +41,19 @@ export interface GenerateAllOptions {
    * @default - generate all modules
    */
   readonly singleModule?: string;
+
+  /**
+   * The orgs to generate code for. An org is the first part of a CloudFormation type name, e.g. `AWS` in `AWS::S3::Bucket`.
+   *
+   * Services of any other org are skipped, along with their resources.
+   *
+   * Mutually exclusive with `singleModule`, whose module name already selects the services.
+   * Exactly one of the two must be specified.
+   *
+   * @example ['AWS', 'Alexa']
+   * @default - none, `singleModule` must be specified instead
+   */
+  readonly orgs?: string[];
 }
 
 /**
@@ -58,10 +71,17 @@ export interface GenerateAllOptions {
  */
 export async function generateAll(
   outPath: string,
-  { scopeMapPath, skippedServices, isStable, singleModule }: GenerateAllOptions,
+  { scopeMapPath, skippedServices, isStable, singleModule, orgs }: GenerateAllOptions,
 ): Promise<ModuleMap> {
+  if (singleModule != null && orgs != null) {
+    throw new Error('Specify only one of orgs and singleModule');
+  }
+  if (singleModule == null && orgs == null) {
+    throw new Error('Specify one of orgs and singleModule');
+  }
+
   const db = await loadPatchedSpec();
-  const allScopes = getAllScopes(db, 'cloudFormationNamespace');
+  const allScopes = getAllScopes(db, orgs, 'cloudFormationNamespace');
 
   let scopes: ModuleMapScope[];
   if (singleModule != null) {
@@ -109,6 +129,7 @@ export async function generateAll(
       outputPath: outPath,
       clearOutput: false,
       isStable,
+      orgs,
       builderProps: {
         inCdkLib: true,
         filePatterns: {

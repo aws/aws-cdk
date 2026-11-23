@@ -107,6 +107,69 @@ describe('capacity provider', () => {
       });
     });
 
+    test('with GPU utilization scaling policy', () => {
+      // WHEN
+      new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
+        subnets,
+        securityGroups: [securityGroup],
+        scalingOptions: lambda.ScalingOptions.manual([
+          lambda.TargetTrackingScalingPolicy.gpuUtilization(70),
+        ]),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CapacityProvider', {
+        CapacityProviderScalingConfig: {
+          ScalingMode: 'Manual',
+          ScalingPolicies: [
+            {
+              PredefinedMetricType: 'LambdaCapacityProviderAverageGPUUtilization',
+              TargetValue: 70,
+            },
+          ],
+        },
+      });
+    });
+
+    test.each([-1, -10, 101, 150])('gpuUtilization rejects an out-of-range target %p (service caps TargetValue at 100)', (target) => {
+      expect(() => lambda.TargetTrackingScalingPolicy.gpuUtilization(target))
+        .toThrow(/targetGpuUtilization must be between 0 and 100/);
+    });
+
+    test.each([0, 50, 100])('gpuUtilization accepts an in-range target %p', (target) => {
+      expect(() => lambda.TargetTrackingScalingPolicy.gpuUtilization(target)).not.toThrow();
+    });
+
+    test.each([-1, -10, 101, 150])('cpuUtilization rejects an out-of-range target %p (service caps TargetValue at 100)', (target) => {
+      expect(() => lambda.TargetTrackingScalingPolicy.cpuUtilization(target))
+        .toThrow(/targetCpuUtilization must be between 0 and 100/);
+    });
+
+    test.each([0, 50, 100])('cpuUtilization accepts an in-range target %p', (target) => {
+      expect(() => lambda.TargetTrackingScalingPolicy.cpuUtilization(target)).not.toThrow();
+    });
+
+    test.each([
+      ['cpu', lambda.TargetTrackingScalingPolicy.cpuUtilization],
+      ['gpu', lambda.TargetTrackingScalingPolicy.gpuUtilization],
+    ])('%sUtilization passes an unresolved token target through', (_, factory) => {
+      // WHEN
+      new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
+        subnets,
+        securityGroups: [securityGroup],
+        scalingOptions: lambda.ScalingOptions.manual([
+          factory(cdk.Token.asNumber(cdk.Fn.ref('TargetParam'))),
+        ]),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::CapacityProvider', {
+        CapacityProviderScalingConfig: {
+          ScalingPolicies: [{ TargetValue: { Ref: 'TargetParam' } }],
+        },
+      });
+    });
+
     test('with excluded instance types', () => {
       // WHEN
       new lambda.CapacityProvider(stack, 'MyCapacityProvider', {
@@ -525,6 +588,22 @@ describe('capacity provider', () => {
           },
         },
       });
+    });
+
+    test('rejects an imported function, which has no L1 resource to configure', () => {
+      // GIVEN
+      const imported = lambda.Function.fromFunctionArn(
+        stack,
+        'ImportedFunction',
+        'arn:aws:lambda:us-east-1:123456789012:function:MyExistingFunction',
+      );
+
+      // THEN
+      // An imported reference has no `node.defaultChild`, so there is no `AWS::Lambda::Function` to
+      // put `CapacityProviderConfig` on and the attachment cannot take effect. This asserts the
+      // failure so that making imported functions work stays a deliberate change rather than
+      // something a reader assumes already holds.
+      expect(() => capacityProvider.addFunction(imported)).toThrow();
     });
 
     test('configures function with all options', () => {

@@ -19,9 +19,18 @@ export interface CloudFormationEventContext {
   LogicalResourceId: string;
   ResponseURL: string;
   Data?: any;
+  NoEcho?: boolean;
 }
 
 export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudFormationEventContext, options: CloudFormationResponseOptions = { }) {
+  // NoEcho is set if either the caller or the event says so. A FAILED response for
+  // an isComplete request (submitted by safeHandler) does not pass the option, but
+  // the request still carries the Data returned by onEvent. The check is for
+  // truthiness, not `=== true`: a handler written in another language, or one that
+  // builds its JSON by hand, can return `"true"` or `1`, which CloudFormation and
+  // the framework have always honored. The same value decides both the response
+  // body and the log line.
+  const noEcho = Boolean(options.noEcho) || Boolean(event.NoEcho);
   const json: AWSLambda.CloudFormationCustomResourceResponse = {
     Status: status,
     Reason: options.reason || status,
@@ -29,7 +38,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
     RequestId: event.RequestId,
     PhysicalResourceId: event.PhysicalResourceId || MISSING_PHYSICAL_ID_MARKER,
     LogicalResourceId: event.LogicalResourceId,
-    NoEcho: options.noEcho,
+    NoEcho: noEcho ? true : undefined,
     Data: event.Data,
   };
 
@@ -37,7 +46,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
 
   const parsedUrl = url.parse(event.ResponseURL);
   const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
-  if (options?.noEcho) {
+  if (noEcho) {
     log('submit redacted response to cloudformation', loggingSafeUrl, redactDataFromPayload(json));
   } else {
     log('submit response to cloudformation', loggingSafeUrl, json);
@@ -92,7 +101,8 @@ export function safeHandler(block: (event: any) => Promise<void>) {
         } else {
           // otherwise, if PhysicalResourceId is not specified, something is
           // terribly wrong because all other events should have an ID.
-          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify({ ...event, ResponseURL: '...' })}`);
+          const sanitizedEvent = { ...event, ResponseURL: '...' };
+          log(`ERROR: Malformed event. "PhysicalResourceId" is required: ${JSON.stringify(event.NoEcho ? redactDataFromPayload(sanitizedEvent) : sanitizedEvent)}`);
         }
       }
 
@@ -104,18 +114,32 @@ export function safeHandler(block: (event: any) => Promise<void>) {
   };
 }
 
-export function redactDataFromPayload(payload: OnEventResponse) {
+/**
+ * Returns a copy of the payload with every `Data` value replaced, for logging a
+ * payload that has `NoEcho` set. The `Data` key names are kept: they are the
+ * attribute names the template reads with `Fn::GetAtt`, so they are not secret.
+ *
+ * The same rule is implemented by `redactResponseData` in
+ * `@aws-cdk/custom-resource-handlers` (`nodejs-entrypoint.ts` and
+ * `core/nodejs-entrypoint-handler/index.ts`), which cannot import it.
+ * `custom-resources/test/provider-framework/redact-data-parity.test.ts` runs all
+ * three on the same inputs.
+ */
+export function redactDataFromPayload(payload: OnEventResponse): OnEventResponse {
   // Create a deep copy of the payload object
   const redactedPayload: OnEventResponse = JSON.parse(JSON.stringify(payload));
 
   // Redact the data in the copied payload object
-  if (redactedPayload.Data) {
-    const keys = Object.keys(redactedPayload.Data);
-    for (const key of keys) {
-      redactedPayload.Data[key] = '*****';
-    }
+  const data: unknown = redactedPayload.Data;
+  if (data === undefined || data === null) {
+    return redactedPayload;
   }
-  return redactedPayload;
+  if (typeof data !== 'object' || Array.isArray(data)) {
+    // masking per key only makes sense for an object; for anything else (for
+    // example a string, whose characters cannot be overwritten) hide the whole value.
+    return { ...redactedPayload, Data: '*****' as any };
+  }
+  return { ...redactedPayload, Data: Object.fromEntries(Object.keys(data).map(key => [key, '*****'])) };
 }
 
 export class Retry extends Error { }

@@ -6,6 +6,7 @@ import type { IConstruct } from 'constructs';
 import { collectAnnotationReport } from './annotation-plugin';
 import type { Acknowledgement } from './collect-acknowledged-rule-ids';
 import { collectAcknowledgedRules } from './collect-acknowledged-rule-ids';
+import { iterateAssembliesPostorder, iterateAssembliesPreorder } from './construct-iteration';
 import { lit } from './literal-string';
 import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
@@ -15,7 +16,7 @@ import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import type { Stage } from '../stage';
 import type { IPolicyValidationPlugin, PolicyValidationPluginReport, PolicyValidationStack, PolicyViolatingResource } from '../validation';
-import { APP_TYPE, STAGE_TYPE } from './core-construct-finders';
+import { APP_TYPE } from './core-construct-finders';
 import { profileSpan } from './perf';
 import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
@@ -35,22 +36,23 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
   const assemblies = getAssemblies(root, assembly);
   const stacksByPlugin: Map<IPolicyValidationPlugin, Set<private_cxapi.CloudFormationStackArtifact>> = new Map();
 
-  visitAssemblies(root, 'post', construct => {
-    if (STAGE_TYPE.isMarked(construct)) {
-      const stageAssembly = assemblies.get(construct.artifactId);
-      if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
+  // The default plugin is configured at root level, but is auto-added to the list per stage.
+  const addDefaultPlugin = defaultValidationEnabled(root) && !hasUserRegisteredCloudFormationValidatePlugin(root);
 
-      const plugins = pluginsToEvaluate(root, construct);
-      for (const plugin of plugins) {
-        if (!stacksByPlugin.has(plugin)) {
-          stacksByPlugin.set(plugin, new Set());
-        }
-        for (const stack of stageAssembly.stacksRecursively) {
-          stacksByPlugin.get(plugin)!.add(stack);
-        }
+  for (const stage of iterateAssembliesPostorder(root)) {
+    const stageAssembly = assemblies.get(stage.artifactId);
+    if (!stageAssembly) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${stage.stageName}`);
+
+    const plugins = pluginsToEvaluate(root, stage, addDefaultPlugin);
+    for (const plugin of plugins) {
+      if (!stacksByPlugin.has(plugin)) {
+        stacksByPlugin.set(plugin, new Set());
+      }
+      for (const stack of stageAssembly.stacksRecursively) {
+        stacksByPlugin.get(plugin)!.add(stack);
       }
     }
-  });
+  }
 
   if (stacksByPlugin.size === 0) return;
 
@@ -196,22 +198,22 @@ export function validateTemplates(root: IConstruct, outdir: string, assembly: pr
 function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Map<string, private_cxapi.CloudAssembly> {
   const assemblies = new Map<string, private_cxapi.CloudAssembly>();
   assemblies.set(root.artifactId, rootAssembly);
-  visitAssemblies(root, 'pre', construct => {
-    const stage = construct as Stage;
+  // Parents before children, so the parent assembly is always available here
+  for (const stage of iterateAssembliesPreorder(root)) {
     if (stage.parentStage && assemblies.has(stage.parentStage.artifactId)) {
       assemblies.set(
         stage.artifactId,
         assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId),
       );
     }
-  });
+  }
   return assemblies;
 }
 
 /**
  * Return the list of plugins to invoke for the given stage
  */
-function pluginsToEvaluate(root: App, stage: Stage): IPolicyValidationPlugin[] {
+function pluginsToEvaluate(root: App, stage: Stage, addDefaultPlugin: boolean): IPolicyValidationPlugin[] {
   const ret: IPolicyValidationPlugin[] = [];
 
   // 1. User-registered plugins
@@ -219,7 +221,7 @@ function pluginsToEvaluate(root: App, stage: Stage): IPolicyValidationPlugin[] {
 
   // 2. Default validation engine (runs unless the user registered one explicitly,
   // or disabled validation via the CDK_VALIDATION environment variable)
-  if (defaultValidationEnabled(root) && !hasUserRegisteredCloudFormationValidatePlugin(root)) {
+  if (addDefaultPlugin) {
     ret.push(CloudFormationValidatePlugin._singletonInstance());
   }
 
@@ -520,24 +522,6 @@ function isTrustedPlugin(x: IPolicyValidationPlugin) {
   return x instanceof CloudFormationValidatePlugin;
 }
 
-/**
- * Visit the given construct tree in either pre or post order, only looking at Assemblies
- */
-export function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
-  if (order === 'pre') {
-    cb(root);
-  }
-
-  for (const child of root.node.children) {
-    if (!STAGE_TYPE.isMarked(child)) { continue; }
-    visitAssemblies(child, order, cb);
-  }
-
-  if (order === 'post') {
-    cb(root);
-  }
-}
-
 function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean): boolean {
   const raw = root.node.tryGetContext(key);
   if (raw === undefined) return defaultValue;
@@ -625,18 +609,17 @@ function fileOrSymlinkExists(p: string): boolean {
  * Returns true if the user registered exactly one valid instance, false if none.
  * Throws if the plugin is registered on a nested Stage or more than once.
  */
-function hasUserRegisteredCloudFormationValidatePlugin(root: IConstruct): boolean {
+function hasUserRegisteredCloudFormationValidatePlugin(root: App): boolean {
   let count = 0;
-  visitAssemblies(root, 'post', construct => {
-    if (!STAGE_TYPE.isMarked(construct)) return;
-    for (const plugin of construct._validationPlugins) {
+  for (const stage of iterateAssembliesPostorder(root)) {
+    for (const plugin of stage._validationPlugins) {
       if (!(plugin instanceof CloudFormationValidatePlugin)) continue;
-      if (construct !== root) {
+      if (stage !== root) {
         throw new UnscopedValidationError(lit`CloudFormationValidatePluginNotAtApp`, 'CloudFormationValidatePlugin can only be registered at the App level, not on a Stage');
       }
       count++;
     }
-  });
+  }
   if (count > 1) {
     throw new UnscopedValidationError(lit`DuplicateCloudFormationValidatePlugin`, 'only one instance of CloudFormationValidatePlugin can be registered');
   }

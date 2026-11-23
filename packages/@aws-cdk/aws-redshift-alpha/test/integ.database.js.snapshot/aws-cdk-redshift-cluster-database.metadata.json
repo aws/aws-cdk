@@ -6,13 +6,17 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at Stack._silenceLiteralAzWarning (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/aws-cdk-lib/core/lib/stack.js:1481:49)",
-        "    at get availabilityZones (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
-        "    at new Vpc (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
-        "    at <anonymous> (/workplace/ozelali/cdk/redshift-alpha-escape-literals/packages/@aws-cdk/aws-redshift-alpha/test/integ.database.js:62:13)",
+        "    at Validations.acknowledge (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
+        "    at Stack._silenceLiteralAzWarning (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
+        "    at get availabilityZones (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at new Vpc (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
+        "    at <anonymous> (/workplace/ozelali/cdk/redshift-alpha-table-names/packages/@aws-cdk/aws-redshift-alpha/test/integ.database.js:64:13)",
         "    ...node internals..."
       ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-redshift-cluster-database.template.json"
     }
   ],
   "/aws-cdk-redshift-cluster-database/custom-kms-key": [
@@ -173,6 +177,54 @@
       "type": "aws:cdk:analytics:method",
       "data": {
         "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "environment": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
           "*"
         ]
       }
@@ -597,6 +649,154 @@
       }
     }
   ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeQueryF353D69A"
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/inlinePolicyAddedToExecutionRole-0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/inlinePolicyAddedToExecutionRole-1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/Exports/Output{\"Ref\":\"PrivilegeQueryF353D69A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPrivilegeQueryF353D69AA6DB0176"
+    }
+  ],
   "/aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
@@ -910,6 +1110,54 @@
       "data": "*"
     }
   ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeQueryServiceRoleF3B61091"
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/inlinePolicyAddedToExecutionRole-0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeQueryinlinePolicyAddedToExecutionRole0E6324767"
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/inlinePolicyAddedToExecutionRole-1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeQueryinlinePolicyAddedToExecutionRole152A66CCC"
+    }
+  ],
   "/aws-cdk-redshift-cluster-database/Cluster/Secret/Attachment/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1149,6 +1397,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "TableWithAutoGeneratedNameC8EFACBF"
+    }
+  ],
+  "/aws-cdk-redshift-cluster-database/PrivilegeQuery/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrivilegeQueryServiceRoleDefaultPolicy980E8E1E"
     }
   ],
   "/aws-cdk-redshift-cluster-database/User/Resource/Handler/inlinePolicyAddedToExecutionRole-0/Resource": [

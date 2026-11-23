@@ -1,0 +1,21 @@
+{
+  "Description": "IAM_NO_OVERLY_PERMISSIVE_PASSROLE must fire: iam:PassRole uses a wildcard '*' resource (any role can be passed).",
+  "Resources": {
+    "WildcardPassRolePolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "WildcardPassRolePolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

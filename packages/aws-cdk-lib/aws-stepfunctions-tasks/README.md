@@ -1472,12 +1472,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
+import { KubectlV37Layer } from '@aws-cdk/lambda-layer-kubectl-v37';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-  version: eks.KubernetesVersion.V1_35,
+  version: eks.KubernetesVersion.V1_37,
   clusterName: 'myEksCluster',
-  kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV37Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {

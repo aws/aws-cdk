@@ -6,6 +6,8 @@ on:
   issues:
     types: [reopened]
 
+cache-mode: read
+
 jobs:
   auto_comment:
     permissions:

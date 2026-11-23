@@ -1,0 +1,20 @@
+{
+  "Description": "IAM_NO_WILDCARD_ACTIONS fires: the managed policy allows a service-wide wildcard action",
+  "Resources": {
+    "WildcardActionPolicy": {
+      "Type": "AWS::IAM::ManagedPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "s3:*",
+              "Resource": "arn:aws:s3:::example-bucket/*"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

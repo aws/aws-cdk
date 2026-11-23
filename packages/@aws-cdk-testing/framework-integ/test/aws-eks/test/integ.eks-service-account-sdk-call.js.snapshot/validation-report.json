@@ -1,15 +1,15 @@
 {
-  "version": "54.0.0",
+  "version": "55.0.0",
   "title": "Validation Report",
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.5.1",
+      "pluginVersion": "1.14.0",
       "conclusion": "success",
       "violations": [
         {
           "ruleName": "W2531",
-          "description": "Runtime: Runtime 'python3.9' was deprecated on '2025-12-15'. Creation was disabled on '2027-02-01' and update on '2027-03-03'. Please consider updating to 'python3.14'",
+          "description": "Runtime: Runtime 'python3.9' was deprecated on '2025-12-15'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'python3.14'",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Deprecation"
