@@ -1,4 +1,10 @@
 {
+  "/test-bucket-deployment-signobject": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "test-bucket-deployment-signobject.template.json"
+    }
+  ],
   "/test-bucket-deployment-signobject/Destination": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -18,6 +24,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -123,6 +130,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],

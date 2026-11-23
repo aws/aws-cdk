@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-nested-stack-in-product-stack-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdknestedstackinproductstackintegDefaultTestDeployAssert7C8849C0.template.json"
+    }
+  ],
+  "/aws-cdk-nested-stack-in-product-stack-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-nested-stack-in-product-stack-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
