@@ -62,7 +62,7 @@ for the grant's field semantics.
 **[SEC-IAM-CONFUSED-DEPUTY-ACCOUNT] (RECOMMENDED)** *(conditional — BLOCKING when the path is currently
 reachable)* — Missing `sts:ExternalId` condition on cross-*account* trust to a customer/partner
 (external) account — an `assumedBy` `AccountPrincipal`/`ArnPrincipal` for an account outside your org.
-`ExternalId` (or an inline comment stating why none is needed) is the third-party control. See
+`ExternalId` is the third-party control. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
 - **Doc-absent detail:** inside the org boundary (same-org / internal-Amazon cross-account trust) the two
   accounts share a trust domain and `ExternalId` is not required.
