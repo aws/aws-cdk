@@ -1660,8 +1660,8 @@ to the key policy, and nothing to the execution role's identity policy.
 
 The function author and operator statements use the account principal, gated by `kms:ViaService`.
 On a key policy with the default root statement this changes nothing, so the identity that deploys
-the function and any durable execution operators need `kms:DescribeKey`, `kms:Decrypt` and
-`kms:GenerateDataKey` in their IAM policies. On a key policy without the root statement, these
+the function needs `kms:DescribeKey`, `kms:Decrypt` and `kms:GenerateDataKey` in its IAM policies, and
+durable execution operators need `kms:Decrypt` in theirs. On a key policy without the root statement, these
 statements let IAM policies in the account grant these actions through Lambda, which the key policy
 did not allow before. The identities still need the IAM permissions above.
 
