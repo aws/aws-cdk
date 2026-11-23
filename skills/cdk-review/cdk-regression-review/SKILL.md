@@ -48,9 +48,9 @@ no-nit-quota), stay silent on the following too — not even as OPTIONAL — bec
 program. When a defect is in another dimension, leave it — it's outside your scope.
 
 - **Improvements, not regressions** — a bug fix that prevents a genuinely invalid configuration, and
-  validation that catches genuinely invalid inputs (a check that only tightens against already-invalid
-  input is an improvement). For the boolean-token false-positive guard (a `Token.isUnresolved()` guard on a
-  boolean, enum, or construct reference is dead code, and a boolean prop needs no token guard at all), see
+  validation that catches genuinely invalid inputs. For the boolean-token false-positive guard (a
+  `Token.isUnresolved()` guard on a boolean, enum, or construct reference is dead code, and a boolean prop
+  needs no token guard at all), see
   `REG-TOKEN-UNRESOLVED-GUARD` in [`regression-rules.md`](references/regression-rules.md).
 - **Performance and dependency-range opinions** — a micro-optimization or performance opinion with no
   measured regression; a dependency-range bump (`glob ^7 → ^11`) unless you can show it raises a floor
