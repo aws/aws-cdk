@@ -2715,14 +2715,17 @@ in user data. Tasks run in the order they were first added, with two exceptions:
   script. So a CloudFormation signal added with `addSignalOnExitCommand()` is sent after all other tasks have run, as
   with `UserData.forWindows()`, also for tasks added after passing `init` to an `Instance`. Scripts added with
   `detach: true` are the exception: they run concurrently, so the signal does not wait for them to finish.
+  As all scripts run after the other tasks, a file downloaded with `addS3DownloadCommand()` does not exist yet when
+  those tasks run. Run it with `addExecuteFileCommand()`, not with an `Ec2LaunchV2Task.executeProgram()` task.
 * EC2Launch v2 always runs `sysprep` last.
 
 The factory methods of `Ec2LaunchV2Task` are named after the tasks they produce, except `hostName()` for the
 `setHostName` task and `wallpaper()` for the `setWallpaper` task. Tasks without a factory method can be added with
 `Ec2LaunchV2Task.custom()`.
 
-Adding `executeProgram`, `writeFile`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again
-appends to the inputs of the existing task. Adding any other task with inputs twice is an error.
+Adding `executeScript` (with `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()`), `executeProgram`,
+`writeFile`, or a task added with `Ec2LaunchV2Task.custom()` whose inputs are a list, again appends to the inputs of the
+existing task. Adding any other task with inputs twice is an error.
 
 EC2Launch v2 (tested with version 2.5.2) does not load user data with a `writeFile` task whose destination is under
 `C:\Windows`, so `Ec2LaunchV2Task.writeFile()` rejects such destinations. Write those files with a command instead.

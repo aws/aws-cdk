@@ -931,6 +931,10 @@ const COMMAND_SCRIPT_TASK = 'executeScript';
  * exception: they run concurrently, so the signal does not wait for them to
  * finish. EC2Launch v2 always runs `sysprep` last.
  *
+ * As all scripts run after the other tasks, a file downloaded with
+ * `addS3DownloadCommand()` does not exist yet when those tasks run. Run it
+ * with `addExecuteFileCommand()`, not with an `executeProgram` task.
+ *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-settings.html#ec2launch-v2-schema-user-data
  */
 export class Ec2LaunchV2UserData extends UserData {
