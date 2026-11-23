@@ -2304,7 +2304,7 @@ Balancing log delivery service (`logdelivery.elasticloadbalancing.amazonaws.com`
 `<prefix>/AWSLogs/<account>/`, limited to load balancers in the stack's account and Region. For a
 bucket whose policy the app can't change, such as an imported bucket, the gateway warns and you add
 that statement yourself. The bucket must be in the gateway's Region and use Amazon S3-managed keys
-(SSE-S3). Test traffic
+(SSE-S3); the gateway rejects a bucket that uses AWS KMS, including the AWS managed key. Test traffic
 rules for blue/green deployments aren't modeled yet; set them on the `CfnGateway` with an escape
 hatch.
 

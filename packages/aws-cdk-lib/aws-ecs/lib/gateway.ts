@@ -4,7 +4,7 @@ import { CfnGateway } from './ecs.generated';
 import * as ec2 from '../../aws-ec2';
 import type * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
-import type * as s3 from '../../aws-s3';
+import * as s3 from '../../aws-s3';
 import type * as wafv2 from '../../aws-wafv2';
 import type { Duration, IResource } from '../../core';
 import { Annotations, Arn, ArnFormat, CfnResource, Fn, Names, PhysicalName, Resource, Stack, Token, ValidationError } from '../../core';
@@ -57,7 +57,8 @@ export interface GatewayAccessLogs {
    * delivery service (`logdelivery.elasticloadbalancing.amazonaws.com`) write objects under
    * `<prefix>/AWSLogs/<account>/`. For a bucket whose policy this app can't change, such as an
    * imported bucket, add that statement yourself. The bucket must use Amazon S3-managed keys
-   * (SSE-S3); a bucket encrypted with a KMS key is not supported.
+   * (SSE-S3); a bucket encrypted with AWS KMS (SSE-KMS or DSSE-KMS, with a customer managed key
+   * or the AWS managed key) is not supported.
    *
    * [disable-awslint:prefer-ref-interface] the gateway adds a statement to the bucket's resource policy
    */
@@ -617,8 +618,9 @@ export class Gateway extends Resource implements IGateway {
   private grantAccessLogDelivery(accessLogs: GatewayAccessLogs) {
     const { bucket, prefix } = accessLogs;
     // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#access-log-create-bucket
-    if (bucket.encryptionKey) {
-      throw new ValidationError(lit`GatewayAccessLogsKmsUnsupported`, 'the access log bucket of a gateway must use Amazon S3-managed keys (SSE-S3); a bucket encrypted with a KMS key is not supported', this);
+    // `encryption` also catches KMS_MANAGED and DSSE_MANAGED buckets, which use the AWS managed key and have no `encryptionKey`
+    if (bucket.encryptionKey || (bucket.encryption !== undefined && bucket.encryption !== s3.BucketEncryption.S3_MANAGED)) {
+      throw new ValidationError(lit`GatewayAccessLogsKmsUnsupported`, `the access log bucket of a gateway must use Amazon S3-managed keys (SSE-S3); a bucket encrypted with AWS KMS is not supported, got ${bucket.encryption ?? 'a KMS key'}`, this);
     }
     if (prefix !== undefined && !Token.isUnresolved(prefix) && prefix.includes('AWSLogs')) {
       throw new ValidationError(lit`GatewayAccessLogsPrefixValid`, `the access log prefix of a gateway must not contain "AWSLogs", got ${JSON.stringify(prefix)}`, this);

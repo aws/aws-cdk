@@ -258,11 +258,37 @@ describe('gateway', () => {
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
   });
 
-  test('fails for an access log bucket encrypted with a KMS key', () => {
-    const bucket = new s3.Bucket(stack, 'Logs', { encryption: s3.BucketEncryption.KMS });
+  test.each([
+    s3.BucketEncryption.KMS,
+    s3.BucketEncryption.KMS_MANAGED,
+    s3.BucketEncryption.DSSE,
+    s3.BucketEncryption.DSSE_MANAGED,
+  ])('fails for an access log bucket with %s encryption', (encryption) => {
+    const bucket = new s3.Bucket(stack, 'Logs', { encryption });
 
     expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } })).toThrow(
-      'the access log bucket of a gateway must use Amazon S3-managed keys (SSE-S3); a bucket encrypted with a KMS key is not supported');
+      `the access log bucket of a gateway must use Amazon S3-managed keys (SSE-S3); a bucket encrypted with AWS KMS is not supported, got ${encryption}`);
+  });
+
+  test('fails for an imported access log bucket that declares KMS_MANAGED encryption', () => {
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'Logs', {
+      bucketName: 'logs',
+      encryption: s3.BucketEncryption.KMS_MANAGED,
+    });
+
+    expect(() => new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } })).toThrow(
+      /must use Amazon S3-managed keys \(SSE-S3\)/);
+  });
+
+  test.each([
+    s3.BucketEncryption.S3_MANAGED,
+    s3.BucketEncryption.UNENCRYPTED,
+  ])('accepts an access log bucket with %s encryption', (encryption) => {
+    const bucket = new s3.Bucket(stack, 'Logs', { encryption });
+
+    new ecs.Gateway(stack, 'Gateway', { vpc, accessLogs: { bucket } });
+
+    Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
   });
 
   test('fails for an access log prefix containing AWSLogs', () => {
