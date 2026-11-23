@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/812909d78bc7096fa93e683ed8c7dc619ec36856921c82ef129d304045e73105.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f1f202d6187f0b7d4fce091f74b2f845f88ad95682b3fb4aa5d9cb1d1ef4cea5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -53,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/89750fc52a44be8ba4143ed2ffec19e357d685b129b3af8a1cc252f977ae2a85.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/632fbb8286fd84a52a1956418edb494057ddd942fae1456644cd06375d6c60f2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -624,6 +624,11 @@
           "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": {
             "recommendedValue": true,
             "explanation": "Render the API Gateway access log destination ARN without the trailing `:*`"
+          },
+          "@aws-cdk/aws-s3-deployment:modernResource": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the new BucketDeployment resource"
           },
           "@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction": {
             "recommendedValue": true,

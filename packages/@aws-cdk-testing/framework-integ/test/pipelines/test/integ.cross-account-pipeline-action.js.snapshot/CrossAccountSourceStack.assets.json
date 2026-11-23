@@ -16,31 +16,16 @@
         }
       }
     },
-    "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa": {
-      "displayName": "DeploySource/AwsCliLayer/Code",
-      "source": {
-        "path": "asset.fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip",
-        "packaging": "file"
-      },
-      "destinations": {
-        "234567890123-test-region-23c7949a": {
-          "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
-          "objectKey": "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip",
-          "region": "test-region",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
-        }
-      }
-    },
-    "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43": {
+    "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f": {
       "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
       "source": {
-        "path": "asset.a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43",
+        "path": "asset.7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f",
         "packaging": "zip"
       },
       "destinations": {
-        "234567890123-test-region-e0520d31": {
+        "234567890123-test-region-2d16a13b": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
-          "objectKey": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip",
+          "objectKey": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
         }
@@ -61,16 +46,16 @@
         }
       }
     },
-    "fac83604f2697be3ce0c4b6a05af75aa3a26e8c84a28b9a460ea02e8133951f6": {
+    "aade237fa6b898474243c2c7f9d579007666582e6f93c14e56f639ab103f8f92": {
       "displayName": "CrossAccountSourceStack Template",
       "source": {
         "path": "CrossAccountSourceStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-test-region-7375ee0e": {
+        "234567890123-test-region-ddaac9bf": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
-          "objectKey": "fac83604f2697be3ce0c4b6a05af75aa3a26e8c84a28b9a460ea02e8133951f6.json",
+          "objectKey": "aade237fa6b898474243c2c7f9d579007666582e6f93c14e56f639ab103f8f92.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
         }

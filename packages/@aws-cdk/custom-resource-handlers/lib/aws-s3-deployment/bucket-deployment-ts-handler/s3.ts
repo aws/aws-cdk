@@ -5,6 +5,7 @@
 import { type Readable } from 'stream';
 import type { S3 } from '@aws-sdk/client-s3';
 import pLimit from 'p-limit';
+import { rechunk } from './chunking';
 import { S3ObjectSet } from './file-set';
 import type { Filters } from './filters';
 import { replaceMarkers } from './markers';
@@ -20,8 +21,12 @@ const OWNERSHIP_TAG = 'aws-cdk:cr-owned';
  * How many S3 requests to have in flight at once.
  *
  * A deployment can carry thousands of files, so the per-file work is throttled rather than
- * launched all at once. 32 keeps a large site fast without exhausting sockets or file
- * descriptors in a 1024 MiB Lambda.
+ * launched all at once. Keep a large transfer fast without exhausting memory and FDs.
+ *
+ * The number has been chosen by trying out a couple of settings and picking a
+ * reasonably high but not overly high value; values higher than this have
+ * observed to not provide much performance benefit anymore on a ZIP file with a
+ * lot of small files in it.
  */
 const CONCURRENCY = 32;
 
@@ -52,22 +57,22 @@ export class S3Deployment {
         await withSourceFiles(this.s3, source, sourceIndex, action.extract, scratchDirectory, async (files) => {
           const accepted = files.filter((file) => action.filters.accepts(file.relativeKey));
 
-          // Parallelism is bounded by `limit`, not by the number of files in the source.
-          // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
-          await Promise.all(accepted.map((file) => {
+          const uploadable = accepted.filter((file) => {
             // Claiming and comparing are independent: the claim only protects the key from
             // pruning, and the comparison always reads the original listing. So a path
             // carried by several sources gets the same answer every time, and files racing
             // for the same key cannot interfere with each other.
             destination.markForKeeping(file.relativeKey);
 
-            if (file.isAlreadyInDestination(destination)) { return; }
+            return !file.isAlreadyInDestination(destination);
+          });
 
-            return limit(async () => {
-              const versionId = await this.upload(file, action);
-              if (versionId) { versionIds.set(file.sourceIndex, versionId); }
-            });
-          }));
+          // Parallelism is bounded by `limit`, not by the number of files in the source.
+          // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
+          await Promise.all(uploadable.map((file) => limit(async() => {
+            const versionId = await this.upload(file, action);
+            if (versionId) { versionIds.set(file.sourceIndex, versionId); }
+          })));
         });
       }
 
@@ -143,28 +148,33 @@ export class S3Deployment {
       ContentType: action.putObjectSettings.ContentType ?? guessContentType(file.relativeKey),
     };
 
-    if (Object.keys(file.markers).length > 0) {
-      const entireFile = await readEntireStream((await file.openStream()).body);
-      const body = replaceMarkers(entireFile, file.markers, file.markersConfig);
+    return retryWithS3Throttles(async () => {
+      const { body, contentLength } = await file.openStream();
+
+      if (Object.keys(file.markers).length > 0) {
+        const entireFile = await readEntireStream(body);
+        const updatedBody = replaceMarkers(entireFile, file.markers, file.markersConfig);
+        const response = await this.s3.putObject({
+          Bucket: action.destination.bucketName,
+          Key: key,
+          Body: updatedBody,
+          ...metadata,
+        });
+        return response.VersionId;
+      }
+
       const response = await this.s3.putObject({
         Bucket: action.destination.bucketName,
         Key: key,
-        Body: body,
+        // Re-chunked because S3 refuses an `aws-chunked` frame under 8192 bytes, and the
+        // SDK derives its frames from this stream's chunks.
+        Body: rechunk(body),
+        // S3 has to know the length up front to sign a streaming upload.
+        ContentLength: contentLength,
         ...metadata,
       });
       return response.VersionId;
-    }
-
-    const { body, contentLength } = await file.openStream();
-    const response = await this.s3.putObject({
-      Bucket: action.destination.bucketName,
-      Key: key,
-      Body: body,
-      // S3 has to know the length up front to sign a streaming upload.
-      ContentLength: contentLength,
-      ...metadata,
     });
-    return response.VersionId;
   }
 
   /**
@@ -271,4 +281,25 @@ async function readEntireStream(stream: Readable): Promise<Buffer> {
     chunks.push(chunk as Buffer);
   }
   return Buffer.concat(chunks);
+}
+
+async function retryWithS3Throttles<T>(fn: () => Promise<T>): Promise<T> {
+  const deadline = Date.now() + 60_000;
+  let delayMs = 50;
+  while (true) {
+    try {
+      return await fn();
+    } catch (e: any) {
+      if (e.name === 'SlowDown' && Date.now() < deadline) {
+        await sleep(Math.floor(Math.random() * delayMs));
+        delayMs *= 2;
+        continue;
+      }
+      throw e;
+    }
+  }
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

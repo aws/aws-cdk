@@ -1,0 +1,50 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.17.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "F0001",
+          "description": "Resources: Resources section must exist and be non-empty",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Structure"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "appconfig-configuration/DefaultTest/DeployAssert",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'python3.8' was deprecated on '2024-10-14'. Creation will be disabled on '2027-07-29', and updates will be disabled on '2027-08-31'. Please consider updating to 'python3.14'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-appconfig-configuration/MyValidatorFunction/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-appconfig-configuration.template.json",
+                "logicalId": "MyValidatorFunctionA679CB3C",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

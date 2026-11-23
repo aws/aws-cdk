@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ff05eca043a934fd4c1157fc8a6bfba9cfd6951354f37bcc9f43d389599b702a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5cb1aae377e3b9ef4a090d127d073a811f312332c37afea4aba3d1d3131c34ae.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -623,6 +623,11 @@
           "@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard": {
             "recommendedValue": true,
             "explanation": "Render the API Gateway access log destination ARN without the trailing `:*`"
+          },
+          "@aws-cdk/aws-s3-deployment:modernResource": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the new BucketDeployment resource"
           },
           "@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction": {
             "recommendedValue": true,

@@ -25,9 +25,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -55,9 +53,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -66,7 +62,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -74,7 +70,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -82,7 +78,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -90,7 +86,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -98,7 +94,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -106,7 +102,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/test-bucket-deployments/BucketWithoutExtract": [
@@ -192,21 +188,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/test-bucket-deployments/DeployWithBasic/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployments/DeployWithBasic/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -390,21 +378,13 @@
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
     }
   ],
-  "/test-bucket-deployments/DeployWithPruneDisabled/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployments/DeployWithPruneDisabled/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -446,21 +426,13 @@
       "data": "*"
     }
   ],
-  "/test-bucket-deployments/DeployWithExclude/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployments/DeployWithExclude/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -528,21 +500,13 @@
       "data": "*"
     }
   ],
-  "/test-bucket-deployments/DeployWithoutExtract/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployments/DeployWithoutExtract/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -610,21 +574,13 @@
       "data": "*"
     }
   ],
-  "/test-bucket-deployments/DeployWithAddSource/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployments/DeployWithAddSource/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -696,21 +652,13 @@
       "data": "*"
     }
   ],
-  "/test-bucket-deployments/DeployWithoutObjectKeys/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/test-bucket-deployments/DeployWithoutObjectKeys/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -774,12 +722,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DestinationAutoDeleteObjectsCustomResource15E926BA"
-    }
-  ],
-  "/test-bucket-deployments/DeployWithBasic/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithBasicAwsCliLayerF2F6D6A3"
     }
   ],
   "/test-bucket-deployments/DeployWithBasic/Asset1/AssetBucket": [
@@ -932,12 +874,6 @@
       "data": "*"
     }
   ],
-  "/test-bucket-deployments/DeployWithPruneDisabled/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithPruneDisabledAwsCliLayerBB59E3F5"
-    }
-  ],
   "/test-bucket-deployments/DeployWithPruneDisabled/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -948,12 +884,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DeployWithPruneDisabledCustomResourceBC53A8E0"
-    }
-  ],
-  "/test-bucket-deployments/DeployWithExclude/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithExcludeAwsCliLayer732FAE70"
     }
   ],
   "/test-bucket-deployments/DeployWithExclude/Asset1/AssetBucket": [
@@ -986,12 +916,6 @@
       "data": "BucketWithoutExtractAutoDeleteObjectsCustomResourceABF60253"
     }
   ],
-  "/test-bucket-deployments/DeployWithoutExtract/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithoutExtractAwsCliLayerE4885331"
-    }
-  ],
   "/test-bucket-deployments/DeployWithoutExtract/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -1020,12 +944,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BucketWithAddSourceAutoDeleteObjectsCustomResourceBA1DB48C"
-    }
-  ],
-  "/test-bucket-deployments/DeployWithAddSource/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithAddSourceAwsCliLayer69D8BDCC"
     }
   ],
   "/test-bucket-deployments/DeployWithAddSource/Asset1/AssetBucket": [
@@ -1064,12 +982,6 @@
       "data": "BucketWithoutObjectKeysAutoDeleteObjectsCustomResourceCD1E46F9"
     }
   ],
-  "/test-bucket-deployments/DeployWithoutObjectKeys/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployWithoutObjectKeysAwsCliLayer043713CD"
-    }
-  ],
   "/test-bucket-deployments/DeployWithoutObjectKeys/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -1082,46 +994,10 @@
       "data": "DeployWithoutObjectKeysCustomResource825229D6"
     }
   ],
-  "/test-bucket-deployments/DeployWithBasic/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
   "/test-bucket-deployments/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
-    }
-  ],
-  "/test-bucket-deployments/DeployWithPruneDisabled/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/test-bucket-deployments/DeployWithExclude/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/test-bucket-deployments/DeployWithoutExtract/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/test-bucket-deployments/DeployWithAddSource/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/test-bucket-deployments/DeployWithoutObjectKeys/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ]
 }

@@ -15,30 +15,16 @@
         }
       }
     },
-    "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa": {
-      "displayName": "DeployZip/AwsCliLayer/Code",
-      "source": {
-        "path": "asset.fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip",
-        "packaging": "file"
-      },
-      "destinations": {
-        "current_account-current_region-1c6b1ef8": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43": {
+    "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f": {
       "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
       "source": {
-        "path": "asset.a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43",
+        "path": "asset.7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-f7aec5f1": {
+        "current_account-current_region-39a56ff1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip",
+          "objectKey": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
@@ -57,16 +43,16 @@
         }
       }
     },
-    "3e2714d9701e99bedada78dc910d4d7e3383c6f953b714ff7dc7f2c026e76cf4": {
+    "b8aa1de31136287da0469a8c71f62d136b288d1d825eaf36991214ff76715f9d": {
       "displayName": "test-bucket-deployment-object-versions Template",
       "source": {
         "path": "test-bucket-deployment-object-versions.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-ba8baffc": {
+        "current_account-current_region-2eac61d4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3e2714d9701e99bedada78dc910d4d7e3383c6f953b714ff7dc7f2c026e76cf4.json",
+          "objectKey": "b8aa1de31136287da0469a8c71f62d136b288d1d825eaf36991214ff76715f9d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

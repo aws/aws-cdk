@@ -5,12 +5,14 @@
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
+import { Readable } from 'stream';
 import { S3 } from '@aws-sdk/client-s3';
 import type { AwsStub } from 'aws-sdk-client-mock';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as YAML from 'yaml';
 import { FakeS3 } from './fake-aws/fake-s3';
 import { buildZip, cfnEvent, renameEntry } from './helpers';
+import { rechunk } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/chunking';
 import { S3ObjectSet } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/file-set';
 import { compileFilters, globToRegExp } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/filters';
 import { encodeMarkerValue, replaceMarkers } from '../../../lib/aws-s3-deployment/bucket-deployment-ts-handler/markers';
@@ -263,6 +265,92 @@ describe('expanding a source', () => {
         expect(file.isAlreadyInDestination(identical)).toBe(false);
       });
     });
+  });
+});
+
+describe('re-chunking a stream', () => {
+  // S3 refuses an `aws-chunked` frame under 8192 bytes unless it is the last, and the SDK
+  // derives one frame per chunk the body stream produces. So the boundaries matter even
+  // though the bytes do not change.
+  const MINIMUM = 8192;
+
+  /** Feed `sizes` through `rechunk` and report what came out. */
+  async function through(sizes: number[], blockSize?: number) {
+    const input = sizes.map((size, i) => Buffer.alloc(size, 97 + (i % 26)));
+    const out: Buffer[] = [];
+    for await (const chunk of rechunk(Readable.from(input), blockSize)) {
+      out.push(chunk as Buffer);
+    }
+    return {
+      sizes: out.map((chunk) => chunk.length),
+      bytes: Buffer.concat(out),
+      expected: Buffer.concat(input),
+    };
+  }
+
+  const nonFinal = (sizes: number[]) => sizes.slice(0, -1);
+
+  test('coalesces chunks too small to stand alone', async () => {
+    const { sizes, bytes, expected } = await through(Array.from({ length: 100 }, () => 1024));
+
+    expect(nonFinal(sizes).every((size) => size >= MINIMUM)).toBe(true);
+    expect(bytes.equals(expected)).toBe(true);
+  });
+
+  test('preserves content exactly across an irregular chunk pattern', async () => {
+    // The alternation a real S3 response body arrives in.
+    const pattern = Array.from({ length: 60 }, (_, i) => (i % 2 === 0 ? 16 * 1024 : 1024));
+
+    const { sizes, bytes, expected } = await through(pattern);
+
+    expect(nonFinal(sizes).every((size) => size >= MINIMUM)).toBe(true);
+    expect(bytes.equals(expected)).toBe(true);
+  });
+
+  test('the last chunk may be as small as it needs to be', async () => {
+    const { sizes, bytes } = await through([70 * 1024, 10]);
+
+    expect(sizes[sizes.length - 1]).toBeLessThan(MINIMUM);
+    expect(nonFinal(sizes).every((size) => size >= MINIMUM)).toBe(true);
+    expect(bytes.length).toBe(70 * 1024 + 10);
+  });
+
+  test('a body smaller than one block comes out as a single chunk', async () => {
+    // Nothing to coalesce, and a lone chunk is always the last one, so any size is legal.
+    const { sizes, bytes } = await through([10]);
+
+    expect(sizes).toEqual([10]);
+    expect(bytes.length).toBe(10);
+  });
+
+  test('an empty body produces no chunks', async () => {
+    const { sizes, bytes } = await through([]);
+
+    expect(sizes).toEqual([]);
+    expect(bytes.length).toBe(0);
+  });
+
+  test('zero-length chunks are dropped rather than framed', async () => {
+    // A zero-size frame is how `aws-chunked` marks the end of a body, so one in the middle
+    // would truncate the upload.
+    const { sizes, bytes } = await through([0, 20 * 1024, 0, 20 * 1024, 0]);
+
+    expect(sizes.every((size) => size > 0)).toBe(true);
+    expect(bytes.length).toBe(40 * 1024);
+  });
+
+  test('chunks already large enough are passed through untouched', async () => {
+    // Keeps the common case — a stream read from a local file — copy-free.
+    const { sizes } = await through([64 * 1024, 64 * 1024, 64 * 1024]);
+
+    expect(sizes).toEqual([64 * 1024, 64 * 1024, 64 * 1024]);
+  });
+
+  test('a big chunk following a held-back one keeps the bytes in order', async () => {
+    const { sizes, bytes, expected } = await through([100, 64 * 1024, 100]);
+
+    expect(bytes.equals(expected)).toBe(true);
+    expect(nonFinal(sizes).every((size) => size >= MINIMUM)).toBe(true);
   });
 });
 

@@ -16,31 +16,16 @@
         }
       }
     },
-    "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa": {
-      "displayName": "BucketDeployment/AwsCliLayer/Code",
-      "source": {
-        "path": "asset.fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip",
-        "packaging": "file"
-      },
-      "destinations": {
-        "12345678-test-region-4fa6f704": {
-          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip",
-          "region": "test-region",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
-        }
-      }
-    },
-    "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43": {
+    "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f": {
       "displayName": "Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code",
       "source": {
-        "path": "asset.a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43",
+        "path": "asset.7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f",
         "packaging": "zip"
       },
       "destinations": {
-        "12345678-test-region-51c70a21": {
+        "12345678-test-region-8473edf8": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip",
+          "objectKey": "7db460b95fd54adb1eb23ef14727c072b8db6906ac87f78f7796d4e936c1671f.zip",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
@@ -61,16 +46,16 @@
         }
       }
     },
-    "d00e44d4261e3136a28d6c24ff4a5a4653992afcd9dbe8e93b5d4255cee1c9ab": {
+    "f6e6515da04697541aa02c1eb2ea82c1ae069044fd09f3a194f71a8198f9dada": {
       "displayName": "CdkPipelineStepFunctionsActionStack Template",
       "source": {
         "path": "CdkPipelineStepFunctionsActionStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region-983de4fd": {
+        "12345678-test-region-44f3281d": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "d00e44d4261e3136a28d6c24ff4a5a4653992afcd9dbe8e93b5d4255cee1c9ab.json",
+          "objectKey": "f6e6515da04697541aa02c1eb2ea82c1ae069044fd09f3a194f71a8198f9dada.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }

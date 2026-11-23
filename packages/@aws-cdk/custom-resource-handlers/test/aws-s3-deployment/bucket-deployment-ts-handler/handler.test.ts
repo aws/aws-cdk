@@ -118,6 +118,33 @@ describe('deployment', () => {
     expect(fakeS3.text(DST, 'web/deadbeef.zip')).toBe('raw payload');
   });
 
+  test('Extract=false deploys an object far larger than one network chunk', async () => {
+    // A response body arrives in transport-sized pieces, many of them under the 8192 bytes
+    // S3 requires of every `aws-chunked` frame but the last. Anything streamed from S3 to
+    // S3 has to be re-chunked on the way, and that only shows up once the object spans
+    // more than a single chunk.
+    const body = Buffer.concat(Array.from({ length: 100 }, (_, i) => Buffer.alloc(1024, 97 + (i % 26))));
+    fakeS3.seed(SRC, 'assets/big.bin', body);
+
+    await onEvent(cfnEvent('Create', props(
+      { Extract: 'false', DestinationBucketKeyPrefix: 'web/' },
+      ['assets/big.bin'],
+    )));
+
+    expect(fakeS3.bytes(DST, 'web/big.bin').equals(body)).toBe(true);
+  });
+
+  test('an extracted entry far larger than one network chunk round-trips', async () => {
+    // The same requirement, for the path that reads from the archive on disk rather than
+    // from a response body.
+    const body = 'x'.repeat(300 * 1024);
+    seedZip('a.zip', [{ path: 'big.txt', body }]);
+
+    await onEvent(cfnEvent('Create', props()));
+
+    expect(fakeS3.text(DST, 'big.txt')).toBe(body);
+  });
+
   test('later sources win on a path collision', async () => {
     seedZip('a.zip', [{ path: 'index.html', body: 'from-a' }, { path: 'only-a.txt', body: 'a' }]);
     seedZip('b.zip', [{ path: 'index.html', body: 'from-b' }, { path: 'only-b.txt', body: 'b' }]);

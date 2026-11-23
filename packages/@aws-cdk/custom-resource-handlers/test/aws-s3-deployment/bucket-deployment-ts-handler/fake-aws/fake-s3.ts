@@ -132,6 +132,9 @@ function s3Error(name: string, message: string, httpStatusCode = 400): never {
 
 let versionCounter = 0;
 
+/** The smallest `aws-chunked` frame S3 accepts anywhere but at the end of a body. */
+const MINIMUM_CHUNK_SIZE = 8192;
+
 export class FakeS3 {
   private readonly buckets = new Map<string, FakeBucket>();
 
@@ -266,7 +269,7 @@ export class FakeS3 {
 
     return {
       $metadata: { httpStatusCode: 200 },
-      Body: sdkStreamMixin(Readable.from([object.body])),
+      Body: sdkStreamMixin(Readable.from(networkChunks(object.body))),
       ContentLength: object.body.length,
       ContentType: object.contentType,
       VersionId: object.versionId,
@@ -283,7 +286,19 @@ export class FakeS3 {
       s3Error(failure.name, failure.message, 403);
     }
 
-    const body = await toBuffer(input.Body);
+    const { buffer: body, chunkSizes } = await drain(input.Body);
+
+    // S3 wraps a streaming body in `aws-chunked` framing, emitting one frame per chunk the
+    // stream produced, and refuses any frame under 8192 bytes except the last. Enforcing
+    // that here is what stops a body whose chunk sizes real S3 would reject from passing
+    // in tests.
+    const undersized = chunkSizes.slice(0, -1).filter((size) => size < MINIMUM_CHUNK_SIZE);
+    if (undersized.length > 0) {
+      s3Error(
+        'InvalidChunkSizeError',
+        'Only the last chunk is allowed to have a size less than 8192 bytes',
+      );
+    }
 
     // S3 rejects a request whose body does not match the length it was signed with, and
     // the provider now supplies that length explicitly for streaming uploads — so getting
@@ -519,19 +534,49 @@ function sha256Base64(body: Buffer): string {
  * Streams are supported because the provider pipes a download or an archive entry straight
  * into an upload, which is the whole point of not buffering.
  */
-async function toBuffer(body: PutObjectCommandInput['Body']): Promise<Buffer> {
-  if (body === undefined) { return Buffer.alloc(0); }
-  if (Buffer.isBuffer(body)) { return body; }
-  if (typeof body === 'string') { return Buffer.from(body, 'utf-8'); }
-  if (body instanceof Uint8Array) { return Buffer.from(body); }
+/**
+ * Drain a request body, reporting the chunk sizes a stream produced.
+ *
+ * The sizes are what the `aws-chunked` frame sizes would be, which S3 constrains.
+ */
+async function drain(body: PutObjectCommandInput['Body']): Promise<{ buffer: Buffer; chunkSizes: number[] }> {
+  if (body === undefined) { return { buffer: Buffer.alloc(0), chunkSizes: [] }; }
+  // A body already in memory is sent as one payload rather than framed, so the chunk rule
+  // never applies to it.
+  if (Buffer.isBuffer(body)) { return { buffer: body, chunkSizes: [body.length] }; }
+  if (typeof body === 'string') { return { buffer: Buffer.from(body, 'utf-8'), chunkSizes: [Buffer.byteLength(body, 'utf-8')] }; }
+  if (body instanceof Uint8Array) { return { buffer: Buffer.from(body), chunkSizes: [body.length] }; }
 
   if (typeof (body as any)[Symbol.asyncIterator] === 'function') {
     const chunks: Buffer[] = [];
     for await (const chunk of body as AsyncIterable<Buffer | string>) {
       chunks.push(typeof chunk === 'string' ? Buffer.from(chunk, 'utf-8') : chunk);
     }
-    return Buffer.concat(chunks);
+    return { buffer: Buffer.concat(chunks), chunkSizes: chunks.map((chunk) => chunk.length) };
   }
 
   throw new Error(`FakeS3 does not support a ${typeof body} body; pass a Buffer, string, Uint8Array or stream`);
+}
+
+/**
+ * Split a stored body the way a real S3 response arrives.
+ *
+ * A response body is delivered over the network, so its chunk boundaries follow transport
+ * framing rather than anything about the object: a 1 MiB object measured against real S3
+ * arrived as an alternation of 16 KiB and ~1 KiB pieces. Returning it as one chunk instead
+ * would hide every problem that depends on chunk sizes — which is exactly how an upload
+ * that real S3 rejects with `InvalidChunkSizeError` first passed these tests.
+ */
+function networkChunks(body: Buffer): Buffer[] {
+  const chunks: Buffer[] = [];
+  const sizes = [16 * 1024, 1024];
+
+  let offset = 0;
+  for (let i = 0; offset < body.length; i++) {
+    const size = Math.min(sizes[i % sizes.length], body.length - offset);
+    chunks.push(body.subarray(offset, offset + size));
+    offset += size;
+  }
+
+  return chunks.length > 0 ? chunks : [Buffer.alloc(0)];
 }

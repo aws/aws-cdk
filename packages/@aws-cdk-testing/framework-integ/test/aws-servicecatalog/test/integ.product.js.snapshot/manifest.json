@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/21c5834a3f18b3bbab35df8c84f5acf3ed108942808902882d9abb5148826ebe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/2f9c16b947865fe6cb1c466922da20b32f46cce344d1a350d1c9c5523a531b0b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -624,6 +624,11 @@
             "recommendedValue": true,
             "explanation": "Render the API Gateway access log destination ARN without the trailing `:*`"
           },
+          "@aws-cdk/aws-s3-deployment:modernResource": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the new BucketDeployment resource"
+          },
           "@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction": {
             "recommendedValue": true,
             "explanation": "When enabled, each EvaluateExpression task gets its own Lambda function",
@@ -638,6 +643,5 @@
         }
       }
     }
-  },
-  "minimumCliVersion": "2.1148.1"
+  }
 }

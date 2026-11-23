@@ -66,9 +66,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -96,9 +94,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -107,7 +103,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/aws-appconfig-configuration/DummyRole": [
@@ -209,19 +205,18 @@
       "type": "aws:cdk:warning",
       "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]",
       "trace": [
-        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:244:29)",
-        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:113:18)",
+        "Annotations.addMessage (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
         "new Pipeline (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:483:47)",
         "new Pipeline (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Pipeline (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "Object.<anonymous> (/Users/huijbers/Workspaces/PublicCDK/aws-cdk2/packages/@aws-cdk-testing/framework-integ/test/aws-appconfig/test/integ.configuration.js:226:18)",
-        "Module._compile (node:internal/modules/cjs/loader:1761:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1893:10)",
-        "Module.load (node:internal/modules/cjs/loader:1481:32)",
-        "Module._load (node:internal/modules/cjs/loader:1300:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:245:24)",
-        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1968:14)",
+        "Object..js (node:internal/modules/cjs/loader:2108:10)",
+        "Module.load (node:internal/modules/cjs/loader:1690:32)",
+        "Module._load (node:internal/modules/cjs/loader:1480:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
         "node:internal/main/run_main_module:33:47"
       ]
     },
@@ -530,21 +525,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/aws-appconfig-configuration/DeployConfigInBucket/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -1023,12 +1010,6 @@
       "data": "MyBucketAutoDeleteObjectsCustomResource2C28D565"
     }
   ],
-  "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeployConfigInBucketAwsCliLayerFC57D055"
-    }
-  ],
   "/aws-appconfig-configuration/DeployConfigInBucket/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -1243,12 +1224,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "MyConfigFromPipelineDeploymentStrategyF07EE763"
-    }
-  ],
-  "/aws-appconfig-configuration/DeployConfigInBucket/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/aws-appconfig-configuration/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [

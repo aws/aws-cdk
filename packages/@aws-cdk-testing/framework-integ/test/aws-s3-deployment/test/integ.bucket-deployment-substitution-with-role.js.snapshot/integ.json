@@ -9,6 +9,5 @@
       "assertionStackName": "integtestbucketdeploymentsubstitutionwithroleDefaultTestDeployAssertCE8DBE46"
     }
   },
-  "enableLookups": true,
-  "minimumCliVersion": "2.1145.0"
+  "enableLookups": true
 }

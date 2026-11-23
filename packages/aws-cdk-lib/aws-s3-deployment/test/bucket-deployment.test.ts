@@ -79,6 +79,29 @@ test('deploy from local directory asset', () => {
   });
 });
 
+test('modern resource uses no AWS CLI layer', () => {
+  // GIVEN
+  const app = new cdk.App({
+    postCliContext: {
+      '@aws-cdk/aws-s3-deployment:modernResource': true,
+    },
+  });
+  const stack = new cdk.Stack(app);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.jsonData('f.json', { a: 1 })],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  const t = Template.fromStack(stack);
+  t.hasResourceProperties('AWS::Lambda::Function', Match.objectLike({
+    Layers: Match.absent(),
+  }));
+});
+
 test('empty sources array is preserved', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app);
