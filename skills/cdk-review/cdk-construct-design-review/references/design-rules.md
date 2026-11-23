@@ -86,6 +86,8 @@ deprecate-and-add (`FooV2`), not mutate. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
 - **Tier:** RECOMMENDED for an implementation-detail type left exported instead of `@internal`, because the
   guide states that rule as a SHOULD.
+- **Tier (doc-absent detail):** the guide names no damage for a `@deprecated` prop in a newly introduced
+  interface: it breaks no existing program, since none uses the interface yet, so RECOMMENDED.
 - **Scope split (doc-absent detail):** classifying an *existing-surface* break is outside construct-design's scope.
 
 **[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop mapping to a CloudFormation property whose
