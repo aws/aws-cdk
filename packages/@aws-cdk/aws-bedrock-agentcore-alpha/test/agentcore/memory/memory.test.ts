@@ -409,13 +409,13 @@ describe('Memory expiration duration validation tests', () => {
     });
   });
 
-  test('Should throw error for expiration less than 7 days', () => {
+  test('Should throw error for expiration less than 3 days', () => {
     expect(() => {
       new Memory(stack, 'short-expiry', {
         memoryName: 'short_expiry_memory',
         expirationDuration: Duration.days(0),
       });
-    }).toThrow('Memory expiration days must be between 7 and 365');
+    }).toThrow('Memory expiration days must be between 3 and 365');
   });
 
   test('Should throw error for expiration more than 365 days', () => {
@@ -424,14 +424,14 @@ describe('Memory expiration duration validation tests', () => {
         memoryName: 'long_expiry_memory',
         expirationDuration: Duration.days(366),
       });
-    }).toThrow('Memory expiration days must be between 7 and 365');
+    }).toThrow('Memory expiration days must be between 3 and 365');
   });
 
-  test('Should accept minimum valid expiration (7 days)', () => {
+  test('Should accept minimum valid expiration (3 days)', () => {
     expect(() => {
       new Memory(stack, 'min-expiry', {
         memoryName: 'min_expiry_memory',
-        expirationDuration: Duration.days(7),
+        expirationDuration: Duration.days(3),
       });
     }).not.toThrow();
   });
