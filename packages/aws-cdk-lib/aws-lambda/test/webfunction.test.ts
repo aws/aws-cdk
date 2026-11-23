@@ -677,11 +677,67 @@ describe('WebFunction template', () => {
     });
   });
 
-  test('throws when entryPoint is set for a non-Node.js runtime', () => {
+  test('throws when entryPoint is set for an unsupported runtime', () => {
     expect(() => new WebFunction(stack, 'Test', minimalProps({
-      runtime: WebFunctionRuntime.of('python3.13'),
-      entryPoint: 'app.py',
-    }))).toThrow(/entryPoint is only supported for Node.js runtimes, got 'python3.13'/);
+      runtime: WebFunctionRuntime.of('ruby3.3'),
+      entryPoint: 'app.rb',
+    }))).toThrow(/entryPoint is only supported for Node.js and Python runtimes, got 'ruby3.3'/);
+  });
+
+  test('entryPoint is injected as AWS_LAMBDA_PYTHON_ENTRYPOINT for Python 3.15 runtime', () => {
+    new WebFunction(
+      stack,
+      'Test',
+      minimalProps({
+        webFunctionName: 'my-python-func',
+        runtime: WebFunctionRuntime.PYTHON_3_15,
+        entryPoint: 'main.py',
+        environment: { ENV: 'production' },
+      }),
+    );
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: {
+        EnvironmentVariables: {
+          ENV: 'production',
+          AWS_LAMBDA_PYTHON_ENTRYPOINT: 'main.py',
+        },
+      },
+    });
+  });
+
+  test('entryPoint is accepted for a Python runtime given with of()', () => {
+    new WebFunction(stack, 'Test', minimalProps({
+      runtime: WebFunctionRuntime.of('python3.14'),
+      entryPoint: 'server.py',
+    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::WebFunctionRevision', {
+      ServiceConfig: Match.objectLike({
+        EnvironmentVariables: Match.objectLike({ AWS_LAMBDA_PYTHON_ENTRYPOINT: 'server.py' }),
+      }),
+    });
+  });
+
+  test('throws when entryPoint and AWS_LAMBDA_PYTHON_ENTRYPOINT env var are both set', () => {
+    expect(() => {
+      new WebFunction(
+        stack,
+        'Test',
+        minimalProps({
+          webFunctionName: 'my-func',
+          runtime: WebFunctionRuntime.PYTHON_3_15,
+          entryPoint: 'main.py',
+          environment: { AWS_LAMBDA_PYTHON_ENTRYPOINT: 'other.py' },
+        }),
+      );
+    }).toThrow(/entryPoint cannot be used together with an AWS_LAMBDA_PYTHON_ENTRYPOINT environment variable/);
+  });
+
+  test('WebFunctionRuntime defines Python 3.15 and latest', () => {
+    expect(WebFunctionRuntime.PYTHON_3_15.name).toEqual('python3.15');
+    expect(WebFunctionRuntime.PYTHON_LATEST.name).toEqual('python3.15');
+    expect(WebFunctionRuntime.PYTHON_3_15.toString()).toEqual('python3.15');
   });
 
   test('entryPoint is accepted for a Node.js runtime given with of()', () => {

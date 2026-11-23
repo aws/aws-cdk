@@ -20,6 +20,23 @@ export class WebFunctionRuntime {
   public static readonly NODEJS_LATEST = new WebFunctionRuntime('nodejs24.x');
 
   /**
+   * Python 3.15 runtime
+   */
+  public static readonly PYTHON_3_15 = new WebFunctionRuntime('python3.15');
+
+  /**
+   * The latest Python version currently available in ALL regions (not necessarily the latest Python version
+   * available in YOUR region).
+   *
+   * This value changes as new Python runtimes become available; it currently resolves to
+   * Python 3.15. The runtime is part of a revision's build configuration, so when an
+   * upgrade of the CDK library moves this to a newer runtime, the next deployment creates a
+   * new revision on it and shifts the endpoint's traffic there — without any change to your
+   * code. Use a specific version such as `PYTHON_3_15` to control when that happens.
+   */
+  public static readonly PYTHON_LATEST = new WebFunctionRuntime('python3.15');
+
+  /**
    * Use a custom runtime string not yet supported by the CDK.
    *
    * This allows customers to use a newly released runtime without waiting
