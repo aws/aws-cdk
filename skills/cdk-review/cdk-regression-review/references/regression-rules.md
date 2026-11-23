@@ -24,13 +24,9 @@ same leak on a *brand-new* L2 surface is not a regression — outside your scope
 
 **[REG-TOKEN-UNRESOLVED-GUARD] (BLOCKING)** — A check or manipulation on an unresolved token (a value that
 is actually a `Ref`/`Fn::` at synth) emits invalid CloudFormation or throws for users passing that token.
-Guard with `Token.isUnresolved()` before validating or comparing. For token fundamentals — the three
-encodings and the `Token.asString/asList/asNumber` conversions — read the
+Guard with `Token.isUnresolved()` before validating or comparing. See
+[`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety) and the
 [CDK Tokens guide](https://docs.aws.amazon.com/cdk/v2/guide/tokens.html).
-- **Guard before validate:** the guard-before-validate rule — with typed string/number/list examples, the
-  opaque-value `Fn.select`/`Fn.join` manipulation pattern, and the tokenized-list `.length === 1` gotcha —
-  is stated at
-  [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety).
 - **Boolean-token false-positive guard (doc-absent detail):** tokens encode only as string, number, or
   string-list (`Token.asString`/`asNumber`/`asList` — there is no `asBoolean`), so a `boolean`-typed value
   can never be an unresolved token. Do not flag a missing `Token.isUnresolved()` guard on a boolean prop,
