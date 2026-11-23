@@ -539,9 +539,10 @@ and in partitions other than `aws`.
 
 With the feature flag enabled:
 
-- If the stack's region is known at synthesis time but has no registry known to the CDK, the `us-west-2` repository is used.
+- If the stack's region is known at synthesis time but has no registry known to the CDK, the `us-west-2` repository is used,
+  and a warning is reported at synthesis time.
 - If the stack's region is not known at synthesis time (the stack has no `env`), the repository is looked up at deployment time,
-  and the deployment fails in a region that is not known to the CDK.
+  and the deployment fails in a region that is not known to the CDK. A warning is reported at synthesis time.
 
 To use another repository, such as a copy of the image in your own account, use the `repository` property:
 

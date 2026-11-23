@@ -8,7 +8,7 @@ import * as iam from '../../aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Aws, Duration, FeatureFlags, Names, RemovalPolicy, Stack, Token, ValidationError } from '../../core';
+import { Annotations, Aws, Duration, FeatureFlags, Names, RemovalPolicy, Stack, Token, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 import { FactName, RegionInfo } from '../../region-info';
@@ -557,7 +557,14 @@ export class AlbController extends Construct {
     }
 
     const stack = Stack.of(this);
-    if (!Token.isUnresolved(stack.region) && RegionInfo.get(stack.region).eksAddonRepositoryAccount === undefined) {
+    if (Token.isUnresolved(stack.region)) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:albControllerRepositoryDeployTimeLookup',
+        'The AWS Load Balancer Controller image repository is looked up at deployment time, and the deployment fails in a region '
+        + 'that has no Amazon EKS add-on image registry known to the CDK. Set the region of the stack or the repository property to avoid this');
+    } else if (RegionInfo.get(stack.region).eksAddonRepositoryAccount === undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:albControllerRepositoryLegacyFallback',
+        `No Amazon EKS add-on image registry is known for ${stack.region}, so the AWS Load Balancer Controller image is pulled from `
+        + 'us-west-2. Set the repository property to use another repository');
       return LEGACY_REPOSITORY;
     }
 
