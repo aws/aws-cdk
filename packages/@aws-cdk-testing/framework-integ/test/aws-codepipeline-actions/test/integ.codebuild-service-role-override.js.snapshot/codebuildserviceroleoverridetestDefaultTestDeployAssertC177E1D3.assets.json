@@ -1,16 +1,29 @@
 {
   "version": "55.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "2b3bb73e35ce04c4f2b18778215a1d6207c20ecb52c92c65194e1e72965e6aa3": {
+      "source": {
+        "path": "asset.2b3bb73e35ce04c4f2b18778215a1d6207c20ecb52c92c65194e1e72965e6aa3.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-311d5de8": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2b3bb73e35ce04c4f2b18778215a1d6207c20ecb52c92c65194e1e72965e6aa3.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "034d9b116f6977b8917f577b98a2df8635ce5ad94b244e237bc4e2f2f0bc313b": {
       "displayName": "codebuildserviceroleoverridetestDefaultTestDeployAssertC177E1D3 Template",
       "source": {
         "path": "codebuildserviceroleoverridetestDefaultTestDeployAssertC177E1D3.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-a31a8333": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "034d9b116f6977b8917f577b98a2df8635ce5ad94b244e237bc4e2f2f0bc313b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

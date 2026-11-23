@@ -3,17 +3,18 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * A CodeBuild action that runs its builds as an explicit `serviceRoleOverride`
  * role, scoped to the single repository cloned by a Full Clone CodeConnections
- * source. The action renders `ServiceRoleArnOverride` and the pipeline role gets
- * `iam:PassRole` on the override role.
+ * source. The action renders `ServiceRoleArnOverride`, and the action's role (CDK
+ * creates one per action) gets `iam:PassRole` on the override role.
  *
- * The test deploys the stack but does not run the pipeline: by default the source
- * uses a mock connection. To run a build by hand, set CONNECTION_ARN, REPO_OWNER,
- * REPO_NAME and BRANCH to a real connection and repository.
+ * The test checks the deployed pipeline's configuration. With the default mock
+ * connection, the execution the pipeline starts on creation fails at the Source
+ * stage. To run a build, set CONNECTION_ARN, REPO_OWNER, REPO_NAME and BRANCH to a
+ * real connection and repository.
  */
 
 const app = new cdk.App();
@@ -99,7 +100,10 @@ buildRole.addToPolicy(new iam.PolicyStatement({
   conditions: { StringEquals: { [`${connectionService}:FullRepositoryId`]: `${owner}/${repo}` } },
 }));
 
-new IntegTest(app, 'codebuild-service-role-override-test', {
+const integ = new IntegTest(app, 'codebuild-service-role-override-test', {
   testCases: [stack],
   diffAssets: true,
 });
+
+integ.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: pipeline.pipelineName })
+  .assertAtPath('pipeline.stages.1.actions.0.configuration.ServiceRoleArnOverride', ExpectedResult.stringLikeRegexp('BuildRole'));

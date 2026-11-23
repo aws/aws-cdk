@@ -116,25 +116,27 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * project's default service role for builds triggered by this pipeline action.
    *
    * Maps to the CodePipeline `ServiceRoleArnOverride` action configuration property.
-   * When supplied, the action's role (the pipeline role when `usePipelineRoleForActions`
-   * is set) is granted `iam:PassRole` on this role, limited to CodeBuild. The identity
-   * that deploys the pipeline (for CDK, the CloudFormation execution role) must also
-   * have `iam:PassRole` on this role.
+   * The role must be in the same account as the CodeBuild project, and its trust
+   * policy must allow `codebuild.amazonaws.com` to assume it.
    *
-   * CDK does not add any other permissions to this role. It must grant everything
-   * the build needs, such as access to the pipeline artifact bucket, build logs,
-   * source connections and any `PARAMETER_STORE` or `SECRETS_MANAGER` environment
-   * variables. The role must be in the same account as the CodeBuild project.
+   * CDK grants `iam:PassRole` on this role, limited to CodeBuild, to the role the
+   * action runs as: the action's `role` if you set one, the role CDK creates for the
+   * action (in the project's account for a cross-account action), or the pipeline role
+   * when `usePipelineRoleForActions` is set. The identity that deploys the pipeline (for
+   * CDK, the CloudFormation execution role) must also have `iam:PassRole` on this role.
    *
-   * When supplied, this action does not grant the project's service role access to
-   * the pipeline artifact bucket, source connections, CodeCommit repositories or
-   * environment variable secrets, since its builds do not run as that role.
+   * CDK grants nothing else to this role, and this action stops granting the project's
+   * role access to the pipeline artifact bucket, source connections, CodeCommit
+   * repositories and environment variable secrets. Grant this role everything the build
+   * needs, including the artifact bucket in the action's region: for a cross-region
+   * action that is `pipeline.crossRegionSupport[region].replicationBucket`, not
+   * `pipeline.artifactBucket`.
    *
-   * CodeBuild encrypts build outputs with the project's encryption key. If the artifact
-   * bucket uses a customer-managed KMS key and the project has no `encryptionKey` of its
-   * own, CDK still sets the bucket key as the project's encryption key and grants the
-   * project's role encrypt/decrypt on it. If the project has its own `encryptionKey`,
-   * CodeBuild uses that key instead, so grant this role access to it too.
+   * CodeBuild encrypts build outputs with the project's encryption key. If the project
+   * has no `encryptionKey` of its own and the artifact bucket uses a customer-managed KMS
+   * key in the project's account and region, CDK still sets that key on the project and
+   * grants the project's role encrypt/decrypt on it. If the project has its own
+   * `encryptionKey`, grant this role access to that key too.
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeBuild.html
    *
@@ -269,11 +271,11 @@ export class CodeBuildAction extends Action {
     }
     if (this.props.serviceRoleOverride) {
       const roleAccount = this.props.serviceRoleOverride.env.account;
-      const projectAccount = cdk.Stack.of(this.props.project).account;
+      const projectAccount = this.props.project.env.account;
       if (cdk.Token.compareStrings(roleAccount, projectAccount) === cdk.TokenComparison.DIFFERENT) {
         throw new cdk.ValidationError(
           lit`ServiceRoleOverrideAccountMismatch`,
-          `serviceRoleOverride must be in the same account as the CodeBuild project (${projectAccount}), got a role in account ${roleAccount}`,
+          `serviceRoleOverride must be in the same account as the CodeBuild project (${JSON.stringify(projectAccount)}), got a role in account ${JSON.stringify(roleAccount)}`,
           scope,
         );
       }

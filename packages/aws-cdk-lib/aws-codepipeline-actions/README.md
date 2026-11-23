@@ -452,28 +452,41 @@ const testAction = new codepipeline_actions.CodeBuildAction({
 Pass `serviceRoleOverride` to override the CodeBuild project's default service role for
 builds triggered by this action — useful when a project is shared across pipelines and you
 want to grant each one custom permissions without making the shared service role overly
-permissive. CDK grants the action's role (the pipeline role when `usePipelineRoleForActions`
-is set) `iam:PassRole` on it automatically. The identity that deploys the pipeline, for CDK
+permissive. CDK grants `iam:PassRole` on it, limited to CodeBuild, to the role the action runs
+as: the action's `role` if you set one, the role CDK creates for the action, or the pipeline
+role when `usePipelineRoleForActions` is set. The identity that deploys the pipeline, for CDK
 the CloudFormation execution role, must also have `iam:PassRole` on the override role.
 
-CDK adds no other permissions to the override role. The permissions CDK grants to the
-project's role, such as the pipeline artifact bucket, CloudWatch Logs, source connections,
-VPC access and anything added with `project.addToRolePolicy()`, do not apply to builds that
-use the override, so grant the role everything the build needs, including access to any
-`PARAMETER_STORE` or `SECRETS_MANAGER` environment variables. The role must be in the same
-account as the project.
+The role must be in the same account as the project, and its trust policy must allow
+`codebuild.amazonaws.com` to assume it. If the project is in a different account or region
+than the pipeline, create the role in the project's stack with
+`roleName: PhysicalName.GENERATE_IF_NEEDED`.
 
-An action with `serviceRoleOverride` also stops granting the project's role access to the
-pipeline artifact bucket, the action's source connections and CodeCommit repositories, and
-its environment variable secrets, so a shared project's role does not collect bucket, source
-or secret permissions for builds it never runs. Other actions that use the same project without
-an override still grant these to the project's role as before.
+CDK grants nothing else to the override role, and the action stops granting the project's
+role access to the pipeline artifact bucket, its source connections and CodeCommit
+repositories, and its environment variable secrets, so a shared project's role does not
+collect those permissions for builds it never runs. Other actions that use the same project
+without an override still grant them to the project's role as before. Grant the override role
+what the build needs, for example:
 
-CodeBuild encrypts build outputs with the project's encryption key. If the artifact bucket uses
-a customer-managed KMS key and the project has no `encryptionKey` of its own, CDK still sets the
-bucket key as the project's encryption key and grants the project's role encrypt/decrypt on it.
-If the project has its own `encryptionKey`, CodeBuild uses that key instead, so grant the
-override role access to it too.
+* the artifact bucket in the action's region: read, or read/write if the action has outputs.
+  For a cross-region action this is `pipeline.crossRegionSupport[region].replicationBucket`,
+  which exists only after the action is added to the pipeline;
+* encrypt/decrypt on the project's own `encryptionKey`, if it has one;
+* CloudWatch Logs for `/aws/codebuild/<project name>`, or the project's `logging` destinations;
+* test report groups, if the buildspec publishes reports;
+* `UseConnection` for CodeConnections sources with `codeBuildCloneOutput: true`, and
+  `codecommit:GitPull` for CodeCommit sources with `codeBuildCloneOutput: true`;
+* `PARAMETER_STORE` and `SECRETS_MANAGER` environment variables, and the KMS keys that encrypt
+  them;
+* anything else the project's configuration relies on, such as VPC access, a custom ECR build
+  image or its registry credentials, Session Manager, or statements added with
+  `project.addToRolePolicy()`.
+
+CodeBuild encrypts build outputs with the project's encryption key. If the project has no
+`encryptionKey` of its own and the artifact bucket uses a customer-managed KMS key in the
+project's account and region, CDK still sets that key on the project and grants the project's
+role encrypt/decrypt on it.
 
 For example, to scope a shared project's builds to one repository:
 
@@ -491,8 +504,11 @@ const buildRole = new iam.Role(this, 'BuildRole', {
 // project has its own encryptionKey, also call key.grantEncryptDecrypt(buildRole).
 pipeline.artifactBucket.grantRead(buildRole);
 
+const partition = project.stack.partition;
+const { account, region } = project.env;
+
 // Write the build logs
-const logGroupArn = `arn:${this.partition}:logs:${this.region}:${this.account}:log-group:/aws/codebuild/${project.projectName}`;
+const logGroupArn = `arn:${partition}:logs:${region}:${account}:log-group:/aws/codebuild/${project.projectName}`;
 buildRole.addToPolicy(new iam.PolicyStatement({
   actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
   resources: [logGroupArn, `${logGroupArn}:*`],
@@ -507,11 +523,13 @@ buildRole.addToPolicy(new iam.PolicyStatement({
     'codebuild:BatchPutTestCases',
     'codebuild:BatchPutCodeCoverages',
   ],
-  resources: [`arn:${this.partition}:codebuild:${this.region}:${this.account}:report-group/${project.projectName}-*`],
+  resources: [`arn:${partition}:codebuild:${region}:${account}:report-group/${project.projectName}-*`],
 }));
 
-// Clone only the repository this pipeline builds. Use the service prefix of your
-// connection ARN: `codeconnections` here, `codestar-connections` for older connections.
+// Clone only the repository this pipeline builds (needed when the source action sets
+// codeBuildCloneOutput: true). Use your connection ARN's service prefix for both the
+// action and the condition key: `codeconnections` here, `codestar-connections` for older
+// connections.
 buildRole.addToPolicy(new iam.PolicyStatement({
   actions: ['codeconnections:UseConnection'],
   resources: [connectionArn],

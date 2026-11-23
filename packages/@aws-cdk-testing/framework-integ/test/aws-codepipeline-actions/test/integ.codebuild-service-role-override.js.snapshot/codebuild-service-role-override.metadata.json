@@ -337,6 +337,12 @@
       "data": "PipelineC660917D"
     }
   ],
+  "/codebuild-service-role-override/Exports/Output{\"Ref\":\"PipelineC660917D\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPipelineC660917DEB540586"
+    }
+  ],
   "/codebuild-service-role-override/MyBuildProject/Role/Resource": [
     {
       "type": "aws:cdk:logicalId",

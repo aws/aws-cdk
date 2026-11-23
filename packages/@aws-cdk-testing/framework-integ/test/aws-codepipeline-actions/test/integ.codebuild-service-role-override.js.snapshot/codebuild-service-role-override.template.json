@@ -736,6 +736,16 @@
    }
   }
  },
+ "Outputs": {
+  "ExportsOutputRefPipelineC660917DEB540586": {
+   "Value": {
+    "Ref": "PipelineC660917D"
+   },
+   "Export": {
+    "Name": "codebuild-service-role-override:ExportsOutputRefPipelineC660917DEB540586"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

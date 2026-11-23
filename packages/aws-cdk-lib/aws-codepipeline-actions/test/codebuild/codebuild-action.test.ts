@@ -5,7 +5,7 @@ import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
-import { App, SecretValue, Stack } from '../../../core';
+import { App, CfnParameter, SecretValue, Stack } from '../../../core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable @stylistic/quote-props */
@@ -313,6 +313,7 @@ describe('CodeBuild Action', () => {
       function setup(roleFactory?: (stack: Stack) => iam.IRoleRef, pipelineProps: Partial<codepipeline.PipelineProps> = {}) {
         const stack = new Stack();
         const serviceRoleOverride = roleFactory?.(stack);
+        const project = new codebuild.PipelineProject(stack, 'CodeBuild');
         const sourceOutput = new codepipeline.Artifact();
         new codepipeline.Pipeline(stack, 'Pipeline', {
           ...pipelineProps,
@@ -334,14 +335,14 @@ describe('CodeBuild Action', () => {
                 new cpactions.CodeBuildAction({
                   actionName: 'CodeBuild',
                   input: sourceOutput,
-                  project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                  project,
                   serviceRoleOverride,
                 }),
               ],
             },
           ],
         });
-        return { stack, serviceRoleOverride, template: Template.fromStack(stack) };
+        return { stack, project, serviceRoleOverride, template: Template.fromStack(stack) };
       }
 
       // Asserts that exactly one policy in the template grants the conditioned iam:PassRole on
@@ -353,6 +354,13 @@ describe('CodeBuild Action', () => {
         }));
         expect(policies).toHaveLength(1);
         expect(policies[0].Properties.Roles).toEqual([{ 'Ref': expect.stringMatching(rolePattern) }]);
+      }
+
+      // All actions in all policy statements of the template, with array Actions flattened.
+      function policyActions(template: Template): string[] {
+        return Object.values(template.findResources('AWS::IAM::Policy'))
+          .flatMap(policy => policy.Properties.PolicyDocument.Statement)
+          .flatMap((statement: any) => [statement.Action].flat());
       }
 
       function expectBuildConfiguration(template: Template, configuration: any) {
@@ -401,12 +409,18 @@ describe('CodeBuild Action', () => {
         const { template } = setup();
 
         expectBuildConfiguration(template, Match.not(Match.objectLike({ 'ServiceRoleArnOverride': Match.anyValue() })));
-        const policies = template.findResources('AWS::IAM::Policy');
-        for (const policy of Object.values(policies)) {
-          for (const statement of policy.Properties.PolicyDocument.Statement) {
-            expect(statement.Condition?.StringEquals?.['iam:PassedToService']).not.toBe('codebuild.amazonaws.com');
-          }
-        }
+        expect(policyActions(template)).not.toContain('iam:PassRole');
+      });
+
+      test('when provided on an action without outputs: does not grant the project role read access to the artifact bucket', () => {
+        const { stack, project, template } = setup(s => iam.Role.fromRoleArn(s, 'OverrideRole', ROLE_ARN));
+        const roleRef = { 'Ref': stack.getLogicalId(project.role!.node.defaultChild as any) };
+        const actions = Object.values(template.findResources('AWS::IAM::Policy', { Properties: { Roles: Match.arrayWith([roleRef]) } }))
+          .flatMap(policy => policy.Properties.PolicyDocument.Statement)
+          .flatMap((statement: any) => [statement.Action].flat());
+
+        expect(actions).not.toContain('s3:GetObject*');
+        expect(actions).toContain('logs:PutLogEvents');
       });
 
       test('cross-account: grants iam:PassRole to the action role in the project account', () => {
@@ -445,17 +459,13 @@ describe('CodeBuild Action', () => {
         // IAM only allows passing a role to a service in the same account as the role, so a PassRole
         // grant on the pipeline role in the pipeline's account could never be used here.
         // https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html
-        for (const policy of Object.values(Template.fromStack(pipelineStack).findResources('AWS::IAM::Policy'))) {
-          for (const statement of policy.Properties.PolicyDocument.Statement) {
-            expect(statement.Action).not.toEqual('iam:PassRole');
-          }
-        }
+        expect(policyActions(Template.fromStack(pipelineStack))).not.toContain('iam:PassRole');
       });
 
       // Builds a pipeline whose CodeBuild actions all use `project`, with a Full Clone CodeConnections
       // source, a Full Clone CodeCommit source, an output and secret environment variables.
       // Returns the actions of the project's role's policies.
-      function projectRoleActions(overrides: Array<iam.IRoleRef | undefined>): string[] {
+      function projectRoleActions(withOverride: boolean[]): string[] {
         const stack = new Stack();
         const project = new codebuild.PipelineProject(stack, 'Project');
         const connectionOutput = new codepipeline.Artifact('ConnectionOutput');
@@ -484,7 +494,7 @@ describe('CodeBuild Action', () => {
             },
             {
               stageName: 'Build',
-              actions: overrides.map((serviceRoleOverride, i) => new cpactions.CodeBuildAction({
+              actions: withOverride.map((override, i) => new cpactions.CodeBuildAction({
                 actionName: `CodeBuild${i}`,
                 project,
                 input: connectionOutput,
@@ -494,7 +504,7 @@ describe('CodeBuild Action', () => {
                   PARAM: { type: codebuild.BuildEnvironmentVariableType.PARAMETER_STORE, value: '/my/param' },
                   SECRET: { type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER, value: 'my-secret' },
                 },
-                serviceRoleOverride,
+                serviceRoleOverride: override ? iam.Role.fromRoleArn(stack, `OverrideRole${i}`, ROLE_ARN) : undefined,
               })),
             },
           ],
@@ -516,7 +526,7 @@ describe('CodeBuild Action', () => {
       ];
 
       test('when provided: does not grant the project role the action\'s bucket, source and secret permissions', () => {
-        const actions = projectRoleActions([iam.Role.fromRoleArn(new Stack(), 'OverrideRole', ROLE_ARN)]);
+        const actions = projectRoleActions([true]);
 
         for (const action of ACTION_GRANTS) {
           expect(actions).not.toContain(action);
@@ -528,7 +538,7 @@ describe('CodeBuild Action', () => {
       });
 
       test('when not provided: grants the project role the action\'s bucket, source and secret permissions', () => {
-        const actions = projectRoleActions([undefined]);
+        const actions = projectRoleActions([false]);
 
         for (const action of ACTION_GRANTS) {
           expect(actions).toContain(action);
@@ -537,7 +547,7 @@ describe('CodeBuild Action', () => {
       });
 
       test('shared project: an action without an override still grants the project role its permissions', () => {
-        const actions = projectRoleActions([iam.Role.fromRoleArn(new Stack(), 'OverrideRole', ROLE_ARN), undefined]);
+        const actions = projectRoleActions([true, false]);
 
         for (const action of ACTION_GRANTS) {
           expect(actions).toContain(action);
@@ -567,7 +577,63 @@ describe('CodeBuild Action', () => {
             project: new codebuild.PipelineProject(stack, 'CodeBuild'),
             serviceRoleOverride: iam.Role.fromRoleArn(stack, 'OverrideRole', 'arn:aws:iam::234567890123:role/MyCodeBuildRole'),
           })],
-        })).toThrow(/serviceRoleOverride must be in the same account as the CodeBuild project \(123456789012\), got a role in account 234567890123/);
+        })).toThrow(/serviceRoleOverride must be in the same account as the CodeBuild project \("123456789012"\), got a role in account "234567890123"/);
+      });
+
+      // Builds a pipeline in account 123456789012 whose CodeBuild action uses a project imported
+      // from account 234567890123, with an override role from `roleAccount`.
+      function addImportedProjectAction(roleAccount: string) {
+        const app = new App();
+        const stack = new Stack(app, 'PipelineStack', { env: { account: '123456789012', region: 'us-east-1' } });
+        const sourceOutput = new codepipeline.Artifact();
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+          crossAccountKeys: true,
+          stages: [{
+            stageName: 'Source',
+            actions: [new cpactions.S3SourceAction({
+              actionName: 'S3_Source',
+              bucket: new s3.Bucket(stack, 'Bucket'),
+              bucketKey: 'key',
+              output: sourceOutput,
+            })],
+          }],
+        });
+        pipeline.addStage({
+          stageName: 'Build',
+          actions: [new cpactions.CodeBuildAction({
+            actionName: 'CodeBuild',
+            input: sourceOutput,
+            project: codebuild.Project.fromProjectArn(stack, 'Imported', 'arn:aws:codebuild:us-east-1:234567890123:project/Imported'),
+            serviceRoleOverride: iam.Role.fromRoleArn(stack, 'OverrideRole', `arn:aws:iam::${roleAccount}:role/MyCodeBuildRole`),
+          })],
+        });
+        return stack;
+      }
+
+      test('imported project: accepts a role from the project\'s account', () => {
+        const stack = addImportedProjectAction('234567890123');
+
+        expectBuildConfiguration(Template.fromStack(stack), Match.objectLike({
+          'ServiceRoleArnOverride': 'arn:aws:iam::234567890123:role/MyCodeBuildRole',
+        }));
+      });
+
+      test('imported project: fails for a role from the pipeline\'s account', () => {
+        expect(() => addImportedProjectAction('123456789012'))
+          .toThrow(/serviceRoleOverride must be in the same account as the CodeBuild project \("234567890123"\), got a role in account "123456789012"/);
+      });
+
+      test('does not check the account when the project\'s account is not known at synth time', () => {
+        const { template } = setup(stack => iam.Role.fromRoleArn(stack, 'OverrideRole', 'arn:aws:iam::234567890123:role/MyCodeBuildRole'));
+
+        expectBuildConfiguration(template, Match.objectLike({ 'ServiceRoleArnOverride': 'arn:aws:iam::234567890123:role/MyCodeBuildRole' }));
+      });
+
+      test('does not check the account when the role ARN is a token', () => {
+        const { template } = setup(stack => iam.Role.fromRoleArn(stack, 'OverrideRole',
+          new CfnParameter(stack, 'RoleArn').valueAsString));
+
+        expectBuildConfiguration(template, Match.objectLike({ 'ServiceRoleArnOverride': { 'Ref': 'RoleArn' } }));
       });
     });
 
