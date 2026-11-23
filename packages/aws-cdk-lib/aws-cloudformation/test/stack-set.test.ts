@@ -1331,6 +1331,32 @@ describe('StackSet self managed admin role', () => {
     });
   });
 
+  test('each target in the targets prop gets trust for its opt-in regions', () => {
+    const app = new App({ context: { [cxapi.ENABLE_PARTITION_LITERALS]: true } });
+    const stack = new Stack(app, 'TestStack', { env: { account: '111111111111', region: 'us-east-1' } });
+
+    new StackSet(stack, 'StackSet', {
+      targets: [
+        StackSetTarget.fromAccounts({ regions: ['us-east-1'], accounts: ['111111111111'] }),
+        StackSetTarget.fromAccounts({ regions: ['ap-east-1'], accounts: ['222222222222'] }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: Match.arrayWith([{
+          Effect: 'Allow',
+          Principal: { Service: 'cloudformation.ap-east-1.amazonaws.com' },
+          Action: 'sts:AssumeRole',
+          Condition: {
+            StringEquals: { 'aws:SourceAccount': '111111111111' },
+            ArnLike: { 'aws:SourceArn': 'arn:aws:cloudformation:*:111111111111:stackset/*' },
+          },
+        }]),
+      },
+    });
+  });
+
   test('the trust policy of a supplied admin role gets no conditions added', () => {
     const app = new App();
     const stack = new Stack(app);
