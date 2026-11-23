@@ -43,10 +43,9 @@ Work the changed docs in this order. Adapt to what the diff touches.
 2. **Check the inventory against the rules.** Walk the changed docs family by family — **README
    examples**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For each
    rule check both directions — what is present-and-wrong, and what is owed-but-missing. From the step-1
-   inventory, check each doc a surface of that kind owes and flag the absent. One method the rows lack: for
-   a `@default`, **read the constructor / `?? ` handling in the same
-   diff and compare** what the code applies when the prop is omitted against the tag — a contradiction is
-   this dimension's highest-value defect.
+   inventory, check each doc a surface of that kind owes and flag the absent. For a `@default`, read the
+   constructor / `??` handling in the same diff and compare what the code applies when the prop is
+   omitted against the tag.
 
 3. **Rate by harm and stop.** Rate every finding by the harm the defect does — misled consumer, a feature
    shipped without the usage docs a guide requires — per `cdk-review-principles` (its
@@ -65,8 +64,7 @@ another dimension, leave it — it's outside your scope.
 
 - **Prose wording is not a `@default` defect** — a misspelled word, an awkward sentence, a comment that
   "reads a little off", capitalization, Oxford-comma preferences break no build and misstate no behavior.
-  **This is the single most important exclusion for this dimension:** a misspelled word in a JSDoc comment
-  breaks nothing; a `@default false` that is actually `true` misleads every consumer — only the second is
+  A misspelled word in a JSDoc comment breaks nothing; a `@default false` that is actually `true` misleads every consumer — only the second is
   a finding.
 - **Comment-density or style opinions** — whether a block "needs more comments", inline-comment placement,
   docstring formatting idioms.
