@@ -48,8 +48,8 @@ import type { ContainerDefinition, Protocol } from '../container-definition';
 import type { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
 import type { GatewayConnectorOptions } from '../gateway';
-import { GatewayAccessType } from '../gateway';
 import type { LogDriver, LogDriverConfig } from '../log-drivers/log-driver';
+import { ServiceGatewayConnector } from '../mixins/service';
 
 /**
  * The interface for a service.
@@ -982,9 +982,7 @@ export abstract class BaseService extends Resource
     if (props.canaryConfiguration) {
       this.validateCanaryConfiguration(props.canaryConfiguration);
     }
-    if (props.gatewayConnector) {
-      this.validateGatewayConnector(props.gatewayConnector);
-    }
+    const gatewayConnectorMixin = props.gatewayConnector ? this.gatewayConnectorMixin(props.gatewayConnector) : undefined;
 
     // An empty array tells CloudFormation to remove the existing load balancer registrations, while an
     // absent property leaves the live service alone, so removing the last target group from a service
@@ -1026,7 +1024,6 @@ export abstract class BaseService extends Resource
       networkConfiguration: this._networkConfigurationBox,
       serviceRegistries: this._serviceRegistries,
       serviceConnectConfiguration: this._serviceConnectConfig,
-      gatewayConnectors: props.gatewayConnector ? [renderGatewayConnector(props.gatewayConnector)] : undefined,
       volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
       ...additionalProps,
     });
@@ -1155,6 +1152,11 @@ export abstract class BaseService extends Resource
     }
 
     this.node.defaultChild = this.resource;
+
+    // applied after defaultChild is set, so the mixin's warning goes on this construct
+    if (gatewayConnectorMixin) {
+      this.with(gatewayConnectorMixin);
+    }
   }
 
   /**
@@ -1524,47 +1526,15 @@ export abstract class BaseService extends Resource
     return !!(port && Number.isInteger(port) && port >= BaseService.MIN_PORT && port <= BaseService.MAX_PORT);
   }
 
-  private validateGatewayConnector(connector: GatewayConnectorOptions) {
+  /**
+   * Check what the gateway connector needs from this service and its task definition, and return
+   * the mixin that validates the connector options and renders them on the CfnService.
+   */
+  private gatewayConnectorMixin(connector: GatewayConnectorOptions): ServiceGatewayConnector {
     if (this.taskDefinition.networkMode !== NetworkMode.AWS_VPC) {
       throw new ValidationError(lit`GatewayConnectorRequiresAwsVpc`, `gatewayConnector requires a task definition with the awsvpc network mode, got ${JSON.stringify(this.taskDefinition.networkMode)}`, this);
     }
-
-    const accessTypes = connector.accessTypes;
-    if (accessTypes !== undefined && !Token.isUnresolved(accessTypes)
-      && (accessTypes.length === 0 || new Set(accessTypes).size !== accessTypes.length)) {
-      throw new ValidationError(lit`GatewayAccessTypesValid`, `gatewayConnector accessTypes must be a non-empty list without duplicates, got ${JSON.stringify(accessTypes)}`, this);
-    }
-    // any internet-facing gateway associated with the cluster, including one imported or associated
-    // outside this app, can serve a service that accepts PUBLIC gateways
-    if (accessTypes === undefined
-      || (!Token.isUnresolved(accessTypes) && accessTypes.includes(GatewayAccessType.PUBLIC))) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:gatewayConnectorPublicAccess',
-        'This service can receive traffic from internet-facing gateways associated with its cluster; set gatewayConnector accessTypes to [GatewayAccessType.PRIVATE] if it must not be reachable from the internet.');
-    }
-
-    const hc = connector.healthCheck;
-    if (hc) {
-      if (hc.port !== undefined && !Token.isUnresolved(hc.port) && !this.isValidPort(hc.port)) {
-        throw new ValidationError(lit`GatewayHealthCheckPortValid`, `gatewayConnector health check port must be between 1 and 65535, got ${hc.port}`, this);
-      }
-      if (hc.path !== undefined && !Token.isUnresolved(hc.path) && !hc.path.startsWith('/')) {
-        throw new ValidationError(lit`GatewayHealthCheckPathValid`, `gatewayConnector health check path must start with '/', got ${JSON.stringify(hc.path)}`, this);
-      }
-      const interval = gatewayConnectorSeconds(this, 'health check interval', hc.interval, 5, 300);
-      const timeout = gatewayConnectorSeconds(this, 'health check timeout', hc.timeout, 2, 120);
-      if (interval !== undefined && timeout !== undefined && timeout >= interval) {
-        throw new ValidationError(lit`GatewayHealthCheckTimeoutValid`, `gatewayConnector health check timeout must be less than the interval, got timeout ${timeout} seconds and interval ${interval} seconds`, this);
-      }
-      for (const [name, count] of [['healthyThresholdCount', hc.healthyThresholdCount], ['unhealthyThresholdCount', hc.unhealthyThresholdCount]] as const) {
-        if (count !== undefined && !Token.isUnresolved(count) && (!Number.isInteger(count) || count < 2 || count > 10)) {
-          throw new ValidationError(lit`GatewayHealthCheckThresholdValid`, `gatewayConnector health check ${name} must be a whole number between 2 and 10, got ${count}`, this);
-        }
-      }
-      if (hc.healthyHttpCodes !== undefined && hc.healthyGrpcCodes !== undefined) {
-        throw new ValidationError(lit`GatewayHealthCheckMatcherValid`, 'gatewayConnector health check can have healthyHttpCodes or healthyGrpcCodes, not both', this);
-      }
-    }
-    gatewayConnectorSeconds(this, 'deregistrationDelay', connector.deregistrationDelay, 0, 3600);
+    const mixin = new ServiceGatewayConnector(connector);
 
     // containers can be added to the task definition after the service is created
     this.node.addValidation({
@@ -1577,6 +1547,8 @@ export abstract class BaseService extends Resource
         return [`gatewayConnector portName ${JSON.stringify(connector.portName)} does not match the name of a port mapping in the task definition`];
       },
     });
+
+    return mixin;
   }
 
   /**
@@ -2343,43 +2315,4 @@ function determineContainerNameAndPort(scope: IConstruct, options: DetermineCont
   }
 
   return {};
-}
-
-/**
- * Validate a gateway connector duration and return it in seconds, or undefined if it is a token or not set.
- */
-function gatewayConnectorSeconds(scope: Construct, name: string, duration: Duration | undefined, min: number, max: number): number | undefined {
-  if (duration === undefined || duration.isUnresolved()) {
-    return undefined;
-  }
-  const seconds = duration.toSeconds({ integral: false });
-  if (!Number.isInteger(seconds) || seconds < min || seconds > max) {
-    throw new ValidationError(lit`GatewayConnectorDurationValid`, `gatewayConnector ${name} must be a whole number of seconds between ${min} and ${max}, got ${seconds} seconds`, scope);
-  }
-  return seconds;
-}
-
-function renderGatewayConnector(connector: GatewayConnectorOptions): CfnService.GatewayConnectorProperty {
-  const hc = connector.healthCheck;
-  return {
-    portName: connector.portName,
-    // validated as whole seconds; a token amount must be in seconds, or toSeconds() throws
-    deregistrationDelay: connector.deregistrationDelay
-      ? { timeoutSeconds: connector.deregistrationDelay.toSeconds() }
-      : undefined,
-    filters: connector.accessTypes ? { accessTypes: connector.accessTypes } : undefined,
-    healthCheck: hc ? {
-      healthCheckPath: hc.path,
-      healthCheckPort: hc.port,
-      healthCheckProtocol: hc.protocol,
-      // validated as whole seconds; a token amount must be in seconds, or toSeconds() throws
-      healthCheckIntervalSeconds: hc.interval?.toSeconds(),
-      healthCheckTimeoutSeconds: hc.timeout?.toSeconds(),
-      healthyThresholdCount: hc.healthyThresholdCount,
-      unhealthyThresholdCount: hc.unhealthyThresholdCount,
-      matcher: hc.healthyHttpCodes !== undefined || hc.healthyGrpcCodes !== undefined
-        ? { httpCode: hc.healthyHttpCodes, grpcCode: hc.healthyGrpcCodes }
-        : undefined,
-    } : undefined,
-  };
 }

@@ -2796,3 +2796,28 @@ Applies one or more cluster settings to an ECS cluster. If a setting with the sa
 new ecs.CfnCluster(this, 'Cluster')
   .with(new ecs.mixins.ClusterSettings([{ name: 'containerInsights', value: 'enhanced' }]));
 ```
+
+### ServiceGatewayConnector
+
+Connects a service to the Amazon ECS gateways associated with its cluster by setting its gateway
+connector, replacing any existing one. The connector options are validated when the mixin is created,
+and a warning is added when the service accepts traffic from internet-facing gateways:
+
+```ts
+new ecs.CfnService(this, 'Service')
+  .with(new ecs.mixins.ServiceGatewayConnector({
+    portName: 'web',
+    accessTypes: [ecs.GatewayAccessType.PRIVATE],
+  }));
+```
+
+The `gatewayConnector` property of an L2 service applies this mixin and also checks that the task
+definition uses the `awsvpc` network mode and has a port mapping named `portName`, and makes the
+service depend on the gateway association of its cluster. Prefer it over applying the mixin to an
+L2 service, which skips those checks:
+
+```ts
+declare const service: ecs.FargateService;
+
+service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' }));
+```
