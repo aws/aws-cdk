@@ -2698,8 +2698,8 @@ that stack is deployed too.
 
 Flag type: Backwards incompatible bugfix
 
-When this feature flag is enabled, the `DescribeLogStreams` permission is granted on the log group ARN,
-while `CreateLogStream` and `PutLogEvents` remain granted on the log stream ARN pattern.
+CloudWatch Logs authorizes `DescribeLogStreams` on log groups, and `CreateLogStream` and `PutLogEvents`
+on log streams. When enabled, this feature flag grants each permission on the corresponding resource type.
 
 When disabled, all three permissions are granted together on the log stream ARN pattern, preserving the
 previous behavior.
