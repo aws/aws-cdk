@@ -1197,6 +1197,30 @@
    "Export": {
     "Name": "aws-fargate-integ:ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182"
    }
+  },
+  "ExportsOutputRefScheduledFargateTaskScheduledEventRule2B79E34F077F3C36": {
+   "Value": {
+    "Ref": "ScheduledFargateTaskScheduledEventRule2B79E34F"
+   },
+   "Export": {
+    "Name": "aws-fargate-integ:ExportsOutputRefScheduledFargateTaskScheduledEventRule2B79E34F077F3C36"
+   }
+  },
+  "ExportsOutputRefScheduledFargateTask3ScheduledEventRuleF06B35BBA80E8299": {
+   "Value": {
+    "Ref": "ScheduledFargateTask3ScheduledEventRuleF06B35BB"
+   },
+   "Export": {
+    "Name": "aws-fargate-integ:ExportsOutputRefScheduledFargateTask3ScheduledEventRuleF06B35BBA80E8299"
+   }
+  },
+  "ExportsOutputRefScheduledFargateTask2ScheduledEventRuleB28B6E8992AE7316": {
+   "Value": {
+    "Ref": "ScheduledFargateTask2ScheduledEventRuleB28B6E89"
+   },
+   "Export": {
+    "Name": "aws-fargate-integ:ExportsOutputRefScheduledFargateTask2ScheduledEventRuleB28B6E8992AE7316"
+   }
   }
  },
  "Parameters": {
