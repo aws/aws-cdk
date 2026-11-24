@@ -1,5 +1,6 @@
 import { Template } from '../../assertions';
 import { App, CfnResource, SecretValue, Stack, Token } from '../../core';
+import { IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
@@ -353,5 +354,83 @@ test('cross-env user ARNs include path', () => {
         ],
       ],
     },
+  });
+});
+
+describe('default policy of an imported user with @aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName', () => {
+  const userArn = 'arn:aws:iam::123456789012:user/MyUser';
+
+  function stackSafeApp(): App {
+    return new App({ context: { [IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+  }
+
+  function importUserAndGrant(stack: Stack): void {
+    const user = User.fromUserArn(stack, 'ImportedUser', userArn);
+    user.addToPrincipalPolicy(new PolicyStatement({ actions: ['s3:GetObject'], resources: ['*'] }));
+  }
+
+  test('is named after the stack and keeps its logical ID', () => {
+    // GIVEN
+    const stack = new Stack(stackSafeApp(), 'UserStack1');
+
+    // WHEN
+    importUserAndGrant(stack);
+
+    // THEN
+    const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy', {
+      Properties: {
+        PolicyName: 'PolicyUserStack1ImportedUser9302B323',
+        PolicyDocument: {
+          Statement: [{ Action: 's3:GetObject', Effect: 'Allow', Resource: '*' }],
+          Version: '2012-10-17',
+        },
+        Users: ['MyUser'],
+      },
+    });
+    // The logical ID is the same as before the policy got a stack-specific name, so the policy is renamed in place
+    expect(Object.keys(policies)).toEqual(['ImportedUserPolicy1A28650A']);
+  });
+
+  test('has a different name in each stack that imports the same user', () => {
+    // GIVEN
+    const stack1 = new Stack(stackSafeApp(), 'UserStack1');
+    const stack2 = new Stack(stackSafeApp(), 'UserStack2');
+
+    // WHEN
+    importUserAndGrant(stack1);
+    importUserAndGrant(stack2);
+
+    // THEN
+    Template.fromStack(stack1).hasResourceProperties('AWS::IAM::Policy', { PolicyName: 'PolicyUserStack1ImportedUser9302B323' });
+    Template.fromStack(stack2).hasResourceProperties('AWS::IAM::Policy', { PolicyName: 'PolicyUserStack2ImportedUserD0D64717' });
+  });
+
+  test('uses the stack name', () => {
+    // GIVEN
+    const stack = new Stack(stackSafeApp(), 'UserStack', { stackName: 'renamed-stack' });
+
+    // WHEN
+    importUserAndGrant(stack);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', { PolicyName: 'PolicyrenamedstackImportedUser17CA3F46' });
+  });
+
+  test('keeps the same name in every stack without the feature flag', () => {
+    // GIVEN
+    const stack1 = new Stack(new App(), 'UserStack1');
+    const stack2 = new Stack(new App(), 'UserStack2');
+
+    // WHEN
+    importUserAndGrant(stack1);
+    importUserAndGrant(stack2);
+
+    // THEN
+    for (const stack of [stack1, stack2]) {
+      const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy', {
+        Properties: { PolicyName: 'ImportedUserPolicy1A28650A', Users: ['MyUser'] },
+      });
+      expect(Object.keys(policies)).toEqual(['ImportedUserPolicy1A28650A']);
+    }
   });
 });

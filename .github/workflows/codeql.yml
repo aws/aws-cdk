@@ -38,6 +38,9 @@ jobs:
           build-mode: none
         - language: actions
           build-mode: none
+    env:
+      # Overlay analysis caches add little speed for this repo, but take up cache space
+      CODEQL_OVERLAY_DATABASE_MODE: none
     steps:
     - name: Checkout repository
       uses: actions/checkout@v7

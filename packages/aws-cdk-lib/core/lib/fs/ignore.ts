@@ -47,6 +47,21 @@ export abstract class IgnoreStrategy {
   }
 
   /**
+   * Return an IgnoreStrategy that does not ignore any files.
+   */
+  public static none(): IgnoreStrategy {
+    return new class extends IgnoreStrategy {
+      public add(): void {
+        // no-op
+      }
+
+      public ignores(): boolean {
+        return false;
+      }
+    };
+  }
+
+  /**
    * Creates an IgnoreStrategy based on the `ignoreMode` and `exclude` in a `CopyOptions`.
    *
    * @returns `IgnoreStrategy` based on the `CopyOptions`

@@ -25,6 +25,8 @@ on:
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   download-if-workflow-run:
     runs-on: ubuntu-latest

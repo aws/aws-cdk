@@ -1,0 +1,20 @@
+{
+  "/LambdaEventSourceKafkaQueueTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "LambdaEventSourceKafkaQueueTestDefaultTestDeployAssertA902E247.template.json"
+    }
+  ],
+  "/LambdaEventSourceKafkaQueueTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/LambdaEventSourceKafkaQueueTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}
