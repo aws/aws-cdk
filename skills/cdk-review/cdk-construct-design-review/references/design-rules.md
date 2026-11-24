@@ -34,14 +34,10 @@ interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`
 **[CD-PROPS-DEFAULT] (BLOCKING)** — A `@default` that contradicts what the code does is a real
 behavioral surprise. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior).
-- **Scope split:** the default *behavior* is yours; whether the tag is merely present
-  or reads well is outside your scope.
 
 **[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token/secret, must be typed
 `SecretValue` so a plaintext secret can't pass through the API. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
-- **Scope split:** the type choice is design (yours); whether a specific value leaks
-  is outside your scope.
 
 **[CD-NAMING] (BLOCKING)** — Name the resource and its props in official AWS/CloudFormation terminology,
 and derive its resource interface name (`IFoo`). See
@@ -50,8 +46,6 @@ and derive its resource interface name (`IFoo`). See
 **[CD-ATTRIBUTES] (BLOCKING)** — Expose every CloudFormation attribute as a type-name-prefixed
 (`bucketArn`, not `arn`) opaque token. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Resource Attributes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#resource-attributes).
-- **Scope split:** the surface design is yours; grading the tag/`@returns` prose is
-  outside your scope.
 
 **[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Extend only `Resource`/`Construct`/`{Foo}Base`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Base Classes & Inheritance`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#base-classes--inheritance).
@@ -74,9 +68,7 @@ See [`AGENTS_CONSTRUCT_DESIGN.md § Tags`](https://github.com/aws/aws-cdk/blob/m
 deprecate-and-add (`FooV2`), not mutate. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
 - **Tier:** RECOMMENDED for an implementation-detail type left exported instead of `@internal`.
-- **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface: it
-  breaks no existing program, since none uses the interface yet.
-- **Scope split:** classifying an *existing-surface* break is outside construct-design's scope.
+- **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface.
 
 **[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop mapping to a CloudFormation property whose
 `UpdateType` is `Immutable` (or `Conditional`) is a replacement footgun: setting it later triggers a
@@ -88,13 +80,8 @@ CloudFormation resource specification before you flag. See
 for the update-behavior classes and
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy)
 for the stateful classification.
-- **Tier:** RECOMMENDED when the user sets the value, since only the user's own later
-  change replaces the resource. Up-tier BLOCKING when the L2 computes the value, so a change elsewhere
-  replaces a stateful resource. A stateless resource is not up-tiered: replacement costs downtime and a new
-  name, not data.
-- **Scope split:** flag only the *new* surface a future user mutates. A break in an
-  *existing* consumer's synthesis, and the committed snapshot diff of this PR's own synth, are outside
-  construct-design's scope.
+- **Tier:** BLOCKING when the L2 computes the value, so a change elsewhere replaces a stateful resource.
+- **Scope split:** the committed snapshot diff of this PR's own synth is outside construct-design's scope.
 
 **[CD-AWSLINT-SUPPRESSION] (RECOMMENDED)** — Flag every `awslint.exclude` entry the diff adds or broadens,
 and ask for a stated justification in the PR description or an adjacent comment. A suppression turns off an
@@ -104,8 +91,7 @@ guardrail. See
 build-time enforcement and
 [`awslint README § Saving State`](https://github.com/aws/aws-cdk/blob/main/packages/awslint/README.md#saving-state)
 for the `exclude` mechanism.
-- **Escalate to BLOCKING when the suppressed rule backs a MUST-level guideline:** the
-  suppression there silences the exact floor the design and regression lenses trust.
+- **Tier:** BLOCKING when the suppressed rule backs a MUST-level guideline.
 
 **[CD-ENUMS] (RECOMMENDED)** — Model a closed known set as an `enum`, an open set as an enum-like class.
 See
@@ -122,9 +108,6 @@ and prefer extending an existing method over adding a new one. See
 affordance where the service supports it. See
 [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
 and the sections following it for the signatures.
-- **Auto-wired affordances:** before flagging an absence, confirm the framework
-  doesn't already provide it — tagging works through `Tags.of(x).add(...)` wherever the L1 is taggable, and
-  `removalPolicy`, dependencies, and metadata come from `cdk.Resource`.
 
 **[CD-POLYMORPHISM-OVER-BOOLEAN] (RECOMMENDED)** — Model behavioral variation through polymorphism, not a
 boolean flag. See
@@ -137,10 +120,6 @@ rather than declaring a parallel one. See
 **[CD-PREFER-DEFAULT] (RECOMMENDED)** — Prefer inferring a sensible default over raising an error: error
 only when no default exists or the user gave an explicitly contradictory config. See
 [`AGENTS.md § Error Handling`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#error-handling).
-- **Application:** when two or more props jointly control one behavior, trace every
-  combination (both / one / conflicting) against this ordering. Infer a value derivable from another prop
-  or the service rather than require it.
-- **Escalate to BLOCKING only when the same shape also breaks a cited codified mandate — cite it.**
 
 ## Ages-well anti-patterns
 
@@ -155,7 +134,6 @@ no consumer today.
 public surface.
 
 **[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID MUST NOT change.
-- **Scope split:** the resulting stack break is also outside construct-design's scope.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
 capability lands additively. See
