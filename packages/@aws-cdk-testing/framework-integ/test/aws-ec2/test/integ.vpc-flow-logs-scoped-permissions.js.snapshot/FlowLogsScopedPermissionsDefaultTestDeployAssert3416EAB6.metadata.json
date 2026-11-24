@@ -13,15 +13,9 @@
         "synthesize (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
         "App.synth (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
         "App.synth (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:234:27)",
-        "Object.<anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:24:5)",
-        "Module._compile (node:internal/modules/cjs/loader:1734:14)",
-        "Object..js (node:internal/modules/cjs/loader:1899:10)",
-        "Module.load (node:internal/modules/cjs/loader:1469:32)",
-        "Function._load (node:internal/modules/cjs/loader:1286:12)",
-        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
-        "wrapModuleLoad (node:internal/modules/cjs/loader:235:24)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:151:5)",
-        "node:internal/main/run_main_module:33:47"
+        "process.<anonymous> (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:181:51)",
+        "Object.onceWrapper (node:events:622:26)",
+        "process.emit (node:events:507:28)"
       ]
     },
     {
@@ -97,6 +91,26 @@
       "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
     }
   ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938"
+    }
+  ],
   "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -115,6 +129,24 @@
       "data": "AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8cWaitFor4106C5E8"
     }
   ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938WaitForRoleF2D10BC0"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938WaitFor042721B6"
+    }
+  ],
   "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/WaitFor/IsCompleteProvider/Invoke": [
     {
       "type": "aws:cdk:logicalId",
@@ -125,6 +157,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8cWaitForTimeoutProviderInvokeF37E34EB"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938WaitForIsCompleteProviderInvoke00B7E2E2"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938WaitForTimeoutProviderInvokeE650182A"
     }
   ]
 }

@@ -33,6 +33,27 @@
       "data": true
     }
   ],
+  "/VPCFlowLogsScopedPermissions/TrafficSource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnetType": "Public"
+        },
+        "instanceType": "*",
+        "machineImage": "*",
+        "associatePublicIpAddress": true,
+        "userData": "*"
+      }
+    }
+  ],
+  "/VPCFlowLogsScopedPermissions/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+    }
+  ],
   "/VPCFlowLogsScopedPermissions/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -190,7 +211,7 @@
         "    at Validations.acknowledge (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
         "    at new FlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:877:43)",
         "    at PropertyInjectable.addFlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)",
-        "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:11:21)",
+        "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:13:21)",
         "    ...node internals..."
       ]
     },
@@ -203,7 +224,7 @@
         "    at Validations.acknowledge (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
         "    at new FlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:881:43)",
         "    at PropertyInjectable.addFlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)",
-        "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:11:21)",
+        "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:13:21)",
         "    ...node internals..."
       ]
     }
@@ -220,10 +241,49 @@
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
     }
   ],
+  "/VPCFlowLogsScopedPermissions/TrafficSource/InstanceSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "allowAllOutbound": true,
+        "allowAllIpv6Outbound": "*"
+      }
+    }
+  ],
+  "/VPCFlowLogsScopedPermissions/TrafficSource/InstanceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/VPCFlowLogsScopedPermissions/TrafficSource/InstanceProfile": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrafficSourceInstanceProfile508D9C39"
+    }
+  ],
+  "/VPCFlowLogsScopedPermissions/TrafficSource/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrafficSource84C22CD0"
+    }
+  ],
   "/VPCFlowLogsScopedPermissions/Exports/Output{\"Ref\":\"VPCCloudWatchLogsFlowLog07174876\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefVPCCloudWatchLogsFlowLog07174876651F50D8"
+    }
+  ],
+  "/VPCFlowLogsScopedPermissions/Exports/Output{\"Ref\":\"VPCCloudWatchLogsLogGroup8163DE72\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefVPCCloudWatchLogsLogGroup8163DE72E12CB81B"
     }
   ],
   "/VPCFlowLogsScopedPermissions/VPC/PublicSubnet1/Subnet": [
@@ -370,6 +430,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "VPCCloudWatchLogsFlowLog07174876"
+    }
+  ],
+  "/VPCFlowLogsScopedPermissions/TrafficSource/InstanceSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrafficSourceInstanceSecurityGroup98F34AB8"
+    }
+  ],
+  "/VPCFlowLogsScopedPermissions/TrafficSource/InstanceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrafficSourceInstanceRole88B304E0"
     }
   ],
   "/VPCFlowLogsScopedPermissions/VPC/CloudWatchLogs/IAMRole/Resource": [

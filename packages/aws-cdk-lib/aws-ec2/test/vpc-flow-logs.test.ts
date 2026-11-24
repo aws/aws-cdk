@@ -3,7 +3,8 @@ import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { App, CfnResource, RemovalPolicy, Stack } from '../../core';
+import type { CfnResource } from '../../core';
+import { App, RemovalPolicy, Stack } from '../../core';
 import { EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED } from '../../cx-api';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc, FlowLogTrafficType } from '../lib';
 
