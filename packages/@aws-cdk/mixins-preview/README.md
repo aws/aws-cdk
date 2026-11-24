@@ -68,7 +68,8 @@ distribution
   }));
 ```
 
-Configures Vended Logs for an S3 Bucket destination:
+Configures Vended Logs for encrypted and unencrypted S3 Bucket destinations
+For encrypted S3 buckets, if the key needs to be imported from a different stack, permissions must be added to it manually.
 
 ```typescript 
 import * as eventBusMixins from '@aws-cdk/mixins-preview/aws-events/mixins';
@@ -85,6 +86,19 @@ const eventBus = new events.EventBus(scope, 'EventBus', {
 const logsBucket = new s3.Bucket(scope, 'Bucket');
 
 eventBus.with(eventBusMixins.CfnEventBusLogsMixin.INFO_LOGS.toS3(logsBucket));
+
+// can also set up log delivery ot encrypted buckets
+const key = new kms.Key(scope, 'EncryptionKey', {
+  enabled: true
+});
+
+const encryptedBucket = new s3.Bucket(scope, 'EncryptedBucket', {
+  encryptionKey: key,
+});
+
+// if no key is provided, the Mixin will attempt to find it using EncryptedResources.of()
+eventbus.with(eventBusMixins.CfnEventBusLogsMixin.ERROR_LOGS.toS3(encryptedBucket, { encryptionKey: key }));
+
 ```
 
 Configures Vended Logs for a Firehose Delivery Stream destination:

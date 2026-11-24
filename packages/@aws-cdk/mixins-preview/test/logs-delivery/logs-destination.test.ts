@@ -851,6 +851,8 @@ describe('S3 Destination', () => {
         ]),
       },
     });
+    Annotations.fromStack(stack).hasNoWarning('*',
+      Match.stringLikeRegexp('could not add policy to the provided encryption key'));
   });
 
   test('adds proper key permissions for L2 bucket with L2 key', () => {
@@ -899,6 +901,8 @@ describe('S3 Destination', () => {
         ]),
       },
     });
+    Annotations.fromStack(stack).hasNoWarning('*',
+      Match.stringLikeRegexp('could not add policy to the provided encryption key'));
   });
 
   test('uses the provided key for an imported bucket', () => {
