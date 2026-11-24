@@ -6,9 +6,9 @@
         "CloudFormation-Validate::W3010": "Literal AZs in template are the result of accessing stack.availabilityZones, this is expected and safe"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at Stack._silenceLiteralAzWarning (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1516:49)",
-        "    at get availabilityZones (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:862:18)",
+        "    at Validations.acknowledge (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at Stack._silenceLiteralAzWarning (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1524:49)",
+        "    at get availabilityZones (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:870:18)",
         "    at new Vpc (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:839:48)",
         "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:10:13)",
         "    ...node internals..."
@@ -187,10 +187,10 @@
         "CloudFormation-Validate::F3002": "AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at new FlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:883:43)",
+        "    at Validations.acknowledge (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at new FlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:877:43)",
         "    at PropertyInjectable.addFlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)",
-        "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:11:5)",
+        "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:11:21)",
         "    ...node internals..."
       ]
     },
@@ -200,10 +200,10 @@
         "CloudFormation-Validate::F3003": "AWS::EC2::FlowLog DestinationOptions accepts properties in camelCase, even they are listed as PascalCase in the spec"
       },
       "trace": [
-        "    at Validations.acknowledge (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:126:18)",
-        "    at new FlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:887:43)",
+        "    at Validations.acknowledge (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/validation/validations.js:136:18)",
+        "    at new FlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc-flow-logs.js:881:43)",
         "    at PropertyInjectable.addFlowLog (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:344:16)",
-        "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:11:5)",
+        "    at <anonymous> (/Users/yamahar/personal/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ec2/test/integ.vpc-flow-logs-scoped-permissions.js:11:21)",
         "    ...node internals..."
       ]
     }
@@ -218,6 +218,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    }
+  ],
+  "/VPCFlowLogsScopedPermissions/Exports/Output{\"Ref\":\"VPCCloudWatchLogsFlowLog07174876\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefVPCCloudWatchLogsFlowLog07174876651F50D8"
     }
   ],
   "/VPCFlowLogsScopedPermissions/VPC/PublicSubnet1/Subnet": [
