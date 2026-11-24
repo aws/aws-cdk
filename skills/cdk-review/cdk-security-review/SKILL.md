@@ -43,7 +43,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    check each control the change owes. Confirm the service supports the control before flagging its absence.
 
 3. **Rate by harm and stop.** Rate each finding by the impact if the exposure is reached, on the
-   `cdk-review-principles` BLOCKING/RECOMMENDED/OPTIONAL scale ("Confidence is not severity", "Politeness is
+   `cdk-review-principles` BLOCKING/RECOMMENDED scale ("Confidence is not severity", "Politeness is
    not severity"). Rate a concrete exposure at that impact even when you are unsure a caller reaches it.
    Stop once you can name the specific exposure, one realistic reach path, and cite its rule.
 
@@ -71,6 +71,6 @@ resource access, Secrets & credentials, Secure defaults.
 
 ## Apply cdk-review-principles
 
-Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED/OPTIONAL scale, the
+Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED scale, the
 baseline-vs-excellence distinction, the evidence and citation authority order, the `file:line` discipline,
 the finding format, and the bar a finding must meet.

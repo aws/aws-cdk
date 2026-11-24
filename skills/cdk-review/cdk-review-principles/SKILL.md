@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED/OPTIONAL), evidence + citation authority order, exact file:line, when to offer a fix, the bar a finding must meet to be posted, review tone, the shared what-not-to-flag exclusions, the finding-output contract (ruleId + reference fields), and how a rule's conditional severity reads. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — the harm-based severity scale (BLOCKING/RECOMMENDED), evidence + citation authority order, exact file:line, when to offer a fix, the bar a finding must meet to be posted, review tone, the shared what-not-to-flag exclusions, the finding-output contract (ruleId + reference fields), and how a rule's conditional severity reads. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -8,7 +8,7 @@ description: "Shared foundation every CDK review-dimension skill applies — the
 ## Severity — rate by the harm it does when it triggers
 
 Ask one question of every finding: **if this ships and the code path is reached, what
-breaks, and how badly?** That answer sets the tier. Three tiers, keyed to the *kind* of
+breaks, and how badly?** That answer sets the tier. Two tiers, keyed to the *kind* of
 harm:
 
 - **BLOCKING** — the harm is **damage**. Something concretely breaks: data is lost, a
@@ -27,11 +27,9 @@ harm:
     prefer specific IAM actions over full-service wildcards (`s3:*`)." The resource is
     still scoped, so no door opens — but the grant is wider than the code path needs →
     RECOMMENDED.
-- **OPTIONAL** — the harm is **negligible**. Pure polish: a naming choice, a tidier
-  grouping with identical effect.
 
-A finding's `severity` field takes exactly one of these three words —
-`BLOCKING` / `RECOMMENDED` / `OPTIONAL`. A rule with a conditional severity is one rule: its
+A finding's `severity` field takes exactly one of these two words — `BLOCKING` /
+`RECOMMENDED`. A rule with a conditional severity is one rule: its
 header carries the primary severity, and its body states when it up- or down-tiers.
 
 ### Calibrate the harm honestly
@@ -40,7 +38,7 @@ The tier is right only if you rate the harm honestly. Four ways it slips:
 
 - **Confidence is not severity.** Rate by the harm *when* the path is reached, however sure
   you are that it is reached. A concrete failure mechanism is BLOCKING or RECOMMENDED by
-  its blast radius. OPTIONAL means genuinely negligible harm.
+  its blast radius.
 - **Politeness is not severity.** A blocking issue raised as a gentle question — "Can we
   scope this to a specific ARN?" — still blocks. Rate the harm the change asserts.
 - **No harm, no finding.** Clean code reports nothing. A change that merely *mentions* IAM,

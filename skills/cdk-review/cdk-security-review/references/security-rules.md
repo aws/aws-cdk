@@ -75,10 +75,6 @@ rewrite the governing tag and self-grant. See
 suffices. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
 
-**[SEC-IAM-GROUPING-NIT] (OPTIONAL)** — Failing to group related actions into one statement is a
-hardening nit at most, not an exposure. See
-[`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
-
 ## Network & resource access
 
 **[SEC-NET-PUBLIC-RESOURCE] (BLOCKING)** — A code path that makes a resource public (or widens a

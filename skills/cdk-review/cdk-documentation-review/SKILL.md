@@ -50,6 +50,6 @@ since each field takes one value.
 
 ## Apply cdk-review-principles
 
-Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED/OPTIONAL scale, the
+Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED scale, the
 evidence/citation authority order, the `file:line` discipline, the finding format, and the bar a
 finding must meet.

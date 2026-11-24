@@ -9,7 +9,7 @@ Give each finding these fields:
   A single-line finding sets both to that line.
 - `category` — this dimension's finding type (its own taxonomy enum; each dimension
   skill names the values it uses).
-- `severity` — one of `BLOCKING` / `RECOMMENDED` / `OPTIONAL`, defined in `SKILL.md` "Severity — rate
+- `severity` — one of `BLOCKING` / `RECOMMENDED`, defined in `SKILL.md` "Severity — rate
   by the harm it does when it triggers". The only severity vocabulary.
 - `ruleId` — the stable `[id]` of the rule that fired, taken verbatim from the dimension's
   rules file. The debug/trace key: it names exactly which rule produced the finding.

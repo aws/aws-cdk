@@ -46,11 +46,6 @@ for a mixin's required tests.
 - **Tier:** up-tier BLOCKING when the diagnostic / reject arm is a security- or
   correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
 
-**[TEST-UNIT-DOC-NAME] (OPTIONAL)** — A test name that describes nothing (`'works'`, `'test 2'`), so the
-suite fails as a specification; a merely awkward-but-descriptive title is a cosmetic, out of scope. See
-[`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the
-test-naming convention.
-
 ## Integration tests
 
 **[TEST-INTEG-MISSING-REQUIRED] (BLOCKING)** — An integ test the gate marked owed is absent with no valid
@@ -110,11 +105,10 @@ for the assertion-owed cases and the `awsApiCall` → `ExpectedResult` API. Also
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a
 `403`/error `ExpectedResult`).
 
-**[TEST-INTEG-REDUNDANT] (OPTIONAL)** — N resources created to exercise N enum values when one reconfigured
-resource, or the enum threaded through, tests the same synthesized template. One resource usually
+**[TEST-INTEG-REDUNDANT] (RECOMMENDED)** — N resources created to exercise N enum values, with N large,
+when one reconfigured resource, or the enum threaded through, tests the same synthesized template. One resource usually
 suffices to prove the enum renders. See
 [`INTEGRATION_TESTS.md § New L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#new-l2-constructs)
 and
 [`§ Existing L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#existing-l2-constructs)
 for the tests a new/existing L2 owes.
-- **Tier:** up-tier RECOMMENDED when the multiplication is large.

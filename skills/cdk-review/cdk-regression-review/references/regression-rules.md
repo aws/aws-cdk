@@ -121,7 +121,7 @@ stable module, such as a changed default, with no feature flag. See
 **[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
 breaking change still requires an explicit `BREAKING CHANGE:` callout in the PR body (before the `---`
 line) — the *missing* callout is the finding. A permitted experimental break that already carries the
-callout is at most an OPTIONAL note, not a finding. For a mitigation, prefer opt-in
+callout is not a finding. For a mitigation, prefer opt-in
 via a new API element (add
 it and mark the old one `@deprecated` with a descriptive error) over a feature flag, whose effects are
 non-local. See
