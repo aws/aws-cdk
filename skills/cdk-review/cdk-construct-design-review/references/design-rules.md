@@ -2,14 +2,12 @@
 
 ## Feature placement & abstraction
 
-**[CD-IFOO-NO-FEATURE-METHODS] (BLOCKING)** — A feature method, a `grant*` method included, or a
-config-mutation method added to the resource interface `IFoo`, other than a factory method that creates a
-new resource (`add{Bar}`) or a method
+**[CD-IFOO-NO-FEATURE-METHODS] (BLOCKING)** — A feature method or a config-mutation method added to the
+resource interface `IFoo`, other than a factory method that creates a new resource (`add{Bar}`) or a method
 [`AGENTS_CONSTRUCT_DESIGN.md § Standard Interface Extensions`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#standard-interface-extensions)
 requires on the interface; features belong on Facades. See
-[`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo),
-[`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#configuration-mutation)
-and [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants).
+[`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo)
+and [`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#configuration-mutation).
 
 **[CD-LAYER-MODEL] (BLOCKING)** — An L2 MUST hide CloudFormation (no `Cfn*`/`Token` in its surface),
 provide an escape hatch to the L1, and expose the full service surface (no hard-coded choice the service
