@@ -49,10 +49,8 @@ Work the changed surface in this order; adapt to what the diff touches.
 
 ## What not to flag
 
-Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
-no-nit-quota), stay silent on the following — not even as OPTIONAL — because none is a security
-exposure the PR introduces. When a defect belongs to a different dimension, leave it — it's outside
-your scope.
+Beyond the shared exclusions in `cdk-review-principles`, stay silent on the following — not even as
+OPTIONAL — because none is a security exposure the PR introduces.
 
 - **Correctness and regression risks** (validation, token handling, edge-case breakage) —
   outside your scope, unless the defect is itself a security exposure.

@@ -42,9 +42,8 @@ Work the changed surface in this order; adapt to what the diff touches.
 
 ## What not to flag
 
-Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
-no-nit-quota), stay silent on the following — not even as OPTIONAL — because none is a design defect in
-the changed surface. When a defect belongs to a different dimension, leave it — it's outside your scope.
+Beyond the shared exclusions in `cdk-review-principles`, stay silent on the following — not even as
+OPTIONAL — because none is a design defect in the changed surface.
 
 - **Correctness bugs** — missing implementations, logic errors, broken paths — outside your scope.
 - **Regression risk** — input/token/edge-case breakage of working code, and breaking changes to the

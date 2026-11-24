@@ -40,15 +40,9 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
 
 ## What not to flag
 
-Beyond the shared exclusions in `cdk-review-principles` (pre-existing, cosmetics, out-of-scope,
-no-nit-quota), stay silent on the following too — not even as OPTIONAL — because none breaks an existing
-program. When a defect is in another dimension, leave it — it's outside your scope.
+Beyond the shared exclusions in `cdk-review-principles`, stay silent on the following too — not even as
+OPTIONAL — because none breaks an existing program.
 
-- **Improvements, not regressions** — a bug fix that prevents a genuinely invalid configuration, and
-  validation that catches genuinely invalid inputs. For the boolean-token false-positive guard (a
-  `Token.isUnresolved()` guard on a boolean, enum, or construct reference is dead code, and a boolean prop
-  needs no token guard at all), see
-  `REG-TOKEN-UNRESOLVED-GUARD` in [`regression-rules.md`](references/regression-rules.md).
 - **Performance and dependency-range opinions** — a micro-optimization or performance opinion with no
   measured regression; a dependency-range bump (`glob ^7 → ^11`) unless you can show it raises a floor
   CDK ships against and thereby breaks existing consumers.
