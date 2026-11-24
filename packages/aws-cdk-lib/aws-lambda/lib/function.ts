@@ -51,8 +51,6 @@ import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, USE_CDK_MANAGED_LAMBDA_LOGGROUP } from '../../cx-api';
 
-const DURABLE_ENCRYPTION_DOC_URL = 'https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html';
-
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
  */
@@ -1800,7 +1798,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     });
 
     // A CfnKey without a key policy would lose its default root statement, so only a JSON object policy is edited.
-    const isEditableCfnKey = kms.CfnKey.isCfnKey(key) && typeof key.keyPolicy === 'object' && !Token.isUnresolved(key.keyPolicy);
+    const isEditableCfnKey = kms.CfnKey.isCfnKey(key) && key.keyPolicy !== null && typeof key.keyPolicy === 'object'
+      && !Token.isUnresolved(key.keyPolicy);
+    // Key.fromCfnKey returns a child of the CfnKey, so look at the scope too.
     const isEditableKey = isEditableCfnKey || (iam.ResourceWithPolicies.of(key) !== undefined
       && (Resource.isOwnedResource(key) || kms.CfnKey.isCfnKey(key.node.scope)));
     if (isEditableKey) {
@@ -1819,8 +1819,8 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (!isEditableKey || isCrossAccountKey) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyPolicyIncomplete',
         'CDK cannot add every durableConfig.kmsKey statement to the key policy. Add the Lambda service principal statement if it is ' +
-        'missing, and an execution role statement if the key is in another account or has no default root statement. ' +
-        `See ${DURABLE_ENCRYPTION_DOC_URL}.`);
+        'missing, and an execution role statement if the key is in another account. ' +
+        'See https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html.');
     }
   }
 

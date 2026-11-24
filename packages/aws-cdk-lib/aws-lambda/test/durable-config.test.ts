@@ -270,7 +270,7 @@ describe('durable config', () => {
     expectExecutionRoleStatement(fnStack, 'my-durable-fn', { 'Fn::ImportValue': Match.stringLikeRegexp('^KeyStack:ExportsOutputFnGetAttDurableKey.*Arn') });
   });
 
-  test('DurableConfig with a kmsKey in a nested stack grants the execution role through a nested stack parameter', () => {
+  test('DurableConfig with a kmsKey in a nested stack grants the execution role through a nested stack output', () => {
     const fnStack = new cdk.Stack(new cdk.App(), 'FnStack');
     const nested = new cdk.NestedStack(fnStack, 'Nested');
     newDurableFunction(fnStack, { functionName: 'my-durable-fn', kmsKey: new kms.Key(nested, 'DurableKey') });
@@ -333,6 +333,7 @@ describe('durable config', () => {
   test.each([
     ['an imported key', (stack: cdk.Stack) => kms.Key.fromKeyArn(stack, 'DurableKey', importedKeyArn), importedKeyArn],
     ['a CfnKey without a keyPolicy', (stack: cdk.Stack) => new kms.CfnKey(stack, 'DurableKey', {}), { 'Fn::GetAtt': ['DurableKey', 'Arn'] }],
+    ['a CfnKey with a null keyPolicy', (stack: cdk.Stack) => new kms.CfnKey(stack, 'DurableKey', { keyPolicy: null }), { 'Fn::GetAtt': ['DurableKey', 'Arn'] }],
     ['a CfnKey with a token keyPolicy', (stack: cdk.Stack) => new kms.CfnKey(stack, 'DurableKey', {
       keyPolicy: cdk.Lazy.any({ produce: () => rootPolicy }),
     }), { 'Fn::GetAtt': ['DurableKey', 'Arn'] }],
@@ -364,7 +365,25 @@ describe('durable config', () => {
     const fnStack = new cdk.Stack(app, 'FnStack', { env: { account: '111111111111', region: 'us-east-1' } });
     newDurableFunction(fnStack, { functionName: 'my-durable-fn', kmsKey: new kms.Key(keyStack, 'DurableKey') });
 
-    expect(JSON.stringify(keyPolicyStatements(keyStack))).toContain('lambda.amazonaws.com');
+    const partitionFnArn = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':lambda:us-east-1:111111111111:function:my-durable-fn']] };
+    expectKeyPolicyStatements(keyStack, [
+      Match.objectLike({ Action: 'kms:*' }),
+      Match.objectEquals({
+        Effect: 'Allow',
+        Principal: { Service: 'lambda.amazonaws.com' },
+        Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        Resource: '*',
+        Condition: { StringEquals: { 'aws:SourceAccount': '111111111111', 'aws:SourceArn': partitionFnArn, [encryptionContextKey]: partitionFnArn } },
+      }),
+    ]);
+    Template.fromStack(fnStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: 'kms:Decrypt',
+          Condition: { StringEquals: { 'kms:ViaService': 'lambda.us-east-1.amazonaws.com', [encryptionContextKey]: partitionFnArn } },
+        })]),
+      },
+    });
     Annotations.fromStack(fnStack).hasWarning('/FnStack/Lambda',
       Match.stringLikeRegexp('CDK cannot add every durableConfig.kmsKey statement to the key policy.*durableConfigKmsKeyPolicyIncomplete'));
   });

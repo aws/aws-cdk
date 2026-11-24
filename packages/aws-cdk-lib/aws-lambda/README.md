@@ -1676,12 +1676,12 @@ statement, the identity that deploys the function needs `kms:DescribeKey`, `kms:
 Set `functionName` to a literal string to scope the statements to the function. Without it, they match
 every function in the account and Region. Adding `durableConfig` to an existing function replaces it, so
 you can set a new literal `functionName` in the same deployment. Don't keep an existing custom name, as the
-note above describes.
+note above describes. If the function already has `durableConfig`, setting `functionName` replaces it.
 
 CDK adds these statements only for the key currently set in `durableConfig.kmsKey`. Removing or switching
 it removes them from the old key's policy and the role's policy on the next deployment, and running
 executions keep the key they started with. Before you do, grant the old key yourself, and keep the grant
-until executions on it finish and their retention ends.
+until running executions on it finish. Operators who read retained executions need their own `kms:Decrypt`.
 
 ## AutoScaling
 

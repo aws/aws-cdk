@@ -36,7 +36,8 @@ const scopedFunction = new lambda.Function(stack, 'DurableFunctionWithCmkAndName
   durableConfig: { executionTimeout: Duration.hours(1), retentionPeriod: Duration.days(30), kmsKey: scopedKey },
 });
 
-// With the key in another stack, the key stack does not reference the function stack or its role.
+// With the key in another stack and a role passed in, the role's own policy gets the grant and the key stack
+// references neither the function stack nor the role.
 const crossStackKey = new kms.Key(keyStack, 'CrossStackKey', { removalPolicy: RemovalPolicy.DESTROY });
 const crossStackRole = new iam.Role(stack, 'CrossStackRole', {
   roleName: `${stack.stackName}-cross-stack-role`,
