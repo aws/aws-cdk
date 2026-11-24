@@ -69,7 +69,7 @@ distribution
 ```
 
 Configures Vended Logs for encrypted and unencrypted S3 Bucket destinations
-For encrypted S3 buckets, if the key needs to be imported from a different stack, permissions must be added to it manually.
+For encrypted S3 buckets, if the key is imported/referenced (EX: `kms.Key.fromKeyArn()`), the Mixin cannot update the key policy. Permissions for log delivery must be added manually.
 
 ```typescript 
 import * as eventBusMixins from '@aws-cdk/mixins-preview/aws-events/mixins';
@@ -97,7 +97,7 @@ const encryptedBucket = new s3.Bucket(scope, 'EncryptedBucket', {
 });
 
 // if no key is provided, the Mixin will attempt to find it using EncryptedResources.of()
-eventbus.with(eventBusMixins.CfnEventBusLogsMixin.ERROR_LOGS.toS3(encryptedBucket, { encryptionKey: key }));
+eventBus.with(eventBusMixins.CfnEventBusLogsMixin.ERROR_LOGS.toS3(encryptedBucket, { encryptionKey: key }));
 
 ```
 
