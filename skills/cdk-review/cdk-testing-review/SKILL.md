@@ -61,9 +61,8 @@ Populate the structured finding fields the `cdk-review-principles` skill defines
 cited inline). This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
 Missing edge & negative cases, Untested feature-flag state, Missing required integration test, Dangerous
 snapshot diff, IntegTest construct misuse, Weak or missing assertions, Stale integration snapshot. The
-`suggestedFix`, when there is one (folded into
-`message`), shows the test or snapshot snippet demonstrating the gap and the assertion, case, or test to
-add.
+`suggestedFix`, when there is one (folded into `message`), shows the test or snapshot snippet demonstrating
+the gap and the assertion, case, or test to add.
 
 ## Apply cdk-review-principles
 
