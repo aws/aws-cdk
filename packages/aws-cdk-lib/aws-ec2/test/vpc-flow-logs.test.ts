@@ -3,7 +3,7 @@ import * as iam from '../../aws-iam';
 import * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
-import { App, RemovalPolicy, Stack } from '../../core';
+import { App, CfnResource, RemovalPolicy, Stack } from '../../core';
 import { EC2_FLOW_LOGS_CLOUDWATCH_LOGS_PERMISSIONS_SCOPED } from '../../cx-api';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc, FlowLogTrafficType } from '../lib';
 
@@ -172,14 +172,36 @@ describe('vpc flow logs', () => {
           Match.objectLike({
             Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
             Effect: 'Allow',
+            Resource: Match.objectEquals({
+              'Fn::ImportValue': Match.stringLikeRegexp('^LogGroupStack:ExportsOutputFnGetAttTestLogGroup.*Arn'),
+            }),
           }),
           Match.objectLike({
             Action: 'logs:DescribeLogStreams',
             Effect: 'Allow',
+            Resource: Match.objectEquals({
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':logs:us-east-1:123456789012:log-group:',
+                  Match.objectEquals({
+                    'Fn::ImportValue': Match.stringLikeRegexp('^LogGroupStack:ExportsOutputRefTestLogGroup'),
+                  }),
+                ],
+              ],
+            }),
           }),
         ]),
       },
     });
+
+    const logGroupLogicalId = logGroupStack.getLogicalId(logGroup.node.defaultChild as CfnResource);
+    Template.fromStack(logGroupStack).hasOutput('*', Match.objectLike({
+      Value: { Ref: logGroupLogicalId },
+      Export: { Name: Match.stringLikeRegexp('^LogGroupStack:ExportsOutputRef') },
+    }));
   });
 
   test('with cloudwatch logs as the destination, allows use of existing resources', () => {
