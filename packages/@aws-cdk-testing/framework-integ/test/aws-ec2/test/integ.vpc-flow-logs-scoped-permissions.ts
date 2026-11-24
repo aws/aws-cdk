@@ -23,5 +23,3 @@ test.assertions.awsApiCall('EC2', 'describeFlowLogs', {
     interval: Duration.seconds(30),
     totalTimeout: Duration.minutes(10),
   });
-
-app.synth();
