@@ -1263,3 +1263,54 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   ],
 }));
 ```
+
+## CloudWatch Omni
+
+[CloudWatch Omni](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch-omni.html) is an observability
+experience for applications and AI agents that users reach through a sign-in URL, with identities they already have in IAM
+or IAM Identity Center. Its resources form a tree: a domain configures sign-in, and the spaces under a domain give access to
+the telemetry of one account and Region.
+
+### Domains
+
+A domain is the root of CloudWatch Omni in an account. Users reach it at two URLs: one based on the domain ID,
+`https://<domain-id>.cloudwatch-omni.global.app.aws`, and one based on the domain name,
+`https://<domain-name>.cloudwatch-omni.global.app.aws`. `identityProviders` sets how users sign in: with IAM users and
+roles, through IAM Identity Center, or both. An account has at most one domain across all Regions.
+
+```ts
+const domain = new cloudwatch.Domain(this, 'Domain', {
+  domainName: 'observability',
+  identityProviders: [cloudwatch.IdentityProvider.IAM],
+  tags: { Team: 'observability' },
+});
+
+// The ID-based URL of the domain
+new CfnOutput(this, 'DomainUrl', { value: domain.domainEndpointUrl! });
+```
+
+Sign-in through IAM Identity Center needs the Identity Center instance. Give it by ARN, or pass an L1 `CfnInstance`
+with `IdentityCenterInstance.fromInstance()`:
+
+```ts
+new cloudwatch.Domain(this, 'Domain', {
+  domainName: 'observability',
+  identityProviders: [cloudwatch.IdentityProvider.IDC, cloudwatch.IdentityProvider.IAM],
+  identityCenterInstance: cloudwatch.IdentityCenterInstance.fromInstanceArn(
+    'arn:aws:sso:::instance/ssoins-1a2b3c4d5e6f7a8b'),
+});
+```
+
+`IdentityProvider.of()` names a provider that has no static member yet.
+
+By default the domain is retained when it is removed from the stack. Set `removalPolicy: RemovalPolicy.DESTROY` to delete it
+with the stack.
+
+To reference an existing domain, use `Domain.fromDomainArn()`, or `Domain.fromDomainId()` when only the ID is known. A domain
+referenced by ID has no known ARN, and reading its `domainArn` throws.
+
+```ts
+const byArn = cloudwatch.Domain.fromDomainArn(this, 'ByArn',
+  'arn:aws:cloudwatch:us-east-1:123456789012:domain/d-abc456');
+const byId = cloudwatch.Domain.fromDomainId(this, 'ById', 'd-abc456');
+```

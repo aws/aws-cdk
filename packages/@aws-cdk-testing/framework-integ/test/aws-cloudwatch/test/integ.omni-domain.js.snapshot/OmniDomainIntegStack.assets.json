@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "1801e8bb6c4d6e68f4a11e349cd3668fb59ad3b5e5a1bebfb1c22114971dd706": {
+      "displayName": "OmniDomainIntegStack Template",
+      "source": {
+        "path": "OmniDomainIntegStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-c0d38a2e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1801e8bb6c4d6e68f4a11e349cd3668fb59ad3b5e5a1bebfb1c22114971dd706.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

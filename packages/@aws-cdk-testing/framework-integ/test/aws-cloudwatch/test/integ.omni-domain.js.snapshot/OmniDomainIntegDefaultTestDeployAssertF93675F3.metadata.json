@@ -1,0 +1,58 @@
+{
+  "/OmniDomainInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "OmniDomainIntegDefaultTestDeployAssertF93675F3.template.json"
+    }
+  ],
+  "/OmniDomainInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/OmniDomainInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/OmniDomainInteg/DefaultTest/DeployAssert/AwsApiCallCloudControlgetResourceff73c9abc22b3bb122ba61891d949831/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/OmniDomainInteg/DefaultTest/DeployAssert/AwsApiCallCloudControlgetResourceff73c9abc22b3bb122ba61891d949831/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudControlgetResourceff73c9abc22b3bb122ba61891d949831"
+    }
+  ],
+  "/OmniDomainInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/OmniDomainInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/OmniDomainInteg/DefaultTest/DeployAssert/AwsApiCallCloudControlgetResourceff73c9abc22b3bb122ba61891d949831/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudControlgetResourceff73c9abc22b3bb122ba61891d949831"
+    }
+  ]
+}
