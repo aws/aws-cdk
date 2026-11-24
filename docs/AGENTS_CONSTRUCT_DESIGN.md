@@ -192,7 +192,8 @@ Common facade types — see [AGENTS_CONSTRUCT_IMPLEMENTATION.md](./AGENTS_CONSTR
 
 - You MUST NOT include configuration mutation methods on the construct interface (`IFoo`) — they belong on the concrete class only (imported constructs cannot be reconfigured)
 - Annotate mutation methods with `@config` JSDoc tag
-- Exception: grant methods and factory methods SHOULD be on the interface because they serve external consumers or create new resources
+- Exception: factory methods SHOULD be on the interface because they create new resources
+- New grant methods go in the `{Resource}Grants` Facade, not on the interface — see [AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants](./AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants)
 
 ### Method Verb Semantics
 
