@@ -27,12 +27,9 @@ is actually a `Ref`/`Fn::` at synth) emits invalid CloudFormation or throws for 
 Guard with `Token.isUnresolved()` before validating or comparing. See
 [`AGENTS.md § Token Safety`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#token-safety) and the
 [CDK Tokens guide](https://docs.aws.amazon.com/cdk/v2/guide/tokens.html).
-- **Boolean-token false-positive guard:** tokens encode only as string, number, or
-  string-list (`Token.asString`/`asNumber`/`asList` — there is no `asBoolean`), so a `boolean`-typed value
-  can never be an unresolved token. Do not flag a missing `Token.isUnresolved()` guard on a boolean prop,
-  and do not report that a boolean "could be a token." The same fact validates the opposite finding: a
-  `Token.isUnresolved()` call on a boolean, enum, or construct reference (e.g. `IKey`) is dead code — the
-  guard can never be true.
+- **Boolean props:** tokens encode only as string, number or string list (`Token.asString`/`asNumber`/
+  `asList`; there is no `asBoolean`), so a `boolean`-typed prop cannot hold an unresolved token, and a
+  missing guard on it is not a finding.
 
 ## JSII cross-language compatibility
 
@@ -103,11 +100,10 @@ and
 **[REG-API-SURFACE-BREAK] (BLOCKING)** — A change that makes existing programs fail to compile: renaming or
 removing a public class/method/property, adding a required property (or changing optional→required /
 nullable→non-nullable on an input), or removing a return property (or changing non-nullable→nullable on a
-return). *(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
+return), or removing an enum member. *(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation)
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
-- **Also breaking:** removing an enum member.
 
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
 error: an update that cannot be applied, a change that causes service interruption or data loss
