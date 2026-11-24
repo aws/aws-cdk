@@ -81,7 +81,8 @@ props-based shape, or for a written justification. See
 logic refactor that changes what the code does on an edge case, or a
 shared base-class/helper side effect (a spurious `CfnCondition`, a token-keyed cache) that flows into every
 consumer of that method. *(Conditional — BLOCKING when it reaches every consumer or fails an existing
-stack's update.)*
+stack's update.)* A change that only stops an input or configuration that never deployed or never worked is
+not this finding; one that also changes what working code does is.
 
 ## Library stability & breaking changes
 
