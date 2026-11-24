@@ -11,6 +11,9 @@ const app = new cdk.App();
 
 class EventStack extends cdk.Stack {
   public readonly cluster: ecs.Cluster;
+  public readonly defaultTask: ScheduledFargateTask;
+  public readonly customRoleTask: ScheduledFargateTask;
+  public readonly containerNameTask: ScheduledFargateTask;
 
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
@@ -19,7 +22,7 @@ class EventStack extends cdk.Stack {
     this.cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
 
     // Create the scheduled task
-    new ScheduledFargateTask(this, 'ScheduledFargateTask', {
+    this.defaultTask = new ScheduledFargateTask(this, 'ScheduledFargateTask', {
       cluster: this.cluster,
       scheduledFargateTaskImageOptions: {
         image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
@@ -43,7 +46,7 @@ class EventStack extends cdk.Stack {
     const customRole = new iam.Role(this, 'CustomRole', {
       assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
     });
-    new ScheduledFargateTask(this, 'ScheduledFargateTask3', {
+    this.customRoleTask = new ScheduledFargateTask(this, 'ScheduledFargateTask3', {
       cluster: this.cluster,
       scheduledFargateTaskImageOptions: {
         image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
@@ -58,7 +61,7 @@ class EventStack extends cdk.Stack {
     });
 
     // Create the scheduled task with container name
-    new ScheduledFargateTask(this, 'ScheduledFargateTask2', {
+    this.containerNameTask = new ScheduledFargateTask(this, 'ScheduledFargateTask2', {
       cluster: this.cluster,
       scheduledFargateTaskImageOptions: {
         image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
@@ -87,17 +90,37 @@ const integTest = new integ.IntegTest(app, 'publicQueueProcessingFargateServiceT
   testCases: [myStack],
 });
 
-// The scheduled tasks run every 2 minutes; wait until at least one task
-// has run in the cluster to prove the EventBridge rule actually runs tasks.
+// The scheduled tasks run every 2 minutes; wait until each rule has run a
+// task in the cluster to prove every EventBridge rule actually runs tasks.
 // The tasks run a short-lived command and stop, so assert on STOPPED tasks:
 // asserting on a running task would leave active tasks in the cluster and
 // the cluster could not be deleted when the test stack is destroyed.
-integTest.assertions.awsApiCall('ECS', 'listTasks', {
+// Once every rule has run, turn the rules off and wait until no task is
+// still running, so the cluster delete does not race a task the rules
+// would otherwise keep starting.
+const tasks = [myStack.defaultTask, myStack.customRoleTask, myStack.containerNameTask];
+
+// The command exits right away, so look for a STOPPED task from each rule
+const ran = tasks.map(task => integTest.assertions.awsApiCall('ECS', 'listTasks', {
   cluster: myStack.cluster.clusterArn,
+  family: task.taskDefinition.family,
   desiredStatus: 'STOPPED',
 }).assertAtPath('taskArns.0', integ.ExpectedResult.stringLikeRegexp('arn:aws:ecs:.*:task/.*/.*')).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(10),
   interval: cdk.Duration.seconds(30),
+}));
+
+// Stop the schedules and wait until no task is still running, so the cluster delete doesn't race them
+const disabled = tasks.map(task => integTest.assertions.awsApiCall('EventBridge', 'disableRule', {
+  Name: task.eventRule.ruleName,
+}));
+const drained = integTest.assertions.awsApiCall('ECS', 'listTasks', {
+  cluster: myStack.cluster.clusterArn,
+}).expect(integ.ExpectedResult.objectLike({ taskArns: [] })).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(10),
+  interval: cdk.Duration.seconds(30),
 });
+
+[...ran, ...disabled, drained].reduce((prev, call) => prev.next(call));
 
 app.synth();
