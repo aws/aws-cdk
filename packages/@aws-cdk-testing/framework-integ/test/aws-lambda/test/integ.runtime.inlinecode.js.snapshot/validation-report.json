@@ -4,12 +4,12 @@
   "pluginReports": [
     {
       "pluginName": "CloudFormation Validate",
-      "pluginVersion": "1.14.0",
+      "pluginVersion": "1.17.1",
       "conclusion": "success",
       "violations": [
         {
           "ruleName": "W2531",
-          "description": "Runtime: Runtime 'python3.8' was deprecated on '2024-10-14'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'python3.14'",
+          "description": "Runtime: Runtime 'python3.8' was deprecated on '2024-10-14'. Creation will be disabled on '2027-07-29', and updates will be disabled on '2027-08-31'. Please consider updating to 'python3.14'",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Deprecation"
@@ -31,7 +31,7 @@
         },
         {
           "ruleName": "W2531",
-          "description": "Runtime: Runtime 'python3.9' was deprecated on '2025-12-15'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'python3.14'",
+          "description": "Runtime: Runtime 'python3.9' was deprecated on '2025-12-15'. Creation will be disabled on '2027-07-29', and updates will be disabled on '2027-08-31'. Please consider updating to 'python3.14'",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Deprecation"
@@ -53,7 +53,29 @@
         },
         {
           "ruleName": "W2531",
-          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation will be disabled on '2027-02-01', and updates will be disabled on '2027-03-03'. Please consider updating to 'nodejs24.x'",
+          "description": "Runtime: Runtime 'python3.10' was deprecated on '2026-10-31'. Creation will be disabled on '2027-07-29', and updates will be disabled on '2027-08-31'. Please consider updating to 'python3.14'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Deprecation"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10/Resource",
+              "constructFqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "aws-cdk-lambda-runtime-inlinecode.template.json",
+                "logicalId": "PYTHON310431C418B",
+                "propertyPaths": [
+                  "Properties.Runtime"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "W2531",
+          "description": "Runtime: Runtime 'nodejs20.x' was deprecated on '2026-04-30'. Creation will be disabled on '2027-07-29', and updates will be disabled on '2027-08-31'. Please consider updating to 'nodejs24.x'",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Deprecation"
@@ -75,7 +97,7 @@
         },
         {
           "ruleName": "F0001",
-          "description": "Resources section must exist and be non-empty",
+          "description": "Resources: Resources section must exist and be non-empty",
           "severity": "warning",
           "ruleMetadata": {
             "category": "Structure"

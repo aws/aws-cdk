@@ -67,7 +67,7 @@ const MEMORY_TAG_MAX_LENGTH = 256;
  * Minimum length for memory expiration days
  * @internal
  */
-const MEMORY_EXPIRATION_DAYS_MIN = 7;
+const MEMORY_EXPIRATION_DAYS_MIN = 3;
 /**
  * Maximum length for memory expiration days
  * @internal
@@ -572,7 +572,7 @@ export interface MemoryProps {
    */
   readonly memoryName?: string;
   /**
-   * Short-term memory expiration in days (between 7 and 365).
+   * Short-term memory expiration in days (between 3 and 365).
    * Sets the short-term (raw event) memory retention.
    * Events older than the specified duration will expire and no longer be stored.
    * @default - 90 days
