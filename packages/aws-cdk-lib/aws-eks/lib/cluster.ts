@@ -1322,10 +1322,6 @@ abstract class ClusterBase extends Resource implements ICluster {
   }
 
   /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added.
-   */
-  /**
    * Adds a nodeadm `NodeConfig` part to the user data of an Amazon Linux 2023 auto scaling group.
    */
   private addAmazonLinux2023UserData(autoScalingGroup: autoscaling.AutoScalingGroup, bootstrapOptions: BootstrapOptions = {}) {
@@ -1340,14 +1336,29 @@ abstract class ClusterBase extends Resource implements ICluster {
       throw new ValidationError(lit`Al2023RequiresServiceCidr`,
         'Amazon Linux 2023 nodes need the cluster\'s service CIDR for nodeadm. Set bootstrapOptions.serviceCidr ' +
         '(for an existing cluster, read it with `aws eks describe-cluster --query cluster.kubernetesNetworkConfig.serviceIpv4Cidr`), ' +
-        'or set serviceIpv4Cidr when creating a new cluster. Do not add serviceIpv4Cidr to an existing cluster: changing it replaces the cluster.', autoScalingGroup);
+        'or set serviceIpv4Cidr when creating a new cluster. Do not add serviceIpv4Cidr to an existing cluster: the cluster resource ' +
+        'does not apply the change, so nodes would get a service CIDR that does not match the cluster.', autoScalingGroup);
     }
     userData.addPart(ec2.MultipartBody.fromRawBody({
       contentType: 'application/node.eks.aws',
       body: renderAmazonLinux2023UserData(this, autoScalingGroup, serviceCidr, bootstrapOptions),
     }));
+
+    // Unlike the Amazon Linux 2 bootstrap, nodeadm does not run cfn-signal. A group that waits for signals
+    // only works if something else sends them (for example applyCloudFormationInit), so warn rather than fail.
+    const cfnGroup = autoScalingGroup.node.defaultChild as autoscaling.CfnAutoScalingGroup;
+    if (cfnGroup.cfnOptions.creationPolicy?.resourceSignal ||
+        cfnGroup.cfnOptions.updatePolicy?.autoScalingRollingUpdate?.waitOnResourceSignals) {
+      Annotations.of(autoScalingGroup).addWarningV2('@aws-cdk/aws-eks:al2023NoCfnSignal',
+        'Amazon Linux 2023 nodes do not send a CloudFormation signal when they join the cluster. This auto scaling group ' +
+        'waits for signals, so the deployment fails unless something else sends them (for example applyCloudFormationInit).');
+    }
   }
 
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
+   */
   private addSpotInterruptHandler() {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
@@ -2733,6 +2744,9 @@ export interface BootstrapOptions {
    * Extra arguments to add to the kubelet. Useful for adding labels or taints.
    *
    * For example, `--node-labels foo=bar,goo=far`.
+   *
+   * On Amazon Linux 2023, write each flag as `--flag=value`, for example
+   * `--node-labels=foo=bar,goo=far`: nodeadm passes each flag to the kubelet separately.
    *
    * @default - none
    */

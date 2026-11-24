@@ -1,6 +1,6 @@
 import type { BootstrapOptions, ICluster } from './cluster';
 import type * as autoscaling from '../../aws-autoscaling';
-import { Stack, ValidationError } from '../../core';
+import { Stack, Token, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import { posixShellEscape, posixShellEscapeMinimal } from '../../core/lib/private/shell-escape';
 
@@ -79,7 +79,7 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
 export function renderAmazonLinux2023UserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, serviceCidr: string, options: BootstrapOptions = {}): string {
   const unsupported = new Array<string>();
   if (options.useMaxPods === false) { unsupported.push('useMaxPods'); }
-  if (options.enableDockerBridge !== undefined) { unsupported.push('enableDockerBridge'); }
+  if (options.enableDockerBridge) { unsupported.push('enableDockerBridge'); }
   if (options.awsApiRetryAttempts !== undefined) { unsupported.push('awsApiRetryAttempts'); }
   if (options.dockerConfigJson !== undefined) { unsupported.push('dockerConfigJson'); }
   if (options.additionalArgs !== undefined) { unsupported.push('additionalArgs'); }
@@ -106,7 +106,16 @@ export function renderAmazonLinux2023UserData(cluster: ICluster, autoScalingGrou
     flags.push('--register-with-taints=spotInstance=true:PreferNoSchedule');
   }
   if (options.kubeletExtraArgs) {
-    flags.push(...options.kubeletExtraArgs.trim().split(/\s+/));
+    const extraFlags = options.kubeletExtraArgs.trim().split(/\s+/);
+    // nodeadm takes each kubelet flag as its own list entry, so a value separated from its flag by a
+    // space would become a separate entry. Tokens are skipped: their values are only known at deploy time.
+    const detached = extraFlags.filter(flag => !flag.startsWith('--') && !Token.isUnresolved(flag));
+    if (detached.length > 0) {
+      throw new ValidationError(lit`Al2023KubeletExtraArgsFormat`,
+        'On Amazon Linux 2023, each kubeletExtraArgs flag must be written as --flag=value. ' +
+        `Not attached to a flag: ${detached.join(' ')}`, autoScalingGroup);
+    }
+    flags.push(...extraFlags);
   }
 
   const lines = [

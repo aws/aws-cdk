@@ -730,7 +730,8 @@ cluster.addAutoScalingGroupCapacity('AL2023Nodes', {
 
 For an existing cluster, pass the service CIDR in `bootstrapOptions.serviceCidr` instead. You can read it with
 `aws eks describe-cluster --name <cluster> --query cluster.kubernetesNetworkConfig.serviceIpv4Cidr`.
-Do not add `serviceIpv4Cidr` to an existing cluster: changing it replaces the cluster.
+Do not add `serviceIpv4Cidr` to an existing cluster: the cluster resource does not apply the change, so the
+cluster keeps its original service CIDR while nodes would be configured with the new one.
 
 ```ts
 declare const cluster: eks.Cluster;
@@ -747,7 +748,35 @@ cluster.addAutoScalingGroupCapacity('AL2023Nodes', {
 
 Spot instances get the same `lifecycle=Ec2Spot` label and `PreferNoSchedule` taint as on Amazon Linux 2.
 Of the `bootstrapOptions`, only `serviceCidr`, `kubeletExtraArgs` and `dnsClusterIp` apply to Amazon Linux 2023;
-the options of the Amazon Linux 2 `bootstrap.sh` script are rejected. Nodes do not send a CloudFormation signal.
+the options of the Amazon Linux 2 `bootstrap.sh` script are rejected. Write each `kubeletExtraArgs` flag as
+`--flag=value`, because nodeadm passes each flag to the kubelet separately.
+
+Nodes do not send a CloudFormation signal. If the auto scaling group waits for signals (`signals`, or a rolling
+update that waits on them), something else must send them, for example `applyCloudFormationInit`; CDK adds a
+warning in that case.
+
+To connect an auto scaling group you create yourself, give it an `EksOptimizedImage` with
+`machineImageType: eks.MachineImageType.AMAZON_LINUX_2023`. The image provides the MIME multipart user data that
+nodeadm reads; `connectAutoScalingGroupCapacity` rejects other user data. This is also the only option for an
+imported cluster:
+
+```ts
+declare const cluster: eks.Cluster;
+
+const asg = new autoscaling.AutoScalingGroup(this, 'AL2023Asg', {
+  vpc: cluster.vpc,
+  instanceType: new ec2.InstanceType('m5.large'),
+  machineImage: new eks.EksOptimizedImage({
+    kubernetesVersion: '1.36',
+    machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+  }),
+});
+
+cluster.connectAutoScalingGroupCapacity(asg, {
+  machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+  bootstrapOptions: { serviceCidr: '10.100.0.0/16' },
+});
+```
 
 #### Bottlerocket
 

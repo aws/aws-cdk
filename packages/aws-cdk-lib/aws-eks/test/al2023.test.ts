@@ -1,5 +1,5 @@
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import { App, Fn, Stack, Token } from '../../core';
@@ -195,6 +195,31 @@ describe('Amazon Linux 2023 capacity', () => {
         .toThrow(new RegExp(`bootstrapOptions ${name} are not supported for Amazon Linux 2023`));
     });
 
+    test('rejects kubeletExtraArgs values that are not attached to a flag', () => {
+      // GIVEN
+      const { cluster, asg } = newClusterAndAsg();
+
+      // THEN
+      expect(() => renderAmazonLinux2023UserData(cluster, asg, SERVICE_CIDR, {
+        kubeletExtraArgs: '--node-labels foo=bar,goo=far',
+      })).toThrow(/must be written as --flag=value. Not attached to a flag: foo=bar,goo=far/);
+    });
+
+    test.each([
+      [{ useMaxPods: true }],
+      [{ enableDockerBridge: false }],
+    ])('accepts %j, which matches Amazon Linux 2023 behavior, and renders the same NodeConfig', (options: eks.BootstrapOptions) => {
+      // GIVEN
+      const { stack, cluster, asg } = newClusterAndAsg();
+
+      // WHEN
+      const withOption = stack.resolve(renderAmazonLinux2023UserData(cluster, asg, SERVICE_CIDR, options));
+      const without = stack.resolve(renderAmazonLinux2023UserData(cluster, asg, SERVICE_CIDR));
+
+      // THEN
+      expect(withOption).toEqual(without);
+    });
+
     test('requires the endpoint and CA of an imported cluster', () => {
       // GIVEN
       const { stack, asg } = newClusterAndAsg();
@@ -306,6 +331,31 @@ describe('Amazon Linux 2023 capacity', () => {
       // THEN
       expect(JSON.stringify(stack.resolve(asg.userData.render()))).toContain('Content-Type: application/node.eks.aws');
       Template.fromStack(stack).resourceCountIs('AWS::AutoScaling::AutoScalingGroup', 1);
+      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('do not send a CloudFormation signal'));
+    });
+
+    test('warns when the group waits for signals, which nodeadm does not send', () => {
+      // GIVEN
+      const { stack, cluster } = newCluster();
+      const asg = new autoscaling.AutoScalingGroup(stack, 'Self', {
+        vpc: cluster.vpc,
+        instanceType: new ec2.InstanceType('m5.large'),
+        machineImage: new eks.EksOptimizedImage({
+          kubernetesVersion: '1.30',
+          machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+        }),
+        signals: autoscaling.Signals.waitForAll(),
+      });
+
+      // WHEN
+      cluster.connectAutoScalingGroupCapacity(asg, {
+        machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+        bootstrapOptions: { serviceCidr: SERVICE_CIDR },
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Self',
+        Match.stringLikeRegexp('Amazon Linux 2023 nodes do not send a CloudFormation signal'));
     });
   });
 });
