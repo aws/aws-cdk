@@ -10,5 +10,6 @@
       "assertionStackName": "WebFunctionMinimalTestDefaultTestDeployAssertEB86BEC8"
     }
   },
-  "enableLookups": true
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
 }
