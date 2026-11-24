@@ -108,8 +108,6 @@ return). *(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
 - **Also breaking:** removing an enum member.
-- **Non-breaking guard:** adding optional input props, new methods/classes, and
-  return props is additive.
 
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
 error: an update that cannot be applied, a change that causes service interruption or data loss
@@ -123,8 +121,6 @@ for the definitional test of which template changes are breaking.
   feature flag for it. See
   [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags) and
   [`CONTRIBUTING.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#feature-flags).
-- **Non-breaking guard:** an update that applies cleanly with no replacement and only
-  additive template changes is not breaking.
 
 **[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
 breaking change still requires an explicit `BREAKING CHANGE:` callout in the PR body (before the `---`
