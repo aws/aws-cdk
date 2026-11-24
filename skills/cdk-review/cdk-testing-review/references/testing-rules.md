@@ -104,11 +104,3 @@ whether or not the change's category owed an assertion. See
 for the assertion-owed cases and the `awsApiCall` → `ExpectedResult` API. Also assert the
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a
 `403`/error `ExpectedResult`).
-
-**[TEST-INTEG-REDUNDANT] (RECOMMENDED)** — N resources created to exercise N enum values, with N large,
-when one reconfigured resource, or the enum threaded through, tests the same synthesized template. One resource usually
-suffices to prove the enum renders. See
-[`INTEGRATION_TESTS.md § New L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#new-l2-constructs)
-and
-[`§ Existing L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#existing-l2-constructs)
-for the tests a new/existing L2 owes.

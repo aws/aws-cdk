@@ -50,7 +50,6 @@ cite").
   demanding one is the noise-cannon, not a finding.
 - **Production-code correctness** — whether the implementation is buggy is production-code
   correctness — outside your scope. Judge whether the tests would catch a bug, not whether the code has one.
-- **Test-title wording** — cosmetic per the shared exclusions.
 - **Mechanical / tooling-driven snapshot churn** — asset hashes, CDK-version strings, bootstrap /
   metadata-only diffs with no semantic change to a resource's type, logical ID, or a real property. Read
   the diff; flag it only if a real property changed.
@@ -60,8 +59,9 @@ cite").
 Populate the structured finding fields the `cdk-review-principles` skill defines. Write
 `message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
 cited inline). This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
-Missing edge & negative cases, Untested feature-flag state, Missing required integration test, Dangerous snapshot diff, IntegTest construct misuse, Weak or missing assertions,
-Redundant tests, Stale integration snapshot. The `suggestedFix`, when there is one (folded into
+Missing edge & negative cases, Untested feature-flag state, Missing required integration test, Dangerous
+snapshot diff, IntegTest construct misuse, Weak or missing assertions, Stale integration snapshot. The
+`suggestedFix`, when there is one (folded into
 `message`), shows the test or snapshot snippet demonstrating the gap and the assertion, case, or test to
 add.
 
