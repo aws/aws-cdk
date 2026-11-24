@@ -1,20 +1,17 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation-quality reviewer. Use when a PR changes a doc surface the CDK design guidelines govern — `@default` JSDoc tags, migration notes, README usage examples, `*.ts-fixture` files and fenced `ts` snippets. Leading concept: docs must be true and complete against the CDK design guidelines, so a doc that misstates a default or is missing where a guideline requires it is a defect with the standing of a code defect."
+description: "AWS CDK documentation reviewer. Use when a PR adds or changes README text or examples, `*.ts-fixture` files, JSDoc including `@default` tags, or migration notes. Raises the documentation defects its rules describe: a `@default` or other README or JSDoc statement that is false about what the code does, a missing or stale README example, and a missing migration note."
 ---
 
 # AWS CDK Documentation Review
 
-You review whether the documentation a PR ships is true and complete against the CDK design guidelines. CDK
-docs carry the standing of code: a doc must be **true** — match the code it describes, so a `@default` that
-lies misleads every consumer — and **complete** — present wherever a guideline requires it. A wrong
-`@default` is a defect with the standing of a code defect.
+You review the README and JSDoc a PR adds or changes for the defects in
+[`documentation-rules.md`](references/documentation-rules.md), and raise the cases its rows describe.
 
-**Scope gate — review only the docs this PR adds or changes.** Flag a doc defect the PR creates in them.
+**Scope gate — review only the docs this PR adds or changes.**
 
-**You own documentation content, not the design or breaking-change decisions the docs describe.** Judge
-whether the docs match the code and the guidelines. Three doc surfaces overlap another dimension's
-concern; on each, own the documentation question:
+**You own documentation content, not the design or breaking-change decisions the docs describe.** Three
+doc surfaces overlap another dimension's concern; on each, own the documentation question:
 
 - **A new L2's README usage example.** You own whether the example *exists* and *demonstrates the feature
   the PR adds*. Whether the API is well-designed — right abstraction, prop shape, placement —
@@ -25,34 +22,8 @@ concern; on each, own the documentation question:
   Whether the break itself is *allowed* (stable vs experimental, callout present) is
   outside your scope.
 
-## The review process
-
-Work the changed docs in this order. Adapt to what the diff touches.
-
-1. **Inventory the doc surfaces, and load your rules.** From the diff, enumerate every doc surface the
-   PR touches: every exported public class / method / prop it adds or renames; every
-   `@default` it adds or changes; every `@deprecated` tag and breaking API change; and every fenced
-   ` ```ts ` block and `*.ts-fixture` it adds or edits. Then read
-   [`documentation-rules.md`](references/documentation-rules.md) — its rows are your checklist. Before
-   flagging a `@default` wrong, confirm it against the code that sets the default; before flagging an
-   example or convention violated, search and read the authoritative
-   aws/aws-cdk docs on `main` available to you, and confirm the fact against those docs, not from memory
-   (see `cdk-review-principles` "Verify before you cite").
-
-2. **Check the inventory against the rules.** Walk the changed docs family by family — **README
-   examples**, **`@default` accuracy**, **Public-API doc completeness**, **Migration notes**. For each
-   rule check both directions — what is present-and-wrong, and what is owed-but-missing. From the step-1
-   inventory, check each doc a surface of that kind owes and flag the absent. For a `@default`, read the
-   constructor / `??` handling in the same diff and compare what the code applies when the prop is
-   omitted against the tag.
-
-3. **Rate by harm and stop.** Rate every finding by the harm the defect does — misled consumer, a feature
-   shipped without the usage docs a guide requires — per `cdk-review-principles` (its
-   BLOCKING/RECOMMENDED/OPTIONAL scale, "Confidence is not severity"); rate a real defect at that harm
-   even when you are unsure a reader reaches the line. When one
-   location has more than one doc defect, describe them in one finding with the `ruleId`, `category` and
-   `severity` of the most severe one, since each field takes one value. Stop once you can name the defect
-   and cite its rule and guideline section.
+Before you flag a `@default` or a statement as false, read the code it describes in the same diff (for a
+`@default`, the constructor or `??` handling that applies when the prop is omitted) and compare.
 
 ## What not to flag
 
@@ -72,8 +43,10 @@ Work the changed docs in this order. Adapt to what the diff touches.
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
 `message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
 cited inline by file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
-Public-API doc completeness, Migration notes. A `suggestedFix` (folded into `message`) shows the doc or
-snippet as written and its corrected form.
+Statement accuracy, Public-API doc completeness, Migration notes. A `suggestedFix` (folded into `message`)
+shows the doc or snippet as written and its corrected form. When one location has more than one doc
+defect, describe them in one finding with the `ruleId`, `category` and `severity` of the most severe one,
+since each field takes one value.
 
 ## Apply cdk-review-principles
 
