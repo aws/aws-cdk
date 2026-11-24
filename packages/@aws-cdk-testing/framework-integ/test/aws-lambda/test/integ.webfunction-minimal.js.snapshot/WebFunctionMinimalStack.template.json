@@ -130,70 +130,6 @@
          ]
         ]
        }
-      },
-      {
-       "Action": [
-        "s3:GetObject",
-        "s3:GetObjectVersion"
-       ],
-       "Condition": {
-        "StringEquals": {
-         "aws:SourceAccount": {
-          "Ref": "AWS::AccountId"
-         }
-        },
-        "ArnLike": {
-         "aws:SourceArn": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":lambda:",
-            {
-             "Ref": "AWS::Region"
-            },
-            ":",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":web-function/WebFunctionMinimalStackNodeJs267342E68C/revision/*"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       },
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          {
-           "Fn::GetAtt": [
-            "CodeBucketFF4C7AD6",
-            "Arn"
-           ]
-          },
-          "/",
-          {
-           "Fn::Select": [
-            0,
-            {
-             "Fn::GetAtt": [
-              "DeployCodeCustomResource46A14DA0",
-              "SourceObjectKeys"
-             ]
-            }
-           ]
-          }
-         ]
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
@@ -276,18 +212,6 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
-  },
-  "DeployCodeAwsCliLayerB38BC350": {
-   "Type": "AWS::Lambda::LayerVersion",
-   "Properties": {
-    "Content": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "fa8e14e761e0a29058a42409f160eea065c3dd13909951db47e4a0f1c44f01aa.zip"
-    },
-    "Description": "/opt/awscli/aws"
-   }
   },
   "DeployCodeCustomResource46A14DA0": {
    "Type": "Custom::CDKBucketDeployment",
@@ -453,7 +377,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a12efc822af4855efaddc35cac5d42dfa7a132ded579c17dbca95a4a89d0db43.zip"
+     "S3Key": "5892cb75b4e8ca5480d8803341312ee1e05d11f586916822e03c4be9ce3618a8.zip"
     },
     "Environment": {
      "Variables": {
@@ -657,152 +581,6 @@
     "CodeBucketPolicy637E7C14",
     "MinimalBucketFunction70777F34",
     "MinimalBucketRevision0400274F"
-   ]
-  },
-  "NodeJs26ServiceRole142BE8A4": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "DependsOn": [
-    "CodeBucketPolicy637E7C14"
-   ]
-  },
-  "NodeJs26LogGroup089A2271": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 731
-   },
-   "DependsOn": [
-    "CodeBucketPolicy637E7C14"
-   ],
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "NodeJs26FunctionE574C7D5": {
-   "Type": "AWS::Lambda::WebFunction",
-   "Properties": {
-    "FunctionName": "WebFunctionMinimalStackNodeJs267342E68C"
-   },
-   "DependsOn": [
-    "CodeBucketPolicy637E7C14"
-   ]
-  },
-  "NodeJs26RevisionB980B4F4": {
-   "Type": "AWS::Lambda::WebFunctionRevision",
-   "Properties": {
-    "BuildConfig": {
-     "CodeConfig": {
-      "S3Object": {
-       "Bucket": {
-        "Ref": "CodeBucketFF4C7AD6"
-       },
-       "Key": {
-        "Fn::Select": [
-         0,
-         {
-          "Fn::GetAtt": [
-           "DeployCodeCustomResource46A14DA0",
-           "SourceObjectKeys"
-          ]
-         }
-        ]
-       },
-       "VersionId": {
-        "Fn::Select": [
-         0,
-         {
-          "Fn::GetAtt": [
-           "DeployCodeCustomResource46A14DA0",
-           "SourceObjectVersionIds"
-          ]
-         }
-        ]
-       }
-      }
-     },
-     "RuntimeConfig": {
-      "Runtime": "nodejs26.x"
-     }
-    },
-    "FunctionName": {
-     "Ref": "NodeJs26FunctionE574C7D5"
-    },
-    "ServiceConfig": {
-     "ExecutionRoleArn": {
-      "Fn::GetAtt": [
-       "NodeJs26ServiceRole142BE8A4",
-       "Arn"
-      ]
-     },
-     "TelemetryConfig": {
-      "LoggingConfig": {
-       "LogGroup": {
-        "Ref": "NodeJs26LogGroup089A2271"
-       }
-      }
-     },
-     "TimeoutSeconds": 30
-    }
-   },
-   "DependsOn": [
-    "CodeBucketPolicy637E7C14",
-    "NodeJs26FunctionE574C7D5"
-   ]
-  },
-  "NodeJs26Endpoint0F1280D6": {
-   "Type": "AWS::Lambda::WebFunctionEndpoint",
-   "Properties": {
-    "AuthType": "IamAuth",
-    "EndpointName": "prod",
-    "EndpointType": "HomeRegion",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "NodeJs26FunctionE574C7D5",
-      "FunctionArn"
-     ]
-    },
-    "RevisionWeights": [
-     {
-      "RevisionId": {
-       "Fn::GetAtt": [
-        "NodeJs26RevisionB980B4F4",
-        "RevisionId"
-       ]
-      },
-      "Weight": 100
-     }
-    ]
-   },
-   "DependsOn": [
-    "CodeBucketPolicy637E7C14",
-    "NodeJs26FunctionE574C7D5",
-    "NodeJs26RevisionB980B4F4"
    ]
   }
  },
