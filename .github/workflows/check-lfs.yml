@@ -5,6 +5,8 @@ on:
 permissions:
   contents: read
 
+cache-mode: read
+
 jobs:
   check-lfs:
     runs-on: ubuntu-latest
