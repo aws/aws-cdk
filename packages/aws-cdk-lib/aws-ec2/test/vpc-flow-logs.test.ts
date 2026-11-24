@@ -137,16 +137,7 @@ describe('vpc flow logs', () => {
           Match.objectEquals({
             Action: 'logs:DescribeLogStreams',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':logs:us-west-2:111122223333:log-group:imported-log-group',
-                ],
-              ],
-            },
+            Resource: 'arn:aws:logs:us-west-2:111122223333:log-group:imported-log-group',
           }),
         ]),
       },

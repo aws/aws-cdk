@@ -5,11 +5,11 @@ import type { IVpc } from './vpc';
 import * as iam from '../../aws-iam';
 import type * as firehose from '../../aws-kinesisfirehose';
 import * as logs from '../../aws-logs';
+import { logGroupArnWithoutStreamSuffix } from '../../aws-logs/lib/private/log-group-arn';
 import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as s3 from '../../aws-s3';
 import type { IResource } from '../../core';
 import {
-  ArnFormat,
   Validations,
   CfnResource,
   FeatureFlags,
@@ -469,14 +469,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
         new iam.PolicyStatement({
           actions: ['logs:DescribeLogStreams'],
           effect: iam.Effect.ALLOW,
-          resources: [Stack.of(logGroup).formatArn({
-            service: 'logs',
-            account: logGroup.env.account,
-            region: logGroup.env.region,
-            resource: 'log-group',
-            resourceName: logGroup.logGroupRef.logGroupName,
-            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-          })],
+          resources: [logGroupArnWithoutStreamSuffix(logGroup)],
         }),
       );
     }
