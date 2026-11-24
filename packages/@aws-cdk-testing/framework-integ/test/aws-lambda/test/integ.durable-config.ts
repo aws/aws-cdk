@@ -26,7 +26,7 @@ const wildcardFunction = new lambda.Function(stack, 'DurableFunctionWithCmk', {
   durableConfig: { executionTimeout: Duration.hours(1), retentionPeriod: Duration.days(30), kmsKey: wildcardKey },
 });
 
-// With a functionName, the statements are scoped to the function, and the role is named by ARN.
+// With a functionName, the statements are scoped to the function.
 const scopedKey = new kms.Key(stack, 'ScopedKey', { removalPolicy: RemovalPolicy.DESTROY });
 const scopedFunction = new lambda.Function(stack, 'DurableFunctionWithCmkAndName', {
   functionName: `${stack.stackName}-cmk`,
@@ -36,7 +36,7 @@ const scopedFunction = new lambda.Function(stack, 'DurableFunctionWithCmkAndName
   durableConfig: { executionTimeout: Duration.hours(1), retentionPeriod: Duration.days(30), kmsKey: scopedKey },
 });
 
-// With the key in another stack, a named role is matched by an aws:PrincipalArn condition.
+// With the key in another stack, the key stack does not reference the function stack or its role.
 const crossStackKey = new kms.Key(keyStack, 'CrossStackKey', { removalPolicy: RemovalPolicy.DESTROY });
 const crossStackRole = new iam.Role(stack, 'CrossStackRole', {
   roleName: `${stack.stackName}-cross-stack-role`,

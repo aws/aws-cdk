@@ -41,7 +41,7 @@ import * as sqs from '../../aws-sqs';
 import type { IAspect, RemovalPolicy, Size } from '../../core';
 import {
   Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn,
-  Names, NestedStack, Resource, Stack, Token,
+  Names, Resource, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import type { IArrayBox, IMapBox } from '../../core/lib/helpers-internal';
@@ -1758,7 +1758,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     if (config.kmsKey) {
-      this.grantDurableExecutionKeyAccess(config.kmsKey, this.role!);
+      this.grantDurableExecutionKeyAccess(config.kmsKey);
     }
 
     return {
@@ -1769,108 +1769,59 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   }
 
   /**
-   * Validates the durable execution key, then adds the durable encryption statements to its key policy.
+   * Grants the execution role and the Lambda service principal the durable encryption permissions on the key.
    */
-  private grantDurableExecutionKeyAccess(key: kms.IKeyRef, role: iam.IRole) {
-    const stack = Stack.of(this);
-    // CDK edits the alias target's key policy at synth, so repointing the alias would give new executions a key without it.
+  private grantDurableExecutionKeyAccess(key: kms.IKeyRef) {
+    // An alias ARN never matches the key in a policy Resource, and the alias can be repointed to a key without these grants.
     const keyArn = key.keyRef.keyArn;
     if ('aliasName' in key || (!Token.isUnresolved(keyArn) && !keyArn.includes(':key/'))) {
       throw new ValidationError(lit`DurableConfigKmsKeyIsAlias`, `durableConfig.kmsKey must be a KMS key, not an alias (${JSON.stringify(key.node.path)}); pass the key itself`, this);
     }
-    if (!Token.isUnresolved(key.env.region) && !Token.isUnresolved(stack.region) && key.env.region !== stack.region) {
-      throw new ValidationError(lit`DurableConfigKmsKeyMustBeSameRegion`, `durableConfig.kmsKey is in Region ${JSON.stringify(key.env.region)} but the function is in ${JSON.stringify(stack.region)}; use a key in the function's Region`, this);
-    }
-    // Key.fromCfnKey returns a child of the CfnKey, so look at the scope too.
-    const cfnKey = kms.CfnKey.isCfnKey(key) ? key : kms.CfnKey.isCfnKey(key.node.scope) ? key.node.scope : key.node.defaultChild;
-    const keySpec = kms.CfnKey.isCfnKey(cfnKey) ? cfnKey.keySpec : undefined;
-    if (keySpec !== undefined && !Token.isUnresolved(keySpec) && keySpec !== kms.KeySpec.SYMMETRIC_DEFAULT) {
-      throw new ValidationError(lit`DurableConfigKmsKeyNotSymmetric`, `durableConfig.kmsKey must be a symmetric encryption key, got key spec ${JSON.stringify(keySpec)}; use KeySpec.SYMMETRIC_DEFAULT`, this);
-    }
-    if (!Token.isUnresolved(key.env.account) && !Token.isUnresolved(stack.account) && key.env.account !== stack.account) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyCrossAccount',
-        `durableConfig.kmsKey is in account ${key.env.account}, so the function's account also needs IAM permissions for it. See ${DURABLE_ENCRYPTION_DOC_URL}.`);
-    }
+
+    const stack = Stack.of(this);
+    // Build the function ARN from the name: referencing the function would create a Key -> Function -> Key cycle.
+    const isWildcardFunctionArn = Token.isUnresolved(this.physicalName);
+    const functionArn = stack.formatArn({
+      service: 'lambda',
+      resource: 'function',
+      resourceName: isWildcardFunctionArn ? '*' : this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+    const encryptionContext = { 'kms:EncryptionContext:aws:lambda:FunctionArn': functionArn };
+    const viaService = { 'kms:ViaService': `lambda.${stack.region}.amazonaws.com` };
+
+    iam.Grant.addToPrincipal({
+      grantee: this,
+      actions: ['kms:Decrypt'],
+      resourceArns: [keyArn],
+      conditions: isWildcardFunctionArn
+        ? { StringEquals: viaService, StringLike: encryptionContext }
+        : { StringEquals: { ...viaService, ...encryptionContext } },
+    });
 
     // A CfnKey without a key policy would lose its default root statement, so only a JSON object policy is edited.
     const isEditableCfnKey = kms.CfnKey.isCfnKey(key) && typeof key.keyPolicy === 'object' && !Token.isUnresolved(key.keyPolicy);
     const isEditableKey = isEditableCfnKey || (iam.ResourceWithPolicies.of(key) !== undefined
       && (Resource.isOwnedResource(key) || kms.CfnKey.isCfnKey(key.node.scope)));
-    if (!isEditableKey) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyNotEditable',
-        `CDK cannot edit the durableConfig.kmsKey key policy. Add the durable execution statements to it manually. See ${DURABLE_ENCRYPTION_DOC_URL}.`);
-      return;
+    if (isEditableKey) {
+      kms.KeyGrants.fromKey(key).actions(
+        new iam.ServicePrincipal('lambda.amazonaws.com')
+          .withConditions({ StringEquals: { 'aws:SourceAccount': stack.account } })
+          .withConditions(isWildcardFunctionArn
+            ? { ArnLike: { 'aws:SourceArn': functionArn }, StringLike: encryptionContext }
+            : { StringEquals: { 'aws:SourceArn': functionArn, ...encryptionContext } }),
+        'kms:Decrypt',
+        'kms:GenerateDataKey',
+      );
     }
-
-    const keyGrants = kms.KeyGrants.fromKey(key);
-    const lambdaViaService = `lambda.${stack.region}.amazonaws.com`;
-
-    // Build the function ARN from the name: referencing the function would create a Key -> Function -> Key cycle.
-    const usesWildcardFunctionArn = Token.isUnresolved(this.physicalName);
-    const functionArn = stack.formatArn({
-      service: 'lambda',
-      resource: 'function',
-      resourceName: usesWildcardFunctionArn ? '*' : this.physicalName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    });
-    if (usesWildcardFunctionArn) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyWildcardFunctionArn',
-        'durableConfig.kmsKey key policy statements match every Lambda function in this account and Region. ' +
-        `Set functionName to a literal string to scope them to this function. See ${DURABLE_ENCRYPTION_DOC_URL}.`);
+    // A key in another account must also name the execution role, which the role's IAM policy cannot do.
+    const isCrossAccountKey = !Token.isUnresolved(key.env.account) && !Token.isUnresolved(stack.account) && key.env.account !== stack.account;
+    if (!isEditableKey || isCrossAccountKey) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyPolicyIncomplete',
+        'CDK cannot add every durableConfig.kmsKey statement to the key policy. Add the Lambda service principal statement if it is ' +
+        'missing, and an execution role statement if the key is in another account or has no default root statement. ' +
+        `See ${DURABLE_ENCRYPTION_DOC_URL}.`);
     }
-    const encryptionContextCondition = {
-      [usesWildcardFunctionArn ? 'StringLike' : 'StringEquals']: { 'kms:EncryptionContext:aws:lambda:FunctionArn': functionArn },
-    };
-
-    // Separate withConditions calls merge conditions that share an operator.
-    keyGrants.actions(
-      new iam.ServicePrincipal('lambda.amazonaws.com')
-        .withConditions({ StringEquals: { 'aws:SourceAccount': stack.account } })
-        .withConditions({ [usesWildcardFunctionArn ? 'ArnLike' : 'StringEquals']: { 'aws:SourceArn': functionArn } })
-        .withConditions(encryptionContextCondition),
-      'kms:Decrypt',
-      'kms:GenerateDataKey',
-    );
-
-    // Match the role by an aws:PrincipalArn condition when its ARN is known without a resource reference: that cannot
-    // create a cycle, and KMS does not require the role to exist yet.
-    const isOwnedRole = Resource.isOwnedResource(role);
-    const cfnRole = role.node.defaultChild;
-    let resourceFreeRoleArn: string | undefined;
-    if (!isOwnedRole) {
-      resourceFreeRoleArn = Token.isUnresolved(role.roleArn) ? undefined : role.roleArn;
-    } else if (iam.CfnRole.isCfnRole(cfnRole) && cfnRole.roleName !== undefined
-      && !Token.isUnresolved(cfnRole.roleName) && !Token.isUnresolved(cfnRole.path)) {
-      resourceFreeRoleArn = stack.formatArn({
-        service: 'iam', region: '', resource: 'role', resourceName: `${(cfnRole.path ?? '/').slice(1)}${cfnRole.roleName}`,
-      });
-    }
-    // Otherwise name the role only where that adds no stack dependency.
-    const keyStack = Stack.of(key);
-    const roleStack = Stack.of(role);
-    const canReferenceRole = (keyStack === stack && !NestedStack.isNestedStack(roleStack))
-      || (isOwnedRole && (roleStack === keyStack || keyStack.nestedStackParent === roleStack));
-
-    if (resourceFreeRoleArn !== undefined) {
-      keyGrants.actions(new kms.ViaServicePrincipal(lambdaViaService, new iam.AnyPrincipal()
-        .withConditions({ StringEquals: { 'kms:CallerAccount': stack.account } })
-        .withConditions({ ArnEquals: { 'aws:PrincipalArn': resourceFreeRoleArn } })
-        .withConditions(encryptionContextCondition)), 'kms:Decrypt');
-    } else if (canReferenceRole) {
-      // IRole has no withConditions, so wrap its ARN.
-      keyGrants.actions(new kms.ViaServicePrincipal(lambdaViaService,
-        new iam.ArnPrincipal(role.roleArn).withConditions(encryptionContextCondition)), 'kms:Decrypt');
-    } else {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyExecutionRoleNotGranted',
-        'CDK did not grant the execution role kms:Decrypt on durableConfig.kmsKey, because referencing the role could create a circular ' +
-        `dependency. Pass a role with a literal roleName, or add the statement yourself. See ${DURABLE_ENCRYPTION_DOC_URL}.`);
-    }
-
-    // Function author validation. DescribeKey carries no encryption context.
-    const functionAuthor = new iam.AccountPrincipal(stack.account);
-    keyGrants.actions(new kms.ViaServicePrincipal(lambdaViaService, functionAuthor), 'kms:DescribeKey');
-    keyGrants.actions(new kms.ViaServicePrincipal(lambdaViaService, functionAuthor.withConditions(encryptionContextCondition)),
-      'kms:Decrypt', 'kms:GenerateDataKey');
   }
 
   private validateAndRenderAcceleratorConfig(config: AcceleratorConfig, props: FunctionProps): CfnFunction.AcceleratorConfigProperty {

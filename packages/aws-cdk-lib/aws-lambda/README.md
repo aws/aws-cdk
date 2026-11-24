@@ -1653,45 +1653,35 @@ const fn = new lambda.Function(this, 'MyFunction', {
 });
 ```
 
-The key must be a symmetric encryption key in the function's Region, not an alias. For a key defined
-in your app, CDK adds the statements from
+The key must be a symmetric encryption key in the function's Region, not an alias. CDK grants the
+permissions from
 [Encrypting Lambda durable execution data](https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html)
-to the key policy, and nothing to the execution role's identity policy.
+in two places:
 
-The function author and operator statements use the account principal, gated by `kms:ViaService`.
-On a key policy with the default root statement this changes nothing, so the identity that deploys
-the function needs `kms:DescribeKey`, `kms:Decrypt` and `kms:GenerateDataKey` in its IAM policies, and
-durable execution operators need `kms:Decrypt` in theirs. On a key policy without the root statement, these
-statements let IAM policies in the account grant these actions through Lambda, which the key policy
-did not allow before. The identities still need the IAM permissions above.
+- The execution role gets `kms:Decrypt` in its IAM policy, conditioned on `kms:ViaService` and the
+  function's encryption context. KMS applies this IAM policy only when the key policy has the default
+  root statement. A `kms.Key` has it unless you pass your own `policy` without it.
+- The key policy gets a statement for the Lambda service principal, with `kms:Decrypt` and
+  `kms:GenerateDataKey`, conditioned on `aws:SourceAccount`, `aws:SourceArn` and the encryption context.
 
-Set `functionName` to a literal string to scope the statements to the function. Without it, they
-match every function in the account and Region, and CDK emits a warning. Adding `durableConfig` to an
-existing function replaces it, so you can set a new literal `functionName` in the same deployment.
-Don't keep an existing custom name, as the note above describes.
+If the key is imported, or is a `kms.CfnKey` whose `keyPolicy` is not a JSON object, CDK cannot edit the
+key policy and emits a warning. Add the Lambda service principal statement to the key policy yourself.
+If the key is in another account, CDK also emits the warning, because the key policy must name the
+execution role too. Add that statement yourself.
 
-If the key is imported, or is a `kms.CfnKey` whose `keyPolicy` is not a JSON object, CDK adds no
-statements and emits a warning. Add all the statements from the guide to the key policy yourself.
+CDK adds no statements for the function author or for durable execution operators. With the default root
+statement, the identity that deploys the function needs `kms:DescribeKey`, `kms:Decrypt` and
+`kms:GenerateDataKey` in its IAM policies, and operators need `kms:Decrypt` in theirs.
 
-CDK grants the execution role through a condition when the role ARN is known at synth time, for
-example a role with a literal `roleName` (and `path`, if set), or one imported with a literal ARN.
-Otherwise it names the role ARN only when that adds no stack dependency: the key is in the function's
-stack and the role is not in a nested stack, or a role defined in your app is in the key's stack or in
-the parent of the key's nested stack. In any other layout,
-CDK skips the execution role statement and emits a warning. Pass a role with a literal `roleName`, or
-add the statement yourself. If the key
-policy names a role that itself depends on the key, CloudFormation reports a circular dependency, so
-give that role a literal `roleName`.
+Set `functionName` to a literal string to scope the statements to the function. Without it, they match
+every function in the account and Region. Adding `durableConfig` to an existing function replaces it, so
+you can set a new literal `functionName` in the same deployment. Don't keep an existing custom name, as the
+note above describes.
 
-If a key defined in your app is in another account, CDK still adds the key policy statements, but emits a warning: the
-function's account also needs IAM permissions on the key.
-
-CDK adds these statements only for the key currently set in `durableConfig.kmsKey`. Removing or
-switching it removes them from the old key's policy on the next deployment, and running executions
-keep the key they started with. Before you do, add equivalent statements to the old key yourself, for
-example with `oldKey.addToResourcePolicy(...)`, and keep them until executions on it finish and their
-retention ends. Each function with a literal `functionName` adds about 1.3 KB to the key policy, which
-is limited to 32 KB, so use more than one key for about 24 or more such functions.
+CDK adds these statements only for the key currently set in `durableConfig.kmsKey`. Removing or switching
+it removes them from the old key's policy and the role's policy on the next deployment, and running
+executions keep the key they started with. Before you do, grant the old key yourself, and keep the grant
+until executions on it finish and their retention ends.
 
 ## AutoScaling
 

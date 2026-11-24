@@ -8,7 +8,9 @@
   "/aws-cdk-lambda-durable-config-key/CrossStackKey": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "removalPolicy": "destroy"
+      }
     }
   ],
   "/aws-cdk-lambda-durable-config-key/BootstrapVersion": [
