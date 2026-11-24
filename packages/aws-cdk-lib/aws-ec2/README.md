@@ -2719,8 +2719,9 @@ in user data. Tasks run in the order they were first added, with two exceptions:
   those tasks run. Run it with `addExecuteFileCommand()`, not with an `Ec2LaunchV2Task.executeProgram()` task.
 * EC2Launch v2 always runs `sysprep` last.
 
-The factory methods of `Ec2LaunchV2Task` are named after the tasks they produce, except `hostName()` for the
-`setHostName` task and `wallpaper()` for the `setWallpaper` task. Tasks without a factory method can be added with
+The factory methods of `Ec2LaunchV2Task` are named after the tasks they produce, except `executePowerShell()` and
+`executeBatch()`, which both produce the `executeScript` task, `hostName()` for the `setHostName` task, and
+`wallpaper()` for the `setWallpaper` task. Tasks without a factory method can be added with
 `Ec2LaunchV2Task.custom()`.
 
 Adding `executeScript` (with `Ec2LaunchV2Task.executePowerShell()` or `Ec2LaunchV2Task.executeBatch()`), `executeProgram`,

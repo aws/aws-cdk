@@ -710,9 +710,11 @@ export interface Ec2LaunchV2SysprepOptions {
  * `UserData` stage. Use `Ec2LaunchV2Task.custom()` for tasks not covered here.
  *
  * Each factory method is named after the task it produces, except
- * `hostName()` (the `setHostName` task) and `wallpaper()` (the `setWallpaper`
- * task): jsii does not allow method names starting with `set` that take one
- * argument, as they conflict with Java property setters.
+ * `executePowerShell()` and `executeBatch()`, which both produce the
+ * `executeScript` task, and `hostName()` (the `setHostName` task) and
+ * `wallpaper()` (the `setWallpaper` task): jsii does not allow method names
+ * starting with `set` that take one argument, as they conflict with Java
+ * property setters.
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2launch-v2-task-definitions.html
  */
