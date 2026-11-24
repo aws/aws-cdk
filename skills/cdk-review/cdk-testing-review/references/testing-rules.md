@@ -8,8 +8,6 @@ outcome that matters — or a test named for a behavior it never exercises. See
 rules.
 - **Conditional:** down-tier RECOMMENDED when the core outcome is asserted elsewhere
   and only a facet is loose.
-- **Detection method:** ask **if I broke the behavior this test covers, would this
-  test turn red?** If not, it is a non-asserting test.
 
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
 optional prop that changes a default with no backward-compat test locking the old default in. Both
@@ -21,8 +19,6 @@ flag mechanics and
 for new validation on existing constructs.
 - **Conditional:** down-tier RECOMMENDED when only the new state is untested and the
   preserved old default is covered.
-- **Detection method:** a diff that touches `FeatureFlags.of(this).isEnabled(...)` or
-  adds a flag in `cx-api` has two reachable states.
 
 **[TEST-UNIT-MISSING-REGRESSION] (RECOMMENDED)** — A behavior the PR adds that a user relies on has no test
 that would fail if it broke. See
@@ -66,13 +62,9 @@ for the required-scenario list,
 for the feat/fix default, and the `pr-linter/exempt-integ-test` label in
 [`prlint/constants.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/constants.ts) for
 the exempt terminal.
-- **Exemption heuristic:** a simple property pass-through (a value threaded straight
-  to an L1 with no new behavior) is the canonical exemption — **but** a pass-through exposing a
-  previously-unused or untested CFN property requires a test, which takes precedence over the
-  pass-through intuition.
 - **Conditional:** down-tier RECOMMENDED when a unit test already asserts the change's
-  synthesized-template effect and only the owed integ test is absent (a gap in test depth, not shipped
-  damage — ask for the integ test or the exempt label).
+  synthesized-template effect and only the owed integ test is absent; ask for the integ test or the exempt
+  label.
 
 **[TEST-INTEG-DANGEROUS-SNAPSHOT] (BLOCKING)** — The committed `*.snapshot` change hides a dangerous
 template change presented as a benign refresh. The snapshot is the synthesized CloudFormation template, so
@@ -81,27 +73,11 @@ a snapshot diff is a template diff. See
 for the snapshot-as-template fact and
 [`CONTRIBUTING.md § Behavior changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#behavior-changes)
 for the breaking-change rule.
-- **Dangerous-diff signatures:** BLOCKING when hidden in a "benign" refresh — name the
-  specific template line (resource logical ID + property) and the consequence:
-  - **Stateful-resource replacement** — a replacement-triggering property changed on a stateful resource
-    (`AWS::RDS::DBInstance`, `AWS::DynamoDB::Table`, `AWS::S3::Bucket`, `AWS::EFS::FileSystem`,
-    `AWS::Elasticache::*`). CloudFormation deletes and recreates; data is lost.
-  - **Logical-ID change of a stateful resource** — the resource's logical key in `Resources` changed (often
-    via a construct-path/id change). CloudFormation treats it as delete + create → data loss.
-  - **IAM widening** — a statement's `Action`/`Resource` broadened (`s3:GetObject` → `s3:*`, a specific ARN
-    → `"*"`), a new `Allow`, or a trust-policy principal opened up. IAM design in
-    production code is outside your scope, but flag it here when the *snapshot diff* reveals the widening as a benign refresh.
-  - **Removal/retention-policy weakening** — `DeletionPolicy` / `UpdateReplacePolicy` moving `Retain` →
-    `Delete` (or dropped) on a stateful resource.
-- **Snapshot-reading budget:** focus on the `integ.*.ts` file and scan the template
-  diff only for the signatures above; skip `manifest.json`, `tree.json`, and asset files — they carry no
-  review value. The goal is catching a dangerous template change hiding in the regeneration.
-- **Mechanical churn is out of scope:** tooling-driven, no semantic template change —
-  asset hashes, CDK version strings / `aws:cdk:version` metadata, bootstrap/synthesizer boilerplate
-  (`CDKMetadata`, `BootstrapVersion` SSM lookups), pure metadata / ordering churn (`aws:cdk:path`,
-  key-order, `Rules`/`Parameters` reshuffles with no property change). Rule of thumb: if no resource's
-  type, logical ID, or real property value changed, the diff is mechanical — do not flag it, and do not
-  wave one through because "snapshots always change."
+- **Also dangerous:** a widened IAM `Action`/`Resource`, a new `Allow` or a widened trust principal, and a
+  `DeletionPolicy` / `UpdateReplacePolicy` moved off `Retain` or dropped on a stateful resource.
+- **Snapshot reading:** skip `manifest.json`, `tree.json` and asset files; read the template diff.
+- **Mechanical churn:** a diff in which no resource's type, logical ID or real property value changed is
+  not this finding.
 
 **[TEST-INTEG-STALE-SNAPSHOT] (BLOCKING)** — The diff shows a changed `integ.*.ts` and its companion
 `*.snapshot/`, but the snapshot does not reflect the test change (or a brand-new `integ.*.ts` arrives with
@@ -123,10 +99,6 @@ the `IntegTest`/`testCases` pattern,
 [`CONTRIBUTING.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#integration-tests)
 for the no-`--dry-run` hard rule, and the
 [`IntegTest` construct](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts).
-- **Placement:** Stable modules' integ tests live in
-  `@aws-cdk-testing/framework-integ/test/MODULE/test/integ.*.ts`; alpha modules (`@aws-cdk/<service>-alpha`)
-  keep theirs in the alpha package's own `test/` dir, not in `framework-integ`. An alpha test in its own
-  `test/` dir is placed correctly.
 
 **[TEST-INTEG-WEAK-ASSERTION] (RECOMMENDED)** — A deploy-only test where a cross-service, Custom-Resource,
 code-bundling, or complex-IAM/networking change owes a deploy-time assertion. Independently, a verification
@@ -137,8 +109,6 @@ whether or not the change's category owed an assertion. See
 for the assertion-owed cases and the `awsApiCall` → `ExpectedResult` API. Also assert the
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a
 `403`/error `ExpectedResult`).
-- **Calibration:** a successful deploy validates a single-property that just renders
-  into the template.
 
 **[TEST-INTEG-REDUNDANT] (OPTIONAL)** — N resources created to exercise N enum values when one reconfigured
 resource, or the enum threaded through, tests the same synthesized template. One resource usually
@@ -148,8 +118,3 @@ and
 [`§ Existing L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#existing-l2-constructs)
 for the tests a new/existing L2 owes.
 - **Conditional:** up-tier RECOMMENDED when the multiplication is large.
-- **Module-norm technique:** when judging over-/under-testing, compare against 2-3
-  similar integ tests in the same module (stable in
-  `@aws-cdk-testing/framework-integ/test/MODULE/test/integ.*.ts`, alpha in the alpha package's own
-  `test/`) and cite them as evidence — a test far heavier than its peers likely warrants simplification;
-  one far lighter for a comparable feature may be under-testing.
