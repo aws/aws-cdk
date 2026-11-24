@@ -334,6 +334,46 @@ describe('Amazon Linux 2023 capacity', () => {
       Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('do not send a CloudFormation signal'));
     });
 
+    test('adds the NodeConfig for an imported cluster when serviceCidr is given', () => {
+      // GIVEN
+      const { stack, asg } = importedClusterAndAl2023Asg();
+      const imported = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
+        clusterName: 'imported',
+        clusterEndpoint: 'https://imported.eks.example.com',
+        clusterCertificateAuthorityData: 'Y2VydA==',
+        clusterSecurityGroupId: 'sg-12345678',
+      });
+
+      // WHEN
+      imported.connectAutoScalingGroupCapacity(asg, {
+        machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+        bootstrapOptions: { serviceCidr: SERVICE_CIDR },
+      });
+
+      // THEN
+      const userData = JSON.stringify(stack.resolve(asg.userData.render()));
+      expect(userData).toContain('Content-Type: application/node.eks.aws');
+      expect(userData).toContain('apiServerEndpoint: https://imported.eks.example.com');
+      expect(userData).toContain('cidr: 172.20.0.0/16');
+    });
+
+    test('requires serviceCidr for an imported cluster even if the backing cluster sets serviceIpv4Cidr', () => {
+      // GIVEN
+      const { stack, cluster } = newCluster({ serviceIpv4Cidr: SERVICE_CIDR });
+      const { asg } = importedClusterAndAl2023Asg(stack);
+      const imported = eks.Cluster.fromClusterAttributes(stack, 'Imported', {
+        clusterName: cluster.clusterName,
+        clusterEndpoint: cluster.clusterEndpoint,
+        clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
+        clusterSecurityGroupId: cluster.clusterSecurityGroupId,
+      });
+
+      // THEN
+      expect(() => imported.connectAutoScalingGroupCapacity(asg, {
+        machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+      })).toThrow(/Set bootstrapOptions.serviceCidr/);
+    });
+
     test('warns when the group waits for signals, which nodeadm does not send', () => {
       // GIVEN
       const { stack, cluster } = newCluster();
@@ -381,6 +421,20 @@ function newClusterAndAsg(spot = false) {
     vpc: cluster.vpc,
   });
   return { stack, cluster, asg };
+}
+
+function importedClusterAndAl2023Asg(existing?: Stack) {
+  const stack = existing ?? new Stack(new App(), 'Stack');
+  const vpc = new ec2.Vpc(stack, 'NodeVpc');
+  const asg = new autoscaling.AutoScalingGroup(stack, 'Al2023Asg', {
+    vpc,
+    instanceType: new ec2.InstanceType('m5.large'),
+    machineImage: new eks.EksOptimizedImage({
+      kubernetesVersion: '1.33',
+      machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+    }),
+  });
+  return { stack, asg };
 }
 
 function ssmParameterDefaults(stack: Stack): string[] {

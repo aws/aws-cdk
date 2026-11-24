@@ -75,8 +75,12 @@ export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: a
  *
  * @see https://awslabs.github.io/amazon-eks-ami/nodeadm/doc/api/
  */
-// eslint-disable-next-line max-len
-export function renderAmazonLinux2023UserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, serviceCidr: string, options: BootstrapOptions = {}): string {
+export function renderAmazonLinux2023UserData(
+  cluster: ICluster,
+  autoScalingGroup: autoscaling.AutoScalingGroup,
+  serviceCidr: string,
+  options: BootstrapOptions = {},
+): string {
   const unsupported = new Array<string>();
   if (options.useMaxPods === false) { unsupported.push('useMaxPods'); }
   if (options.enableDockerBridge) { unsupported.push('enableDockerBridge'); }

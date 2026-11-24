@@ -2698,7 +2698,8 @@ export interface BootstrapOptions {
    * Only used with `MachineImageType.AMAZON_LINUX_2023`. For an IPv6 cluster, set this
    * to the cluster's service IPv6 CIDR.
    *
-   * @default - the `serviceIpv4Cidr` of the cluster, if it was set when the cluster was defined in this app
+   * @default - the `serviceIpv4Cidr` of the cluster, if it was set when the cluster was defined in this app;
+   * otherwise Amazon Linux 2023 capacity fails at synthesis (for example for imported clusters)
    */
   readonly serviceCidr?: string;
 
@@ -2735,8 +2736,11 @@ export interface BootstrapOptions {
    * Overrides the IP address to use for DNS queries within the
    * cluster.
    *
+   * On Amazon Linux 2023, when this is not set, nodeadm infers the address from the
+   * service CIDR (`serviceCidr`).
+   *
    * @default - 10.100.0.10 or 172.20.0.10 based on the IP
-   * address of the primary interface.
+   * address of the primary interface (Amazon Linux 2); inferred from the service CIDR (Amazon Linux 2023)
    */
   readonly dnsClusterIp?: string;
 
