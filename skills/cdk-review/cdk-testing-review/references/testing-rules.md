@@ -6,7 +6,7 @@
 outcome that matters — or a test named for a behavior it never exercises. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the `Match`
 rules.
-- **Conditional:** down-tier RECOMMENDED when the core outcome is asserted elsewhere
+- **Tier:** down-tier RECOMMENDED when the core outcome is asserted elsewhere
   and only a facet is loose.
 
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
@@ -17,14 +17,14 @@ ships with the suite still green. See
 flag mechanics and
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for new validation on existing constructs.
-- **Conditional:** down-tier RECOMMENDED when only the new state is untested and the
+- **Tier:** down-tier RECOMMENDED when only the new state is untested and the
   preserved old default is covered.
 
 **[TEST-UNIT-MISSING-REGRESSION] (RECOMMENDED)** — A behavior the PR adds that a user relies on has no test
 that would fail if it broke. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for how to assert
 the outcome.
-- **Conditional:** up-tier BLOCKING when the untested behavior is a security- or
+- **Tier:** up-tier BLOCKING when the untested behavior is a security- or
   correctness-critical guardrail the change adds. Such a guardrail is a check the change adds whose silent
   failure would let a security exposure or a wrong deployment through, for example a validation that
   rejects a configuration which would otherwise deploy and be exposed or wrong. A check whose silent
@@ -43,7 +43,7 @@ regresses. See
 for the `hasWarning`/`hasNoWarning`/`hasError` API, and
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Mixin Testing`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#mixin-testing)
 for a mixin's required tests.
-- **Conditional:** up-tier BLOCKING when the diagnostic / reject arm is a security- or
+- **Tier:** up-tier BLOCKING when the diagnostic / reject arm is a security- or
   correctness-critical guardrail the change adds, as `TEST-UNIT-MISSING-REGRESSION` defines it.
 
 **[TEST-UNIT-DOC-NAME] (OPTIONAL)** — A test name that describes nothing (`'works'`, `'test 2'`), so the
@@ -62,7 +62,7 @@ for the required-scenario list,
 for the feat/fix default, and the `pr-linter/exempt-integ-test` label in
 [`prlint/constants.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/constants.ts) for
 the exempt terminal.
-- **Conditional:** down-tier RECOMMENDED when a unit test already asserts the change's
+- **Tier:** down-tier RECOMMENDED when a unit test already asserts the change's
   synthesized-template effect and only the owed integ test is absent; ask for the integ test or the exempt
   label.
 
@@ -117,4 +117,4 @@ suffices to prove the enum renders. See
 and
 [`§ Existing L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#existing-l2-constructs)
 for the tests a new/existing L2 owes.
-- **Conditional:** up-tier RECOMMENDED when the multiplication is large.
+- **Tier:** up-tier RECOMMENDED when the multiplication is large.

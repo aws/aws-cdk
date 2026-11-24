@@ -11,7 +11,7 @@ for new validation on existing constructs.
   the PR and is rejected after.
 
 **[REG-INPUT-VALIDATION] (RECOMMENDED)** — Missing input validation: the CDK never validates a
-configuration property, letting an invalid value through. *(Conditional — BLOCKING when the unvalidated
+configuration property, letting an invalid value through. *(conditional — BLOCKING when the unvalidated
 value flows into a working stack and breaks its update.)*
 
 **[REG-CFN-TYPE-LEAK] (RECOMMENDED)** — A change to an existing public API that newly exposes an L1
@@ -47,7 +47,7 @@ TypeScript accepts. Fix: move the new field into the struct as an optional `read
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
 
 **[REG-JSII-INTERFACE-NAMING] (BLOCKING)** — A data-only interface (only `readonly` properties) named with
-the `I` prefix that callers are meant to pass as data (a props, options or result object), not a type
+the `I` prefix that callers are meant to pass as data (a props or options object), not a type
 classes implement: jsii generates it as a behavioral interface instead of a struct. See
 [`jsii § Naming › Interfaces`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#interfaces).
 
@@ -80,7 +80,7 @@ props-based shape, or for a written justification. See
 **[REG-UNDEFINED-BEHAVIOR] (RECOMMENDED)** — Any other runtime-behavior risk that fits no other family: a
 logic refactor that changes what the code does on an edge case, or a
 shared base-class/helper side effect (a spurious `CfnCondition`, a token-keyed cache) that flows into every
-consumer of that method. *(Conditional — BLOCKING when it reaches every consumer or fails an existing
+consumer of that method. *(conditional — BLOCKING when it reaches every consumer or fails an existing
 stack's update.)* A change that only stops an input or configuration that never deployed or never worked is
 not this finding; one that also changes what working code does is.
 
@@ -101,7 +101,7 @@ and
 **[REG-API-SURFACE-BREAK] (BLOCKING)** — A change that makes existing programs fail to compile: renaming or
 removing a public class/method/property, adding a required property (or changing optional→required /
 nullable→non-nullable on an input), or removing a return property (or changing non-nullable→nullable on a
-return), or removing an enum member. *(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
+return), or removing an enum member. *(conditional — resolve the tier through [REG-STABILITY-GATE].)* See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation)
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
@@ -109,7 +109,7 @@ for the enumerated compile-break cases and the `allowed-breaking-changes.txt` ex
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
 error: an update that cannot be applied, a change that causes service interruption or data loss
 (replacement of a stateful resource), or a change to the **logical ID of a stateful resource**.
-*(Conditional — resolve the tier through [REG-STABILITY-GATE].)* See
+*(conditional — resolve the tier through [REG-STABILITY-GATE].)* See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for the construct-ID/logical-ID→data-loss rule; [`CONTRIBUTING.md § Behavior changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#behavior-changes)
 for the definitional test of which template changes are breaking.

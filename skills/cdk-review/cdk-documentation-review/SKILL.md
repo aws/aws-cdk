@@ -70,8 +70,8 @@ Work the changed docs in this order. Adapt to what the diff touches.
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
-`message` as the complete posted comment (observation, impact, a fix when you have one, guideline cited
-inline by file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
+`message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
+cited inline by file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
 Public-API doc completeness, Migration notes. A `suggestedFix` (folded into `message`) shows the doc or
 snippet as written and its corrected form.
 

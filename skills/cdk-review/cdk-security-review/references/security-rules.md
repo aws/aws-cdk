@@ -99,10 +99,11 @@ template. `SecretValue` defers resolution and keeps plaintext out of source and 
 `Token`-typed prop bypasses that. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 
-**[SEC-SECRET-IN-MAP] (BLOCKING)** — A secret-shaped **value** nested in a `Record<string, string>` map
-(a Lambda/ECS `environment`, CFN Include parameters, or a similar map-shaped prop) is the same BLOCKING
-finding, even though the map's prop is named `environment`. The value still lands in the template,
-recoverable via `cloudformation:GetTemplate` / `lambda:GetFunctionConfiguration`. See
+**[SEC-SECRET-IN-MAP] (BLOCKING)** — A value that is itself a credential, judged by the value and not the
+key name, nested in a `Record<string, string>` map (a Lambda/ECS `environment`, CFN Include parameters, or a
+similar map-shaped prop) is the same BLOCKING finding, even though the map's prop is named `environment`.
+The value still lands in the template, recoverable via `cloudformation:GetTemplate` /
+`lambda:GetFunctionConfiguration`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 
 **[SEC-SECRET-TYPE] (RECOMMENDED)** — A secret-shaped prop (`password`, `*token*`) typed as a plain

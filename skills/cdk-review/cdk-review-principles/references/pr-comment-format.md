@@ -27,7 +27,7 @@ complete comment. Write it as a self-contained review comment:
 
 - **Observation** — what the issue is, specific, referencing the code (1-2 sentences).
 - **Impact** — why it matters, what happens if it is not addressed.
-- **Fix, when you have one** — the change to make (a code example or a question framing a
+- **Fix, once you have checked one** — the change to make (a code example or a question framing a
   specific alternative), with the guideline cited inline where one backs the finding.
 
 Populate `evidence`, `reference`, and `suggestedFix` as structured fields too, and fold

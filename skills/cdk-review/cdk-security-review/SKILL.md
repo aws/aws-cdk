@@ -65,8 +65,8 @@ Work the changed surface in this order; adapt to what the diff touches.
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines for a finding — write
-`message` as the complete posted comment (observation, impact, a fix when you have one, and the guideline cited
-inline by file + section). This dimension's `category` is one of: IAM least-privilege, Network &
+`message` as the complete posted comment (observation, impact, a fix once you have checked one, and the
+guideline cited inline by file + section). This dimension's `category` is one of: IAM least-privilege, Network &
 resource access, Secrets & credentials, Secure defaults.
 
 ## Apply cdk-review-principles

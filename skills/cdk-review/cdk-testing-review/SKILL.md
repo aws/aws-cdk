@@ -59,8 +59,8 @@ cite").
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines. Write
-`message` as the complete posted comment (observation, impact, a fix when you have one, guideline cited
-inline). This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
+`message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
+cited inline). This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
 Missing edge & negative cases, Untested feature-flag state, Tests-as-documentation, Missing required
 integration test, Dangerous snapshot diff, IntegTest construct misuse, Weak or missing assertions,
 Redundant tests, Stale integration snapshot. The `suggestedFix`, when there is one (folded into

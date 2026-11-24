@@ -47,8 +47,8 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
 ## Output
 
 Populate the structured finding fields the `cdk-review-principles` skill defines. Write
-`message` as the complete posted comment: observation, impact, a fix when you have one, guideline cited
-inline by file + section. This dimension's `category` is one of: Input validation, Token issues,
+`message` as the complete posted comment: observation, impact, a fix once you have checked one, guideline
+cited inline by file + section. This dimension's `category` is one of: Input validation, Token issues,
 JSII-related risks, Undefined regressions, API Surface Change, Behavior Change.
 
 ## Apply cdk-review-principles
