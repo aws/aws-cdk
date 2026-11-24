@@ -880,6 +880,11 @@ export abstract class BaseService extends Resource
   private readonly isEcsDeploymentController: boolean;
 
   private readonly resource: CfnService;
+
+  /**
+   * The gateway connector last applied to this service, if any.
+   */
+  private _gatewayConnector?: GatewayConnectorOptions;
   private scalableTaskCount?: ScalableTaskCount;
 
   /**
@@ -982,7 +987,8 @@ export abstract class BaseService extends Resource
     if (props.canaryConfiguration) {
       this.validateCanaryConfiguration(props.canaryConfiguration);
     }
-    const gatewayConnectorMixin = props.gatewayConnector ? this.gatewayConnectorMixin(props.gatewayConnector) : undefined;
+    // the connector options are validated here; the checks on this service run when the mixin is applied
+    const gatewayConnectorMixin = props.gatewayConnector ? new ServiceGatewayConnector(props.gatewayConnector) : undefined;
 
     // An empty array tells CloudFormation to remove the existing load balancer registrations, while an
     // absent property leaves the live service alone, so removing the last target group from a service
@@ -1101,10 +1107,6 @@ export abstract class BaseService extends Resource
       this.enableServiceConnect(props.serviceConnectConfiguration);
     }
 
-    if (props.gatewayConnector && Cluster.isCluster(props.cluster)) {
-      this.node.addDependency(props.cluster._gatewayAssociationsDependable);
-    }
-
     if (props.volumeConfigurations) {
       props.volumeConfigurations.forEach(v => this.addVolume(v));
     }
@@ -1153,7 +1155,8 @@ export abstract class BaseService extends Resource
 
     this.node.defaultChild = this.resource;
 
-    // applied after defaultChild is set, so the mixin's warning goes on this construct
+    // applied after defaultChild is set, so the mixin runs _checkGatewayConnector on this service and
+    // its warning goes on this construct, the same as when the mixin is applied to the service later
     if (gatewayConnectorMixin) {
       this.with(gatewayConnectorMixin);
     }
@@ -1527,28 +1530,42 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Check what the gateway connector needs from this service and its task definition, and return
-   * the mixin that validates the connector options and renders them on the CfnService.
+   * Check what a gateway connector needs from this service and its task definition, and make the
+   * service depend on the gateway associations of its cluster.
+   *
+   * Called by the `ServiceGatewayConnector` mixin when it is applied to the `CfnService` of this
+   * service, either through the `gatewayConnector` property or with `service.with(...)`.
+   *
+   * @internal
    */
-  private gatewayConnectorMixin(connector: GatewayConnectorOptions): ServiceGatewayConnector {
+  public _checkGatewayConnector(connector: GatewayConnectorOptions): void {
     if (this.taskDefinition.networkMode !== NetworkMode.AWS_VPC) {
       throw new ValidationError(lit`GatewayConnectorRequiresAwsVpc`, `gatewayConnector requires a task definition with the awsvpc network mode, got ${JSON.stringify(this.taskDefinition.networkMode)}`, this);
     }
-    const mixin = new ServiceGatewayConnector(connector);
+
+    // the mixin replaces the connector, so only the last one applied is validated
+    const firstConnector = this._gatewayConnector === undefined;
+    this._gatewayConnector = connector;
+    if (!firstConnector) {
+      return;
+    }
+
+    if (Cluster.isCluster(this.cluster)) {
+      this.node.addDependency(this.cluster._gatewayAssociationsDependable);
+    }
 
     // containers can be added to the task definition after the service is created
     this.node.addValidation({
       validate: () => {
+        const portName = this._gatewayConnector!.portName;
         // a token can't be compared, so only report a mismatch when every name is known
-        if (Token.isUnresolved(connector.portName) || this.taskDefinition._hasUnresolvedPortMappingName()
-          || this.taskDefinition.findPortMappingByName(connector.portName)) {
+        if (Token.isUnresolved(portName) || this.taskDefinition._hasUnresolvedPortMappingName()
+          || this.taskDefinition.findPortMappingByName(portName)) {
           return [];
         }
-        return [`gatewayConnector portName ${JSON.stringify(connector.portName)} does not match the name of a port mapping in the task definition`];
+        return [`gatewayConnector portName ${JSON.stringify(portName)} does not match the name of a port mapping in the task definition`];
       },
     });
-
-    return mixin;
   }
 
   /**

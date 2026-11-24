@@ -970,6 +970,79 @@ describe('gateway connector', () => {
     })).toThrow(/Gateway connectors are not supported for External service/);
   });
 
+  describe('applying the ServiceGatewayConnector mixin to an L2 service', () => {
+    test('makes the service depend on the gateway associations of its cluster, the same as the property', () => {
+      const gateway = ecs.Gateway.fromGatewayArn(stack, 'Gateway', GATEWAY_ARN);
+      const association = new ecs.GatewayClusterAssociation(stack, 'Association', { cluster, gateway });
+      const viaProp = new ecs.FargateService(stack, 'ViaProp', { cluster, taskDefinition, gatewayConnector: { portName: 'web' } });
+      const viaMixin = new ecs.FargateService(stack, 'ViaMixin', { cluster, taskDefinition });
+
+      viaMixin.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' }));
+
+      const logicalId = stack.getLogicalId(association.node.defaultChild as cdk.CfnElement);
+      const services = Template.fromStack(stack).findResources('AWS::ECS::Service');
+      const id = (service: ecs.FargateService) => stack.getLogicalId(service.node.defaultChild as ecs.CfnService);
+      expect(services[id(viaMixin)].DependsOn).toContain(logicalId);
+      expect(services[id(viaMixin)].DependsOn).toEqual(services[id(viaProp)].DependsOn);
+      expect(services[id(viaMixin)].Properties.GatewayConnectors).toEqual([{ PortName: 'web' }]);
+    });
+
+    test('fails when the port name does not match a port mapping', () => {
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+      service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'api' }));
+
+      expect(() => Template.fromStack(stack))
+        .toThrow(/gatewayConnector portName "api" does not match the name of a port mapping in the task definition/);
+    });
+
+    test('validates only the last connector when applied twice', () => {
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+
+      service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'api' }));
+      service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', { GatewayConnectors: [{ PortName: 'web' }] });
+    });
+
+    test('fails for a task definition without the awsvpc network mode', () => {
+      const ec2Cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc: cluster.vpc });
+      ec2Cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t3.micro') });
+      const bridgeTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'BridgeTaskDef', { networkMode: ecs.NetworkMode.BRIDGE });
+      bridgeTaskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+        memoryLimitMiB: 256,
+        portMappings: [{ containerPort: 80, name: 'web' }],
+      });
+      const service = new ecs.Ec2Service(stack, 'Service', { cluster: ec2Cluster, taskDefinition: bridgeTaskDefinition });
+
+      expect(() => service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' })))
+        .toThrow(/gatewayConnector requires a task definition with the awsvpc network mode, got "bridge"/);
+    });
+
+    test('fails for an external service', () => {
+      const externalTaskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+      externalTaskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:1.27'),
+        memoryLimitMiB: 256,
+        portMappings: [{ containerPort: 80, name: 'web' }],
+      });
+      const service = new ecs.ExternalService(stack, 'Service', { cluster, taskDefinition: externalTaskDefinition });
+
+      expect(() => service.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'web' })))
+        .toThrow(/Gateway connectors are not supported for External service/);
+    });
+
+    test('does not check a CfnService that is not the default child of the L2', () => {
+      const service = new ecs.FargateService(stack, 'Service', { cluster, taskDefinition });
+      const extra = new ecs.CfnService(service, 'Extra');
+
+      extra.with(new ecs.mixins.ServiceGatewayConnector({ portName: 'api' }));
+
+      expect(() => Template.fromStack(stack)).not.toThrow();
+    });
+  });
+
   test.each([0, 65536])('fails for health check port %d', (port) => {
     expect(() => new ecs.FargateService(stack, 'Service', {
       cluster,

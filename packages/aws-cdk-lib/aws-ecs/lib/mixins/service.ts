@@ -14,10 +14,11 @@ import { GatewayAccessType } from '../gateway';
  * Sets the `gatewayConnectors` property of the service to this one connector, replacing any
  * existing `gatewayConnectors`. The connector options are validated when the mixin is created.
  *
- * The mixin doesn't check that the task definition uses the `awsvpc` network mode or that
- * `portName` names a port mapping of the task definition, and it doesn't make the service depend
- * on the gateway association of its cluster. The `gatewayConnector` property of `FargateService`,
- * `Ec2Service` and `ExternalService` does all three.
+ * Applied to a bare `CfnService`, the mixin doesn't check that the task definition uses the
+ * `awsvpc` network mode or that `portName` names a port mapping of the task definition, and it
+ * doesn't make the service depend on the gateway associations of its cluster. Applied to a
+ * `FargateService` or `Ec2Service`, or through their `gatewayConnector` property, it does all
+ * three. `ExternalService` doesn't support gateway connectors, so applying the mixin to one throws.
  *
  * When `accessTypes` is omitted or includes `PUBLIC`, the mixin adds a warning: any
  * internet-facing gateway associated with the cluster can then send traffic to the service.
@@ -40,6 +41,14 @@ export class ServiceGatewayConnector extends Mixin {
       return;
     }
 
+    // when the L1 is the default child of an L2 service, let the L2 check the connector against its
+    // task definition and cluster, so `service.with(...)` and the `gatewayConnector` property agree
+    const owner = construct.node.scope;
+    const l2 = owner?.node.defaultChild === construct ? owner : undefined;
+    if (isGatewayConnectorOwner(l2)) {
+      l2._checkGatewayConnector(this.connector);
+    }
+
     // a service has one connector here, so the whole list is replaced rather than merged
     new CfnPropsMixin(CfnService, {
       gatewayConnectors: [renderGatewayConnector(this.connector)],
@@ -51,12 +60,23 @@ export class ServiceGatewayConnector extends Mixin {
     if (accessTypes === undefined
       || (!Token.isUnresolved(accessTypes) && accessTypes.includes(GatewayAccessType.PUBLIC))) {
       // warn on the L2 service when the L1 is its default child, so the warning can be acknowledged there
-      const owner = construct.node.scope;
-      const scope = owner?.node.defaultChild === construct ? owner : construct;
+      const scope = l2 ?? construct;
       Annotations.of(scope).addWarningV2('@aws-cdk/aws-ecs:gatewayConnectorPublicAccess',
         'This service can receive traffic from internet-facing gateways associated with its cluster; set gatewayConnector accessTypes to [GatewayAccessType.PRIVATE] if it must not be reachable from the internet.');
     }
   }
+}
+
+/**
+ * An L2 service that checks a gateway connector applied to its `CfnService`. `BaseService`
+ * implements this; it isn't imported here because base-service.ts imports this module.
+ */
+interface IGatewayConnectorOwner extends IConstruct {
+  _checkGatewayConnector(connector: GatewayConnectorOptions): void;
+}
+
+function isGatewayConnectorOwner(x: IConstruct | undefined): x is IGatewayConnectorOwner {
+  return x !== undefined && typeof (x as Partial<IGatewayConnectorOwner>)._checkGatewayConnector === 'function';
 }
 
 function validateGatewayConnector(connector: GatewayConnectorOptions) {

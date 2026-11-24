@@ -2811,10 +2811,11 @@ new ecs.CfnService(this, 'Service')
   }));
 ```
 
-The `gatewayConnector` property of an L2 service applies this mixin and also checks that the task
-definition uses the `awsvpc` network mode and has a port mapping named `portName`, and makes the
-service depend on the gateway association of its cluster. Prefer it over applying the mixin to an
-L2 service, which skips those checks:
+Applied to a bare `CfnService`, the mixin can't check the task definition or the cluster. Applied to
+a `FargateService` or `Ec2Service`, it also checks that the task definition uses the `awsvpc` network
+mode and has a port mapping named `portName`, and makes the service depend on the gateway
+associations of its cluster. The `gatewayConnector` property of these services applies the same
+mixin, so both ways run the same checks. `ExternalService` doesn't support gateway connectors.
 
 ```ts
 declare const service: ecs.FargateService;
