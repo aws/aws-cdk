@@ -44,8 +44,9 @@ The tier is right only if you rate the harm honestly. Four ways it slips:
 - **No harm, no finding.** Clean code reports nothing. A change that merely *mentions* IAM,
   encryption, or a secret is not a finding; a concrete new harm is. Inventing a low-severity
   finding out of a non-finding is the most common way a review inflates. A defect is a finding
-  only when you can name its harm: something that breaks, a boundary that opens, a hardening
-  gap, a maintainability cost, or a trap a later reader would act on.
+  only when you can name its harm: something that breaks, a boundary that opens, a permission
+  or default wider than the code needs, a maintainability cost, or a trap a later reader would
+  act on.
 - **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
   *new* harm → not a finding. Rate what the diff adds.
 
