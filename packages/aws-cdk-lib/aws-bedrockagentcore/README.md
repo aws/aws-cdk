@@ -225,7 +225,7 @@ However, customers looking for fully managed deployments can benefit from direct
 
 With direct code deployment, developers create a zip archive of code and dependencies, upload to Amazon S3, and configure the bucket in the agent configuration. A ZIP archive containing Linux arm64 dependencies needs to be uploaded to S3 as a pre-requisite to Create Agent Runtime.
 
-For more information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-get-started-code-deploy.html).
+For more information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-get-started-code-deploy.html). For common deployment errors and fixes, see [Troubleshooting direct code deployment](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-code-deploy-common-issues.html).
 
 ```typescript fixture=default
 // S3 bucket containing the agent core
@@ -265,6 +265,8 @@ const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
   agentRuntimeArtifact: agentRuntimeArtifact,
 });
 ```
+
+> **Note:** `opentelemetry-instrument` comes from the AWS Distro for OpenTelemetry (ADOT) package for your language, such as `aws-opentelemetry-distro` for Python. The code is zipped as is, so put that package in the folder, built for Linux arm64. Without it the runtime fails with `OpenTelemetry instrumentation executable not found. The ZIP file requires open-telemetry dependencies, but none are present.` If you do not need OpenTelemetry, use `entrypoint: ['main.py']`.
 
 #### Option 4: Use an ECR container image URI
 
@@ -876,6 +878,8 @@ new agentcore.Runtime(this, 'test-runtime', {
   manageDeliveryResourcePolicy: false,
 });
 ```
+
+> **Note:** Tracing requires CloudWatch Transaction Search, enabled once per account and Region. Without it the deploy fails with `X-Ray Delivery Destination is supported with CloudWatch Logs as a Trace Segment Destination`. Turn it on in the CloudWatch console, or deploy [`xray.CfnTransactionSearchConfig`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_xray.CfnTransactionSearchConfig.html) in a stack you deploy once per account; see [Enable Transaction Search with CloudFormation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Transaction-Search-Cloudformation.html).
 
 ```typescript fixture=default
 const repository = new ecr.Repository(this, 'TestRepository', {
@@ -2575,7 +2579,7 @@ To write to long-term memory, you need to configure extraction strategies which 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
 | `memoryName` | `string` | No | The name of the memory. If not provided, a unique name will be auto-generated |
-| `expirationDuration` | `Duration` | No | Short-term memory expiration in days (between 7 and 365). Default: 90 days |
+| `expirationDuration` | `Duration` | No | Short-term memory expiration in days (between 3 and 365). Default: 90 days |
 | `description` | `string` | No | Optional description for the memory. Default: no description. |
 | `kmsKey` | `IKey` | No | Custom KMS key to use for encryption. Default: Your data is encrypted with a key that AWS owns and manages for you |
 | `memoryStrategies` | `MemoryStrategyBase[]` | No | Built-in extraction strategies to use for this memory. Default: No extraction strategies (short term memory only) |

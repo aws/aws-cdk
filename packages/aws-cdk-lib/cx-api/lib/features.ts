@@ -2055,7 +2055,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Deploy all stacks that import the same user or group after enabling this flag. The first of them to rename its
       policy removes the inline policy under the old shared name, which may hold the permissions of another stack until
       that stack is deployed too.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.278.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },
