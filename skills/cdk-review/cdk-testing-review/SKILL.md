@@ -45,9 +45,6 @@ cite").
 
 ## What not to flag
 
-Beyond the shared exclusions in `cdk-review-principles`, stay silent on the following — not even as
-OPTIONAL — because none is a gap in the tests this PR owes.
-
 - **A test the change does not owe** — a trivial pass-through exposing no previously-unused property, a
   refactor with no behavior change, or a single-property that just renders into the template owes no test;
   demanding one is the noise-cannon, not a finding.

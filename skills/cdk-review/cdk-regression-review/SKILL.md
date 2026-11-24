@@ -40,9 +40,6 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
 
 ## What not to flag
 
-Beyond the shared exclusions in `cdk-review-principles`, stay silent on the following too — not even as
-OPTIONAL — because none breaks an existing program.
-
 - **Performance and dependency-range opinions** — a micro-optimization or performance opinion with no
   measured regression; a dependency-range bump (`glob ^7 → ^11`) unless you can show it raises a floor
   CDK ships against and thereby breaks existing consumers.

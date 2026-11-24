@@ -49,9 +49,6 @@ Work the changed surface in this order; adapt to what the diff touches.
 
 ## What not to flag
 
-Beyond the shared exclusions in `cdk-review-principles`, stay silent on the following — not even as
-OPTIONAL — because none is a security exposure the PR introduces.
-
 - **Correctness and regression risks** (validation, token handling, edge-case breakage) —
   outside your scope, unless the defect is itself a security exposure.
 - **Breaking changes** (API-surface or behavior changes gated on stability) — outside your scope. A

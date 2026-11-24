@@ -56,10 +56,6 @@ Work the changed docs in this order. Adapt to what the diff touches.
 
 ## What not to flag
 
-Beyond the shared exclusions in `cdk-review-principles`, this dimension stays silent on the following —
-not even as OPTIONAL — because each belongs to a different dimension or is not a documentation defect at
-all.
-
 - **Prose wording is not a `@default` defect** — a misspelled word, an awkward sentence, a comment that
   "reads a little off", capitalization, Oxford-comma preferences break no build and misstate no behavior.
   A misspelled word in a JSDoc comment breaks nothing; a `@default false` that is actually `true` misleads
