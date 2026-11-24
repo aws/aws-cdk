@@ -2667,27 +2667,6 @@ running executions finish first.
 **Compatibility with old behavior:** Disable the feature flag to keep sharing one function between the EvaluateExpression tasks in a stack.
 
 
-### @aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped
-
-*Scope VPC Flow Logs CloudWatch Logs permissions to the required resource types*
-
-Flag type: Backwards incompatible bugfix
-
-When this feature flag is enabled, the `DescribeLogStreams` permission is granted on the log group ARN,
-while `CreateLogStream` and `PutLogEvents` remain granted on the log stream ARN pattern.
-
-When disabled, all three permissions are granted together on the log stream ARN pattern, preserving the
-previous behavior.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Disable this feature flag to keep the previous combined permission statement.
-
-
 ### @aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName
 
 *When enabled, the default policy of an imported user or group gets a name that includes the stack name*
@@ -2711,6 +2690,27 @@ that stack is deployed too.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.278.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped
+
+*Scope VPC Flow Logs CloudWatch Logs permissions to the required resource types*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, the `DescribeLogStreams` permission is granted on the log group ARN,
+while `CreateLogStream` and `PutLogEvents` remain granted on the log stream ARN pattern.
+
+When disabled, all three permissions are granted together on the log stream ARN pattern, preserving the
+previous behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this feature flag to keep the previous combined permission statement.
 
 
 <!-- END details -->
