@@ -113,11 +113,10 @@ error: an update that cannot be applied, a change that causes service interrupti
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for the construct-ID/logical-ID→data-loss rule; [`CONTRIBUTING.md § Behavior changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#behavior-changes)
 for the definitional test of which template changes are breaking.
-- **Tier:** RECOMMENDED for a `@default` change or a noop→real-policy change that alters an existing
-  stack's synthesized template but applies cleanly, without service interruption or data loss. Ask for a
-  feature flag for it. See
-  [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags) and
-  [`CONTRIBUTING.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#feature-flags).
+
+**[REG-BEHAVIOR-CHANGE-NO-FLAG] (RECOMMENDED)** — A change to the observable behavior of an existing API in a
+stable module, such as a changed default, with no feature flag. See
+[`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
 
 **[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
 breaking change still requires an explicit `BREAKING CHANGE:` callout in the PR body (before the `---`
