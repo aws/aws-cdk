@@ -1,6 +1,6 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation reviewer. Use when a PR adds or changes README text or examples, `*.ts-fixture` files, JSDoc including `@default` tags, or migration notes. Raises the documentation defects its rules describe: a `@default` or other README or JSDoc statement that is false about what the code does, a missing or stale README example, and a missing migration note."
+description: "AWS CDK documentation reviewer. Use when a PR adds or changes README text or examples, `*.ts-fixture` files, JSDoc including `@default` tags, or migration notes. Raises the documentation defects its rules describe: a `@default`, or a README or JSDoc statement or example, that is false about what the code does, a missing or stale README example, and a missing migration note."
 ---
 
 # AWS CDK Documentation Review
@@ -22,8 +22,8 @@ doc surfaces overlap another dimension's concern; on each, own the documentation
   Whether the break itself is *allowed* (stable vs experimental, callout present) is
   outside your scope.
 
-Before you flag a `@default` or a statement as false, read the code it describes in the same diff (for a
-`@default`, the constructor or `??` handling that applies when the prop is omitted) and compare.
+Before you flag a `@default`, a statement or an example, read the code it describes (for a `@default`, the
+constructor or `??` handling that applies when the prop is omitted) and compare.
 
 ## What not to flag
 
@@ -34,7 +34,7 @@ Before you flag a `@default` or a statement as false, read the code it describes
 - **Comment-density or style opinions** — whether a block "needs more comments", inline-comment placement,
   docstring formatting idioms.
 - **Code correctness** — whether the code the docs describe is itself buggy is a code-correctness question,
-  not a documentation defect — outside your scope; you judge whether the docs match the code.
+  not a documentation defect — outside your scope.
 - **Test concerns** — unit/integration coverage, snapshot correctness, and test-title strings are test
   concerns, not documentation defects — outside your scope.
 

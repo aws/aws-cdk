@@ -23,11 +23,11 @@ for the default behavior the tag documents.
 
 ## Statement accuracy
 
-**[DOC-STATEMENT-WRONG] (RECOMMENDED)** — A statement, other than a `@default` tag, in a README or JSDoc that
-the PR adds or changes and that is false about what the code does, so that a user who follows it gets a
-failure or a different result; a true statement that leaves something out is not this rule. See
-[`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes).
-- **Tier:** BLOCKING when following the statement loses data, opens access or fails a deployment.
+**[DOC-STATEMENT-WRONG] (RECOMMENDED)** — A statement or example in a README or JSDoc that the PR adds or
+changes, other than a `@default` tag, that a user who relies on it turns into code that fails to synthesize
+or deploy, or into a resource that behaves other than the text says; a true statement that leaves something
+out is not this rule.
+- **Tier:** BLOCKING when following it loses data, opens access or fails a deployment.
 
 ## Public-API doc completeness
 
