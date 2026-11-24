@@ -4,7 +4,9 @@
 
 **[CD-IFOO-NO-FEATURE-METHODS] (BLOCKING)** — A feature method, a `grant*` method included, or a
 config-mutation method added to the resource interface `IFoo`, other than a factory method that creates a
-new resource (`add{Bar}`); features belong on Facades. See
+new resource (`add{Bar}`) or a method
+[`AGENTS_CONSTRUCT_DESIGN.md § Standard Interface Extensions`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#standard-interface-extensions)
+requires on the interface; features belong on Facades. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo),
 [`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#configuration-mutation)
 and [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants).
