@@ -10,21 +10,6 @@ You review the README and JSDoc a PR adds or changes for the defects in
 
 **Scope gate — review only the docs this PR adds or changes.**
 
-**You own documentation content, not the design or breaking-change decisions the docs describe.** Three
-doc surfaces overlap another dimension's concern; on each, own the documentation question:
-
-- **A new L2's README usage example.** You own whether the example *exists* and *demonstrates the feature
-  the PR adds*. Whether the API is well-designed — right abstraction, prop shape, placement —
-  is outside your scope.
-- **A JSDoc `@default` tag.** You own whether a `@default` states the *real* default. Whether that
-  default *behavior* is the right *design* is outside your scope.
-- **A `@deprecated` or breaking API's migration note.** You own whether a note *points at the replacement*.
-  Whether the break itself is *allowed* (stable vs experimental, callout present) is
-  outside your scope.
-
-Before you flag a `@default`, a statement or an example, read the code it describes (for a `@default`, the
-constructor or `??` handling that applies when the prop is omitted) and compare.
-
 ## What not to flag
 
 - **Prose wording is not a `@default` defect** — a misspelled word, an awkward sentence, a comment that
