@@ -81,7 +81,6 @@ for the update-behavior classes and
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy)
 for the stateful classification.
 - **Tier:** BLOCKING when the L2 computes the value, so a change elsewhere replaces a stateful resource.
-- **Scope split:** the committed snapshot diff of this PR's own synth is outside construct-design's scope.
 
 **[CD-AWSLINT-SUPPRESSION] (RECOMMENDED)** — Flag every `awslint.exclude` entry the diff adds or broadens,
 and ask for a stated justification in the PR description or an adjacent comment. A suppression turns off an
