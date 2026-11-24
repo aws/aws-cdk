@@ -374,7 +374,10 @@ describe('Amazon Linux 2023 capacity', () => {
       })).toThrow(/Set bootstrapOptions.serviceCidr/);
     });
 
-    test('warns when the group waits for signals, which nodeadm does not send', () => {
+    test.each([
+      ['signals', { signals: autoscaling.Signals.waitForAll() }],
+      ['a rolling update that waits on signals', { updatePolicy: autoscaling.UpdatePolicy.rollingUpdate({ waitOnResourceSignals: true }) }],
+    ])('warns when the group waits for signals (%s), which nodeadm does not send', (_name: string, signalProps: Partial<autoscaling.AutoScalingGroupProps>) => {
       // GIVEN
       const { stack, cluster } = newCluster();
       const asg = new autoscaling.AutoScalingGroup(stack, 'Self', {
@@ -384,7 +387,7 @@ describe('Amazon Linux 2023 capacity', () => {
           kubernetesVersion: '1.30',
           machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
         }),
-        signals: autoscaling.Signals.waitForAll(),
+        ...signalProps,
       });
 
       // WHEN

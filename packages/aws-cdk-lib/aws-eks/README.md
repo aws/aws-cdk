@@ -756,8 +756,10 @@ update that waits on them), something else must send them, for example `applyClo
 warning in that case.
 
 To connect an auto scaling group you create yourself, give it an `EksOptimizedImage` with
-`machineImageType: eks.MachineImageType.AMAZON_LINUX_2023`. The image provides the MIME multipart user data that
-nodeadm reads; `connectAutoScalingGroupCapacity` rejects other user data:
+`machineImageType: eks.MachineImageType.AMAZON_LINUX_2023`, and pass the same `machineImageType` to
+`connectAutoScalingGroupCapacity`. The image provides the MIME multipart user data that nodeadm reads, and the
+connect call rejects other user data. If you leave `machineImageType` out of the connect call, CDK adds Amazon
+Linux 2 `bootstrap.sh` user data instead and the nodes don't join the cluster:
 
 ```ts
 declare const cluster: eks.Cluster;

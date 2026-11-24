@@ -262,8 +262,11 @@ export interface ICluster extends IResource, ec2.IConnectable, IClusterRef {
   /**
    * Connect capacity in the form of an existing AutoScalingGroup to the EKS cluster.
    *
-   * The AutoScalingGroup must be running an EKS-optimized AMI containing the
-   * /etc/eks/bootstrap.sh script. This method will configure Security Groups,
+   * The AutoScalingGroup must be running an EKS-optimized AMI: Amazon Linux 2
+   * (bootstrapped with /etc/eks/bootstrap.sh), Amazon Linux 2023 (bootstrapped
+   * with nodeadm; the group needs MIME multipart user data, see `EksOptimizedImage`,
+   * and `machineImageType` must be `AMAZON_LINUX_2023`), or Bottlerocket.
+   * This method will configure Security Groups,
    * add the right policies to the instance role, apply the right tags, and add
    * the required user data to the instance's launch configuration.
    *
@@ -1380,8 +1383,11 @@ abstract class ClusterBase extends Resource implements ICluster {
   /**
    * Connect capacity in the form of an existing AutoScalingGroup to the EKS cluster.
    *
-   * The AutoScalingGroup must be running an EKS-optimized AMI containing the
-   * /etc/eks/bootstrap.sh script. This method will configure Security Groups,
+   * The AutoScalingGroup must be running an EKS-optimized AMI: Amazon Linux 2
+   * (bootstrapped with /etc/eks/bootstrap.sh), Amazon Linux 2023 (bootstrapped
+   * with nodeadm; the group needs MIME multipart user data, see `EksOptimizedImage`,
+   * and `machineImageType` must be `AMAZON_LINUX_2023`), or Bottlerocket.
+   * This method will configure Security Groups,
    * add the right policies to the instance role, apply the right tags, and add
    * the required user data to the instance's launch configuration.
    *
@@ -2654,8 +2660,8 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
 
   /**
    * Configures the EC2 user-data script for instances in this autoscaling group
-   * to bootstrap the node (invoke `/etc/eks/bootstrap.sh`) and associate it
-   * with the EKS cluster.
+   * to bootstrap the node (invoke `/etc/eks/bootstrap.sh` on Amazon Linux 2, or add a
+   * nodeadm `NodeConfig` on Amazon Linux 2023) and associate it with the EKS cluster.
    *
    * If you wish to provide a custom user data script, set this to `false` and
    * manually invoke `autoscalingGroup.addUserData()`.
@@ -2782,8 +2788,8 @@ export interface AutoScalingGroupOptions {
 
   /**
    * Configures the EC2 user-data script for instances in this autoscaling group
-   * to bootstrap the node (invoke `/etc/eks/bootstrap.sh`) and associate it
-   * with the EKS cluster.
+   * to bootstrap the node (invoke `/etc/eks/bootstrap.sh` on Amazon Linux 2, or add a
+   * nodeadm `NodeConfig` on Amazon Linux 2023) and associate it with the EKS cluster.
    *
    * If you wish to provide a custom user data script, set this to `false` and
    * manually invoke `autoscalingGroup.addUserData()`.
@@ -2982,6 +2988,11 @@ export interface EksOptimizedImageProps {
    * The Amazon Linux generation to retrieve the image for.
    *
    * `MachineImageType.BOTTLEROCKET` is not supported here.
+   *
+   * When you connect a group that uses an Amazon Linux 2023 image with
+   * `connectAutoScalingGroupCapacity`, pass `machineImageType: MachineImageType.AMAZON_LINUX_2023`
+   * there too. Otherwise Amazon Linux 2 `bootstrap.sh` user data is added and the nodes
+   * do not join the cluster.
    *
    * @default MachineImageType.AMAZON_LINUX_2
    */
