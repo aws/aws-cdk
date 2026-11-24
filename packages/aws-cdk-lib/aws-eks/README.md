@@ -757,8 +757,7 @@ warning in that case.
 
 To connect an auto scaling group you create yourself, give it an `EksOptimizedImage` with
 `machineImageType: eks.MachineImageType.AMAZON_LINUX_2023`. The image provides the MIME multipart user data that
-nodeadm reads; `connectAutoScalingGroupCapacity` rejects other user data. This is also the only option for an
-imported cluster:
+nodeadm reads; `connectAutoScalingGroupCapacity` rejects other user data:
 
 ```ts
 declare const cluster: eks.Cluster;
@@ -773,6 +772,36 @@ const asg = new autoscaling.AutoScalingGroup(this, 'AL2023Asg', {
 });
 
 cluster.connectAutoScalingGroupCapacity(asg, {
+  machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+  bootstrapOptions: { serviceCidr: '10.100.0.0/16' },
+});
+```
+
+This is also how you add Amazon Linux 2023 capacity to an imported cluster. nodeadm needs the cluster's endpoint and
+certificate authority data, so set `clusterEndpoint` and `clusterCertificateAuthorityData` when importing the cluster,
+and pass the service CIDR in `bootstrapOptions.serviceCidr`:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+const importedCluster = eks.Cluster.fromClusterAttributes(this, 'ImportedCluster', {
+  clusterName: 'my-cluster',
+  vpc,
+  clusterSecurityGroupId: 'sg-1234567890abcdef0',
+  clusterEndpoint: 'https://EXAMPLE.gr7.us-east-1.eks.amazonaws.com',
+  clusterCertificateAuthorityData: 'LS0tLS1CRUdJTi...',
+});
+
+const asg = new autoscaling.AutoScalingGroup(this, 'AL2023Asg', {
+  vpc,
+  instanceType: new ec2.InstanceType('m5.large'),
+  machineImage: new eks.EksOptimizedImage({
+    kubernetesVersion: '1.36',
+    machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
+  }),
+});
+
+importedCluster.connectAutoScalingGroupCapacity(asg, {
   machineImageType: eks.MachineImageType.AMAZON_LINUX_2023,
   bootstrapOptions: { serviceCidr: '10.100.0.0/16' },
 });
