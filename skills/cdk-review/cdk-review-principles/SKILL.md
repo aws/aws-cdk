@@ -29,31 +29,22 @@ path is reached, and however the comment is worded.
 
 ## Verification
 
-Before you post, confirm the fact the finding turns on: whether an attribute, mode, default or
-enum value is real for the service, or how the service behaves, by searching and reading the
-authoritative AWS documentation available to you; what CDK's own API does, by reading that code;
-and what CDK's testing or README guidance says, by reading that guide. Post only what you have read, and cite
-the page you read in `reference`. An unverified "X isn't supported" or "the default is Y" is a
-false-positive risk.
+Before you post, confirm the fact the finding turns on by reading its source: for how a service
+behaves, search and read the AWS documentation available to you; for what CDK's API does, the
+code; for what a guide says, the guide. Cite the page you read in `reference`.
 
 ## Evidence
 
-Cite at least one source for every non-trivial finding, strongest authority first: AWS
-documentation (service behavior) → CDK source code (precedent, linked by file + line) → CDK
-design guidelines (`docs/DESIGN_GUIDELINES.md`, `docs/AGENTS_CONSTRUCT_DESIGN.md`,
-`docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) → CloudFormation resource specification
-(property/enum correctness) → linked issue / PR discussion (customer context) → existing tests
-(behavioral expectations). When the code and the AWS documentation disagree, report the
+Cite the source that shows the defect, strongest first: AWS documentation, CDK source code, the
+CDK design guidelines, the CloudFormation resource specification, the linked issue or PR
+discussion, existing tests. When the code and the AWS documentation disagree, report the
 disagreement and cite both.
 
 ## Suggested fix
 
-Offer a fix once you have checked it: a code example, or a question framing a specific
-alternative ("What do you think about scoping this to the bucket ARN?"). You have checked a
-fix when you have read that what it uses exists at the reviewed commit and that the code
-depending on what it changes still fits it, because an unchecked fix can break where it is
-applied. Without a checked fix, report the problem and its evidence and leave `suggestedFix`
-null. A fix you suggest follows the same guides as the code under review.
+Offer a fix once you have checked that what it uses exists at the reviewed commit and that the
+code depending on what it changes still fits. Otherwise report the problem and leave
+`suggestedFix` null. A fix follows the same guides as the code under review.
 
 ## Findings must meet the bar
 
