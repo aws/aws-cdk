@@ -12288,7 +12288,7 @@ var init_features = __esm({
       Deploy all stacks that import the same user or group after enabling this flag. The first of them to rename its
       policy removes the inline policy under the old shared name, which may hold the permissions of another stack until
       that stack is deployed too.`,
-        introducedIn: { v2: "V2NEXT" },
+        introducedIn: { v2: "2.278.0" },
         recommendedValue: true,
         unconfiguredBehavesLike: { v2: false }
       }
@@ -16180,14 +16180,14 @@ var require_graceful_fs = __commonJS({
         return close;
       })(fs19.close);
       fs19.closeSync = (function(fs$closeSync) {
-        function closeSync3(fd) {
+        function closeSync2(fd) {
           fs$closeSync.apply(fs19, arguments);
           resetQueue();
         }
-        Object.defineProperty(closeSync3, previousSymbol, {
+        Object.defineProperty(closeSync2, previousSymbol, {
           value: fs$closeSync
         });
-        return closeSync3;
+        return closeSync2;
       })(fs19.closeSync);
       if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || "")) {
         process.on("exit", function() {
@@ -59636,7 +59636,7 @@ var init_ignore = __esm({
     init_errors();
     init_literal_string();
     ({ minimatch } = require_commonjs4());
-    IgnoreStrategy = class {
+    IgnoreStrategy = class _IgnoreStrategy {
       /**
        * Ignores file paths based on simple glob patterns.
        *
@@ -59663,6 +59663,18 @@ var init_ignore = __esm({
        */
       static docker(absoluteRootPath, patterns) {
         return new DockerIgnoreStrategy(absoluteRootPath, patterns);
+      }
+      /**
+       * Return an IgnoreStrategy that does not ignore any files.
+       */
+      static none() {
+        return new class extends _IgnoreStrategy {
+          add() {
+          }
+          ignores() {
+            return false;
+          }
+        }();
       }
       /**
        * Creates an IgnoreStrategy based on the `ignoreMode` and `exclude` in a `CopyOptions`.
@@ -59911,6 +59923,12 @@ function walkDirectory(directory, options, visitor) {
     const targetStats = shouldFollow(internal) ? tryStat(resolvedLinkTarget) : void 0;
     if (!targetStats) {
       if (!ignoreStrategy.ignores(symbolicPath)) {
+        if (follow === "internal-only" /* BLOCK_EXTERNAL */ && !internal) {
+          throw new UnscopedValidationError(
+            lit`ExternalSymlink`,
+            `BLOCK_EXTERNAL forbids the symbolic link ${realPath} from pointing outside the directory tree (to ${linkTarget}). Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`
+          );
+        }
         visitor.onSymlink?.({ path: symbolicPath, realPath, linkTarget, resolvedLinkTarget, internal });
       }
       return;
@@ -59930,9 +59948,7 @@ function walkDirectory(directory, options, visitor) {
       case "external" /* EXTERNAL */:
         return !internal;
       case "internal-only" /* BLOCK_EXTERNAL */:
-        return internal;
       case "never" /* NEVER */:
-      default:
         return false;
     }
   }
@@ -59961,6 +59977,8 @@ var init_utils = __esm({
     fs2 = __toESM(require("fs"));
     path2 = __toESM(require("path"));
     init_options();
+    init_errors();
+    init_literal_string();
   }
 });
 
@@ -60371,6 +60389,7 @@ var init_fs = __esm({
     _FileSystem = class _FileSystem {
       /**
        * Copies an entire directory structure.
+       *
        * @param srcDir Source directory
        * @param destDir Destination directory
        * @param options options
@@ -60378,6 +60397,26 @@ var init_fs = __esm({
        */
       static copyDirectory(srcDir, destDir, options = {}, rootDir) {
         return copyDirectory(srcDir, destDir, options, rootDir);
+      }
+      /**
+       * Copies an entire directory structure.
+       *
+       * Protects against interruption by copying to a temporary directory first and then renaming the directory into place.
+       * Both the target directory and the temporary directory will be overwritten if they already exist.
+       *
+       * The temporary directory is deleted if an error occurs.
+       */
+      static copyDirectoryAtomic(srcDir, destDir, options = {}) {
+        const tmpDest = `${destDir}.tmp`;
+        _FileSystem.rmrf(tmpDest);
+        try {
+          fs6.mkdirSync(tmpDest, { recursive: true });
+          copyDirectory(srcDir, tmpDest, options);
+          _FileSystem.rmrf(destDir);
+          fs6.renameSync(tmpDest, destDir);
+        } finally {
+          _FileSystem.rmrf(tmpDest);
+        }
       }
       /**
        * Produces fingerprint based on the contents of a single file or an entire directory tree.
@@ -60757,6 +60796,22 @@ function isSeLinux() {
     return false;
   }
 }
+function dockerBuildCounter(platform) {
+  const host = knownArchitecture(process.arch);
+  const target = platform === void 0 ? "native" : knownArchitecture(platform.toLowerCase().split("/")[1]);
+  return `DockerImage.build:${host}:${target}`;
+}
+function knownArchitecture(arch) {
+  switch (arch) {
+    case "x64":
+    case "amd64":
+      return "amd64";
+    case "arm64":
+      return "arm64";
+    default:
+      return "other";
+  }
+}
 function missingImageHint(image, status) {
   if (status !== DOCKER_DAEMON_ERROR_STATUS || !isBuiltInCurrentApp(image) || !dockerImageIsMissing(image.image)) {
     return void 0;
@@ -60948,11 +61003,19 @@ var init_bundling2 = __esm({
           ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ["--build-context", `${k}=${v}`])),
           path22
         ];
-        return { dockerArgs, usingBuildContexts };
+        return { dockerArgs, usingBuildContexts, platform: options.platform };
       }
       static buildIfMissing(tag, dockerBuild) {
         if (dockerBuild.usingBuildContexts || !dockerImageExists(tag)) {
-          dockerExec([...dockerBuild.dockerArgs]);
+          var _stack = [];
+          try {
+            const _span = __using(_stack, profileSpan(dockerBuildCounter(dockerBuild.platform), { telemetry: true }));
+            dockerExec([...dockerBuild.dockerArgs]);
+          } catch (_) {
+            var _error = _, _hasError = true;
+          } finally {
+            __callDispose(_stack, _error, _hasError);
+          }
         }
         if (!dockerBuild.usingBuildContexts) {
           rememberDockerImage(tag);
@@ -61057,7 +61120,7 @@ function renderAssetFilename(assetHash, extension = "") {
   return `asset.${assetHash}${extension}`;
 }
 function determineHashType(scope, assetHashType, customSourceFingerprint) {
-  const hashType = customSourceFingerprint ? assetHashType ?? "custom" /* CUSTOM */ : assetHashType ?? "source" /* SOURCE */;
+  const hashType = assetHashType ?? (customSourceFingerprint ? "custom" /* CUSTOM */ : "source" /* SOURCE */);
   if (customSourceFingerprint && hashType !== "custom" /* CUSTOM */) {
     throw new ValidationError(lit`CannotSpecifyAssetHashTypeWithAssetHash`, `Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`, scope);
   }
@@ -61066,20 +61129,10 @@ function determineHashType(scope, assetHashType, customSourceFingerprint) {
   }
   return hashType;
 }
-function validateInternalSymlinks(root, scope, followMode, ignoreStrat) {
-  walkDirectory(root, { follow: followMode, ignoreStrategy: ignoreStrat }, {
-    onSymlink: (entry) => {
-      if (!entry.internal) {
-        throw new ValidationError(
-          lit`BundlingFileSymlinkForbidden`,
-          `The file ${entry.resolvedLinkTarget} is an external symbolic link which is forbidden due to follow mode ${followMode}. Set \`follow\` to a mode that will follow symlinks (ALWAYS or EXTERNAL) or emit a regular file`,
-          scope
-        );
-      }
-    }
-  });
+function validateInternalSymlinks(root) {
+  walkDirectory(root, { follow: "internal-only" /* BLOCK_EXTERNAL */, ignoreStrategy: IgnoreStrategy.none() }, {});
 }
-function calculateCacheKey(props) {
+function calculateDeduplicationKey(props) {
   return crypto6.createHash("sha256").update(JSON.stringify(sortObject(props), sanitizeHashValue)).digest("hex");
 }
 function sortObject(object) {
@@ -61109,7 +61162,7 @@ function sanitizeHashValue(key, value) {
   }
   return value;
 }
-function findSingleFile(scope, directory, archiveOnly) {
+function findSingleFile(scope, directory, mustBeArchive) {
   if (!fs7.existsSync(directory)) {
     throw new ValidationError(lit`DirectoryDoesNotExist`, `Directory ${directory} does not exist.`, scope);
   }
@@ -61119,33 +61172,28 @@ function findSingleFile(scope, directory, archiveOnly) {
   const content = fs7.readdirSync(directory);
   if (content.length === 1) {
     const file = path7.join(directory, content[0]);
-    const extension = getExtension(content[0]).toLowerCase();
-    if (fs7.statSync(file).isFile() && (!archiveOnly || ARCHIVE_EXTENSIONS.includes(extension))) {
+    if (fs7.statSync(file).isFile() && (!mustBeArchive || isArchiveFile(file))) {
       return file;
     }
   }
   return void 0;
 }
-function determineBundledAsset(scope, bundleDir, outputType, ignore, followMode) {
-  const archiveFile = findSingleFile(scope, bundleDir, outputType !== "single-file" /* SINGLE_FILE */);
-  if (outputType === "auto-discover" /* AUTO_DISCOVER */) {
-    outputType = archiveFile ? "archived" /* ARCHIVED */ : "not-archived" /* NOT_ARCHIVED */;
+function pickAssetTarget(scope, bundleDir, outputType) {
+  if (outputType === "not-archived" /* NOT_ARCHIVED */) {
+    return { path: bundleDir, packaging: "zip" /* ZIP_DIRECTORY */, isArchive: true };
   }
-  switch (outputType) {
-    case "not-archived" /* NOT_ARCHIVED */:
-      if (followMode == "internal-only" /* BLOCK_EXTERNAL */) {
-        validateInternalSymlinks(bundleDir, scope, followMode, ignore);
-      }
-      return { path: bundleDir, packaging: "zip" /* ZIP_DIRECTORY */ };
-    case "archived" /* ARCHIVED */:
-    case "single-file" /* SINGLE_FILE */:
-      if (!archiveFile) {
-        throw new ValidationError(lit`BundlingOutputDirectoryExpectedSingleFile`, "Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`", scope);
-      } else if (fs7.lstatSync(archiveFile).isSymbolicLink()) {
-        throw new ValidationError(lit`SymlinkInBundlingOutput`, "The output from bundling is not allowed to be a symlink.", scope);
-      }
-      return { path: archiveFile, packaging: "file" /* FILE */, extension: getExtension(archiveFile) };
+  const allowNonArchiveFile = outputType === "single-file" /* SINGLE_FILE */;
+  const singleFile = findSingleFile(scope, bundleDir, !allowNonArchiveFile);
+  if (!singleFile && outputType === "auto-discover" /* AUTO_DISCOVER */) {
+    return { path: bundleDir, packaging: "zip" /* ZIP_DIRECTORY */, isArchive: true };
   }
+  if (!singleFile) {
+    throw new ValidationError(lit`BundlingOutputDirectoryExpectedSingleFile`, "Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`", scope);
+  }
+  if (fs7.lstatSync(singleFile).isSymbolicLink()) {
+    throw new ValidationError(lit`SymlinkInBundlingOutput`, `The output from bundling is not allowed to be a symlink: ${singleFile}`, scope);
+  }
+  return { path: singleFile, packaging: "file" /* FILE */, isArchive: isArchiveFile(singleFile) };
 }
 function getExtension(source) {
   for (const ext of ARCHIVE_EXTENSIONS) {
@@ -61156,21 +61204,40 @@ function getExtension(source) {
   return path7.extname(source);
 }
 function timerSpanFromOptions(x) {
-  const src = bundlingSourceFromOptions(x);
-  return src ? profileSpan(`bundle:${src}`, { telemetry: true }) : void 0;
+  return profileSpan(`bundle:${bundlingSourceFromOptions(x)}`, { telemetry: true });
+}
+function timeBundlingMode(x, mode, durationMs) {
+  recordPerformanceEntry(`bundle:${bundlingSourceFromOptions(x)}:${mode}`, { durationMs, telemetry: true });
+}
+function countBundlingOutcome(x, outcome) {
+  recordPerformanceEntry(`bundle:${bundlingSourceFromOptions(x)}:${outcome}`, { telemetry: true });
 }
 function bundlingSourceFromOptions(x) {
   const value = x[PERF_BUNDLING_SRC_SYM];
-  return typeof value === "string" ? value : void 0;
+  return typeof value === "string" ? value : "Custom";
 }
-var crypto6, path7, import_constructs7, fs7, ARCHIVE_EXTENSIONS, ASSET_SALT_CONTEXT_KEY, AssetStaging;
+function isArchiveFile(filename) {
+  return ARCHIVE_EXTENSIONS.includes(getExtension(filename).toLowerCase());
+}
+function isLegacyPlaceholderDirectory(bundleDir) {
+  const files = fs7.readdirSync(bundleDir);
+  if (files.length !== 1) {
+    return false;
+  }
+  const singleFile = path7.join(bundleDir, files[0]);
+  const stats = fs7.lstatSync(singleFile);
+  return stats.isFile() && stats.size === 0;
+}
+var crypto6, path7, import_perf_hooks2, import_constructs7, fs7, ARCHIVE_EXTENSIONS, ASSET_SALT_CONTEXT_KEY, AssetStaging, FileStats;
 var init_asset_staging2 = __esm({
   "../../aws-cdk-lib/core/lib/asset-staging.ts"() {
     "use strict";
     crypto6 = __toESM(require("crypto"));
     path7 = __toESM(require("path"));
+    import_perf_hooks2 = require("perf_hooks");
     import_constructs7 = __toESM(require_lib4());
     fs7 = __toESM(require_lib5());
+    init_annotations();
     init_assets();
     init_bundling2();
     init_errors();
@@ -61200,7 +61267,7 @@ var init_asset_staging2 = __esm({
        * Clears the asset hash cache
        */
       static clearAssetHashCache() {
-        this.assetCache.clear();
+        this.deduplicationCache.clear();
         clearLargeFileFingerprintCache();
         clearKnownDockerImages();
       }
@@ -61208,7 +61275,7 @@ var init_asset_staging2 = __esm({
        * Cache of asset hashes based on asset configuration to avoid repeated file
        * system and bundling operations.
        */
-      static assetCache = new Cache();
+      static deduplicationCache = new Cache();
       /**
        * Absolute path to the asset data.
        *
@@ -61248,7 +61315,10 @@ var init_asset_staging2 = __esm({
        */
       packaging;
       /**
-       * Whether this asset is an archive (zip or jar).
+       * Whether this asset will ultimately end up in S3 as an archive
+       *
+       * It will end up as an archive either if it's a directory (which
+       * the CDK will ZIP) or if it's a file that's an archive.
        */
       isArchive;
       fingerprintOptions;
@@ -61260,25 +61330,23 @@ var init_asset_staging2 = __esm({
        * Will not be used literally, always hashed later on.
        */
       customSourceFingerprint;
-      cacheKey;
-      _sourceStats;
+      deduplicationKey;
+      sourceStats;
       constructor(scope, id, props) {
         super(scope, id);
         const salt = this.node.tryGetContext(ASSET_SALT_CONTEXT_KEY);
         this.sourcePath = path7.resolve(props.sourcePath);
         this.fingerprintOptions = {
-          ...props,
+          follow: props.follow,
+          ignoreMode: props.ignoreMode,
           exclude: [".is_custom_resource", ...props.exclude ?? []],
           extraHash: props.extraHash || salt ? `${props.extraHash ?? ""}${salt ?? ""}` : void 0
         };
         if (!fs7.existsSync(this.sourcePath)) {
           throw new ValidationError(lit`CannotFindAsset`, `Cannot find asset at ${this.sourcePath}`, this);
         }
-        const ignoreStrategy = IgnoreStrategy.fromCopyOptions(props, this.sourcePath);
-        if (props.follow == "internal-only" /* BLOCK_EXTERNAL */ && fs7.statSync(this.sourcePath).isDirectory()) {
-          validateInternalSymlinks(this.sourcePath, scope, props.follow, ignoreStrategy);
-        }
-        this._sourceStats = fs7.statSync(this.sourcePath);
+        const stats = fs7.statSync(this.sourcePath);
+        this.sourceStats = new FileStats(stats.isDirectory(), stats.isFile());
         const outdir = stageOf(this)?.assetOutdir;
         if (!outdir) {
           throw new ValidationError(lit`UnableToDetermineCloudAssembly`, 'unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope', this);
@@ -61286,39 +61354,43 @@ var init_asset_staging2 = __esm({
         this.assetOutdir = outdir;
         this.customSourceFingerprint = props.assetHash;
         this.hashType = determineHashType(this, props.assetHashType, this.customSourceFingerprint);
-        let stageThisAsset;
-        let skip = false;
-        if (props.bundling) {
-          skip = !stackOf(this).bundlingRequired;
-          const bundling = props.bundling;
-          stageThisAsset = () => this.stageByBundling(bundling, skip, props);
-        } else {
-          stageThisAsset = () => this.stageByCopying();
+        if (props.bundling && this.hashType !== "source" /* SOURCE */) {
+          if (props.exclude && props.exclude.length > 0) {
+            Annotations.of(this).addWarningV2("@aws-cdk/core:meaninglessExclude", `"exclude" is configured on a bundled asset, but that field does nothing unless assetHashType is "SOURCE" (got "${this.hashType}")`);
+          }
+          if (!!props.follow && props.follow !== "internal-only" /* BLOCK_EXTERNAL */ && props.follow !== "never" /* NEVER */) {
+            Annotations.of(this).addWarningV2("@aws-cdk/core:meaninglessFollow", `On a bundled asset with assetHashType "${this.hashType}", only "follow: BLOCK_EXTERNAL" has an effect (got "${props.follow}")`);
+          }
         }
-        this.cacheKey = calculateCacheKey({
+        if (!props.bundling && ["bundle" /* BUNDLE */, "output" /* OUTPUT */].includes(this.hashType)) {
+          throw new ValidationError(lit`CannotUseHashTypeWithoutBundling`, `Cannot use \`${this.hashType}\` hash type when \`bundling\` is not specified.`, this);
+        }
+        const skip = props.bundling ? !stackOf(this).bundlingRequired : false;
+        this.deduplicationKey = calculateDeduplicationKey({
           outdir: this.assetOutdir,
           sourcePath: path7.resolve(props.sourcePath),
           bundling: props.bundling,
           assetHashType: this.hashType,
           customFingerprint: this.customSourceFingerprint,
-          extraHash: props.extraHash,
+          extraHash: this.fingerprintOptions.extraHash,
           exclude: props.exclude,
           ignoreMode: props.ignoreMode,
-          skip
+          follow: props.follow,
+          skip,
+          stagingDisabled: this.stagingDisabled
         });
-        const staged = _AssetStaging.assetCache.obtain(this.cacheKey, stageThisAsset);
+        let staged;
+        if (props.bundling) {
+          const bundling = props.bundling;
+          staged = _AssetStaging.deduplicationCache.obtain(this.deduplicationKey, () => this.stageByBundling(bundling, skip));
+        } else {
+          staged = _AssetStaging.deduplicationCache.obtain(this.deduplicationKey, () => this.stageByCopying());
+        }
         this.stagedPath = staged.stagedPath;
         this.absoluteStagedPath = staged.stagedPath;
         this.assetHash = staged.assetHash;
         this.packaging = staged.packaging;
         this.isArchive = staged.isArchive;
-        this._sourceStats = void 0;
-      }
-      get sourceStats() {
-        if (!this._sourceStats) {
-          throw new AssumptionError(lit`SourceStatusUnset`, "_sourceStats has been unset");
-        }
-        return this._sourceStats;
       }
       /**
        * A cryptographic hash of the asset.
@@ -61364,10 +61436,15 @@ var init_asset_staging2 = __esm({
       /**
        * Stage the source to the target by copying
        *
-       * Optionally skip if staging is disabled, in which case we pretend we did something but we don't really.
+       * Optionally skip if staging is disabled, in which case we pretend we did
+       * something but we don't really.  This mode is designed for quick iteration
+       * using a local development tool, like SAM CLI. The produced template will
+       * link to the source location of the asset, rather than the staged location,
+       * so that you don't need to run `cdk synth` every time you make changes to
+       * the asset source.
        */
       stageByCopying() {
-        const assetHash = this.calculateHash(this.hashType);
+        const assetHash = this.calculateSourceHash(void 0);
         const targetPath = this.stagingDisabled ? this.sourcePath : path7.resolve(this.assetOutdir, renderAssetFilename(assetHash, getExtension(this.sourcePath)));
         const stagedPath = this.renderStagedPath(this.sourcePath, targetPath);
         if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
@@ -61378,56 +61455,60 @@ var init_asset_staging2 = __esm({
           assetHash,
           stagedPath,
           packaging: this.sourceStats.isDirectory() ? "zip" /* ZIP_DIRECTORY */ : "file" /* FILE */,
-          isArchive: this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(getExtension(this.sourcePath).toLowerCase())
+          isArchive: this.sourceStats.isDirectory() || isArchiveFile(this.sourcePath)
         };
       }
       /**
        * Stage the source to the target by bundling
        *
-       * Optionally skip, in which case we pretend we did something but we don't really.
+       * Optionally skip, which in this case means that we don't do the actual bundling command because
+       * we consider it too slow and we are only interested in the template anyway.
        */
-      stageByBundling(bundling, skip, props) {
+      stageByBundling(bundling, skip) {
         if (!this.sourceStats.isDirectory()) {
           throw new ValidationError(lit`AssetExpectedDirectoryForBundling`, `Asset ${this.sourcePath} is expected to be a directory when bundling`, this);
         }
         if (skip) {
-          let hashType = this.hashType;
-          if (hashType === "output" /* OUTPUT */ || hashType === "bundle" /* BUNDLE */) {
-            this.customSourceFingerprint = Names.uniqueId(this);
-            hashType = "custom" /* CUSTOM */;
-          }
+          const hash = crypto6.createHash("sha256");
+          hash.update(Names.uniqueId(this));
+          const fakeAssetHash = hash.digest("hex");
+          countBundlingOutcome(bundling, "skipped");
           return {
-            assetHash: this.calculateHash(hashType, bundling),
+            assetHash: fakeAssetHash,
             stagedPath: this.sourcePath,
             packaging: "zip" /* ZIP_DIRECTORY */,
             isArchive: true
           };
         }
-        let assetHash = this.hashType === "source" /* SOURCE */ || this.hashType === "custom" /* CUSTOM */ ? this.calculateHash(this.hashType, bundling) : void 0;
-        const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
-        this.bundle(bundling, bundleDir);
         const bundlingOutputType = bundling.outputType ?? "auto-discover" /* AUTO_DISCOVER */;
-        const ignore = IgnoreStrategy.fromCopyOptions(props, bundleDir);
-        const bundledAsset = determineBundledAsset(this, bundleDir, bundlingOutputType, ignore, props.follow);
-        assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
-        const stagedPath = this.renderStagedPath(
-          bundledAsset.path,
-          path7.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension))
-        );
-        this.stageAsset(bundledAsset.path, stagedPath, "move");
-        if (bundledAsset.packaging === "file" /* FILE */) {
-          if (this.hashType === "output" /* OUTPUT */ || this.hashType === "bundle" /* BUNDLE */) {
-            fs7.removeSync(path7.dirname(bundledAsset.path));
+        let assetHash = this.calculateHashBeforehand ? this.calculateSourceHash(bundling) : void 0;
+        let bundleDir = this.bundlingOutputdir(assetHash);
+        if (!assetHash || !bundleDir || !fs7.existsSync(bundleDir) || isLegacyPlaceholderDirectory(bundleDir)) {
+          const tempDir = this.bundleToTempDir(bundling, assetHash);
+          if (assetHash) {
+            if (this.fingerprintOptions.follow === "internal-only" /* BLOCK_EXTERNAL */) {
+              validateInternalSymlinks(tempDir);
+            }
           } else {
-            fs7.closeSync(fs7.openSync(bundledAsset.path, "w"));
+            const hashTarget = pickAssetTarget(this, tempDir, bundlingOutputType);
+            assetHash = this.calculateOutputHash(hashTarget.path);
           }
+          bundleDir = this.bundlingOutputdir(assetHash);
+          FileSystem.rmrf(bundleDir);
+          fs7.renameSync(tempDir, bundleDir);
+        } else {
+          countBundlingOutcome(bundling, "reused");
         }
+        const targetAsset = pickAssetTarget(this, bundleDir, bundlingOutputType);
         return {
           assetHash,
-          stagedPath,
-          packaging: bundledAsset.packaging,
-          isArchive: bundlingOutputType !== "single-file" /* SINGLE_FILE */
+          stagedPath: targetAsset.path,
+          packaging: targetAsset.packaging,
+          isArchive: targetAsset.isArchive
         };
+      }
+      get calculateHashBeforehand() {
+        return this.hashType === "source" /* SOURCE */ || this.hashType === "custom" /* CUSTOM */;
       }
       /**
        * Whether staging has been disabled
@@ -61457,24 +61538,25 @@ var init_asset_staging2 = __esm({
         if (this.sourceStats.isFile()) {
           fs7.copyFileSync(sourcePath, targetPath);
         } else if (this.sourceStats.isDirectory()) {
-          fs7.mkdirSync(targetPath);
-          FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
+          FileSystem.copyDirectoryAtomic(sourcePath, targetPath, this.fingerprintOptions);
         } else {
           throw new ValidationError(lit`UnknownFileType`, `Unknown file type: ${sourcePath}`, this);
         }
       }
       /**
-       * Determine the directory where we're going to write the bundling output
+       * Return the directory where the bundling output will be placed.
        *
-       * This is the target directory where we're going to write the staged output
-       * files if we can (if the hash is fully known), or a temporary directory
-       * otherwise.
+       * This is where we expect the output of the bundling command to end up after
+       * running it.
+       *
+       * If the source hash is known, this will be the directory named after the hash.
+       * Otherwise, it will be undefined.
        */
-      determineBundleDir(outdir, sourceHash) {
-        if (sourceHash) {
-          return path7.resolve(outdir, renderAssetFilename(sourceHash));
+      bundlingOutputdir(sourceHash) {
+        if (sourceHash === void 0) {
+          return void 0;
         }
-        return path7.resolve(outdir, `bundling-temp-${this.cacheKey}`);
+        return path7.resolve(this.assetOutdir, renderAssetFilename(sourceHash));
       }
       /**
        * Bundles an asset to the given directory
@@ -61486,11 +61568,8 @@ var init_asset_staging2 = __esm({
        * @param bundleDir Where to create the bundle directory
        * @returns The fully resolved bundle output directory.
        */
-      bundle(options, bundleDir) {
-        if (fs7.existsSync(bundleDir)) {
-          return;
-        }
-        const tempDir = `${bundleDir}-building`;
+      bundleToTempDir(options, assetHash) {
+        const tempDir = path7.resolve(this.assetOutdir, `asset.${assetHash ?? this.deduplicationKey}-building`);
         fs7.rmSync(tempDir, { recursive: true, force: true });
         fs7.ensureDirSync(tempDir);
         fs7.chmodSync(tempDir, 511);
@@ -61501,6 +61580,7 @@ var init_asset_staging2 = __esm({
             process.stderr.write(`Bundling asset ${this.node.path}...
 `);
             const _span = __using(_stack, timerSpanFromOptions(options));
+            const start = import_perf_hooks2.performance.now();
             localBundling = options.local?.tryBundle(tempDir, options);
             if (!localBundling) {
               options.image.buildImage?.();
@@ -61519,7 +61599,7 @@ var init_asset_staging2 = __esm({
                   break;
               }
             }
-            fs7.renameSync(tempDir, bundleDir);
+            timeBundlingMode(options, localBundling ? "local" : "docker", import_perf_hooks2.performance.now() - start);
           } catch (_) {
             var _error = _, _hasError = true;
           } finally {
@@ -61528,38 +61608,78 @@ var init_asset_staging2 = __esm({
         } catch (err) {
           throw new ValidationError(lit`FailedToBundleAsset`, `Failed to bundle asset ${this.node.path}, bundle output is located at ${tempDir}: ${err}`, this);
         }
-        if (FileSystem.isEmpty(bundleDir)) {
-          const outputDir = localBundling ? bundleDir : _AssetStaging.BUNDLING_OUTPUT_DIR;
+        if (FileSystem.isEmpty(tempDir)) {
+          const outputDir = localBundling ? tempDir : _AssetStaging.BUNDLING_OUTPUT_DIR;
           throw new ValidationError(lit`BundlingProducedNoOutput`, `Bundling did not produce any output. Check that content is written to ${outputDir}.`, this);
         }
+        return tempDir;
       }
-      calculateHash(hashType, bundling, outputDir) {
-        if (hashType == "custom" /* CUSTOM */ || hashType == "source" /* SOURCE */ && bundling) {
-          const hash = crypto6.createHash("sha256");
-          hash.update(this.customSourceFingerprint ?? FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions));
-          if (bundling) {
-            hash.update(JSON.stringify(bundling, sanitizeHashValue));
-          }
-          return hash.digest("hex");
+      /**
+       * Calculate the asset hash as a source hash
+       *
+       * Must not be called if the asset hash type is `AssetHashType.BUNDLE` or `AssetHashType.OUTPUT`.
+       */
+      calculateSourceHash(bundling) {
+        if (!this.calculateHashBeforehand) {
+          throw new AssumptionError(lit`InvalidHashType`, "Cannot call calculateSourceHash with this asset hash type");
         }
-        switch (hashType) {
+        const hash = crypto6.createHash("sha256");
+        switch (this.hashType) {
           case "source" /* SOURCE */:
-            return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
-          case "bundle" /* BUNDLE */:
-          case "output" /* OUTPUT */:
-            if (!outputDir) {
-              throw new ValidationError(lit`CannotUseHashTypeWithoutBundling`, `Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`, this);
+            const sourceFingerprint = FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
+            if (!bundling) {
+              return sourceFingerprint;
             }
-            return FileSystem.fingerprint(outputDir, this.fingerprintOptions);
+            hash.update(sourceFingerprint);
+            break;
+          case "custom" /* CUSTOM */:
+            hash.update(this.customSourceFingerprint);
+            break;
           default:
-            throw new ValidationError(lit`UnknownAssetHashType`, "Unknown asset hash type.", this);
+            throw new AssumptionError(lit`InvalidHashType`, "Cannot call calculateSourceHash with this asset hash type");
         }
+        if (bundling) {
+          hash.update(JSON.stringify(bundling, sanitizeHashValue));
+        }
+        return hash.digest("hex");
+      }
+      /**
+       * Calculate the asset hash based on the contents of the output directory.
+       *
+       * We do NOT use the source fingerprinting options on purpose; those are only
+       * for COPY assets and SOURCEHASHED bundles. The bundling command is entirely
+       * responsible for the contents of the output directory.
+       *
+       * Exceptions:
+       *
+       * - We do use the `extraHash` field, user wants to be able to invalidate the asset hash externally.
+       * - We copy over the symlink follow mode IF it was BLOCK_EXTERNAL, as a security measure.
+       */
+      calculateOutputHash(outputDir) {
+        return FileSystem.fingerprint(outputDir, {
+          follow: this.fingerprintOptions.follow === "internal-only" /* BLOCK_EXTERNAL */ ? "internal-only" /* BLOCK_EXTERNAL */ : void 0,
+          extraHash: this.fingerprintOptions.extraHash
+        });
       }
       renderStagedPath(sourcePath, targetPath) {
         if (this.hashType !== "output" /* OUTPUT */ && path7.dirname(sourcePath) === targetPath) {
           targetPath = targetPath + "_noext";
         }
         return targetPath;
+      }
+    };
+    FileStats = class {
+      constructor(_isDir, _isFile) {
+        this._isDir = _isDir;
+        this._isFile = _isFile;
+      }
+      _isDir;
+      _isFile;
+      isDirectory() {
+        return this._isDir;
+      }
+      isFile() {
+        return this._isFile;
       }
     };
   }
@@ -84442,11 +84562,11 @@ function parseAsNumber(x) {
   const r = parseInt(`${x}`, 10);
   return isNaN(r) ? void 0 : r;
 }
-var import_perf_hooks2, fs13, APP_INIT_HOOK_SYMBOL, DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS, SLOW_SYNTH_THRESHOLD_CTX, App, PERF_STATE;
+var import_perf_hooks3, fs13, APP_INIT_HOOK_SYMBOL, DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS, SLOW_SYNTH_THRESHOLD_CTX, App, PERF_STATE;
 var init_app2 = __esm({
   "../../aws-cdk-lib/core/lib/app.ts"() {
     "use strict";
-    import_perf_hooks2 = require("perf_hooks");
+    import_perf_hooks3 = require("perf_hooks");
     fs13 = __toESM(require_lib5());
     init_helpers_internal();
     init_bundling();
@@ -84505,7 +84625,7 @@ var init_app2 = __esm({
           outdir: props.outdir ?? process.env[OUTDIR_ENV]
         });
         this._confirmValidationPluginsDoNotMutate = props.confirmValidationPluginsDoNotMutate ?? false;
-        this.initMark = import_perf_hooks2.performance.now();
+        this.initMark = import_perf_hooks3.performance.now();
         clearKnownDockerImages();
         this._builtinCloudFormationValidation = props.builtinCloudFormationValidation ?? true;
         if (!PERF_STATE.loadTimeMeasured) {
@@ -84570,17 +84690,17 @@ var init_app2 = __esm({
           return super.synth(options);
         }
         this.alreadySynthed = true;
-        const startSynthMark = import_perf_hooks2.performance.now();
+        const startSynthMark = import_perf_hooks3.performance.now();
         recordPerformanceEntry("phase:Construction", {
           durationMs: startSynthMark - this.initMark,
           telemetry: true
         });
         const ret = super.synth(options);
         recordPerformanceEntry("phase:Synthesis", {
-          durationMs: import_perf_hooks2.performance.now() - startSynthMark,
+          durationMs: import_perf_hooks3.performance.now() - startSynthMark,
           telemetry: true
         });
-        const totalAppTimeMs = import_perf_hooks2.performance.now() - this.initMark;
+        const totalAppTimeMs = import_perf_hooks3.performance.now() - this.initMark;
         const { constructCount, stackCount } = countTree(this);
         recordPerformanceEntry("count:Constructs", {
           count: constructCount,
