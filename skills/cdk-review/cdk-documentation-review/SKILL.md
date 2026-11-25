@@ -7,6 +7,6 @@ description: "AWS CDK documentation reviewer. Use when a PR adds or changes READ
 
 You review the README and JSDoc a PR adds or changes and raise the cases the rows of
 [`documentation-rules.md`](references/documentation-rules.md) describe. Apply `cdk-review-principles` for
-severity, evidence and the finding format. A finding's `category` is the heading its rule sits under in
-the rules file. When one location has more than one doc defect, describe them in one finding with the
-`ruleId`, `category` and `severity` of the most severe one, since each field takes one value.
+severity, evidence and the finding format. When one location has more than one doc defect, describe them
+in one finding with the `ruleId`, `category` and `severity` of the most severe one, since each field takes
+one value.
