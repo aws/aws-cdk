@@ -1,0 +1,34 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "b9d265a7298dcf7774794746a1aac25ee61dc998230526747e062aeaff88af86": {
+      "displayName": "MyRuby40Lambda/Code",
+      "source": {
+        "path": "asset.b9d265a7298dcf7774794746a1aac25ee61dc998230526747e062aeaff88af86",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-eff85bea": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b9d265a7298dcf7774794746a1aac25ee61dc998230526747e062aeaff88af86.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "c4068a5af89fa0bc8b2206ff1624ff4d895f13a2ee4374447f56bfe447252e04": {
+      "displayName": "lambda-test-assets-file-for-ruby40 Template",
+      "source": {
+        "path": "lambda-test-assets-file-for-ruby40.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-00e0463c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c4068a5af89fa0bc8b2206ff1624ff4d895f13a2ee4374447f56bfe447252e04.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

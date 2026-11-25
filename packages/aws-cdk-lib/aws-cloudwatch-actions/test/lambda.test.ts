@@ -197,7 +197,7 @@ def handler(event, context):
 
   const alarmLambda2 = new lambda.Function(stack, 'alarmLambda2', {
     runtime: lambda.Runtime.PYTHON_3_12,
-    functionName: 'alarmLambda',
+    functionName: 'alarmLambda2',
     code: lambda.Code.fromInline(`
 def handler(event, context):
   print('event:', event)

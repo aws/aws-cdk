@@ -8,7 +8,9 @@ const stack = new cdk.Stack(app, 'stack');
 
 const api = new appsync.GraphqlApi(stack, 'DisableIntrospection', {
   name: 'DisableIntrospection',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  },
   introspectionConfig: appsync.IntrospectionConfig.DISABLED,
 });
 

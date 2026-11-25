@@ -4,6 +4,7 @@ import type { ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import { ClientVpnEndpoint } from './client-vpn-endpoint';
 import type {
   CfnVPCCidrBlock,
+  IIPAMPoolRef,
   ISubnetRef,
   IVPCRef, SubnetReference, VPCReference,
 } from './ec2.generated';
@@ -30,7 +31,8 @@ import {
   IpAddresses,
   Ipv6Addresses,
 } from './ip-addresses';
-import { NatProvider } from './nat';
+import type { ConfigureNatOptions } from './nat';
+import { NatProvider, RegionalNatGatewayProvider } from './nat';
 import type { INetworkAcl } from './network-acl';
 import { NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
@@ -57,7 +59,7 @@ import type { VpcLookupOptions } from './vpc-lookup';
 import type { EnableVpnGatewayOptions, VpnConnectionOptions } from './vpn';
 import { VpnConnection, VpnConnectionType, VpnGateway } from './vpn';
 import * as cxschema from '../../cloud-assembly-schema';
-import type { IResource } from '../../core';
+import type { Duration, IResource } from '../../core';
 import {
   Annotations,
   Arn,
@@ -65,7 +67,6 @@ import {
   CustomResource,
   FeatureFlags,
   Fn,
-  Lazy,
   Names,
   Resource,
   Stack,
@@ -74,7 +75,11 @@ import {
   UnscopedValidationError,
   ValidationError,
 } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { stackOf } from '../../core/lib/private/core-construct-finders';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
@@ -362,6 +367,12 @@ export interface SubnetSelection {
 
   /**
    * Select subnets only in the given AZs.
+   *
+   * Filtering happens at synthesis time. Literal AZ names do not match subnets
+   * whose availability zones are unresolved tokens (for example, from
+   * `Fn.getAzs()` in an environment-agnostic stack). To filter by literal names,
+   * the subnet AZs must also be known at synthesis time. For a new VPC, you can
+   * specify explicit AZ names in `VpcProps.availabilityZones`.
    *
    * @default no filtering on AZs is done
    */
@@ -1431,6 +1442,8 @@ export class Vpc extends VpcBase {
       dummyValue: undefined,
     }).value;
 
+    stackOf(scope)._silenceLiteralAzWarning();
+
     return new LookedUpVpc(scope, id, attributes ?? DUMMY_VPC_PROPS, attributes === undefined);
 
     /**
@@ -1652,6 +1665,11 @@ export class Vpc extends VpcBase {
       const maxAZs = props.maxAzs ?? 3;
       this.availabilityZones = stack.availabilityZones.slice(0, maxAZs);
     }
+    if (props.availabilityZones !== undefined && !Token.isUnresolved(props.availabilityZones) &&
+      props.availabilityZones.length === 0 && props.subnetConfiguration?.length !== 0) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ec2:emptyAvailabilityZonesInVpc',
+        'The VPC has no availability zones, so no subnets will be created. Specify at least one availability zone or omit availabilityZones to use the stack availability zones.');
+    }
     for (let i = 0; props.reservedAzs && i < props.reservedAzs; i++) {
       this.availabilityZones.push(FAKE_AZ_NAME);
     }
@@ -1667,7 +1685,38 @@ export class Vpc extends VpcBase {
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
 
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
-    const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
+
+    if (props.natGatewayProvider instanceof RegionalNatGatewayProvider) {
+      if (Token.isUnresolved(props.natGateways)) {
+        throw new ValidationError(lit`NatGatewaysTokenWithRegionalNatGateway`, '`natGateways` must be a resolved number when `natGatewayProvider` is a Regional NAT Gateway, got an unresolved token.', this);
+      }
+      if (props.natGateways !== undefined && props.natGateways < 1) {
+        throw new ValidationError(lit`NatGatewaysBelowOneWithRegionalNatGateway`, `\`natGateways\` must be at least 1 when \`natGatewayProvider\` is a Regional NAT Gateway, got ${props.natGateways}. Remove \`natGatewayProvider\` if you do not want a NAT gateway.`, this);
+      }
+      if (props.natGateways !== undefined && props.natGateways > 1) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:regionalNatGatewayCount',
+          '`natGateways` is ignored when using Regional NAT Gateway. A single regional gateway covers all AZs.',
+        );
+      }
+      if (props.natGatewaySubnets !== undefined) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ec2:regionalNatGatewaySubnets',
+          '`natGatewaySubnets` is ignored when using Regional NAT Gateway. The gateway is created at VPC level without requiring a public subnet.',
+        );
+      }
+    }
+
+    if (Token.isUnresolved(props.natGateways)) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-ec2:natGatewaysToken',
+        '`natGateways` must be resolved at synthesis time to decide how many NAT gateways to create. The unresolved token is treated as 0, so no NAT gateway will be created.',
+      );
+    }
+
+    const natGatewayCount = determineNatGatewayCount(
+      props.natGateways, this.subnetConfiguration, this.availabilityZones.length, props.natGatewayProvider,
+    );
 
     if (this.useIpv6) {
       this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
@@ -1707,7 +1756,7 @@ export class Vpc extends VpcBase {
         }
         // configure IPv6 route if VPC is dual stack
         if (this.useIpv6) {
-          publicSubnet.addIpv6DefaultInternetRoute(igw.ref);
+          publicSubnet.addIpv6DefaultInternetRoute(igw.ref, att);
         }
       });
 
@@ -1809,6 +1858,16 @@ export class Vpc extends VpcBase {
   }
 
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {
+    if (provider instanceof RegionalNatGatewayProvider) {
+      provider.configureNat({
+        vpc: this,
+        natSubnets: [],
+        privateSubnets: this.privateSubnets as PrivateSubnet[],
+      });
+
+      return;
+    }
+
     const natSubnets: PublicSubnet[] = this.selectSubnetObjects(placement) as PublicSubnet[];
     for (const sub of natSubnets) {
       if (this.publicSubnets.indexOf(sub) === -1) {
@@ -1816,11 +1875,12 @@ export class Vpc extends VpcBase {
       }
     }
 
-    provider.configureNat({
+    const options: ConfigureNatOptions = {
       vpc: this,
       natSubnets: natSubnets.slice(0, natCount),
       privateSubnets: this.privateSubnets as PrivateSubnet[],
-    });
+    };
+    provider.configureNat(options);
   }
 
   /**
@@ -2038,6 +2098,28 @@ function subnetTypeTagValue(type: SubnetType) {
 }
 
 /**
+ * Allocation of a subnet's IPv4 CIDR block from an Amazon VPC IP Address Manager (IPAM) pool
+ */
+export interface SubnetIpv4IpamAllocation {
+  /**
+   * The IPAM pool from which the CIDR block is allocated at deploy time
+   *
+   * The pool must be a resource planning pool for the VPC the subnet belongs to (its
+   * `sourceResource` is the VPC), and the allocated CIDR block must lie within the CIDR of
+   * that VPC. Pools in a private scope require the IPAM Advanced Tier.
+   * To reference a pool that is not defined in this app, use `CfnIPAMPool.fromIpamPoolId()`.
+   */
+  readonly ipamPool: IIPAMPoolRef;
+
+  /**
+   * The netmask length of the CIDR block to allocate from the pool
+   *
+   * Must be between 16 and 28 (inclusive), the sizes allowed for an IPv4 subnet.
+   */
+  readonly netmaskLength: number;
+}
+
+/**
  * Specify configuration parameters for a VPC subnet
  */
 export interface SubnetProps {
@@ -2054,8 +2136,25 @@ export interface SubnetProps {
 
   /**
    * The CIDR notation for this subnet
+   *
+   * Exactly one of `cidrBlock` and `ipv4IpamAllocation` must be specified.
+   *
+   * @default - the CIDR block is allocated from the IPAM pool given in `ipv4IpamAllocation`
    */
-  readonly cidrBlock: string;
+  readonly cidrBlock?: string;
+
+  /**
+   * Allocate the IPv4 CIDR block of this subnet from an IPAM pool at deploy time
+   *
+   * When set, `ipv4CidrBlock` resolves to a deploy-time attribute of the subnet instead of a
+   * concrete string, so `SubnetFilter.byCidrMask()`, `SubnetFilter.byCidrRanges()` and
+   * `SubnetFilter.containsIpAddresses()` cannot be used with this subnet.
+   *
+   * Exactly one of `cidrBlock` and `ipv4IpamAllocation` must be specified.
+   *
+   * @default - the subnet uses the concrete `cidrBlock`
+   */
+  readonly ipv4IpamAllocation?: SubnetIpv4IpamAllocation;
 
   /**
    * Controls if a public IP is associated to an instance at launch
@@ -2089,6 +2188,7 @@ export interface SubnetProps {
  * @resource AWS::EC2::Subnet
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Subnet extends Resource implements ISubnet {
   /**
    * Uniquely identifies this class.
@@ -2117,6 +2217,11 @@ export class Subnet extends Resource implements ISubnet {
   public readonly availabilityZone: string;
 
   /**
+   * The IPv4 CIDR block for this subnet
+   *
+   * If the subnet is allocated from an IPAM pool (`ipv4IpamAllocation`), this is a
+   * deploy-time attribute of the subnet rather than a concrete string.
+   *
    * @attribute
    */
   public readonly ipv4CidrBlock: string;
@@ -2168,27 +2273,41 @@ export class Subnet extends Resource implements ISubnet {
 
   private readonly _internetConnectivityEstablished = new DependencyGroup();
 
-  private _networkAcl: INetworkAcl;
+  private _networkAcl: IBox<INetworkAcl>;
 
   constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.cidrBlock !== undefined && props.ipv4IpamAllocation !== undefined) {
+      throw new ValidationError(lit`CannotSpecifyBothCidrBlockAndIpv4IpamAllocation`, 'Cannot specify both \'cidrBlock\' and \'ipv4IpamAllocation\'; supply exactly one of them', this);
+    }
+    if (props.cidrBlock === undefined && props.ipv4IpamAllocation === undefined) {
+      throw new ValidationError(lit`MissingCidrBlockOrIpv4IpamAllocation`, 'Either \'cidrBlock\' or \'ipv4IpamAllocation\' must be specified', this);
+    }
+    const netmaskLength = props.ipv4IpamAllocation?.netmaskLength;
+    if (netmaskLength !== undefined && !Token.isUnresolved(netmaskLength) && (netmaskLength < 16 || netmaskLength > 28)) {
+      throw new ValidationError(lit`InvalidIpv4IpamAllocationNetmaskLength`, `'ipv4IpamAllocation.netmaskLength' must be between 16 and 28, got ${netmaskLength}`, this);
+    }
+
     Object.defineProperty(this, VPC_SUBNET_SYMBOL, { value: true });
 
     Tags.of(this).add(NAME_TAG, this.node.path);
 
     this.availabilityZone = props.availabilityZone;
-    this.ipv4CidrBlock = props.cidrBlock;
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
+      ipv4IpamPoolId: props.ipv4IpamAllocation?.ipamPool.ipamPoolRef.ipamPoolId,
+      ipv4NetmaskLength: netmaskLength,
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
+    // With IPAM the CIDR block is only known at deploy time
+    this.ipv4CidrBlock = props.cidrBlock ?? subnet.attrCidrBlock;
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
@@ -2198,8 +2317,9 @@ export class Subnet extends Resource implements ISubnet {
 
     // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
     // was just created. However, the ACL can be replaced at a later time.
-    this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
-    this.subnetNetworkAclAssociationId = Lazy.string({ produce: () => this._networkAcl.networkAclRef.networkAclId });
+    this._networkAcl = Box.fromValue(NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId));
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+    this.subnetNetworkAclAssociationId = Token.asString(this._networkAcl.derive(acl => acl.networkAclRef.networkAclId));
     this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
@@ -2239,18 +2359,26 @@ export class Subnet extends Resource implements ISubnet {
   }
 
   /**
-   * Create a default IPv6 route that points to a passed IGW.
+   * Create a default IPv6 route that points to a passed IGW, with a dependency
+   * on the IGW's attachment to the VPC.
    *
    * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
+   * @param gatewayAttachment the gateway attachment construct to be added as a dependency
    */
   @MethodMetadata()
-  public addIpv6DefaultInternetRoute(gatewayId: string) {
-    this.addRoute('DefaultRoute6', {
-      routerType: RouterType.GATEWAY,
-      routerId: gatewayId,
+  public addIpv6DefaultInternetRoute(gatewayId: string, gatewayAttachment?: IDependable) {
+    const route = new CfnRoute(this, 'DefaultRoute6', {
+      routeTableId: this.routeTable.routeTableId,
       destinationIpv6CidrBlock: '::/0',
-      enablesInternetConnectivity: true,
+      gatewayId,
     });
+    if (gatewayAttachment) {
+      route.node.addDependency(gatewayAttachment);
+    }
+
+    // Since the 'route' depends on the gateway attachment, just
+    // depending on the route is enough.
+    this._internetConnectivityEstablished.add(route);
   }
 
   /**
@@ -2279,7 +2407,7 @@ export class Subnet extends Resource implements ISubnet {
    * object and calling `associateNetworkAcl()`.
    */
   public get networkAcl(): INetworkAcl {
-    return this._networkAcl;
+    return this._networkAcl.get();
   }
 
   /**
@@ -2333,7 +2461,7 @@ export class Subnet extends Resource implements ISubnet {
 
   @MethodMetadata()
   public associateNetworkAcl(id: string, networkAcl: INetworkAcl) {
-    this._networkAcl = networkAcl;
+    this._networkAcl.set(networkAcl);
 
     const scope = networkAcl instanceof Construct ? networkAcl : this;
     const other = networkAcl instanceof Construct ? this : networkAcl;
@@ -2400,7 +2528,7 @@ export enum RouterType {
   EGRESS_ONLY_INTERNET_GATEWAY = 'EgressOnlyInternetGateway',
 
   /**
-   * Internet Gateway
+   * Internet Gateway or Virtual Private Gateway
    */
   GATEWAY = 'Gateway',
 
@@ -2465,6 +2593,19 @@ export interface PublicSubnetProps extends SubnetProps {
 
 }
 
+/**
+ * Options for adding a NAT gateway to a public subnet
+ */
+export interface AddNatGatewayOptions {
+  /**
+   * Maximum amount of time to wait before forcibly releasing the IP addresses
+   * if connections are still in progress.
+   *
+   * @default Duration.seconds(350)
+   */
+  readonly maxDrainDuration?: Duration;
+}
+
 export interface IPublicSubnet extends ISubnet { }
 
 export interface PublicSubnetAttributes extends SubnetAttributes { }
@@ -2492,16 +2633,20 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
   /**
    * Creates a new managed NAT gateway attached to this public subnet.
    * Also adds the EIP for the managed NAT.
+   *
+   * @param eipAllocationId Allocation ID of an Elastic IP address to assign to the NAT gateway. A new EIP is allocated when omitted.
+   * @param options Additional options for the NAT gateway
    * @returns A ref to the NAT Gateway ID
    */
   @MethodMetadata()
-  public addNatGateway(eipAllocationId?: string) {
+  public addNatGateway(eipAllocationId?: string, options: AddNatGatewayOptions = {}) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
       allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
+      maxDrainDurationSeconds: options.maxDrainDuration?.toSeconds(),
     });
     ngw.node.addDependency(this.internetConnectivityEstablished);
     return ngw;
@@ -2771,7 +2916,6 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
   public get ipv4CidrBlock(): string {
     if (!this._ipv4CidrBlock) {
-      // tslint:disable-next-line: max-line-length
       throw new ValidationError(lit`CannotReferenceImportedSubnets`, 'You cannot reference an imported Subnet\'s IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()', this);
     }
     return this._ipv4CidrBlock;
@@ -2799,7 +2943,20 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
  * Do we want to require that there are private subnets if there are NatGateways?
  * They seem pointless but I see no reason to prevent it.
  */
-function determineNatGatewayCount(requestedCount: number | undefined, subnetConfig: SubnetConfiguration[], azCount: number) {
+function determineNatGatewayCount(
+  requestedCount: number | undefined,
+  subnetConfig: SubnetConfiguration[],
+  azCount: number,
+  natGatewayProvider?: NatProvider,
+) {
+  if (natGatewayProvider instanceof RegionalNatGatewayProvider) {
+    return 1;
+  }
+
+  if (Token.isUnresolved(requestedCount)) {
+    return 0;
+  }
+
   const hasPrivateSubnets = subnetConfig.some(c => (c.subnetType === SubnetType.PRIVATE_WITH_EGRESS
     || c.subnetType === SubnetType.PRIVATE || c.subnetType === SubnetType.PRIVATE_WITH_NAT) && !c.reserved);
   const hasPublicSubnets = subnetConfig.some(c => c.subnetType === SubnetType.PUBLIC && !c.reserved);

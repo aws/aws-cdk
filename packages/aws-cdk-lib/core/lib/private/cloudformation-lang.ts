@@ -4,12 +4,14 @@ import * as yaml_cfn from './yaml-cfn';
 import { Lazy } from '../lazy';
 import type { IFragmentConcatenator, IResolveContext } from '../resolvable';
 import { DefaultTokenResolver } from '../resolvable';
-import { Stack } from '../stack';
+import type { Stack } from '../stack';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { makeUniqueId } from './uniqueid';
 import { UnscopedValidationError } from '../errors';
 import { lit } from './literal-string';
+import { Box } from '../helpers-internal';
+import { stackOf } from './core-construct-finders';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -29,6 +31,7 @@ export class CloudFormationLang {
    * @param space Indentation to use (default: no pretty-printing)
    */
   public static toJSON(obj: any, space?: number): string {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString({
       // We used to do this by hooking into `JSON.stringify()` by adding in objects
       // with custom `toJSON()` functions, but it's ultimately simpler just to
@@ -50,9 +53,7 @@ export class CloudFormationLang {
    * @param obj The object to stringify
    */
   public static toYAML(obj: any): string {
-    return Lazy.uncachedString({
-      produce: () => yaml_cfn.serialize(obj),
-    });
+    return Token.asString(Box.fromValue(obj).derive((data) => yaml_cfn.serialize(data)));
   }
 
   /**
@@ -257,7 +258,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         //
         // Therefore, if we encounter lists we need to defer to a custom resource to handle
         // them properly at deploy time.
-        const stack = Stack.of(ctx.scope);
+        const stack = stackOf(ctx.scope);
 
         // Because this will be called twice (once during `prepare`, once during `resolve`),
         // we need to make sure to be idempotent, so use a cache.

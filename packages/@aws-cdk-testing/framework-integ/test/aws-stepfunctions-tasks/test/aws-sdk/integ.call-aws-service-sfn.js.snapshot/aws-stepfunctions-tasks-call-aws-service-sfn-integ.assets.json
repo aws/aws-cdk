@@ -1,15 +1,16 @@
 {
-  "version": "30.0.0",
+  "version": "54.0.0",
   "files": {
-    "8d119297b7c1d884a3ca022e9e34db2e9da223ed96c46f750e5da902ad88a309": {
+    "83a3699de8167ea2b18a7ff4ff33fbabb5d7db87b7a745954a20e471a5efc75b": {
+      "displayName": "aws-stepfunctions-tasks-call-aws-service-sfn-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-call-aws-service-sfn-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-3d57406e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8d119297b7c1d884a3ca022e9e34db2e9da223ed96c46f750e5da902ad88a309.json",
+          "objectKey": "83a3699de8167ea2b18a7ff4ff33fbabb5d7db87b7a745954a20e471a5efc75b.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { JsonPath, Pass, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
+import { DefinitionBody, JsonPath, Pass, StateMachine } from 'aws-cdk-lib/aws-stepfunctions';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-intrinsics-integ');
@@ -44,7 +44,7 @@ const pass = new Pass(stack, 'pass', {
 });
 
 const stateMachine = new StateMachine(stack, 'StateMachine', {
-  definition: pass,
+  definitionBody: DefinitionBody.fromChainable(pass),
 });
 
 const integ = new IntegTest(app, 'StateMachineIntrinsicsTest', {

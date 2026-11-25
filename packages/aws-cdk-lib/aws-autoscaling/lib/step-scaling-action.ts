@@ -1,7 +1,10 @@
 import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './autoscaling.generated';
 import type { Duration } from '../../core';
-import { Annotations, Lazy, ValidationError } from '../../core';
+import { Annotations, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
@@ -63,16 +66,19 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
+@noBoxStackTraces
 export class StepScalingAction extends Construct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
 
-  private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
+  private readonly adjustments: IArrayBox<CfnScalingPolicy.StepAdjustmentProperty>;
 
   constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
+
+    this.adjustments = Box.fromArray([], { omitEmpty: false });
 
     // Specify cooldown property in StepScaling policy type is ineffective and may cause deployment failure
     // in certain regions. We can't simply remove the property since it break existing users. Since setting
@@ -88,7 +94,7 @@ export class StepScalingAction extends Construct {
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,
       metricAggregationType: props.metricAggregationType,
-      stepAdjustments: Lazy.any({ produce: () => this.adjustments }),
+      stepAdjustments: this.adjustments,
     });
 
     this.scalingPolicyArn = resource.ref;

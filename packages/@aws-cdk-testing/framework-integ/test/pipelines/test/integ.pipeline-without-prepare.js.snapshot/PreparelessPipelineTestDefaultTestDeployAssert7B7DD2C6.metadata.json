@@ -1,0 +1,20 @@
+{
+  "/PreparelessPipelineTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PreparelessPipelineTestDefaultTestDeployAssert7B7DD2C6.template.json"
+    }
+  ],
+  "/PreparelessPipelineTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PreparelessPipelineTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

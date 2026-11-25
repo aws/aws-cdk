@@ -46,7 +46,7 @@ export interface RecordFieldDeliveryProps {
   /**
    * RecordFields the user has defined to be used in log delivery
    *
-   * @defualt - no fields were provided
+   * @default - no fields were provided
    */
   readonly providedFields?: string[];
   /**
@@ -64,7 +64,7 @@ export interface DeliveryProps extends RecordFieldDeliveryProps {
   /**
    * Format of the logs that are sent to the delivery destination specified
    *
-   * @defualt - undefined, use whatever default the delivery destination specifies
+   * @default - undefined, use whatever default the delivery destination specifies
    */
   readonly outputFormat?: string;
 }

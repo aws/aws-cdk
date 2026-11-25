@@ -1,6 +1,6 @@
-import { CDK_DEBUG, debugModeEnabled } from './debug';
+import type { MakeReadonly } from './helpers-internal/box';
+import { ReadonlyState } from './helpers-internal/box';
 import type { IResolvable, IResolveContext } from './resolvable';
-import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
 /**
@@ -168,7 +168,7 @@ export class Lazy {
    * cannot depend on the Stack the Token is used in.
    */
   public static string(producer: IStableStringProducer, options: LazyStringValueOptions = {}) {
-    return Token.asString(new LazyString(producer, true), options);
+    return Token.asString(new LazyBox(new LazyString(producer, true)), options);
   }
 
   /**
@@ -215,7 +215,7 @@ export class Lazy {
    * cannot depend on the Stack the Token is used in.
    */
   public static number(producer: IStableNumberProducer) {
-    return Token.asNumber(new LazyNumber(producer, true));
+    return Token.asNumber(new LazyBox(new LazyNumber(producer, true)));
   }
 
   /**
@@ -278,7 +278,7 @@ export class Lazy {
    * cannot depend on the Stack the Token is used in.
    */
   public static list(producer: IStableListProducer, options: LazyListValueOptions = {}) {
-    return Token.asList(new LazyList(producer, true, options), options);
+    return Token.asList(new LazyBox(new LazyList(producer, true, options)), options);
   }
 
   /**
@@ -303,7 +303,7 @@ export class Lazy {
    * resolution context.
    */
   public static any(producer: IStableAnyProducer, options: LazyAnyValueOptions = {}): IResolvable {
-    return new LazyAny(producer, true, options);
+    return new LazyBox(new LazyAny(producer, true, options));
   }
 
   /**
@@ -331,17 +331,10 @@ interface ILazyProducer<A> {
 }
 
 abstract class LazyBase<A> implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
   private _cached?: A;
 
   constructor(private readonly producer: ILazyProducer<A>, private readonly cache: boolean) {
-    // Stack trace capture is conditioned to `debugModeEnabled()`, because
-    // lazies can be created in a fairly thrashy way, and the stack traces are
-    // large and slow to obtain; but are mostly useful only when debugging a
-    // resolution issue.
-    this.creationStack = debugModeEnabled()
-      ? captureStackTrace(this.constructor)
-      : [`Execute again with ${CDK_DEBUG}=true to capture stack traces`];
   }
 
   public resolve(context: IResolveContext) {
@@ -361,6 +354,36 @@ abstract class LazyBase<A> implements IResolvable {
    *
    * Called automatically when JSON.stringify() is called on a Token.
    */
+  public toJSON(): any {
+    return '<unresolved-lazy>';
+  }
+}
+// Setting singleton value on prototype to save memory and allocations
+(LazyBase.prototype as any).creationStack = ['Token stack traces are no longer captured'];
+
+/**
+ * A Box wrapper around a cached Lazy.
+ *
+ * Resolves the inner Lazy once and stores the result in a State box,
+ * making cached Lazy tokens participate in the Box ecosystem (Box.isBox,
+ * derive, getStackTraces).
+ */
+class LazyBox<A> extends ReadonlyState<A> {
+  private readonly inner: LazyBase<A>;
+
+  constructor(inner: LazyBase<A>) {
+    super(undefined as any);
+    this.inner = inner;
+  }
+
+  public get() {
+    return this.inner.resolve(undefined as any) as MakeReadonly<A>;
+  }
+
+  public toString() {
+    return Token.asString(this);
+  }
+
   public toJSON(): any {
     return '<unresolved-lazy>';
   }

@@ -8,18 +8,24 @@
     "targets": {
       "build": {
         "outputs": [
-          "{projectRoot}/**/*.js",
-          "{projectRoot}/**/*.d.ts",
-          "{projectRoot}/.jsii",
-          "{projectRoot}/.warnings.jsii.js",
-          "{projectRoot}/.gitignore",
-          "{projectRoot}/tsconfig.json",
+          "{projectRoot}/lib/**/*",
+          "{projectRoot}/test/**/*",
+          "{projectRoot}/build-tools/**/*",
+          "{projectRoot}/design/**/*",
+          "{projectRoot}/rosetta/**/*",
           "{projectRoot}/README.md",
-          "{projectRoot}/rosetta",
+          "{projectRoot}/FEATURE_FLAGS.md",
+          "{projectRoot}/.jsiirc.json",
+          "{projectRoot}/.jsii",
+          "{projectRoot}/.jsii.gz",
+          "{projectRoot}/.warnings.jsii.js",
+          "{projectRoot}/tsconfig.json",
+          "{projectRoot}/tsconfig.tsbuildinfo",
           "!{projectRoot}/node_modules/**/*"
         ]
       }
-    }
+    },
+    "$comment": "This package is a cdk-copy of the same-named aws-cdk-lib submodule: nearly its entire content, including its .ts sources, is a build output. Inputs come from aws-cdk-lib via the ^default input in nx.json."
   },
   "jsii": {
     "excludeTypescript": [

@@ -891,6 +891,61 @@ describe('State Machine', () => {
     });
   });
 
+  test('Instantiate a State Machine with a task without passing any IAM Role - Ensure that default role satisfies confused deputy protection conditions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Finished'))),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              Service: 'states.amazonaws.com',
+            },
+            Action: 'sts:AssumeRole',
+            Condition: {
+              ArnLike: {
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':stateMachine:*',
+                    ],
+                  ],
+                },
+              },
+              StringEquals: {
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
+              },
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('Instantiate a State Machine with a task assuming a literal roleArn (cross-account)', () => {
     // GIVEN
     const app = new cdk.App();

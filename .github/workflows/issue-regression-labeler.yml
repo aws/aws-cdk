@@ -3,6 +3,8 @@ name: issue-regression-label
 on:
   issues:
     types: [opened, edited]
+cache-mode: read
+
 jobs:
   add-regression-label:
     runs-on: ubuntu-latest
@@ -11,7 +13,7 @@ jobs:
     steps:
     - name: Fetch template body
       id: check_regression
-      uses: actions/github-script@v8
+      uses: actions/github-script@v9
       env: 
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TEMPLATE_BODY: ${{ github.event.issue.body }}

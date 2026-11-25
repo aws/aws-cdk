@@ -128,7 +128,9 @@ def is_complete(event, context):
 
 The user-defined `onEvent` AWS Lambda function is invoked whenever a resource
 lifecycle event occurs. The function is expected to handle the event and return
-a response to the framework that, at least, includes the physical resource ID.
+a response to the framework. Every field of that response is optional: the
+framework substitutes a default when the physical resource ID is omitted,
+although returning it explicitly is still recommended.
 
 If `onEvent` returns successfully, the framework will submit a "SUCCESS" response
 to AWS CloudFormation for this resource operation.  If the provider is
@@ -147,7 +149,7 @@ Provider Request]:
 | `RequestType`           | String | The type of lifecycle event: `Create`, `Update` or `Delete`.                                                                                        |
 | `LogicalResourceId`     | String | The template developer-chosen name (logical ID) of the custom resource in the AWS CloudFormation template.                                          |
 | `PhysicalResourceId`    | String | This field will only be present for `Update` and `Delete` events and includes the value returned in `PhysicalResourceId` of the previous operation. |
-| `ResourceProperties`    | JSON   | This field contains the properties defined in the template for this custom resource.                                                                |
+| `ResourceProperties`    | JSON   | This field contains the properties defined in the template for this custom resource. All scalar values are stringified by CloudFormation.           |
 | `OldResourceProperties` | JSON   | This field will only be present for `Update` events and contains the resource properties that were declared previous to the update request.         |
 | `ResourceType`          | String | The resource type defined for this custom resource in the template. A provider may handle any number of custom resource types.                      |
 | `RequestId`             | String | A unique ID for the request.                                                                                                                        |
@@ -157,7 +159,7 @@ The return value from `onEvent` must be a JSON object with the following fields:
 
 | Field                | Type    | Required | Description                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | -------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PhysicalResourceId` | String  | No       | The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur. |
+| `PhysicalResourceId` | String  | No       | The allocated/assigned physical ID of the resource. When omitted, the framework substitutes the event's `RequestId` for `Create`, and the current physical ID for `Update` and `Delete`. Returning a *different* ID from an `Update` means the resource was replaced, so CloudFormation follows with a `Delete` for the previous ID. Returning a different ID from a `Delete` is not allowed: the framework fails the operation with an error. |
 | `Data`               | JSON    | No       | Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.                                                                                                                                                                                                                                                                                                                                                 |
 | `NoEcho`             | Boolean | No       | Whether to mask the output of the custom resource when retrieved by using the `Fn::GetAtt` function and to mask the `Data` values.                                                                                                                                                                                                                                                                                                                                                 |
 | *any*                | *any*   | No       | Any other field included in the response will be passed through to `isComplete`. This can sometimes be useful to pass state between the handlers.                                                                                                                                                                                                                                                                                                     |
@@ -282,7 +284,10 @@ lifecycle events:
   https://github.com/aws/aws-cdk/issues/5524).
 * If an `Update` event fails, CloudFormation will issue an additional `Update`
   with the previous properties.
-* If a `Delete` event fails, CloudFormation will abandon this resource.
+* If a `Delete` event fails during a `Stack Update`, CloudFormation will
+  report the error but succeed the `Update`, and abandon the resource.
+* If a `Delete` event fails during any other stack operation, CloudFormation
+  will fail and block the stack operation, requiring human intervention.
 
 ### Important cases to handle
 
@@ -327,6 +332,9 @@ make sure your custom resource behaves correctly in all cases:
   rollback `Updates`) or in `OldResourceProperties` (during rollforward
   `Update`). You must continue to handle all possible sets of properties
   your custom resource could have ever been created with in the past.
+* Keep in mind that all scalars in the `ResourceProperties` are stringified.
+  That means that numbers arrive as `"42"`, booleans arrive as `"true"`, and
+  lists of numbers arrive as `["80", "443"]`.
 
 ### Provider Framework Execution Policy
 

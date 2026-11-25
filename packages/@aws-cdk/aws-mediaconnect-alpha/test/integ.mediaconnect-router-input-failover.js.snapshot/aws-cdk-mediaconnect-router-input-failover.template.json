@@ -1,0 +1,96 @@
+{
+ "Resources": {
+  "network39EEAA36": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "10.0.0.0/16"
+       }
+      ]
+     }
+    },
+    "Name": "failover-network"
+   }
+  },
+  "routerInputFailoverF90481E1": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "Failover": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "network39EEAA36",
+        "Arn"
+       ]
+      },
+      "PrimarySourceIndex": 0,
+      "ProtocolConfigurations": [
+       {
+        "Rtp": {
+         "Port": 5000
+        }
+       },
+       {
+        "Rtp": {
+         "Port": 5001
+        }
+       }
+      ],
+      "SourcePriorityMode": "PRIMARY_SECONDARY"
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 5000000,
+    "Name": "failover-input",
+    "RegionName": "us-east-1",
+    "RoutingScope": "REGIONAL",
+    "Tier": "INPUT_50",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

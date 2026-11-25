@@ -1,0 +1,1773 @@
+{
+  "/integ-lambda-python-poetry": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_313": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_310": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_311": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475: (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:3)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:532:9)",
+        "visit (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:529:9)",
+        "synthesizeTree (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:468:5)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:96:5)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_312/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinepython312E980C237"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:49:35)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_313/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_313/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinepython313A17B0A53"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:55:35)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_310/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_310/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinepython310CCEB365D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:61:35)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_311/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_311/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinepython31130A54F68"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:66:35)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithhashespython312139C35A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:71:45)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithhashespython3139AA5A266"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:80:45)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithhashespython310BD04F877"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:89:45)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithhashespython311819AD79B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:97:45)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlineexcludespython312B63B04B6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:105:43)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlineexcludespython31347CB2787"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:114:43)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlineexcludespython310B7555D7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:123:43)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlineexcludespython3113F187913"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:131:43)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerwithhashesexcludespython3129DE6CDBE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:139:53)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerwithhashesexcludespython31342886739"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:149:53)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerwithhashesexcludespython310E3EB25FB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:159:53)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerwithhashesexcludespython31110477909"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:168:53)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithouturlspython31208643E39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:177:46)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithouturlspython313E06FD2EB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:186:46)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithouturlspython310D1D226E3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:195:46)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithouturlspython31174A8D665"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:203:46)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython312E980C237\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinepython312E980C237486214AB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython313A17B0A53\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinepython313A17B0A537EDB13A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython310CCEB365D\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython31130A54F68\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinepython31130A54F685779D70D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython312139C35A3\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinewithhashespython312139C35A3E9C53D8A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython3139AA5A266\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinewithhashespython3139AA5A2661F3AC34D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython310BD04F877\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinewithhashespython310BD04F877D52DE581"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython311819AD79B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinewithhashespython311819AD79BA116B6B3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython312B63B04B6\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlineexcludespython312B63B04B6247A4DAF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython31347CB2787\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlineexcludespython31347CB27873C118C49"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython310B7555D7A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlineexcludespython310B7555D7A7BA49FC6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython3113F187913\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlineexcludespython3113F187913B9A340D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython3129DE6CDBE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerwithhashesexcludespython3129DE6CDBE30B75007"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython31342886739\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerwithhashesexcludespython31342886739A1595E95"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython310E3EB25FB\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerwithhashesexcludespython310E3EB25FB48AA64D9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython31110477909\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerwithhashesexcludespython3111047790925870EDE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython31208643E39\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinewithouturlspython31208643E391424A2CF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython313E06FD2EB\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinewithouturlspython313E06FD2EBED78EDBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython310D1D226E3\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinewithouturlspython310D1D226E35105656C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython31174A8D665\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefmyhandlerinlinewithouturlspython31174A8D66561F57634"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:349:33)",
+        "resolveValue (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:277:16)",
+        "resolveReferences (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:128:30)",
+        "prepareApp (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:84:36)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:236:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_312/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinepython312ServiceRole28B00F83"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:49:35)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_312/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_313/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinepython313ServiceRoleA1B2A1B8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:55:35)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_313/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_310/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinepython310ServiceRoleB4606AB1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:61:35)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_310/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_311/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinepython311ServiceRole4B8ABA44"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:66:35)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_python_311/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithhashespython312ServiceRoleFAA00F08"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:71:45)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithhashespython313ServiceRoleB2804D87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:80:45)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithhashespython310ServiceRole37B48C89"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:89:45)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithhashespython311ServiceRole9B42C343"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:97:45)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlineexcludespython312ServiceRole6F1367BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:105:43)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlineexcludespython313ServiceRole335644DF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:114:43)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlineexcludespython310ServiceRoleDC036FC7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:123:43)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlineexcludespython311ServiceRole21E684E7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:131:43)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerwithhashesexcludespython312ServiceRole3B9D423B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:139:53)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerwithhashesexcludespython313ServiceRoleD05433BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:149:53)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerwithhashesexcludespython310ServiceRole96EB96AD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:159:53)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerwithhashesexcludespython311ServiceRoleB81FA0C8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:168:53)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithouturlspython312ServiceRole6859FCE5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:177:46)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithouturlspython313ServiceRoleEDF8C58A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:186:46)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithouturlspython310ServiceRoleD53ED266"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:195:46)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "myhandlerinlinewithouturlspython311ServiceRoleE7136845"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Function (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new PythonFunction (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new TestStack (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:203:46)",
+        "<anonymous> (/tmp/cdk-snap-regen.gQmcMe/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.poetry.js:218:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

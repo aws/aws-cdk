@@ -1,3 +1,4 @@
+import type { ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
 import type { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput, AspectPriority } from 'aws-cdk-lib/core';
 import type { Construct, IConstruct } from 'constructs';
@@ -5,13 +6,14 @@ import type { IApiCall } from './api-call-base';
 import { ApiCallBase } from './api-call-base';
 import type { ExpectedResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
+import type { ProviderOptions } from './providers';
 import type { WaiterStateMachineOptions } from './waiter-state-machine';
 import { WaiterStateMachine } from './waiter-state-machine';
 
 /**
  * Options to perform an AWS JavaScript V2 API call
  */
-export interface AwsApiCallOptions {
+export interface AwsApiCallOptions extends ProviderOptions {
   /**
    * The AWS service, i.e. S3
    */
@@ -74,12 +76,16 @@ export class AwsApiCall extends ApiCallBase {
   private _assertAtPath?: string;
   private readonly api: string;
   private readonly service: string;
+  private readonly providerLogLevel?: ApplicationLogLevel;
 
   constructor(scope: Construct, id: string, props: AwsApiCallProps) {
     super(scope, id);
 
+    this.providerLogLevel = props.providerLogLevel;
+
     this.provider = new AssertionsProvider(this, 'SdkProvider', {
       logRetention: props.parameters?.RetentionDays,
+      providerLogLevel: props.providerLogLevel,
     });
     this.provider.addPolicyStatementFromSdkCall(props.service, props.api);
     this.name = `${props.service}${props.api}`;
@@ -141,6 +147,7 @@ export class AwsApiCall extends ApiCallBase {
   public waitForAssertions(options?: WaiterStateMachineOptions): IApiCall {
     const waiter = new WaiterStateMachine(this, 'WaitFor', {
       ...options,
+      providerLogLevel: this.providerLogLevel,
     });
     this.stateMachineArn = waiter.stateMachineArn;
     this.provider.addPolicyStatementFromSdkCall('states', 'StartExecution');

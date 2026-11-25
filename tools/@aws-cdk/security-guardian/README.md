@@ -46,7 +46,6 @@ rules/
 │   ├── iam-role-no-broad-principals.guard
 │   └── iam-role-root-principal-needs-conditions.guard
 ├── kinesis/
-│   ├── kinesis-encryption-enabled.guard
 │   └── kinesis-firehose-encryption-enabled.guard
 ├── neptune/
 │   └── neptune-encryption-enabled.guard
@@ -142,6 +141,18 @@ yarn security-guardian
 > - `--base_sha=origin/main`  
 > - `--rule_set_path=./custom-rules`
 
+### 3. Run Tests
+
+The tests run the rules with [cfn-guard](https://github.com/aws-cloudformation/cloudformation-guard), so install cfn-guard 3 and put it on your `PATH` first.
+
+```bash
+yarn test
+```
+
+Every rule in `rules/` needs two fixtures in `test/rule-fixtures/<rule path without .guard>/`: `non-compliant.json`, which the rule must fail, and `compliant.json`, which the rule must evaluate and pass. The tests fail for a rule that has no fixtures.
+
+A rule can also have `compliant-<name>.json` and `non-compliant-<name>.json` fixtures, checked like the base pair, where `<name>` is lowercase letters, digits and hyphens, with no leading, trailing or doubled hyphen. Any other file under `test/rule-fixtures/`, except hidden files, fails the tests, as does a fixture outside a rule's directory.
+
 ---
 
 ## Output
@@ -160,27 +171,30 @@ Use `mikepenz/action-junit-report@e08919a3b1fb83a78393dfb775a9c37f17d8eea6` (v6.
 
 ### Enhanced Failure Formatting
 
-The tool automatically enhances CFN Guard failure messages by:
+When `enhance_xml` is enabled, the tool enhances CFN Guard failure messages by:
 
-- Splitting concatenated failure messages into individual violations
-- Extracting exact line numbers and column positions
-- Identifying specific CloudFormation resources and properties
-- Formatting output for better readability in CI/CD reports
+- Extracting human-readable error descriptions from custom `<<##ERROR:...##>>` annotations in guard rules
+- Replacing the raw rule name with an actionable message that explains what's wrong and how to fix it
+- Splitting concatenated failure details into individual violations
+- Prefixing each failure with the validation type (e.g., `[Type: Static]` or `[Type: Resolved]`)
+
+Each guard rule includes a custom error annotation using cfn-guard's `<<...>>` syntax:
+
+```
+<<##ERROR:EBS volume must have encryption enabled. Set 'Encrypted' to true.##>>
+```
 
 **Before (Raw CFN Guard Output):**
 
-```text
-IAM_NO_WILDCARD_ACTIONS_INLINE for Type: ResolvedCheck was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role1/Properties[L:324,C:20]]Check was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role2/Properties[L:485,C:20]]
+```xml
+<failure message="EBS_ENCRYPTION_ENABLED for Type: Static">Check was not compliant as property [Properties.Encrypted] is missing.</failure>
 ```
 
 **After (Enhanced Format):**
 
-```text
-Rule: IAM_NO_WILDCARD_ACTIONS_INLINE (Type: Resolved)
-==================================================
-
-- Check was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role1/Properties[L:324,C:20]]
-- Check was not compliant as property [Policies[*].PolicyDocument.Statement[*]] is missing. Value traversed to [Path=/Resources/Role2/Properties[L:485,C:20]]
+```xml
+<failure message="[Type: Static] EBS volume must have encryption enabled. Set 'Encrypted' to true.">
+Check was not compliant as property [Properties.Encrypted] is missing.</failure>
 ```
 
 ---

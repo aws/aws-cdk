@@ -27,14 +27,17 @@ rule IAM_ROLE_NO_BROAD_PRINCIPALS when %iam_roles_no_broad_principals !empty {
                 # Check for wildcard as entire principal
                 when Principal is_string {
                   Principal != "*"
+                      <<##ERROR:IAM role trust policy must not use broadly scoped principals. Remove '*' from Principal and scope to specific accounts or roles.##>>
                 }
                 # Check if AWS principal exists
                 when Principal.AWS exists {
                     # Check if AWS is a string
                     when Principal.AWS is_string {
                       Principal.AWS != "*"
+                          <<##ERROR:IAM role trust policy must not use broadly scoped principals. Remove '*' from Principal and scope to specific accounts or roles.##>>
                       # Wildcard account - matches any AWS account
                       Principal.AWS != /arn:aws:iam::\*:/
+                          <<##ERROR:IAM role trust policy must not use broadly scoped principals. Remove wildcard account ARNs (arn:aws:iam::*:) from Principal and scope to specific accounts or roles.##>>
                     }
                     # Check if AWS is an array - iterate each item and check only string items
                     # This handles mixed arrays with strings and intrinsic functions (objects)
@@ -42,7 +45,9 @@ rule IAM_ROLE_NO_BROAD_PRINCIPALS when %iam_roles_no_broad_principals !empty {
                       Principal.AWS[*] {
                           when this is_string {
                               this != "*"
+                                  <<##ERROR:IAM role trust policy must not use broadly scoped principals. Remove '*' from Principal and scope to specific accounts or roles.##>>
                               this != /arn:aws:iam::\*:/
+                                  <<##ERROR:IAM role trust policy must not use broadly scoped principals. Remove wildcard account ARNs (arn:aws:iam::*:) from Principal and scope to specific accounts or roles.##>>
                           }
                       }
                     }

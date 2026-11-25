@@ -16,7 +16,9 @@ class LambdaStack extends Stack {
   constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
-    this.queue = new sqs.Queue(this, 'Queue');
+    this.queue = new sqs.Queue(this, 'Queue', {
+      encryption: sqs.QueueEncryption.SQS_MANAGED,
+    });
 
     const fn = new lambda.Function(this, 'MyFunction', {
       runtime: STANDARD_NODEJS_RUNTIME,
@@ -43,7 +45,7 @@ class LambdaStack extends Stack {
       },
     });
     customRule.addTarget(new CloudWatchLogGroup(logGroup, {
-      logEvent: LogGroupTargetInput.fromObject({
+      logEvent: LogGroupTargetInput.fromObjectV2({
         message: 'Howdy Ho!',
       }),
     }));

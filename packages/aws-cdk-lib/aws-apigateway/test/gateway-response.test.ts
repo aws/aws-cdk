@@ -99,13 +99,15 @@ describe('gateway response', () => {
       deploy: true,
     });
     const deploymentResource = restApi.latestDeployment!.node.defaultChild;
-    const logicalId = (deploymentResource as any).calculateLogicalId();
+    const hashComponents = (deploymentResource as any).hashComponents!;
+    const logicalId = (deploymentResource as any).calculateLogicalId(hashComponents);
 
     // WHEN
     restApi.addGatewayResponse('gatewayResponse', {
       type: ResponseType.AUTHORIZER_CONFIGURATION_ERROR,
     });
-    const newLogicalId = (deploymentResource as any).calculateLogicalId();
+    const newHashComponents = (deploymentResource as any).hashComponents!;
+    const newLogicalId = (deploymentResource as any).calculateLogicalId(newHashComponents);
 
     // THEN
     expect(newLogicalId).not.toEqual(logicalId);

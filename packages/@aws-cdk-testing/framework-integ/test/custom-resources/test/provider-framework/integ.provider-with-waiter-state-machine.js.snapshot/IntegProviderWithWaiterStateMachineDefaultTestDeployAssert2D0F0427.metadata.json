@@ -1,0 +1,20 @@
+{
+  "/IntegProviderWithWaiterStateMachine/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "IntegProviderWithWaiterStateMachineDefaultTestDeployAssert2D0F0427.template.json"
+    }
+  ],
+  "/IntegProviderWithWaiterStateMachine/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/IntegProviderWithWaiterStateMachine/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

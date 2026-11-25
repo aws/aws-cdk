@@ -11,4 +11,6 @@
  */
 import { CloudAssembly } from '../cx-api';
 
-afterAll(CloudAssembly.cleanupTemporaryDirectories);
+if (!process.env.CDK_NO_CLEAN_TESTS) {
+  afterAll(CloudAssembly.cleanupTemporaryDirectories);
+}

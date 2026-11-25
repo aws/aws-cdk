@@ -1,0 +1,20 @@
+{
+  "/integ-cloudfront-custom-s3/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.template.json"
+    }
+  ],
+  "/integ-cloudfront-custom-s3/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-cloudfront-custom-s3/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "/test-condition-with-ref": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "test-condition-with-ref.template.json"
+    }
+  ],
+  "/test-condition-with-ref/PrincipalTag": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrincipalTag"
+    }
+  ],
+  "/test-condition-with-ref/AWSCDKCfnUtilsProviderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/test-condition-with-ref/MyRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/test-condition-with-ref/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/test-condition-with-ref/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/test-condition-with-ref/PrincipalTagCondition/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/test-condition-with-ref/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
+    }
+  ],
+  "/test-condition-with-ref/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKCfnUtilsProviderCustomResourceProviderHandlerCF82AA57"
+    }
+  ],
+  "/test-condition-with-ref/MyRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyRoleF48FFE04"
+    }
+  ],
+  "/test-condition-with-ref/PrincipalTagCondition/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PrincipalTagCondition94CCB594"
+    }
+  ]
+}

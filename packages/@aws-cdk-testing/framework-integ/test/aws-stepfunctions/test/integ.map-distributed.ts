@@ -16,7 +16,7 @@ const map = new sfn.Map(stack, 'Map', {
   stateName: 'My-Map-State',
   maxConcurrencyPath: sfn.JsonPath.stringAt('$.maxConcurrency'),
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
-  parameters: {
+  itemSelector: {
     foo: 'foo',
     bar: sfn.JsonPath.stringAt('$.bar'),
   },
@@ -31,7 +31,7 @@ const role = new iam.Role(stack, 'Role', {
 });
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: map,
+  definitionBody: sfn.DefinitionBody.fromChainable(map),
   timeout: cdk.Duration.seconds(30),
 });
 

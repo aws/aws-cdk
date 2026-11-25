@@ -3,7 +3,7 @@ import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Stack, Tags } from '../../core';
+import { Stack, Tags, Validations } from '../../core';
 import * as eks from '../lib';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_25;
@@ -319,6 +319,10 @@ describe('fargate', () => {
   test('supports passing secretsEncryptionKey with FargateCluster', () => {
     // GIVEN
     const stack = new Stack();
+    Validations.of(stack).acknowledge({
+      id: 'CloudFormation-Validate::W9009',
+      reason: 'EncryptionConfig.Resources is intentionally retained for backwards compatibility',
+    });
 
     // WHEN
 

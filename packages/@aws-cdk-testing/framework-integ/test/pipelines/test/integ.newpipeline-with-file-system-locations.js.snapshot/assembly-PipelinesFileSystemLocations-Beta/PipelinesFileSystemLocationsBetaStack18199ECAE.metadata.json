@@ -1,0 +1,26 @@
+{
+  "/PipelinesFileSystemLocations/Beta/Stack1": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "PipelinesFileSystemLocationsBetaStack18199ECAE.template.json"
+    }
+  ],
+  "/PipelinesFileSystemLocations/Beta/Stack1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PipelinesFileSystemLocations/Beta/Stack1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/PipelinesFileSystemLocations/Beta/Stack1/Asset/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

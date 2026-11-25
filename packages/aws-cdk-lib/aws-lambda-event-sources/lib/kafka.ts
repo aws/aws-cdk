@@ -29,6 +29,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   readonly secret?: secretsmanager.ISecret;
   /**
    * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a length between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
+   * When `consumptionMode` is `KafkaConsumptionMode.QUEUE`, this is the name of the share group.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
    *
    * @default - none
@@ -115,8 +116,9 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * Maximum number of retry attempts.
    *
    * Set to -1 for infinite retries (until the record expires in the event source).
+   * `-1` isn't supported when `consumptionMode` is `KafkaConsumptionMode.QUEUE`.
    *
-   * @default -1 (infinite retries)
+   * @default -1 (infinite retries) in stream mode, 0 in queue mode
    */
   readonly retryAttempts?: number;
 
@@ -193,6 +195,22 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
   readonly securityGroup?: ISecurityGroup;
 
   /**
+   * How Lambda reads records from the Kafka topic.
+   *
+   * **Queue mode requires Kafka 4.2.0 or later.** `KafkaConsumptionMode.QUEUE` reads the topic as
+   * a Kafka share group, so records in a partition can be processed in parallel. In queue mode,
+   * `startingPosition`, `startingPositionTimestamp` and `maxBatchingWindow` are not supported, `retryAttempts` must be
+   * between 0 and 10000 and defaults to 0 (and, as in stream mode, requires provisioned mode), and
+   * `consumerGroupId` is the name of the share group. The consumption mode can't be changed after the event source
+   * mapping is created.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-selfmanagedkafkaeventsourceconfig.html
+   *
+   * @default - Lambda reads the topic in stream mode (`KafkaConsumptionMode.STREAM`)
+   */
+  readonly consumptionMode?: lambda.KafkaConsumptionMode;
+
+  /**
    * The authentication method for your Kafka cluster
    *
    * @default AuthenticationMethod.SASL_SCRAM_512_AUTH
@@ -237,6 +255,10 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
     this.innerProps = props;
+
+    if (props.startingPosition === undefined) {
+      throw new UnscopedValidationError(lit`StartingPositionRequired`, 'startingPosition must be set for ManagedKafkaEventSource');
+    }
 
     if (props.metricsConfig) {
       if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
@@ -380,6 +402,14 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       throw new UnscopedValidationError(lit`StartingPositionTimestampStartingPosition`, 'startingPositionTimestamp can only be used when startingPosition is AT_TIMESTAMP');
     }
 
+    // Stream mode (the default) needs a starting position. Queue mode doesn't support one; that,
+    // and other queue-mode rules, are validated by EventSourceMapping. Custom modes are not checked.
+    const mode = props.consumptionMode?.mode;
+    const isStreamMode = mode === undefined || mode === lambda.KafkaConsumptionMode.STREAM.mode;
+    if (isStreamMode && props.startingPosition === undefined) {
+      throw new UnscopedValidationError(lit`StartingPositionRequired`, 'startingPosition must be set for SelfManagedKafkaEventSource when consumptionMode is STREAM (the default)');
+    }
+
     if (props.metricsConfig) {
       if (!props.metricsConfig.metrics || props.metricsConfig.metrics.length === 0) {
         throw new UnscopedValidationError(lit`MetricsconfigContainLeastMetric`, 'MetricsConfig must contain at least one metric type. Specify one or more metrics from lambda.MetricType (EVENT_COUNT, ERROR_COUNT, KAFKA_METRICS)');
@@ -399,6 +429,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
+        kafkaConsumptionMode: this.innerProps.consumptionMode,
         startingPosition: this.innerProps.startingPosition,
         startingPositionTimestamp: this.innerProps.startingPositionTimestamp,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),

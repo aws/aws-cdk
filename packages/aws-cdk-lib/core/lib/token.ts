@@ -228,6 +228,7 @@ export class Tokenization {
     // only convert numbers to strings so that Refs, conditions, and other things don't end up synthesizing as [object object]
 
     if (Token.isUnresolved(x)) {
+      // eslint-disable-next-line no-restricted-syntax
       return Lazy.uncachedString({
         produce: context => {
           const resolved = context.resolve(x);
@@ -251,7 +252,7 @@ export class JsonNull implements IResolvable {
   /** The canonical instance of `JsonNull`. */
   public static readonly INSTANCE = new JsonNull();
 
-  public readonly creationStack: string[] = [];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   private constructor() { }
 

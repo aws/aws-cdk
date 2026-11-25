@@ -121,7 +121,7 @@ export class Runtime {
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    */
-  public static readonly NODEJS_LATEST = new Runtime('nodejs22.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+  public static readonly NODEJS_LATEST = new Runtime('nodejs24.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
   /**
    * The NodeJS 22.x runtime (nodejs22.x)
@@ -132,6 +132,11 @@ export class Runtime {
    * The NodeJS 24.x runtime (nodejs24.x)
    */
   public static readonly NODEJS_24_X = new Runtime('nodejs24.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
+   * The NodeJS 26.x runtime (nodejs26.x)
+   */
+  public static readonly NODEJS_26_X = new Runtime('nodejs26.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The Python 2.7 runtime (python2.7)
@@ -222,6 +227,15 @@ export class Runtime {
   });
 
   /**
+   * The Python 3.15 runtime (python3.15)
+   */
+  public static readonly PYTHON_3_15 = new Runtime('python3.15', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
    * The Java 8 runtime (java8)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Java runtime.
    */
@@ -264,6 +278,29 @@ export class Runtime {
    * The Java 25 runtime (java25)
    */
   public static readonly JAVA_25 = new Runtime('java25', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Java 8 AL2023 runtime (java8.al2023)
+   */
+  public static readonly JAVA_8_AL2023 = new Runtime('java8.al2023', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
+   * The Java 11 AL2023 runtime (java11.al2023)
+   */
+  public static readonly JAVA_11_AL2023 = new Runtime('java11.al2023', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Java 17 AL2023 runtime (java17.al2023)
+   */
+  public static readonly JAVA_17_AL2023 = new Runtime('java17.al2023', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
     supportsSnapStart: true,
   });
@@ -353,6 +390,11 @@ export class Runtime {
   public static readonly RUBY_3_4 = new Runtime('ruby3.4', RuntimeFamily.RUBY);
 
   /**
+   * The Ruby 4.0 runtime (ruby4.0)
+   */
+  public static readonly RUBY_4_0 = new Runtime('ruby4.0', RuntimeFamily.RUBY);
+
+  /**
    * The custom provided runtime (provided)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2023 runtime.
    */
@@ -416,6 +458,22 @@ export class Runtime {
 
   /**
    * The bundling Docker image for this runtime.
+   *
+   * Unless the runtime was created with the `bundlingDockerImage` prop of
+   * `LambdaRuntimeProps`, this is an
+   * untagged AWS SAM build image. Its contents can change independently of the
+   * AWS CDK version. To pin a specific image version when bundling with
+   * `Code.fromAsset()`, pass `DockerImage.fromRegistry('<image>:<tag>')` as
+   * `bundling.image`. Constructs that build their own bundling image on top of
+   * this runtime's image (for example `NodejsFunction`) do not run it directly;
+   * when bundling runs in Docker (for example with `forceDockerBundling: true`),
+   * pin the base image for them by creating a runtime with a pinned image, e.g.
+   * `new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true,
+   * bundlingDockerImage: 'public.ecr.aws/sam/build-nodejs20.x:<tag>' })`. Copy
+   * any other props the predefined runtime sets, such as `supportsSnapStart`,
+   * so that the custom runtime stays equivalent to it.
+   *
+   * @see https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-image-repositories.html
    */
   public readonly bundlingImage: DockerImage;
 
@@ -456,7 +514,7 @@ export class Runtime {
 export function determineLatestNodeRuntime(scope: Construct): Runtime {
   // Runtime regional fact should always return a known runtime string that Runtime can index off, but for type
   // safety we also default it here.
-  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_22_X.name);
+  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, Runtime.NODEJS_24_X.name);
   return new Runtime(runtimeName, RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 }
 

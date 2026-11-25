@@ -16,8 +16,14 @@ let iam_roles = Resources.*[
 # Note: Only string values are checked - intrinsic functions (maps like Fn::GetAtt) are skipped
 rule IAM_NO_WORLD_ACCESSIBLE_TRUST_POLICY when %iam_roles !empty {
     %iam_roles.Properties.AssumeRolePolicyDocument.Statement[ Effect == "Allow" ] {
-        when Principal is_string { Principal != "*" }
-        when Principal.AWS is_string { Principal.AWS != "*" }
-        when Principal.AWS is_list { Principal.AWS[*][ this is_string ] != "*" }
+        when Principal is_string { Principal != "*"
+            <<##ERROR:IAM role trust policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts, roles, or services.##>>
+        }
+        when Principal.AWS is_string { Principal.AWS != "*"
+            <<##ERROR:IAM role trust policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts, roles, or services.##>>
+        }
+        when Principal.AWS is_list { Principal.AWS[*][ this is_string ] != "*"
+            <<##ERROR:IAM role trust policy must not be world-accessible. Remove '*' from Principal and scope to specific accounts, roles, or services.##>>
+        }
     }
 }

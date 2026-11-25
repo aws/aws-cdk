@@ -1,0 +1,121 @@
+{
+  "/cloudfront-custom-s3-stack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cloudfront-custom-s3-stack.template.json"
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "websiteIndexDocument": "*",
+        "websiteErrorDocument": "*",
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Distribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "viewerProtocolPolicy": "redirect-to-https",
+        "priceClass": "PriceClass_200",
+        "originConfigs": [
+          {
+            "behaviors": [
+              {
+                "isDefaultBehavior": true
+              }
+            ],
+            "customOriginSource": {
+              "originProtocolPolicy": "http-only",
+              "domainName": "*"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "/cloudfront-custom-s3-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cloudfront-custom-s3-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket83908E77"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Bucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Bucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Distribution/CFDistribution": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistributionCFDistribution882A7313"
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Bucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketPolicyE9A3008A"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/cloudfront-custom-s3-stack/Bucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "/cdk-integ-bundling-lambda-nodejs": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdk-integ-bundling-lambda-nodejs.template.json"
+    }
+  ],
+  "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "forceDockerBundling": true,
+          "commandHooks": "*"
+        },
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "forceDockerBundling": true,
+          "commandHooks": "*"
+        },
+        "runtime": "*"
+      }
+    }
+  ],
+  "/cdk-integ-bundling-lambda-nodejs/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-bundling-lambda-nodejs/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tsdecoratorhandlerrootuser49139373"
+    }
+  ],
+  "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tsdecoratorhandlerrootuserServiceRole7E60BF99"
+    }
+  ],
+  "/cdk-integ-bundling-lambda-nodejs/ts-decorator-handler-root-user/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

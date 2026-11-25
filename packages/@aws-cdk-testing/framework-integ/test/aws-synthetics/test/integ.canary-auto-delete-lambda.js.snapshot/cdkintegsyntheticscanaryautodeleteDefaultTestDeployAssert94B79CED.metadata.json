@@ -1,0 +1,20 @@
+{
+  "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED.template.json"
+    }
+  ],
+  "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

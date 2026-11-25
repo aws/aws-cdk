@@ -687,6 +687,12 @@ export class ImagePipeline extends ImagePipelineBase {
       tags: props.tags,
     });
 
+    // https://github.com/aws-cloudformation/cloudformation-validate/issues/186
+    cdk.Validations.of(imagePipeline).acknowledge({
+      id: 'CloudFormation-Validate::W3030',
+      reason: 'OnFailure "Abort" is a valid value that works, leaving it for legacy reasons.',
+    });
+
     this.resource = imagePipeline;
   }
 

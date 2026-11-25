@@ -348,7 +348,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
       const errorProps = ['retentionPeriod', 'visibilityTimeout', 'maxReceiveCount'].filter(prop => props.hasOwnProperty(prop));
       throw new ValidationError(lit`OnlyQueue`, `${errorProps.join(', ')} can be set only when queue is not set. Specify them in the QueueProps of the queue`, this);
     }
-    // Create the SQS queue and it's corresponding DLQ if one is not provided
+    // Create the SQS queue and its corresponding DLQ if one is not provided
     if (props.queue) {
       this.sqsQueue = props.queue;
     } else {

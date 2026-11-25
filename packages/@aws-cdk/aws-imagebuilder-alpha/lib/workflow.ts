@@ -204,7 +204,7 @@ export enum WorkflowAction {
   EXECUTE_COMPONENTS = 'ExecuteComponents',
 
   /**
-   * The ExecuteStateMachine action executes a the state machine provided and waits for completion as part of the
+   * The ExecuteStateMachine action executes the state machine provided and waits for completion as part of the
    * workflow
    */
   EXECUTE_STATE_MACHINE = 'ExecuteStateMachine',

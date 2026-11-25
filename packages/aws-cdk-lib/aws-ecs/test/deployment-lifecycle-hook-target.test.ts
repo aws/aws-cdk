@@ -1,3 +1,4 @@
+import { acknowledgeTestValidationRules } from './util';
 import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -14,6 +15,7 @@ describe('DeploymentLifecycleHookTarget', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
+    acknowledgeTestValidationRules(stack);
     vpc = new ec2.Vpc(stack, 'Vpc');
     cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');

@@ -1,4 +1,5 @@
-import * as cdk from 'aws-cdk-lib/core';
+import type { IArrayBox } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { Box, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { Construct } from 'constructs';
 import type { DatabaseOptions } from '../database-options';
 import type { ITable } from '../table';
@@ -48,29 +49,29 @@ export interface UserTablePrivilegesProps extends DatabaseOptions {
  * method. Thus, each `User` will have at most one `UserTablePrivileges` construct to manage its privileges. For details
  * on why this is a Good Thing, see the README, under "Granting Privileges".
  */
+@noBoxStackTraces
 export class UserTablePrivileges extends Construct {
-  private privileges: TablePrivilege[];
+  private privileges: IArrayBox<TablePrivilege>;
 
   constructor(scope: Construct, id: string, props: UserTablePrivilegesProps) {
     super(scope, id);
 
-    this.privileges = props.privileges ?? [];
+    this.privileges = Box.fromArray(props.privileges ?? [], { omitEmpty: false });
 
     new DatabaseQuery<UserTablePrivilegesHandlerProps>(this, 'Resource', {
       ...props,
       handler: HandlerName.UserTablePrivileges,
       properties: {
         username: props.user.username,
-        tablePrivileges: cdk.Lazy.any({
-          produce: () =>
-            Object.entries(groupPrivilegesByTable(this.privileges))
-              .map(([tableId, tablePrivileges]) => ({
-                tableId,
-                // The first element always exists since the groupBy element is at least a singleton.
-                tableName: tablePrivileges[0]!.table.tableName,
-                actions: unifyTableActions(tablePrivileges).map(action => TableAction[action]),
-              })),
-        }) as any,
+        tablePrivileges: this.privileges.derive(privs =>
+          Object.entries(groupPrivilegesByTable(privs))
+            .map(([tableId, tablePrivileges]) => ({
+              tableId,
+              // The first element always exists since the groupBy element is at least a singleton.
+              tableName: tablePrivileges[0]!.table.tableName,
+              actions: unifyTableActions(tablePrivileges).map(action => TableAction[action]),
+            })),
+        ) as any,
       },
     });
   }
@@ -97,7 +98,7 @@ const unifyTableActions = (tablePrivileges: TablePrivilege[]): TableAction[] => 
   return [...set];
 };
 
-const groupPrivilegesByTable = (privileges: TablePrivilege[]): Record<string, TablePrivilege[]> => {
+const groupPrivilegesByTable = (privileges: readonly TablePrivilege[]): Record<string, TablePrivilege[]> => {
   return privileges.reduce((grouped, privilege) => {
     const { table } = privilege;
     const tableId = table.node.id;

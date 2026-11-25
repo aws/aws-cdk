@@ -1,7 +1,7 @@
 
 import * as child_process from 'child_process';
 import * as path from 'path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
@@ -120,12 +120,10 @@ async function main() {
     const includeRules = new RuleFilterSet(args.include);
     const excludeRules = new RuleFilterSet(args.exclude);
 
-    const results = [];
-
-    results.push(...ALL_RULES_LINTER.eval(assembly, {
+    const results = ALL_RULES_LINTER.eval(assembly, {
       includeRules: includeRules,
       excludeRules: excludeRules,
-    }));
+    });
 
     // Sort errors to the top (highest severity first)
     results.sort((a, b) => b.level - a.level);
@@ -135,33 +133,32 @@ async function main() {
     for (const diag of results) {
       const suppressionKey = `${diag.rule.code}:${diag.scope}`;
 
+      let show = false;
       let color;
       switch (diag.level) {
         case DiagnosticLevel.Success:
-          if (args.verbose) {
-            color = chalk.gray;
-          }
+          show = args.verbose;
+          color = chalk.gray;
           break;
         case DiagnosticLevel.Error:
           errors++;
+          show = true;
           color = chalk.red;
           if (args.save) {
             excludesToSave.push(suppressionKey);
           }
           break;
         case DiagnosticLevel.Warning:
-          if (!args.quiet) {
-            color = chalk.yellow;
-          }
+          show = !args.quiet;
+          color = chalk.yellow;
           break;
         case DiagnosticLevel.Skipped:
-          if (!args.quiet) {
-            color = chalk.blue;
-          }
+          show = !args.quiet;
+          color = chalk.blue;
           break;
       }
 
-      if (color) {
+      if (show) {
         console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: [${chalk.bold(`awslint:${diag.rule.code}`)}:${chalk.bold(diag.scope)}] ${diag.message}`));
       }
     }

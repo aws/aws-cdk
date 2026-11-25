@@ -25,9 +25,18 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
                                 when Resource exists {
                                     when Resource is_string {
                                         Resource != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                     when Resource is_list {
-                                        Resource[*] != "*"
+                                        # Compare only string elements: a list may hold intrinsic objects
+                                        # (Fn::GetAtt/Sub/Join) resolving to specific ARNs, which are correctly
+                                        # scoped and must not be flagged. A literal "*" element still fails.
+                                        Resource[*] {
+                                            when this is_string {
+                                                this != "*"
+                                                    <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -37,9 +46,18 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
                                 when Resource exists {
                                     when Resource is_string {
                                         Resource != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                     when Resource is_list {
-                                        Resource[*] != "*"
+                                        # Compare only string elements: a list may hold intrinsic objects
+                                        # (Fn::GetAtt/Sub/Join) resolving to specific ARNs, which are correctly
+                                        # scoped and must not be flagged. A literal "*" element still fails.
+                                        Resource[*] {
+                                            when this is_string {
+                                                this != "*"
+                                                    <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -59,9 +77,18 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
                                 when Resource exists {
                                     when Resource is_string {
                                         Resource != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                     when Resource is_list {
-                                        Resource[*] != "*"
+                                        # Compare only string elements: a list may hold intrinsic objects
+                                        # (Fn::GetAtt/Sub/Join) resolving to specific ARNs, which are correctly
+                                        # scoped and must not be flagged. A literal "*" element still fails.
+                                        Resource[*] {
+                                            when this is_string {
+                                                this != "*"
+                                                    <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -71,9 +98,18 @@ rule IAM_NO_OVERLY_PERMISSIVE_PASSROLE when %iam_passrole_resources !empty {
                                 when Resource exists {
                                     when Resource is_string {
                                         Resource != "*"
+                                            <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
                                     }
                                     when Resource is_list {
-                                        Resource[*] != "*"
+                                        # Compare only string elements: a list may hold intrinsic objects
+                                        # (Fn::GetAtt/Sub/Join) resolving to specific ARNs, which are correctly
+                                        # scoped and must not be flagged. A literal "*" element still fails.
+                                        Resource[*] {
+                                            when this is_string {
+                                                this != "*"
+                                                    <<##ERROR:iam:PassRole must not use wildcard resources. Replace '*' in Resource with specific role ARNs that can be passed.##>>
+                                            }
+                                        }
                                     }
                                 }
                             }

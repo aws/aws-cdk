@@ -6,6 +6,7 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cdk from '../../core';
+import { flattenMeta } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import { Asset } from '../lib/asset';
 
@@ -62,17 +63,19 @@ test('verify that the app resolves tokens in metadata', () => {
   });
 
   const synth = app.synth().getStackByName(stack.stackName);
-  const meta = synth.metadata || {};
-  expect(meta['/my-stack']).toBeTruthy();
-  expect(meta['/my-stack'][0]).toBeTruthy();
-  expect(meta['/my-stack'][0].data).toEqual({
-    path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-    id: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-    packaging: 'zip',
-    sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
-    s3BucketParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
-    s3KeyParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9',
-    artifactHashParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
+  const meta = flattenMeta(synth.metadata || {});
+  expect(meta).toMatchObject({
+    '/my-stack': {
+      'aws:cdk:asset': [{
+        path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+        id: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+        packaging: 'zip',
+        sourceHash: '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+        s3BucketParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B',
+        s3KeyParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3VersionKey1F7D75F9',
+        artifactHashParameter: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2ArtifactHash220DE9BD',
+      }],
+    },
   });
 });
 
@@ -332,6 +335,13 @@ test('nested assemblies share assets: default synth edition', () => {
 });
 
 describe('staging', () => {
+  // These tests chdir into a temp dir. Jest reuses the worker process across test
+  // files, so restore cwd or later files (e.g. aws-s3/test/validation.test.ts,
+  // which renders paths relative to cwd) fail depending on scheduling.
+  let originalCwd: string;
+  beforeEach(() => { originalCwd = process.cwd(); });
+  afterEach(() => { process.chdir(originalCwd); });
+
   test('copy file assets under <outdir>/${fingerprint}.ext', () => {
     const tempdir = mkdtempSync();
     process.chdir(tempdir); // change current directory to somewhere in /tmp
@@ -446,9 +456,16 @@ describe('staging', () => {
     // WHEN
     const session = app.synth();
     const artifact = session.getStackByName(stack.stackName);
-    const metadata = artifact.metadata || {};
-    const md = Object.values(metadata)[0]![0]!.data as cxschema.AssetMetadataEntry;
-    expect(md.path).toBe('asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2');
+    const metadata = flattenMeta(artifact.metadata || {});
+    expect(metadata).toMatchObject({
+      '/stack': {
+        'aws:cdk:asset': [
+          {
+            path: 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+          },
+        ],
+      },
+    });
   });
 });
 

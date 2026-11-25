@@ -1,3 +1,4 @@
+import { acknowledgeTestValidationRules } from './util';
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -316,6 +317,7 @@ describe('instance engine', () => {
     ])('is passed correctly for %s', (engineVersion, version) => {
       // WHEN
       const stack = new cdk.Stack();
+      acknowledgeTestValidationRules(stack);
       const vpc = new ec2.Vpc(stack, 'VPC');
 
       new rds.DatabaseInstance(stack, 'Instance', {

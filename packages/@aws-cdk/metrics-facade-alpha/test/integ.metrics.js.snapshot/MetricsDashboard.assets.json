@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "ef1f5f3dc3c2deb11f9a5a70aeb181bb72324ce6a99eaf30df3c413d2b84f612": {
+      "displayName": "MetricsDashboard Template",
+      "source": {
+        "path": "MetricsDashboard.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-57f001d7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ef1f5f3dc3c2deb11f9a5a70aeb181bb72324ce6a99eaf30df3c413d2b84f612.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

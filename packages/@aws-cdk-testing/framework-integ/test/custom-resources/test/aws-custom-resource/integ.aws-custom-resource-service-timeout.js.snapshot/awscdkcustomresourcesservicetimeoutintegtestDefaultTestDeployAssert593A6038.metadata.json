@@ -1,0 +1,20 @@
+{
+  "/aws-cdk-customresources-service-timeout-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "awscdkcustomresourcesservicetimeoutintegtestDefaultTestDeployAssert593A6038.template.json"
+    }
+  ],
+  "/aws-cdk-customresources-service-timeout-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-customresources-service-timeout-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

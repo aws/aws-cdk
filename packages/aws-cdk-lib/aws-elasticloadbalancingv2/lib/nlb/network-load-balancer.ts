@@ -304,13 +304,15 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   }
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
+    const enforceSgInboundRules = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic !== undefined
+      ? (props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic ? 'on' : 'off')
+      : undefined;
+
     super(scope, id, props, {
       type: 'network',
       securityGroups: Lazy.list({ produce: () => this.securityGroups }),
       ipAddressType: props.ipAddressType,
-      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: Lazy.string({
-        produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
-      }),
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: enforceSgInboundRules,
       enablePrefixForIpv6SourceNat: props.enablePrefixForIpv6SourceNat === true ? 'on': props.enablePrefixForIpv6SourceNat === false ? 'off' : undefined,
       subnetMappings: props.subnetMappings,
     });

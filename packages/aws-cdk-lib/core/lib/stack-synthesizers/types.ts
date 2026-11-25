@@ -21,6 +21,13 @@ export interface IStackSynthesizer {
   readonly lookupRole?: string;
 
   /**
+   * The role that is passed to CloudFormation to execute the change set
+   *
+   * @default - no role
+   */
+  readonly cloudFormationExecutionRole?: string;
+
+  /**
    * Bind to the stack this environment is going to be used on
    *
    * Must be called before any of the other methods are called, and can only be called once.

@@ -44,11 +44,15 @@ import {
   IAspect,
   ITaggable,
   PermissionsBoundary,
+  CrossStackReferences,
+  ReferenceStrength,
   RemovalPolicy,
   RemovalPolicies,
   Mixin,
   Mixins,
   MissingRemovalPolicies,
+  CfnResourceMetadataContext,
+  CfnTemplateMetadataContext,
   Resource,
   SecretValue,
   Size,
@@ -60,6 +64,7 @@ import {
   TagType,
   Tags,
   Token,
+  Validations,
 } from 'aws-cdk-lib';
 import {
   IConstruct,

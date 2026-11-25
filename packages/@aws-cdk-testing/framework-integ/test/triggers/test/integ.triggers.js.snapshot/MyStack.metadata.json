@@ -1,0 +1,459 @@
+{
+  "/MyStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "MyStack.template.json"
+    }
+  ],
+  "/MyStack/Topic1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/Topic2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/MyTriggerFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "executeBefore": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "executeBefore": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "executeAfter": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/MyStack/TestQueue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queueName": "*",
+        "encryption": "SQS_MANAGED"
+      }
+    }
+  ],
+  "/MyStack/MyLambdaFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "code": "*",
+        "environment": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/MyStack/MySecondFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/MyStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/MyStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/MyStack/Topic1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Topic198E71B3E"
+    }
+  ],
+  "/MyStack/Topic2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Topic269377B75"
+    }
+  ],
+  "/MyStack/MyTriggerFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/MyStack/MyTriggerFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTriggerFunction056842F6"
+    }
+  ],
+  "/MyStack/MyTriggerFunction/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
+  "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A"
+    }
+  ],
+  "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AWSCDKTriggerCustomResourceProviderCustomResourceProviderHandler97BECD91"
+    }
+  ],
+  "/MyStack/TestQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestQueue6F0069AA"
+    }
+  ],
+  "/MyStack/MyLambdaFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/MyStack/MyLambdaFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyLambdaFunction67CCA873"
+    }
+  ],
+  "/MyStack/MyLambdaFunction/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
+  "/MyStack/MyTrigger/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAssertionLambdaFunction7E77172F"
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
+  "/MyStack/MyAssertionTrigger/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/MySecondFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/MyStack/MySecondFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MySecondFunction0F0B51EB"
+    }
+  ],
+  "/MyStack/MySecondFunction/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
+  "/MyStack/MyDefaultPropTrigger/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/Exports/Output{\"Ref\":\"TestQueue6F0069AA\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTestQueue6F0069AA4C7E94E2"
+    }
+  ],
+  "/MyStack/MyTriggerFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTriggerFunctionServiceRole1BB78C29"
+    }
+  ],
+  "/MyStack/MyTriggerFunction/Trigger/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/MyTriggerFunction/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTriggerFunctionCurrentVersion61957CE1f17c1c09f1ce6b916e414b39b50d1e7d"
+    }
+  ],
+  "/MyStack/MyLambdaFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyLambdaFunctionServiceRole313A4D46"
+    }
+  ],
+  "/MyStack/MyLambdaFunction/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyLambdaFunctionCurrentVersion4FAB80EC88e1a6555a4925fe10563117c573d2cf"
+    }
+  ],
+  "/MyStack/MyTrigger/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTrigger"
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAssertionLambdaFunctionServiceRole36146F3B"
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80471a30c0d98c41fbae206f65480f88b6"
+    }
+  ],
+  "/MyStack/MyAssertionTrigger/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAssertionTrigger"
+    }
+  ],
+  "/MyStack/MySecondFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MySecondFunctionServiceRole5B930841"
+    }
+  ],
+  "/MyStack/MySecondFunction/Trigger/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/MyStack/MySecondFunction/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MySecondFunctionCurrentVersion7D497B5D521822ce335698d5cea3b86e1bc4c2e2"
+    }
+  ],
+  "/MyStack/MyDefaultPropTrigger/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyDefaultPropTrigger"
+    }
+  ],
+  "/MyStack/MyTriggerFunction/Trigger/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTriggerFunctionTrigger5424E7A7"
+    }
+  ],
+  "/MyStack/MyAssertionLambdaFunction/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyAssertionLambdaFunctionServiceRoleDefaultPolicyFC44077F"
+    }
+  ],
+  "/MyStack/MySecondFunction/Trigger/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MySecondFunctionTrigger8C61EC28"
+    }
+  ]
+}

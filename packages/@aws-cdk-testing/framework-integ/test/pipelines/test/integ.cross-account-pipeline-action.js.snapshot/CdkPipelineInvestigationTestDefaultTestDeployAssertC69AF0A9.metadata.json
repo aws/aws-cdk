@@ -1,0 +1,20 @@
+{
+  "/CdkPipelineInvestigationTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CdkPipelineInvestigationTestDefaultTestDeployAssertC69AF0A9.template.json"
+    }
+  ],
+  "/CdkPipelineInvestigationTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CdkPipelineInvestigationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

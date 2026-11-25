@@ -1,0 +1,14 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "cdk-integ-emx-bridge/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-bridge"
+      ],
+      "assertionStack": "cdk-integ-emx-bridge/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxbridgeDefaultTestDeployAssertFB3B244D"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

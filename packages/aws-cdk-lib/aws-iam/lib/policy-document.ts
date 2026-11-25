@@ -1,4 +1,5 @@
 import type { IConstruct } from 'constructs';
+import type { ResourcePolicyValidationOptions } from './policy-statement';
 import { PolicyStatement, deriveEstimateSizeOptions } from './policy-statement';
 import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
@@ -62,13 +63,12 @@ export class PolicyDocument implements cdk.IResolvable {
     return newPolicyDocument;
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
   private readonly minimize?: boolean;
 
   constructor(props: PolicyDocumentProps = {}) {
-    this.creationStack = cdk.captureStackTrace();
     this.autoAssignSids = !!props.assignSids;
     this.minimize = props.minimize;
 
@@ -157,12 +157,31 @@ export class PolicyDocument implements cdk.IResolvable {
    *
    * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html#access_policies-json
    *
+   * @param options Optional validation options
    * @returns An array of validation error messages, or an empty array if the document is valid.
    */
-  public validateForResourcePolicy(): string[] {
+  public validateForResourcePolicy(options?: ResourcePolicyValidationOptions): string[] {
     const errors = new Array<string>();
     for (const statement of this.statements) {
-      errors.push(...statement.validateForResourcePolicy());
+      errors.push(...statement.validateForResourcePolicy(options));
+    }
+    return errors;
+  }
+
+  /**
+   * Validate that all policy statements in the policy document satisfies the
+   * requirements for a trust policy (assume role policy).
+   *
+   * Trust policies are a special type of resource-based policy where the resource is implicit (the role itself).
+   *
+   * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.html
+   *
+   * @returns An array of validation error messages, or an empty array if the document is valid.
+   */
+  public validateForTrustPolicy(): string[] {
+    const errors = new Array<string>();
+    for (const statement of this.statements) {
+      errors.push(...statement.validateForTrustPolicy());
     }
     return errors;
   }

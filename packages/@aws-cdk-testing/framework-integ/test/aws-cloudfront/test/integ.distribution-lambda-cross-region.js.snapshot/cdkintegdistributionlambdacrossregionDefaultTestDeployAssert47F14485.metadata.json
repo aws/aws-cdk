@@ -1,0 +1,20 @@
+{
+  "/cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485.template.json"
+    }
+  ],
+  "/cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

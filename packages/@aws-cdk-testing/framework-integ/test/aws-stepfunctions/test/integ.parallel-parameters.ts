@@ -25,7 +25,7 @@ parallel.branch(firstPassBranch);
 parallel.branch(secondPassBranch);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: parallel,
+  definitionBody: sfn.DefinitionBody.fromChainable(parallel),
 });
 
 const integ = new IntegTest(app, 'ParallelParametersTest', {

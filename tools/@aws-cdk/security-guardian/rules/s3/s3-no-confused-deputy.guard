@@ -23,6 +23,7 @@ rule S3_NO_CONFUSED_DEPUTY when %s3_bucket_policies !empty {
                         Condition.StringLike exists or
                         Condition.ArnEquals exists or
                         Condition.ArnLike exists
+                            <<##ERROR:S3 bucket policy with service principal must include a confused deputy condition.##>>
                     }
                 }
             }

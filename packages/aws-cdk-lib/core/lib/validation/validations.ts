@@ -1,0 +1,186 @@
+import type { IConstruct } from 'constructs';
+import type { IPolicyValidationPlugin } from './validation';
+import { Annotations, type WarningOptions } from '../annotations';
+import { UnscopedValidationError } from '../errors';
+import { STAGE_TYPE, stageOf } from '../private/core-construct-finders';
+import { lit } from '../private/literal-string';
+import { enhancedStackTrace } from '../private/stack-trace';
+import { ANNOTATION_PLUGIN_NAMESPACE, normalizeValidationIdForAnnotations, parseValidationId } from './private/validation-id';
+
+/**
+ * An acknowledgment of a validation rule, used to suppress it from output.
+ */
+export interface Acknowledgment {
+  /**
+   * The rule ID to acknowledge.
+   */
+  readonly id: string;
+
+  /**
+   * The reason for acknowledging this rule.
+   */
+  readonly reason: string;
+
+  /**
+   * Optionally narrow the acknowledgement to only the warning occurrences whose
+   * call-site context matches this filter.
+   *
+   * The object is treated as an **`objectLike` partial match** against the
+   * context attached to each occurrence (the same semantics as
+   * `template.hasResourceProperties`): every key you specify must be present
+   * with a matching value, and any key you do not mention is left unconstrained.
+   * A warning emitted without any context is never matched by a non-empty
+   * filter, so a specific filter cannot accidentally silence an undetailed
+   * warning.
+   *
+   * A value is matched for equality (including non-string values such as
+   * numbers, booleans, or arrays). Because the value type is `any`, richer
+   * per-key matching can be introduced later without a breaking change — a
+   * future release may accept a matcher as a value (e.g. a glob/regex) in
+   * addition to a literal, leaving existing literal callers untouched.
+   *
+   * When omitted, all occurrences of the rule id are acknowledged
+   * (backwards-compatible behavior).
+   *
+   * @default - acknowledges all occurrences of the rule id
+   */
+  readonly where?: { [key: string]: any };
+}
+
+/**
+ * Manages validations for CDK constructs.
+ *
+ * @example
+ * /// fixture=validation-plugin
+ * declare const myApp: App;
+ * declare const plugin: IPolicyValidationPlugin;
+ * Validations.of(myApp).addPlugins(plugin);
+ */
+export class Validations {
+  /**
+   * Metadata key used to store acknowledged rules on construct nodes.
+   *
+   * Plugin authors can read this metadata to build audit trails from
+   * acknowledgments recorded via `acknowledge()`.
+   */
+  public static readonly ACKNOWLEDGED_RULES_METADATA_KEY = 'aws:cdk:acknowledged-rules';
+
+  /**
+   * Returns the Validations for the given construct scope.
+   *
+   * @param scope any construct
+   */
+  public static of(scope: IConstruct): Validations {
+    return new Validations(scope);
+  }
+
+  private constructor(private readonly scope: IConstruct) {}
+
+  /**
+   * Register one or more validation plugins that will be executed during synthesis.
+   *
+   * Plugins can only be registered within a Stage or App scope.
+   * If any plugin reports a violation, synthesis will be interrupted and the
+   * report displayed to the user.
+   *
+   * @param plugins the validation plugins to add
+   */
+  public addPlugins(...plugins: IPolicyValidationPlugin[]): void {
+    const stage = STAGE_TYPE.isMarked(this.scope) ? this.scope : stageOf(this.scope);
+    if (!stage) {
+      throw new UnscopedValidationError(lit`NoStageForValidationPlugins`, 'Cannot add validation plugins on a construct without an enclosing Stage');
+    }
+    stage._addValidationPlugins(...plugins);
+  }
+
+  /**
+   * Adds a warning metadata entry to this construct that can be acknowledged.
+   *
+   * The CLI will display the warning when an app is synthesized, or fail if run
+   * in `--strict` mode.
+   *
+   * The ID will be stored with the `annotation` prefix (e.g. `annotation::MyWarning`).
+   * Use this prefixed ID when calling `acknowledge()` to suppress the warning.
+   *
+   * @param id unique identifier for the warning, used for acknowledgement
+   * @param message the warning message
+   * @param options optional settings, including structured `context` for selective acknowledgement
+   */
+  public addWarning(id: string, message: string, options?: WarningOptions): void {
+    id = normalizeValidationIdForAnnotations(id);
+    Annotations.of(this.scope).addWarningV2(id, message, options);
+  }
+
+  /**
+   * Adds an error metadata entry to this construct.
+   *
+   * Synthesis will be interrupted when errors are reported.
+   *
+   * Note: Annotation errors are not currently acknowledgeable. The ID is
+   * recorded for identification purposes but `acknowledge()` will not
+   * suppress errors added via this method.
+   *
+   * @param id unique identifier for the error
+   * @param message the error message
+   */
+  public addError(id: string, message: string): void {
+    id = normalizeValidationIdForAnnotations(id);
+    Annotations.of(this.scope).addError(`${message} (${id})`);
+  }
+
+  /**
+   * Acknowledge one or more rules, suppressing them from validation output.
+   *
+   * Acknowledgments are recorded to construct metadata so that downstream
+   * plugins (e.g. CDK Nag) can read them for audit trails.
+   *
+   * Currently only annotation warnings can be suppressed. Annotation errors
+   * are not yet acknowledgeable.
+   *
+   * If an ID has no well-known prefix, it is assumed to be an annotation rule
+   * for backwards compatibility.
+   *
+   * @param rules the rules to acknowledge
+   */
+  public acknowledge(...rules: Acknowledgment[]): void {
+    for (const rule of rules) {
+      const parsed = parseValidationId(rule.id);
+
+      const qualifiedId = normalizeValidationIdForAnnotations(parsed);
+      this.recordAcknowledgment(qualifiedId, rule.reason);
+
+      // There is a mess here, that has been created for historical reasons and we now
+      // sort of have to leave in place for backwards compatibility.
+      //
+      // Annotations can be added via:
+      //
+      // 1) `Annotations.of().addWarningV2('<id>')`         -- adds an annotation with the given ID
+      // 2) `Validations.of().addWarning('<id>')`           -- adds an annotation with ID 'Annotation::<id>'
+      // 3) `Validations.of().addWarning('<prefix>::<id>')` -- adds an annotation with ID '<prefix>::<id>'
+      //
+      // For both cases (1) and (2), we would like to be able to suppress the warning by calling one of:
+      //
+      // a) `Validations.of().acknowledge('Annotation::<id>')`            -- validation namespace
+      // b) `Validations.of().acknowledge('<id>')`                        -- backwards compatible with the initial release of Validations API
+      // c) `Validations.of().acknowledge('Construct-Annotations::<id>')` -- previous name of validation namespace
+      //
+      // Since we can't know if `Validations.of().acknowledge('<id>')` should
+      // suppress the namespaced or unnamespaced version of the warning, we will suppress both.
+      Annotations.of(this.scope)._acknowledgeWarning(qualifiedId, rule.where);
+
+      if (qualifiedId.startsWith(`${ANNOTATION_PLUGIN_NAMESPACE}::`)) {
+        const annotationId = qualifiedId.substring(`${ANNOTATION_PLUGIN_NAMESPACE}::`.length);
+        Annotations.of(this.scope)._acknowledgeWarning(annotationId, rule.where);
+      }
+    }
+  }
+
+  private recordAcknowledgment(id: string, reason: string): void {
+    this.scope.node.addMetadata(
+      Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      { [id]: reason },
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      { stackTraceOverride: enhancedStackTrace(this.recordAcknowledgment) },
+    );
+  }
+}

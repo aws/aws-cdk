@@ -18,7 +18,7 @@ class TestStack extends Stack {
             console.log(\'hello world\');
           };`),
       }),
-      cleanup: synthetics.Cleanup.LAMBDA,
+      provisionedResourceCleanup: true,
       activeTracing: true,
       memory: Size.mebibytes(2048),
       timeout: Duration.minutes(4),

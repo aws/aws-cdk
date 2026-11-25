@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "integ-lambda-python-poetry.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aba344abcdaff8e6a298560d661910ef42c053e637a772352a08de28dbe449a4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8828c937ef4da0e8362d201efdd9047685ca617a763feb0e2b7ea69796c189fc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,1270 +33,7 @@
       "dependencies": [
         "integ-lambda-python-poetry.assets"
       ],
-      "metadata": {
-        "/integ-lambda-python-poetry/my_handler_inline_python_312": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_312/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_312/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_312/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython312ServiceRole28B00F83"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_312/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython312E980C237"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_313": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_313/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_313/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_313/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython313ServiceRoleA1B2A1B8"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_313/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython313A17B0A53"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_39": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_39/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_39/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_39/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython39ServiceRoleEDE997C5"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_39/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython3914E0D89D"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_310": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_310/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_310/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_310/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython310ServiceRoleB4606AB1"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_310/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython310CCEB365D"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_311": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_311/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_311/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_311/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython311ServiceRole4B8ABA44"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_python_311/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinepython31130A54F68"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython312ServiceRoleFAA00F08"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_312/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython312139C35A3"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython313ServiceRoleB2804D87"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_313/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython3139AA5A266"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_39": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_39/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_39/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_39/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython39ServiceRole220659D2"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_39/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython3964CAE284"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython310ServiceRole37B48C89"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_310/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython310BD04F877"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython311ServiceRole9B42C343"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_with_hashes_python_311/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithhashespython311819AD79B"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython312ServiceRole6F1367BB"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_312/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython312B63B04B6"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython313ServiceRole335644DF"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_313/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython31347CB2787"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_39": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_39/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_39/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_39/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython39ServiceRole9B90B7FF"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_39/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython39ABB3DFE9"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython310ServiceRoleDC036FC7"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_310/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython310B7555D7A"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython311ServiceRole21E684E7"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_excludes_python_311/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlineexcludespython3113F187913"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython312ServiceRole3B9D423B"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_312/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython3129DE6CDBE"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython313ServiceRoleD05433BB"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_313/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython31342886739"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_39": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_39/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_39/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_39/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython39ServiceRole29B2D833"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_39/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython39134584D9"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython310ServiceRole96EB96AD"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_310/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython310E3EB25FB"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython311ServiceRoleB81FA0C8"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_with_hashes_excludes_python_311/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerwithhashesexcludespython31110477909"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython312ServiceRole6859FCE5"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_312/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython31208643E39"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython313ServiceRoleEDF8C58A"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_313/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython313E06FD2EB"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_39": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_39/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_39/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_39/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython39ServiceRole99A4A7CE"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_39/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython39B9799E29"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython310ServiceRoleD53ED266"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_310/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython310D1D226E3"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython311ServiceRoleE7136845"
-          }
-        ],
-        "/integ-lambda-python-poetry/my_handler_inline_without_urls_python_311/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myhandlerinlinewithouturlspython31174A8D665"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython312E980C237\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinepython312E980C237486214AB"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython313A17B0A53\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinepython313A17B0A537EDB13A7"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython3914E0D89D\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinepython3914E0D89DAA53377B"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython310CCEB365D\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinepython310CCEB365DA798DC08"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinepython31130A54F68\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinepython31130A54F685779D70D"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython312139C35A3\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithhashespython312139C35A3E9C53D8A"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython3139AA5A266\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithhashespython3139AA5A2661F3AC34D"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython3964CAE284\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithhashespython3964CAE28415366198"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython310BD04F877\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithhashespython310BD04F877D52DE581"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithhashespython311819AD79B\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithhashespython311819AD79BA116B6B3"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython312B63B04B6\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlineexcludespython312B63B04B6247A4DAF"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython31347CB2787\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlineexcludespython31347CB27873C118C49"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython39ABB3DFE9\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlineexcludespython39ABB3DFE9A0059A3D"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython310B7555D7A\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlineexcludespython310B7555D7A7BA49FC6"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlineexcludespython3113F187913\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlineexcludespython3113F187913B9A340D2"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython3129DE6CDBE\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerwithhashesexcludespython3129DE6CDBE30B75007"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython31342886739\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerwithhashesexcludespython31342886739A1595E95"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython39134584D9\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerwithhashesexcludespython39134584D9944622EB"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython310E3EB25FB\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerwithhashesexcludespython310E3EB25FB48AA64D9"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerwithhashesexcludespython31110477909\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerwithhashesexcludespython3111047790925870EDE"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython31208643E39\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithouturlspython31208643E391424A2CF"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython313E06FD2EB\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithouturlspython313E06FD2EBED78EDBA"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython39B9799E29\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithouturlspython39B9799E297CE3B777"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython310D1D226E3\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithouturlspython310D1D226E35105656C"
-          }
-        ],
-        "/integ-lambda-python-poetry/Exports/Output{\"Ref\":\"myhandlerinlinewithouturlspython31174A8D665\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefmyhandlerinlinewithouturlspython31174A8D66561F57634"
-          }
-        ],
-        "/integ-lambda-python-poetry/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-lambda-python-poetry/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-lambda-python-poetry.metadata.json",
       "displayName": "integ-lambda-python-poetry"
     },
     "poetryDefaultTestDeployAssertE9C9CB8F.assets": {
@@ -1316,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a2341e23d547625ff22d95d3c64a7e0170330de4e036de62b3cb5c8d31f3cf62.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/989acc8511ad8560c94433b7a79a9776826c42dae936b165662d95c72187f5d0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -1332,1462 +69,7 @@
         "integ-lambda-python-poetry",
         "poetryDefaultTestDeployAssertE9C9CB8F.assets"
       ],
-      "metadata": {
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401InvokeCBB1B246"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401WaitForIsCompleteProviderInvoke957D0D8C"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401WaitForTimeoutProviderInvoke919400C1"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401WaitForRole181D55E1"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401WaitFor45B50540"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvokeec4af8df49e9cdc52bc50f6dc2c6c401"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke25144ef98e9004a751090b35f432918d"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke25144ef98e9004a751090b35f432918dInvoke58341E0D"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke25144ef98e9004a751090b35f432918dWaitForIsCompleteProviderInvoke42E7E2FD"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke25144ef98e9004a751090b35f432918dWaitForTimeoutProviderInvoke07B9C73C"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke25144ef98e9004a751090b35f432918dWaitForRoleD5B665EB"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke25144ef98e9004a751090b35f432918dWaitForC08529A6"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke25144ef98e9004a751090b35f432918d/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke25144ef98e9004a751090b35f432918d"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3cad21d621f0d126dadbdb71007e5678/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3cad21d621f0d126dadbdb71007e5678/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3cad21d621f0d126dadbdb71007e5678"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3cad21d621f0d126dadbdb71007e5678/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3cad21d621f0d126dadbdb71007e5678Invoke8A0FE001"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3cad21d621f0d126dadbdb71007e5678/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3cad21d621f0d126dadbdb71007e5678WaitForIsCompleteProviderInvoke11775206"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3cad21d621f0d126dadbdb71007e5678/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3cad21d621f0d126dadbdb71007e5678WaitForTimeoutProviderInvokeE752F817"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3cad21d621f0d126dadbdb71007e5678/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3cad21d621f0d126dadbdb71007e5678WaitForRole43F0B043"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3cad21d621f0d126dadbdb71007e5678/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3cad21d621f0d126dadbdb71007e5678WaitFor802109A6"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3cad21d621f0d126dadbdb71007e5678/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke3cad21d621f0d126dadbdb71007e5678"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094f"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fInvoke3DACF8AE"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fWaitForIsCompleteProviderInvoke8AE9DA47"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fWaitForTimeoutProviderInvoke08116B22"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fWaitForRole0A6165B6"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke1169f1cd9853adbc01aa3feb2303094fWaitForD7215EA1"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke1169f1cd9853adbc01aa3feb2303094f/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke1169f1cd9853adbc01aa3feb2303094f"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079Invoke233FCD2E"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079WaitForIsCompleteProviderInvoke40EC9711"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079WaitForTimeoutProviderInvoke08AD62B4"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079WaitForRoleB15DE8C9"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeedc778179c8316b7704f58e7d1b26079WaitFor567415C5"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeedc778179c8316b7704f58e7d1b26079/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvokeedc778179c8316b7704f58e7d1b26079"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51e"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eInvokeEBD7C3E9"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eWaitForIsCompleteProviderInvokeAEA79D76"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eWaitForTimeoutProviderInvoke63815EC3"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eWaitForRole8A44F1BD"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke24315e181a41a235e2e87bafad09a51eWaitFor116D1594"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke24315e181a41a235e2e87bafad09a51e/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke24315e181a41a235e2e87bafad09a51e"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dInvokeC6A22AFA"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dWaitForIsCompleteProviderInvoke80AF7ADE"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dWaitForTimeoutProviderInvokeEF8D50AA"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dWaitForRole8C5D0CF4"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke885c68516f6c4fbb69fc688aff1ed02dWaitFor7B4EB976"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke885c68516f6c4fbb69fc688aff1ed02d/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke885c68516f6c4fbb69fc688aff1ed02d"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke79b1a14eb02906a628f7c4dbbe920695/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke79b1a14eb02906a628f7c4dbbe920695/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke79b1a14eb02906a628f7c4dbbe920695/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695InvokeD98138BD"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke79b1a14eb02906a628f7c4dbbe920695/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695WaitForIsCompleteProviderInvoke449C9CB8"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke79b1a14eb02906a628f7c4dbbe920695/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695WaitForTimeoutProviderInvokeD2A82985"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke79b1a14eb02906a628f7c4dbbe920695/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695WaitForRole582E6646"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke79b1a14eb02906a628f7c4dbbe920695/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke79b1a14eb02906a628f7c4dbbe920695WaitFor2D6311E0"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke79b1a14eb02906a628f7c4dbbe920695/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke79b1a14eb02906a628f7c4dbbe920695"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205Invoke13B8AE32"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205WaitForIsCompleteProviderInvokeE12C71CD"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205WaitForTimeoutProviderInvokeEA5807D2"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205WaitForRoleC0F1737A"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke07f0bf48404b68e262de7d7930dd8205WaitFor8CDA3409"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke07f0bf48404b68e262de7d7930dd8205/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke07f0bf48404b68e262de7d7930dd8205"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1InvokeCA6FFB87"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1WaitForIsCompleteProviderInvoke62ACD241"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1WaitForTimeoutProviderInvoke8B339A09"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1WaitForRole8E050513"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokec61a044478d06a105f47fc0d2fe27ff1WaitFor7AFF6CAA"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokec61a044478d06a105f47fc0d2fe27ff1/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvokec61a044478d06a105f47fc0d2fe27ff1"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039f"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fInvoke60933A38"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fWaitForIsCompleteProviderInvokeB90B66C3"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fWaitForTimeoutProviderInvoke7D7F9ADA"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fWaitForRole9C5F196D"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke67e31700a87d3520f715da7e26f5039fWaitFor49DF98F2"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke67e31700a87d3520f715da7e26f5039f/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke67e31700a87d3520f715da7e26f5039f"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90Invoke510DD413"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90WaitForIsCompleteProviderInvoke71470331"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90WaitForTimeoutProviderInvokeA7D18943"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90WaitForRole26EC687D"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokeb89473d31d84fc8db1fc25d666223b90WaitFor361127BF"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokeb89473d31d84fc8db1fc25d666223b90/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvokeb89473d31d84fc8db1fc25d666223b90"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071Invoke885F1D2D"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071WaitForIsCompleteProviderInvoke32A2E7C6"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071WaitForTimeoutProviderInvoke7826C2CB"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071WaitForRole9C5B755D"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071WaitForE0079699"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke043e1dedc8f3e3b5d8a05a8aca5a5071"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48InvokeBD6050E3"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48WaitForIsCompleteProviderInvokeB45B6D13"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48WaitForTimeoutProviderInvoke6A69905F"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48WaitForRole9105599A"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke4079df0400337907aa2fe7db3d66be48WaitFor997EFE92"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke4079df0400337907aa2fe7db3d66be48/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke4079df0400337907aa2fe7db3d66be48"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3250bb32728280619d5b61822c425915"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3250bb32728280619d5b61822c425915InvokeB7A21067"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3250bb32728280619d5b61822c425915WaitForIsCompleteProviderInvokeCD1BB57C"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3250bb32728280619d5b61822c425915WaitForTimeoutProviderInvoke52A6B233"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3250bb32728280619d5b61822c425915WaitForRole410ED407"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3250bb32728280619d5b61822c425915WaitForC1B0E323"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3250bb32728280619d5b61822c425915/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke3250bb32728280619d5b61822c425915"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5Invoke9841938E"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5WaitForIsCompleteProviderInvokeCAE2F497"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5WaitForTimeoutProviderInvokeE86B1615"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5WaitForRole3D51427C"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke89ccfc23c8b38086a312a181381234c5WaitForB0DD46B0"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke89ccfc23c8b38086a312a181381234c5/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke89ccfc23c8b38086a312a181381234c5"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokecfdbb2685c588ff401f751735d28688e"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eInvoke95DDBED1"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eWaitForIsCompleteProviderInvokeF533D0AF"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eWaitForTimeoutProviderInvoke5D59FFA2"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eWaitForRole5891B375"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvokecfdbb2685c588ff401f751735d28688eWaitForEDDFB35F"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvokecfdbb2685c588ff401f751735d28688e/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvokecfdbb2685c588ff401f751735d28688e"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954InvokeE2C5F009"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954WaitForIsCompleteProviderInvokeA0DD22BE"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954WaitForTimeoutProviderInvokeAF7732D2"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954WaitForRole17F8AC6E"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954WaitFor6A9442A4"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke7a64a8e12c3d6719d8c1335e5dac6954"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9InvokeA06B6C17"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9WaitForIsCompleteProviderInvoke1E3613DA"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9WaitForTimeoutProviderInvoke30080DFA"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9WaitForRoleDCA55B79"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9WaitFor7A562C01"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke0203cc956eb1c3d944eac2a14877b1e9/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke0203cc956eb1c3d944eac2a14877b1e9"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acInvokeC3F6FB37"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acWaitForIsCompleteProviderInvoke60CAF235"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acWaitForTimeoutProviderInvokeD3E5FB6A"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acWaitForRoleE2CFF3D2"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5acWaitForDC07FB48"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke54f7c2b7bb58bea3a7b16da4c60ad5ac"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3Invoke22DE297C"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3WaitForIsCompleteProviderInvokeE184CC0F"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3WaitForTimeoutProviderInvokeDF70D14F"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3WaitForRole61DCD2A9"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke873736695cbe391c49a0b4a24b0c57b3WaitFor7007665D"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke873736695cbe391c49a0b4a24b0c57b3/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke873736695cbe391c49a0b4a24b0c57b3"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57Invoke0FF1450B"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57WaitForIsCompleteProviderInvokeD2FC6A0A"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57WaitForTimeoutProviderInvokeA8D66E56"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57WaitForRole46497BC3"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57WaitForE4D2F698"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke382e32035b9b21ed91d9ce9971ee9a57/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke382e32035b9b21ed91d9ce9971ee9a57"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke35b2bcc0582401faf2507203fefb6341/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke35b2bcc0582401faf2507203fefb6341/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke35b2bcc0582401faf2507203fefb6341"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke35b2bcc0582401faf2507203fefb6341/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke35b2bcc0582401faf2507203fefb6341InvokeA7439D3B"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke35b2bcc0582401faf2507203fefb6341/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke35b2bcc0582401faf2507203fefb6341WaitForIsCompleteProviderInvoke22C99587"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke35b2bcc0582401faf2507203fefb6341/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke35b2bcc0582401faf2507203fefb6341WaitForTimeoutProviderInvokeB22B382F"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke35b2bcc0582401faf2507203fefb6341/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke35b2bcc0582401faf2507203fefb6341WaitForRole293E6B81"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke35b2bcc0582401faf2507203fefb6341/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke35b2bcc0582401faf2507203fefb6341WaitFor6205DA54"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke35b2bcc0582401faf2507203fefb6341/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke35b2bcc0582401faf2507203fefb6341"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550Invoke76128422"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550WaitForIsCompleteProviderInvokeBAAB9B1B"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550WaitForTimeoutProviderInvokeD2E30391"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550WaitForRole955BB31A"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke078bd41d77bf51a737ab281515e48550WaitFor814B77F7"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke078bd41d77bf51a737ab281515e48550/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke078bd41d77bf51a737ab281515e48550"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eInvokeFDECD315"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eWaitForIsCompleteProviderInvoke81A109FD"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eWaitForTimeoutProviderInvoke9B59DB42"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eWaitForRole830CEEFC"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39eWaitFor6ADBABD5"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/LambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke3d2f1798a8ddd4e40bd82d89a6b7b39e"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/poetry/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "poetryDefaultTestDeployAssertE9C9CB8F.metadata.json",
       "displayName": "poetry/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -2795,6 +77,542 @@
       "properties": {
         "file": "tree.json"
       }
+    },
+    "aws-cdk-lib/feature-flag-report": {
+      "type": "cdk:feature-flag-report",
+      "properties": {
+        "module": "aws-cdk-lib",
+        "flags": {
+          "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Pass signingProfileName to CfnSigningProfile"
+          },
+          "@aws-cdk/core:newStyleStackSynthesis": {
+            "recommendedValue": true,
+            "explanation": "Switch to new stack synthesis method which enables CI/CD",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/core:stackRelativeExports": {
+            "recommendedValue": true,
+            "explanation": "Name exports based on the construct paths relative to the stack, rather than the global construct path",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
+          },
+          "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
+            "recommendedValue": true,
+            "explanation": "Force lowercasing of RDS Cluster names in CDK",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": {
+            "recommendedValue": true,
+            "explanation": "Allow adding/removing multiple UsagePlanKeys independently",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-lambda:recognizeVersionProps": {
+            "recommendedValue": true,
+            "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-lambda:recognizeLayerVersion": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the `fn.currentVersion`."
+          },
+          "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": {
+            "recommendedValue": true,
+            "explanation": "Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/core:checkSecretUsage": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enable this flag to make it impossible to accidentally use SecretValues in unsafe locations"
+          },
+          "@aws-cdk/core:target-partitions": {
+            "recommendedValue": [
+              "aws",
+              "aws-cn"
+            ],
+            "explanation": "What regions to include in lookup tables of environment agnostic stacks"
+          },
+          "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "ECS extensions will automatically add an `awslogs` driver if no logging is specified"
+          },
+          "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enable this feature flag to have Launch Templates generated by the `InstanceRequireImdsv2Aspect` use unique names."
+          },
+          "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "ARN format used by ECS. In the new ARN format, the cluster name is part of the resource ID."
+          },
+          "@aws-cdk/aws-iam:minimizePolicies": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Minimize IAM policies by combining Statements"
+          },
+          "@aws-cdk/core:validateSnapshotRemovalPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Error on snapshot removal policies on resources that do not support it."
+          },
+          "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Generate key aliases that include the stack name"
+          },
+          "@aws-cdk/aws-s3:createDefaultLoggingPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enable this feature flag to create an S3 bucket policy by default in cases where an AWS service would automatically create the Policy if one does not exist."
+          },
+          "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Restrict KMS key policy for encrypted Queues a bit more"
+          },
+          "@aws-cdk/aws-apigateway:disableCloudWatchRole": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Make default CloudWatch Role behavior safe for multiple API Gateways in one environment"
+          },
+          "@aws-cdk/core:enablePartitionLiterals": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Make ARNs concrete if AWS partition is known"
+          },
+          "@aws-cdk/aws-events:eventsTargetQueueSameAccount": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Event Rules may only push to encrypted SQS queues in the same account"
+          },
+          "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Avoid setting the \"ECS\" deployment controller when adding a circuit breaker"
+          },
+          "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
+          },
+          "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use S3 Bucket Policy instead of ACLs for Server Access Logging"
+          },
+          "@aws-cdk/aws-route53-patters:useCertificate": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the official `Certificate` resource instead of `DnsValidatedCertificate`"
+          },
+          "@aws-cdk/customresources:installLatestAwsSdkDefault": {
+            "userValue": false,
+            "recommendedValue": false,
+            "explanation": "Whether to install the latest SDK by default in AwsCustomResource"
+          },
+          "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use unique resource name for Database Proxy"
+          },
+          "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Remove CloudWatch alarms from deployment group"
+          },
+          "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Include authorizer configuration in the calculation of the API deployment logical ID."
+          },
+          "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Define user data for a launch template by default when a machine image is provided."
+          },
+          "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "SecretTargetAttachments uses the ResourcePolicy of the attached Secret."
+          },
+          "@aws-cdk/aws-redshift:columnId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Whether to use an ID to track Redshift column changes"
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enable AmazonEMRServicePolicy_v2 managed policies"
+          },
+          "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Restrict access to the VPC default security group"
+          },
+          "@aws-cdk/aws-apigateway:requestValidatorUniqueId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Generate a unique id for each RequestValidator added to a method"
+          },
+          "@aws-cdk/aws-kms:aliasNameRef": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "KMS Alias name and keyArn will have implicit reference to KMS Key"
+          },
+          "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition"
+          },
+          "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Generate a launch template when creating an AutoScalingGroup"
+          },
+          "@aws-cdk/core:includePrefixInUniqueNameGeneration": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Include the stack prefix in the stack name generation process"
+          },
+          "@aws-cdk/aws-efs:denyAnonymousAccess": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "EFS denies anonymous clients accesses"
+          },
+          "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enables support for Multi-AZ with Standby deployment for opensearch domains"
+          },
+          "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default"
+          },
+          "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, mount targets will have a stable logicalId that is linked to the associated subnet."
+          },
+          "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change."
+          },
+          "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id."
+          },
+          "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials."
+          },
+          "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the CodeCommit source action is using the default branch name 'main'."
+          },
+          "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID."
+          },
+          "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enables Pipeline to set the default value for crossAccountKeys to false."
+          },
+          "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Enables Pipeline to set the default pipeline type to V2."
+          },
+          "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only."
+          },
+          "@aws-cdk/pipelines:reduceAssetRoleTrustScope": {
+            "recommendedValue": true,
+            "explanation": "Remove the root account principal from PipelineAssetsFileRole trust policy",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-eks:nodegroupNameAttribute": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
+          },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
+          "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the default volume type of the EBS volume will be GP3"
+          },
+          "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, remove default deployment alarm settings"
+          },
+          "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": {
+            "userValue": false,
+            "recommendedValue": false,
+            "explanation": "When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default"
+          },
+          "@aws-cdk/aws-s3:keepNotificationInImportedBucket": {
+            "userValue": false,
+            "recommendedValue": false,
+            "explanation": "When enabled, Adding notifications to a bucket in the current stack will not remove notification from imported stack."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:useNewS3UriParametersForBedrockInvokeModelTask": {
+            "recommendedValue": true,
+            "explanation": "When enabled, use new props for S3 URI field in task definition of state machine for bedrock invoke model.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/core:explicitStackTags": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
+          },
+          "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, we will only grant the necessary permissions when users specify cloudwatch log group through logConfiguration"
+          },
+          "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled will allow you to specify a resource policy per replica, and not copy the source table policy to all replicas"
+          },
+          "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, initOptions.timeout and resourceSignalTimeout values will be summed together."
+          },
+          "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, a Lambda authorizer Permission created when using GraphqlApi will be properly scoped with a SourceArn."
+          },
+          "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the value of property `instanceResourceId` in construct `DatabaseInstanceReadReplica` will be set to the correct value which is `DbiResourceId` instead of currently `DbInstanceArn`"
+          },
+          "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, CFN templates added with `cfn-include` will error if the template contains Resource Update or Create policies with CFN Intrinsics that include non-primitive values."
+          },
+          "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, both `@aws-sdk` and `@smithy` packages will be excluded from the Lambda Node.js 18.x runtime to prevent version mismatches in bundled applications."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the resource of IAM Run Ecs policy generated by SFN EcsRunTask will reference the definition, instead of constructing ARN."
+          },
+          "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2."
+          },
+          "@aws-cdk/core:aspectStabilization": {
+            "recommendedValue": true,
+            "explanation": "When enabled, a stabilization loop will be run when invoking Aspects during synthesis.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource."
+          },
+          "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere"
+          },
+          "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the default behaviour of OIDC provider will reject unauthorized connections"
+          },
+          "@aws-cdk/core:enableAdditionalMetadataCollection": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues."
+          },
+          "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": {
+            "userValue": false,
+            "recommendedValue": false,
+            "explanation": "[Deprecated] When enabled, Lambda will create new inline policies with AddToRolePolicy instead of adding to the Default Policy Statement"
+          },
+          "@aws-cdk/aws-s3:setUniqueReplicationRoleName": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, CDK will automatically generate a unique role name that is used for s3 object replication."
+          },
+          "@aws-cdk/pipelines:reduceStageRoleTrustScope": {
+            "recommendedValue": true,
+            "explanation": "Remove the root account principal from Stage addActions trust policy",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-events:requireEventBusPolicySid": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, grantPutEventsTo() will use resource policies with Statement IDs for service principals."
+          },
+          "@aws-cdk/core:aspectPrioritiesMutating": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When set to true, Aspects added by the construct library on your behalf will be given a priority of MUTATING."
+          },
+          "@aws-cdk/aws-dynamodb:retainTableReplica": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, table replica will be default to the removal policy of source table unless specified otherwise."
+          },
+          "@aws-cdk/cognito:logUserPoolClientSecretValue": {
+            "recommendedValue": false,
+            "explanation": "When disabled, the value of the user pool client secret will not be logged in the custom resource lambda function logs."
+          },
+          "@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope": {
+            "recommendedValue": true,
+            "explanation": "When enabled, scopes down the trust policy for the cross-account action role",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the resultWriterV2 property of DistributedMap will be used insted of resultWriter"
+          },
+          "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Add an S3 trust policy to a KMS key resource policy for SNS subscriptions."
+          },
+          "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, the EgressOnlyGateway resource is only created if private subnets are defined in the dual-stack VPC."
+          },
+          "@aws-cdk/aws-ec2-alpha:useResourceIdForVpcV2Migration": {
+            "recommendedValue": false,
+            "explanation": "When enabled, use resource IDs for VPC V2 migration"
+          },
+          "@aws-cdk/aws-s3:publicAccessBlockedByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, setting any combination of options for BlockPublicAccess will automatically set true for any options not defined."
+          },
+          "@aws-cdk/aws-lambda:useCdkManagedLogGroup": {
+            "userValue": false,
+            "recommendedValue": true,
+            "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/aws-eks:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "weak",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
+          }
+        }
+      }
     }
-  }
+  },
+  "minimumCliVersion": "2.1126.0"
 }

@@ -1,8 +1,16 @@
 import { ClassDeclaration, IndentationText, Project, PropertyDeclaration, QuoteKind, Scope, SourceFile, Symbol, SyntaxKind } from "ts-morph";
 import * as path from "path";
 import * as fs from "fs";
-// import { exec } from "child_process";
-// import SyntaxKind = ts.SyntaxKind;
+
+const REPO_ROOT = path.resolve(__dirname, "../../../..");
+
+/**
+ * Canonical source-file key relative to the repo, prefixed with `aws-cdk/`
+ * to match the established format in the generated JSON files.
+ */
+function canonicalSourceKey(filePath: string): string {
+  return "aws-cdk/" + path.relative(REPO_ROOT, filePath);
+}
 
 const DIRECTORIES_TO_SKIP = [
   "node_modules",
@@ -681,7 +689,7 @@ export class EnumsUpdater extends MetadataUpdater {
     const moduleEnumBlueprint: Record<string, Record<string, (string | number)[]>> = {};
 
     this.project.getSourceFiles().forEach((sourceFile) => {
-      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1]
+      const sourceFileName: string = canonicalSourceKey(sourceFile.getFilePath());
       let fileBlueprint: Record<string, (string | number)[]> = {};
       sourceFile.forEachChild((node) => {
         if (node.getKindName() === "EnumDeclaration") {
@@ -872,7 +880,7 @@ export class EnumLikeUpdater extends MetadataUpdater {
 
     // Retrieve enum-like classes
     this.project.getSourceFiles().forEach((sourceFile) => {
-      const sourceFileName: string = sourceFile.getFilePath().split("/aws-cdk/")[1]
+      const sourceFileName: string = canonicalSourceKey(sourceFile.getFilePath());
       let fileBlueprint: Record<string, string[]> = {};
       sourceFile.forEachChild((node) => {
         if (node instanceof ClassDeclaration) {

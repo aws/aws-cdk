@@ -49,7 +49,7 @@ new cdk.CfnOutput(sourceStack, 'PublicSubnetRtId', { value: publicSubnet.routeTa
  * adds new subnets and gateways to verify import functionality.
  */
 const importStack = new cdk.Stack(app, 'vpcv2-import-integ-test');
-importStack.addDependency(sourceStack);
+importStack.addStackDependency(sourceStack);
 
 const importedVpc = VpcV2.VpcV2.fromVpcV2Attributes(importStack, 'ImportedVpc', {
   vpcId: cdk.Fn.importValue('SourceVpcId'),

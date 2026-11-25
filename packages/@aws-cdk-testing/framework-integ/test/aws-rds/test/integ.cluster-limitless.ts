@@ -11,7 +11,7 @@ class TestStack extends IntegTestBaseStack {
 
     const vpc = new ec2.Vpc(this, 'Vpc');
 
-    new DatabaseCluster(this, `DatabaseCluster${INTEG_TEST_LATEST_AURORA_POSTGRES_LIMITLESS.auroraPostgresFullVersion}`, {
+    new DatabaseCluster(this, 'DatabaseCluster', {
       engine: DatabaseClusterEngine.auroraPostgres({
         version: INTEG_TEST_LATEST_AURORA_POSTGRES_LIMITLESS,
       }),

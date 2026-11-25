@@ -1,5 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
 import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { AssertionsProvider } from '../../../lib/assertions';
 
@@ -205,6 +206,36 @@ describe('AssertionProvider', () => {
       expect(provider.encode(undefined)).toBeUndefined();
       expect(provider.encode(null)).toBeNull();
       expect(provider.encode({})).toEqual({});
+    });
+  });
+
+  describe('providerLogLevel', () => {
+    test('defaults to FATAL', () => {
+      // WHEN
+      new AssertionsProvider(stack, 'AssertionsProvider');
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        LoggingConfig: {
+          LogFormat: 'JSON',
+          ApplicationLogLevel: 'FATAL',
+        },
+      });
+    });
+
+    test('can be overridden', () => {
+      // WHEN
+      new AssertionsProvider(stack, 'AssertionsProvider', {
+        providerLogLevel: ApplicationLogLevel.INFO,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        LoggingConfig: {
+          LogFormat: 'JSON',
+          ApplicationLogLevel: 'INFO',
+        },
+      });
     });
   });
 });

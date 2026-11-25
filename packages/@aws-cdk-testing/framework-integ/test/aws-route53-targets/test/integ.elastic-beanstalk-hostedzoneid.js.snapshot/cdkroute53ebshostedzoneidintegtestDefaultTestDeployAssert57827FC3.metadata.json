@@ -1,0 +1,20 @@
+{
+  "/cdk-route53-ebs-hostedzoneid-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkroute53ebshostedzoneidintegtestDefaultTestDeployAssert57827FC3.template.json"
+    }
+  ],
+  "/cdk-route53-ebs-hostedzoneid-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-route53-ebs-hostedzoneid-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

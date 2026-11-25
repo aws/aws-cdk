@@ -16,7 +16,7 @@
   },
   "lib/private/database-query-provider/table.ts": {
     "@cdklabs/no-throw-default-error": {
-      "count": 1
+      "count": 3
     }
   },
   "lib/private/database-query-provider/user.ts": {
@@ -25,6 +25,11 @@
     }
   },
   "lib/private/database-query-provider/util.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/private/database-query-provider/validate.ts": {
     "@cdklabs/no-throw-default-error": {
       "count": 1
     }

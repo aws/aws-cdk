@@ -1,0 +1,20 @@
+{
+  "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ElasticsearchCustomKmsIntegDefaultTestDeployAssertFEEBA45B.template.json"
+    }
+  ],
+  "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

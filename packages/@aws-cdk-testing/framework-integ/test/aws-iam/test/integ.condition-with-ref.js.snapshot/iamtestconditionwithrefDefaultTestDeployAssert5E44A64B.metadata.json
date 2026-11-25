@@ -1,0 +1,20 @@
+{
+  "/iam-test-condition-with-ref/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B.template.json"
+    }
+  ],
+  "/iam-test-condition-with-ref/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/iam-test-condition-with-ref/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

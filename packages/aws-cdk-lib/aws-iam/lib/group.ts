@@ -7,12 +7,15 @@ import { Policy } from './policy';
 import type { PolicyStatement } from './policy-statement';
 import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ArnPrincipal } from './principals';
-import { AttachedPolicies } from './private/util';
+import { AttachedPolicies, importedDefaultPolicyName } from './private/util';
 import type { IUser } from './user';
-import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Annotations, ArnFormat, FeatureFlags, Resource, Stack, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 
 /**
  * Represents an IAM Group.
@@ -120,7 +123,7 @@ abstract class GroupBase extends Resource implements IGroup {
    */
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
-      this.defaultPolicy = new Policy(this, 'DefaultPolicy');
+      this.defaultPolicy = new Policy(this, 'DefaultPolicy', { policyName: this._defaultPolicyName() });
       this.defaultPolicy.attachToGroup(this);
     }
 
@@ -131,6 +134,16 @@ abstract class GroupBase extends Resource implements IGroup {
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.addToPrincipalPolicy(statement).statementAdded;
   }
+
+  /**
+   * The physical name of the default policy.
+   *
+   * @returns `undefined` to let the policy generate its own name
+   * @internal
+   */
+  protected _defaultPolicyName(): string | undefined {
+    return undefined;
+  }
 }
 
 /**
@@ -140,6 +153,7 @@ abstract class GroupBase extends Resource implements IGroup {
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Group extends GroupBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.Group';
@@ -167,6 +181,12 @@ export class Group extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
       public principalAccount = arnComponents.account;
+
+      /** @internal */
+      protected _defaultPolicyName(): string | undefined {
+        const isStackSafe = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME);
+        return isStackSafe ? importedDefaultPolicyName(this, 'DefaultPolicy') : undefined;
+      }
     }
 
     return new Import(scope, id);
@@ -211,7 +231,7 @@ export class Group extends GroupBase {
     });
   }
 
-  private readonly managedPolicies: IManagedPolicy[] = [];
+  private readonly _managedPolicies: IArrayBox<IManagedPolicy>;
   private readonly _path?: string;
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
@@ -221,12 +241,12 @@ export class Group extends GroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.managedPolicies.push(...props.managedPolicies || []);
+    this._managedPolicies = Box.fromArray([...props.managedPolicies || []]);
     this._path = props.path;
 
     this._resource = new CfnGroup(this, 'Resource', {
       groupName: this.physicalName,
-      managedPolicyArns: Lazy.list({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn), { displayHint: 'managedPolicyArns' }),
       path: props.path,
     });
 
@@ -241,14 +261,14 @@ export class Group extends GroupBase {
    */
   @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy) {
-    if (this.managedPolicies.find(mp => mp === policy)) { return; }
-    this.managedPolicies.push(policy);
+    if (this._managedPolicies.find(mp => mp === policy)) { return; }
+    this._managedPolicies.push(policy);
     this.managedPoliciesExceededWarning();
   }
 
   private managedPoliciesExceededWarning() {
-    if (this.managedPolicies.length > 10) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:groupMaxPoliciesExceeded', `You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
+    if (this._managedPolicies.length > 10) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:groupMaxPoliciesExceeded', `You added ${this._managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
     }
   }
 }

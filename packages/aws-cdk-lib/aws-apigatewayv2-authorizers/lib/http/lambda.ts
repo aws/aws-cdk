@@ -9,6 +9,7 @@ import {
   HttpAuthorizerType,
   AuthorizerPayloadVersion,
 } from '../../../aws-apigatewayv2';
+import type { IRoleRef } from '../../../aws-iam';
 import { ServicePrincipal } from '../../../aws-iam';
 import type { IFunction } from '../../../aws-lambda';
 import { Stack, Duration, Names } from '../../../core';
@@ -63,6 +64,15 @@ export interface HttpLambdaAuthorizerProps {
    * @default [HttpLambdaResponseType.IAM]
    */
   readonly responseTypes?: HttpLambdaResponseType[];
+
+  /**
+   * The IAM role that the API Gateway service assumes while invoking the authorizer.
+   *
+   * Supported only for REQUEST authorizers.
+   *
+   * @default - No role
+   */
+  readonly role?: IRoleRef;
 }
 
 /**
@@ -123,17 +133,20 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
         payloadFormatVersion: enableSimpleResponses ? AuthorizerPayloadVersion.VERSION_2_0 : AuthorizerPayloadVersion.VERSION_1_0,
         authorizerUri: lambdaAuthorizerArn(this.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
+        role: this.props.role,
       });
 
-      this.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
-        scope: options.scope,
-        principal: new ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: Stack.of(options.route).formatArn({
-          service: 'execute-api',
-          resource: options.route.httpApi.apiId,
-          resourceName: `authorizers/${this.authorizer.authorizerId}`,
-        }),
-      });
+      if (!this.props.role) {
+        this.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
+          scope: options.scope,
+          principal: new ServicePrincipal('apigateway.amazonaws.com'),
+          sourceArn: Stack.of(options.route).formatArn({
+            service: 'execute-api',
+            resource: options.route.httpApi.apiId,
+            resourceName: `authorizers/${this.authorizer.authorizerId}`,
+          }),
+        });
+      }
     }
 
     return {

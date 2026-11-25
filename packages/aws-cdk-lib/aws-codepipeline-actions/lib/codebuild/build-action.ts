@@ -222,8 +222,7 @@ export class CodeBuildAction extends Action {
           this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
-      // lazy, because the Artifact name might be generated lazily
-      configuration.PrimarySource = cdk.Lazy.string({ produce: () => this.props.input.artifactName });
+      configuration.PrimarySource = this.props.input._artifactNameBox;
     }
     if (this.props.executeBatchBuild) {
       configuration.BatchEnabled = 'true';

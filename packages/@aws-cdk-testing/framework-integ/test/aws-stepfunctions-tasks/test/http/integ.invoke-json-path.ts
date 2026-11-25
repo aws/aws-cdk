@@ -73,7 +73,7 @@ const httpInvokeTask = new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint', {
 });
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: httpInvokeTask,
+  definitionBody: sfn.DefinitionBody.fromChainable(httpInvokeTask),
   timeout: cdk.Duration.seconds(30),
 });
 

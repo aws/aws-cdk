@@ -1,0 +1,20 @@
+{
+  "/cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611.template.json"
+    }
+  ],
+  "/cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

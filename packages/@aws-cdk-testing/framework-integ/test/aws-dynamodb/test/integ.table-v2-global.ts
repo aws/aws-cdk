@@ -22,7 +22,7 @@ class TestStack extends Stack {
       contributorInsightsSpecification: {
         enabled: true,
       },
-      pointInTimeRecovery: true,
+      pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
       tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
       timeToLiveAttribute: 'attr',
       removalPolicy: RemovalPolicy.DESTROY,

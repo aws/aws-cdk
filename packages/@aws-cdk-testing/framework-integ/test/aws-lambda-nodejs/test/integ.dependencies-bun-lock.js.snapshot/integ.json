@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "55.0.0",
   "testCases": {
     "BunTest/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStackName": "BunTestDefaultTestDeployAssert773BA602"
     }
   },
-  "minimumCliVersion": "2.1020.1"
+  "enableLookups": true,
+  "minimumCliVersion": "2.1147.0"
 }

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.healthagent"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.HealthAgent"
+    },
+    "python": {
+      "module": "aws_cdk.aws_healthagent"
+    }
+  }
+}

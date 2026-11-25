@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "53.0.0",
   "testCases": {
     "integtest-pipe-target-sqs/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integtest-pipe-target-sqs/DefaultTest/DeployAssert",
       "assertionStackName": "integtestpipetargetsqsDefaultTestDeployAssertD5F047DA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

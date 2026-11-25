@@ -8,7 +8,10 @@ import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
@@ -200,6 +203,7 @@ export interface EcsDeploymentGroupProps {
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
 @propertyInjectable
+@noBoxStackTraces
 export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeploymentGroup {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.EcsDeploymentGroup';
@@ -228,7 +232,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
    */
   public readonly role: iam.IRole;
 
-  private readonly alarms: IAlarmRef[];
+  private readonly alarms: IArrayBox<IAlarmRef>;
 
   constructor(scope: Construct, id: string, props: EcsDeploymentGroupProps) {
     super(scope, id, {
@@ -241,7 +245,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
     this.role = this._role;
 
     this._application = props.application || new EcsApplication(this, 'Application');
-    this.alarms = props.alarms || [];
+    this.alarms = Box.fromArray(props.alarms || [], { omitEmpty: false });
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
     this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || EcsDeploymentConfig.ALL_AT_ONCE);
@@ -277,15 +281,13 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
         produce: () => this.renderBlueGreenDeploymentConfiguration(props.blueGreenDeploymentConfig),
       }),
       loadBalancerInfo: cdk.Lazy.any({ produce: () => this.renderLoadBalancerInfo(props.blueGreenDeploymentConfig) }),
-      alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration({
-          alarms: this.alarms,
-          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
-          removeAlarms: removeAlarmsFromDeploymentGroup,
-          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
-        }),
-      }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this, this.alarms, props.autoRollback) }),
+      alarmConfiguration: this.alarms.derive(alarms => renderAlarmConfiguration({
+        alarms: [...alarms],
+        ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+        removeAlarms: removeAlarmsFromDeploymentGroup,
+        ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+      })),
+      autoRollbackConfiguration: this.alarms.derive(alarms => renderAutoRollbackConfiguration(this, [...alarms], props.autoRollback)),
     });
 
     this._setNameAndArn(resource, this.application);

@@ -2,12 +2,15 @@ import { Annotations, Match, Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ScheduledFargateTask } from '../../lib';
+import { acknowledgeTestValidationRules } from '../util';
 
 test('Can create a scheduled Fargate Task - with only required props', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -82,6 +85,7 @@ test('Can create a scheduled Fargate Task - with only required props', () => {
 test('Can create a scheduled Fargate Task - with optional props', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -91,7 +95,7 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
     scheduledFargateTaskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
-      cpu: 2,
+      cpu: 2048,
       ephemeralStorageGiB: 100,
       environment: { TRIGGER: 'CloudWatch Events' },
     },
@@ -172,6 +176,7 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
 test('Scheduled Fargate Task - with MemoryReservation defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -210,6 +215,7 @@ test('Scheduled Fargate Task - with MemoryReservation defined', () => {
 test('Scheduled Fargate Task - with Command defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -254,6 +260,7 @@ test('Scheduled Fargate Task - with Command defined', () => {
 test('Scheduled Fargate Task - with subnetSelection defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', {
     maxAzs: 1,
     subnetConfiguration: [
@@ -295,6 +302,7 @@ test('Scheduled Fargate Task - with subnetSelection defined', () => {
 test('Scheduled Fargate Task - can take 8 vCpu and 60GB memory sizes', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -319,6 +327,7 @@ test('Scheduled Fargate Task - can take 8 vCpu and 60GB memory sizes', () => {
 test('Scheduled Fargate Task - with platformVersion defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -372,6 +381,7 @@ test('Scheduled Fargate Task - with platformVersion defined', () => {
 test('Scheduled Fargate Task - with securityGroups defined', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
@@ -423,6 +433,7 @@ test('Scheduled Fargate Task - with securityGroups defined', () => {
 test('Scheduled Fargate Task - exposes ECS Task', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -442,6 +453,7 @@ test('Scheduled Fargate Task - exposes ECS Task', () => {
 test('Scheduled Fargate Task shows warning when minute is not defined in cron', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -461,6 +473,7 @@ test('Scheduled Fargate Task shows warning when minute is not defined in cron', 
 test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -480,6 +493,7 @@ test('Scheduled Fargate Task shows no warning when minute is * in cron', () => {
 test('Scheduled Fargate Task - with tag propagation', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', {
     maxAzs: 1,
     subnetConfiguration: [
@@ -513,6 +527,7 @@ test('Scheduled Fargate Task - with tag propagation', () => {
 test('Scheduled Fargate Task - with list of tags', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', {
     maxAzs: 1,
     subnetConfiguration: [
@@ -556,6 +571,7 @@ test('Scheduled Fargate Task - with list of tags', () => {
 test('Scheduled Fargate Task - with unused properties', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -587,6 +603,7 @@ test('Scheduled Fargate Task - with unused properties', () => {
 test('Can create a scheduled Fargate Task - with customized container name', () => {
   // GIVEN
   const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
@@ -651,6 +668,34 @@ test('Can create a scheduled Fargate Task - with customized container name', () 
           },
         },
         Name: 'ScheduledContainer2',
+      },
+    ],
+  });
+});
+
+test('Scheduled Fargate Task - with custom role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  acknowledgeTestValidationRules(stack);
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = iam.Role.fromRoleArn(stack, 'CustomRole', 'arn:aws:iam::123456789012:role/CustomRole');
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+    role,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        RoleArn: 'arn:aws:iam::123456789012:role/CustomRole',
       },
     ],
   });

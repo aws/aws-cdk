@@ -10,7 +10,7 @@
       "es2022",
       "dom"
     ],
-    "module": "CommonJS",
+    "module": "Node20",
     "newLine": "lf",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,

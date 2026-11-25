@@ -1,0 +1,8 @@
+{
+  "/AwsCustomResourceTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.template.json"
+    }
+  ]
+}

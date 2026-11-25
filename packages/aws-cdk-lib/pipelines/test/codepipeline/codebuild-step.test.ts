@@ -40,7 +40,7 @@ test('additionalinputs creates the right commands', () => {
         phases: {
           install: {
             commands: [
-              '[ ! -d "some/deep/directory" ] || { echo \'additionalInputs: "some/deep/directory" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && mkdir -p -- "some/deep" && ln -s -- "$CODEBUILD_SRC_DIR_test2_test2_Source" "some/deep/directory"',
+              '[ ! -d \'some/deep/directory\' ] || { echo \'additionalInputs: "some/deep/directory" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.\'; exit 1; } && mkdir -p -- \'some/deep\' && ln -s -- "$CODEBUILD_SRC_DIR_test2_test2_Source" \'some/deep/directory\'',
             ],
           },
         },
@@ -115,7 +115,7 @@ test('timeout from defaults can be overridden', () => {
       additionalInputs: {
         'some/deep/directory': cdkp.CodePipelineSource.gitHub('test2/test2', 'main'),
       },
-      timeout: Duration.minutes(888),
+      timeout: Duration.minutes(480),
     }),
     codeBuildDefaults: {
       timeout: Duration.minutes(180),
@@ -124,7 +124,7 @@ test('timeout from defaults can be overridden', () => {
 
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
-    TimeoutInMinutes: 888,
+    TimeoutInMinutes: 480,
   });
 });
 

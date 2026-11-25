@@ -1,0 +1,66 @@
+{
+  "/cdk-integ-lambda-nodejs-shell-bundling/ts-handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-shell-bundling/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-shell-bundling/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-shell-bundling/ts-handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-shell-bundling/ts-handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandler4E1C6929"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-shell-bundling/ts-handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlerServiceRole8876B8E7"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-shell-bundling/ts-handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

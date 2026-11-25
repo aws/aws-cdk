@@ -1,0 +1,20 @@
+{
+  "/integ-pipeline-cfn-cross-account/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integpipelinecfncrossaccountDefaultTestDeployAssertC7E37541.template.json"
+    }
+  ],
+  "/integ-pipeline-cfn-cross-account/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-pipeline-cfn-cross-account/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ]
+}

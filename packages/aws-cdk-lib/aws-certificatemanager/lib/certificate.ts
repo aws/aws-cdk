@@ -5,7 +5,7 @@ import { apexDomain } from './util';
 import type * as cloudwatch from '../../aws-cloudwatch';
 import type * as route53 from '../../aws-route53';
 import type { IResource } from '../../core';
-import { Token, Tags, ValidationError } from '../../core';
+import { Token, Tags, ValidationError, Validations } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -331,6 +331,17 @@ export class Certificate extends CertificateBase implements ICertificate {
     }
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
+
+    // Due to the way `allDomainNames` is constructed, it can contain duplicates. Those don't hamper
+    // deployability, but will trigger validation warnings for nonsensicality. So silence them.
+    //
+    // We can't really fix this easily because it will lead to resource replacement.
+    if (allDomainNames.length !== new Set(allDomainNames).size) {
+      Validations.of(this).acknowledge({
+        id: 'CloudFormation-Validate::F3037',
+        reason: 'Duplicate domain names in subjectAlternativeNames exist for historical reasons',
+      });
+    }
 
     const certificateExport = (props.allowExport === true) ? 'ENABLED' : undefined;
 

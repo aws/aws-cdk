@@ -15,17 +15,17 @@ class TestStack extends Stack {
     super(scope, id);
 
     const child = new sfn.StateMachine(this, 'Child', {
-      definition: new sfn.Pass(this, 'Pass'),
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(this, 'Pass')),
     });
 
     const parent = new sfn.StateMachine(this, 'Parent', {
-      definition: new StepFunctionsStartExecution(this, 'Task', {
+      definitionBody: sfn.DefinitionBody.fromChainable(new StepFunctionsStartExecution(this, 'Task', {
         stateMachine: child,
         input: sfn.TaskInput.fromObject({
           hello: sfn.JsonPath.stringAt('$.hello'),
         }),
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-      }),
+      })),
     });
 
     new CfnOutput(this, 'StateMachineARN', {
