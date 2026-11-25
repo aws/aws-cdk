@@ -14,10 +14,6 @@ Security is a **baseline** dimension: a real exposure must be fixed before merge
 `cdk-review-principles` "Calibrate the harm honestly"), so this dimension's calibration skews toward BLOCKING
 for a concrete exposure.
 
-**Scope gate — review only security exposure introduced by this PR.** Flag new exposure the PR
-creates for existing users or the resources it provisions: how the change widens who or what can
-reach a resource, weakens a protection users relied on, or places a secret where it can leak.
-
 ## The review process
 
 Work the changed surface in this order; adapt to what the diff touches.
