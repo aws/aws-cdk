@@ -8,6 +8,11 @@ export class WebFunctionRuntime {
   public static readonly NODEJS_24_X = new WebFunctionRuntime('nodejs24.x');
 
   /**
+   * Node.js 26.x runtime
+   */
+  public static readonly NODEJS_26_X = new WebFunctionRuntime('nodejs26.x');
+
+  /**
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    *
