@@ -72,6 +72,12 @@
       "data": "*"
     }
   ],
+  "/WebFunctionMinimalStack/NodeJs26": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/WebFunctionMinimalStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -167,6 +173,14 @@
   "/WebFunctionMinimalStack/DeployCode/CustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
       "data": "*"
     },
     {
@@ -280,6 +294,46 @@
       "data": "*"
     }
   ],
+  "/WebFunctionMinimalStack/NodeJs26/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/WebFunctionMinimalStack/NodeJs26/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/WebFunctionMinimalStack/NodeJs26/Function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NodeJs26FunctionE574C7D5"
+    }
+  ],
+  "/WebFunctionMinimalStack/NodeJs26/Revision": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NodeJs26RevisionB980B4F4"
+    }
+  ],
+  "/WebFunctionMinimalStack/NodeJs26/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/WebFunctionMinimalStack/Exports/Output{\"Fn::GetAtt\":[\"MinimalBucketEndpoint910239E5\",\"DomainName\"]}": [
     {
       "type": "aws:cdk:logicalId",
@@ -388,6 +442,24 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "MinimalBucketEndpoint910239E5"
+    }
+  ],
+  "/WebFunctionMinimalStack/NodeJs26/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NodeJs26ServiceRole142BE8A4"
+    }
+  ],
+  "/WebFunctionMinimalStack/NodeJs26/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NodeJs26LogGroup089A2271"
+    }
+  ],
+  "/WebFunctionMinimalStack/NodeJs26/Endpoint/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NodeJs26Endpoint0F1280D6"
     }
   ],
   "/WebFunctionMinimalStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
