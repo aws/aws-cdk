@@ -49,7 +49,8 @@ for a mixin's required tests.
 ## Integration tests
 
 **[TEST-INTEG-MISSING-REQUIRED] (BLOCKING)** — An integ test the PR needs is absent with no valid
-exemption. See
+exemption. The PR needs an integ test for a feature or fix, a previously-unused CFN resource or property,
+a cross-service integration, a new supported version, or a Custom Resource. See
 [`AGENTS.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#integration-tests) and
 [`INTEGRATION_TESTS.md § When are Integration Tests Required`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#when-are-integration-tests-required)
 for the required-scenario list,

@@ -18,12 +18,10 @@ Apply `cdk-review-principles` for severity, evidence and the finding format.
    happy path, or test one of two flag states. The rows of
    [`testing-rules.md`](references/testing-rules.md) name and tier what you find.
 
-2. **Integration tests — when one is needed.** The PR needs an integ test for a feature or fix, a
-   previously-unused CFN resource or property, a cross-service integration, a new supported version, or a
-   Custom Resource.
-   Where the change's behavior only shows once deployed (`TEST-INTEG-WEAK-ASSERTION` names the cases), ask
-   whether the integ test asserts it on the deployed resources, not only that the stack deploys. Then
-   judge the integ tests and snapshots it adds or changes by the integration rows.
+2. **Integration tests.** Where the change's behavior only shows once deployed (`TEST-INTEG-WEAK-ASSERTION`
+   names the cases), ask whether the integ test asserts it on the deployed resources, not only that the
+   stack deploys. Then judge the integ tests and snapshots it adds or changes, and any it needs but lacks,
+   by the integration rows.
 
 3. **When to stop.** When several gaps stem from one test, classify under the best-fitting rule and
    describe them together. When the tests would catch a break, or no test is needed, raise nothing. Stop
