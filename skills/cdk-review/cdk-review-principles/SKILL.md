@@ -31,7 +31,7 @@ harm:
 
 A finding's `severity` field takes exactly one of these two words — `BLOCKING` /
 `RECOMMENDED`. A rule with a conditional severity is one rule: its
-header carries the primary severity, and its body states when it up- or down-tiers.
+header carries the primary severity, and its body states when it is BLOCKING or RECOMMENDED instead.
 
 ### Calibrate the harm honestly
 
