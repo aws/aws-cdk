@@ -1,61 +1,34 @@
 # Finding & Comment Format Reference
 
-## The structured finding contract
+## Fields
 
 Give each finding these fields:
 
 - `file` — repo-relative path of the file the finding is on.
-- `lineRange: { startLine, endLine }` — the line or line span the finding is about.
-  A single-line finding sets both to that line.
+- `lineRange: { startLine, endLine }` — the line or line span the finding is about; a single line
+  sets both.
+- `ruleId` — the id of the rule the finding cites, verbatim.
 - `category` — the heading the finding's rule sits under in the dimension's rules.
-- `severity` — `BLOCKING` or `RECOMMENDED`: the tier of the rule the finding cites, as `SKILL.md`
-  "Severity" defines it. The only severity vocabulary.
-- `ruleId` — the stable `[id]` of the rule that fired, taken verbatim from the dimension's
-  rules. The debug/trace key: it names exactly which rule produced the finding.
-- `message` — the human-visible comment text (see the next section).
-- `reference` — the authoritative source the finding cites: a CDK design guideline, jsii doc, CloudFormation resource spec, or AWS service doc — file + section, or a URL — the source for the fact the finding turns on, per `SKILL.md` "Verification"; or null.
-- `evidence` — the supporting detail behind the finding.
+- `severity` — `BLOCKING` or `RECOMMENDED`, the tier of the rule (`SKILL.md` "Severity").
+- `message` — the comment the author reads (next section).
 - `suggestedFix` — a concrete fix, or null.
+- `reference` — the source for the fact the finding turns on (`SKILL.md` "Verification"): file +
+  section, or a URL; or null.
+- `evidence` — the supporting detail behind the finding.
 
-The review as a whole also carries a `summary` with its `text`.
+The review as a whole carries a `summary` with its `text`.
 
-## `message` — write it complete and standalone
+## `message`
 
-Treat `message` as the text the reader sees on its own: it must stand alone as a
-complete comment. Write it as a self-contained review comment:
+`message` is the comment the author reads, so it reads on its own:
 
-- **Observation** — what the issue is, specific, referencing the code (1-2 sentences).
-- **Impact** — why it matters, what happens if it is not addressed.
+- **Observation** — what is wrong, specific, referencing the code (one or two sentences).
+- **Impact** — what happens if it is not addressed.
 - **Fix, once you have checked one** — the change to make (a code example or a question framing a
-  specific alternative), with the guideline cited inline where one backs the finding.
+  specific alternative), with the guide cited inline where one backs the finding.
 
-Populate `evidence`, `reference`, and `suggestedFix` as structured fields too, and fold
-their essentials into the `message` prose so it stands alone. `ruleId` is the exception: a
-structured metadata field for debug/tracing that stays in its own field (though a finding may
-still cite the rule inline where that aids the author).
+## Summary and grouping
 
-Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
-suggestions as questions where you can; stay direct and constructive on blocking issues
-("this needs to change because…"); acknowledge good work; and drop "obviously" and "simply".
-
-## Evidence & References
-
-Put the citation in `reference`/`evidence` and name it inline in `message`, so the posted comment
-carries its own authority.
-
-## Filtering — what becomes a finding
-
-Emit a finding only when it meets the posting conditions in `SKILL.md` "Findings must meet the
-bar". In this format, "tied to a specific line" means it has
-a `file` and a `lineRange`; a high-level observation with no line to anchor to belongs in the
-review `summary`.
-
-Keep these out of the findings (put them in the `summary` text if they matter):
-high-level design observations not tied to a line, positive feedback, clusters of
-related minor points, findings already
-surfaced by automated PR analysis (unless you add new context), and philosophical
-questions.
-
-Consolidate related findings on one cause into one.
-
-Let the review `summary` carry the broader picture.
+- An observation with no line, positive notes and groups of minor points go in the review
+  `summary`, which carries the broader picture.
+- Related findings on one cause are one finding.

@@ -47,8 +47,7 @@ zero comments is the right result for a PR with nothing wrong. A count would cho
 by number rather than by merit.
 
 A finding becomes a posted comment only when it is (1) tied to a specific line, (2)
-actionable, and (3) significant enough to stand alone. Keep high-level observations,
-positive notes, and clusters of minor points in the review summary.
+actionable, and (3) significant enough to stand alone.
 
 Spend the review on what the build cannot see. The PR's build already fails on what its
 compiler and linters check, such as a public API with no docstring or an optional props
