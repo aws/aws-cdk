@@ -20,7 +20,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    read [`security-rules.md`](references/security-rules.md): its rows are your checklist. Before you flag what
    an action allows, a service's real default posture, or whether a condition key applies,
    search and read the authoritative AWS IAM/service / CloudFormation documentation available to you and
-   confirm the fact there, not from memory (see `cdk-review-principles` "Verify before you cite").
+   confirm the fact there, not from memory (see `cdk-review-principles` "Verification").
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **IAM least-privilege**
    (including trust-policy confused-deputy), **Network & resource access**, **Secrets & credentials**,

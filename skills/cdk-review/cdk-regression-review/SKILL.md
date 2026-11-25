@@ -19,7 +19,7 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
    [`regression-rules.md`](references/regression-rules.md): its rows are your checklist. Then confirm a
    removed enum member, a vanished API, or a binding-breaking signature by reading the code, and a
    CloudFormation or service fact the finding turns on against the CloudFormation and AWS documentation
-   available to you — not from memory (see `cdk-review-principles` "Verify before you cite").
+   available to you — not from memory (see `cdk-review-principles` "Verification").
 
 2. **Check the diff against the rules.** For each rule check both directions: what is present and
    violating, and what is required but missing. The required-but-missing scan catches an omission the

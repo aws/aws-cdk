@@ -19,7 +19,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    and what to scan (step 2). Search and read the authoritative AWS service and CloudFormation documentation
    available to you for the area, and confirm the fact each judgment turns on: is this attribute, mode, or
    default real for the service? What the service offers decides whether the abstraction is right and
-   durable (see `cdk-review-principles` "Verify before you cite"). Then read
+   durable (see `cdk-review-principles` "Verification"). Then read
    [`design-rules.md`](references/design-rules.md): its rows are your checklist.
 
 2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule

@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; which sources to cite and in what order; the exact file and line a finding points to; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; how to verify a fact before posting; which sources to cite and in what order; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -32,39 +32,33 @@ The `severity` field takes one of these two words.
 - **Only harm this PR introduces.** Review what the diff adds or changes. A pre-existing
   wildcard the PR merely moved does zero *new* harm → not a finding.
 
-## What every finding carries
+## Verification
 
-A correctly-rated finding still has to be actionable. Every finding carries a location and evidence, and
-a fix once you have checked one:
+Before you post, confirm the fact the finding turns on: whether an attribute, mode, default or
+enum value is real for the service, or how the service behaves, by searching and reading the
+authoritative AWS documentation available to you; what CDK's own API does, by reading that code;
+and what CDK's testing or README guidance says, by reading that guide. Post only what you have read, and cite
+the page you read in `reference`. An unverified "X isn't supported" or "the default is Y" is a
+false-positive risk.
 
-- **An exact location** — `path/to/file.ts:L42`, or a range `path/to/file.ts:L42-L50`. A
-  finding with no code location stays in the report as a high-level observation; it cannot
-  become a posted line comment, since there is no line to anchor it to.
-- **Evidence** — cite at least one source for every non-trivial finding, strongest
-  authority first: AWS documentation (service behavior) → CDK source code (precedent,
-  linked by file + line) → CDK design guidelines (`docs/DESIGN_GUIDELINES.md`,
-  `docs/AGENTS_CONSTRUCT_DESIGN.md`, `docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) →
-  CloudFormation resource specification (property/enum correctness) → linked issue / PR
-  discussion (customer context) → existing tests (behavioral expectations). When the code
-  and the AWS documentation disagree, report the disagreement and cite both. Skip a citation
-  only for pure style, an obvious typo or unused import, or a genuine question. **Verify
-  before you cite:** when a finding
-  turns on whether an attribute, mode, default or enum value is real for the service, or
-  how the service behaves, search and read the authoritative AWS documentation available
-  to you and confirm the fact against it before posting; confirm what CDK's own API does
-  by reading that code, and what CDK's testing or README guidance says by reading that
-  guide; post only what you have read. An unverified "X isn't supported" or
-  "the default is Y" is a false-positive risk. Cite the page you read in `reference`.
-- **A fix, once you have checked it** — a code example, or a question framing a specific
-  alternative ("What do you think about scoping this to the bucket ARN?"). You have checked a
-  fix when you have read that what it uses exists at the reviewed commit and that the code
-  depending on what it changes still fits it, because an unchecked fix can break where it is
-  applied. Without a checked fix, report the problem and its evidence and leave `suggestedFix`
-  null. A fix you suggest follows the same guides as the code under review.
+## Evidence
 
-Write it in a reviewer's voice: prefer "we" and "consider" over "you should"; frame
-suggestions as questions where you can; stay direct and constructive on blocking issues
-("this needs to change because…"); acknowledge good work; and drop "obviously" and "simply".
+Cite at least one source for every non-trivial finding, strongest authority first: AWS
+documentation (service behavior) → CDK source code (precedent, linked by file + line) → CDK
+design guidelines (`docs/DESIGN_GUIDELINES.md`, `docs/AGENTS_CONSTRUCT_DESIGN.md`,
+`docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`) → CloudFormation resource specification
+(property/enum correctness) → linked issue / PR discussion (customer context) → existing tests
+(behavioral expectations). When the code and the AWS documentation disagree, report the
+disagreement and cite both.
+
+## Suggested fix
+
+Offer a fix once you have checked it: a code example, or a question framing a specific
+alternative ("What do you think about scoping this to the bucket ARN?"). You have checked a
+fix when you have read that what it uses exists at the reviewed commit and that the code
+depending on what it changes still fits it, because an unchecked fix can break where it is
+applied. Without a checked fix, report the problem and its evidence and leave `suggestedFix`
+null. A fix you suggest follows the same guides as the code under review.
 
 ## Findings must meet the bar
 

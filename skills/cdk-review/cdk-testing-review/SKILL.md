@@ -35,8 +35,8 @@ Work the changed surface in this order. Adapt it to what the diff touches.
 
 Before you cite an integ-test pattern, an `assertions` / `integ-tests` API as misused, or a required
 pattern as absent, search and read the CDK testing guide and the module README available to you and
-confirm against them rather than working from memory (see `cdk-review-principles` "Verify before you
-cite").
+confirm against them rather than working from memory (see `cdk-review-principles`
+"Verification").
 
 ## What not to flag
 
