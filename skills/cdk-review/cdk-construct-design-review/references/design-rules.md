@@ -51,8 +51,8 @@ and derive its resource interface name (`IFoo`). See
 [`AGENTS_CONSTRUCT_DESIGN.md § Base Classes & Inheritance`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#base-classes--inheritance).
 
 **[CD-FROM-METHODS] (BLOCKING)** — Give a resource at least one `from{Attribute}` importer (a resource
-with an ARN MUST have `fromFooArn`), placed on the concrete class; `from*` MUST NOT transform or validate
-the identifier. See
+with an ARN MUST have `fromFooArn`), placed on the concrete class; a `from*` method passes the identifier
+it is given through unchanged. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Import (from*) Methods`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#import-from-methods).
 
 **[CD-REMOVAL-POLICY] (BLOCKING)** — A new stateful resource (database, table, bucket) must expose a
