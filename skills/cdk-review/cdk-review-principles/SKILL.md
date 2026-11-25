@@ -21,7 +21,8 @@ harm:
   - *Open door.* A new IAM policy with `Resource: "*"` where a scoped ARN exists — the
     blast radius is the whole account → BLOCKING.
 - **RECOMMENDED** — the harm is **decay**. Nothing breaks today, but the change leaves a
-  hardening gap, a maintainability cost, or a latent trap that bites a later reader.
+  permission or default wider than the code needs, a maintainability cost, or a latent trap
+  that bites a later reader.
   Should be fixed before merge; does not block it.
   - *Over-grant.* `s3:*` where a scoped action set would serve. `AGENTS.md`: "SHOULD
     prefer specific IAM actions over full-service wildcards (`s3:*`)." The resource is

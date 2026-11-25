@@ -1,6 +1,6 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation reviewer. Use when a PR adds or changes README text or examples, `*.ts-fixture` files, JSDoc including `@default` tags, or migration notes. Raises the documentation defects its rules describe: a `@default` that misstates the code, a README or JSDoc statement or example that leads a user to failing code or a misbehaving resource, a missing or stale README example, a mixin merge with L1 properties that the PR adds or changes and the JSDoc does not describe, and a missing migration note."
+description: "AWS CDK documentation reviewer. Use when a PR adds or changes README text or examples, `*.ts-fixture` files, JSDoc including `@default` tags, or migration notes. Raises the documentation defects its rules describe: a `@default` that misstates the code; a README or JSDoc statement or example that a user who relies on it turns into code that fails to synthesize or deploy, or into a resource that behaves other than the text says; a missing or stale README example; a mixin merge with L1 properties that the PR adds or changes and the JSDoc does not describe; and a missing migration note."
 ---
 
 # AWS CDK Documentation Review
