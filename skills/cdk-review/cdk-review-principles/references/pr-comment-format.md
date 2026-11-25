@@ -17,7 +17,7 @@ Give each finding these fields:
   section, or a URL; or null.
 - `evidence` — the supporting detail behind the finding.
 
-The review as a whole carries a `summary` with its `text`.
+Related findings on one cause are one finding.
 
 ## `message`
 
@@ -28,9 +28,3 @@ The review as a whole carries a `summary` with its `text`.
 - **Guide** — the guide cited inline where one backs the finding.
 
 The change to make goes in `suggestedFix` only.
-
-## Summary and grouping
-
-- An observation with no line, positive notes and groups of minor points go in the review
-  `summary`, which carries the broader picture.
-- Related findings on one cause are one finding.
