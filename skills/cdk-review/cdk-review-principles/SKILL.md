@@ -7,17 +7,14 @@ description: "Shared foundation every CDK review-dimension skill applies — how
 
 ## Severity
 
-A finding takes the tier of the rule it cites: the tier in the rule's header, or the tier its Tier
-line gives when that line's condition holds.
-
 - **BLOCKING** — must be fixed before merge.
 - **RECOMMENDED** — should be fixed before merge.
 
-The `severity` field takes one of these two words. A finding that rests on a guide line alone takes its
-tier from the line's wording: BLOCKING for MUST or MUST NOT, RECOMMENDED for SHOULD or SHOULD NOT, and
-RECOMMENDED for a line that requires something with neither word. Where one of your rules states the case,
-the rule's tier applies. A Tier line's tier applies once you have confirmed its condition; until then the
-header's tier applies. The tier stays the same however the comment is worded.
+A finding's tier comes from what backs it:
+
+- **A rule** — the tier in its header, or the tier of its Tier line once you have confirmed that line's
+  condition.
+- **A guide line alone** — BLOCKING for MUST or MUST NOT; RECOMMENDED otherwise.
 
 ## When a defect is a finding
 
