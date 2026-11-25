@@ -107,6 +107,6 @@ for the cases that need an assertion and the `awsApiCall` → `ExpectedResult` A
 `403`/error `ExpectedResult`).
 
 **[TEST-INTEG-REDUNDANT] (RECOMMENDED)** — Several resources in an integ test that differ only in the
-value of one setting, such as `memorySize`. A new supported version, or a value that adds resources or
-integrations, keeps its own resource. See
+value of one setting, such as `memorySize`. A new supported version, or a value that changes what else is
+deployed, keeps its own resource. See
 [`INTEGRATION_TESTS.md § New L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#new-l2-constructs).
