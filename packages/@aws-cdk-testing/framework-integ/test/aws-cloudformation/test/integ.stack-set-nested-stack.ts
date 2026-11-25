@@ -133,10 +133,10 @@ class TestCase extends Stack {
       stackSetName,
       assetBuckets: [s3.Bucket.fromBucketName(this, 'AssetBucket', `${assetBucketPrefix}-${targetRegion}`)],
       assetBucketPrefix,
-      target: cfn.StackSetTarget.fromAccounts({
+      targets: [cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [targetRegion],
-      }),
+      })],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
         adminRole,
