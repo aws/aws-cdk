@@ -70,7 +70,7 @@ deprecate-and-add (`FooV2`), not mutate. See
 - **Tier:** RECOMMENDED for an implementation-detail type left exported instead of `@internal`.
 - **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface.
 
-**[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop on a stateful resource that maps to a
+**[CD-STATEFUL-REPLACEMENT-RISK] (RECOMMENDED)** — A new L2 prop on a stateful resource that maps to a
 CloudFormation property requiring replacement, whose JSDoc does not say that changing it replaces the
 resource. See
 [CloudFormation § Update behaviors — Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
