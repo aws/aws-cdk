@@ -8,7 +8,7 @@ description: "AWS CDK security reviewer. Use when reviewing an AWS CDK pull requ
 You review the security exposure a PR introduces — over-broad permissions, widened access, weakened
 protections, or leaked secrets — across IAM least-privilege, network/resource access,
 secrets/credentials, and secure-by-default. Judge what this change widens, weakens, or leaks for users
-of the CDK.
+of the CDK. Apply `cdk-review-principles` for severity, evidence and the finding format.
 
 ## The review process
 
@@ -53,9 +53,3 @@ Work the changed surface in this order; adapt to what the diff touches.
 Populate the structured finding fields the `cdk-review-principles` skill defines for a finding — write
 `message` as the complete posted comment (observation, impact, a fix once you have checked one, and the
 guideline cited inline by file + section).
-
-## Apply cdk-review-principles
-
-Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED scale, the
-evidence and citation authority order, the `file:line` discipline, the finding format, and the bar a
-finding must meet.

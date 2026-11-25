@@ -14,7 +14,7 @@ Give each finding these fields:
 - `ruleId` — the stable `[id]` of the rule that fired, taken verbatim from the dimension's
   rules. The debug/trace key: it names exactly which rule produced the finding.
 - `message` — the human-visible comment text (see the next section).
-- `reference` — the authoritative source the finding cites: a CDK design guideline, jsii doc, CloudFormation resource spec, or AWS service doc — file + section, or a URL — per the authority order in `SKILL.md` "Make each finding land"; or null.
+- `reference` — the authoritative source the finding cites: a CDK design guideline, jsii doc, CloudFormation resource spec, or AWS service doc — file + section, or a URL — taking the strongest source first, in the order `SKILL.md` "Make each finding land" lists; or null.
 - `evidence` — the supporting detail behind the finding.
 - `suggestedFix` — a concrete fix, or null.
 

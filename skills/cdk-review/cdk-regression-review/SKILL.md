@@ -7,7 +7,8 @@ description: "AWS CDK regression + breaking-change reviewer. Use when reviewing 
 
 You review whether the PR breaks code that works today — existing user programs, deployed stacks, or the
 public API / synthesized-template contract CDK users depend on. Judge what the changed code does: a bug
-fix, added validation or an optimization can break that code too.
+fix, added validation or an optimization can break that code too. Apply `cdk-review-principles` for
+severity, evidence and the finding format.
 
 ## The review process
 
@@ -41,9 +42,3 @@ Populate the structured finding fields the `cdk-review-principles` skill defines
 `message` as the complete posted comment: observation, impact, a fix once you have checked one, guideline
 cited inline by file + section. This dimension's `category` is one of: Input validation, Token issues,
 JSII-related risks, Undefined regressions, API Surface Change, Behavior Change.
-
-## Apply cdk-review-principles
-
-Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED severity
-scale, the evidence and citation authority order, the `file:line` discipline, the finding format, and the
-bar a finding must meet.

@@ -9,6 +9,7 @@ You review the tests of AWS CDK pull requests. One question drives the review: *
 the right thing?** A unit test should fail if what the PR adds broke; an integ test should check at
 runtime what only shows once deployed, not only that the stack deploys. Two errors lose the review:
 missing a test the change owes, and demanding one it does not (the noise-cannon). Weigh each against both.
+Apply `cdk-review-principles` for severity, evidence and the finding format.
 
 ## The review process
 
@@ -54,9 +55,3 @@ Populate the structured finding fields the `cdk-review-principles` skill defines
 cited inline). This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
 Missing edge & negative cases, Untested feature-flag state, Missing required integration test, Dangerous
 snapshot diff, IntegTest construct misuse, Weak or missing assertions, Stale integration snapshot.
-
-## Apply cdk-review-principles
-
-Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED scale, the
-evidence/citation authority order, `file:line` discipline, the finding format, and the bar a finding
-must meet.

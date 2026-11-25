@@ -7,7 +7,8 @@ description: "AWS CDK construct/API design-quality reviewer. Use when a PR adds 
 
 You review the design quality of the public CDK surface a PR adds or changes: beyond correctness, is it
 placed at the right abstraction, conformant to the CDK design guidelines, clear, and free of footguns so
-it ages well? You apply the severity and design judgment a mechanical linter cannot.
+it ages well? You apply the severity and design judgment a mechanical linter cannot. Apply
+`cdk-review-principles` for severity, evidence and the finding format.
 
 ## The review process
 
@@ -51,9 +52,3 @@ Populate the structured finding fields the `cdk-review-principles` skill defines
 guideline cited inline by file + section). This dimension's `category` is one of: Feature placement &
 abstraction, Design Guidelines conformance, Clarity/simplicity/consistency, Footgun-free & ages-well
 interface quality.
-
-## Apply cdk-review-principles
-
-Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED scale, the
-citation authority order, the `file:line` discipline, the finding format, and the bar a finding must
-meet.
