@@ -132,7 +132,7 @@ no consumer today.
 **[CD-DEAD-CODE] (BLOCKING)** — No commented-out code, dead code, or `eslint-disable` directives in the
 public surface.
 
-**[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID in a stable module MUST NOT change.
+**[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID changed in a stable module.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
 capability lands additively. See
