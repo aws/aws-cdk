@@ -21,7 +21,7 @@ harm:
   - *Account-wide access.* A new IAM policy with `Resource: "*"` where a scoped ARN exists —
     it reaches the whole account, so a security boundary opens → BLOCKING.
 - **RECOMMENDED** — nothing breaks today, but the change leaves a permission or default
-  wider than the code needs, a maintainability cost, or a trap that misleads a later reader.
+  wider than the code needs, a maintainability cost, or a trap a later reader would act on.
   Should be fixed before merge; does not block it.
   - *Over-grant.* `s3:*` where a scoped action set would serve. `AGENTS.md`: "SHOULD
     prefer specific IAM actions over full-service wildcards (`s3:*`)." The resource is
@@ -46,7 +46,7 @@ The tier is right only if you rate the harm honestly. Check four things:
   a low-severity finding is the most common way a review posts findings it should not. A defect
   is a finding only when you can name its harm: something that breaks, a security boundary that
   opens, a permission or default wider than the code needs, a maintainability cost, or a trap
-  that misleads a later reader.
+  a later reader would act on.
 - **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
   *new* harm → not a finding. Rate what the diff adds.
 
@@ -122,7 +122,7 @@ at any severity:
 - **Outside this dimension's scope** — a defect that belongs to a different review
   dimension is not yours to flag; each dimension reviews independently, so leave it rather
   than report it here.
-- **Minor points on a clean change** — when the changed surface is clean, report nothing.
+- **A clean change** — when the changed surface is clean, report nothing.
 - **Release-tooling / monorepo markers** — `0.0.0` workspace or alpha versions, `V2NEXT`
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.

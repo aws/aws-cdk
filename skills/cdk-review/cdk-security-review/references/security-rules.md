@@ -70,9 +70,9 @@ separation. When a `PolicyStatement` gates access on `aws:ResourceTag`/`aws:Prin
 rewrite the governing tag and self-grant. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
-**[SEC-IAM-OVERBROAD-PRINCIPAL] (RECOMMENDED)** *(conditional — BLOCKING when it opens access)* — A role
-`assumedBy` an `AccountRootPrincipal()` (or a cross-account root) where a specific `ServicePrincipal`
-suffices. See
+**[SEC-IAM-OVERBROAD-PRINCIPAL] (RECOMMENDED)** *(conditional — BLOCKING when it opens a security boundary)*
+— A role `assumedBy` an `AccountRootPrincipal()` (or a cross-account root) where a specific
+`ServicePrincipal` suffices. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
 
 ## Network & resource access
