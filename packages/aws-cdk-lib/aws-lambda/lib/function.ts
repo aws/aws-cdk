@@ -1785,6 +1785,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       resourceName: isWildcardFunctionArn ? '*' : this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+    if (isWildcardFunctionArn) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyWildcardFunctionArn',
+        'durableConfig.kmsKey statements match every Lambda function in this account and Region. ' +
+        'Set functionName to a literal string to scope them to this function.');
+    }
     const encryptionContext = { 'kms:EncryptionContext:aws:lambda:FunctionArn': functionArn };
     const viaService = { 'kms:ViaService': `lambda.${stack.region}.amazonaws.com` };
 
@@ -1814,12 +1819,13 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         'kms:GenerateDataKey',
       );
     }
-    // A key in another account must also name the execution role, which the role's IAM policy cannot do.
+    // A key in another account must also allow the function account's identities in its key policy; IAM alone cannot.
     const isCrossAccountKey = !Token.isUnresolved(key.env.account) && !Token.isUnresolved(stack.account) && key.env.account !== stack.account;
     if (!isEditableKey || isCrossAccountKey) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyPolicyIncomplete',
         'CDK cannot add every durableConfig.kmsKey statement to the key policy. Add the Lambda service principal statement if it is ' +
-        'missing, and an execution role statement if the key is in another account. ' +
+        'missing, and, if the key is in another account, statements for the execution role, the identity that deploys the function, ' +
+        'and durable execution operators. ' +
         'See https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html.');
     }
   }

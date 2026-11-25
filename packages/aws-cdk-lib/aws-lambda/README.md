@@ -1660,21 +1660,23 @@ in two places:
 
 - The execution role gets `kms:Decrypt` in its IAM policy, conditioned on `kms:ViaService` and the
   function's encryption context. KMS applies this IAM policy only when the key policy has the default
-  root statement. A `kms.Key` has it unless you pass your own `policy` without it.
+  root statement. A `kms.Key` has it unless you pass your own `policy` without it. CDK cannot add a
+  policy to a role imported with `mutable: false`, so grant that role `kms:Decrypt` yourself.
 - The key policy gets a statement for the Lambda service principal, with `kms:Decrypt` and
   `kms:GenerateDataKey`, conditioned on `aws:SourceAccount`, `aws:SourceArn` and the encryption context.
 
 If the key is imported, or is a `kms.CfnKey` whose `keyPolicy` is not a JSON object, CDK cannot edit the
 key policy and emits a warning. Add the Lambda service principal statement to the key policy yourself.
-If the key is in another account, CDK also emits the warning, because the key policy must name the
-execution role too. Add that statement yourself.
+If the key is in another account, CDK also emits the warning. The key policy must then also allow the
+execution role, the identity that deploys the function, and durable execution operators. Add those
+statements yourself.
 
 CDK adds no statements for the function author or for durable execution operators. With the default root
 statement, the identity that deploys the function needs `kms:DescribeKey`, `kms:Decrypt` and
 `kms:GenerateDataKey` in its IAM policies, and operators need `kms:Decrypt` in theirs.
 
 Set `functionName` to a literal string to scope the statements to the function. Without it, they match
-every function in the account and Region. Adding `durableConfig` to an existing function replaces it, so
+every function in the account and Region, and CDK emits a warning. Adding `durableConfig` to an existing function replaces it, so
 you can set a new literal `functionName` in the same deployment. Don't keep an existing custom name, as the
 note above describes. If the function already has `durableConfig`, setting `functionName` replaces it.
 

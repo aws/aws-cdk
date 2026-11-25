@@ -254,6 +254,8 @@ describe('durable config', () => {
       lambdaServiceStatement('*'),
     ]);
     expectExecutionRoleStatement(stack, '*', keyArnOf(stack, key));
+    Annotations.fromStack(stack).hasWarning('/stack/Lambda',
+      Match.stringLikeRegexp('match every Lambda function in this account and Region.*durableConfigKmsKeyWildcardFunctionArn'));
   });
 
   test('DurableConfig with a kmsKey in another stack adds no reference from the key stack to the function stack', () => {
@@ -294,6 +296,28 @@ describe('durable config', () => {
     newDurableFunction(stack, { functionName: 'my-durable-fn', role, kmsKey: key });
 
     expectExecutionRoleStatement(stack, 'my-durable-fn', keyArnOf(stack, key));
+  });
+
+  test('DurableConfig with a kmsKey grants a mutable role imported by ARN through a new policy', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'stack');
+    const key = new kms.Key(stack, 'DurableKey');
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/DurableRole');
+    newDurableFunction(stack, { functionName: 'my-durable-fn', role, kmsKey: key });
+
+    expectExecutionRoleStatement(stack, 'my-durable-fn', keyArnOf(stack, key));
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', { Roles: ['DurableRole'] });
+  });
+
+  test('DurableConfig with a kmsKey adds no grant for an immutable role imported by ARN', () => {
+    const stack = new cdk.Stack(new cdk.App(), 'stack');
+    const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/DurableRole', { mutable: false });
+    newDurableFunction(stack, { functionName: 'my-durable-fn', role, kmsKey: new kms.Key(stack, 'DurableKey') });
+
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+    expectKeyPolicyStatements(stack, [
+      Match.objectLike({ Principal: accountRoot, Action: 'kms:*' }),
+      lambdaServiceStatement('my-durable-fn'),
+    ]);
   });
 
   test('DurableConfig with @aws-cdk/aws-iam:minimizePolicies keeps the exact conditions', () => {

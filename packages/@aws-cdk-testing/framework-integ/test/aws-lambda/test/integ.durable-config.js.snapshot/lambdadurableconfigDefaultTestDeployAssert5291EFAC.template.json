@@ -38,7 +38,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795550444238"
+    "salt": "1795623645825"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -94,6 +94,46 @@
          "Effect": "Allow",
          "Resource": [
           "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:Invoke"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":lambda:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":function:",
+             {
+              "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
+             }
+            ]
+           ]
+          }
          ]
         }
        ]
@@ -164,7 +204,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795550444239"
+    "salt": "1795623645826"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -207,10 +247,58 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1795550444240"
+    "salt": "1795623645826"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke196a686eba30e2212e0fd4c079be8c8d": {
+   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Lambda",
+    "api": "invoke",
+    "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"Payload\":{\"result\":\"checkpointed\"}}}",
+    "parameters": {
+     "FunctionName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Payload": "\"{}\""
+    },
+    "flattenResponse": "false",
+    "salt": "1795623645831"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "LambdaInvoke196a686eba30e2212e0fd4c079be8c8dInvokeA4AD8649": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::ImportValue": "aws-cdk-lambda-durable-config:ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
   }
  },
  "Outputs": {
@@ -234,6 +322,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsLambdaInvoke196a686eba30e2212e0fd4c079be8c8d": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LambdaInvoke196a686eba30e2212e0fd4c079be8c8d",
      "assertion"
     ]
    }

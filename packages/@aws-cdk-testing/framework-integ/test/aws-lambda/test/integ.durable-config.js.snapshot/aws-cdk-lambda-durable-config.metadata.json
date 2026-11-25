@@ -41,8 +41,8 @@
       "trace": [
         "Annotations.addMessage (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
         "Annotations.addInfoV2 (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
-        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1309:43)",
-        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:789:59)",
+        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1308:43)",
+        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:45:1)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
@@ -81,8 +81,28 @@
       "trace": [
         "Annotations.addMessage (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
         "Annotations.addInfoV2 (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
-        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1309:43)",
-        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:789:59)",
+        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1308:43)",
+        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
+        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:53:26)",
+        "Module._compile (node:internal/modules/cjs/loader:1929:14)",
+        "Object..js (node:internal/modules/cjs/loader:2060:10)",
+        "Module.load (node:internal/modules/cjs/loader:1651:32)",
+        "Module._load (node:internal/modules/cjs/loader:1443:12)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:261:19)",
+        "Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)",
+        "node:internal/main/run_main_module:33:47"
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "durableConfig.kmsKey statements match every Lambda function in this account and Region. Set functionName to a literal string to scope them to this function. [ack: @aws-cdk/aws-lambda:durableConfigKmsKeyWildcardFunctionArn]",
+      "trace": [
+        "Annotations.addMessage (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "PropertyInjectable.grantDurableExecutionKeyAccess (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1347:47)",
+        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1320:22)",
+        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:53:26)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
@@ -122,10 +142,10 @@
       "trace": [
         "Annotations.addMessage (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
         "Annotations.addInfoV2 (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
-        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1309:43)",
-        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:789:59)",
+        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1308:43)",
+        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:61:24)",
+        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:62:24)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
         "Object..js (node:internal/modules/cjs/loader:2060:10)",
         "Module.load (node:internal/modules/cjs/loader:1651:32)",
@@ -197,10 +217,10 @@
       "trace": [
         "Annotations.addMessage (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
         "Annotations.addInfoV2 (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:204:18)",
-        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1309:43)",
-        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:789:59)",
+        "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1308:43)",
+        "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:75:28)",
+        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:84:28)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
         "Object..js (node:internal/modules/cjs/loader:2060:10)",
         "Module.load (node:internal/modules/cjs/loader:1651:32)",
@@ -373,6 +393,14 @@
       }
     }
   ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmkAndName/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
   "/aws-cdk-lambda-durable-config/CrossStackRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -433,6 +461,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefDurableFunctionWithCmk4AAC4848129EDE55"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/Exports/Output{\"Ref\":\"DurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
     }
   ],
   "/aws-cdk-lambda-durable-config/Exports/Output{\"Fn::GetAtt\":[\"ScopedKeyB82353F2\",\"Arn\"]}": [
@@ -547,6 +581,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DurableFunctionWithCmkAndNameLogGroup04A02A44"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmkAndName/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982"
     }
   ],
   "/aws-cdk-lambda-durable-config/CrossStackRole/DefaultPolicy/Resource": [
