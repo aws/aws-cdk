@@ -91,7 +91,7 @@
 
 ## Import Method Implementation
 
-- A `from*` method that parses its input MUST use the Arn helpers, which accept tokens (`Arn.split`, `Stack.of(scope).splitArn`, or `Arn.extractResourceName` for a resource name that can contain `/`), or check `Token.isUnresolved` before parsing the string another way
+- A `from*` method that parses its input MUST use the Arn helpers (`Arn.split`, `Stack.of(scope).splitArn`), which accept tokens, or check `Token.isUnresolved` before parsing the string another way
 - When implementing `fromLookup` methods via context providers, prefer `fromResourceAttributes()` over `fromResourceName()` to avoid reconstructing ARNs with the wrong environment
 
 ---
