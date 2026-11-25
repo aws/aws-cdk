@@ -69,8 +69,8 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     echo "Using version '$version' as the baseline..." >&2
 
     # Filter packages by existing at the target version
-    existing_pkg_dirs=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_for_existing_pkgs "$@" "'$version'"' _ {})
-    existing_names=$(echo "$existing_pkg_dirs" | xargs -n1 -P4 -I {} bash -c 'package_name "$@"' _ {})
+    existing_pkg_dirs=$(echo "$jsii_package_dirs" | xargs -P4 -I {} bash -c 'dirs_for_existing_pkgs "$@" "'$version'"' _ {})
+    existing_names=$(echo "$existing_pkg_dirs" | xargs -P4 -I {} bash -c 'package_name "$@"' _ {})
     install_versions=$(for name in $existing_names; do echo "${name}@${version}"; done)
     echo " Done." >&2
 

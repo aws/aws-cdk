@@ -11,6 +11,8 @@ permissions:
   id-token: write
   actions: read
 
+cache-mode: read
+
 jobs:
   upload:
     name: Upload to Codecov

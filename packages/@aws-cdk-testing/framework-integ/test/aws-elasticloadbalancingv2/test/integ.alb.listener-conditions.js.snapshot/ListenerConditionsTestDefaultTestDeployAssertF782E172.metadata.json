@@ -1,0 +1,128 @@
+{
+  "/ListenerConditionsTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:231:27)",
+        "process.<anonymous> (/home/azatoth/build/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:178:51)",
+        "Object.onceWrapper (node:events:633:26)",
+        "process.emit (node:events:518:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "ListenerConditionsTestDefaultTestDeployAssertF782E172.template.json"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRules3a7a15be3f37eeb154f14e98c948a259/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRules3a7a15be3f37eeb154f14e98c948a259/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallelasticloadbalancingv2describeRules3a7a15be3f37eeb154f14e98c948a259"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRulesb42766845fa4fa07b779551f67185976/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRulesb42766845fa4fa07b779551f67185976/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallelasticloadbalancingv2describeRulesb42766845fa4fa07b779551f67185976"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRulesdb6d3f7c76934a5dda27194023afcb7c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRulesdb6d3f7c76934a5dda27194023afcb7c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallelasticloadbalancingv2describeRulesdb6d3f7c76934a5dda27194023afcb7c"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRules3a7a15be3f37eeb154f14e98c948a259/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallelasticloadbalancingv2describeRules3a7a15be3f37eeb154f14e98c948a259"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRulesb42766845fa4fa07b779551f67185976/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallelasticloadbalancingv2describeRulesb42766845fa4fa07b779551f67185976"
+    }
+  ],
+  "/ListenerConditionsTest/DefaultTest/DeployAssert/AwsApiCallelastic-load-balancing-v2describeRulesdb6d3f7c76934a5dda27194023afcb7c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallelasticloadbalancingv2describeRulesdb6d3f7c76934a5dda27194023afcb7c"
+    }
+  ]
+}

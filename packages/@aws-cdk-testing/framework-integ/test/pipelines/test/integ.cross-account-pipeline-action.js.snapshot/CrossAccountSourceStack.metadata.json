@@ -1,4 +1,10 @@
 {
+  "/CrossAccountSourceStack": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CrossAccountSourceStack.template.json"
+    }
+  ],
   "/CrossAccountSourceStack/SourceBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -20,6 +26,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "architecture": "*",
         "layers": [
           "*"
         ],
@@ -185,6 +192,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
+        "architecture": "*",
         "layers": [
           "*"
         ],
