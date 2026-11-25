@@ -13,7 +13,7 @@ severity, evidence and the finding format.
 ## The review process
 
 1. **Orient and load your rules.** Name the public surface the PR changes. Establish first whether its
-   module is stable or experimental, since the breaking-change rows rate by it. Read
+   module is stable or experimental, since it decides which breaking-change rows apply. Read
    [`regression-rules.md`](references/regression-rules.md): its rows are your checklist.
 
 2. **Check the diff against the rules.** For each rule check both directions: what is present and

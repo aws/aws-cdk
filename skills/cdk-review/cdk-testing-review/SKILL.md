@@ -29,9 +29,8 @@ Apply `cdk-review-principles` for severity, evidence and the finding format.
 
 ## What not to flag
 
-- **A test the change does not need** — a trivial pass-through exposing no previously-unused property, a
-  refactor with no behavior change, or a single-property that just renders into the template needs no
-  test.
+- **A test the change does not need** — a trivial pass-through exposing no previously-unused property, or
+  a refactor with no behavior change, needs no test.
 - **Production-code correctness** — whether the implementation is buggy is production-code
   correctness — outside your scope. Judge whether the tests would catch a bug, not whether the code has one.
 - **Mechanical / tooling-driven snapshot churn** — asset hashes, CDK-version strings, bootstrap /

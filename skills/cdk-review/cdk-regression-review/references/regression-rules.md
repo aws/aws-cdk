@@ -2,9 +2,10 @@
 
 ## Input validation
 
-**[REG-VALIDATION-FALSE-POSITIVE] (BLOCKING)** — New validation must not reject a value CDK accepts today,
-meaning input that deploys successfully; an over-strict check turns a working stack into one that stops
-synthesizing. Confirm the real constraint against the authoritative AWS service docs before rating. See
+**[REG-VALIDATION-FALSE-POSITIVE] (BLOCKING)** — New validation must not reject a value CDK accepts
+today, meaning input that deploys successfully; an over-strict check turns a working stack into one that
+stops synthesizing. Confirm the real constraint against the authoritative AWS service docs before you
+raise it. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for new validation on existing constructs.
 - **Detection:** for each new rejection, name one concrete input that deployed before
@@ -92,28 +93,27 @@ allowed. In an **experimental** library (an `-alpha` suffix and `"stability": "e
 legitimate stable break is an existing API that was a bug *blocking* the feature (nobody could use it),
 recorded in `allowed-breaking-changes.txt` at the repo root. A break with an entry there is not a finding
 when the API was unusable before the change; an entry the PR itself adds does not by itself exempt the
-break. Confirm the module's stability from its `package.json` before rating. See
+break. Confirm the module's stability from its `package.json` before you raise a break. See
 [`CONTRIBUTING.md § Breaking Changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#breaking-changes),
 [`§ API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 and
 [`AGENTS.md § PR Conventions`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#pr-conventions).
 
-**[REG-API-SURFACE-BREAK] (BLOCKING)** — A change that makes existing programs fail to compile: renaming or
-removing a public class/method/property, adding a required property (or changing optional→required /
-nullable→non-nullable on an input), or removing a return property (or changing non-nullable→nullable on a
-return), or removing an enum member. See
+**[REG-API-SURFACE-BREAK] (BLOCKING)** — A change in a stable module that makes existing programs fail to
+compile: renaming or removing a public class/method/property, adding a required property (or changing
+optional→required / nullable→non-nullable on an input), or removing a return property (or changing
+non-nullable→nullable on a return), or removing an enum member. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation)
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
-- **Tier:** resolve the tier through [REG-STABILITY-GATE].
 
-**[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
-error: an update that cannot be applied, a change that causes service interruption or data loss
-(replacement of a stateful resource), or a change to the **logical ID of a stateful resource**. See
+**[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change in a stable module that alters CloudFormation synthesis
+without a compile error: an update that cannot be applied, a change that causes service interruption or
+data loss (replacement of a stateful resource), or a change to the **logical ID of a stateful
+resource**. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for the construct-ID/logical-ID→data-loss rule; [`CONTRIBUTING.md § Behavior changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#behavior-changes)
 for the definitional test of which template changes are breaking.
-- **Tier:** resolve the tier through [REG-STABILITY-GATE].
 
 **[REG-BEHAVIOR-CHANGE-NO-FLAG] (RECOMMENDED)** — A change to the observable behavior of an existing API in a
 stable module, such as a changed default, with no feature flag. See

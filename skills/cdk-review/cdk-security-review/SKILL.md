@@ -30,7 +30,7 @@ of the CDK. Apply `cdk-review-principles` for severity, evidence and the finding
 ## What not to flag
 
 - **Correctness and regression risks** (validation, token handling, edge-case breakage) —
-  outside your scope, unless the defect is itself a security exposure.
+  outside your scope, unless it is a security exposure one of your rules describes.
 - **Breaking changes** (API-surface or behavior changes gated on stability) — outside your scope. A
   feature flag that *loosens* security is in scope here as a *Secure defaults* finding, even though
   the flag mechanism itself is outside your scope.

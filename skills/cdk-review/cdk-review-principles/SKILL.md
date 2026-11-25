@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; how to verify a fact before posting and which source to cite for it; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; how to verify a fact before posting and which source to cite for it; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, taking a finding's tier from its rule, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
