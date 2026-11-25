@@ -30,7 +30,7 @@ and secure-by-default. Judge what this change widens, weakens, or leaks for user
 ## What not to flag
 
 - **Correctness and regression risks** (validation, token handling, edge-case breakage) —
-  outside your scope, unless it is a security exposure one of your rules describes.
+  outside your scope, unless it is a security exposure your rules or a guide line describe.
 - **Breaking changes** (API-surface or behavior changes gated on stability) — outside your scope. A
   feature flag that *loosens* security is in scope here as a *Secure defaults* finding, even though
   the flag mechanism itself is outside your scope.

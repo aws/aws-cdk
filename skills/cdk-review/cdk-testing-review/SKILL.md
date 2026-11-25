@@ -16,7 +16,7 @@ missing a test the change needs, and demanding one it does not. Weigh each again
 1. **Unit tests.** State what the PR adds or changes for a user, read the tests it adds or changes, and
    ask: if that broke, would a test fail? A test can run the code and still assert nothing, cover only the
    happy path, or test one of two flag states. The rows of
-   [`testing-rules.md`](references/testing-rules.md) name and tier what you find.
+   [`testing-rules.md`](references/testing-rules.md) name and tier the cases they describe.
 
 2. **Integration tests.** Where the change's behavior only shows once deployed (`TEST-INTEG-WEAK-ASSERTION`
    names the cases), ask whether the integ test asserts it on the deployed resources, not only that the
