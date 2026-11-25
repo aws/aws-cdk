@@ -64,10 +64,10 @@ test('requires asset bucket to be passed', () => {
 
   expect(() => {
     new LambdaStackSet(stack, 'StackSet', {
-      target: StackSetTarget.fromAccounts({
+      targets: [StackSetTarget.fromAccounts({
         regions: ['us-east-1'],
         accounts: ['11111111111'],
-      }),
+      })],
       capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
     });
   }).toThrow('an asset bucket must be provided to use file assets, set \'assetBuckets\' in the StackSet props');
@@ -82,13 +82,13 @@ test('test lambda assets with one asset bucket', () => {
   const stack = new Stack(app);
   new LambdaStackSet(stack, 'StackSet', {
     assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets') }),
-    target: StackSetTarget.fromAccounts({
+    targets: [StackSetTarget.fromAccounts({
       regions: ['us-east-1'],
       accounts: ['11111111111'],
       parameterOverrides: {
         Param1: 'Value1',
       },
-    }),
+    })],
     capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
   });
 
@@ -107,13 +107,13 @@ test('test lambda assets with two asset buckets', () => {
       'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets'),
       'eu-west-1': s3.Bucket.fromBucketName(stack, 'AssetBucket2', 'integ-assets2'),
     }),
-    target: StackSetTarget.fromAccounts({
+    targets: [StackSetTarget.fromAccounts({
       regions: ['us-east-1'],
       accounts: ['11111111111'],
       parameterOverrides: {
         Param1: 'Value1',
       },
-    }),
+    })],
     capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
   });
 
@@ -130,10 +130,10 @@ test('lambda asset bucket name is looked up by region in the stackset template',
   const stack = new Stack(stage, 'Parent');
   const lambdaStack = new LambdaStackSet(stack, 'StackSet', {
     assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
-    target: StackSetTarget.fromAccounts({
+    targets: [StackSetTarget.fromAccounts({
       regions: ['us-east-1'],
       accounts: ['11111111111'],
-    }),
+    })],
     capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
   });
 
@@ -153,10 +153,10 @@ test('lambda asset is staged to the parent asset bucket and copied via bucket de
   const stack = new Stack(app);
   new LambdaStackSet(stack, 'StackSet', {
     assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets') }),
-    target: StackSetTarget.fromAccounts({
+    targets: [StackSetTarget.fromAccounts({
       regions: ['us-east-1'],
       accounts: ['11111111111'],
-    }),
+    })],
     capabilities: [CfnCapabilities.ANONYMOUS_IAM, CfnCapabilities.NAMED_IAM],
   });
 
@@ -214,10 +214,10 @@ describe('StackSet template asset object keys', () => {
     const stack = new Stack(app, 'Parent', { synthesizer: options.synthesizer });
     const stackSet = new StackSet(stack, 'StackSet', {
       assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
-      target: StackSetTarget.fromAccounts({
+      targets: [StackSetTarget.fromAccounts({
         regions: ['us-east-1'],
         accounts: ['11111111111'],
-      }),
+      })],
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
     });
 
@@ -418,7 +418,7 @@ describe('StackSet asset buckets', () => {
     }
     const stackSet = new StackSet(stack, 'StackSet', {
       assetBuckets: StackSetAssets.fromRegionalBuckets(buckets),
-      target: StackSetTarget.fromAccounts({ accounts: ['222222222222'], regions: ['us-east-1', 'eu-west-1'] }),
+      targets: [StackSetTarget.fromAccounts({ accounts: ['222222222222'], regions: ['us-east-1', 'eu-west-1'] })],
     });
     addLambda(stackSet);
     return { app, stack, stackSet };
@@ -670,7 +670,7 @@ describe('StackSet asset bucket regions', () => {
     }
     const stackSet = new StackSet(stack, 'StackSet', {
       assetBuckets: StackSetAssets.fromRegionalBuckets(buckets),
-      target,
+      targets: target ? [target] : undefined,
     });
     return { app, stack, stackSet };
   }
@@ -726,7 +726,7 @@ describe('StackSet asset bucket regions', () => {
   test('a StackSet without asset buckets has no coverage check', () => {
     const app = new App();
     const stack = new Stack(app, 'Admin');
-    const stackSet = new StackSet(stack, 'StackSet', { target: accounts(['eu-west-1']) });
+    const stackSet = new StackSet(stack, 'StackSet', { targets: [accounts(['eu-west-1'])] });
     new sns.Topic(stackSet, 'Topic');
 
     expect(() => app.synth()).not.toThrow();
@@ -760,7 +760,7 @@ describe('StackSet asset read grants', () => {
     }
     const stackSet = new StackSet(stack, 'StackSet', {
       assetBuckets: StackSetAssets.fromRegionalBuckets(buckets),
-      target: StackSetTarget.fromOrganizationalUnits({ organizationalUnits: ['ou-1'], regions: ['us-east-1', 'eu-west-1'] }),
+      targets: [StackSetTarget.fromOrganizationalUnits({ organizationalUnits: ['ou-1'], regions: ['us-east-1', 'eu-west-1'] })],
       deploymentType: DeploymentType.serviceManaged(),
     });
     return { app, stack, bucketStacks, stackSet };

@@ -1310,7 +1310,7 @@ export class StackSet extends Stack implements IStackSet {
    * Checks the asset buckets against the regions the StackSet deploys to
    */
   private validateAssetBuckets(assetBuckets: StackSetAssetBuckets): string[] {
-    const regionGroups = this.stackInstances.map(instances => instances.regions);
+    const regionGroups = this.stackInstances.get().map(instances => instances.regions);
     const anyUnresolved = regionGroups.some(regions => Token.isUnresolved(regions) || regions.some(region => Token.isUnresolved(region)));
     const targetRegions = new Set(regionGroups
       .filter(regions => !Token.isUnresolved(regions))

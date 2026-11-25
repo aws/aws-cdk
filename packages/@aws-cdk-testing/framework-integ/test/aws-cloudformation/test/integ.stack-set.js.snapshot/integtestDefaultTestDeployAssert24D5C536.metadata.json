@@ -49,10 +49,36 @@
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
     }
   ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance9ff6e76651b7d30c6c3dc7c5646acc21/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance9ff6e76651b7d30c6c3dc7c5646acc21/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFormationdescribeStackInstance9ff6e76651b7d30c6c3dc7c5646acc21"
+    }
+  ],
   "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance022df512df70993e9ed6d80586b9025e/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallCloudFormationdescribeStackInstance022df512df70993e9ed6d80586b9025e"
+    }
+  ],
+  "/integ-test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackInstance9ff6e76651b7d30c6c3dc7c5646acc21/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackInstance9ff6e76651b7d30c6c3dc7c5646acc21"
     }
   ]
 }

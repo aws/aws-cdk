@@ -420,7 +420,7 @@ for (const region of regions) {
 const stack = new Stack(app, 'Admin', { env: { account: '111111111111', region: 'us-east-1' } });
 const stackSet = new StackSet(stack, 'MyStackSet', {
   assetBuckets: StackSetAssets.fromRegionalBuckets(buckets),
-  target: StackSetTarget.fromOrganizationalUnits({ regions, organizationalUnits: ['ou-1'] }),
+  targets: [StackSetTarget.fromOrganizationalUnits({ regions, organizationalUnits: ['ou-1'] })],
   deploymentType: DeploymentType.serviceManaged(),
 });
 

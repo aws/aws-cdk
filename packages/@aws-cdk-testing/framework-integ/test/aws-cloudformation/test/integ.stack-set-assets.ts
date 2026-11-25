@@ -149,10 +149,10 @@ class AssetTestCase extends Stack {
     const stackSet = new LambdaStackSet(this, 'StackSet', {
       assetBuckets: cfn.StackSetAssets.fromRegionalBuckets({ [assetTargetRegion]: props.assetBucket }),
       stackSetName,
-      target: cfn.StackSetTarget.fromAccounts({
+      targets: [cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
         regions: [assetTargetRegion],
-      }),
+      })],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
         adminRole,
