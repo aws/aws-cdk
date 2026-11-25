@@ -14,19 +14,9 @@ harm:
 - **BLOCKING** — something concretely breaks: data is lost, a security boundary opens, a
   customer's stack fails or silently does the wrong thing.
   Must be fixed before merge.
-  - *Replaced resources.* A PR renames a construct ID in a stable module. `AGENTS.md`
-    names the harm in the rule: "MUST NOT change construct IDs — logical IDs derive from
-    the full construct path; any change replaces all resources in scope, causing data
-    loss." Resource replacement on a live stack loses data → BLOCKING.
-  - *Account-wide access.* A new IAM policy with `Resource: "*"` where a scoped ARN exists —
-    it reaches the whole account, so a security boundary opens → BLOCKING.
 - **RECOMMENDED** — nothing breaks today, but the change leaves a permission or default
   wider than the code needs, a maintainability cost, or a trap a later reader would act on.
   Should be fixed before merge; does not block it.
-  - *Over-grant.* `s3:*` where a scoped action set would serve. `AGENTS.md`: "SHOULD
-    prefer specific IAM actions over full-service wildcards (`s3:*`)." The resource is
-    still scoped, so no security boundary opens — but the grant is wider than the code path
-    needs → RECOMMENDED.
 
 A finding's `severity` field takes exactly one of these two words — `BLOCKING` /
 `RECOMMENDED`. A rule with a conditional severity is one rule: its
