@@ -9,9 +9,8 @@ requires on the interface; features belong on Facades. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo)
 and [`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#configuration-mutation).
 
-**[CD-LAYER-MODEL] (BLOCKING)** — An L2 MUST hide CloudFormation (no `Cfn*`/`Token` in its surface),
-provide an escape hatch to the L1, and expose the full service surface (no hard-coded choice the service
-exposes). See
+**[CD-LAYER-MODEL] (BLOCKING)** — An L2 that exposes CloudFormation in its surface (`Cfn*`/`Token`), lacks
+an escape hatch to the L1, or hard-codes a choice the service exposes. See
 [`AGENTS.md § Architecture — The Layer Model`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#architecture--the-layer-model).
 
 **[CD-FEATURE-PLACEMENT] (RECOMMENDED)** — Implement a new feature as a building block (Mixin /
@@ -27,8 +26,9 @@ example is a design miss. See
 
 ## Design Guidelines conformance
 
-**[CD-PROPS-SHAPE] (BLOCKING)** — Props must be flat, concise, and strongly typed (construct
-interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`). See
+**[CD-PROPS-SHAPE] (BLOCKING)** — A prop that is weakly typed or loosely shaped: an ARN string where a
+construct interface fits, a raw number where `Duration`/`Size` fits, a `Cfn*` or `Token` type, a nested
+object where flat props fit. See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 - **Tier:** RECOMMENDED for props valid only together that are left as separate props (one nested object),
   and for props that exclude each other (factory methods or an enum-like class). See
@@ -38,8 +38,8 @@ interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`
 behavioral surprise. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior).
 
-**[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token/secret, must be typed
-`SecretValue` so a plaintext secret can't pass through the API. See
+**[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token or secret, typed as a
+plain string, so a plaintext secret can pass through the API. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 
 **[CD-NAMING] (BLOCKING)** — Name the resource and its props in official AWS/CloudFormation terminology,
@@ -53,12 +53,12 @@ and derive its resource interface name (`IFoo`). See
 **[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Extend only `Resource`/`Construct`/`{Foo}Base`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Base Classes & Inheritance`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#base-classes--inheritance).
 
-**[CD-FROM-METHODS] (BLOCKING)** — Give a resource at least one `from{Attribute}` importer (a resource
-with an ARN MUST have `fromFooArn`), placed on the concrete class; a `from*` method passes the identifier
-it is given through unchanged. See
+**[CD-FROM-METHODS] (BLOCKING)** — A resource without a `from{Attribute}` importer, or with an ARN and no
+`fromFooArn`; an importer placed off the concrete class; a `from*` method that changes the identifier it
+is given. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Import (from*) Methods`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#import-from-methods).
 
-**[CD-REMOVAL-POLICY] (BLOCKING)** — A new stateful resource (database, table, bucket) must expose a
+**[CD-REMOVAL-POLICY] (BLOCKING)** — A new stateful resource (database, table, bucket) that lacks a
 `removalPolicy?` prop. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy).
 
@@ -122,14 +122,13 @@ only when no default exists or the user gave an explicitly contradictory config.
 
 ## Anti-patterns
 
-Each is a codified MUST NOT at
+Each is listed at
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).
 
-**[CD-SPECULATIVE-ABSTRACTION] (BLOCKING)** — No speculative abstraction ("do not future-proof"): an
-unused base class, generic interface, or option added "for the future" is un-removable API surface with
-no consumer today.
+**[CD-SPECULATIVE-ABSTRACTION] (BLOCKING)** — An unused base class, generic interface or option added for
+the future: API surface that cannot be removed and has no consumer today.
 
-**[CD-DEAD-CODE] (BLOCKING)** — No commented-out code, dead code, or `eslint-disable` directives in the
+**[CD-DEAD-CODE] (BLOCKING)** — Commented-out code, dead code or an `eslint-disable` directive in the
 public surface.
 
 **[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID changed in a stable module.

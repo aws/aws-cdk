@@ -2,10 +2,10 @@
 
 ## Input validation
 
-**[REG-VALIDATION-FALSE-POSITIVE] (BLOCKING)** — New validation in a stable module must not reject a value
-CDK accepts today, meaning input that deploys successfully; an over-strict check turns a working stack into
-one that stops synthesizing. Confirm the real constraint against the authoritative AWS service docs before
-you raise it. See
+**[REG-VALIDATION-FALSE-POSITIVE] (BLOCKING)** — New validation in a stable module that rejects a value
+CDK accepts today, meaning input that deploys successfully; an over-strict check turns a working stack
+into one that stops synthesizing. Confirm the real constraint against the authoritative AWS service docs
+before you raise it. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for new validation on existing constructs.
 - **Detection:** for each new rejection, name one concrete input that deployed before
@@ -41,8 +41,8 @@ A change that compiles in TypeScript can still break another language's bindings
 function, method, or constructor in a stable module: existing positional calls still compile and pass each
 argument to the wrong parameter.
 
-**[REG-JSII-STRUCT-LAST] (BLOCKING)** — A struct argument (a data interface: no `I` prefix, `readonly`-only
-props) MUST be the last positional parameter. jsii explodes it into keyword/named arguments in Python,
+**[REG-JSII-STRUCT-LAST] (BLOCKING)** — A positional parameter placed after a struct argument (a data
+interface: no `I` prefix, `readonly`-only props). jsii explodes it into keyword/named arguments in Python,
 Java, C#, and Go, so any parameter after a struct breaks the generated bindings — even an optional one
 TypeScript accepts. Fix: move the new field into the struct as an optional `readonly` property.
 Grounded in [`jsii spec § Structs`](https://aws.github.io/jsii/specification/2-type-system/#structs).
@@ -87,8 +87,8 @@ that also changes what working code does is.
 
 ## Library stability & breaking changes
 
-**[REG-STABILITY-GATE] (BLOCKING)** — A breaking change to a **stable** library (`aws-cdk-lib`) is never
-allowed. In an **experimental** library (an `-alpha` suffix and `"stability": "experimental"` in
+**[REG-STABILITY-GATE] (BLOCKING)** — A breaking change to a stable library (`aws-cdk-lib`). In an
+**experimental** library (an `-alpha` suffix and `"stability": "experimental"` in
 `package.json`) a breaking change is permitted but needs an explicit `BREAKING CHANGE:` callout. The one
 legitimate stable break is an existing API that was a bug *blocking* the feature (nobody could use it),
 recorded in `allowed-breaking-changes.txt` at the repo root. A break with an entry there is not a finding
