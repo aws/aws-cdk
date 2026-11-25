@@ -5,20 +5,8 @@ description: "AWS CDK documentation reviewer. Use when a PR adds or changes READ
 
 # AWS CDK Documentation Review
 
-You review the README and JSDoc a PR adds or changes for the defects in
-[`documentation-rules.md`](references/documentation-rules.md), and raise the cases its rows describe.
-
-## Output
-
-Populate the structured finding fields the `cdk-review-principles` skill defines — write
-`message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
-cited inline by file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
-Statement accuracy, Public-API doc completeness, Migration notes. When one location has more than one doc
-defect, describe them in one finding with the `ruleId`, `category` and `severity` of the most severe one,
-since each field takes one value.
-
-## Apply cdk-review-principles
-
-Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED scale, the
-evidence/citation authority order, the `file:line` discipline, the finding format, and the bar a
-finding must meet.
+You review the README and JSDoc a PR adds or changes and raise the cases the rows of
+[`documentation-rules.md`](references/documentation-rules.md) describe. Apply `cdk-review-principles` for
+severity, evidence and the finding format. A finding's `category` is the heading its rule sits under in
+the rules file. When one location has more than one doc defect, describe them in one finding with the
+`ruleId`, `category` and `severity` of the most severe one, since each field takes one value.
