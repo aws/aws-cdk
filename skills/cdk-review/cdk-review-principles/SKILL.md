@@ -13,15 +13,16 @@ line gives when that line's condition holds.
 - **BLOCKING** — must be fixed before merge.
 - **RECOMMENDED** — should be fixed before merge.
 
-The `severity` field takes one of these two words. Keep the rule's tier when you are unsure the
-path is reached, and however the comment is worded.
+The `severity` field takes one of these two words. A Tier line's tier applies once you have
+confirmed its condition; until then the header's tier applies. The tier stays the same however the
+comment is worded.
 
 ## When a defect is a finding
 
 A defect is a finding when you can state its impact and the PR introduces it:
 
-- **Impact** — what goes wrong for a user or a maintainer if it ships. Judge the change by its
-  effect.
+- **Impact** — what goes wrong for a user or a maintainer if it ships: something fails, does the
+  wrong thing, or costs later work. Judge the change by its effect.
 - **Introduced by this PR** — it is in what the diff adds or changes; code the PR only moved
   counts as unchanged.
 
