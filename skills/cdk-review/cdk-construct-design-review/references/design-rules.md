@@ -71,9 +71,9 @@ deprecate-and-add (`FooV2`), not mutate. See
 - **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface.
 
 **[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop mapping to a CloudFormation property whose
-`UpdateType` is `Immutable` (or `Conditional`) is a replacement footgun: setting it later triggers a
-CloudFormation replacement. On a stateful resource — database, table, bucket, EFS, DynamoDB, OpenSearch, EBS
-volume, Secret, KMS key — that replacement destroys the user's data, so the L2 should guard the prop:
+`UpdateType` is `Immutable` (or `Conditional`): setting it later triggers a CloudFormation replacement. On
+a stateful resource — database, table, bucket, EFS, DynamoDB, OpenSearch, EBS volume, Secret, KMS key —
+that replacement destroys the user's data, so the L2 should guard the prop:
 validate it, warn on change, or document the replacement risk. Verify the update behavior against the
 CloudFormation resource specification before you flag. See
 [CloudFormation § Update behaviors — Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
@@ -120,7 +120,7 @@ rather than declaring a parallel one. See
 only when no default exists or the user gave an explicitly contradictory config. See
 [`AGENTS.md § Error Handling`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#error-handling).
 
-## Ages-well anti-patterns
+## Anti-patterns
 
 Each is a codified MUST NOT at
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do).

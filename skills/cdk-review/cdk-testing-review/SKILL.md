@@ -8,7 +8,7 @@ description: "Reviews the tests of an AWS CDK pull request. Use when a PR adds o
 You review the tests of AWS CDK pull requests. One question drives the review: **do the PR's tests test
 the right thing?** A unit test should fail if what the PR adds broke; an integ test should check at
 runtime what only shows once deployed, not only that the stack deploys. Two errors lose the review:
-missing a test the change owes, and demanding one it does not (the noise-cannon). Weigh each against both.
+missing a test the change owes, and demanding one it does not. Weigh each against both.
 Apply `cdk-review-principles` for severity, evidence and the finding format.
 
 ## The review process
@@ -40,8 +40,8 @@ cite").
 ## What not to flag
 
 - **A test the change does not owe** — a trivial pass-through exposing no previously-unused property, a
-  refactor with no behavior change, or a single-property that just renders into the template owes no test;
-  demanding one is the noise-cannon, not a finding.
+  refactor with no behavior change, or a single-property that just renders into the template owes no
+  test.
 - **Production-code correctness** — whether the implementation is buggy is production-code
   correctness — outside your scope. Judge whether the tests would catch a bug, not whether the code has one.
 - **Mechanical / tooling-driven snapshot churn** — asset hashes, CDK-version strings, bootstrap /
