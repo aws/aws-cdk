@@ -7,7 +7,8 @@ the primary security citation.
 ## IAM least-privilege
 
 **[SEC-IAM-WILDCARD-RESOURCE] (BLOCKING)** — A `Resource: "*"` (or an ARN far broader than the
-resource the code touches) where a scoped ARN exists. See
+resource the code touches) where a scoped ARN exists, including when it is the default of an optional
+prop. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
 **[SEC-IAM-WILDCARD-ACTION-ALL] (BLOCKING)** — An all-services action wildcard (`Action: "*"`), even
@@ -23,12 +24,6 @@ on a scoped resource. See
 no-op: when converting `PolicyStatement`s to grants you MUST preserve conditions, effect, and principals. See
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants).
 - **Tier:** RECOMMENDED when the dropped scoping guards a not-yet-reachable path.
-
-**[SEC-IAM-DEFAULT-WILDCARD] (BLOCKING)** — An optional prop that defaults to a wildcard when omitted (an
-`iamResources?` defaulting to `['*']`, a default `'*'` id): the *default* is the exposure, because
-forgetting the prop silently grants broad access. Prefer requiring the prop. See
-[`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules) and
-[`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
 **[SEC-IAM-WILDCARD-ACTION-SERVICE] (RECOMMENDED)** — A full-service action wildcard (`service:*`) on an
 otherwise correctly-scoped resource grants more than the code needs but opens no security boundary.
