@@ -14,7 +14,7 @@ Give each finding these fields:
 - `ruleId` — the stable `[id]` of the rule that fired, taken verbatim from the dimension's
   rules. The debug/trace key: it names exactly which rule produced the finding.
 - `message` — the human-visible comment text (see the next section).
-- `reference` — the authoritative source the finding cites: a CDK design guideline, jsii doc, CloudFormation resource spec, or AWS service doc — file + section, or a URL — taking the strongest source first, in the order `SKILL.md` "Make each finding land" lists; or null.
+- `reference` — the authoritative source the finding cites: a CDK design guideline, jsii doc, CloudFormation resource spec, or AWS service doc — file + section, or a URL — taking the strongest source first, in the order `SKILL.md` "What every finding carries" lists; or null.
 - `evidence` — the supporting detail behind the finding.
 - `suggestedFix` — a concrete fix, or null.
 
@@ -32,8 +32,8 @@ complete comment. Write it as a self-contained review comment:
 
 Populate `evidence`, `reference`, and `suggestedFix` as structured fields too, and fold
 their essentials into the `message` prose so it stands alone. Write it in a reviewer's
-voice (see `SKILL.md` "Make each finding land"). `ruleId` is the exception: a structured metadata field for
-debug/tracing that stays in its own field (though a finding may still cite the rule inline
+voice (see `SKILL.md` "What every finding carries"). `ruleId` is the exception: a structured
+metadata field for debug/tracing that stays in its own field (though a finding may still cite the rule inline
 where that aids the author).
 
 ## Evidence & References
@@ -50,7 +50,7 @@ review `summary`.
 
 Keep these out of the findings (put them in the `summary` text if they matter):
 high-level design observations not tied to a line, positive feedback, clusters of
-related nits, findings already
+related minor points, findings already
 surfaced by automated PR analysis (unless you add new context), and philosophical
 questions.
 

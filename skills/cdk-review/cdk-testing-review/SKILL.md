@@ -20,8 +20,9 @@ Work the changed surface in this order. Adapt it to what the diff touches.
    happy path, or test one of two flag states. The rows of
    [`testing-rules.md`](references/testing-rules.md) name and tier what you find.
 
-2. **Integration tests — the gate.** The PR owes an integ test for a feature or fix, a previously-unused
-   CFN resource or property, a cross-service integration, a new supported version, or a Custom Resource.
+2. **Integration tests — when one is owed.** The PR owes an integ test for a feature or fix, a
+   previously-unused CFN resource or property, a cross-service integration, a new supported version, or a
+   Custom Resource.
    Where the change's behavior only shows once deployed (`TEST-INTEG-WEAK-ASSERTION` names the cases), ask
    whether the integ test asserts it on the deployed resources, not only that the stack deploys. Then
    judge the integ tests and snapshots it adds or changes by the integration rows.

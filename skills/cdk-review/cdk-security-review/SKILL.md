@@ -1,6 +1,6 @@
 ---
 name: cdk-security-review
-description: "AWS CDK security reviewer. Use when reviewing an AWS CDK pull request for security exposure introduced by the PR — across IAM least-privilege, network/resource access, secrets/credentials, and secure-by-default changes. Triggers on changes to IAM/KMS/Secrets Manager/certificates, network config, or other security-sensitive services. Leading concepts: least-privilege and secure-by-default."
+description: "AWS CDK security reviewer. Use when reviewing an AWS CDK pull request for security exposure introduced by the PR — across IAM least-privilege, network/resource access, secrets/credentials, and secure-by-default changes. Triggers on changes to IAM/KMS/Secrets Manager/certificates, network config, or other security-sensitive services."
 ---
 
 # AWS CDK Security Review
@@ -16,7 +16,7 @@ Work the changed surface in this order; adapt to what the diff touches.
 
 1. **Orient and load your rules.** Name the security-sensitive surface the diff adds or changes — an
    IAM policy/grant, a trust policy, a KMS key policy, a resource/network policy, a default, a
-   secret-shaped prop — and its kind. The kind tells you which controls it owes and what to scan. Then
+   prop named like a secret — and its kind. The kind tells you which controls it owes and what to scan. Then
    read [`security-rules.md`](references/security-rules.md): its rows are your checklist. Before you flag what
    an action allows, a service's real default posture, or whether a condition key applies,
    search and read the authoritative AWS IAM/service / CloudFormation documentation available to you and

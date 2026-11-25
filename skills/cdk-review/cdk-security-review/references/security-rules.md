@@ -32,8 +32,8 @@ requiring the prop. See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
 **[SEC-IAM-WILDCARD-ACTION-SERVICE] (RECOMMENDED)** — A full-service action wildcard (`service:*`) on an
-otherwise correctly-scoped resource is a hardening gap, not an open door. Suffix wildcards
-(`s3:GetObject*`) are acceptable. See
+otherwise correctly-scoped resource grants more than the code needs but opens no security boundary.
+Suffix wildcards (`s3:GetObject*`) are acceptable. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
 **[SEC-IAM-HANDROLLED-POLICY] (RECOMMENDED)** *(conditional — BLOCKING when it grants a wildcard or a
@@ -97,7 +97,7 @@ template. `SecretValue` defers resolution and keeps plaintext out of source and 
 
 **[SEC-SECRET-IN-MAP] (BLOCKING)** — A value that is itself a credential, judged by the value and not the
 key name, nested in a `Record<string, string>` map (a Lambda/ECS `environment`, CFN Include parameters, or a
-similar map-shaped prop) is the same BLOCKING finding, even though the map's prop is named `environment`.
+similar map prop) is the same BLOCKING finding, even though the map's prop is named `environment`.
 The value still lands in the template, recoverable via `cloudformation:GetTemplate` /
 `lambda:GetFunctionConfiguration`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).

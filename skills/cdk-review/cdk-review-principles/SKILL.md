@@ -18,16 +18,15 @@ harm:
     names the harm in the rule: "MUST NOT change construct IDs — logical IDs derive from
     the full construct path; any change replaces all resources in scope, causing data
     loss." Resource replacement on a live stack loses data → BLOCKING.
-  - *Open door.* A new IAM policy with `Resource: "*"` where a scoped ARN exists — the
-    blast radius is the whole account → BLOCKING.
+  - *Account-wide access.* A new IAM policy with `Resource: "*"` where a scoped ARN exists —
+    it reaches the whole account, so a security boundary opens → BLOCKING.
 - **RECOMMENDED** — nothing breaks today, but the change leaves a permission or default
-  wider than the code needs, a maintainability cost, or a latent trap that bites a later
-  reader.
+  wider than the code needs, a maintainability cost, or a trap that misleads a later reader.
   Should be fixed before merge; does not block it.
   - *Over-grant.* `s3:*` where a scoped action set would serve. `AGENTS.md`: "SHOULD
     prefer specific IAM actions over full-service wildcards (`s3:*`)." The resource is
-    still scoped, so no door opens — but the grant is wider than the code path needs →
-    RECOMMENDED.
+    still scoped, so no security boundary opens — but the grant is wider than the code path
+    needs → RECOMMENDED.
 
 A finding's `severity` field takes exactly one of these two words — `BLOCKING` /
 `RECOMMENDED`. A rule with a conditional severity is one rule: its
@@ -35,29 +34,29 @@ header carries the primary severity, and its body states when it is BLOCKING or 
 
 ### Calibrate the harm honestly
 
-The tier is right only if you rate the harm honestly. Four ways it slips:
+The tier is right only if you rate the harm honestly. Check four things:
 
 - **Confidence is not severity.** Rate by the harm *when* the path is reached, however sure
   you are that it is reached. A concrete failure mechanism is BLOCKING or RECOMMENDED by
-  its blast radius.
+  how much it affects.
 - **Politeness is not severity.** A blocking issue raised as a gentle question — "Can we
   scope this to a specific ARN?" — still blocks. Rate the harm the change asserts.
 - **No harm, no finding.** Clean code reports nothing. A change that merely *mentions* IAM,
-  encryption, or a secret is not a finding; a concrete new harm is. Inventing a low-severity
-  finding out of a non-finding is the most common way a review inflates. A defect is a finding
-  only when you can name its harm: something that breaks, a boundary that opens, a permission
-  or default wider than the code needs, a maintainability cost, or a trap a later reader would
-  act on.
+  encryption, or a secret is not a finding; a concrete new harm is. Turning a non-finding into
+  a low-severity finding is the most common way a review posts findings it should not. A defect
+  is a finding only when you can name its harm: something that breaks, a security boundary that
+  opens, a permission or default wider than the code needs, a maintainability cost, or a trap
+  that misleads a later reader.
 - **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
   *new* harm → not a finding. Rate what the diff adds.
 
 When the finding is that the change violates a rule in the aws-cdk repo's own guides
 (`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
-harm set the tier: a rule naming data loss or an open boundary → BLOCKING; a rule stated
-as a preference → RECOMMENDED. Cite the rule by file + section and
+harm set the tier: a rule naming data loss or an opened security boundary → BLOCKING; a
+rule stated as a preference → RECOMMENDED. Cite the rule by file + section and
 quote it, so the author sees the authority.
 
-## Make each finding land
+## What every finding carries
 
 A correctly-rated finding still has to be actionable. Every finding carries a location and evidence, and
 a fix once you have checked one:
@@ -100,7 +99,7 @@ by number rather than by merit.
 
 A finding becomes a posted comment only when it is (1) tied to a specific line, (2)
 actionable, and (3) significant enough to stand alone. Keep high-level observations,
-positive notes, and clusters of nits in the review summary.
+positive notes, and clusters of minor points in the review summary.
 
 Spend the review on what the build cannot see. The PR's build already fails on what its
 compiler and linters check, such as a public API with no docstring or an optional props
@@ -112,8 +111,8 @@ structured finding fields and how to write each one before you generate findings
 
 ## What not to flag — the shared exclusions
 
-Every dimension skill applies these five exclusions on top of its own dimension-specific
-carve-outs. None is a finding, at any severity:
+Every dimension skill applies these five exclusions on top of its own. None is a finding,
+at any severity:
 
 - **Pre-existing / not introduced by this PR** — if the diff did not add or change it, the
   problem is not this PR's; do not flag it.
@@ -123,8 +122,7 @@ carve-outs. None is a finding, at any severity:
 - **Outside this dimension's scope** — a defect that belongs to a different review
   dimension is not yours to flag; each dimension reviews independently, so leave it rather
   than report it here.
-- **No nit quota** — when the changed surface is clean, report nothing; never reach for a
-  nit to have something to say.
+- **Minor points on a clean change** — when the changed surface is clean, report nothing.
 - **Release-tooling / monorepo markers** — `0.0.0` workspace or alpha versions, `V2NEXT`
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.

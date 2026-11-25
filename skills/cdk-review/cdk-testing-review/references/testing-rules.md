@@ -48,7 +48,7 @@ for a mixin's required tests.
 
 ## Integration tests
 
-**[TEST-INTEG-MISSING-REQUIRED] (BLOCKING)** — An integ test the gate marked owed is absent with no valid
+**[TEST-INTEG-MISSING-REQUIRED] (BLOCKING)** — An integ test the PR owes is absent with no valid
 exemption. See
 [`AGENTS.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#integration-tests) and
 [`INTEGRATION_TESTS.md § When are Integration Tests Required`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#when-are-integration-tests-required)
