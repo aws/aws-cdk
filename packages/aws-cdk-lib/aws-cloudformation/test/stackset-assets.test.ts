@@ -3,6 +3,7 @@ import path from 'path';
 import { Construct } from 'constructs';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
@@ -27,7 +28,7 @@ import {
   DeploymentType,
   NestedStack,
   StackSet,
-  StackSetAssets,
+  StackSetAssetBuckets,
   StackSetGrants,
   StackSetTarget,
 } from '../lib';
@@ -81,7 +82,7 @@ test('test lambda assets with one asset bucket', () => {
   });
   const stack = new Stack(app);
   new LambdaStackSet(stack, 'StackSet', {
-    assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets') }),
+    assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets') }),
     targets: [StackSetTarget.fromAccounts({
       regions: ['us-east-1'],
       accounts: ['11111111111'],
@@ -103,7 +104,7 @@ test('test lambda assets with two asset buckets', () => {
   });
   const stack = new Stack(app);
   new LambdaStackSet(stack, 'StackSet', {
-    assetBuckets: StackSetAssets.fromRegionalBuckets({
+    assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({
       'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets'),
       'eu-west-1': s3.Bucket.fromBucketName(stack, 'AssetBucket2', 'integ-assets2'),
     }),
@@ -129,7 +130,7 @@ test('lambda asset bucket name is looked up by region in the stackset template',
   const stage = new Stage(app, 'Stage', { env: { account: '123456789012', region: 'us-east-1' } });
   const stack = new Stack(stage, 'Parent');
   const lambdaStack = new LambdaStackSet(stack, 'StackSet', {
-    assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
+    assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     targets: [StackSetTarget.fromAccounts({
       regions: ['us-east-1'],
       accounts: ['11111111111'],
@@ -152,7 +153,7 @@ test('lambda asset is staged to the parent asset bucket and copied via bucket de
   });
   const stack = new Stack(app);
   new LambdaStackSet(stack, 'StackSet', {
-    assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets') }),
+    assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'integ-assets') }),
     targets: [StackSetTarget.fromAccounts({
       regions: ['us-east-1'],
       accounts: ['11111111111'],
@@ -172,7 +173,7 @@ test('httpUrl and s3Url use the regional S3 endpoint', () => {
   const app = new App();
   const stack = new Stack(app, 'Admin');
   const stackSet = new StackSet(stack, 'StackSet', {
-    assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
+    assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
   });
   const scriptPath = path.join(__dirname, 'stackset-script', 'script.py');
   const script = new s3_assets.Asset(stackSet, 'Script', { path: scriptPath });
@@ -213,7 +214,7 @@ describe('StackSet template asset object keys', () => {
     const app = new App({ context: options.context });
     const stack = new Stack(app, 'Parent', { synthesizer: options.synthesizer });
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
       targets: [StackSetTarget.fromAccounts({
         regions: ['us-east-1'],
         accounts: ['11111111111'],
@@ -333,13 +334,13 @@ describe('StackSet asset bucket deployment dependencies', () => {
     const app = new App();
     const stack = new Stack(app);
     new LambdaStackSet(stack, 'FirstStackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'FirstBucket', 'first-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'FirstBucket', 'first-us-east-1') }),
       stackSetName: 'first',
       deploymentType: DeploymentType.serviceManaged(),
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
     });
     new LambdaStackSet(stack, 'SecondStackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'SecondBucket', 'second-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'SecondBucket', 'second-us-east-1') }),
       stackSetName: 'second',
       deploymentType: DeploymentType.serviceManaged(),
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
@@ -361,7 +362,7 @@ describe('StackSet asset bucket deployment dependencies', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'late-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'late-us-east-1') }),
       stackSetName: 'late',
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
     });
@@ -379,7 +380,7 @@ describe('StackSet asset bucket deployment dependencies', () => {
     const app = new App();
     const stack = new Stack(app);
     new LambdaStackSet(new Construct(stack, 'Group'), 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'nested-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'nested-us-east-1') }),
       stackSetName: 'nested',
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
     });
@@ -417,7 +418,7 @@ describe('StackSet asset buckets', () => {
       buckets[region] = s3.Bucket.fromBucketName(stack, `Bucket-${region}`, `my-assets-${region}`);
     }
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets(buckets),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets(buckets),
       targets: [StackSetTarget.fromAccounts({ accounts: ['222222222222'], regions: ['us-east-1', 'eu-west-1'] })],
     });
     addLambda(stackSet);
@@ -442,7 +443,7 @@ describe('StackSet asset buckets', () => {
   test('a StackSet with asset buckets but no file assets renders no mappings', () => {
     const stack = hostStack();
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') }),
     });
     new sns.Topic(stackSet, 'Topic');
 
@@ -452,7 +453,7 @@ describe('StackSet asset buckets', () => {
   test('a lambda in a nested stack of the StackSet reads its code through a copy of the mapping', () => {
     const stack = hostStack();
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets-us-east-1') }),
     });
     const nested = new NestedStack(stackSet, 'Nested');
     addLambda(nested);
@@ -474,7 +475,7 @@ describe('StackSet asset buckets', () => {
     const app = new App();
     const stack = hostStack(app);
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ [region]: bucketOf(app, stack) }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ [region]: bucketOf(app, stack) }),
     });
     addLambda(stackSet);
 
@@ -487,7 +488,7 @@ describe('StackSet asset buckets', () => {
     const assetsStack = bucketStack(app, 'eu-west-1');
     const bucket = new s3.Bucket(assetsStack, 'Bucket', { bucketName: core.PhysicalName.GENERATE_IF_NEEDED });
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'eu-west-1': bucket }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'eu-west-1': bucket }),
     });
     addLambda(stackSet);
 
@@ -507,7 +508,7 @@ describe('StackSet asset buckets', () => {
     const stack = hostStack();
 
     expect(() => new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': bucketOf(stack) }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': bucketOf(stack) }),
     })).toThrow(expect.objectContaining({
       name: 'BucketNameRequiredForAssets',
       message: BUCKET_NAME_REQUIRED,
@@ -521,12 +522,12 @@ describe('StackSet asset buckets', () => {
     const bucket = new s3.Bucket(bucketStack(app, 'eu-west-1'), 'Bucket');
 
     expect(() => new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'eu-west-1': bucket }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'eu-west-1': bucket }),
     })).toThrow(expect.objectContaining({ name: 'CannotUseCrossEnvironment' }));
   });
 
   test('fails when fromRegionalBuckets gets no buckets', () => {
-    expect(() => StackSetAssets.fromRegionalBuckets({})).toThrow(expect.objectContaining({
+    expect(() => StackSetAssetBuckets.fromRegionalBuckets({})).toThrow(expect.objectContaining({
       name: 'StackSetAssetBucketsEmpty',
       message: 'fromRegionalBuckets requires at least one region and bucket',
     }));
@@ -536,7 +537,7 @@ describe('StackSet asset buckets', () => {
     const stack = hostStack();
     const region = Token.asString({ Ref: 'Region' });
 
-    expect(() => StackSetAssets.fromRegionalBuckets({ [region]: s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') })).toThrow(expect.objectContaining({
+    expect(() => StackSetAssetBuckets.fromRegionalBuckets({ [region]: s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') })).toThrow(expect.objectContaining({
       name: 'StackSetAssetBucketRegionUnresolved',
       message: `the regions of the asset buckets must be region names known at synth time, got ${JSON.stringify(region)}`,
     }));
@@ -548,7 +549,7 @@ describe('StackSet asset buckets', () => {
     const bucket = new s3.Bucket(bucketStack(app, 'eu-west-1'), 'Bucket', { bucketName: 'eu-assets' });
 
     expect(() => new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': bucket }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': bucket }),
     })).toThrow(expect.objectContaining({
       name: 'StackSetAssetBucketRegionMismatch',
       message: 'the asset bucket for region "us-east-1" is in region "eu-west-1", use the region of each bucket as its key',
@@ -559,7 +560,7 @@ describe('StackSet asset buckets', () => {
   test('an imported bucket is not checked against its region key', () => {
     const stack = hostStack();
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'eu-west-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'eu-west-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') }),
     });
     addLambda(stackSet);
 
@@ -615,7 +616,7 @@ describe('StackSet asset buckets', () => {
       const assetsStack = new Stack(new Stage(app, 'Buckets'), 'BucketStack', { env: { account: ACCOUNT, region: 'eu-west-1' } });
       const bucket = new s3.Bucket(assetsStack, 'Bucket', { bucketName: 'my-assets-eu-west-1' });
       const stackSet = new StackSet(stack, 'StackSet', {
-        assetBuckets: StackSetAssets.fromRegionalBuckets({ 'eu-west-1': bucket }),
+        assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'eu-west-1': bucket }),
         deploymentType: DeploymentType.serviceManaged(),
       });
       return { app, stack, assetsStack, stackSet };
@@ -647,7 +648,7 @@ describe('StackSet asset buckets', () => {
     const stack = hostStack(app);
     const assetsStack = bucketStack(app, 'eu-west-1');
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({
         'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets-us-east-1'),
         'eu-west-1': new s3.Bucket(assetsStack, 'Bucket', { bucketName: 'my-assets-eu-west-1' }),
       }),
@@ -669,7 +670,7 @@ describe('StackSet asset bucket regions', () => {
       buckets[region] = s3.Bucket.fromBucketName(stack, `Bucket-${region}`, `my-assets-${region}`);
     }
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets(buckets),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets(buckets),
       targets: target ? [target] : undefined,
     });
     return { app, stack, stackSet };
@@ -682,7 +683,7 @@ describe('StackSet asset bucket regions', () => {
   test('fails when a target region has no asset bucket', () => {
     const { app } = stackSetWithBuckets(['us-east-1'], accounts(['us-east-1', 'eu-west-1']));
 
-    expect(() => app.synth()).toThrow('the StackSet deploys to region "eu-west-1" but has no asset bucket for it, add a bucket for "eu-west-1" to \'StackSetAssets.fromRegionalBuckets()\'');
+    expect(() => app.synth()).toThrow('the StackSet deploys to region "eu-west-1" but has no asset bucket for it, add a bucket for "eu-west-1" to \'StackSetAssetBuckets.fromRegionalBuckets()\'');
   });
 
   test('fails when a target added later has a region without an asset bucket', () => {
@@ -696,7 +697,7 @@ describe('StackSet asset bucket regions', () => {
     const { stack } = stackSetWithBuckets(['us-east-1', 'us-east1'], accounts(['us-east-1']));
 
     Annotations.fromStack(stack).hasWarning('/Admin/StackSet', Match.stringLikeRegexp(
-      'the StackSet doesn\'t deploy to the regions of the asset buckets \\["us-east1"\\], remove them from \'StackSetAssets.fromRegionalBuckets\\(\\)\' or add a target with these regions'));
+      'the StackSet doesn\'t deploy to the regions of the asset buckets \\["us-east1"\\], remove them from \'StackSetAssetBuckets.fromRegionalBuckets\\(\\)\' or add a target with these regions'));
   });
 
   test('does not warn about an acknowledged untargeted asset bucket region', () => {
@@ -711,6 +712,13 @@ describe('StackSet asset bucket regions', () => {
     ['a token list of regions', () => accounts(Token.asList({ Ref: 'Regions' }))],
   ])('skips %s for the coverage check', (_name, targetOf) => {
     const { app, stack } = stackSetWithBuckets(['us-east-1', 'eu-west-1'], targetOf());
+
+    expect(() => app.synth()).not.toThrow();
+    Annotations.fromStack(stack).hasNoWarning('/Admin/StackSet', Match.stringLikeRegexp('regions of the asset buckets'));
+  });
+
+  test('does not warn when the StackSet has no targets', () => {
+    const { app, stack } = stackSetWithBuckets(['us-east-1', 'eu-west-1']);
 
     expect(() => app.synth()).not.toThrow();
     Annotations.fromStack(stack).hasNoWarning('/Admin/StackSet', Match.stringLikeRegexp('regions of the asset buckets'));
@@ -736,7 +744,6 @@ describe('StackSet asset bucket regions', () => {
 
 describe('StackSet asset read grants', () => {
   const ACCOUNT = '111111111111';
-  const PUBLIC_READ = '@aws-cdk/aws-cloudformation:stackSetAssetsPublicRead';
 
   function assetObjectsArn(bucketLogicalId: string) {
     return { 'Fn::Join': ['', [{ 'Fn::GetAtt': [bucketLogicalId, 'Arn'] }, '/cdk-stackset-assets/*']] };
@@ -759,7 +766,7 @@ describe('StackSet asset read grants', () => {
       buckets[bucketStack.region] = new s3.Bucket(bucketStack, 'Bucket', { bucketName: `my-assets-${bucketStack.region}` });
     }
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets(buckets),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets(buckets),
       targets: [StackSetTarget.fromOrganizationalUnits({ organizationalUnits: ['ou-1'], regions: ['us-east-1', 'eu-west-1'] })],
       deploymentType: DeploymentType.serviceManaged(),
     });
@@ -774,7 +781,7 @@ describe('StackSet asset read grants', () => {
     const stack = new Stack(app, 'Admin', { env: { account: ACCOUNT, region: 'us-east-1' } });
     const bucket = new s3.Bucket(stack, 'Bucket', { bucketName: 'my-assets-us-east-1' });
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': bucket }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': bucket }),
       stackSetName: 'with-host-bucket',
     });
     return { app, stack, bucket, stackSet };
@@ -856,11 +863,59 @@ describe('StackSet asset read grants', () => {
     expect(stackSetResource.DependsOn).toContain(policyId);
   });
 
+  test('readAssets grants kms:Decrypt on the key of an asset bucket encrypted with a key of the app', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin', { env: { account: ACCOUNT, region: 'us-east-1' } });
+    const key = new kms.Key(stack, 'Key');
+    const bucket = new s3.Bucket(stack, 'Bucket', { bucketName: 'my-assets-us-east-1', encryptionKey: key });
+    const stackSet = new StackSet(stack, 'StackSet', {
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': bucket }),
+    });
+
+    stackSet.grants.readAssets(new iam.AccountPrincipal('222222222222'));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([{
+          Action: 'kms:Decrypt',
+          Effect: 'Allow',
+          Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']] } },
+          Resource: '*',
+        }]),
+      },
+    });
+    expect(bucketPolicyStatements(stack)).toEqual([{
+      Action: 's3:GetObject',
+      Effect: 'Allow',
+      Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']] } },
+      Resource: assetObjectsArn(bucketLogicalIdOf(stack)),
+    }]);
+  });
+
+  test('readAssets on an SSE-S3 asset bucket adds only s3:GetObject to its bucket policy', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin', { env: { account: ACCOUNT, region: 'us-east-1' } });
+    const bucket = new s3.Bucket(stack, 'Bucket', { bucketName: 'my-assets-us-east-1', encryption: s3.BucketEncryption.S3_MANAGED });
+    const stackSet = new StackSet(stack, 'StackSet', {
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': bucket }),
+    });
+
+    stackSet.grants.readAssets(new iam.AccountPrincipal('222222222222'));
+
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+    expect(bucketPolicyStatements(stack)).toEqual([{
+      Action: 's3:GetObject',
+      Effect: 'Allow',
+      Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']] } },
+      Resource: assetObjectsArn(bucketLogicalIdOf(stack)),
+    }]);
+  });
+
   test('readAssets leaves imported buckets unchanged', () => {
     const app = new App();
     const stack = new Stack(app, 'Admin');
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') }),
       deploymentType: DeploymentType.serviceManaged(),
     });
 
@@ -869,6 +924,27 @@ describe('StackSet asset read grants', () => {
     expect(grant.success).toBe(false);
     Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 0);
     Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+  });
+
+  test('readAssets warns that a referenced bucket must allow the target accounts', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const stackSet = new StackSet(stack, 'StackSet', {
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') }),
+    });
+
+    stackSet.grants.readAssets(new iam.AccountPrincipal('222222222222'));
+
+    Annotations.fromStack(stack).hasWarning('/Admin/StackSet',
+      'the asset bucket for region "us-east-1" is referenced, so CDK can\'t change its policy, allow the target accounts to read \'cdk-stackset-assets/*\' in its bucket policy [ack: @aws-cdk/aws-cloudformation:stackSetAssetBucketNotGranted]');
+  });
+
+  test('readAssets does not warn about owned buckets', () => {
+    const { stack, stackSet } = stackSetWithHostBucket();
+
+    stackSet.grants.readAssets(new iam.AccountPrincipal('222222222222'));
+
+    Annotations.fromStack(stack).hasNoWarning('/Admin/StackSet', Match.stringLikeRegexp('is referenced, so CDK can'));
   });
 
   test('readAssets on a referenced StackSet grants nothing', () => {
@@ -887,60 +963,5 @@ describe('StackSet asset read grants', () => {
     const stackSet = new StackSet(new Stack(app, 'Admin'), 'StackSet');
 
     expect(stackSet.grants.readAssets(new iam.OrganizationPrincipal('o-a1b2c3d4e5')).success).toBe(false);
-  });
-
-  test.each([
-    ['AnyPrincipal', () => new iam.AnyPrincipal()],
-    ['StarPrincipal', () => new iam.StarPrincipal()],
-    ['ArnPrincipal(\'*\')', () => new iam.ArnPrincipal('*')],
-    ['a CompositePrincipal with AnyPrincipal', () => new iam.CompositePrincipal(new iam.AnyPrincipal(), new iam.AccountPrincipal('222222222222'))],
-  ])('warns when read access is granted to everyone with %s', (_name, granteeOf) => {
-    const { stack, stackSet } = stackSetWithHostBucket();
-
-    stackSet.grants.readAssets(granteeOf());
-
-    Annotations.fromStack(stack).hasWarning('/Admin/StackSet', Match.stringLikeRegexp(
-      'granting read access to the file assets of the StackSet to everyone makes them public, grant access to the organization or the accounts the StackSet deploys to instead'));
-  });
-
-  test.each([
-    ['OrganizationPrincipal', () => new iam.OrganizationPrincipal('o-a1b2c3d4e5')],
-    ['AccountPrincipal', () => new iam.AccountPrincipal('222222222222')],
-    ['a role', (stack: Stack) => new iam.Role(stack, 'Grantee', { assumedBy: new iam.AccountRootPrincipal() })],
-  ])('does not warn when read access is granted to %s', (_name, granteeOf) => {
-    const { stack, stackSet } = stackSetWithHostBucket();
-
-    stackSet.grants.readAssets(granteeOf(stack));
-
-    Annotations.fromStack(stack).hasNoWarning('/Admin/StackSet', Match.stringLikeRegexp('file assets of the StackSet to everyone'));
-  });
-
-  test('does not warn when every asset bucket is imported', () => {
-    const app = new App();
-    const stack = new Stack(app, 'Admin');
-    const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'Bucket', 'my-assets') }),
-    });
-
-    stackSet.grants.readAssets(new iam.AnyPrincipal());
-
-    Annotations.fromStack(stack).hasNoWarning('/Admin/StackSet', Match.stringLikeRegexp('file assets of the StackSet to everyone'));
-  });
-
-  test('warns once when read access to several asset buckets is granted to everyone', () => {
-    const { stack, stackSet } = stackSetWithBucketStacks();
-
-    stackSet.grants.readAssets(new iam.AnyPrincipal());
-
-    expect(Annotations.fromStack(stack).findWarning('/Admin/StackSet', Match.stringLikeRegexp('file assets of the StackSet to everyone'))).toHaveLength(1);
-  });
-
-  test('does not warn about acknowledged public read access', () => {
-    const { stack, stackSet } = stackSetWithHostBucket();
-    CoreAnnotations.of(stackSet).acknowledgeWarning(PUBLIC_READ, 'the assets are public');
-
-    stackSet.grants.readAssets(new iam.AnyPrincipal());
-
-    Annotations.fromStack(stack).hasNoWarning('/Admin/StackSet', Match.stringLikeRegexp('file assets of the StackSet to everyone'));
   });
 });

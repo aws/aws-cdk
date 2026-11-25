@@ -5,7 +5,7 @@ import type { Construct } from 'constructs';
 import { Node } from 'constructs';
 import { CfnStackSet } from './cloudformation.generated';
 import { StackSetSynthesizer } from './private/stackset-synthesizer';
-import type { StackSetAssetBuckets, StackSetAssets } from './stackset-assets';
+import type { StackSetAssetBuckets } from './stackset-assets';
 import { StackSetGrants } from './stackset-grants';
 import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
@@ -634,7 +634,7 @@ export interface StackSetProps {
    *
    * @default - no asset buckets. File assets will not be supported.
    */
-  readonly assetBuckets?: StackSetAssets;
+  readonly assetBuckets?: StackSetAssetBuckets;
 
   /**
    * The type of deployment for this StackSet. The deployment can either be managed by
@@ -1050,11 +1050,12 @@ export class StackSet extends Stack implements IStackSet {
 
     // The host stack stages the file assets of the template, in the scope of this StackSet,
     // and copies them to the asset buckets
-    const assetBuckets = props.assetBuckets?._bind(this);
+    const assetBuckets = props.assetBuckets?._bind(this).buckets;
     synthesizer.bindHost({ stack: hostStack, scope, id, assetBuckets });
     if (assetBuckets) {
       // Targets can be added after construction, so check the regions at synth
-      this.node.addValidation({ validate: () => this.validateAssetBuckets(assetBuckets) });
+      const bucketRegions = Object.keys(assetBuckets).sort();
+      this.node.addValidation({ validate: () => this.validateAssetBucketRegions(bucketRegions) });
     }
 
     const deploymentTypeConfig = (props.deploymentType ?? DeploymentType.selfManaged())._bind(this);
@@ -1307,9 +1308,9 @@ export class StackSet extends Stack implements IStackSet {
   }
 
   /**
-   * Checks the asset buckets against the regions the StackSet deploys to
+   * Every target region needs an asset bucket, and every asset bucket should be in a target region
    */
-  private validateAssetBuckets(assetBuckets: StackSetAssetBuckets): string[] {
+  private validateAssetBucketRegions(bucketRegions: string[]): string[] {
     const regionGroups = this.stackInstances.get().map(instances => instances.regions);
     const anyUnresolved = regionGroups.some(regions => Token.isUnresolved(regions) || regions.some(region => Token.isUnresolved(region)));
     const targetRegions = new Set(regionGroups
@@ -1317,11 +1318,16 @@ export class StackSet extends Stack implements IStackSet {
       .flat()
       .filter(region => !Token.isUnresolved(region)));
 
-    const { errors, warnings } = assetBuckets.validate([...targetRegions], !anyUnresolved);
-    for (const warning of warnings) {
-      Annotations.of(this).addWarningV2(warning.id, warning.message);
+    // A token might be any of the regions of the buckets, and a StackSet without targets gets them later
+    const untargeted = bucketRegions.filter(region => !targetRegions.has(region));
+    if (regionGroups.length > 0 && !anyUnresolved && untargeted.length > 0) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetBucketRegionNotTargeted',
+        `the StackSet doesn't deploy to the regions of the asset buckets ${JSON.stringify(untargeted)}, remove them from 'StackSetAssetBuckets.fromRegionalBuckets()' or add a target with these regions`);
     }
-    return errors;
+
+    return [...targetRegions]
+      .filter(region => !bucketRegions.includes(region))
+      .map(region => `the StackSet deploys to region ${JSON.stringify(region)} but has no asset bucket for it, add a bucket for ${JSON.stringify(region)} to 'StackSetAssetBuckets.fromRegionalBuckets()'`);
   }
 
   /**

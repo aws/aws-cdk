@@ -42,7 +42,6 @@ const secondTargetRegion = process.env.INTEG_SECOND_TARGET_REGION ?? 'us-west-2'
 const topicDisplayName = 'integ-stackset-topic';
 const secondRegionTopicDisplayName = 'integ-stackset-topic-second-region';
 const executionRoleName = 'AWSCloudFormationStackSetExecutionRole-integ-test';
-const adminRoleName = 'AWSCloudFormationStackSetAdministrationRole-integ-test';
 const stackSetName = 'integ-stackset-test';
 
 const app = new App({
@@ -95,23 +94,7 @@ interface TestCaseProps extends StackProps {
 class TestCase extends Stack {
   constructor(scope: Construct, id: string, props: TestCaseProps) {
     super(scope, id, props);
-    const adminRole = new iam.Role(this, 'AdminRole', {
-      roleName: adminRoleName,
-      assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
-      inlinePolicies: {
-        AssumeExecutionRole: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ['sts:AssumeRole'],
-              resources: [
-                `arn:aws:iam::*:role/${executionRoleName}`,
-              ],
-            }),
-          ],
-        }),
-      },
-    });
+
     const stackSet = new MyStackSet(this, 'StackSet', {
       stackSetName,
       parameters: { TopicDisplayName: topicDisplayName },
@@ -129,7 +112,6 @@ class TestCase extends Stack {
       ],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
-        adminRole,
       }),
       operationPreferences: {
         failureTolerance: cfn.StackSetFailureTolerance.count(1),
@@ -138,10 +120,9 @@ class TestCase extends Stack {
       },
     });
 
-    // A value of this stack, passed to the template as a StackSet parameter
-    new CfnOutput(stackSet, 'AdminRoleId', { value: adminRole.roleId });
-    // Also passed to the template as a StackSet parameter, so no physical name is generated for the role
-    new CfnOutput(stackSet, 'AdminRoleArn', { value: adminRole.roleArn });
+    // Values of the admin role that the StackSet creates, passed to the template as StackSet parameters
+    new CfnOutput(stackSet, 'AdminRoleName', { value: stackSet.adminRole!.roleName });
+    new CfnOutput(stackSet, 'AdminRoleArn', { value: stackSet.adminRole!.roleArn });
   }
 }
 

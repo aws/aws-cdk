@@ -67,6 +67,22 @@
       },
       {
        "Action": "s3:GetObject",
+       "Condition": {
+        "ArnEquals": {
+         "aws:PrincipalArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":iam::12345678:role/AWSCloudFormationStackSetExecutionRole-integ-assets"
+           ]
+          ]
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "AWS": "arn:aws:iam::12345678:root"

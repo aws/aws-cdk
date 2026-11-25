@@ -23,7 +23,8 @@ export class StackSetGrants {
    * Grants read access to the file assets of this StackSet
    *
    * Grant it to the accounts or the organization the StackSet deploys to. Only asset buckets
-   * defined in this app are changed, and no KMS permissions are granted.
+   * defined in this app are changed. The key policy of a customer managed key defined in the app
+   * also allows `kms:Decrypt`. Set the key policy of an imported key yourself, and don't use `aws/s3`.
    *
    * @param grantee the principal to grant read access to
    */

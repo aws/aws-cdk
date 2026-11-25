@@ -30,7 +30,7 @@ import {
   RegionConcurrencyType,
   StackSet,
   StackSetAccountFilter,
-  StackSetAssets,
+  StackSetAssetBuckets,
   StackSetConcurrencyMode,
   StackSetFailureTolerance,
   StackSetMaxConcurrency,
@@ -1460,7 +1460,7 @@ describe('StackSet placement', () => {
     const app = new App();
     const stack = new Stack(app, 'Admin');
     new LambdaStackSet(stack, 'Baseline', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
 
     const children = stack.node.children.map((child) => child.node.id);
@@ -1794,7 +1794,7 @@ describe('StackSet references to resources of a stack with an environment', () =
   test('the ARN of a role is passed through the StackSet to a nested stack in it', () => {
     const { stack, auditRole } = stackWithAuditRole();
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
     const nested = new core.NestedStack(stackSet, 'Nested');
     new CfnOutput(nested, 'AuditRoleArn', { value: auditRole.roleArn });
@@ -1871,7 +1871,7 @@ describe('nested stacks in a StackSet', () => {
     const app = new App();
     const stack = new Stack(app, 'Admin');
     const stackSet = new StackSet(stack, 'StackSet', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
     const nested = new NestedStack(stackSet, 'Nested');
     return { app, stack, stackSet, nested };
@@ -2135,7 +2135,7 @@ describe('StackSet validation errors', () => {
     const app = new App();
     const stack = new Stack(app);
     const stackSet = new StackSet(stack, 'AssetStack', {
-      assetBuckets: StackSetAssets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
+      assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ 'us-east-1': s3.Bucket.fromBucketName(stack, 'AssetBucket', 'prefix-us-east-1') }),
     });
 
     expect(() => stackSet.synthesizer.addFileAsset({ sourceHash: 'hash', executable: ['build.sh'] })).toThrow(expect.objectContaining({

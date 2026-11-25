@@ -7,7 +7,7 @@ import {
   RegionConcurrencyType,
   StackSet,
   StackSetAccountFilter,
-  StackSetAssets,
+  StackSetAssetBuckets,
   StackSetConcurrencyMode,
   StackSetFailureTolerance,
   StackSetMaxConcurrency,

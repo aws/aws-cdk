@@ -17,7 +17,7 @@
      "Payload": "\"{\\\"message\\\":\\\"read from the asset bucket of the region\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1795445640575"
+    "salt": "1795623666133"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

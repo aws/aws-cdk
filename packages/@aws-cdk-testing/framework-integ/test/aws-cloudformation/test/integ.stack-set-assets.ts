@@ -147,7 +147,7 @@ class AssetTestCase extends Stack {
     });
 
     const stackSet = new LambdaStackSet(this, 'StackSet', {
-      assetBuckets: cfn.StackSetAssets.fromRegionalBuckets({ [assetTargetRegion]: props.assetBucket }),
+      assetBuckets: cfn.StackSetAssetBuckets.fromRegionalBuckets({ [assetTargetRegion]: props.assetBucket }),
       stackSetName,
       targets: [cfn.StackSetTarget.fromAccounts({
         accounts: [targetAccount!],
@@ -160,9 +160,12 @@ class AssetTestCase extends Stack {
       capabilities: [CfnCapabilities.ANONYMOUS_IAM],
     });
 
-    // The stack instance reads the code of the function as the execution role of the target account.
+    // Only the StackSet execution role of the target account reads the code, when it creates the function.
     // The account is unknown when the test is synthesized without the environment variables.
-    stackSet.grants.readAssets(new iam.AccountPrincipal(targetAccount ?? Aws.ACCOUNT_ID));
+    const readerAccount = targetAccount ?? Aws.ACCOUNT_ID;
+    stackSet.grants.readAssets(new iam.AccountPrincipal(readerAccount).withConditions({
+      ArnEquals: { 'aws:PrincipalArn': `arn:${Aws.PARTITION}:iam::${readerAccount}:role/${executionRoleName}` },
+    }));
   }
 }
 

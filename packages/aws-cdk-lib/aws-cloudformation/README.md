@@ -397,17 +397,20 @@ accounts and regions, so they can't read these assets from the CDK bootstrap buc
 
 1. Create one bucket in each region that the StackSet deploys to, with an explicit `bucketName`.
    A Lambda function can only read its code from a bucket in its own region.
-2. Pass the bucket of each region as `assetBuckets: StackSetAssets.fromRegionalBuckets({ ... })`,
+2. Pass the bucket of each region as `assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ ... })`,
    keyed by region. Synthesis fails if a region that the StackSet deploys to has no bucket.
 3. Allow the target accounts to read the assets with `stackSet.grants.readAssets()`, for example with
    an organization principal for a service managed StackSet, or an account principal for each
-   account of a self managed StackSet.
+   account of a self managed StackSet. `readAssets()` grants exactly the principal you pass: if only
+   the deployment reads the assets (for example Lambda code), you can limit an account principal to the
+   StackSet execution role with an `ArnEquals` condition on `aws:PrincipalArn`.
 
 Here's an example that creates the buckets in the same CDK app, with one stack per region:
 
 ```ts
 declare const app: App;
 
+const regions = ['us-east-1', 'eu-west-1'];
 const buckets: { [region: string]: s3.IBucket } = {};
 for (const region of regions) {
   const bucketStack = new Stack(app, `StackSetAssets-${region}`, { env: { account: '111111111111', region } });
@@ -419,7 +422,7 @@ for (const region of regions) {
 
 const stack = new Stack(app, 'Admin', { env: { account: '111111111111', region: 'us-east-1' } });
 const stackSet = new StackSet(stack, 'MyStackSet', {
-  assetBuckets: StackSetAssets.fromRegionalBuckets(buckets),
+  assetBuckets: StackSetAssetBuckets.fromRegionalBuckets(buckets),
   targets: [StackSetTarget.fromOrganizationalUnits({ regions, organizationalUnits: ['ou-1'] })],
   deploymentType: DeploymentType.serviceManaged(),
 });
@@ -446,13 +449,14 @@ Keep these points in mind:
   `readAssets()` grants `s3:GetObject` on that prefix only. Don't expire or archive objects under that
   prefix with lifecycle rules: accounts that join a target organizational unit later read the assets
   when their stack instance is created.
-- **Encryption**: `readAssets()` grants no KMS permissions. Encrypt the buckets with SSE-S3
-  (`s3.BucketEncryption.S3_MANAGED`), or with a customer managed key whose key policy allows the target
-  accounts to decrypt. Objects encrypted with the AWS managed key `aws/s3` can't be read from other
-  accounts.
+- **Encryption**: for a bucket encrypted with a customer managed key defined in the app,
+  `readAssets()` also allows `kms:Decrypt` in the key policy. For an imported key, allow the target
+  accounts to decrypt in its key policy yourself. Objects encrypted with the AWS managed key `aws/s3`
+  (`s3.BucketEncryption.KMS_MANAGED`) can't be read from other accounts, so use SSE-S3
+  (`s3.BucketEncryption.S3_MANAGED`) or a customer managed key.
 - **Existing buckets**: you can pass buckets you reference with `s3.Bucket.fromBucketName()`.
-  `readAssets()` doesn't change them, so allow the target accounts to read `cdk-stackset-assets/*` in
-  their bucket policies. For a bucket in another account, also allow the copy job of the stack that
+  `readAssets()` doesn't change them and adds a warning, so allow the target accounts to read
+  `cdk-stackset-assets/*` in their bucket policies. For a bucket in another account, also allow the copy job of the stack that
   contains the StackSet to write to it.
 - **Docker image assets** (for example `lambda.DockerImageCode.fromImageAsset()`) are not supported.
 

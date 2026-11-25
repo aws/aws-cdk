@@ -3,7 +3,7 @@ import type { IDependable } from 'constructs';
 import { Construct, DependencyGroup } from 'constructs';
 import * as iam from '../../../aws-iam';
 import type { CfnBucket, IBucket } from '../../../aws-s3';
-import { Bucket } from '../../../aws-s3';
+import { Bucket, BucketGrants } from '../../../aws-s3';
 import type { ISource } from '../../../aws-s3-deployment';
 import { BucketDeployment, Source } from '../../../aws-s3-deployment';
 import type {
@@ -28,7 +28,6 @@ import {
 } from '../../../core';
 import { AssumptionError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
-import type { StackSetAssetBuckets } from '../stackset-assets';
 
 /**
  * Where the host stack of a StackSet creates the constructs that copy the StackSet's file assets
@@ -50,11 +49,11 @@ interface StackSetHost {
   readonly id: string;
 
   /**
-   * The buckets that hold the file assets
+   * The bucket of each region that holds the file assets, keyed by region name
    *
    * @default - no asset buckets, file assets can't be used
    */
-  readonly assetBuckets?: StackSetAssetBuckets;
+  readonly assetBuckets?: { [region: string]: IBucket };
 }
 
 /**
@@ -99,11 +98,11 @@ export class StackSetSynthesizer extends StackSynthesizer {
   /**
    * The synthesizer of a StackSet defined in this app, or `undefined` for anything else
    */
-  public static of(x: unknown): StackSetSynthesizer | undefined {
+  public static of(x: any): StackSetSynthesizer | undefined {
     if (!Stack.isStack(x)) {
       return undefined;
     }
-    const synthesizer: unknown = x.synthesizer;
+    const synthesizer: any = x.synthesizer;
     return isStackSetSynthesizer(synthesizer) ? synthesizer : undefined;
   }
 
@@ -134,8 +133,10 @@ export class StackSetSynthesizer extends StackSynthesizer {
    */
   public bindHost(host: StackSetHost) {
     this.host = host;
-    for (const region of host.assetBuckets?.regions() ?? []) {
-      this.addAssetBucket(region, host.assetBuckets!.bucketFor(region));
+    const buckets = host.assetBuckets ?? {};
+    // Sorted, so that the order of the regions doesn't change the template
+    for (const region of Object.keys(buckets).sort()) {
+      this.addAssetBucket(region, buckets[region]);
     }
   }
 
@@ -204,18 +205,15 @@ export class StackSetSynthesizer extends StackSynthesizer {
    *
    * @returns the grant, or `undefined` for a referenced bucket
    */
-  private grantReadBucket(grantee: iam.IGrantable, { bucket }: AssetBucket): iam.Grant | undefined {
+  private grantReadBucket(grantee: iam.IGrantable, { region, bucket }: AssetBucket): iam.Grant | undefined {
     // The policy of a referenced bucket is managed outside of the app
     if (!Resource.isOwnedResource(bucket)) {
+      Annotations.of(this.boundStack).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetBucketNotGranted',
+        `the asset bucket for region ${JSON.stringify(region)} is referenced, so CDK can't change its policy, allow the target accounts to read 'cdk-stackset-assets/*' in its bucket policy`);
       return undefined;
     }
-    const grant = iam.Grant.addToPrincipalOrResource({
-      grantee,
-      actions: ['s3:GetObject'],
-      resourceArns: [bucket.arnForObjects(`${ASSET_KEY_PREFIX}*`)],
-      resource: bucket,
-    });
-    this.warnIfPublic(grantee);
+    // Also grants kms:Decrypt on the key of a bucket encrypted with a key defined in the app
+    const grant = BucketGrants.fromBucket(bucket).actionsOnObjectKeys(grantee, `${ASSET_KEY_PREFIX}*`, 's3:GetObject', 'kms:Decrypt');
 
     // The stack instances read the assets, so the StackSet is deployed after the permissions.
     // Dependencies can't cross Stages, so a bucket in another Stage must be deployed first.
@@ -230,18 +228,6 @@ export class StackSetSynthesizer extends StackSynthesizer {
    */
   private isInHostStage(bucket: IBucket): boolean {
     return Stage.of(bucket) === Stage.of(this.host?.stack ?? this.boundStack);
-  }
-
-  /**
-   * Granting read access to a principal of any account without conditions makes the assets public
-   */
-  private warnIfPublic(grantee: iam.IGrantable) {
-    const fragment = grantee.grantPrincipal.policyFragment;
-    const principals = Object.values(fragment.principalJson).flat();
-    if (principals.includes('*') && Object.keys(fragment.conditions).length === 0) {
-      Annotations.of(this.boundStack).addWarningV2('@aws-cdk/aws-cloudformation:stackSetAssetsPublicRead',
-        'granting read access to the file assets of the StackSet to everyone makes them public, grant access to the organization or the accounts the StackSet deploys to instead');
-    }
   }
 
   /**

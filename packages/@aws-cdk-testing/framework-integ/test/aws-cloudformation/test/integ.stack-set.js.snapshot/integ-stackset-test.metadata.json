@@ -5,16 +5,28 @@
       "data": "integ-stackset-test.template.json"
     }
   ],
-  "/integ-stackset-test/AdminRole": [
+  "/integ-stackset-test/StackSet": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-stackset-test/StackSet.AdminRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "roleName": "*",
         "assumedBy": {
           "principalAccount": "*",
           "assumeRoleAction": "*"
-        },
-        "inlinePolicies": "*"
+        }
       }
     },
     {
@@ -42,20 +54,6 @@
       }
     }
   ],
-  "/integ-stackset-test/StackSet": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    }
-  ],
   "/integ-stackset-test/StackSet.Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -74,13 +72,51 @@
       "data": "CheckBootstrapVersion"
     }
   ],
-  "/integ-stackset-test/AdminRole/Resource": [
+  "/integ-stackset-test/StackSet/TopicDisplayName": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "AdminRole38563C57"
+      "data": "TopicDisplayName"
     }
   ],
-  "/integ-stackset-test/AdminRole/DefaultPolicy": [
+  "/integ-stackset-test/StackSet/IntegStackSetSNSTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "displayName": "*"
+      }
+    }
+  ],
+  "/integ-stackset-test/StackSet/AdminRoleName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AdminRoleName"
+    }
+  ],
+  "/integ-stackset-test/StackSet/AdminRoleArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AdminRoleArn"
+    }
+  ],
+  "/integ-stackset-test/StackSet/reference-to-integstacksettestStackSetAdminRoleC0FA4E9ARef": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetointegstacksettestStackSetAdminRoleC0FA4E9ARef"
+    }
+  ],
+  "/integ-stackset-test/StackSet/reference-to-integstacksettestStackSetAdminRoleC0FA4E9AArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetointegstacksettestStackSetAdminRoleC0FA4E9AArn"
+    }
+  ],
+  "/integ-stackset-test/StackSet.AdminRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetAdminRole60BC89F6"
+    }
+  ],
+  "/integ-stackset-test/StackSet.AdminRole/DefaultPolicy": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -110,54 +146,16 @@
       }
     }
   ],
-  "/integ-stackset-test/StackSet/TopicDisplayName": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "TopicDisplayName"
-    }
-  ],
-  "/integ-stackset-test/StackSet/IntegStackSetSNSTopic": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "displayName": "*"
-      }
-    }
-  ],
-  "/integ-stackset-test/StackSet/AdminRoleId": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "AdminRoleId"
-    }
-  ],
-  "/integ-stackset-test/StackSet/AdminRoleArn": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "AdminRoleArn"
-    }
-  ],
-  "/integ-stackset-test/StackSet/reference-to-integstacksettestAdminRoleD699F605RoleId": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "referencetointegstacksettestAdminRoleD699F605RoleId"
-    }
-  ],
-  "/integ-stackset-test/StackSet/reference-to-integstacksettestAdminRoleD699F605Arn": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "referencetointegstacksettestAdminRoleD699F605Arn"
-    }
-  ],
-  "/integ-stackset-test/AdminRole/DefaultPolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "AdminRoleDefaultPolicy1C2AB961"
-    }
-  ],
   "/integ-stackset-test/StackSet/IntegStackSetSNSTopic/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "IntegStackSetSNSTopic360B333E"
+    }
+  ],
+  "/integ-stackset-test/StackSet.AdminRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StackSetAdminRoleDefaultPolicyA86F14C6"
     }
   ]
 }
