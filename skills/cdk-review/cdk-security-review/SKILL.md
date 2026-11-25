@@ -12,15 +12,10 @@ of the CDK. Apply `cdk-review-principles` for severity, evidence and the finding
 
 ## The review process
 
-Work the changed surface in this order; adapt to what the diff touches.
-
 1. **Orient and load your rules.** Name the security-sensitive surface the diff adds or changes — an
    IAM policy/grant, a trust policy, a KMS key policy, a resource/network policy, a default, a
-   prop named like a secret — and its kind. The kind tells you which controls it needs and what to scan. Then
-   read [`security-rules.md`](references/security-rules.md): its rows are your checklist. Before you flag what
-   an action allows, a service's real default posture, or whether a condition key applies,
-   search and read the authoritative AWS IAM/service / CloudFormation documentation available to you and
-   confirm the fact there, not from memory (see `cdk-review-principles` "Verification").
+   prop named like a secret — and its kind. The kind tells you which controls it needs and what to scan.
+   Then read [`security-rules.md`](references/security-rules.md): its rows are your checklist.
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **IAM least-privilege**
    (including trust-policy confused-deputy), **Network & resource access**, **Secrets & credentials**,
@@ -29,9 +24,8 @@ Work the changed surface in this order; adapt to what the diff touches.
    (step 1), check each control the change needs. Confirm the service supports the control before flagging
    its absence.
 
-3. **Take the tier from the rule and stop.** Give each finding the tier of the rule it cites, per
-   `cdk-review-principles` "Severity", even when you are unsure a caller reaches the exposure. Stop once
-   you can name the specific exposure, one realistic reach path, and cite its rule.
+3. **When to stop.** Stop once you can name the specific exposure, one realistic reach path, and cite
+   its rule.
 
 ## What not to flag
 
@@ -47,9 +41,3 @@ Work the changed surface in this order; adapt to what the diff touches.
 - **An already-scoped `grant*` helper**, and any permission/default the PR did not change.
 - **A benign ABAC tag-gate with no adjacent tag-write grant**, and an ordinary role that grants no
   IAM-mutating action — neither is a finding.
-
-## Output
-
-Populate the structured finding fields the `cdk-review-principles` skill defines for a finding — write
-`message` as the complete posted comment (observation, impact, a fix once you have checked one, and the
-guideline cited inline by file + section).

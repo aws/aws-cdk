@@ -12,22 +12,15 @@ severity, evidence and the finding format.
 
 ## The review process
 
-Work the changed surface rules-first. Adapt it to what the diff touches.
-
 1. **Orient and load your rules.** Name the public surface the PR changes. Establish first whether its
    module is stable or experimental, since the breaking-change rows rate by it. Read
-   [`regression-rules.md`](references/regression-rules.md): its rows are your checklist. Then confirm a
-   removed enum member, a vanished API, or a binding-breaking signature by reading the code, and a
-   CloudFormation or service fact the finding turns on against the CloudFormation and AWS documentation
-   available to you — not from memory (see `cdk-review-principles` "Verification").
+   [`regression-rules.md`](references/regression-rules.md): its rows are your checklist.
 
 2. **Check the diff against the rules.** For each rule check both directions: what is present and
    violating, and what is required but missing. The required-but-missing scan catches an omission the
    changed lines don't show. Enumerate what the change needs; flag each required item that is absent.
 
-3. **Take the tier from the rule and stop.** Give every finding the tier of the rule it cites, per
-   `cdk-review-principles` "Severity", even when you doubt the mechanism fires. Stop once you can name
-   the mechanism and cite its rule.
+3. **When to stop.** Stop once you can name the mechanism and cite its rule.
 
 ## What not to flag
 
@@ -37,7 +30,5 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
 
 ## Output
 
-Populate the structured finding fields the `cdk-review-principles` skill defines. Write
-`message` as the complete posted comment: observation, impact, a fix once you have checked one, guideline
-cited inline by file + section. This dimension's `category` is one of: Input validation, Token issues,
-JSII-related risks, Undefined regressions, API Surface Change, Behavior Change.
+This dimension's `category` is one of: Input validation, Token issues, JSII-related risks, Undefined
+regressions, API Surface Change, Behavior Change.

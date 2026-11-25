@@ -13,8 +13,6 @@ Apply `cdk-review-principles` for severity, evidence and the finding format.
 
 ## The review process
 
-Work the changed surface in this order. Adapt it to what the diff touches.
-
 1. **Unit tests.** State what the PR adds or changes for a user, read the tests it adds or changes, and
    ask: if that broke, would a test fail? A test can run the code and still assert nothing, cover only the
    happy path, or test one of two flag states. The rows of
@@ -27,16 +25,9 @@ Work the changed surface in this order. Adapt it to what the diff touches.
    whether the integ test asserts it on the deployed resources, not only that the stack deploys. Then
    judge the integ tests and snapshots it adds or changes by the integration rows.
 
-3. **Take the tier from the rule and stop.** Give each finding the tier of the rule it cites, per
-   `cdk-review-principles` "Severity", even when you are unsure the gap would be hit. When several gaps
-   stem from one test, classify under the best-fitting rule and describe them together. When the tests
-   would catch a break, or no test is needed, raise nothing. Stop once you can name the gap and cite its
-   rule.
-
-Before you cite an integ-test pattern, an `assertions` / `integ-tests` API as misused, or a required
-pattern as absent, search and read the CDK testing guide and the module README available to you and
-confirm against them rather than working from memory (see `cdk-review-principles`
-"Verification").
+3. **When to stop.** When several gaps stem from one test, classify under the best-fitting rule and
+   describe them together. When the tests would catch a break, or no test is needed, raise nothing. Stop
+   once you can name the gap and cite its rule.
 
 ## What not to flag
 
@@ -51,8 +42,6 @@ confirm against them rather than working from memory (see `cdk-review-principles
 
 ## Output
 
-Populate the structured finding fields the `cdk-review-principles` skill defines. Write
-`message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
-cited inline). This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
+This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
 Missing edge & negative cases, Untested feature-flag state, Missing required integration test, Dangerous
 snapshot diff, IntegTest construct misuse, Weak or missing assertions, Stale integration snapshot.

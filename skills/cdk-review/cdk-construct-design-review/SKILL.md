@@ -12,15 +12,10 @@ users into mistakes, and open to extension later without breaking its users? App
 
 ## The review process
 
-Work the changed surface in this order; adapt to what the diff touches.
-
 1. **Orient and load your rules.** List the public API the diff adds or changes, and name its kind —
    grantable, stateful, connectable, attribute-bearing — because the kind sets both what the surface needs
-   and what to scan (step 2). Search and read the authoritative AWS service and CloudFormation documentation
-   available to you for the area, and confirm the fact each judgment turns on: is this attribute, mode, or
-   default real for the service? What the service offers decides whether the abstraction is right and
-   durable (see `cdk-review-principles` "Verification"). Then read
-   [`design-rules.md`](references/design-rules.md): its rows are your checklist.
+   and what to scan (step 2). Then read [`design-rules.md`](references/design-rules.md): its rows are your
+   checklist.
 
 2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule
    check both directions: what is present and violating, and what the kind requires but the diff omits.
@@ -28,11 +23,9 @@ Work the changed surface in this order; adapt to what the diff touches.
    docs, and confirm the CDK framework doesn't already auto-wire it. A missing affordance takes its rule's
    tier, like a declared defect.
 
-3. **Take the tier from the rule and stop.** Give every finding the tier of the rule it cites, per
-   `cdk-review-principles` "Severity", even when you are unsure it fires. When several defects share one
-   code cause, give one finding with the `ruleId`, `category` and `severity` of its most severe defect,
-   since each field takes one value. Stop once you can name the defect and cite its rule — file +
-   section.
+3. **When to stop.** When several defects share one code cause, give one finding with the `ruleId`,
+   `category` and `severity` of its most severe defect, since each field takes one value. Stop once you
+   can name the defect and cite its rule — file + section.
 
 ## What not to flag
 
@@ -47,7 +40,5 @@ Work the changed surface in this order; adapt to what the diff touches.
 
 ## Output
 
-Populate the structured finding fields the `cdk-review-principles` skill defines — write
-`message` as the complete posted comment (observation, impact, a fix once you have checked one, and the
-guideline cited inline by file + section). This dimension's `category` is one of: Feature placement &
-abstraction, Design Guidelines conformance, Clarity/simplicity/consistency, Misuse traps & extensibility.
+This dimension's `category` is one of: Feature placement & abstraction, Design Guidelines conformance,
+Clarity/simplicity/consistency, Misuse traps & extensibility.
