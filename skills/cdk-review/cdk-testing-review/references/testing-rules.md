@@ -35,7 +35,7 @@ the outcome.
 **[TEST-UNIT-EDGE-NEGATIVE] (RECOMMENDED)** — The happy path is tested but the boundary value, invalid
 input, failure/error path, or token input the code handles is not — where regressions hide. A branch that
 emits a diagnostic (`addWarningV2` / `addError` / `addInfo`) instead of throwing is also a reject arm: it
-owes a `hasWarning`/`hasError` assertion, because a "does not throw" test passes while the warning silently
+needs a `hasWarning`/`hasError` assertion, because a "does not throw" test passes while the warning silently
 regresses. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the
 `test.each` / `"fails"`-prefix / specific-message convention,
@@ -48,7 +48,7 @@ for a mixin's required tests.
 
 ## Integration tests
 
-**[TEST-INTEG-MISSING-REQUIRED] (BLOCKING)** — An integ test the PR owes is absent with no valid
+**[TEST-INTEG-MISSING-REQUIRED] (BLOCKING)** — An integ test the PR needs is absent with no valid
 exemption. See
 [`AGENTS.md § Integration Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#integration-tests) and
 [`INTEGRATION_TESTS.md § When are Integration Tests Required`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#when-are-integration-tests-required)
@@ -58,7 +58,7 @@ for the feat/fix default, and the `pr-linter/exempt-integ-test` label in
 [`prlint/constants.ts`](https://github.com/aws/aws-cdk/blob/main/tools/@aws-cdk/prlint/constants.ts) for
 the exempt terminal.
 - **Tier:** RECOMMENDED when a unit test already asserts the change's
-  synthesized-template effect and only the owed integ test is absent; ask for the integ test or the exempt
+  synthesized-template effect and only the required integ test is absent; ask for the integ test or the exempt
   label.
 
 **[TEST-INTEG-DANGEROUS-SNAPSHOT] (BLOCKING)** — The committed `*.snapshot` change hides a dangerous
@@ -96,11 +96,11 @@ for the no-`--dry-run` hard rule, and the
 [`IntegTest` construct](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts).
 
 **[TEST-INTEG-WEAK-ASSERTION] (RECOMMENDED)** — A deploy-only test where a cross-service, Custom-Resource,
-code-bundling, or complex-IAM/networking change owes a deploy-time assertion. Independently, a verification
+code-bundling, or complex-IAM/networking change needs a deploy-time assertion. Independently, a verification
 scaffold that never verifies — a `CfnOutput` declared or an `awsApiCall` set up with no `ExpectedResult`
 asserting on it — is abandoned verification: dead test code claiming a check it never makes. Flag it
-whether or not the change's category owed an assertion. See
+whether or not the change's category needed an assertion. See
 [`INTEGRATION_TESTS.md § Assertions`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#assertions)
-for the assertion-owed cases and the `awsApiCall` → `ExpectedResult` API. Also assert the
+for the cases that need an assertion and the `awsApiCall` → `ExpectedResult` API. Also assert the
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a
 `403`/error `ExpectedResult`).

@@ -16,7 +16,7 @@ Work the changed surface in this order; adapt to what the diff touches.
 
 1. **Orient and load your rules.** Name the security-sensitive surface the diff adds or changes — an
    IAM policy/grant, a trust policy, a KMS key policy, a resource/network policy, a default, a
-   prop named like a secret — and its kind. The kind tells you which controls it owes and what to scan. Then
+   prop named like a secret — and its kind. The kind tells you which controls it needs and what to scan. Then
    read [`security-rules.md`](references/security-rules.md): its rows are your checklist. Before you flag what
    an action allows, a service's real default posture, or whether a condition key applies,
    search and read the authoritative AWS IAM/service / CloudFormation documentation available to you and
@@ -25,8 +25,9 @@ Work the changed surface in this order; adapt to what the diff touches.
 2. **Check the diff against the rules.** Walk the changed surface family by family — **IAM least-privilege**
    (including trust-policy confused-deputy), **Network & resource access**, **Secrets & credentials**,
    **Secure defaults** — judging the implementation the change produces. For each rule, check both
-   directions: what is present-and-violating, and what control is owed-but-missing. From the kind (step 1),
-   check each control the change owes. Confirm the service supports the control before flagging its absence.
+   directions: what is present-and-violating, and what control is required but missing. From the kind
+   (step 1), check each control the change needs. Confirm the service supports the control before flagging
+   its absence.
 
 3. **Rate by harm and stop.** Rate each finding by the impact if the exposure is reached, on the
    `cdk-review-principles` BLOCKING/RECOMMENDED scale ("Confidence is not severity", "Politeness is

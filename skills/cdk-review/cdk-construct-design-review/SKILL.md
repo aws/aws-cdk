@@ -15,7 +15,7 @@ users into mistakes, and open to extension later without breaking its users? App
 Work the changed surface in this order; adapt to what the diff touches.
 
 1. **Orient and load your rules.** List the public API the diff adds or changes, and name its kind —
-   grantable, stateful, connectable, attribute-bearing — because the kind sets both what the surface owes
+   grantable, stateful, connectable, attribute-bearing — because the kind sets both what the surface needs
    and what to scan (step 2). Search and read the authoritative AWS service and CloudFormation documentation
    available to you for the area, and confirm the fact each judgment turns on: is this attribute, mode, or
    default real for the service? What the service offers decides whether the abstraction is right and
@@ -23,7 +23,7 @@ Work the changed surface in this order; adapt to what the diff touches.
    [`design-rules.md`](references/design-rules.md): its rows are your checklist.
 
 2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule
-   check both directions: what is present and violating, and what the kind owes but the diff omits.
+   check both directions: what is present and violating, and what the kind requires but the diff omits.
    Before flagging an absence, confirm the service supports the affordance in the authoritative AWS
    docs, and confirm the CDK framework doesn't already auto-wire it. Rate a missing affordance exactly as a
    declared defect.

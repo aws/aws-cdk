@@ -22,8 +22,8 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
    available to you — not from memory (see `cdk-review-principles` "Verify before you cite").
 
 2. **Check the diff against the rules.** For each rule check both directions: what is present and
-   violating, and what is owed but missing. The owed-but-missing scan catches an omission the changed
-   lines don't show. Enumerate what the change owes; flag each owed item that is absent.
+   violating, and what is required but missing. The required-but-missing scan catches an omission the
+   changed lines don't show. Enumerate what the change needs; flag each required item that is absent.
 
 3. **Rate by harm and stop.** Rate every finding by the harm when its mechanism triggers, per
    `cdk-review-principles` (its severity scale, "Confidence is not severity") — rate a concrete regression

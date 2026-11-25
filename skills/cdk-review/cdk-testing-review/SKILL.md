@@ -1,6 +1,6 @@
 ---
 name: cdk-testing-review
-description: "Reviews the tests of an AWS CDK pull request. Use when a PR adds or changes tests (`**/*.test.ts`, `integ.*.ts`, `*.snapshot`) or ships new functionality, feature-flag states, CFN properties, or cross-service behavior that should be tested — judging whether the PR's tests test the right thing (unit tests that would fail if what the PR adds broke, integ tests that check deployed behavior at runtime) and whether the PR owes an integ test: meaningful assertions over non-asserting tests, edge/negative/feature-flag cases, required integ tests, snapshot-as-synthesized-template diffs, deploy-time assertions, and legitimate exemptions."
+description: "Reviews the tests of an AWS CDK pull request. Use when a PR adds or changes tests (`**/*.test.ts`, `integ.*.ts`, `*.snapshot`) or ships new functionality, feature-flag states, CFN properties, or cross-service behavior that should be tested — judging whether the PR's tests test the right thing (unit tests that would fail if what the PR adds broke, integ tests that check deployed behavior at runtime) and whether the PR needs an integ test: meaningful assertions over non-asserting tests, edge/negative/feature-flag cases, required integ tests, snapshot-as-synthesized-template diffs, deploy-time assertions, and legitimate exemptions."
 ---
 
 # AWS CDK Test Review
@@ -8,7 +8,7 @@ description: "Reviews the tests of an AWS CDK pull request. Use when a PR adds o
 You review the tests of AWS CDK pull requests. One question drives the review: **do the PR's tests test
 the right thing?** A unit test should fail if what the PR adds broke; an integ test should check at
 runtime what only shows once deployed, not only that the stack deploys. Two errors lose the review:
-missing a test the change owes, and demanding one it does not. Weigh each against both.
+missing a test the change needs, and demanding one it does not. Weigh each against both.
 Apply `cdk-review-principles` for severity, evidence and the finding format.
 
 ## The review process
@@ -20,7 +20,7 @@ Work the changed surface in this order. Adapt it to what the diff touches.
    happy path, or test one of two flag states. The rows of
    [`testing-rules.md`](references/testing-rules.md) name and tier what you find.
 
-2. **Integration tests — when one is owed.** The PR owes an integ test for a feature or fix, a
+2. **Integration tests — when one is needed.** The PR needs an integ test for a feature or fix, a
    previously-unused CFN resource or property, a cross-service integration, a new supported version, or a
    Custom Resource.
    Where the change's behavior only shows once deployed (`TEST-INTEG-WEAK-ASSERTION` names the cases), ask
@@ -30,7 +30,7 @@ Work the changed surface in this order. Adapt it to what the diff touches.
 3. **Rate by harm and stop.** Rate each finding by the harm if the untested behavior regresses, per
    `cdk-review-principles` — rate a concrete gap at that harm even when you are unsure it fires. When
    several gaps stem from one test, classify under the best-fitting rule and describe them together. When
-   the tests would catch a break, or no test is owed, raise nothing. Stop once you can name the gap and cite
+   the tests would catch a break, or no test is needed, raise nothing. Stop once you can name the gap and cite
    its rule.
 
 Before you cite an integ-test pattern, an `assertions` / `integ-tests` API as misused, or a required
@@ -40,8 +40,8 @@ cite").
 
 ## What not to flag
 
-- **A test the change does not owe** — a trivial pass-through exposing no previously-unused property, a
-  refactor with no behavior change, or a single-property that just renders into the template owes no
+- **A test the change does not need** — a trivial pass-through exposing no previously-unused property, a
+  refactor with no behavior change, or a single-property that just renders into the template needs no
   test.
 - **Production-code correctness** — whether the implementation is buggy is production-code
   correctness — outside your scope. Judge whether the tests would catch a bug, not whether the code has one.
