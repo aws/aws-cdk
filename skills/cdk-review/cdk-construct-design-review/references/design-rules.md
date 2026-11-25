@@ -13,8 +13,8 @@ and [`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/
 an escape hatch to the L1, or hard-codes a choice the service exposes. See
 [`AGENTS.md § Architecture — The Layer Model`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#architecture--the-layer-model).
 
-**[CD-FEATURE-PLACEMENT] (RECOMMENDED)** — Implement a new feature as a building block (Mixin /
-CfnPropsMixin / Facade / Trait) first, and only as an L2 method if none fits. See
+**[CD-FEATURE-PLACEMENT] (RECOMMENDED)** — A new feature implemented as an L2 method where a building
+block (Mixin / CfnPropsMixin / Facade / Trait) fits. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Feature Placement Decision`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#feature-placement-decision)
 for the first-match-wins table and
 [`AGENTS.md § L2 Building Blocks`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#l2-building-blocks)
@@ -42,15 +42,16 @@ behavioral surprise. See
 plain string, so a plaintext secret can pass through the API. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 
-**[CD-NAMING] (BLOCKING)** — Name the resource and its props in official AWS/CloudFormation terminology,
-and derive its resource interface name (`IFoo`). See
+**[CD-NAMING] (BLOCKING)** — A resource or prop named outside official AWS/CloudFormation terminology, or
+a resource interface name not derived from it (`IFoo`). See
 [`AGENTS_CONSTRUCT_DESIGN.md § Property Naming`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#property-naming).
 
-**[CD-ATTRIBUTES] (BLOCKING)** — Expose every CloudFormation attribute as a type-name-prefixed
-(`bucketArn`, not `arn`) opaque token. See
+**[CD-ATTRIBUTES] (BLOCKING)** — A CloudFormation attribute missing from the L2, or exposed without the
+type-name prefix (`arn` where `bucketArn` fits) or as other than an opaque token. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Resource Attributes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#resource-attributes).
 
-**[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Extend only `Resource`/`Construct`/`{Foo}Base`. See
+**[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — An L2 that extends a class other than
+`Resource`/`Construct`/`{Foo}Base`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Base Classes & Inheritance`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#base-classes--inheritance).
 
 **[CD-FROM-METHODS] (BLOCKING)** — A resource without a `from{Attribute}` importer, or with an ARN and no
@@ -67,9 +68,9 @@ is given. See
 - **Tier:** RECOMMENDED for a new L2 of a taggable resource with no `tags` prop, or one that does not pass
   `props.tags` to the L1.
 
-**[CD-BACKWARD-COMPAT] (BLOCKING)** — Design the new surface so it won't force a future break: no
-`@deprecated` props in a newly introduced interface, keep detail types `@internal`, and correct later by
-deprecate-and-add (`FooV2`), not mutate. See
+**[CD-BACKWARD-COMPAT] (BLOCKING)** — A new surface that will force a future break: a `@deprecated` prop
+in a newly introduced interface, a detail type left out of `@internal`, or a later fix that mutates the
+original in place of deprecate-and-add (`FooV2`). See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
 - **Tier:** RECOMMENDED for an implementation-detail type left exported instead of `@internal`.
 - **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface.
@@ -82,42 +83,42 @@ for the update-behavior classes and
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy)
 for the stateful classification.
 
-**[CD-AWSLINT-SUPPRESSION] (RECOMMENDED)** — Flag every `awslint.exclude` entry the diff adds or broadens,
-and ask for a stated justification in the PR description or an adjacent comment. A suppression turns off an
-awslint rule that enforces a design guideline at build time, so an unjustified one silently drops that
-guardrail. See
+**[CD-AWSLINT-SUPPRESSION] (RECOMMENDED)** — An `awslint.exclude` entry the diff adds or broadens; the
+comment asks for a stated justification in the PR description or an adjacent comment. A suppression turns
+off an awslint rule that enforces a design guideline at build time, so an unjustified one silently drops
+that guardrail. See
 [`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint) for the
 build-time enforcement and
 [`awslint README § Saving State`](https://github.com/aws/aws-cdk/blob/main/packages/awslint/README.md#saving-state)
 for the `exclude` mechanism.
 - **Tier:** BLOCKING when the suppressed rule backs a MUST-level guideline.
 
-**[CD-ENUMS] (RECOMMENDED)** — Model a closed known set as an `enum`, an open set as an enum-like class.
-See
+**[CD-ENUMS] (RECOMMENDED)** — A closed known set that is not an `enum`, or an open set that is not an
+enum-like class. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Enums & Enum-Like Classes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#enums--enum-like-classes).
 
-**[CD-STATIC-TYPE-CHECK] (RECOMMENDED)** — Prefer a static `isFoo` over `instanceof`. See
+**[CD-STATIC-TYPE-CHECK] (RECOMMENDED)** — An `instanceof` check where a static `isFoo` fits. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Static Type Check`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#static-type-check).
 
-**[CD-ADD-FACTORY] (RECOMMENDED)** — Offer a convenience `add{Bar}(...)` factory for secondary resources,
-and prefer extending an existing method over adding a new one. See
+**[CD-ADD-FACTORY] (RECOMMENDED)** — A secondary resource without a convenience `add{Bar}(...)` factory,
+or a new method where extending an existing one fits. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Factory Methods for Secondary Resources`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#factory-methods-for-secondary-resources).
 
-**[CD-STANDARD-AFFORDANCE] (RECOMMENDED)** — Add the standard `metric*`/`onXxx`/`connections`/`role`
-affordance where the service supports it. See
+**[CD-STANDARD-AFFORDANCE] (RECOMMENDED)** — A standard `metric*`/`onXxx`/`connections`/`role` affordance
+missing where the service supports it. See
 [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
 and the sections following it for the signatures.
 
-**[CD-POLYMORPHISM-OVER-BOOLEAN] (RECOMMENDED)** — Model behavioral variation through polymorphism, not a
-boolean flag. See
+**[CD-POLYMORPHISM-OVER-BOOLEAN] (RECOMMENDED)** — A boolean flag that switches behavior where
+polymorphism fits. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Polymorphism over Booleans`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#polymorphism-over-booleans).
 
-**[CD-TYPE-REUSE] (RECOMMENDED)** — Reuse an existing type across modules when semantically equivalent
-rather than declaring a parallel one. See
+**[CD-TYPE-REUSE] (RECOMMENDED)** — A parallel type declared where an existing type in another module is
+semantically equivalent. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Type Reuse`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#type-reuse).
 
-**[CD-PREFER-DEFAULT] (RECOMMENDED)** — Prefer inferring a sensible default over raising an error: error
-only when no default exists or the user gave an explicitly contradictory config. See
+**[CD-PREFER-DEFAULT] (RECOMMENDED)** — An error raised where a sensible default can be inferred; an error
+fits only when no default exists or the user gave an explicitly contradictory config. See
 [`AGENTS.md § Error Handling`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#error-handling).
 
 ## Anti-patterns
@@ -133,6 +134,6 @@ public surface.
 
 **[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID changed in a stable module.
 
-**[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
-capability lands additively. See
+**[CD-PREFER-ADDITIONS] (RECOMMENDED)** — A change that modifies existing surface where an addition fits,
+so the next capability cannot land additively. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Factory Methods for Secondary Resources`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#factory-methods-for-secondary-resources).
