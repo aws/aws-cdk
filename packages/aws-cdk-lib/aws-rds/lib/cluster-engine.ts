@@ -781,7 +781,7 @@ export class AuroraMysqlEngineVersion {
 
   /** The full version string, for example, "5.7.mysql_aurora.1.78.3.6". */
   public readonly auroraMysqlFullVersion: string;
-  /** The major version of the engine. Currently, it's either "5.7", or "8.0". */
+  /** The major version of the engine, for example "5.7", "8.0" or "8.4". */
   public readonly auroraMysqlMajorVersion: string;
   /**
    * Whether this version requires combining the import and export IAM Roles.
