@@ -337,7 +337,7 @@ Tags.of(myDashboard).add('Environment', 'prod'); // traverses and tags all L1s u
 
 ## Backward Compatibility & Deprecation
 
-- You MUST NOT change any public-facing code that breaks backward compatibility (APIs, method signatures, validations, enum members, prop contracts, making required properties optional)
+- You MUST NOT change any public-facing code in a stable module in a way that breaks backward compatibility (APIs, method signatures, validations, enum members, prop contracts, making a required property optional on a type users read (a return type or a class property)); see [CONTRIBUTING.md § API surface changes](../CONTRIBUTING.md#api-surface-changes)
 - When fixing defects or extending constructs for new modes, deprecate the old version and introduce a corrected replacement (e.g., `FooV2`) rather than modifying the original
 - You MUST NOT include `@deprecated` properties in newly introduced interfaces
 - You SHOULD keep implementation-detail types unexported (marked `@internal`) to minimize backward-compatibility obligations and public API surface
