@@ -40,6 +40,26 @@ enum AdotLambdaLayerType {
    * use cases (such as Go or DotNet runtimes).
    */
   GENERIC = 'GENERIC',
+
+  /**
+   * The AWS Lambda Layer for OpenTelemetry (JavaScript / Node.js) without an embedded collector.
+   */
+  JAVASCRIPT_DISTRO = 'JAVASCRIPT_DISTRO',
+
+  /**
+   * The AWS Lambda Layer for OpenTelemetry (Python) without an embedded collector.
+   */
+  PYTHON_DISTRO = 'PYTHON_DISTRO',
+
+  /**
+   * The AWS Lambda Layer for OpenTelemetry (Java) without an embedded collector.
+   */
+  JAVA_DISTRO = 'JAVA_DISTRO',
+
+  /**
+   * The AWS Lambda Layer for OpenTelemetry (.NET) without an embedded collector.
+   */
+  DOTNET_DISTRO = 'DOTNET_DISTRO',
 }
 
 /**
@@ -159,6 +179,50 @@ export abstract class AdotLayerVersion {
     return AdotLayerVersion.fromAdotVersion(version);
   }
 
+  /**
+   * The AWS Lambda Layer for OpenTelemetry (JavaScript / Node.js)
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromJavaScriptDistroLayerVersion(
+    version: AdotLambdaLayerJavaScriptDistroVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The AWS Lambda Layer for OpenTelemetry (Python)
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromPythonDistroLayerVersion(
+    version: AdotLambdaLayerPythonDistroVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The AWS Lambda Layer for OpenTelemetry (Java)
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromJavaDistroLayerVersion(
+    version: AdotLambdaLayerJavaDistroVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
+  /**
+   * The AWS Lambda Layer for OpenTelemetry (.NET)
+   *
+   * @param version The version of the Lambda layer to use
+   */
+  public static fromDotNetDistroLayerVersion(
+    version: AdotLambdaLayerDotNetDistroVersion,
+  ): AdotLayerVersion {
+    return AdotLayerVersion.fromAdotVersion(version);
+  }
+
   private static fromAdotVersion(adotVersion: AdotLambdaLayerVersion): AdotLayerVersion {
     return new (class extends AdotLayerVersion {
       _bind(_function: IFunction): AdotLambdaLayerBindConfig {
@@ -204,7 +268,8 @@ export enum AdotLambdaExecWrapper {
   STREAM_HANDLER = '/opt/otel-stream-handler',
 
   /**
-   * Wrapping python lambda handlers see https://aws-otel.github.io/docs/getting-started/lambda/lambda-python
+   * Wrapping Lambda handlers for Python ADOT layers and the AWS Lambda Layer for OpenTelemetry (`AWSOpenTelemetryDistro*`),
+   * see https://aws-otel.github.io/docs/getting-started/lambda
    */
   INSTRUMENT_HANDLER = '/opt/otel-instrument',
 
@@ -505,5 +570,85 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
 
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.GENERIC, layerVersion);
+  }
+}
+
+/**
+ * The collection of versions of the AWS Lambda Layer for OpenTelemetry for JavaScript / Node.js (`AWSOpenTelemetryDistroJs`).
+ */
+export class AdotLambdaLayerJavaScriptDistroVersion extends AdotLambdaLayerVersion {
+  /**
+   * Version 0.15.0
+   */
+  public static readonly V0_15_0 = new AdotLambdaLayerJavaScriptDistroVersion('0.15.0');
+
+  /**
+   * The latest layer version available in this CDK version. New versions could
+   * introduce incompatible changes. Make sure to test them before deploying to production.
+   */
+  public static readonly LATEST = this.V0_15_0;
+
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.JAVASCRIPT_DISTRO, layerVersion);
+  }
+}
+
+/**
+ * The collection of versions of the AWS Lambda Layer for OpenTelemetry for Python (`AWSOpenTelemetryDistroPython`).
+ */
+export class AdotLambdaLayerPythonDistroVersion extends AdotLambdaLayerVersion {
+  /**
+   * Version 0.24.0
+   */
+  public static readonly V0_24_0 = new AdotLambdaLayerPythonDistroVersion('0.24.0');
+
+  /**
+   * The latest layer version available in this CDK version. New versions could
+   * introduce incompatible changes. Make sure to test them before deploying to production.
+   */
+  public static readonly LATEST = this.V0_24_0;
+
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.PYTHON_DISTRO, layerVersion);
+  }
+}
+
+/**
+ * The collection of versions of the AWS Lambda Layer for OpenTelemetry for Java (`AWSOpenTelemetryDistroJava`).
+ */
+export class AdotLambdaLayerJavaDistroVersion extends AdotLambdaLayerVersion {
+  /**
+   * Version 2.33.0
+   */
+  public static readonly V2_33_0 = new AdotLambdaLayerJavaDistroVersion('2.33.0');
+
+  /**
+   * The latest layer version available in this CDK version. New versions could
+   * introduce incompatible changes. Make sure to test them before deploying to production.
+   */
+  public static readonly LATEST = this.V2_33_0;
+
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.JAVA_DISTRO, layerVersion);
+  }
+}
+
+/**
+ * The collection of versions of the AWS Lambda Layer for OpenTelemetry for .NET (`AWSOpenTelemetryDistroDotNet`).
+ */
+export class AdotLambdaLayerDotNetDistroVersion extends AdotLambdaLayerVersion {
+  /**
+   * Version 1.16.0
+   */
+  public static readonly V1_16_0 = new AdotLambdaLayerDotNetDistroVersion('1.16.0');
+
+  /**
+   * The latest layer version available in this CDK version. New versions could
+   * introduce incompatible changes. Make sure to test them before deploying to production.
+   */
+  public static readonly LATEST = this.V1_16_0;
+
+  private constructor(protected readonly layerVersion: string) {
+    super(AdotLambdaLayerType.DOTNET_DISTRO, layerVersion);
   }
 }
