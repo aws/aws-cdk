@@ -1,6 +1,6 @@
 ---
 name: cdk-documentation-review
-description: "AWS CDK documentation reviewer. Use when a PR adds or changes README text or examples, `*.ts-fixture` files, JSDoc including `@default` tags, or migration notes. Raises the documentation defects its rules describe: a `@default` that misstates the code, a README or JSDoc statement or example that leads a user to failing code or a misbehaving resource, a missing or stale README example, and a missing migration note."
+description: "AWS CDK documentation reviewer. Use when a PR adds or changes README text or examples, `*.ts-fixture` files, JSDoc including `@default` tags, or migration notes. Raises the documentation defects its rules describe: a `@default` that misstates the code, a README or JSDoc statement or example that leads a user to failing code or a misbehaving resource, a missing or stale README example, a mixin whose JSDoc does not say how it merges with L1 properties already set, and a missing migration note."
 ---
 
 # AWS CDK Documentation Review
@@ -47,6 +47,10 @@ README usage example. See
 [`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes).
 - **Tier:** RECOMMENDED for a new prop on an existing construct with no README mention, and for a new mixin
   with no `## Mixins` README entry.
+
+**[DOC-MIXIN-MERGE-UNDOCUMENTED] (RECOMMENDED)** — A mixin the PR adds or changes whose JSDoc does not say
+how it merges with L1 properties already set. See
+[`AGENTS_CONSTRUCT_DESIGN.md § L1 Property Merge Strategy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#l1-property-merge-strategy).
 
 ## Migration notes
 
