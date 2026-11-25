@@ -26,8 +26,7 @@ You review the README and JSDoc a PR adds or changes for the defects in
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
 `message` as the complete posted comment (observation, impact, a fix once you have checked one, guideline
 cited inline by file + section). This dimension's `category` is one of: README examples, `@default` accuracy,
-Statement accuracy, Public-API doc completeness, Migration notes. A `suggestedFix` (folded into `message`)
-shows the doc or snippet as written and its corrected form. When one location has more than one doc
+Statement accuracy, Public-API doc completeness, Migration notes. When one location has more than one doc
 defect, describe them in one finding with the `ruleId`, `category` and `severity` of the most severe one,
 since each field takes one value.
 
