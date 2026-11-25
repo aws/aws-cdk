@@ -11,7 +11,8 @@ Give each finding these fields:
 - `category` — the heading the finding's rule sits under in the dimension's rules.
 - `severity` — `BLOCKING` or `RECOMMENDED`, the tier of the rule (`SKILL.md` "Severity").
 - `message` — the comment the author reads (next section).
-- `suggestedFix` — a concrete fix, or null.
+- `suggestedFix` — the change to make (a code example or a question framing a specific
+  alternative), once you have checked it (`SKILL.md` "Suggested fix"); or null.
 - `reference` — the source for the fact the finding turns on (`SKILL.md` "Verification"): file +
   section, or a URL; or null.
 - `evidence` — the supporting detail behind the finding.
@@ -24,8 +25,9 @@ The review as a whole carries a `summary` with its `text`.
 
 - **Observation** — what is wrong, specific, referencing the code (one or two sentences).
 - **Impact** — what happens if it is not addressed.
-- **Fix, once you have checked one** — the change to make (a code example or a question framing a
-  specific alternative), with the guide cited inline where one backs the finding.
+- **Guide** — the guide cited inline where one backs the finding.
+
+The change to make goes in `suggestedFix` only.
 
 ## Summary and grouping
 
