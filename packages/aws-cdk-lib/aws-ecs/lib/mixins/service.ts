@@ -17,8 +17,10 @@ import { GatewayAccessType } from '../gateway';
  * Applied to a bare `CfnService`, the mixin doesn't check that the task definition uses the
  * `awsvpc` network mode or that `portName` names a port mapping of the task definition, and it
  * doesn't make the service depend on the gateway associations of its cluster. Applied to a
- * `FargateService` or `Ec2Service`, or through their `gatewayConnector` property, it does all
- * three. `ExternalService` doesn't support gateway connectors, so applying the mixin to one throws.
+ * `FargateService` or `Ec2Service`, or through their `gatewayConnector` property, it checks the
+ * network mode and `portName` and, for a cluster created in this app, makes the service depend on
+ * the cluster's gateway associations; for an imported cluster, add that dependency yourself.
+ * `ExternalService` doesn't support gateway connectors, so applying the mixin to one throws.
  *
  * When `accessTypes` is omitted or includes `PUBLIC`, the mixin adds a warning: any
  * internet-facing gateway associated with the cluster can then send traffic to the service.

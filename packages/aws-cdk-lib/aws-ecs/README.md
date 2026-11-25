@@ -2813,8 +2813,9 @@ new ecs.CfnService(this, 'Service')
 
 Applied to a bare `CfnService`, the mixin can't check the task definition or the cluster. Applied to
 a `FargateService` or `Ec2Service`, it also checks that the task definition uses the `awsvpc` network
-mode and has a port mapping named `portName`, and makes the service depend on the gateway
-associations of its cluster. The `gatewayConnector` property of these services applies the same
+mode and has a port mapping named `portName`. For a cluster created in this app, it also makes the
+service depend on the cluster's gateway associations; for an imported cluster, add that dependency
+yourself. The `gatewayConnector` property of these services applies the same
 mixin, so both ways run the same checks. `ExternalService` doesn't support gateway connectors.
 
 ```ts
