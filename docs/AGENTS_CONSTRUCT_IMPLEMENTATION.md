@@ -91,7 +91,7 @@
 
 ## Import Method Implementation
 
-- You MUST validate that input does not contain unresolved tokens (via `Token.isUnresolved`) before parsing in `from*` methods
+- A `from*` method that parses its input MUST use the Arn helpers (`Arn.split`, `Stack.splitArn`), which accept tokens, or check `Token.isUnresolved` before parsing the string another way
 - When implementing `fromLookup` methods via context providers, prefer `fromResourceAttributes()` over `fromResourceName()` to avoid reconstructing ARNs with the wrong environment
 
 ---

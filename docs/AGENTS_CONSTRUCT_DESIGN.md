@@ -214,7 +214,7 @@ Common facade types — see [AGENTS_CONSTRUCT_IMPLEMENTATION.md](./AGENTS_CONSTR
 - Resources with an ARN MUST have `fromFooArn`
 - Resources with multiple independent attributes MUST have `fromFooAttributes(scope, id, attrs: FooAttributes)`
 - Imported constructs MUST only set properties meaningful for the imported resource — no placeholder objects for unavailable properties
-- `from*` methods MUST NOT transform or validate identifiers (they are pass-through)
+- `from*` methods MUST pass the identifier they are given through unchanged; one that parses it follows [AGENTS_CONSTRUCT_IMPLEMENTATION.md § Import Method Implementation](./AGENTS_CONSTRUCT_IMPLEMENTATION.md#import-method-implementation) and lets a malformed value fail fast ([AGENTS.md § Error Handling](../AGENTS.md#error-handling))
 - When `fromAttributes` receives multiple identifying attributes, prefer the most specific one (ARN) over throwing
 
 ### `fromLookup` Methods
@@ -246,7 +246,7 @@ These are design decisions about what interfaces and props every L2 construct MU
 
 ### IAM Role Integration
 
-- You MUST expose an optional `role: iam.IRole` prop and a readonly `role?: iam.IRole` property on the interface (undefined for imported constructs)
+- You MUST expose an optional `role?: iam.IRoleRef` prop (`iam.IRoleRef & iam.IGrantable` when the construct grants to the role) and a readonly `role?: iam.IRoleRef` property on the interface (undefined for imported constructs)
 - You MUST extend `iam.IGrantable` and provide `addToRolePolicy(statement)` on the interface
 
 ### IAM Resource Policy Integration
