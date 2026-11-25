@@ -18,14 +18,13 @@ path is reached, and however the comment is worded.
 
 ## When a defect is a finding
 
-- **No harm, no finding.** Clean code reports nothing. A change that merely *mentions* IAM,
-  encryption, or a secret is not a finding; a concrete new harm is. Turning a non-finding into
-  a low-severity finding is the most common way a review posts findings it should not. A defect
-  is a finding only when you can name its harm: something that breaks, a security boundary that
-  opens, a permission or default wider than the code needs, a maintainability cost, or a trap
-  a later reader would act on.
-- **Only harm this PR introduces.** Review what the diff adds or changes. A pre-existing
-  wildcard the PR merely moved does zero *new* harm → not a finding.
+A defect is a finding when you can state its impact and the PR introduces it:
+
+- **Impact** — what goes wrong if it ships: something breaks, a security boundary opens, a
+  permission or default is wider than the code needs, maintenance gets costlier, or a later
+  reader would act on a trap. Judge what the change does, whatever topic it touches.
+- **Introduced by this PR** — it is in what the diff adds or changes; code the PR only moved
+  counts as unchanged.
 
 ## Verification
 
