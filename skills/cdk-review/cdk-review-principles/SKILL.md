@@ -11,18 +11,18 @@ Ask one question of every finding: **if this ships and the code path is reached,
 breaks, and how badly?** That answer sets the tier. Two tiers, keyed to the *kind* of
 harm:
 
-- **BLOCKING** — the harm is **damage**. Something concretely breaks: data is lost, a
-  security boundary opens, a customer's stack fails or silently does the wrong thing.
+- **BLOCKING** — something concretely breaks: data is lost, a security boundary opens, a
+  customer's stack fails or silently does the wrong thing.
   Must be fixed before merge.
   - *Replaced resources.* A PR renames a construct ID in a stable module. `AGENTS.md`
     names the harm in the rule: "MUST NOT change construct IDs — logical IDs derive from
     the full construct path; any change replaces all resources in scope, causing data
-    loss." Resource replacement on a live stack is damage → BLOCKING.
+    loss." Resource replacement on a live stack loses data → BLOCKING.
   - *Open door.* A new IAM policy with `Resource: "*"` where a scoped ARN exists — the
     blast radius is the whole account → BLOCKING.
-- **RECOMMENDED** — the harm is **decay**. Nothing breaks today, but the change leaves a
-  permission or default wider than the code needs, a maintainability cost, or a latent trap
-  that bites a later reader.
+- **RECOMMENDED** — nothing breaks today, but the change leaves a permission or default
+  wider than the code needs, a maintainability cost, or a latent trap that bites a later
+  reader.
   Should be fixed before merge; does not block it.
   - *Over-grant.* `s3:*` where a scoped action set would serve. `AGENTS.md`: "SHOULD
     prefer specific IAM actions over full-service wildcards (`s3:*`)." The resource is
@@ -53,8 +53,8 @@ The tier is right only if you rate the harm honestly. Four ways it slips:
 
 When the finding is that the change violates a rule in the aws-cdk repo's own guides
 (`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
-harm set the tier: a rule naming data loss or an open boundary is damage → BLOCKING; a
-rule stated as a preference is decay → RECOMMENDED. Cite the rule by file + section and
+harm set the tier: a rule naming data loss or an open boundary → BLOCKING; a rule stated
+as a preference → RECOMMENDED. Cite the rule by file + section and
 quote it, so the author sees the authority.
 
 ## Make each finding land
