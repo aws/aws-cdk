@@ -74,5 +74,3 @@ integTest.assertions.awsApiCall('StepFunctions', 'describeExecution', {
     totalTimeout: Duration.minutes(30),
     interval: Duration.minutes(1),
   });
-
-app.synth();

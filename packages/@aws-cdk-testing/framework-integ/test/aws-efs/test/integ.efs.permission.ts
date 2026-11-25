@@ -94,4 +94,3 @@ test.assertions.awsApiCall('SSM', 'getCommandInvocation', {
 })).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(3),
 });
-app.synth();

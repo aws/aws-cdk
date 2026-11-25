@@ -152,5 +152,3 @@ test.assertions
       }],
     },
   }));
-
-app.synth();

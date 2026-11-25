@@ -85,5 +85,3 @@ pipeline.addStage({
     testAction,
   ],
 });
-
-app.synth();

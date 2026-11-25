@@ -37,5 +37,3 @@ new opensearch.Domain(stack, 'Domain', {
 new integ.IntegTest(app, 'integ-opensearch-advancedsecurity-with-saml', {
   testCases: [stack],
 });
-
-app.synth();

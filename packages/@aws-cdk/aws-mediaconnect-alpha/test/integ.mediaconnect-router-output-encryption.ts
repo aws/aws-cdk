@@ -156,5 +156,3 @@ flowEncrypted.node.addDependency(transitGrant);
 new IntegTest(app, 'cdk-integ-emx-router-output-encryption', {
   testCases: [stack],
 });
-
-app.synth();

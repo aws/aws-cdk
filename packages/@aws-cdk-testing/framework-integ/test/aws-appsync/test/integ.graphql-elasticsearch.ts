@@ -65,5 +65,3 @@ ds.createResolver('QueryGetTests', {
     },
   })),
 });
-
-app.synth();

@@ -28,5 +28,3 @@ container.addSecret('APIKEY', ecs.Secret.fromSecretsManager(secret, 'apikey'));
 new integ.IntegTest(app, 'aws-ecs-fargate-integ-secret', {
   testCases: [stack],
 });
-
-app.synth();

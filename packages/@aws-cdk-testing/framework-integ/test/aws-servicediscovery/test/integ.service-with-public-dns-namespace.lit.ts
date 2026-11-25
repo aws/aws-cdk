@@ -23,5 +23,3 @@ service.registerIpInstance('IpInstance', {
   ipv4: '54.239.25.192',
   port: 443,
 });
-
-app.synth();

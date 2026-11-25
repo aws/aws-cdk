@@ -23,5 +23,3 @@ const rules = [
 for (const rule of rules) {
   sg.addIngressRule(ec2.Peer.anyIpv4(), rule);
 }
-
-app.synth();

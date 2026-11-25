@@ -196,5 +196,3 @@ new bedrock.Agent(stack, 'AgentWithCustomParser', {
 new integ.IntegTest(app, 'BedrockPromptOverride', {
   testCases: [stack],
 });
-
-app.synth();

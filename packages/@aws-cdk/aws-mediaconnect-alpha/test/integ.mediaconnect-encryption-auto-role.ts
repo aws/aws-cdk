@@ -167,5 +167,3 @@ new RouterOutput(stack, 'MediaLiveOutput', {
 new IntegTest(app, 'cdk-integ-emx-encryption-auto-role', {
   testCases: [stack],
 });
-
-app.synth();

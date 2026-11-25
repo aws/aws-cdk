@@ -35,5 +35,3 @@ new RouterInput(stack, 'routerInputFailover', {
 new IntegTest(app, 'cdk-integ-emx-router-input-failover', {
   testCases: [stack],
 });
-
-app.synth();

@@ -66,5 +66,3 @@ new IntegTest(app, 'pipeline-with-codestarnotifications-test', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

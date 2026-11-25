@@ -20,5 +20,3 @@ cluster.addCapacity('bottlerocket-asg', {
   instanceType: new ec2.InstanceType('c5.large'),
   machineImageType: ecs.MachineImageType.BOTTLEROCKET,
 });
-
-app.synth();

@@ -42,5 +42,3 @@ new mediapackagev2.OriginEndpoint(stack, 'OriginEndpoint', {
 new IntegTest(app, 'cdk-integ-mediapackage-originendpoint-encryption', {
   testCases: [stack],
 });
-
-app.synth();

@@ -129,5 +129,3 @@ new integ.IntegTest(app, 'BedrockMemory', {
   testCases: [stack],
   regions: BEDROCK_AGENT_INTEG_TEST_REGIONS,
 });
-
-app.synth();

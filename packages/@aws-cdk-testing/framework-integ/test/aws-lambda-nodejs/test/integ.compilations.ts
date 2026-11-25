@@ -40,4 +40,3 @@ const app = new App({
   },
 });
 new TestStack(app, 'cdk-integ-compilations-lambda-nodejs');
-app.synth();

@@ -75,5 +75,3 @@ input2.node.addDependency(grant);
 new IntegTest(app, 'cdk-integ-emx-router-input-srt', {
   testCases: [stack],
 });
-
-app.synth();

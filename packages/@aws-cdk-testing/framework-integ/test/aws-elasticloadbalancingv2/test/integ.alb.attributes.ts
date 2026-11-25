@@ -54,5 +54,3 @@ new elbv2.ApplicationLoadBalancer(stack, 'DropInvalidHeaderFieldsFalse', {
 new integ.IntegTest(app, 'Elbv2Test', {
   testCases: [stack],
 });
-
-app.synth();

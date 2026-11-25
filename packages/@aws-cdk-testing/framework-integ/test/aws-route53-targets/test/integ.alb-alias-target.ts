@@ -35,5 +35,3 @@ new route53.ARecord(stack, 'AliasWithHealthCheck', {
     }),
   ),
 });
-
-app.synth();

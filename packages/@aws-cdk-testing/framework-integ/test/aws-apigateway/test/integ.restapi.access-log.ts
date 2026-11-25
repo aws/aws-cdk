@@ -43,5 +43,3 @@ const testCase = new Test(app, 'test-apigateway-access-logs');
 new IntegTest(app, 'apigateway-access-logs', {
   testCases: [testCase],
 });
-
-app.synth();

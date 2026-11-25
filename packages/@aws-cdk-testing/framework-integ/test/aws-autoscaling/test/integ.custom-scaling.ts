@@ -40,5 +40,3 @@ asg.scaleOnSchedule('ScaleUpInTheWeekDay', {
 asg.scaleOnCpuUtilization('KeepCPUReasonable', {
   targetUtilizationPercent: 50,
 });
-
-app.synth();

@@ -54,5 +54,3 @@ vpc.publicSubnets.forEach(subnet => {
   group2.node.addDependency(subnet);
   group1.node.addDependency(subnet);
 });
-
-app.synth();

@@ -27,5 +27,3 @@ cluster.addCapacity('bottlerocket-asg', {
 new integ.IntegTest(app, 'aws-ecs-bottlerocket-nvidia-ami', {
   testCases: [stack],
 });
-
-app.synth();

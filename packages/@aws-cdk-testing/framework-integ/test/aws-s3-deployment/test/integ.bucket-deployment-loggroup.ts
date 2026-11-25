@@ -41,5 +41,3 @@ new integ.IntegTest(app, 'integ-test-bucket-deployment-loggroup', {
   testCases: [testCase],
   diffAssets: false,
 });
-
-app.synth();

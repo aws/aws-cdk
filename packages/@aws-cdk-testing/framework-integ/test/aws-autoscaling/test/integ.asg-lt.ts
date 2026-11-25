@@ -135,5 +135,3 @@ new autoscaling.AutoScalingGroup(stack, 'AsgFromMigrationToLT', {
   migrateToLaunchTemplate: true,
   updatePolicy: autoscaling.UpdatePolicy.rollingUpdate(),
 });
-
-app.synth();

@@ -87,5 +87,3 @@ for (const stack of [ruby32Stack, ruby33Stack, ruby34Stack, ruby40Stack]) {
     Payload: '{"statusCode":200,"body":"\\"Hello from Lambda!\\""}',
   }));
 }
-
-app.synth();

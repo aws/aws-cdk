@@ -41,5 +41,3 @@ new cdk.CfnOutput(stack, 'EndpointArn', { value: endpoint.originEndpointArn });
 new IntegTest(app, 'cdk-integ-mediapackagev2-cloudfront', {
   testCases: [stack],
 });
-
-app.synth();

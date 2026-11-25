@@ -48,4 +48,3 @@ customRuleLazy.node.addDependency(prerequisites.deliveryChannel);
 new integ.IntegTest(app, 'aws-cdk-config-custompolicy-integ', {
   testCases: [stack],
 });
-app.synth();

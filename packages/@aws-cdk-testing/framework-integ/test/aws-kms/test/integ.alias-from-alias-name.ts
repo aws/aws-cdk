@@ -22,5 +22,3 @@ alias.grantGenerateMac(role);
 new IntegTest(app, 'kms-alias-from-alias-name', {
   testCases: [stack],
 });
-
-app.synth();

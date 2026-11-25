@@ -29,5 +29,3 @@ new ApplicationLoadBalancedFargateService(stack, 'HealthCheckALBService', {
 new integ.IntegTest(app, 'healthCheckApplicationLoadBalancedFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

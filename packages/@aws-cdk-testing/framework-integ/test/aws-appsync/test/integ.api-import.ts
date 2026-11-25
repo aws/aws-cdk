@@ -88,5 +88,3 @@ new appsync.Resolver(stack, 'pipeline_resolver', {
     version: 'v1',
   })),
 });
-
-app.synth();

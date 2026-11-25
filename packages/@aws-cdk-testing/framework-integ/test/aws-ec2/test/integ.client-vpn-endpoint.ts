@@ -70,4 +70,3 @@ class ImportCertificates extends Construct {
 
 const app = new App();
 new TestStack(app, 'cdk-ec2-client-vpn-endpoint');
-app.synth();

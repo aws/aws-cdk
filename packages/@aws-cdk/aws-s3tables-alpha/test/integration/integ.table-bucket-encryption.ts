@@ -140,5 +140,3 @@ new IntegTest(app, 'TableBucketEncryptionIntegTest', { testCases });
 
 // TODO: Uncomment to add assertions once SDK is updated to include GetTableBucketEncryption API
 // testCases.forEach(testCase => testCase.validateAssertions(integ));
-
-app.synth();

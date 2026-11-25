@@ -31,5 +31,3 @@ new sfn.StateMachine(stack, 'StateMachine', {
 });
 
 new IntegTest(app, 'StateMachineDefaultRoleTrust', { testCases: [stack] });
-
-app.synth();

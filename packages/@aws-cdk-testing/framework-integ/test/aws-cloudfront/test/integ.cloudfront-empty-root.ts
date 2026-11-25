@@ -24,5 +24,3 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
   ],
   defaultRootObject: '',
 });
-
-app.synth();

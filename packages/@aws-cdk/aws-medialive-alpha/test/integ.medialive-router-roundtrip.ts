@@ -98,5 +98,3 @@ new medialive.Channel(stack, 'LiveChannel', {
 new IntegTest(app, 'cdk-integ-medialive-router-roundtrip', {
   testCases: [stack],
 });
-
-app.synth();

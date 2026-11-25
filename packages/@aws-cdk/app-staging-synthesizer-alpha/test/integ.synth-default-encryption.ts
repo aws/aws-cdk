@@ -25,5 +25,3 @@ if (!defaultStagingStack) {
 new integ.IntegTest(app, 'integ-tests', {
   testCases: [defaultStagingStack, stackDefaultEncryption],
 });
-
-app.synth();

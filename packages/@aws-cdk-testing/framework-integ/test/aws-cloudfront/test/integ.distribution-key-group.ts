@@ -28,5 +28,3 @@ new cloudfront.Distribution(stack, 'Dist', {
     ],
   },
 });
-
-app.synth();

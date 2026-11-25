@@ -24,5 +24,3 @@ new autoscaling.AutoScalingGroup(stack, 'AsgWithKeyPair', {
 new IntegTest(app, 'AsgIntegKeyPair', {
   testCases: [stack],
 });
-
-app.synth();

@@ -18,5 +18,3 @@ class SNSFifoInteg extends Stack {
 const app = new App();
 
 new SNSFifoInteg(app, 'SNSFifoInteg');
-
-app.synth();

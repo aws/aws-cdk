@@ -48,4 +48,3 @@ class TestStack extends Stack {
 
 const app = new App();
 new TestStack(app, 'TestStack');
-app.synth();

@@ -20,5 +20,3 @@ repo.onReferenceCreated('OnReferenceCreated', {
     }),
   },
 });
-
-app.synth();

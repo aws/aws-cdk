@@ -66,5 +66,3 @@ vpc.isolatedSubnets.forEach((subnet, idx) => {
 new integ.IntegTest(app, 'NlbDualstackInternalInteg', {
   testCases: [stack],
 });
-
-app.synth();

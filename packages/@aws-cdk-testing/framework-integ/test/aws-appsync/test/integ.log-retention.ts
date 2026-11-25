@@ -38,5 +38,3 @@ describe.expect(ExpectedResult.objectLike({
     },
   ],
 }));
-
-app.synth();

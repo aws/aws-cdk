@@ -77,5 +77,3 @@ new cdk.CfnOutput(stack, 'ChannelArn', { value: channel.channelArn });
 new IntegTest(app, 'cdk-integ-medialive-global-avail', {
   testCases: [stack],
 });
-
-app.synth();

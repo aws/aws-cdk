@@ -46,5 +46,3 @@ new ecs.Ec2Service(stack, 'FrontendService', {
     name: 'frontend',
   },
 });
-
-app.synth();

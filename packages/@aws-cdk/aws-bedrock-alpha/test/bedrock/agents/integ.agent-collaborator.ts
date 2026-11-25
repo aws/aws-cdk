@@ -49,5 +49,3 @@ new bedrock.Agent(stack, 'CollaborativeAgent', {
 new integ.IntegTest(app, 'BedrockAgentCollaborator', {
   testCases: [stack],
 });
-
-app.synth();

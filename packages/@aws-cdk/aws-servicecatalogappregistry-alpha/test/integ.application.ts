@@ -57,5 +57,3 @@ application.addAttributeGroup('myAnotherAttributeGroup', {
 new integ.IntegTest(app, 'ApplicationIntegTest', {
   testCases: [stack],
 });
-
-app.synth();

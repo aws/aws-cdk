@@ -85,5 +85,3 @@ new integ.IntegTest(app, 'CdkPipelineInvestigationTest', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

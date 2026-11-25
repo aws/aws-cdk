@@ -89,5 +89,3 @@ new ecs.FargateService(stack, 'ManagedInstancesService', {
 new integ.IntegTest(app, 'ManagedInstancesCapacityProvidersDefaultRoles', {
   testCases: [stack],
 });
-
-app.synth();

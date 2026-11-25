@@ -84,5 +84,3 @@ integ.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
     }),
   ]),
 })).waitForAssertions();
-
-app.synth();

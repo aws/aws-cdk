@@ -52,4 +52,3 @@ const app = new App({
   },
 });
 new TestStack(app, 'cdk-integ-elasticsearch');
-app.synth();

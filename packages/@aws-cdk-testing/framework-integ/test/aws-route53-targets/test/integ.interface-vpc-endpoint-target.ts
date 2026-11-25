@@ -31,5 +31,3 @@ new route53.ARecord(stack, 'AliasEndpointRecord', {
   recordName: 'foo',
   target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint)),
 });
-
-app.synth();

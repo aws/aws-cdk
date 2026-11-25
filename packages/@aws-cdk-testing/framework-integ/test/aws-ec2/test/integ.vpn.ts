@@ -28,5 +28,3 @@ vpc.addVpnConnection('Static', { // Static routing
     '192.168.20.0/24',
   ],
 });
-
-app.synth();

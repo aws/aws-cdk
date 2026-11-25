@@ -32,5 +32,3 @@ attributeGroup.associateWith(application);
 new integ.IntegTest(app, 'AttributeGroupIntegTest', {
   testCases: [stack],
 });
-
-app.synth();

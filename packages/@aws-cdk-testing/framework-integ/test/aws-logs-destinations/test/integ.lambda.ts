@@ -94,5 +94,3 @@ receiveMessage.expect(ExpectedResult.objectLike( {
     Body: Match.stringLikeRegexp( '"responsePayload":"success"' ),
   }],
 }));
-
-app.synth();

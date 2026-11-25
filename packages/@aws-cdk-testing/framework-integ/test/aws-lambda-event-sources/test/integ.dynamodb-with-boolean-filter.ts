@@ -41,5 +41,3 @@ fn.addEventSource(new DynamoEventSource(table, {
 new integ.IntegTest(app, 'DynamoDBFilterBoolean', {
   testCases: [stack],
 });
-
-app.synth();

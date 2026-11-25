@@ -48,5 +48,3 @@ new ecs.Ec2Service(stack, 'Service', {
 new integ.IntegTest(app, 'SwapParametersTest', {
   testCases: [stack],
 });
-
-app.synth();

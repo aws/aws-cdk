@@ -63,5 +63,3 @@ new bedrock.Guardrail(stack, 'TestGuardrail', {
 new integ.IntegTest(app, 'BedrockGuardrail', {
   testCases: [stack],
 });
-
-app.synth();

@@ -58,5 +58,3 @@ service.loadBalancer.connections.securityGroups.forEach(sg => {
 new integ.IntegTest(app, 'applicationMultipleTargetGroupsEc2ServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -236,5 +236,3 @@ new cdk.CfnOutput(stack, 'CodeDeployDeploymentGroupName', { value: dg.deployment
 new integ.IntegTest(app, 'EcsDeploymentGroupTest', {
   testCases: [stack],
 });
-
-app.synth();

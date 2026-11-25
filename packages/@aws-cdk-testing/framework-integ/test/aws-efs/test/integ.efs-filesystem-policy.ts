@@ -51,4 +51,3 @@ cdk.Tags.of(accessPoint).add('Name', 'MyAccessPoint');
 new integ.IntegTest(app, 'FileSystemPolicyTest', {
   testCases: [stack],
 });
-app.synth();

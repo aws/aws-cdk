@@ -51,5 +51,3 @@ const trail = new cloudtrail.Trail(stack, 'Trail', { bucket: Trailbucket });
 
 trail.addLambdaEventSelector([lambdaFunction]);
 trail.addS3EventSelector([{ bucket }]);
-
-app.synth();

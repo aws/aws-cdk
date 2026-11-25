@@ -30,5 +30,3 @@ new IntegTest(app, 'TableBucketMetricsIntegTest', {
 
 // Note: GetTableBucketMetricsConfigurationCommand is not yet available in the SDK
 // The deployment itself verifies the MetricsConfiguration property works
-
-app.synth();

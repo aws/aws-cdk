@@ -40,5 +40,3 @@ class UseStack extends cdk.Stack {
 const keyStack = new KeyStack(app, 'KeyStack');
 new UseStack(app, 'UseStack', { key: keyStack.key });
 /// !hide
-
-app.synth();

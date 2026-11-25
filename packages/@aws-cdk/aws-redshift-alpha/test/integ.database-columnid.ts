@@ -64,5 +64,3 @@ new redshift.Table(stack, 'Table', {
 new integ.IntegTest(app, 'redshift-cluster-database-integ', {
   testCases: [stack],
 });
-
-app.synth();

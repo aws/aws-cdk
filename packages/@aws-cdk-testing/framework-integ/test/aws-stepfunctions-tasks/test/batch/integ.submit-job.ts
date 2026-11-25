@@ -80,4 +80,3 @@ class RunBatchStack extends cdk.Stack {
 
 const app = new cdk.App();
 new RunBatchStack(app, 'aws-stepfunctions-integ');
-app.synth();

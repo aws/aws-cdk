@@ -88,5 +88,3 @@ const selfManagedKafkaStack = new SelfManagedKafkaWithKafkaDlqStack(
 new integ.IntegTest(app, 'LambdaEventSourceKafkaDlqTest', {
   testCases: [selfManagedKafkaStack],
 });
-
-app.synth();

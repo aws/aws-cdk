@@ -60,4 +60,3 @@ const app = new App({
   },
 });
 new PipelineStack(app, 'PipelineStack');
-app.synth();

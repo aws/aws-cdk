@@ -24,5 +24,3 @@ new cloudfront.KeyValueStore(stack, 'TestKeyValueStore', {
 new IntegTest(app, 'KeyValueStore', {
   testCases: [stack],
 });
-
-app.synth();

@@ -24,5 +24,3 @@ class TestStack extends cdk.Stack {
 const app = new cdk.App();
 
 new TestStack(app, 'integ-iam-external-role');
-
-app.synth();

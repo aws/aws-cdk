@@ -27,4 +27,3 @@ const app = new cdk.App({
   },
 });
 new KinesisEventSourceTest(app, 'lambda-event-source-kinesis');
-app.synth();

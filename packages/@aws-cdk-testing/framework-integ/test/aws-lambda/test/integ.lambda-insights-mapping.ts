@@ -53,8 +53,6 @@ new lambda.Function(stack, 'MyFunc6', {
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
 });
 
-app.synth();
-
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));
   return callback();

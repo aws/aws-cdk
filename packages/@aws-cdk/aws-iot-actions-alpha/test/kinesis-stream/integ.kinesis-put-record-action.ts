@@ -24,4 +24,3 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 new TestStack(app, 'test-kinesis-stream-action-stack');
-app.synth();

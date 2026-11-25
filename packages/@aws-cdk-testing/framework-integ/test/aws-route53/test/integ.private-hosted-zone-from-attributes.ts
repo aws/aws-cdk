@@ -37,5 +37,3 @@ hostedZoneApiCall.expect(
   }),
 );
 
-app.synth();
-

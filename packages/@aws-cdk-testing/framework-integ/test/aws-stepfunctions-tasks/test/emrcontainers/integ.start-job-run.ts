@@ -118,5 +118,3 @@ new integ.IntegTest(app, 'aws-stepfunctions-tasks-emr-containers-start-job-run-i
     },
   },
 });
-
-app.synth();

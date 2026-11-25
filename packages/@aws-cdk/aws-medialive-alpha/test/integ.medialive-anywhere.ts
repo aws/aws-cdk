@@ -138,5 +138,3 @@ new medialive.Channel(stack, 'AnywhereChannel', {
 new IntegTest(app, 'cdk-integ-medialive-anywhere', {
   testCases: [stack],
 });
-
-app.synth();

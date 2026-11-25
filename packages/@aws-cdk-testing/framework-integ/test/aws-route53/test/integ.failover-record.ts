@@ -45,5 +45,3 @@ class TestStack extends Stack {
 
 const app = new App();
 new TestStack(app, 'failover-record');
-
-app.synth();

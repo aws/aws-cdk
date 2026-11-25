@@ -37,5 +37,3 @@ integ.assertions.awsApiCall('DynamoDB', 'updateTable', {
   TableName: stack.table.tableName,
   DeletionProtectionEnabled: false,
 });
-
-app.synth();

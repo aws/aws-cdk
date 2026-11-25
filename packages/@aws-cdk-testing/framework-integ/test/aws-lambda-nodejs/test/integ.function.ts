@@ -113,4 +113,3 @@ const app = new App({
   },
 });
 new TestStack(app, 'cdk-integ-lambda-nodejs');
-app.synth();

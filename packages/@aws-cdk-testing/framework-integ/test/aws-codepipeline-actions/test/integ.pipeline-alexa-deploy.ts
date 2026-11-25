@@ -53,5 +53,3 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
 new IntegTest(app, 'integ.pipeline-alexa-deploy', {
   testCases: [stack],
 });
-
-app.synth();

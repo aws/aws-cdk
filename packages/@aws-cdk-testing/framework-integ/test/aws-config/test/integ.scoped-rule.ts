@@ -27,4 +27,3 @@ new config.CustomRule(stack, 'Custom', {
 new integ.IntegTest(app, 'aws-cdk-config-rule-integ', {
   testCases: [stack],
 });
-app.synth();

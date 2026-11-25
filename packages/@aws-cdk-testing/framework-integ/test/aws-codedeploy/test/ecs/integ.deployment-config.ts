@@ -15,5 +15,3 @@ new codedeploy.EcsDeploymentConfig(stack, 'LinearConfig', {
 new integ.IntegTest(app, 'EcsDeploymentConfigTest', {
   testCases: [stack],
 });
-
-app.synth();

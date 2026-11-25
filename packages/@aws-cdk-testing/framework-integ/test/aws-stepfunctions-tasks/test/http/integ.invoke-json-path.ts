@@ -98,5 +98,3 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 }));
-
-app.synth();

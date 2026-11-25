@@ -58,5 +58,3 @@ new sfn.StateMachine(stack, 'SM', {
 new IntegTest(app, 'EmrCreateClusterTest', {
   testCases: [stack],
 });
-
-app.synth();

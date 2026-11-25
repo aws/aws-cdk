@@ -39,5 +39,3 @@ new RouterInput(stack, 'MediaLiveChannelWithoutConnection', {
 new IntegTest(app, 'cdk-integ-emx-router-input-without-connection', {
   testCases: [stack],
 });
-
-app.synth();

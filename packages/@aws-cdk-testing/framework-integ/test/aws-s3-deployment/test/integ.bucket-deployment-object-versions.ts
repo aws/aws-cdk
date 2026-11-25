@@ -74,5 +74,3 @@ head.provider.addToRolePolicy({
 head.expect(integ.ExpectedResult.objectLike({
   VersionId: testCase.objectVersionId,
 }));
-
-app.synth();

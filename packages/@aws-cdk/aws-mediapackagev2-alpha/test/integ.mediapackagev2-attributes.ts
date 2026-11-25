@@ -44,5 +44,3 @@ new cdk.CfnOutput(stack, 'EndpointDashUrls', { value: (endpoint.dashManifestUrls
 new IntegTest(app, 'cdk-integ-mediapackagev2-attributes', {
   testCases: [stack],
 });
-
-app.synth();

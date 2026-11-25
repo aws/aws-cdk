@@ -80,5 +80,3 @@ new ecs.Ec2Service(stack, 'Service', {
   taskDefinition,
   securityGroup,
 });
-
-app.synth();

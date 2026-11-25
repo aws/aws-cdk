@@ -10,5 +10,3 @@ new codecommit.Repository(stack, 'Repo', {
   repositoryName: 'aws-cdk-codecommit-repo-contents-zip-file',
   code: Code.fromZipFile(path.join(__dirname, 'asset-test.zip')),
 });
-
-app.synth();

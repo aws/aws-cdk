@@ -29,4 +29,3 @@ new IntegTest(app, 'iam-test-condition-with-ref', {
   diffAssets: true,
 })
 ;
-app.synth();

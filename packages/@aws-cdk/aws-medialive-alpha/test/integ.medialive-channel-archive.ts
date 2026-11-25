@@ -67,5 +67,3 @@ new medialive.Channel(stack, 'ArchiveChannel', {
 new IntegTest(app, 'cdk-integ-medialive-channel-archive', {
   testCases: [stack],
 });
-
-app.synth();

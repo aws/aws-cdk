@@ -28,5 +28,3 @@ new Queue(stack, 'DeadLetterQueue', {
 new integ.IntegTest(app, 'SqsTest', {
   testCases: [stack],
 });
-
-app.synth();

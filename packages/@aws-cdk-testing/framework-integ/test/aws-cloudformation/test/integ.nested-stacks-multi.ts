@@ -23,5 +23,3 @@ class MyNestedStack extends NestedStack {
 const app = new App();
 const stack = new Stack(app, 'nested-stacks-multi');
 new MyNestedStack(stack, 'NestedStack');
-
-app.synth();

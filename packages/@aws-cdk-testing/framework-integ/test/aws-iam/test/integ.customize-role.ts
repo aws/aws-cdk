@@ -32,5 +32,3 @@ role.addToPolicy(new PolicyStatement({
 new IntegTest(app, 'integ-iam-customize-role', {
   testCases: [stack],
 });
-
-app.synth();

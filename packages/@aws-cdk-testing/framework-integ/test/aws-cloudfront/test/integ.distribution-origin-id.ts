@@ -17,5 +17,3 @@ distribution.addBehavior('/third', origin);
 new IntegTest(app, 'DistributionOriginId', {
   testCases: [stack],
 });
-
-app.synth();

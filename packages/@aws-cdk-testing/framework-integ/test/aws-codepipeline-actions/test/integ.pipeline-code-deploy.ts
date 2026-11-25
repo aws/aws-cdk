@@ -52,5 +52,3 @@ deployStage.addAction(new cpactions.CodeDeployServerDeployAction({
   deploymentGroup,
   input: sourceOutput,
 }));
-
-app.synth();

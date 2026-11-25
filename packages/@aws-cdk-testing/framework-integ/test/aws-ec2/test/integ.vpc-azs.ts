@@ -9,5 +9,3 @@ stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 new ec2.Vpc(stack, 'MyVpc', {
   availabilityZones: [stack.availabilityZones[1]],
 });
-
-app.synth();

@@ -27,4 +27,3 @@ new IntegTest(app, 'LogRetentionInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

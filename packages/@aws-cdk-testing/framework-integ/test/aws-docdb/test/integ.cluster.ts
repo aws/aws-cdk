@@ -55,5 +55,3 @@ const app = new cdk.App();
 new IntegTest(app, 'DocdbClusterInteg', {
   testCases: [new TestStack(app, 'aws-cdk-docdb-integ')],
 });
-
-app.synth();

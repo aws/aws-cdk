@@ -128,5 +128,3 @@ awsApiCall1.assertAtPath('pipeline.stages.1.name', ExpectedResult.stringLikeRege
 awsApiCall1.assertAtPath('pipeline.stages.1.actions.0.name', ExpectedResult.stringLikeRegexp('Lambda'));
 awsApiCall1.assertAtPath('pipeline.stages.1.onSuccess.conditions.0.result', ExpectedResult.stringLikeRegexp('FAIL'));
 awsApiCall1.assertAtPath('pipeline.stages.1.onFailure.conditions.0.result', ExpectedResult.stringLikeRegexp('ROLLBACK'));
-
-app.synth();

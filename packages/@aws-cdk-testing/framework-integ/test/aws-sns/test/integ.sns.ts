@@ -119,5 +119,3 @@ testCase.assertions.invokeFunction({
 }).expect(integ.ExpectedResult.objectLike({
   Payload: '"published successfully"',
 }));
-
-app.synth();

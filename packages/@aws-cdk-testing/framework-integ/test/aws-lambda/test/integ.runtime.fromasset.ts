@@ -39,8 +39,6 @@ for (const fn of functions) {
   }));
 }
 
-app.synth();
-
 /* Code for the Lambda Function above:
 
 package com.mycompany.app;

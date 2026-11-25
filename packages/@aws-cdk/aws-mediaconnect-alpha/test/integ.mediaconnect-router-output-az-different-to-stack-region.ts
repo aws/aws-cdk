@@ -37,5 +37,3 @@ new RouterOutput(stack, 'RouterOutput2', {
 new IntegTest(app, 'cdk-integ-emx-router-output-az-different-to-stack-region', {
   testCases: [stack],
 });
-
-app.synth();

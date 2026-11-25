@@ -94,5 +94,3 @@ putObjectCall.next(
     totalTimeout: Duration.minutes(5),
   }).next(getObjectCall),
 );
-
-app.synth();

@@ -4,6 +4,7 @@ import * as servicediscovery from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 
+/// !show
 const namespace = new servicediscovery.PublicDnsNamespace(stack, 'Namespace', {
   name: 'foobar.com',
 });
@@ -23,5 +24,4 @@ service.registerIpInstance('IpInstance', {
   ipv4: '54.239.25.192',
   port: 443,
 });
-
-app.synth();
+/// !hide

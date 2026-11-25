@@ -122,5 +122,3 @@ const drained = integTest.assertions.awsApiCall('ECS', 'listTasks', {
 });
 
 [...ran, ...disabled, drained].reduce((prev, call) => prev.next(call));
-
-app.synth();

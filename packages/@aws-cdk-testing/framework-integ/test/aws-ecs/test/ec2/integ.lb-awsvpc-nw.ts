@@ -57,5 +57,3 @@ lb.connections.securityGroups.forEach(sg => {
 });
 
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName });
-
-app.synth();

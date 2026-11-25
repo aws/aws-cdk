@@ -21,5 +21,3 @@ new Flow(stack, 'flow', {
 new IntegTest(app, 'cdk-integ-emx-flow', {
   testCases: [stack],
 });
-
-app.synth();

@@ -21,5 +21,3 @@ new medialive.Input(stack, 'UrlPullRedundant', {
 new IntegTest(app, 'cdk-integ-medialive-input-url-pull', {
   testCases: [stack],
 });
-
-app.synth();

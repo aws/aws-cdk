@@ -25,5 +25,3 @@ const vpc = new ec2.Vpc(stack, 'MyVpc', {
   routerType: ec2.RouterType.GATEWAY,
   destinationCidrBlock: '8.8.8.8/32',
 });
-
-app.synth();

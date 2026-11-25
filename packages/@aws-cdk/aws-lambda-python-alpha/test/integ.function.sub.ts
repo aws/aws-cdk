@@ -48,4 +48,3 @@ const invoke = integ.assertions.invokeFunction({
 invoke.expect(ExpectedResult.objectLike({
   Payload: '200',
 }));
-app.synth();

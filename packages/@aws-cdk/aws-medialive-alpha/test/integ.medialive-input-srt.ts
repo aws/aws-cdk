@@ -41,5 +41,3 @@ new medialive.Input(stack, 'SrtListenerInput', {
 new IntegTest(app, 'cdk-integ-medialive-input-srt', {
   testCases: [stack],
 });
-
-app.synth();

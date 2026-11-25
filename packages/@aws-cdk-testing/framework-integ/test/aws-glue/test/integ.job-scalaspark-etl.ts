@@ -59,5 +59,3 @@ new glue.ScalaSparkEtlJob(stack, 'OverrideScalaSparkETLJob', {
 new integ.IntegTest(app, 'aws-glue-job-scalaspark-etl-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

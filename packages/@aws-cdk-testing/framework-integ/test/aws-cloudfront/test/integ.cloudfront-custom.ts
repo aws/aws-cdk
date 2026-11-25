@@ -23,5 +23,3 @@ new cloudfront.CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
     },
   ],
 });
-
-app.synth();

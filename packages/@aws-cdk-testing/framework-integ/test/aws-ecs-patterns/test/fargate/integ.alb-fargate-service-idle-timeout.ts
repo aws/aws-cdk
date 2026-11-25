@@ -27,5 +27,3 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
 new integ.IntegTest(app, 'idleTimeoutTest', {
   testCases: [stack],
 });
-
-app.synth();

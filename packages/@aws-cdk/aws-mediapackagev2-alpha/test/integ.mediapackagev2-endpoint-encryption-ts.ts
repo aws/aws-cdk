@@ -47,5 +47,3 @@ new mediapackagev2.OriginEndpoint(stack, 'TsAes128', {
 new IntegTest(app, 'cdk-integ-mediapackage-ts-encryption', {
   testCases: [stack],
 });
-
-app.synth();

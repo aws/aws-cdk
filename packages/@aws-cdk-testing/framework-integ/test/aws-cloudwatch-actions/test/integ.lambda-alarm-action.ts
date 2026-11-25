@@ -78,7 +78,6 @@ const stack = new LambdaAlarmActionIntegrationTestStack(app, 'LambdaAlarmActionI
 new integ.IntegTest(app, 'LambdaAlarmActionIntegrationTest', {
   testCases: [stack],
 });
-app.synth();
 
 const appWithFeatureFlag = new App({
   context: {
@@ -90,7 +89,6 @@ const stackWithFeatureFlag = new LambdaAlarmActionIntegrationTestStack(appWithFe
 new integ.IntegTest(appWithFeatureFlag, 'LambdaAlarmActionIntegrationTestWithFeatureFlag', {
   testCases: [stackWithFeatureFlag],
 });
-appWithFeatureFlag.synth();
 
 function handler(event: any, _context: any, callback: any) {
   console.log(JSON.stringify(event, undefined, 2));

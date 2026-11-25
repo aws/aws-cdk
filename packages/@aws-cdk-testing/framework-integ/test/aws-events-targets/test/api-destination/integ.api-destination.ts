@@ -79,5 +79,3 @@ for (const { ruleName } of [rule, otherRule]) {
     }),
   );
 }
-
-app.synth();

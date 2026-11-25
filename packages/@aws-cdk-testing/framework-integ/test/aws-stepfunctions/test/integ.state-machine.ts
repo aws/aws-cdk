@@ -43,5 +43,3 @@ const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
 
 stateMachine.grantRead(role);
 stateMachine.grant(role, 'states:SendTaskSuccess');
-
-app.synth();

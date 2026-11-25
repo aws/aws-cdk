@@ -121,4 +121,3 @@ class GlueDataBrewJobStack extends cdk.Stack {
 
 const app = new cdk.App();
 new GlueDataBrewJobStack(app, 'aws-stepfunctions-tasks-databrew-start-job-run-integ');
-app.synth();

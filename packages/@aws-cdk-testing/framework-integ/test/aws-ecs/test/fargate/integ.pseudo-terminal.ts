@@ -28,5 +28,3 @@ new ecs.FargateService(stack, 'Service', {
 new integ.IntegTest(app, 'PseudoTerminal', {
   testCases: [stack],
 });
-
-app.synth();

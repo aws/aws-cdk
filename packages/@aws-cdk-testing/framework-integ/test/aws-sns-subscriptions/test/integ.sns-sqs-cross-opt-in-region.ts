@@ -22,5 +22,3 @@ const queueStack = new cdk.Stack(app, 'QueueStack', {
 const queue = new sqs.Queue(queueStack, 'MyQueue');
 
 topic.addSubscription(new subs.SqsSubscription(queue));
-
-app.synth();

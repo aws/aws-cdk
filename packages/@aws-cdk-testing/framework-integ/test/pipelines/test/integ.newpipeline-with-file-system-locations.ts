@@ -74,5 +74,3 @@ new integ.IntegTest(app, 'cdk-integ-codepipeline-with-file-system-locations', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

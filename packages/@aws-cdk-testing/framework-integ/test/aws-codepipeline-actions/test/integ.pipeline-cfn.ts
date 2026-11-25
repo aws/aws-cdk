@@ -70,5 +70,3 @@ pipeline.addStage({
     }),
   ],
 });
-
-app.synth();

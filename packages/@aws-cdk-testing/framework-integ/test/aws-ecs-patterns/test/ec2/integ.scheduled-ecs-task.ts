@@ -73,5 +73,3 @@ const myStack = new EventStack(app, 'aws-ecs-integ-ecs');
 new integ.IntegTest(app, 'scheduledEc2TaskTest', {
   testCases: [myStack],
 });
-
-app.synth();

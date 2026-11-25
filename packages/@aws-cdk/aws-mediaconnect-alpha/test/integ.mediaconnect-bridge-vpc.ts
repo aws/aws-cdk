@@ -125,5 +125,3 @@ new Bridge(stack, 'egressBridgeWithVpc', {
 new IntegTest(app, 'cdk-integ-emx-bridge-vpc', {
   testCases: [stack],
 });
-
-app.synth();

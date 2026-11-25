@@ -97,5 +97,3 @@ new Flow(stack, 'flow', {
 new IntegTest(app, 'cdk-integ-emx-flow-jpegxs', {
   testCases: [stack],
 });
-
-app.synth();

@@ -19,5 +19,3 @@ const api = new appsync.GraphqlApi(stack, 'Api', {
 api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
 
 new IntegTest(app, 'IntegTestEnvironmentVariables', { testCases: [stack] });
-
-app.synth();

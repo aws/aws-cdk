@@ -44,5 +44,3 @@ new integ.IntegTest(app, 'integ-capacity-providers', {
   },
 });
 
-app.synth();
-

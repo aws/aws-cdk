@@ -68,5 +68,3 @@ new medialive.Channel(stack, 'HlsChannel', {
 new IntegTest(app, 'cdk-integ-medialive-channel-hls', {
   testCases: [stack],
 });
-
-app.synth();

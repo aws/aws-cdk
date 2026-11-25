@@ -37,5 +37,3 @@ targetGroup.node.addDependency(vpc.internetConnectivityEstablished);
 new integ.IntegTest(app, 'targetGroupTest', {
   testCases: [stack],
 });
-
-app.synth();

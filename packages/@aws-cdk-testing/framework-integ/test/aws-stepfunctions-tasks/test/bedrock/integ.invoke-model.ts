@@ -162,5 +162,3 @@ new sfn.StateMachine(stack, 'LlamaStateMachine', {
 new IntegTest(app, 'InvokeModel', {
   testCases: [stack],
 });
-
-app.synth();

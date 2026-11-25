@@ -30,5 +30,3 @@ new cloudwatch.Alarm(stack, 'StageAlarm', {
 new integ.IntegTest(app, 'MetricsTest', {
   testCases: [stack],
 });
-
-app.synth();

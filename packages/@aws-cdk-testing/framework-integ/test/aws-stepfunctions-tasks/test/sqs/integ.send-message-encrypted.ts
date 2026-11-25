@@ -46,5 +46,3 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 new cdk.CfnOutput(stack, 'queueUrl', {
   value: queue.queueUrl,
 });
-
-app.synth();

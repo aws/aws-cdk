@@ -167,4 +167,3 @@ class S3ObjectsItemReaderTest {
 const app = new App();
 const s3ObjectsItemReaderPathTest = new S3ObjectsItemReaderTest(app);
 s3ObjectsItemReaderPathTest.test();
-app.synth();

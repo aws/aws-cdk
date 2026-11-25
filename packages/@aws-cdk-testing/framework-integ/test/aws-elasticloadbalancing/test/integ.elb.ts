@@ -22,5 +22,3 @@ new elb.LoadBalancer(stack, 'LB', {
     port: 80,
   },
 });
-
-app.synth();

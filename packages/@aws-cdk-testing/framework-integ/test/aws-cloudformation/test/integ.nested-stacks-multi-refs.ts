@@ -21,8 +21,6 @@ new sns.Topic(nested3, 'Level3ReferencesLevel2', {
   displayName: shortName(level2.topicName),
 });
 
-app.synth();
-
 // topicName is too long for displayName, so just take the second part:
 // Stack1-NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B-EM64TEGA04J9-TopicInNestedUnderStack115E329C4-HEO7NLYC1AFL
 function shortName(topicName: string) {

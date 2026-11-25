@@ -26,4 +26,3 @@ new IntegTest(app, 'ElasticSearchUnsignedBasicAuthInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

@@ -61,5 +61,3 @@ testDS.createResolver('MutationAddTest', {
   requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('test')),
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
-
-app.synth();

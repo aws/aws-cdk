@@ -105,5 +105,3 @@ new lambda.Function(stack, 'MyLambdaDirectS3Read', {
 new integ.IntegTest(app, 'LambdaS3FilesIntegTest', {
   testCases: [stack],
 });
-
-app.synth();

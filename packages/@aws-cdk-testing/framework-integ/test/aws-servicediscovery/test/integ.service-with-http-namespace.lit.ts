@@ -27,5 +27,3 @@ const service2 = namespace.createService('IpService', {
 service2.registerIpInstance('IpInstance', {
   ipv4: '54.239.25.192',
 });
-
-app.synth();

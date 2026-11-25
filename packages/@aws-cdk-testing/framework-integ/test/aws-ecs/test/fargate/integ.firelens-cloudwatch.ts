@@ -41,5 +41,3 @@ new ecs.FargateService(stack, 'Service', {
   securityGroup,
   assignPublicIp: true,
 });
-
-app.synth();

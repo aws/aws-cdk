@@ -58,4 +58,3 @@ const stack = new LogsInsightsQueryDefinitionIntegStack(app, 'aws-cdk-logs-insig
 new IntegTest(app, 'LogsInsightsQueryDefinitionIntegTest', {
   testCases: [stack],
 });
-app.synth();

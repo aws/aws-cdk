@@ -133,5 +133,3 @@ new RouterOutput(stack, 'flowNoConnection', {
 new IntegTest(app, 'cdk-integ-emx-router-output', {
   testCases: [stack],
 });
-
-app.synth();

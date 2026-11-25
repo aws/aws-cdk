@@ -48,5 +48,3 @@ new integ.IntegTest(app, 'AppRunnerSecretsManger', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
-
-app.synth();

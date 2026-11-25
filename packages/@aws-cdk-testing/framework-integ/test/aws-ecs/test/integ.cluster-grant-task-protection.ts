@@ -16,5 +16,3 @@ cluster.grantTaskProtection(taskRole);
 new integ.IntegTest(app, 'aws-ecs-cluster-grant-task-protection', {
   testCases: [stack],
 });
-
-app.synth();

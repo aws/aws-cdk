@@ -97,5 +97,3 @@ new cdk.CfnOutput(stack, 'ChannelArn', { value: channel.channelArn });
 new IntegTest(app, 'cdk-integ-medialive-hls-settings', {
   testCases: [stack],
 });
-
-app.synth();

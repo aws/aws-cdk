@@ -66,5 +66,3 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
     testAction,
   ],
 });
-
-app.synth();

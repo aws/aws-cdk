@@ -56,5 +56,3 @@ pipeline.addStage({
     buildAction,
   ],
 });
-
-app.synth();

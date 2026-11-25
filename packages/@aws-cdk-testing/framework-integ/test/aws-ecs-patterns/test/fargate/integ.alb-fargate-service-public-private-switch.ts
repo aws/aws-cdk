@@ -46,5 +46,3 @@ new integ.IntegTest(app, 'ALBFargatePublicPrivateSwitchTest', {
     'PublicALBFargateServiceLBPublicListenerECSGroupD991EA00',
   ],
 });
-
-app.synth();

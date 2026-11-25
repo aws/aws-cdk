@@ -14,5 +14,3 @@ new inc.CfnInclude(stack, 'ParentStack', {
     },
   },
 });
-
-app.synth();

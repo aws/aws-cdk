@@ -117,5 +117,4 @@ class CallSageMakerStack extends cdk.Stack {
 
 const app = new cdk.App();
 new CallSageMakerStack(app, 'aws-stepfunctions-integ-sagemaker');
-app.synth();
 

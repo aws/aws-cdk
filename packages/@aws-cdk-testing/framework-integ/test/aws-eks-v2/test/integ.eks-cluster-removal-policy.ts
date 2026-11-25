@@ -146,5 +146,3 @@ new integ.IntegTest(app, 'eks-cluster-removal-policy-integ', {
   testCases: [stack],
   diffAssets: false,
 });
-
-app.synth();

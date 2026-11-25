@@ -80,5 +80,3 @@ const testCase = new OpensSearch23Stack(app);
 new IntegTest(app, 'opensearch-2.3-stack', {
   testCases: [testCase],
 });
-
-app.synth();

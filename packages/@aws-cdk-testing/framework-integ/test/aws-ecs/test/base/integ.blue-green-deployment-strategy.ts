@@ -143,5 +143,3 @@ target.attachToApplicationTargetGroup(blueTargetGroup);
 new integ.IntegTest(app, 'aws-ecs-blue-green', {
   testCases: [stack],
 });
-
-app.synth();

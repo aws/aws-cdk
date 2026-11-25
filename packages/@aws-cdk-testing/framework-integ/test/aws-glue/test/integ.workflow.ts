@@ -51,5 +51,3 @@ new cdk.CfnOutput(stack, 'WorkflowName', {
 new integ.IntegTest(app, 'aws-cdk-glue-workflow-trigger-integ', {
   testCases: [stack],
 });
-
-app.synth();

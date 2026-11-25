@@ -18,5 +18,3 @@ new flink.Application(stack, 'App', {
   runtime: flink.Runtime.FLINK_1_19,
 });
 /// !hide
-
-app.synth();

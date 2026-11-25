@@ -134,5 +134,3 @@ tableWithLocalSecondaryIndex.addLocalSecondaryIndex({
   indexName: LSI_TEST_CASE_1,
   sortKey: LSI_SORT_KEY,
 });
-
-app.synth();

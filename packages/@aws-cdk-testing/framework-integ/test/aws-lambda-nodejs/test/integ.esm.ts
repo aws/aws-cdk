@@ -29,4 +29,3 @@ new IntegTest(app, 'LambdaNodeJsEsmInteg', {
   testCases: [stack],
   diffAssets: true,
 });
-app.synth();

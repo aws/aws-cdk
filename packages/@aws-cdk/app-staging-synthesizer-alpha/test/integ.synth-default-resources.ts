@@ -65,5 +65,3 @@ if (!defaultStagingStack) {
 new integ.IntegTest(app, 'integ-tests', {
   testCases: [stack, defaultStagingStack],
 });
-
-app.synth();

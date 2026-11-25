@@ -28,5 +28,3 @@ new integ.IntegTest(app, 'AppRunnerEncryption', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
-
-app.synth();

@@ -9,6 +9,13 @@ const NO_MD5 = {
   "message": "Use the md5hash() function from the core library if you want md5",
 };
 
+// The App synthesizes itself when the integ runner executes the test, so integration
+// tests must not call synth() themselves
+const NO_SYNTH_IN_INTEG_TEST = {
+  "selector": "CallExpression[callee.property.name='synth']",
+  "message": "Integration tests must not call app.synth(): the App synthesizes automatically when the test runs. Remove the call, and register the stacks under test with the IntegTest construct.",
+};
+
 export function makeRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
@@ -240,6 +247,25 @@ export function makeTestRules(/** @type{bool} */ isConstructLibrary) {
     "no-restricted-syntax": [
       "error",
       NO_MD5,
+    ],
+  };
+  return ret;
+}
+
+/**
+ * Return only the `no-restricted-syntax` rule for integration tests: the restrictions of `baseRules` plus the synth one.
+ *
+ * A later `no-restricted-syntax` entry replaces the earlier list instead of extending it,
+ * so this repeats the restrictions of `baseRules` and adds the integration test one.
+ */
+export function makeIntegTestRules(/** @type { import("@eslint/core").RulesConfig } */ baseRules) {
+  const [severity, ...restrictions] = /** @type{any[]} */ (baseRules['no-restricted-syntax']);
+  /** @type { import("@eslint/core").RulesConfig } */
+  const ret = {
+    "no-restricted-syntax": [
+      severity,
+      ...restrictions,
+      NO_SYNTH_IN_INTEG_TEST,
     ],
   };
   return ret;

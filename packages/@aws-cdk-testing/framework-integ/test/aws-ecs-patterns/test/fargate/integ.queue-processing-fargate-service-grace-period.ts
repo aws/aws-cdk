@@ -23,5 +23,3 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
 new integ.IntegTest(app, 'queueProcessingFargateServiceGracePeriodTest', {
   testCases: [stack],
 });
-
-app.synth();

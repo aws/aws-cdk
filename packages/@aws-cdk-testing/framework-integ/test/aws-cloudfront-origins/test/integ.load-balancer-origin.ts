@@ -13,5 +13,3 @@ const loadbalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc, inter
 new cloudfront.Distribution(stack, 'Distribution', {
   defaultBehavior: { origin: new origins.LoadBalancerV2Origin(loadbalancer) },
 });
-
-app.synth();

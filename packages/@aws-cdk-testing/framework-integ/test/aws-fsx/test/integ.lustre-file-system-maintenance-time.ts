@@ -26,5 +26,3 @@ new LustreFileSystem(stack, 'FsxLustreFileSystem', {
 new integ.IntegTest(app, 'FsxLustreMaintenanceTime', {
   testCases: [stack],
 });
-
-app.synth();

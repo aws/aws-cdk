@@ -37,5 +37,3 @@ assertionProvider.addPolicyStatementFromSdkCall('apigateway', 'GET', [
 integrations.expect(
   ExpectedResult.objectLike({ Items: [{ IntegrationMethod: 'ANY', TimeoutInMillis: 20000 }] }),
 );
-
-app.synth();

@@ -31,5 +31,3 @@ const bucket3 = new s3.Bucket(stack, 'Bucket3', {
 
 const importedBucket3 = s3.Bucket.fromBucketName(stack, 'Bucket3Imported', bucket3.bucketName);
 importedBucket3.addEventNotification(s3.EventType.OBJECT_CREATED_COPY, new s3n.SnsDestination(topic3));
-
-app.synth();

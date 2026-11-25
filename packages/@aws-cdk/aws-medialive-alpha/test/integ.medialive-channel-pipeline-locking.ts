@@ -67,5 +67,3 @@ new cdk.CfnOutput(stack, 'ChannelArn', { value: channel.channelArn });
 new IntegTest(app, 'cdk-integ-medialive-pipeline-locking', {
   testCases: [stack],
 });
-
-app.synth();

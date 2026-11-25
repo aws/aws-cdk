@@ -144,5 +144,3 @@ new HttpsRecord(stack, 'HTTPS-ServiceMode-FullParams', {
 
 new cdk.CfnOutput(stack, 'PrivateZoneId', { value: privateZone.hostedZoneId });
 new cdk.CfnOutput(stack, 'PublicZoneId', { value: publicZone.hostedZoneId });
-
-app.synth();

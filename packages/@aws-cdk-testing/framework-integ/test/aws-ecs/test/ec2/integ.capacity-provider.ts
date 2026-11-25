@@ -60,5 +60,3 @@ new integ.IntegTest(app, 'Ec2CapacityProviderTest', {
     },
   },
 });
-
-app.synth();

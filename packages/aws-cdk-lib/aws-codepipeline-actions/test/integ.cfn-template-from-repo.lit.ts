@@ -63,5 +63,3 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 /// !hide
-
-app.synth();

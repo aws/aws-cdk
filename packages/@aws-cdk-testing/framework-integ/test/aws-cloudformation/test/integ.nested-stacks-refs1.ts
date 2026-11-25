@@ -36,4 +36,3 @@ class ParentStack extends Stack {
 const app = new App();
 const producer = new ProducerStack(app, 'nest-stacks-refs1-producer');
 new ParentStack(app, 'nested-stacks-refs1-parent-with-consumer', producer.topic);
-app.synth();

@@ -169,5 +169,3 @@ new integ.IntegTest(app, 'integ-cross-account-pipeline-sfn-action', {
   testCases: [stepFunctionStack, pipelineStack],
   diffAssets: true,
 });
-
-app.synth();

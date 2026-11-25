@@ -89,5 +89,3 @@ new Flow(stack, 'VpcFlow', {
 new IntegTest(app, 'cdk-integ-emx-flow-zixi-push', {
   testCases: [stack],
 });
-
-app.synth();

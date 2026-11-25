@@ -40,5 +40,3 @@ ecs.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
 new integ.IntegTest(app, 'ClusterImported', {
   testCases: [stack],
 });
-
-app.synth();

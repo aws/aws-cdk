@@ -13,5 +13,3 @@ new Topic(stack, 'MyTopic', {
 new IntegTest(app, 'SnsFifoNoNameTest', {
   testCases: [stack],
 });
-
-app.synth();

@@ -21,5 +21,3 @@ const project = new codebuild.Project(stack, 'MyProject', {
 const target = new sns.Topic(stack, 'MyTopic');
 
 project.notifyOnBuildSucceeded('NotifyOnBuildSucceeded', target);
-
-app.synth();

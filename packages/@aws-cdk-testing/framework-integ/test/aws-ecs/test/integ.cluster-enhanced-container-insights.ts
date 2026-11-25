@@ -24,5 +24,3 @@ const describeClusters = testCase.assertions.awsApiCall('ECS', 'describeClusters
 
 describeClusters.assertAtPath('clusters.0.settings.0.name', integ.ExpectedResult.stringLikeRegexp('containerInsights'));
 describeClusters.assertAtPath('clusters.0.settings.0.value', integ.ExpectedResult.stringLikeRegexp('enhanced'));
-
-app.synth();

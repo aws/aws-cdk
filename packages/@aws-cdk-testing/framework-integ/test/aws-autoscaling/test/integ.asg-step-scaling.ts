@@ -45,5 +45,3 @@ asg.scaleOnMetric('StepScalingWithDefaultAdjustmentType', {
 new integ.IntegTest(app, 'autoscaling-step-scaling-integ', {
   testCases: [stack],
 });
-
-app.synth();

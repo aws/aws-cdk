@@ -33,5 +33,3 @@ new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
 new IntegTest(app, 'cdk-integ-mediapackage-cmaf-cenc', {
   testCases: [stack],
 });
-
-app.synth();

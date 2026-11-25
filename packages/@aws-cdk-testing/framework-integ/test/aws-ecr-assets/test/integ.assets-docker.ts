@@ -70,5 +70,3 @@ new cdk.CfnOutput(stack, 'ImageUri6', { value: asset6.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri7', { value: asset7.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri8', { value: asset8.imageUri });
 new cdk.CfnOutput(stack, 'ImageUri9', { value: asset9.imageUri });
-
-app.synth();

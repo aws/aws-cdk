@@ -20,5 +20,3 @@ class ChatbotGuardrailsInteg extends cdk.Stack {
 const app = new cdk.App();
 
 new ChatbotGuardrailsInteg(app, 'ChatbotGuardrailsInteg');
-
-app.synth();

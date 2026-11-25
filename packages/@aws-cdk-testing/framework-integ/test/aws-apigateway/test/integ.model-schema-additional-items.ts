@@ -69,4 +69,3 @@ const stack = new TestStack(app, 'model-schema-additional-items-test');
 new IntegTest(app, 'ModelSchemaAdditionalItemsTest', {
   testCases: [stack],
 });
-app.synth();

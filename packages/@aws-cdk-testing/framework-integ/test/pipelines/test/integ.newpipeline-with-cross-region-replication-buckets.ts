@@ -112,5 +112,3 @@ new integ.IntegTest(
     testCases: [pipelineStack, usEast1S3Stack, usWest2S3Stack],
   },
 );
-
-app.synth();

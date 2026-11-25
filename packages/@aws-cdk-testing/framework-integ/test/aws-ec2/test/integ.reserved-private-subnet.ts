@@ -39,4 +39,3 @@ class VpcReservedPrivateSubnetStack extends cdk.Stack {
   }
 }
 new VpcReservedPrivateSubnetStack(app, 'aws-cdk-ec2-vpc-endpoint');
-app.synth();

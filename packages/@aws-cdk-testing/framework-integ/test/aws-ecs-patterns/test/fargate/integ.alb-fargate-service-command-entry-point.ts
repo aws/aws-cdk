@@ -39,5 +39,3 @@ applicationLoadBalancedFargateService.loadBalancer.connections.addSecurityGroup(
 new integ.IntegTest(app, 'AlbFargateServiceWithCommandAndEntryPoint', {
   testCases: [stack],
 });
-
-app.synth();

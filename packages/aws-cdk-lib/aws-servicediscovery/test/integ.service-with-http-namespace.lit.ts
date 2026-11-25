@@ -4,6 +4,7 @@ import * as servicediscovery from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 
+/// !show
 const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
   name: 'MyHTTPNamespace',
 });
@@ -27,5 +28,4 @@ const service2 = namespace.createService('IpService', {
 service2.registerIpInstance('IpInstance', {
   ipv4: '54.239.25.192',
 });
-
-app.synth();
+/// !hide

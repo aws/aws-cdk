@@ -39,4 +39,3 @@ const testCase = new TestStack(app, 'cdk-integ-elasticsearch-vpc');
 new integ.IntegTest(app, 'cdk-integ-elasticsearch-vpc-test', {
   testCases: [testCase],
 });
-app.synth();

@@ -39,4 +39,3 @@ class ConsumerStack extends Stack {
 const app = new App();
 const parent = new ParentStack(app, 'nested-stacks-refs2-parent-with-producer');
 new ConsumerStack(app, 'nested-stacks-refs2-consumer', parent.topic);
-app.synth();

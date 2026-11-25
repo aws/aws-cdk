@@ -26,5 +26,3 @@ class GitHubOrgWebhookTestStack extends cdk.Stack {
 const app = new cdk.App();
 
 new GitHubOrgWebhookTestStack(app, 'codebuild-github-org-webhook');
-
-app.synth();

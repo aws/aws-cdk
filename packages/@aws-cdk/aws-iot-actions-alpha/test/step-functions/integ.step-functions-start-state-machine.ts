@@ -22,5 +22,3 @@ topicRule.addAction(new actions.StepFunctionsStateMachineAction(stateMachine));
 new integ.IntegTest(app, 'state-machine-integtest', {
   testCases: [stack],
 });
-
-app.synth();

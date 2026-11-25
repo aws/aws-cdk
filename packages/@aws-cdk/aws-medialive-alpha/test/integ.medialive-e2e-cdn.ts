@@ -121,5 +121,3 @@ new cloudfront.Distribution(stack, 'Cdn', {
 new IntegTest(app, 'cdk-integ-medialive-e2e-cdn', {
   testCases: [stack],
 });
-
-app.synth();

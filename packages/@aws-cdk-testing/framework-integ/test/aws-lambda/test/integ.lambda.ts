@@ -57,5 +57,3 @@ new lambda.Function(stack, 'MySnapStartLambdaArm', {
   architecture: lambda.Architecture.ARM_64,
   snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
 });
-
-app.synth();

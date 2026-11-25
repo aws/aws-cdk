@@ -91,5 +91,3 @@ new IntegTest(app, 'Integ', {
     },
   },
 });
-
-app.synth();

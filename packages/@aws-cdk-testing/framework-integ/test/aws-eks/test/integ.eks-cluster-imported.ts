@@ -236,5 +236,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-import-cluster', {
     },
   },
 });
-
-app.synth();

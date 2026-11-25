@@ -117,5 +117,3 @@ group2.metrics.targetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
   threshold: 5,
   evaluationPeriods: 2,
 });
-
-app.synth();

@@ -38,5 +38,3 @@ const testCase = new EuscVpcEndpointStack(app, 'aws-cdk-ec2-vpc-endpoint-eusc', 
 new IntegTest(app, 'vpc-endpoint-eusc', {
   testCases: [testCase],
 });
-
-app.synth();

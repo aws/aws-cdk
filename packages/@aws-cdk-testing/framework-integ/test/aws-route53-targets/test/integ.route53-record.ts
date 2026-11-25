@@ -27,4 +27,3 @@ class TestStack extends Stack {
 
 const app = new App();
 new TestStack(app, 'aws-cdk-r53-record-alias-target-integ');
-app.synth();

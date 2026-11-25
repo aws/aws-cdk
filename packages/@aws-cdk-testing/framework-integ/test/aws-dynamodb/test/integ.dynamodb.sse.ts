@@ -141,5 +141,3 @@ const role = new iam.Role(stack, 'Role', {
 });
 table.grantReadData(role);
 tableWithGlobalAndLocalSecondaryIndex.grantReadData(role);
-
-app.synth();

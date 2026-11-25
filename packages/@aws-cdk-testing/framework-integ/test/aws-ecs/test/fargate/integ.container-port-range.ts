@@ -31,5 +31,3 @@ const stack = new EcsContainerPortRangeStack(app, 'aws-ecs-container-port-range'
 new integ.IntegTest(app, 'EcsContainerPortRange', {
   testCases: [stack],
 });
-
-app.synth();

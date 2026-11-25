@@ -165,5 +165,3 @@ putMessageOnQueue.next(test.assertions.awsApiCall('SageMaker', 'DescribePipeline
 })).expect(ExpectedResult.objectLike({
   PipelineStatus: 'Active',
 }));
-
-app.synth();

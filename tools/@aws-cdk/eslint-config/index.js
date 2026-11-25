@@ -8,7 +8,7 @@ import jest from 'eslint-plugin-jest';
 import jsdoc from 'eslint-plugin-jsdoc';
 import path from 'path';
 import fs from 'fs';
-import { makeRules, makeTestRules } from './rules.js';
+import { makeIntegTestRules, makeRules, makeTestRules } from './rules.js';
 
 export function makeConfig(/** @type{string} */ tsconfigFile, /** @type{any} */ options) {
   options = options ?? {};
@@ -88,13 +88,36 @@ export function makeConfig(/** @type{string} */ tsconfigFile, /** @type{any} */ 
     },
   };
 
+  const rules = makeRules(isConstructLibrary);
+  const testRules = makeTestRules(isConstructLibrary);
+
   return defineConfig(
     // Ignores must be an object by itself and apply to all rules, otherwise it won't work.
     { ignores: ['**/*.js'] },
-    { ...prodConfig, rules: makeRules(isConstructLibrary) },
+    { ...prodConfig, rules },
     // Apply some more rules to test files (used to switch some rules off again)
-    isConstructLibrary ? { ...testConfig, rules: makeTestRules(isConstructLibrary) } : {},
+    isConstructLibrary ? { ...testConfig, rules: testRules } : {},
+    // Integration tests: the same files as the two configs above, narrowed to integ.*.ts
+    {
+      name: 'aws-cdk/eslint-config/integ-tests',
+      files: onlyIntegTests(include),
+      ignores: exclude,
+      rules: makeIntegTestRules(rules),
+    },
+    isConstructLibrary ? {
+      name: 'aws-cdk/eslint-config/tests/integ-tests',
+      files: onlyIntegTests(testConfig.files),
+      ignores: exclude,
+      rules: makeIntegTestRules(testRules),
+    } : {},
   );
+}
+
+/**
+ * Narrow each pattern to integration test files (a file must match all patterns in a nested array).
+ */
+function onlyIntegTests(/** @type{string[]} */ patterns) {
+  return patterns.map((p) => [p, '**/integ.*.ts']);
 }
 
 function isDirectory(/** @type{string} */ p) {

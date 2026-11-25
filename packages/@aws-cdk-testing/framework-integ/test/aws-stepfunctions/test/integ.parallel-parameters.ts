@@ -60,5 +60,3 @@ integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
   interval: cdk.Duration.seconds(5),
 });
 
-app.synth();
-

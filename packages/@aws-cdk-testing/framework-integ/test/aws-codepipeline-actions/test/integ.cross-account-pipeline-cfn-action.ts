@@ -156,5 +156,3 @@ new integ.IntegTest(app, 'integ-pipeline-cfn-cross-account', {
   testCases: [pipelineStack],
   diffAssets: true,
 });
-
-app.synth();

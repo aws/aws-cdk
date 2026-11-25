@@ -28,5 +28,3 @@ const stack = new SqsEventSourceTest(app, 'sqs-event-source-max-concurrency');
 new IntegTest(app, 'sqs-max-concurrency-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

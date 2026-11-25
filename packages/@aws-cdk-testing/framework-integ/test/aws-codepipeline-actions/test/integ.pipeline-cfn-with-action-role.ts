@@ -57,5 +57,3 @@ new codepipeline.Pipeline(stack, 'MyPipeline', {
     cfnStage,
   ],
 });
-
-app.synth();

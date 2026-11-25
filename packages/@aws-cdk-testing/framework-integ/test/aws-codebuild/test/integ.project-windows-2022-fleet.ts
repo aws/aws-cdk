@@ -68,5 +68,3 @@ test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
   totalTimeout: cdk.Duration.minutes(15),
   interval: cdk.Duration.seconds(30),
 });
-
-app.synth();

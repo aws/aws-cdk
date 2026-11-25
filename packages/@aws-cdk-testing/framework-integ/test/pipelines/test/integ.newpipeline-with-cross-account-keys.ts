@@ -65,5 +65,3 @@ const stack = new PipelineStack(app, 'PipelineStack');
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
 });
-
-app.synth();

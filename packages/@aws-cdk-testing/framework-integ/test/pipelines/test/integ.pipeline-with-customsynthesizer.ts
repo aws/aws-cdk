@@ -102,5 +102,3 @@ new IntegTest(app, 'PipelineAssetsTest', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();

@@ -6,6 +6,7 @@ import * as servicediscovery from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
 
+/// !show
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
@@ -30,5 +31,4 @@ const arnService = namespace.createService('ArnService', {
 arnService.registerNonIpInstance('NonIpInstance', {
   customAttributes: { arn: 'arn://' },
 });
-
-app.synth();
+/// !hide

@@ -52,5 +52,3 @@ deployStage.addAction(new cpactions.CodeDeployEcsDeployAction({
     },
   ],
 }));
-
-app.synth();

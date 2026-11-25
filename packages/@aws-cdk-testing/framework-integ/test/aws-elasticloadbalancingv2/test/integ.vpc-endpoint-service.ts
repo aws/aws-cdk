@@ -47,4 +47,3 @@ class VpcEndpointServiceStack extends cdk.Stack {
 }
 
 new VpcEndpointServiceStack(app, 'aws-cdk-ec2-vpc-endpoint-service');
-app.synth();

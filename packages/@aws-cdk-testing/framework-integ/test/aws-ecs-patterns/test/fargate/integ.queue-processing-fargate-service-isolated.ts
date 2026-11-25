@@ -56,5 +56,3 @@ queueProcessing.service.node.addDependency(
 new integ.IntegTest(app, 'isolatedQueueProcessingFargateServiceTest', {
   testCases: [stack],
 });
-
-app.synth();

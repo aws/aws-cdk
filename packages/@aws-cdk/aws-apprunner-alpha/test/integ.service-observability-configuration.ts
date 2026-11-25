@@ -29,5 +29,3 @@ new integ.IntegTest(app, 'AppRunnerObservabilityConfiguration', {
   testCases: [stack],
   regions: APPRUNNER_SUPPORTED_REGIONS,
 });
-
-app.synth();

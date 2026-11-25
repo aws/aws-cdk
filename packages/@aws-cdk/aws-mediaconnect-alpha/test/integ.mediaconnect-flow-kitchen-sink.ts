@@ -201,5 +201,3 @@ new mediaconnect.FlowEntitlement(stack, 'Entitlement', {
 new IntegTest(app, 'cdk-integ-mediaconnect-kitchen-sink', {
   testCases: [stack],
 });
-
-app.synth();

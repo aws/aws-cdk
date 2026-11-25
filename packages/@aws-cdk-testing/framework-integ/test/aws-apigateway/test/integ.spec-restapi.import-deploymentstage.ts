@@ -70,5 +70,3 @@ deployment.addToLogicalId(apiDefinition);
 new integ.IntegTest(app, 'specrestapi-import-deployment-stage', {
   testCases: [stack],
 });
-
-app.synth();

@@ -29,5 +29,3 @@ new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: fargateService.loadBalancer
 new integ.IntegTest(app, 'fargateAssetImageTest', {
   testCases: [stack],
 });
-
-app.synth();

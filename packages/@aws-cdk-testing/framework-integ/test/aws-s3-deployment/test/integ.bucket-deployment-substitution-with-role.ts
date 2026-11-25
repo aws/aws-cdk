@@ -43,5 +43,3 @@ const testCase = new TestBucketDeploymentSubstitutionWithRole(app, 'test-bucket-
 new integ.IntegTest(app, 'integ-test-bucket-deployment-substitution-with-role', {
   testCases: [testCase],
 });
-
-app.synth();

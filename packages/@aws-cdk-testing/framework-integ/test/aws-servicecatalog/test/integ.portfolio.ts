@@ -93,5 +93,3 @@ portfolio.constrainCloudFormationParameters(product, {
     }],
   },
 });
-
-app.synth();

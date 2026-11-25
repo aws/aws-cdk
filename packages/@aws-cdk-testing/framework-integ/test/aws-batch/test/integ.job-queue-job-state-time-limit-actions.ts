@@ -38,5 +38,3 @@ new batch.JobQueue(stack, 'joBBQ', {
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });
-
-app.synth();

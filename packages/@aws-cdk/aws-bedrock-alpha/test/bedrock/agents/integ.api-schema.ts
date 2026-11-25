@@ -201,5 +201,3 @@ new integ.IntegTest(app, 'BedrockApiSchema', {
   testCases: [stack],
   regions: BEDROCK_AGENT_INTEG_TEST_REGIONS,
 });
-
-app.synth();

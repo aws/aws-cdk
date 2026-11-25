@@ -63,5 +63,3 @@ new integ.IntegTest(app, 'LambdaTest', {
     new EcsWithEmptyStrategiesStack(app, 'ecs-placement-strategies-empty'),
   ],
 });
-
-app.synth();

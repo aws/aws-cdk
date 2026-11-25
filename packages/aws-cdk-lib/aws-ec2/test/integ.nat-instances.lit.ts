@@ -32,4 +32,3 @@ new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances', {
     region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
   },
 });
-app.synth();

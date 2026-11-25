@@ -18,5 +18,3 @@ stack.with(
 new integ.IntegTest(app, 'StackWithMixinIntegTest', {
   testCases: [stack],
 });
-
-app.synth();

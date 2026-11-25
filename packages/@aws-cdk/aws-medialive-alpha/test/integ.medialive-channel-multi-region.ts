@@ -101,5 +101,3 @@ new medialive.Channel(primaryStack, 'MultiRegionChannel', {
 new IntegTest(app, 'cdk-integ-medialive-multi-region', {
   testCases: [secondaryStack, primaryStack],
 });
-
-app.synth();

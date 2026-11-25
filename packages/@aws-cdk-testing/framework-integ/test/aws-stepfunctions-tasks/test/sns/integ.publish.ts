@@ -70,5 +70,3 @@ new cdk.CfnOutput(stack, 'queueUrl', {
 new cdk.CfnOutput(stack, 'fifoQueueUrl', {
   value: fifoQueue.queueUrl,
 });
-
-app.synth();

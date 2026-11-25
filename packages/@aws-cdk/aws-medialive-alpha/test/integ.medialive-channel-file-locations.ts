@@ -105,5 +105,3 @@ new cdk.CfnOutput(stack, 'ChannelArn', { value: channel.channelArn });
 new IntegTest(app, 'cdk-integ-medialive-file-locations', {
   testCases: [stack],
 });
-
-app.synth();

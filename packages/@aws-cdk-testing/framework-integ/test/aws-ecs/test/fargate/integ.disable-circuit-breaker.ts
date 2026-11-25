@@ -30,5 +30,3 @@ new ecs.FargateService(stack, 'FargateService', {
 new integ.IntegTest(app, 'integ-aws-ecs-disable-circuit-breaker', {
   testCases: [stack],
 });
-
-app.synth();

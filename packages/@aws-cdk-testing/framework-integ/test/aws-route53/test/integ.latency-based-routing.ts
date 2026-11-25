@@ -33,4 +33,3 @@ const stack = new TestStack(app, 'latency-based-routing');
 new IntegTest(app, 'Route53LatencyBasedRoutingInteg', {
   testCases: [stack],
 });
-app.synth();

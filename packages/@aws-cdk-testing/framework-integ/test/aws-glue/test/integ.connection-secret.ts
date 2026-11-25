@@ -35,5 +35,3 @@ test.assertions.awsApiCall('Glue', 'getConnection', {
     },
   },
 }));
-
-app.synth();

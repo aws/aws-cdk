@@ -74,5 +74,3 @@ const stack = new MskClusterAuthTestStack(app, 'aws-cdk-msk-auth-integ');
 new IntegTest(app, 'MskClusterAuth', {
   testCases: [stack],
 });
-
-app.synth();

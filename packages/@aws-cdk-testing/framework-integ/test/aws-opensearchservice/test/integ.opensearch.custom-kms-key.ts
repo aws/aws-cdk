@@ -75,4 +75,3 @@ domainConfig.assertAtPath(
   'DomainConfig.AccessPolicies.Options.Statement.0.Resource',
   ExpectedResult.stringLikeRegexp('^[*]$'),
 );
-app.synth();

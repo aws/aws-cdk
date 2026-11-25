@@ -20,4 +20,3 @@ class TestStack extends Stack {
 
 const app = new App();
 new TestStack(app, 'cdk-integ-elasticsearch-ultrawarm');
-app.synth();

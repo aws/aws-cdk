@@ -21,5 +21,3 @@ new cloudfront.KeyGroup(stack, 'AwesomeKeyGroup', {
     }),
   ],
 });
-
-app.synth();

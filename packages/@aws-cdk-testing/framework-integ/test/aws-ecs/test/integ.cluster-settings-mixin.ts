@@ -24,5 +24,3 @@ new ecs.Cluster(stack, 'L2Cluster', {
 new integ.IntegTest(app, 'EcsClusterSettingsMixinIntegTest', {
   testCases: [stack],
 });
-
-app.synth();

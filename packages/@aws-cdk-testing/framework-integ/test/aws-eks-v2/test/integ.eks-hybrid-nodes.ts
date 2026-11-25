@@ -51,4 +51,3 @@ new integ.IntegTest(app, 'aws-cdk-eks-cluster-hybrid-nodes-integ', {
     },
   },
 });
-app.synth();

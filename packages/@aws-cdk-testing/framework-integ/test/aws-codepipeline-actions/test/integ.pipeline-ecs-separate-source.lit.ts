@@ -218,5 +218,3 @@ new EcsAppStack(app, 'EcsStackDeployedInPipeline', {
   image: pipelineStack.tagParameterContainerImage,
 });
 /// !hide
-
-app.synth();

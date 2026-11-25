@@ -148,5 +148,3 @@ parquetTable.grantReadWrite(anotherUser);
 new integ.IntegTest(app, 'aws-cdk-glue-table-integ', {
   testCases: [stack],
 });
-
-app.synth();

@@ -17,5 +17,3 @@ new lambda.Function(stack, 'MyLambda', {
   runtime: lambda.Runtime.PYTHON_3_9,
   vpc,
 });
-
-app.synth();

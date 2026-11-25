@@ -66,5 +66,3 @@ class TestStack extends cdk.Stack {
 }
 
 new TestStack(app, 'TestStackMultipartUserData');
-
-app.synth();

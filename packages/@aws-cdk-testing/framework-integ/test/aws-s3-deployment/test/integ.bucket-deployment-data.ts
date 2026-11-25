@@ -130,5 +130,3 @@ assertFileContents('my-yaml/secret-config.yaml', 'secret_value: "test\\"with\\"q
 // Show that our numbers list is stringified (this is not behavior that we perform, this
 // is just demonstrating existing CloudFormation behavior).
 assertFileContents('my-json/numbers-list.json', '{"numbersList":["80", "443"]}');
-
-app.synth();

@@ -61,5 +61,3 @@ const stack = new RestApiAccessLogFirehoseTest(app, 'test-apigateway-access-logs
 new IntegTest(app, 'apigateway-access-logs-firehose', {
   testCases: [stack],
 });
-
-app.synth();

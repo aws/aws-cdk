@@ -17,5 +17,3 @@ const stack = new TestStack(app);
 new IntegTest(app, 'kms-key-alias-tokenized', {
   testCases: [stack],
 });
-
-app.synth();

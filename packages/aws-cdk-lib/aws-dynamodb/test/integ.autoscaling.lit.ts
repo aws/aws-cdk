@@ -27,5 +27,3 @@ readScaling.scaleOnSchedule('ScaleDownAtNight', {
   maxCapacity: 20,
 });
 /// !hide
-
-app.synth();

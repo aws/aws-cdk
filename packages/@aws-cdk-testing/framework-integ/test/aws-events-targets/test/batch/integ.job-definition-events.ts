@@ -41,5 +41,3 @@ timer2.addTarget(new targets.BatchJob(queue.jobQueueArn, queue, job.jobDefinitio
   retryAttempts: 2,
   maxEventAge: cdk.Duration.hours(2),
 }));
-
-app.synth();

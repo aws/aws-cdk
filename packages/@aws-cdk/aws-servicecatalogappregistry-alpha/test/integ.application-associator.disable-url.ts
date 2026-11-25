@@ -39,5 +39,3 @@ disassoc.provider.addToRolePolicy({
   ],
   Resource: ['*'],
 });
-
-app.synth();

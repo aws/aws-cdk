@@ -79,5 +79,3 @@ new IntegTest(app, 'cdk-integ-emx-flow-vpc', {
   testCases: [stack],
 });
 
-app.synth();
-

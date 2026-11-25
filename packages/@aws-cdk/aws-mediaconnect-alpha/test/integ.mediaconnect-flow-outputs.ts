@@ -130,5 +130,3 @@ new FlowOutput(stack, 'SrtCallerVpcOutput', {
 new IntegTest(app, 'cdk-integ-emx-flow-outputs', {
   testCases: [stack],
 });
-
-app.synth();

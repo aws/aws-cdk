@@ -45,5 +45,3 @@ new integ.IntegTest(app, 'integ-test-bucket-deployment-deployed-bucket', {
   testCases: [testCase],
   diffAssets: true,
 });
-
-app.synth();

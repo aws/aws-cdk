@@ -29,5 +29,3 @@ new glue.SecurityConfiguration(stack, 'S3SC', {
   securityConfigurationName: 'S3SC',
   s3Encryption: glue.S3Encryption.s3Managed(),
 });
-
-app.synth();

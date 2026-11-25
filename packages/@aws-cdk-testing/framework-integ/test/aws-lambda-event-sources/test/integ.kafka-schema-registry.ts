@@ -183,5 +183,3 @@ const confluentStack = new SmkConfluentSchemaRegistryStack(app, 'lambda-event-so
 new IntegTest(app, 'SchemaRegistryInteg', {
   testCases: [glueStack, confluentStack],
 });
-
-app.synth();

@@ -183,5 +183,3 @@ new mediaconnect.FlowOutput(stack, 'EncryptedOutput', {
 new IntegTest(app, 'cdk-integ-mediaconnect-gateway-source', {
   testCases: [stack],
 });
-
-app.synth();

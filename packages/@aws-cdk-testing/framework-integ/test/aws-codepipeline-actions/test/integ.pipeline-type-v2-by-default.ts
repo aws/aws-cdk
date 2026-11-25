@@ -60,5 +60,3 @@ new IntegTest(app, 'codepipeline-pipeline-type-v2-by-default-test', {
   testCases: [stack],
   diffAssets: true,
 });
-
-app.synth();
