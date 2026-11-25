@@ -51,5 +51,4 @@ Work the changed surface in this order; adapt to what the diff touches.
 Populate the structured finding fields the `cdk-review-principles` skill defines — write
 `message` as the complete posted comment (observation, impact, a fix once you have checked one, and the
 guideline cited inline by file + section). This dimension's `category` is one of: Feature placement &
-abstraction, Design Guidelines conformance, Clarity/simplicity/consistency, Footgun-free & ages-well
-interface quality.
+abstraction, Design Guidelines conformance, Clarity/simplicity/consistency, Safe use & extension.
