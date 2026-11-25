@@ -38,8 +38,8 @@ A change that compiles in TypeScript can still break another language's bindings
 [jsii TypeScript restrictions guide](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/).
 
 **[REG-JSII-SIGNATURE-CHANGE] (BLOCKING)** — Parameters of the same type that change order in a public
-function, method, or constructor: existing positional calls still compile and pass each argument to the
-wrong parameter.
+function, method, or constructor in a stable module: existing positional calls still compile and pass each
+argument to the wrong parameter.
 
 **[REG-JSII-STRUCT-LAST] (BLOCKING)** — A struct argument (a data interface: no `I` prefix, `readonly`-only
 props) MUST be the last positional parameter. jsii explodes it into keyword/named arguments in Python,
@@ -56,11 +56,11 @@ classes implement: jsii generates it as a behavioral interface instead of a stru
 parameter to `any` in the target languages. See
 [`jsii § Mapped Types`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#typescript-mapped-types).
 
-**[REG-JSII-TYPE-MOVE] (BLOCKING)** — An exported function or const moved to another submodule: existing
-imports of it break.
+**[REG-JSII-TYPE-MOVE] (BLOCKING)** — An exported function or const in a stable module moved to another
+submodule: existing imports of it break.
 
-**[REG-JSII-INHERITANCE] (BLOCKING)** — A `protected` member of a base class made `public`: existing C#
-subclasses that override it break. See
+**[REG-JSII-INHERITANCE] (BLOCKING)** — A `protected` member of a base class in a stable module made
+`public`: existing C# subclasses that override it break. See
 [`jsii § Member Visibility`](https://aws.github.io/jsii/user-guides/lib-author/typescript-restrictions/#member-visibility).
 
 **[REG-JSII-DEPENDENCY-EXPOSURE] (BLOCKING)** — A file with non-jsii imports exported from the main entry
