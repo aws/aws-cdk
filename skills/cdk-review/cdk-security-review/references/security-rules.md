@@ -29,7 +29,6 @@ no-op: when converting `PolicyStatement`s to grants you MUST preserve conditions
 forgetting the prop silently grants broad access. Prefer requiring the prop. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules) and
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
-- **Tier:** RECOMMENDED when bounded.
 
 **[SEC-IAM-WILDCARD-ACTION-SERVICE] (RECOMMENDED)** — A full-service action wildcard (`service:*`) on an
 otherwise correctly-scoped resource grants more than the code needs but opens no security boundary.
@@ -115,6 +114,5 @@ policy downgraded, a secure-private default now defaulting to public/open, or a 
 trust or permissions (widens a policy, opens access, weakens a default) is a *Secure defaults* finding
 here — even though the flag mechanism is otherwise a breaking-change concern outside this dimension. See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
-- **Tier:** RECOMMENDED when the loosening is bounded.
 - **Detection:** suspect a flag whose `unconfiguredBehavesLike`/`recommendedValue` defaults
   existing apps to the *looser* behavior rather than the old (tighter) one.
