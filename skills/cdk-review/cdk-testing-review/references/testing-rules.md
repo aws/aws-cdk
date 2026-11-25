@@ -106,8 +106,7 @@ for the cases that need an assertion and the `awsApiCall` → `ExpectedResult` A
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a
 `403`/error `ExpectedResult`).
 
-**[TEST-INTEG-REDUNDANT] (RECOMMENDED)** — An integ test that deploys several resources only to try
-several values of one prop whose values differ in nothing but the setting, like `memorySize`, so one
-resource already shows the prop takes effect; a value that is a new supported version, or that creates
-resources or integrations, needs its own. See
+**[TEST-INTEG-REDUNDANT] (RECOMMENDED)** — Several resources in an integ test that differ only in the
+value of one setting, such as `memorySize`. A new supported version, or a value that adds resources or
+integrations, keeps its own resource. See
 [`INTEGRATION_TESTS.md § New L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#new-l2-constructs).
