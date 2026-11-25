@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
-import type { ComparisonOperator, TreatMissingData } from './alarm';
+import type { TreatMissingData } from './alarm';
+import { ComparisonOperator } from './alarm';
 import type { IAlarmAction } from './alarm-action';
 import type { IAlarm } from './alarm-base';
 import { AlarmBase } from './alarm-base';
@@ -7,7 +8,7 @@ import { CfnLogAlarm } from './cloudwatch.generated';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
 import type { IRole } from '../../aws-iam';
 import { Grant, Role, ServicePrincipal } from '../../aws-iam';
-import { ArnFormat, CfnCondition, CfnElement, CfnResource, Fn, Stack, Token, Tokenization, ValidationError, Validations } from '../../core';
+import { ArnFormat, Fn, Stack, Token, ValidationError, Validations } from '../../core';
 import type { ArnComponents, Duration } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
@@ -42,10 +43,9 @@ export interface LogAlarmScheduledQuerySchedule {
    * `rate(...)` schedule expression in the largest unit that divides it evenly:
    * days, hours, or minutes.
    *
-   * A rate whose amount is only known at deploy time must be given in minutes,
-   * hours, or days, and is rendered in that unit. Its amount must reference a
-   * `CfnParameter` or a pseudo parameter, because a CloudFormation condition chooses
-   * between the singular and plural unit.
+   * The rate must be known at synthesis time. To use a rate that is only known at
+   * deploy time, set `ScheduledQueryConfiguration.ScheduleConfiguration.ScheduleExpression`
+   * on the underlying `CfnLogAlarm`.
    */
   readonly rate: Duration;
 
@@ -79,6 +79,8 @@ export interface LogAlarmScheduledQuerySchedule {
 export interface LogAlarmScheduledQueryConfiguration {
   /**
    * The query to run against the log groups.
+   *
+   * Between 1 and 10000 characters.
    */
   readonly queryString: string;
 
@@ -86,6 +88,8 @@ export interface LogAlarmScheduledQueryConfiguration {
    * The aggregation expression applied to the query results.
    *
    * For example `count(*)` or `avg(latency) by host`.
+   *
+   * Between 1 and 2048 characters.
    */
   readonly aggregationExpression: string;
 
@@ -170,8 +174,10 @@ export interface LogAlarmProps {
    * - GREATER_THAN_THRESHOLD
    * - LESS_THAN_THRESHOLD
    * - LESS_THAN_OR_EQUAL_TO_THRESHOLD
+   *
+   * @default ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD
    */
-  readonly comparisonOperator: ComparisonOperator;
+  readonly comparisonOperator?: ComparisonOperator;
 
   /**
    * The number of most recent query results to evaluate.
@@ -185,8 +191,10 @@ export interface LogAlarmProps {
    *
    * This is the "M" of the M-out-of-N evaluation and must not exceed
    * `queryResultsToEvaluate`.
+   *
+   * @default - `queryResultsToEvaluate`, so every evaluated result must breach
    */
-  readonly queryResultsToAlarm: number;
+  readonly queryResultsToAlarm?: number;
 
   /**
    * Configuration of the scheduled query that this alarm evaluates.
@@ -224,7 +232,7 @@ export interface LogAlarmProps {
   /**
    * How the alarm treats missing query results.
    *
-   * @default TreatMissingData.Missing
+   * @default TreatMissingData.MISSING
    */
   readonly treatMissingData?: TreatMissingData;
 
@@ -430,11 +438,12 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       throw new ValidationError(lit`InvalidQueryResultsToEvaluate`, `queryResultsToEvaluate must be an integer between 1 and 100, got ${props.queryResultsToEvaluate}`, this);
     }
 
-    if (!Token.isUnresolved(props.queryResultsToAlarm) && (!Number.isInteger(props.queryResultsToAlarm) || props.queryResultsToAlarm < 1)) {
+    if (props.queryResultsToAlarm !== undefined && !Token.isUnresolved(props.queryResultsToAlarm)
+      && (!Number.isInteger(props.queryResultsToAlarm) || props.queryResultsToAlarm < 1)) {
       throw new ValidationError(lit`InvalidQueryResultsToAlarm`, `queryResultsToAlarm must be a positive integer, got ${props.queryResultsToAlarm}`, this);
     }
 
-    if (!Token.isUnresolved(props.queryResultsToEvaluate) && !Token.isUnresolved(props.queryResultsToAlarm)
+    if (props.queryResultsToAlarm !== undefined && !Token.isUnresolved(props.queryResultsToEvaluate) && !Token.isUnresolved(props.queryResultsToAlarm)
       && props.queryResultsToAlarm > props.queryResultsToEvaluate) {
       throw new ValidationError(lit`InvalidQueryResults`, `queryResultsToAlarm must not exceed queryResultsToEvaluate, got ${props.queryResultsToAlarm} > ${props.queryResultsToEvaluate}`, this);
     }
@@ -494,7 +503,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
 
     this.scheduledQueryRole = sqc.scheduledQueryRole
       ?? this.createServiceRole('ScheduledQueryRole', 'logs.amazonaws.com', 'logs', 'scheduled-query');
-    this.grantRunQuery(this.scheduledQueryRole, sqc.logGroups);
+    const grants = this.grantRunQuery(this.scheduledQueryRole, sqc.logGroups);
     if (sqc.logGroups === undefined) {
       Validations.of(this).addWarning('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedQueryPermissions',
         'logGroups is not set, so the scheduled query role is granted query permissions on every log group in the account and region; set logGroups to scope them');
@@ -505,7 +514,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       : logLines.role ?? this.createServiceRole('LogLineRole', 'cloudwatch.amazonaws.com', 'cloudwatch', 'alarm',
         props.alarmName !== undefined && !Token.isUnresolved(props.alarmName) ? props.alarmName : undefined);
     if (this.actionLogLineRole !== undefined) {
-      this.grantReadLogLines(this.actionLogLineRole, sqc.logGroups);
+      grants.push(this.grantReadLogLines(this.actionLogLineRole, sqc.logGroups));
       if (sqc.logGroups === undefined) {
         Validations.of(this).addWarning('aws-cdk-lib/aws-cloudwatch:logAlarmUnscopedLogLinePermissions',
           'logGroups is not set, so the log line role is granted logs:GetQueryResults on every log group in the account and region; set logGroups to scope it');
@@ -516,10 +525,10 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       alarmName: this.physicalName,
       alarmDescription: props.alarmDescription,
       actionsEnabled: props.actionsEnabled,
-      comparisonOperator: props.comparisonOperator,
+      comparisonOperator: props.comparisonOperator ?? ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       threshold: props.threshold,
       queryResultsToEvaluate: props.queryResultsToEvaluate,
-      queryResultsToAlarm: props.queryResultsToAlarm,
+      queryResultsToAlarm: props.queryResultsToAlarm ?? props.queryResultsToEvaluate,
       treatMissingData: props.treatMissingData,
       actionLogLineCount: logLines?.count,
       actionLogLineRoleArn: this.actionLogLineRole?.roleArn,
@@ -530,6 +539,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
       scheduledQueryConfiguration: this.renderScheduledQuery(sqc),
       warmUpConfiguration: this.renderWarmUp(props.warmUpConfiguration),
     });
+    grants.forEach(grant => grant.applyBefore(this.alarm));
 
     props.alarmActions?.forEach(action => this.addAlarmAction(action));
     props.okActions?.forEach(action => this.addOkAction(action));
@@ -605,6 +615,12 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     arns.push(...actions.map(a => this.bindAndWarn(a, propName)));
   }
 
+  /**
+   * Bind an action, and warn when log alarms do not dispatch its type.
+   *
+   * Every warning from this construct goes through `Validations`, so all of them share
+   * one acknowledgement ID format and this one can be acknowledged by service and resource.
+   */
   private bindAndWarn(action: IAlarmAction, propName: string): string {
     const arn = action.bind(this, this).alarmActionArn;
     const components = this.actionArnComponents(arn);
@@ -670,27 +686,28 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    * this account and to the given source ARN pattern to prevent confused-deputy
    * access.
    *
-   * The source is named when its name is known at synthesis time, and matched by
-   * wildcard otherwise.
+   * The source is named exactly when its name is known at synthesis time, so `*` and `?`
+   * in the name match only themselves, and matched by wildcard otherwise.
    */
   private createServiceRole(id: string, servicePrincipal: string, sourceService: string, sourceResource: string, sourceName?: string): IRole {
     const stack = Stack.of(this);
+    const sourceArn = stack.formatArn({
+      service: sourceService,
+      resource: sourceResource,
+      resourceName: sourceName ?? '*',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
     return new Role(this, id, {
       assumedBy: new ServicePrincipal(servicePrincipal, {
-        conditions: {
-          StringEquals: { 'aws:SourceAccount': stack.account },
-          ArnLike: {
+        conditions: sourceName !== undefined
+          ? { StringEquals: { 'aws:SourceAccount': stack.account, 'aws:SourceArn': sourceArn } }
+          : {
+            StringEquals: { 'aws:SourceAccount': stack.account },
             // The scheduled query's name is generated by the service, and a generated alarm
             // name is only known once the alarm exists, which depends on the role. Neither
             // can be named here, so those sources are matched by wildcard.
-            'aws:SourceArn': stack.formatArn({
-              service: sourceService,
-              resource: sourceResource,
-              resourceName: sourceName ?? '*',
-              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-            }),
+            ArnLike: { 'aws:SourceArn': sourceArn },
           },
-        },
       }),
     });
   }
@@ -710,19 +727,20 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Alarm-On-Logs.html
    */
-  private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): void {
-    Grant.addToPrincipal({
+  private grantRunQuery(role: IRole, logGroups?: ILogGroupRef[]): Grant[] {
+    const grants = [Grant.addToPrincipal({
       grantee: role,
       actions: ['logs:StartQuery', 'logs:GetQueryResults'],
       resourceArns: this.logGroupPolicyResources(logGroups),
-    });
+    })];
     if (logGroups === undefined) {
-      Grant.addToPrincipal({
+      grants.push(Grant.addToPrincipal({
         grantee: role,
         actions: ['logs:DescribeLogGroups'],
         resourceArns: ['*'],
-      });
+      }));
     }
+    return grants;
   }
 
   /**
@@ -732,8 +750,8 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Alarm-On-Logs.html
    */
-  private grantReadLogLines(role: IRole, logGroups?: ILogGroupRef[]): void {
-    Grant.addToPrincipal({
+  private grantReadLogLines(role: IRole, logGroups?: ILogGroupRef[]): Grant {
+    return Grant.addToPrincipal({
       grantee: role,
       actions: ['logs:GetQueryResults'],
       resourceArns: this.logGroupPolicyResources(logGroups),
@@ -749,7 +767,7 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
     }
     const minutes = warmUp.warmUpPeriod.toMinutes({ integral: false });
     if (!warmUp.warmUpPeriod.isUnresolved() && (!Number.isInteger(minutes) || minutes < 1 || minutes > 2880)) {
-      throw new ValidationError(lit`InvalidWarmUpPeriod`, `warmUpPeriod must be a whole number of minutes between 1 and 2880 (48 hours), got ${warmUp.warmUpPeriod.toSeconds()} seconds`, this);
+      throw new ValidationError(lit`InvalidWarmUpPeriod`, `warmUpPeriod must be a whole number of minutes between 1 and 2880 (48 hours), got ${minutes} minutes`, this);
     }
     return {
       warmUpPeriodDurationInMinutes: minutes,
@@ -784,48 +802,11 @@ export class LogAlarm extends AlarmBase implements ILogAlarm {
   }
 
   /**
-   * Whether a tokenized amount is a `Ref` to a parameter of this stack or to a pseudo
-   * parameter, the only references a CloudFormation condition may contain besides
-   * mappings and other conditions.
-   */
-  private referencesParameter(amount: number): boolean {
-    const stack = Stack.of(this);
-    const resolved = stack.resolve(amount);
-    const ref = resolved !== null && typeof resolved === 'object' && Object.keys(resolved).length === 1 ? resolved.Ref : undefined;
-    if (typeof ref !== 'string') {
-      return false;
-    }
-    return ref.startsWith('AWS::') || stack.node.findAll().some(c =>
-      CfnElement.isCfnElement(c) && !CfnResource.isCfnResource(c) && Stack.of(c) === stack && stack.resolve(c.logicalId) === ref);
-  }
-
-  /**
-   * Render the schedule rate as a `rate(...)` expression.
-   *
-   * An unresolved rate is read before any other conversion, because a duration built
-   * from a token can only be read in the unit it was created with. It is rendered in
-   * that unit, which is singularised at deploy time when the amount resolves to 1.
+   * Render the schedule rate as a `rate(...)` expression in the largest whole unit.
    */
   private renderRate(rate: Duration): string {
     if (rate.isUnresolved()) {
-      const unit = rate.unitLabel();
-      if (unit !== 'minutes' && unit !== 'hours' && unit !== 'days') {
-        throw new ValidationError(lit`InvalidScheduleRateUnit`, `schedule rate must be given as Duration.minutes(), Duration.hours(), or Duration.days() when its amount comes from a token, got Duration.${unit}`, this);
-      }
-      const amount = unit === 'minutes'
-        ? rate.toMinutes({ integral: false })
-        : unit === 'hours'
-          ? rate.toHours({ integral: false })
-          : rate.toDays({ integral: false });
-      if (!this.referencesParameter(amount)) {
-        throw new ValidationError(lit`UnsupportedScheduleRateToken`, `schedule rate must reference a CfnParameter or a pseudo parameter when its amount comes from a token, because a CloudFormation condition chooses its unit, got ${JSON.stringify(Stack.of(this).resolve(amount))}`, this);
-      }
-      const amountToken = Tokenization.stringifyNumber(amount);
-      const rateAmountIsOne = new CfnCondition(this, 'ScheduleRateAmountIsOne', {
-        expression: Fn.conditionEquals(amountToken, '1'),
-      });
-      const scheduleUnit = Fn.conditionIf(rateAmountIsOne.logicalId, unit.slice(0, -1), unit).toString();
-      return `rate(${amountToken} ${scheduleUnit})`;
+      throw new ValidationError(lit`UnresolvedScheduleRate`, 'schedule rate must be known at synthesis time, got a token; set ScheduleExpression on the underlying CfnLogAlarm to use a rate that is only known at deploy time', this);
     }
     const minutes = rate.toMinutes({ integral: false });
     if (!Number.isInteger(minutes) || minutes < 1) {

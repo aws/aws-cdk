@@ -3,7 +3,7 @@ import { LambdaAction } from '../../aws-cloudwatch-actions/lib';
 import { Role, ServicePrincipal } from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { LogGroup } from '../../aws-logs';
-import { CfnParameter, CfnResource, Duration, Fn, Stack, Token, Validations } from '../../core';
+import { Duration, Fn, Stack, Token, Validations } from '../../core';
 import type { IAlarmAction } from '../lib';
 import { ComparisonOperator, LogAlarm, TreatMissingData } from '../lib';
 
@@ -98,6 +98,19 @@ describe('LogAlarm', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
       ScheduledQueryConfiguration: { ScheduleConfiguration: { ScheduleExpression: expression } },
+    });
+  });
+
+  test('defaults to alarming when every evaluated result is greater than or equal to the threshold', () => {
+    const { comparisonOperator, queryResultsToAlarm, ...props } = baseProps();
+    void comparisonOperator;
+    void queryResultsToAlarm;
+    new LogAlarm(stack, 'Alarm', props);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::LogAlarm', {
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+      QueryResultsToEvaluate: 3,
+      QueryResultsToAlarm: 3,
     });
   });
 
@@ -576,52 +589,9 @@ describe('LogAlarm', () => {
   });
 
   test.each([
-    ['minutes', (amount: number) => Duration.minutes(amount)],
-    ['hours', (amount: number) => Duration.hours(amount)],
-    ['days', (amount: number) => Duration.days(amount)],
-  ])('renders a tokenized rate given in %s, singularising the unit at deploy time', (unit, toRate) => {
-    const rateParam = new CfnParameter(stack, 'RateParam', { type: 'Number' });
-    const props = baseProps();
-    new LogAlarm(stack, 'Alarm', {
-      ...props,
-      scheduledQueryConfiguration: {
-        ...props.scheduledQueryConfiguration,
-        schedule: { rate: toRate(rateParam.valueAsNumber), startTimeOffset: Duration.minutes(5) },
-      },
-    });
-
-    const template = Template.fromStack(stack);
-    const conditions = template.findConditions('*', { 'Fn::Equals': [{ Ref: 'RateParam' }, '1'] });
-    const conditionId = Object.keys(conditions)[0];
-    expect(conditionId).toMatch(/^AlarmScheduleRateAmountIsOne/);
-    template.hasResourceProperties('AWS::CloudWatch::LogAlarm', {
-      ScheduledQueryConfiguration: Match.objectLike({
-        ScheduleConfiguration: Match.objectLike({
-          ScheduleExpression: {
-            'Fn::Join': ['', ['rate(', { Ref: 'RateParam' }, ' ', { 'Fn::If': [conditionId, unit.slice(0, -1), unit] }, ')']],
-          },
-        }),
-      }),
-    });
-  });
-
-  test.each([
-    ['a resource attribute', () => Token.asNumber(new CfnResource(stack, 'RateSource', { type: 'Custom::RateSource' }).getAtt('Rate'))],
-    ['an imported value', () => Token.asNumber(Fn.importValue('ScheduleRate'))],
-  ])('fails for a tokenized rate taken from %s', (_name, amount) => {
-    const props = baseProps();
-    expect(() => new LogAlarm(stack, 'Alarm', {
-      ...props,
-      scheduledQueryConfiguration: {
-        ...props.scheduledQueryConfiguration,
-        schedule: { rate: Duration.minutes(amount()), startTimeOffset: Duration.minutes(5) },
-      },
-    })).toThrow(/schedule rate must reference a CfnParameter or a pseudo parameter when its amount comes from a token/);
-  });
-
-  test.each([
+    ['minutes', Duration.minutes(Token.asNumber({ Ref: 'RateParam' }))],
+    ['hours', Duration.hours(Token.asNumber({ Ref: 'RateParam' }))],
     ['seconds', Duration.seconds(Token.asNumber({ Ref: 'RateParam' }))],
-    ['milliseconds', Duration.millis(Token.asNumber({ Ref: 'RateParam' }))],
   ])('fails for a tokenized rate given in %s', (_name, rate) => {
     const props = baseProps();
     expect(() => new LogAlarm(stack, 'Alarm', {
@@ -630,7 +600,7 @@ describe('LogAlarm', () => {
         ...props.scheduledQueryConfiguration,
         schedule: { rate, startTimeOffset: Duration.minutes(5) },
       },
-    })).toThrow(/schedule rate must be given as Duration.minutes\(\), Duration.hours\(\), or Duration.days\(\) when its amount comes from a token/);
+    })).toThrow(/schedule rate must be known at synthesis time, got a token/);
   });
 
   test.each([
@@ -788,8 +758,9 @@ describe('LogAlarm', () => {
       AssumeRolePolicyDocument: {
         Statement: [Match.objectLike({
           Principal: { Service: 'cloudwatch.amazonaws.com' },
-          Condition: Match.objectLike({
-            ArnLike: {
+          Condition: {
+            StringEquals: {
+              'aws:SourceAccount': { Ref: 'AWS::AccountId' },
               'aws:SourceArn': {
                 'Fn::Join': ['', [
                   'arn:', { Ref: 'AWS::Partition' }, ':cloudwatch:', { Ref: 'AWS::Region' }, ':',
@@ -797,9 +768,23 @@ describe('LogAlarm', () => {
                 ]],
               },
             },
-          }),
+          },
         })],
       },
+    });
+  });
+
+  test('creates the alarm after the policies of both roles', () => {
+    new LogAlarm(stack, 'Alarm', {
+      ...baseProps(),
+      actionLogLines: { count: 10 },
+    });
+
+    Template.fromStack(stack).hasResource('AWS::CloudWatch::LogAlarm', {
+      DependsOn: Match.arrayWith([
+        Match.stringLikeRegexp('^AlarmLogLineRoleDefaultPolicy'),
+        Match.stringLikeRegexp('^QueryRoleDefaultPolicy'),
+      ]),
     });
   });
 

@@ -125,7 +125,10 @@
     },
     "Threshold": 5,
     "TreatMissingData": "notBreaching"
-   }
+   },
+   "DependsOn": [
+    "ScheduledQueryRoleDefaultPolicy3C4AF794"
+   ]
   },
   "AutoRoleLogAlarmScheduledQueryRole809364A4": {
    "Type": "AWS::IAM::Role",
@@ -213,9 +216,7 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
-         }
-        },
-        "ArnLike": {
+         },
          "aws:SourceArn": {
           "Fn::Join": [
            "",
@@ -325,7 +326,11 @@
      "OnlyStartEvaluatingAfterWarmUpPeriodEnds": true,
      "WarmUpPeriodDurationInMinutes": 10
     }
-   }
+   },
+   "DependsOn": [
+    "AutoRoleLogAlarmLogLineRoleDefaultPolicy540A6D84",
+    "AutoRoleLogAlarmScheduledQueryRoleDefaultPolicy6D67126C"
+   ]
   },
   "SourceQueryLogAlarmScheduledQueryRole75A1A6A8": {
    "Type": "AWS::IAM::Role",
@@ -455,7 +460,10 @@
     },
     "Threshold": 5,
     "TreatMissingData": "notBreaching"
-   }
+   },
+   "DependsOn": [
+    "SourceQueryLogAlarmScheduledQueryRoleDefaultPolicy5E96EE56"
+   ]
   }
  },
  "Parameters": {
