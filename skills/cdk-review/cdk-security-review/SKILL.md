@@ -10,10 +10,6 @@ protections, or leaked secrets — across IAM least-privilege, network/resource 
 secrets/credentials, and secure-by-default. Judge what this change widens, weakens, or leaks for users
 of the CDK.
 
-Security is a **baseline** dimension: a real exposure must be fixed before merge (see
-`cdk-review-principles` "Calibrate the harm honestly"), so this dimension's calibration skews toward BLOCKING
-for a concrete exposure.
-
 ## The review process
 
 Work the changed surface in this order; adapt to what the diff touches.
