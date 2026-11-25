@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; how to verify a fact before posting and which source to cite for it; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, taking a finding's tier from its rule, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; how to verify a fact before posting and which source to cite for it; when to offer a fix; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, taking a finding's tier from its rule, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -19,12 +19,21 @@ comment is worded.
 
 ## When a defect is a finding
 
-A defect is a finding when you can state its impact and the PR introduces it:
+A defect is a finding when all of these hold:
 
-- **Impact** — what goes wrong for a user or a maintainer if it ships: something fails, does the
-  wrong thing, or costs later work. Judge the change by its effect.
-- **Introduced by this PR** — it is in what the diff adds or changes; code the PR only moved
-  counts as unchanged.
+- **A rule describes it** — one of your rules.
+- **Impact** — you can state what goes wrong for a user or a maintainer if it ships: something
+  fails, does the wrong thing, or costs later work. Judge the change by its effect.
+- **Introduced by this PR** — it is in what the diff adds or changes; code the PR only moved counts
+  as unchanged.
+- **On a line** — it points at a specific line of the diff.
+- **Beyond the build** — the PR's build does not already fail on it. The compiler and linters check,
+  for example, a public API with no docstring or an optional prop with no `@default` (see
+  [`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint)).
+
+Raise every defect that meets these, and only those; a PR with nothing wrong gets no findings.
+Typos, wording, whitespace, formatting, naming preferences, idiom choices and test-title strings are
+outside every rule.
 
 ## Verification
 
@@ -40,30 +49,10 @@ Offer a fix once you have checked that what it uses exists at the reviewed commi
 code depending on what it changes still fits. Otherwise report the problem and leave
 `suggestedFix` null. A fix follows the same guides as the code under review.
 
-## Findings must meet the bar
+## Finding format
 
-A finding is posted, at its tier, when it meets the posting conditions below, and only then.
-The number of findings is not a target: there is none to reach and none to stay under, and
-zero comments is the right result for a PR with nothing wrong. A count would choose findings
-by number rather than by merit.
-
-A finding becomes a posted comment only when it is (1) tied to a specific line, (2)
-actionable, and (3) significant enough to stand alone.
-
-Spend the review on what the build cannot see. The PR's build already fails on what its
-compiler and linters check, such as a public API with no docstring or an optional props
-property with no `@default` (see
-[`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint)).
-
-See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
-structured finding fields and how to write each one before you generate findings.
-
-## What not to flag
-
-- **Cosmetics** — typos, comment/docstring wording, whitespace, formatting, naming
-  preferences, idiom choices, test-title / `test.each` label strings. A misspelled comment
-  breaks nothing.
-- **A defect none of your rules describes** — raise only what one of your rules describes.
+The fields each finding carries and how to write its `message` are in
+[`references/pr-comment-format.md`](references/pr-comment-format.md).
 
 ## Sources
 

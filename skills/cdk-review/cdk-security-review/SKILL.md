@@ -35,7 +35,7 @@ of the CDK. Apply `cdk-review-principles` for severity, evidence and the finding
   feature flag that *loosens* security is in scope here as a *Secure defaults* finding, even though
   the flag mechanism itself is outside your scope.
 - **General security advice not tied to a diff line** — a finding without a `file:line` is not a
-  posted comment (see `cdk-review-principles` "Findings must meet the bar").
+  posted comment (see `cdk-review-principles` "When a defect is a finding").
 - **Suffix-wildcard actions** (`s3:GetObject*`) — acceptable per the repo Security Rules; the
   full-service `s3:*` is the finding.
 - **An already-scoped `grant*` helper**, and any permission/default the PR did not change.
