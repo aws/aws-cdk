@@ -62,9 +62,10 @@ it is given through unchanged. See
 `removalPolicy?` prop. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy).
 
-**[CD-NO-L2-TAGGABLE] (BLOCKING)** — An L2 implementing `ITaggable`/`ITaggableV2` or exposing a
-`TagManager` is a MUST NOT; the mandated shape is an optional `tags` prop wired to the L1 default child.
-See [`AGENTS_CONSTRUCT_DESIGN.md § Tags`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#tags).
+**[CD-TAGS] (BLOCKING)** — An L2 that implements `ITaggable`/`ITaggableV2` or exposes a `TagManager`. See
+[`AGENTS_CONSTRUCT_DESIGN.md § Tags`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#tags).
+- **Tier:** RECOMMENDED for a new L2 of a taggable resource with no `tags` prop, or one that does not pass
+  `props.tags` to the L1.
 
 **[CD-BACKWARD-COMPAT] (BLOCKING)** — Design the new surface so it won't force a future break: no
 `@deprecated` props in a newly introduced interface, keep detail types `@internal`, and correct later by
