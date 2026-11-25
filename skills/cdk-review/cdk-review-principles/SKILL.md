@@ -31,8 +31,6 @@ A defect is a finding when all of these hold:
   [`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint)).
 
 Raise every defect that meets these, and only those; a PR with nothing wrong gets no findings.
-Typos, wording, whitespace, formatting, naming preferences, idiom choices and test-title strings are
-outside every rule.
 
 ## Verification
 
