@@ -7,12 +7,12 @@ Give each finding these fields:
 - `file` — repo-relative path of the file the finding is on.
 - `lineRange: { startLine, endLine }` — the line or line span the finding is about.
   A single-line finding sets both to that line.
-- `category` — the heading the finding's rule sits under in the dimension's rules file;
+- `category` — the heading the finding's rule sits under in the dimension's rules;
   when the dimension skill lists its own `category` values, one of those.
 - `severity` — one of `BLOCKING` / `RECOMMENDED`, defined in `SKILL.md` "Severity — rate
   by the harm it does when it triggers". The only severity vocabulary.
 - `ruleId` — the stable `[id]` of the rule that fired, taken verbatim from the dimension's
-  rules file. The debug/trace key: it names exactly which rule produced the finding.
+  rules. The debug/trace key: it names exactly which rule produced the finding.
 - `message` — the human-visible comment text (see the next section).
 - `reference` — the authoritative source the finding cites: a CDK design guideline, jsii doc, CloudFormation resource spec, or AWS service doc — file + section, or a URL — per the authority order in `SKILL.md` "Make each finding land"; or null.
 - `evidence` — the supporting detail behind the finding.
