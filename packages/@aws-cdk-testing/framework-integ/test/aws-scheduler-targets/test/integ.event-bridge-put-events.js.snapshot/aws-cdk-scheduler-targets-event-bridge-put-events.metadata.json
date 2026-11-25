@@ -1,0 +1,230 @@
+{
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/MyParameter": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/EventBus": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/Rule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/Schedule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/SchedulerRoleForTarget-6ff532": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/MyParameter/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyParameter18BA547D"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachine2E01A3A5"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/EventsRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/EventBus/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventBus7B8748AA"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/Rule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Rule4C995B7F"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/Schedule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Schedule83A77FD1"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/SchedulerRoleForTarget-6ff532/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerRoleForTarget6ff5322488E9B3"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/SchedulerRoleForTarget-6ff532/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleB840431D"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/EventsRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineEventsRoleDBCDECD1"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/EventsRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/SchedulerRoleForTarget-6ff532/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerRoleForTarget6ff532DefaultPolicy3F7032D5"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineRoleDefaultPolicyDF1E6607"
+    }
+  ],
+  "/aws-cdk-scheduler-targets-event-bridge-put-events/StateMachine/EventsRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineEventsRoleDefaultPolicyFB602CA9"
+    }
+  ]
+}

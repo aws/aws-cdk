@@ -1122,6 +1122,15 @@ export class KubernetesVersion {
   public static readonly V1_36 = KubernetesVersion.of('1.36');
 
   /**
+   * Kubernetes version 1.37
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV37Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v37`.
+   */
+  public static readonly V1_37 = KubernetesVersion.of('1.37');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -1490,7 +1499,7 @@ export interface GrantAccessOptions {
    * `AccessEntryType.HYBRID_LINUX` for EKS Hybrid Nodes, or
    * `AccessEntryType.HYPERPOD_LINUX` for SageMaker HyperPod.
    *
-   * Note that EC2, HYBRID_LINUX, and HYPERPOD_LINUX types cannot
+   * Note that HYBRID_LINUX and HYPERPOD_LINUX types cannot
    * have access policies attached per AWS EKS API constraints.
    *
    * @default AccessEntryType.STANDARD - Standard access entry type that supports access policies
@@ -2930,7 +2939,8 @@ export class EksOptimizedImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    Validations.of(scope).acknowledge({
+    // Warning gets reported against Stack
+    Validations.of(Stack.of(scope)).acknowledge({
       id: 'CloudFormation-Validate::W2506',
       reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
     });
@@ -3041,10 +3051,18 @@ function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
-  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-    INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? CpuArch.ARM_64 :
-      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? CpuArch.ARM_64 :
-        CpuArch.X86_64;
+  // Unresolved (token) instance types can't be inspected at synth time; keep the x86_64 default.
+  if (Token.isUnresolved(instanceType.toString())) {
+    return CpuArch.X86_64;
+  }
+  let architecture: ec2.InstanceArchitecture;
+  try {
+    architecture = instanceType.architecture;
+  } catch {
+    // The getter throws MalformedInstanceTypeIdentifier for names it can't parse; keep the x86_64 default, as before.
+    return CpuArch.X86_64;
+  }
+  return architecture === ec2.InstanceArchitecture.ARM_64 ? CpuArch.ARM_64 : CpuArch.X86_64;
 }
 
 function flatten<A>(xss: A[][]): A[] {

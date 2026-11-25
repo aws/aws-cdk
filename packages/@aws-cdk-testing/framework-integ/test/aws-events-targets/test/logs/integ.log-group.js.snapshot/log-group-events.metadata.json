@@ -1,4 +1,10 @@
 {
+  "/log-group-events": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "log-group-events.template.json"
+    }
+  ],
   "/log-group-events/log-group": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -8,14 +14,6 @@
     }
   ],
   "/log-group-events/log-group2": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy"
-      }
-    }
-  ],
-  "/log-group-events/log-group3": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -159,30 +157,6 @@
       }
     }
   ],
-  "/log-group-events/Timer4": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "schedule": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEventPattern": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addTarget": [
-          {}
-        ]
-      }
-    }
-  ],
   "/log-group-events/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -205,12 +179,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "loggroup2F19C5C9B"
-    }
-  ],
-  "/log-group-events/log-group3/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "loggroup38EAEFD84"
     }
   ],
   "/log-group-events/log-group-imported/Resource": [
@@ -536,12 +504,6 @@
           "*"
         ]
       }
-    }
-  ],
-  "/log-group-events/Timer4/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "Timer417892602"
     }
   ],
   "/log-group-events/Exports/Output{\"Ref\":\"loggroup2F19C5C9B\"}": [

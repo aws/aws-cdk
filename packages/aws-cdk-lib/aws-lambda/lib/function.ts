@@ -1,4 +1,5 @@
 import type { Construct, IConstruct } from 'constructs';
+import type { AcceleratorConfig } from './accelerator-config';
 import type { AdotInstrumentationConfig } from './adot-layers';
 import { AdotLambdaExecWrapper } from './adot-layers';
 import type { AliasOptions, Alias } from './alias';
@@ -372,7 +373,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * Enable SnapStart for Lambda Function.
-   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
+   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime,
+   * as well as container image (OCI) deployments.
    *
    * @default - No snapstart
    */
@@ -580,6 +582,20 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - No durable configuration
    */
   readonly durableConfig?: DurableConfig;
+
+  /**
+   * Accelerator configuration for the function.
+   *
+   * Configures the accelerator resource settings for the execution environment, including
+   * the amount of accelerator memory to allocate. The function must be attached to a
+   * capacity provider (`capacityProvider.addFunction(fn)`), use a container image
+   * (`Runtime.FROM_IMAGE`) on x86_64, and set `memorySize` to at least 2048 MiB.
+   * When set, `ephemeralStorageSize` may be up to 32 GiB.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-lambda-function-acceleratorconfig.html
+   * @default - No accelerator configuration
+   */
+  readonly acceleratorConfig?: AcceleratorConfig;
 
   /**
    * The log group the function sends logs to.
@@ -1095,6 +1111,9 @@ export class Function extends FunctionBase {
       fileSystemConfigs = [{
         arn: props.filesystem.config.arn,
         localMountPath: props.filesystem.config.localMountPath,
+        s3FilesConfig: props.filesystem.config._s3FilesDirectRead
+          ? { directS3Read: props.filesystem.config._s3FilesDirectRead }
+          : undefined,
       }];
     }
 
@@ -1106,9 +1125,26 @@ export class Function extends FunctionBase {
     }
     this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
+    // Validated-and-rendered before the ephemeral-storage check below, which raises its ceiling on
+    // the strength of acceleratorConfig merely being set. In this order a config that does not
+    // qualify for an accelerator at all (wrong package type, wrong architecture, memory floor)
+    // reports that as the first error, instead of quoting the elevated 32 GiB ceiling for a
+    // function that is never getting an accelerator.
+    const acceleratorConfig = props.acceleratorConfig
+      ? this.validateAndRenderAcceleratorConfig(props.acceleratorConfig, props)
+      : undefined;
+
+    // Ephemeral storage is capped at 10 GiB for an ordinary function and at 32 GiB for one with an
+    // accelerator attached, so the ceiling depends on whether acceleratorConfig is set.
+    // See https://docs.aws.amazon.com/lambda/latest/dg/lambda-managed-instances-gpu.html#lambda-managed-instances-gpu-limits
+    const MAX_EPHEMERAL_STORAGE_GPU_MIB = 32768;
+    const MAX_EPHEMERAL_STORAGE_MIB = 10240;
+    const MIN_EPHEMERAL_STORAGE_MIB = 512;
+    const maxEphemeralStorage = props.acceleratorConfig ? MAX_EPHEMERAL_STORAGE_GPU_MIB : MAX_EPHEMERAL_STORAGE_MIB;
+
     if (props.ephemeralStorageSize && !props.ephemeralStorageSize.isUnresolved()
-      && (props.ephemeralStorageSize.toMebibytes() < 512 || props.ephemeralStorageSize.toMebibytes() > 10240)) {
-      throw new ValidationError(lit`EphemeralStorageOutOfRange`, `Ephemeral storage size must be between 512 and 10240 MB, received ${props.ephemeralStorageSize}.`, this);
+      && (props.ephemeralStorageSize.toMebibytes() < MIN_EPHEMERAL_STORAGE_MIB || props.ephemeralStorageSize.toMebibytes() > maxEphemeralStorage)) {
+      throw new ValidationError(lit`EphemeralStorageOutOfRange`, `Ephemeral storage size must be between ${MIN_EPHEMERAL_STORAGE_MIB} and ${maxEphemeralStorage} MB, received ${props.ephemeralStorageSize}.`, this);
     }
 
     const effectiveRuntime = props.runtime === Runtime.NODEJS_LATEST ? determineLatestNodeRuntime(this) : props.runtime;
@@ -1123,6 +1159,7 @@ export class Function extends FunctionBase {
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
         sourceKmsKeyArn: code.sourceKMSKeyArn,
+        s3ObjectStorageMode: code.s3ObjectStorageMode,
       },
       layers: Token.asList(this._layers.derive(l => this.renderLayers(l))),
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
@@ -1150,6 +1187,7 @@ export class Function extends FunctionBase {
       runtimeManagementConfig: props.runtimeManagementMode?.runtimeManagementConfig,
       tenancyConfig: props.tenancyConfig?.tenancyConfigProperty,
       durableConfig: props.durableConfig ? this.renderDurableConfig(props.durableConfig) : undefined,
+      acceleratorConfig,
       snapStart: this.configureSnapStart(props),
       loggingConfig: this.getLoggingConfig(props),
       recursiveLoop: props.recursiveLoop,
@@ -1159,12 +1197,25 @@ export class Function extends FunctionBase {
       this.resource.tracingConfig = this.buildTracingConfig(props.tracing ?? Tracing.ACTIVE);
     }
 
+    // Register the deferred capacity-provider-attachment validator for acceleratorConfig here in
+    // the constructor (matching ECS Ec2Service / DynamoDB Table / Batch JobQueue), rather than as a
+    // side effect of the render method, so the registration is discoverable and runs once.
+    if (props.acceleratorConfig) {
+      this.node.addValidation({ validate: () => this.validateAcceleratorConfig() });
+    }
+
     this._logGroup = props.logGroup ? toILogGroup(props.logGroup) : undefined;
 
     this.resource.node.addDependency(this.role);
 
     this.runtime = effectiveRuntime;
     this.timeout = props.timeout;
+
+    if (effectiveRuntime.name === 'custom') {
+      // On the L1 child, where the FunctionRuntimeConfig mixin acknowledges it when applied.
+      Annotations.of(this.resource).addInfoV2('@aws-cdk/aws-lambda:customRuntimeRequiresRuntimeConfig',
+        "The 'custom' runtime requires a RuntimeConfig, or the deployment fails. Apply the FunctionRuntimeConfig mixin (aws-cdk-lib/aws-lambda/mixins) to set the customer-managed runtime and alias.");
+    }
 
     this.architecture = props.architecture ?? Architecture.X86_64;
 
@@ -1710,6 +1761,56 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
+  private validateAndRenderAcceleratorConfig(config: AcceleratorConfig, props: FunctionProps): CfnFunction.AcceleratorConfigProperty {
+    // The deferred capacity-provider-attachment validator is registered in the constructor (see
+    // where acceleratorConfig is wired), matching how ECS Ec2Service / DynamoDB Table / Batch
+    // JobQueue register their node validations. This method only validates-and-renders.
+    Annotations.of(this).addInfoV2('aws-lambda:Function.AcceleratorConfig', 'Modifying acceleratorConfig on an existing function causes some interruption during the update');
+
+    // LMI Functions with AcceleratorConfig require memorySize >= 2048 MiB. This is a service-side constraint (the
+    // CFN schema puts no minimum on MemorySize), and the function default of 128 MiB would be
+    // rejected at deploy -- so surface it at synth instead.
+    if (props.memorySize === undefined) {
+      throw new ValidationError(lit`AcceleratorRequiresExplicitMemory`, 'acceleratorConfig requires explicit memorySize >= 2048 MiB, but memorySize is not set (default is 128 MiB)', this);
+    }
+    if (!Token.isUnresolved(props.memorySize) && props.memorySize < 2048) {
+      throw new ValidationError(lit`AcceleratorRequiresMinMemory`, `acceleratorConfig requires memorySize >= 2048 MiB, got ${props.memorySize}`, this);
+    }
+
+    const gibibytes = config.acceleratorMemorySize.gibibytes;
+
+    // AcceleratorConfig only supports Image package type (container-based functions).
+    if (props.runtime !== Runtime.FROM_IMAGE) {
+      throw new ValidationError(lit`AcceleratorRequiresImagePackage`, 'acceleratorConfig is not supported for non-container image functions', this);
+    }
+
+    // AcceleratorConfig only supports x86_64. Compare on name so Architecture.custom('arm64', ...) is also rejected; unset defaults to x86_64.
+    if (this._architecture !== undefined && this._architecture.name !== Architecture.X86_64.name) {
+      throw new ValidationError(lit`AcceleratorRequiresX86`, 'acceleratorConfig is only supported for x86_64 functions', this);
+    }
+
+    return {
+      acceleratorMemorySize: gibibytes,
+    };
+  }
+
+  private validateAcceleratorConfig(): string[] {
+    const errors: string[] = [];
+    // `CapacityProvider.addFunction()` sets the L1 `capacityProviderConfig` on the function it is
+    // given, so its presence is what records the attachment. Assigning `cfnFunction.capacityProviderConfig`
+    // directly also passes. Note this cannot see `addPropertyOverride('CapacityProviderConfig', ...)`:
+    // those land in CfnResource's private rawOverrides and are only merged at resolve time, after
+    // validation.
+    if (!this.resource.capacityProviderConfig) {
+      errors.push(
+        'acceleratorConfig requires a CapacityProvider. '
+        + 'Attach the function with capacityProvider.addFunction(fn), '
+        + 'or set cfnFunction.capacityProviderConfig = {...} directly.',
+      );
+    }
+    return errors;
+  }
+
   private configureSnapStart(props: FunctionProps): CfnFunction.SnapStartProperty | undefined {
     // return/exit if no snapStart included
     if (!props.snapStart) {
@@ -1719,11 +1820,12 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // SnapStart does not support Amazon Elastic File System (Amazon EFS), or ephemeral storage greater than 512 MB.
     // SnapStart doesn't support provisioned concurrency either, but that's configured at the version level,
     // so it can't be checked at function set up time
-    // SnapStart supports the Java 11 and Java 17 (java11 and java17) managed runtimes.
+    // Runtime eligibility is enforced via Runtime.supportsSnapStart; container images (FROM_IMAGE)
+    // are exempt because the runtime inside the image cannot be introspected and is validated by the service.
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
     Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only supports published Lambda versions. Ignore if function already has published versions.');
 
-    if (!props.runtime.supportsSnapStart) {
+    if (props.runtime !== Runtime.FROM_IMAGE && !props.runtime.supportsSnapStart) {
       throw new ValidationError(lit`SnapStartCurrentlySupportedRuntime`, `SnapStart currently not supported by runtime ${props.runtime.name}`, this);
     }
 

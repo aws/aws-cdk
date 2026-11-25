@@ -3,6 +3,7 @@
   "showmethemessagesKeyC4D56D85": {
    "Type": "AWS::KMS::Key",
    "Properties": {
+    "Description": "Created by aws-stepfunctions-tasks-sqs-send-message-integ/show-me-the-messages",
     "KeyPolicy": {
      "Statement": [
       {
@@ -30,8 +31,7 @@
       }
      ],
      "Version": "2012-10-17"
-    },
-    "Description": "Created by aws-stepfunctions-tasks-sqs-send-message-integ/show-me-the-messages"
+    }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -56,6 +56,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":states:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":stateMachine:*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "states.amazonaws.com"
@@ -108,12 +137,6 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -128,6 +151,12 @@
        },
        "\",\"MessageBody\":\"sending message over\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

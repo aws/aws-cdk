@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as ssm from '../../../aws-ssm';
-import { Validations } from '../../../core';
+import { Stack, Validations } from '../../../core';
 
 /**
  * Properties for BottleRocketImage
@@ -35,7 +35,8 @@ export class BottleRocketImage implements ec2.IMachineImage {
    * Return the correct image
    */
   public getImage(scope: Construct): ec2.MachineImageConfig {
-    Validations.of(scope).acknowledge({
+    // Warning gets reported against Stack
+    Validations.of(Stack.of(scope)).acknowledge({
       id: 'CloudFormation-Validate::W2506',
       reason: 'SSM parameter is typed as String instead of AWS::SSM::Parameter::Value<AWS::EC2::Image::Id> for historical reasons.',
     });

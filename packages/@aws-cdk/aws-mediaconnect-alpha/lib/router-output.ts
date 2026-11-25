@@ -5,6 +5,7 @@ import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import type { Grant } from 'aws-cdk-lib/aws-iam';
 import { CfnRouterOutput } from 'aws-cdk-lib/aws-mediaconnect';
 import type { IRouterOutputRef, RouterOutputReference } from 'aws-cdk-lib/aws-mediaconnect';
+import type { IInputRef } from 'aws-cdk-lib/aws-medialive';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -46,7 +47,8 @@ export class RouterOutputProtocolOptions {
 }
 
 /**
- * Routing tier that determines the maximum bitrate (in Mbps) for a Router Output.
+ * Tier for a router output. The tier determines the capacity limits, performance characteristics,
+ * and associated costs. The `maximumBitrate` must fall within the limits of the selected tier.
  */
 export class RouterOutputTier {
   /** Up to 100 Mbps */
@@ -164,12 +166,14 @@ export interface RouterOutputProps {
    * @default - Generated automatically
    */
   readonly routerOutputName?: string;
-  /** The maximum bitrate for the router output. */
+  /** The maximum bitrate for the router output. Must fall within the limits of the selected `tier`. */
   readonly maximumBitrate: Bitrate;
   /** Indicates whether the router output is configured for Regional or global routing. */
   readonly routingScope: RoutingScope;
   /**
-   * Select a tier based on your maximum bitrate requirements.
+   * Tier for this output. The tier determines the capacity limits, performance characteristics,
+   * and associated costs; `maximumBitrate` must fall within its limits.
+   *
    * @default RouterOutputTier.OUTPUT_20
    */
   readonly tier?: RouterOutputTier;
@@ -475,14 +479,11 @@ export interface StandardOutputConfigurationProps {
  */
 export interface MediaLiveInputConnectionProps {
   /**
-   * ARN of the MediaLive input to send output to.
-   *
-   * Note: This will change to accept an IInputRef (typed MediaLive Input reference)
-   * when the @aws-cdk/aws-medialive-alpha L2 construct is released.
+   * The MediaLive input to send output to (must be of type `medialive.InputConfiguration.mediaConnectRouter()`).
    */
-  readonly mediaLiveInputArn: string;
-  /** Pipeline ID for MediaLive input */
-  readonly mediaLivePipelineId: MediaLivePipeline;
+  readonly input: IInputRef;
+  /** MediaLive pipeline to send output to */
+  readonly pipeline: MediaLivePipeline;
   /**
    * Optional transit encryption configuration
    * @default - Automatic encryption will be used
@@ -560,20 +561,12 @@ export abstract class RouterOutputConfiguration {
    *
    * Use this when the MediaLive input already exists and you want to connect immediately.
    *
-   * @example
-   *
-   *    RouterOutputConfiguration.mediaLiveInput({
-   *      mediaLiveInputArn: 'arn:aws:medialive:us-east-1:123456789012:input:1234567',
-   *      mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
-   *    });
-   *
    * @param props MediaLive input connection properties
-   * @returns RouterOutputConfiguration instance for MediaLive setup with input connection
    */
   public static mediaLiveInput(props: MediaLiveInputConnectionProps): RouterOutputConfiguration {
     return new MediaLiveInputRouterOutputConfig({
-      mediaLiveInputArn: props.mediaLiveInputArn,
-      mediaLivePipelineId: props.mediaLivePipelineId,
+      mediaLiveInputArn: props.input.inputRef.inputArn,
+      mediaLivePipelineId: props.pipeline,
       destinationTransitEncryption: props.destinationTransitEncryption,
     });
   }
@@ -583,14 +576,7 @@ export abstract class RouterOutputConfiguration {
    *
    * Use this when you want to set up the router output before the MediaLive input exists.
    *
-   * @example
-   *
-   *    RouterOutputConfiguration.mediaLiveInputWithoutConnection({
-   *      availabilityZone: 'us-east-1a',
-   *    });
-   *
    * @param props MediaLive no input connection properties
-   * @returns RouterOutputConfiguration instance for MediaLive setup without input connection
    */
   public static mediaLiveInputWithoutConnection(props: MediaLiveNoInputConnectionProps): RouterOutputConfiguration {
     return new MediaLiveInputRouterOutputConfig(

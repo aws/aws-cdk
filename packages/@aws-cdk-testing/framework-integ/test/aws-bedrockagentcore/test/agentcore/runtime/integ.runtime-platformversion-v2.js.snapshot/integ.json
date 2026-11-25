@@ -1,0 +1,17 @@
+{
+  "version": "54.0.0",
+  "testCases": {
+    "BedrockAgentCoreRuntimePlatformVersionV2Test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-runtime-platformversion-v2"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "assertionStack": "BedrockAgentCoreRuntimePlatformVersionV2Test/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreRuntimePlatformVersionV2TestDefaultTestDeployAssertABF181C2"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1131.0"
+}

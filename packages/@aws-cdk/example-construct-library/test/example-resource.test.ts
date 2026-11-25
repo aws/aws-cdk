@@ -128,7 +128,7 @@ describe('Example Resource', () => {
           account: ['123456789012'],
           region: ['us-east-1'],
           detail: {
-            test: 'value',
+            test: ['value'],
           },
         },
       });
@@ -139,7 +139,7 @@ describe('Example Resource', () => {
         EventPattern: {
           detail: {
             'example-resource-name': [EXAMPLE_RESOURCE_NAME],
-            'test': 'value',
+            'test': ['value'],
           },
           account: ['123456789012'],
           region: ['us-east-1'],

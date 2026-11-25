@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "19ff5b24178a6ff18098330658641662b2a48a77f30eb344c7671190a6320908": {
+      "displayName": "integ-ecs-empty-load-balancers Template",
+      "source": {
+        "path": "integ-ecs-empty-load-balancers.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1f41282e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "19ff5b24178a6ff18098330658641662b2a48a77f30eb344c7671190a6320908.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

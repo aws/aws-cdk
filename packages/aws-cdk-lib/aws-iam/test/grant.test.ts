@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import { Template, Match } from '../../assertions';
-import { CfnResource, Resource, Stack } from '../../core';
+import { App, CfnResource, Resource, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 import * as iam from '../lib';
 
 let stack: Stack;
@@ -20,6 +21,117 @@ describe('IAM grant', () => {
     expect(grant.success).toBeFalsy();
     expect(grant.principalStatement).toBeUndefined();
     expect(grant.resourceStatement).toBeUndefined();
+  });
+});
+
+describe('Grant conditions', () => {
+  const conditions = {
+    StringEquals: { 'aws:SourceAccount': '111111111111' },
+    ArnLike: { 'aws:SourceArn': 'arn:aws:s3:::trusted-source-bucket' },
+  };
+
+  test.each([true, false])('addToPrincipalOrResource adds conditions to the resource policy (minimizePolicies=%s)', (minimize) => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.IAM_MINIMIZE_POLICIES]: minimize } });
+    const flagStack = new Stack(app, 'Stack');
+
+    // WHEN
+    iam.Grant.addToPrincipalOrResource({
+      actions: ['service:DoAThing'],
+      grantee: new iam.ServicePrincipal('bla.amazonaws.com'),
+      resourceArns: ['*'],
+      resource: new FakeResourceWithPolicy(flagStack, 'Buckaroo'),
+      conditions,
+    });
+
+    // THEN
+    Template.fromStack(flagStack).hasResourceProperties('CDK::Test::BuckarooPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 'service:DoAThing',
+          Effect: 'Allow',
+          Principal: { Service: 'bla.amazonaws.com' },
+          Resource: '*',
+          Condition: conditions,
+        }],
+      },
+    });
+  });
+
+  test('addToPrincipalOrResource adds conditions to the resource policy for a cross-account principal', () => {
+    // GIVEN
+    const crossAccountStack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
+    const role = iam.Role.fromRoleArn(crossAccountStack, 'Role', 'arn:aws:iam::222222222222:role/OtherRole');
+
+    // WHEN
+    iam.Grant.addToPrincipalOrResource({
+      actions: ['service:DoAThing'],
+      grantee: role,
+      resourceArns: ['*'],
+      resource: new FakeResourceWithPolicy(crossAccountStack, 'Buckaroo'),
+      conditions,
+    });
+
+    // THEN
+    Template.fromStack(crossAccountStack).hasResourceProperties('CDK::Test::BuckarooPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 'service:DoAThing',
+          Effect: 'Allow',
+          Principal: { AWS: 'arn:aws:iam::222222222222:role/OtherRole' },
+          Resource: '*',
+          Condition: conditions,
+        }],
+      },
+    });
+  });
+
+  test('addToPrincipalOrResource without conditions adds no condition to the resource policy', () => {
+    // WHEN
+    iam.Grant.addToPrincipalOrResource({
+      actions: ['service:DoAThing'],
+      grantee: new iam.ServicePrincipal('bla.amazonaws.com'),
+      resourceArns: ['*'],
+      resource: new FakeResourceWithPolicy(stack, 'Buckaroo'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('CDK::Test::BuckarooPolicy', {
+      PolicyDocument: {
+        Statement: [Match.objectLike({ Condition: Match.absent() })],
+      },
+    });
+  });
+
+  test.each([true, false])('addToPrincipalAndResource adds conditions to both policies (minimizePolicies=%s)', (minimize) => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.IAM_MINIMIZE_POLICIES]: minimize } });
+    const flagStack = new Stack(app, 'Stack');
+    const role = new iam.Role(flagStack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('bla.amazonaws.com'),
+    });
+
+    // WHEN
+    iam.Grant.addToPrincipalAndResource({
+      actions: ['service:DoAThing'],
+      grantee: role,
+      resourceArns: ['*'],
+      resource: new FakeResourceWithPolicy(flagStack, 'Buckaroo'),
+      conditions,
+    });
+
+    // THEN
+    const template = Template.fromStack(flagStack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [Match.objectLike({ Action: 'service:DoAThing', Condition: conditions })],
+      },
+    });
+    template.hasResourceProperties('CDK::Test::BuckarooPolicy', {
+      PolicyDocument: {
+        Statement: [Match.objectLike({ Action: 'service:DoAThing', Condition: conditions })],
+      },
+    });
   });
 });
 
@@ -143,16 +255,19 @@ function expectDependencyOn(id: string) {
 
 class FakeResourceWithPolicy extends Resource implements iam.IResourceWithPolicy {
   private readonly policy: CfnResource;
+  private readonly document = new iam.PolicyDocument();
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
     this.policy = new CfnResource(this, 'Policy', {
       type: 'CDK::Test::BuckarooPolicy',
+      properties: { PolicyDocument: this.document },
     });
   }
 
-  public addToResourcePolicy(_statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.document.addStatements(statement);
     return { statementAdded: true, policyDependable: this.policy };
   }
 }

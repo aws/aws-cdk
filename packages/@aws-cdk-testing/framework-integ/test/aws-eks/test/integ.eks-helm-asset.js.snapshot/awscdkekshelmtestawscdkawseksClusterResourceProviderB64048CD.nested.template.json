@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a746caeb230acdc3265185e86b9466a51c3ec22cffc1616d837969aabd69237.zip"
+     "S3Key": "77f2fbedf887c224c993e7147ddd23874b0cb3559499ab7f0652701e74fbe1c7.zip"
     },
     "Description": "/opt/nodejs/node_modules/proxy-agent"
    }
@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bfbae86c81618a2c2c677e2a4efb41c4825b00c39abc4536b486d92e99b944c8.zip"
+     "S3Key": "3df538280d4c04ec16c8bfb1e52e0d04ba7cf379642ab2d0cc13e677ec348188.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "bfbae86c81618a2c2c677e2a4efb41c4825b00c39abc4536b486d92e99b944c8.zip"
+     "S3Key": "3df538280d4c04ec16c8bfb1e52e0d04ba7cf379642ab2d0cc13e677ec348188.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {

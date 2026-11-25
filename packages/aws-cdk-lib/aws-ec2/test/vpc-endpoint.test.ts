@@ -929,6 +929,15 @@ describe('vpc endpoint', () => {
       });
     });
 
+    test('EKS_PROXY uses the com.amazonaws prefix in eusc-de-east-1', () => {
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'eusc-de-east-1' } });
+      new Vpc(stack, 'VPC').addInterfaceEndpoint('EksProxy', { service: InterfaceVpcEndpointAwsService.EKS_PROXY });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.eusc-de-east-1.eks-proxy',
+      });
+    });
+
     test.each([
       ['ecr.api', InterfaceVpcEndpointAwsService.ECR],
       ['ecr.dkr', InterfaceVpcEndpointAwsService.ECR_DOCKER],
@@ -1185,6 +1194,30 @@ describe('vpc endpoint', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
         ServiceName: 'com.amazonaws.us-west-2.application-autoscaling',
+      });
+    });
+
+    test('test sso vpc interface endpoints in us-west-2', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('SSO Endpoint', {
+        service: InterfaceVpcEndpointAwsService.IAM_IDENTITY_CENTER_SSO,
+      });
+
+      vpc.addInterfaceEndpoint('SSO OAuth Endpoint', {
+        service: InterfaceVpcEndpointAwsService.IAM_IDENTITY_CENTER_SSO_OAUTH,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.sso',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.us-west-2.sso-oauth',
       });
     });
 
