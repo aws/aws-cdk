@@ -1,50 +1,36 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — how to rate a finding BLOCKING or RECOMMENDED by the harm it does, and how a rule's conditional severity reads; which sources to cite and in what order; the exact file and line a finding points to; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; which sources to cite and in what order; the exact file and line a finding points to; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
 
-## Severity — rate by the harm it does when it triggers
+## Severity
 
-Ask one question of every finding: **if this ships and the code path is reached, what
-breaks, and how badly?** That answer sets the tier. Two tiers, keyed to the *kind* of
-harm:
+A finding takes the tier of the rule it cites: the tier in the rule's header, or the tier its Tier
+line gives when that line's condition holds.
 
-- **BLOCKING** — something concretely breaks: data is lost, a security boundary opens, a
-  customer's stack fails or silently does the wrong thing.
-  Must be fixed before merge.
-- **RECOMMENDED** — nothing breaks today, but the change leaves a permission or default
-  wider than the code needs, a maintainability cost, or a trap a later reader would act on.
-  Should be fixed before merge; does not block it.
+- **BLOCKING** — must be fixed before merge.
+- **RECOMMENDED** — should be fixed before merge.
 
-A finding's `severity` field takes exactly one of these two words — `BLOCKING` /
-`RECOMMENDED`. A rule with a conditional severity is one rule: its
-header carries the primary severity, and its body states when it is BLOCKING or RECOMMENDED instead.
+The `severity` field takes one of these two words.
 
-### Calibrate the harm honestly
+- **Confidence is not severity.** Keep the rule's tier even when you are unsure the path is
+  reached.
+- **Politeness is not severity.** Keep the tier however the comment is worded: a BLOCKING
+  finding raised as a gentle question — "Can we scope this to a specific ARN?" — is still
+  BLOCKING.
 
-The tier is right only if you rate the harm honestly. Check four things:
+## When a defect is a finding
 
-- **Confidence is not severity.** Rate by the harm *when* the path is reached, however sure
-  you are that it is reached. A concrete failure mechanism is BLOCKING or RECOMMENDED by
-  how much it affects.
-- **Politeness is not severity.** A blocking issue raised as a gentle question — "Can we
-  scope this to a specific ARN?" — still blocks. Rate the harm the change asserts.
 - **No harm, no finding.** Clean code reports nothing. A change that merely *mentions* IAM,
   encryption, or a secret is not a finding; a concrete new harm is. Turning a non-finding into
   a low-severity finding is the most common way a review posts findings it should not. A defect
   is a finding only when you can name its harm: something that breaks, a security boundary that
   opens, a permission or default wider than the code needs, a maintainability cost, or a trap
   a later reader would act on.
-- **Only harm this PR introduces.** Rate what the diff adds or changes. A pre-existing
+- **Only harm this PR introduces.** Review what the diff adds or changes. A pre-existing
   wildcard the PR merely moved does zero *new* harm → not a finding.
-
-When the finding is that the change violates a rule in the aws-cdk repo's own guides
-(`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
-harm set the tier: a rule naming data loss or an opened security boundary → BLOCKING; a
-rule stated as a preference → RECOMMENDED. Cite the rule by file + section and
-quote it, so the author sees the authority.
 
 ## What every finding carries
 

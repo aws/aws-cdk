@@ -29,10 +29,9 @@ Work the changed surface in this order; adapt to what the diff touches.
    (step 1), check each control the change needs. Confirm the service supports the control before flagging
    its absence.
 
-3. **Rate by harm and stop.** Rate each finding by the impact if the exposure is reached, on the
-   `cdk-review-principles` BLOCKING/RECOMMENDED scale ("Confidence is not severity", "Politeness is
-   not severity"). Rate a concrete exposure at that impact even when you are unsure a caller reaches it.
-   Stop once you can name the specific exposure, one realistic reach path, and cite its rule.
+3. **Take the tier from the rule and stop.** Give each finding the tier of the rule it cites, per
+   `cdk-review-principles` "Severity", even when you are unsure a caller reaches the exposure. Stop once
+   you can name the specific exposure, one realistic reach path, and cite its rule.
 
 ## What not to flag
 

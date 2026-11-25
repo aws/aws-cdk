@@ -27,11 +27,11 @@ Work the changed surface in this order. Adapt it to what the diff touches.
    whether the integ test asserts it on the deployed resources, not only that the stack deploys. Then
    judge the integ tests and snapshots it adds or changes by the integration rows.
 
-3. **Rate by harm and stop.** Rate each finding by the harm if the untested behavior regresses, per
-   `cdk-review-principles` — rate a concrete gap at that harm even when you are unsure it fires. When
-   several gaps stem from one test, classify under the best-fitting rule and describe them together. When
-   the tests would catch a break, or no test is needed, raise nothing. Stop once you can name the gap and cite
-   its rule.
+3. **Take the tier from the rule and stop.** Give each finding the tier of the rule it cites, per
+   `cdk-review-principles` "Severity", even when you are unsure the gap would be hit. When several gaps
+   stem from one test, classify under the best-fitting rule and describe them together. When the tests
+   would catch a break, or no test is needed, raise nothing. Stop once you can name the gap and cite its
+   rule.
 
 Before you cite an integ-test pattern, an `assertions` / `integ-tests` API as misused, or a required
 pattern as absent, search and read the CDK testing guide and the module README available to you and

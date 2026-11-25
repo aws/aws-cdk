@@ -9,8 +9,8 @@ Give each finding these fields:
   A single-line finding sets both to that line.
 - `category` — the heading the finding's rule sits under in the dimension's rules;
   when the dimension skill lists its own `category` values, one of those.
-- `severity` — one of `BLOCKING` / `RECOMMENDED`, defined in `SKILL.md` "Severity — rate
-  by the harm it does when it triggers". The only severity vocabulary.
+- `severity` — `BLOCKING` or `RECOMMENDED`: the tier of the rule the finding cites, as `SKILL.md`
+  "Severity" defines it. The only severity vocabulary.
 - `ruleId` — the stable `[id]` of the rule that fired, taken verbatim from the dimension's
   rules. The debug/trace key: it names exactly which rule produced the finding.
 - `message` — the human-visible comment text (see the next section).

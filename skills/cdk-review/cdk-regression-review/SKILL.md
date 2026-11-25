@@ -25,10 +25,9 @@ Work the changed surface rules-first. Adapt it to what the diff touches.
    violating, and what is required but missing. The required-but-missing scan catches an omission the
    changed lines don't show. Enumerate what the change needs; flag each required item that is absent.
 
-3. **Rate by harm and stop.** Rate every finding by the harm when its mechanism triggers, per
-   `cdk-review-principles` (its severity scale, "Confidence is not severity") — rate a concrete regression
-   or break at that harm even when you doubt it fires. Stop once you can name the mechanism and cite its
-   rule.
+3. **Take the tier from the rule and stop.** Give every finding the tier of the rule it cites, per
+   `cdk-review-principles` "Severity", even when you doubt the mechanism fires. Stop once you can name
+   the mechanism and cite its rule.
 
 ## What not to flag
 

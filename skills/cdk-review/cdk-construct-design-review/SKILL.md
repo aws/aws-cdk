@@ -28,12 +28,11 @@ Work the changed surface in this order; adapt to what the diff touches.
    docs, and confirm the CDK framework doesn't already auto-wire it. Rate a missing affordance exactly as a
    declared defect.
 
-3. **Rate by harm and stop.** Rate every finding by the cost of shipping the shape, per
-   `cdk-review-principles` ("Confidence is not severity"); rate a wrong abstraction, an L1 leak, or a
-   trap that leads users into a mistake at that cost even when you are unsure it fires. When several
-   defects share one code cause, give one finding with the `ruleId`, `category` and `severity` of its most
-   severe defect, since each field takes one value. Stop once you can name the defect and cite its rule —
-   file + section.
+3. **Take the tier from the rule and stop.** Give every finding the tier of the rule it cites, per
+   `cdk-review-principles` "Severity", even when you are unsure it fires. When several defects share one
+   code cause, give one finding with the `ruleId`, `category` and `severity` of its most severe defect,
+   since each field takes one value. Stop once you can name the defect and cite its rule — file +
+   section.
 
 ## What not to flag
 
