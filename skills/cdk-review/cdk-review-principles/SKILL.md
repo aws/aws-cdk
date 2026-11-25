@@ -20,9 +20,8 @@ path is reached, and however the comment is worded.
 
 A defect is a finding when you can state its impact and the PR introduces it:
 
-- **Impact** — what goes wrong if it ships: something breaks, a security boundary opens, a
-  permission or default is wider than the code needs, maintenance gets costlier, or a later
-  reader would act on a trap. Judge what the change does, whatever topic it touches.
+- **Impact** — what goes wrong for a user or a maintainer if it ships. Judge what the change
+  does, whatever topic it touches.
 - **Introduced by this PR** — it is in what the diff adds or changes; code the PR only moved
   counts as unchanged.
 
