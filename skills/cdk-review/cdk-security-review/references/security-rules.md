@@ -102,10 +102,6 @@ The value still lands in the template, recoverable via `cloudformation:GetTempla
 `lambda:GetFunctionConfiguration`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
 
-**[SEC-SECRET-TYPE] (RECOMMENDED)** — A secret-shaped prop (`password`, `*token*`) typed as a plain
-`string` instead of `SecretValue` signals that embedding the secret in code/template is acceptable. See
-[`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
-
 ## Secure defaults
 
 **[SEC-DEFAULT-FLIP] (BLOCKING)** — A default changed to be less secure when the PR introduces it:
