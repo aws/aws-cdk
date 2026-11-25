@@ -104,9 +104,7 @@ structured finding fields and how to write each one before you generate findings
 - **Cosmetics** — typos, comment/docstring wording, whitespace, formatting, naming
   preferences, idiom choices, test-title / `test.each` label strings. A misspelled comment
   breaks nothing.
-- **Outside this dimension's scope** — a defect that belongs to a different review
-  dimension is not yours to flag; each dimension reviews independently, so leave it rather
-  than report it here.
+- **A defect none of your rules describes** — raise only what one of your rules describes.
 - **Release-tooling / monorepo markers** — `0.0.0` workspace or alpha versions, `V2NEXT`
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
