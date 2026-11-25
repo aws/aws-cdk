@@ -30,6 +30,9 @@ example is a design miss. See
 **[CD-PROPS-SHAPE] (BLOCKING)** — Props must be flat, concise, and strongly typed (construct
 interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`). See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
+- **Tier:** RECOMMENDED for props valid only together that are left as separate props (one nested object),
+  and for props that exclude each other (factory methods or an enum-like class). See
+  [`AGENTS_CONSTRUCT_DESIGN.md § Property Structure`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#property-structure-flat-vs-nested).
 
 **[CD-PROPS-DEFAULT] (BLOCKING)** — A `@default` that contradicts what the code does is a real
 behavioral surprise. See
