@@ -1,0 +1,47 @@
+{
+ "Resources": {
+  "TopicBFC7AF6E": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "TopicName": "integ-stackset-nested-stack-topic"
+   }
+  },
+  "TopicPolicyA1747468": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:GetTopicAttributes",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::12345678:root"
+          ]
+         ]
+        }
+       },
+       "Resource": {
+        "Ref": "TopicBFC7AF6E"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "TopicBFC7AF6E"
+     }
+    ]
+   }
+  }
+ }
+}

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { Construct } from 'constructs';
@@ -2173,6 +2174,83 @@ describe('nested stacks in a StackSet', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFormation::StackSet', {
       Parameters: [{ ParameterKey: stackSetParameter, ParameterValue: { 'Fn::GetAtt': [Match.stringLikeRegexp('^AuditRole'), 'Arn'] } }],
     });
+  });
+
+  /**
+   * The logical ID of the only copy job of the file assets of a StackSet
+   */
+  function onlyCopyJob(template: Template): string {
+    const copies = Object.keys(template.findResources('Custom::CDKBucketDeployment'));
+    expect(copies).toHaveLength(1);
+    return copies[0];
+  }
+
+  /**
+   * The logical ID of the policy of the function that copies the file assets of a StackSet
+   */
+  function copyFunctionPolicy(template: Template): string {
+    const policies = Object.keys(template.findResources('AWS::IAM::Policy', {
+      Properties: { PolicyName: Match.stringLikeRegexp('^CustomCDKBucketDeployment') },
+    }));
+    expect(policies).toHaveLength(1);
+    return policies[0];
+  }
+
+  test('the StackSet waits for the nested template to be copied to the asset buckets', () => {
+    const { stack, nested } = stackSetWithNestedStack();
+    new sns.Topic(nested, 'Topic');
+
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::CloudFormation::StackSet', {
+      DependsOn: Match.arrayWith([onlyCopyJob(template)]),
+    });
+  });
+
+  test('the function that copies the nested template waits for its permissions', () => {
+    const { stack, nested } = stackSetWithNestedStack();
+    new sns.Topic(nested, 'Topic');
+
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::Lambda::Function', {
+      Properties: { Handler: 'index.handler' },
+      DependsOn: Match.arrayWith([copyFunctionPolicy(template)]),
+    });
+  });
+
+  test('the StackSet waits for the template of a nested stack in a nested stack to be copied', () => {
+    const { stack, nested } = stackSetWithNestedStack();
+    new sns.Topic(new NestedStack(nested, 'Inner'), 'Topic');
+
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::CloudFormation::StackSet', {
+      DependsOn: Match.arrayWith([onlyCopyJob(template)]),
+    });
+  });
+
+  test('a StackSet in a nested stack waits for its nested template to be copied, and the template of the nested stack is hashed with it', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Admin');
+    const host = new NestedStack(stack, 'Host');
+    const stackSet = new StackSet(host, 'StackSet', {
+      assetBuckets: [s3.Bucket.fromBucketName(host, 'AssetBucket', 'prefix-us-east-1')],
+      assetBucketPrefix: 'prefix',
+    });
+    new sns.Topic(new NestedStack(stackSet, 'Nested'), 'Topic');
+
+    const assembly = app.synth();
+
+    const hostTemplate = Template.fromStack(host);
+    hostTemplate.hasResource('AWS::CloudFormation::StackSet', {
+      DependsOn: Match.arrayWith([onlyCopyJob(hostTemplate)]),
+    });
+    hostTemplate.hasResource('AWS::Lambda::Function', {
+      Properties: { Handler: 'index.handler' },
+      DependsOn: Match.arrayWith([copyFunctionPolicy(hostTemplate)]),
+    });
+    // The asset hash of the template of the host covers the dependencies
+    const assets = JSON.parse(fs.readFileSync(path.join(assembly.directory, 'Admin.assets.json'), 'utf-8')).files;
+    const [hash] = Object.entries(assets).find(([, file]: [string, any]) => file.source.path === host.templateFile)!;
+    expect(hash).toEqual(crypto.createHash('sha256').update(JSON.stringify(hostTemplate.toJSON())).digest('hex'));
   });
 
   test('fails without asset buckets', () => {

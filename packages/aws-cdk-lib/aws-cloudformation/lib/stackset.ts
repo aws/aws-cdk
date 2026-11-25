@@ -27,6 +27,7 @@ import type { IArrayBox, IBox, IMapBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { reifyConstructDependencies } from '../../core/lib/private/deps';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { undefinedIfAllValuesAreEmpty } from '../../core/lib/util';
@@ -1269,6 +1270,13 @@ export class StackSet extends Stack implements IStackSet {
         displayName: `${this.node.path} Template`,
       }).httpUrl);
     }
+
+    // The copy jobs of the file assets of the nested stacks in this StackSet are created while
+    // their templates are prepared, which is after the app applied the construct dependencies.
+    // Apply them again in the host stack, so the StackSet waits for its assets to be copied and
+    // the copy jobs wait for their permissions. Do this before the template of the host stack is
+    // hashed, in case the host stack is a nested stack. Applying a dependency again has no effect.
+    reifyConstructDependencies(this.hostStack);
 
     return this.resource;
   }
