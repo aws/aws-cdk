@@ -45,5 +45,5 @@ JSII-related risks, Undefined regressions, API Surface Change, Behavior Change.
 ## Apply cdk-review-principles
 
 Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED severity
-scale, the baseline-vs-excellence distinction, the evidence and citation authority order, the `file:line`
-discipline, the finding format, and the bar a finding must meet.
+scale, the evidence and citation authority order, the `file:line` discipline, the finding format, and the
+bar a finding must meet.

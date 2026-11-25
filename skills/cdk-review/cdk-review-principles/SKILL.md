@@ -56,11 +56,6 @@ harm set the tier: a rule naming data loss or an open boundary is damage → BLO
 rule stated as a preference is decay → RECOMMENDED. Cite the rule by file + section and
 quote it, so the author sees the authority.
 
-Keep **baseline** harm (correctness, security, compliance — must fix) separate from
-**excellence** framing (design that takes a change from correct to better). Grade
-excellence on the harm scale like any finding, against the same bar. Report one piece of
-code once, as a must-fix or as a design nicety; reporting it as both double-counts it.
-
 ## Make each finding land
 
 A correctly-rated finding still has to be actionable. Every finding carries a location and evidence, and

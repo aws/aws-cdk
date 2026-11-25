@@ -55,5 +55,5 @@ interface quality.
 ## Apply cdk-review-principles
 
 Apply the shared `cdk-review-principles` skill for the canonical BLOCKING/RECOMMENDED scale, the
-baseline-vs-excellence distinction, the citation authority order, the `file:line` discipline, the finding
-format, and the bar a finding must meet.
+citation authority order, the `file:line` discipline, the finding format, and the bar a finding must
+meet.
