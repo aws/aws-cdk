@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; how to verify a fact before posting; which sources to cite and in what order; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule it cites, including a rule's Tier line; when a defect is a finding; how to verify a fact before posting and which source to cite for it; when to offer a fix; the bar a finding must meet to be posted; the reviewer's tone; what no dimension flags; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, rating a finding's severity, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -29,16 +29,11 @@ path is reached, and however the comment is worded.
 
 ## Verification
 
-Before you post, confirm the fact the finding turns on by reading its source: for how a service
-behaves, search and read the AWS documentation available to you; for what CDK's API does, the
-code; for what a guide says, the guide. Cite the page you read in `reference`.
-
-## Evidence
-
-Cite the source that shows the defect, strongest first: AWS documentation, CDK source code, the
-CDK design guidelines, the CloudFormation resource specification, the linked issue or PR
-discussion, existing tests. When the code and the AWS documentation disagree, report the
-disagreement and cite both.
+Before you post, confirm the fact the finding turns on by reading its source, and cite that source
+in `reference`: the AWS documentation available to you (search it) for how a service behaves, the
+CloudFormation resource specification for a property or enum value, the CDK code for what the
+library does, the guide for a CDK rule. When the code and the AWS documentation disagree, cite
+both.
 
 ## Suggested fix
 
