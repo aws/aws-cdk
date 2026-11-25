@@ -70,12 +70,9 @@ deprecate-and-add (`FooV2`), not mutate. See
 - **Tier:** RECOMMENDED for an implementation-detail type left exported instead of `@internal`.
 - **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface.
 
-**[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop mapping to a CloudFormation property whose
-`UpdateType` is `Immutable` (or `Conditional`): setting it later triggers a CloudFormation replacement. On
-a stateful resource — database, table, bucket, EFS, DynamoDB, OpenSearch, EBS volume, Secret, KMS key —
-that replacement destroys the user's data, so the L2 should guard the prop:
-validate it, warn on change, or document the replacement risk. Verify the update behavior against the
-CloudFormation resource specification before you flag. See
+**[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop on a stateful resource that maps to a
+CloudFormation property requiring replacement, whose JSDoc does not say that changing it replaces the
+resource. See
 [CloudFormation § Update behaviors — Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
 for the update-behavior classes and
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy)
