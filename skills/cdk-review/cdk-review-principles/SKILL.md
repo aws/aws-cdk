@@ -14,8 +14,8 @@ line gives when that line's condition holds.
 - **RECOMMENDED** — should be fixed before merge.
 
 The `severity` field takes one of these two words. A finding that rests on a guide line alone is
-RECOMMENDED. A Tier line's tier applies once you have confirmed its condition; until then the lower tier
-applies. The tier stays the same however the comment is worded.
+RECOMMENDED. A Tier line's tier applies once you have confirmed its condition; until then the header's
+tier applies. The tier stays the same however the comment is worded.
 
 ## When a defect is a finding
 
