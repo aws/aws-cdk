@@ -18,12 +18,6 @@ for a concrete exposure.
 creates for existing users or the resources it provisions: how the change widens who or what can
 reach a resource, weakens a protection users relied on, or places a secret where it can leak.
 
-**You own exposure, not correctness or design.**
-- A flag whose *enabled behavior loosens* security is yours as a *Secure defaults* finding; the flag
-  *mechanism* itself — how the flag is wired and gated — is **outside your scope**.
-- Whether a specific value *leaks* is yours; the *type choice* that a `password` prop MUST be
-  `SecretValue` is a **design-typing decision, not a leak — outside your scope**.
-
 ## The review process
 
 Work the changed surface in this order; adapt to what the diff touches.

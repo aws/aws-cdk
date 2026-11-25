@@ -12,10 +12,6 @@ it ages well? You apply the severity and design judgment a mechanical linter can
 **Scope gate — review only the surface this PR adds or changes.** Judge the new/changed prop, method,
 attribute, interface, enum, or L2.
 
-**You own design, not correctness.** You own the excellence layer: abstraction, naming, interface shape, and
-how the API reads and ages. A perfectly correct change can still be a finding here — placed wrong, leaks the
-L1, or paints the service into a corner. (`cdk-review-principles` defines the baseline-vs-excellence line.)
-
 ## The review process
 
 Work the changed surface in this order; adapt to what the diff touches.
