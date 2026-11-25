@@ -37,8 +37,8 @@ The tier is right only if you rate the harm honestly. Check four things:
   is a finding only when you can name its harm: something that breaks, a security boundary that
   opens, a permission or default wider than the code needs, a maintainability cost, or a trap
   a later reader would act on.
-- **Only harm this PR introduces.** A pre-existing wildcard the PR merely moved does zero
-  *new* harm → not a finding. Rate what the diff adds.
+- **Only harm this PR introduces.** Rate what the diff adds or changes. A pre-existing
+  wildcard the PR merely moved does zero *new* harm → not a finding.
 
 When the finding is that the change violates a rule in the aws-cdk repo's own guides
 (`AGENTS.md`, `CONTRIBUTING.md`, the `docs/AGENTS_*` guides), let the rule's own stated
@@ -99,20 +99,14 @@ property with no `@default` (see
 See [`references/pr-comment-format.md`](references/pr-comment-format.md) for the
 structured finding fields and how to write each one before you generate findings.
 
-## What not to flag — the shared exclusions
+## What not to flag
 
-Every dimension skill applies these five exclusions on top of its own. None is a finding,
-at any severity:
-
-- **Pre-existing / not introduced by this PR** — if the diff did not add or change it, the
-  problem is not this PR's; do not flag it.
 - **Cosmetics** — typos, comment/docstring wording, whitespace, formatting, naming
   preferences, idiom choices, test-title / `test.each` label strings. A misspelled comment
   breaks nothing.
 - **Outside this dimension's scope** — a defect that belongs to a different review
   dimension is not yours to flag; each dimension reviews independently, so leave it rather
   than report it here.
-- **A clean change** — when the changed surface is clean, report nothing.
 - **Release-tooling / monorepo markers** — `0.0.0` workspace or alpha versions, `V2NEXT`
   changelog placeholders, maturity banners; flag one only if you have verified the specific
   value is actually wrong.
