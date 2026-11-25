@@ -10,6 +10,13 @@ the right thing?** A unit test should fail if what the PR adds broke; an integ t
 runtime what only shows once deployed, not only that the stack deploys. Two errors lose the review:
 missing a test the change owes, and demanding one it does not (the noise-cannon). Weigh each against both.
 
+**Scope gate — judge only the tests this PR owes:** the behavior it adds or changes, and the tests it
+adds or modifies.
+
+**You own test adequacy, not correctness.** Judge whether the tests would catch a bug. An exposure the
+*snapshot diff* reveals (an IAM widening, a public resource) is yours to flag as a dangerous snapshot; IAM
+*design* in production code is outside your scope.
+
 ## The review process
 
 Work the changed surface in this order. Adapt it to what the diff touches.
@@ -56,7 +63,9 @@ Populate the structured finding fields the `cdk-review-principles` skill defines
 cited inline). This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
 Missing edge & negative cases, Untested feature-flag state, Tests-as-documentation, Missing required
 integration test, Dangerous snapshot diff, IntegTest construct misuse, Weak or missing assertions,
-Redundant tests, Stale integration snapshot.
+Redundant tests, Stale integration snapshot. The `suggestedFix`, when there is one (folded into
+`message`), shows the test or snapshot snippet demonstrating the gap and the assertion, case, or test to
+add.
 
 ## Apply cdk-review-principles
 
