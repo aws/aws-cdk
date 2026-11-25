@@ -7,8 +7,7 @@ Give each finding these fields:
 - `file` — repo-relative path of the file the finding is on.
 - `lineRange: { startLine, endLine }` — the line or line span the finding is about.
   A single-line finding sets both to that line.
-- `category` — the heading the finding's rule sits under in the dimension's rules;
-  when the dimension skill lists its own `category` values, one of those.
+- `category` — the heading the finding's rule sits under in the dimension's rules.
 - `severity` — `BLOCKING` or `RECOMMENDED`: the tier of the rule the finding cites, as `SKILL.md`
   "Severity" defines it. The only severity vocabulary.
 - `ruleId` — the stable `[id]` of the rule that fired, taken verbatim from the dimension's

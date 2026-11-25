@@ -37,9 +37,3 @@ Apply `cdk-review-principles` for severity, evidence and the finding format.
 - **Mechanical / tooling-driven snapshot churn** — asset hashes, CDK-version strings, bootstrap /
   metadata-only diffs with no semantic change to a resource's type, logical ID, or a real property. Read
   the diff; flag it only if a real property changed.
-
-## Output
-
-This dimension's `category` is one of: Non-asserting test, Missing regression-catching test,
-Missing edge & negative cases, Untested feature-flag state, Missing required integration test, Dangerous
-snapshot diff, IntegTest construct misuse, Weak or missing assertions, Stale integration snapshot.

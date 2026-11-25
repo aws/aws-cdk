@@ -27,8 +27,3 @@ severity, evidence and the finding format.
 - **Performance and dependency-range opinions** — a micro-optimization or performance opinion with no
   measured regression; a dependency-range bump (`glob ^7 → ^11`) unless you can show it raises a floor
   CDK ships against and thereby breaks existing consumers.
-
-## Output
-
-This dimension's `category` is one of: Input validation, Token issues, JSII-related risks, Undefined
-regressions, API Surface Change, Behavior Change.

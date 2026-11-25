@@ -37,8 +37,3 @@ users into mistakes, and open to extension later without breaking its users? App
   secret prop MUST be `SecretValue` stays yours; whether a policy is over-broad is outside your scope.
 - **Test/doc prose quality** — test design and README/JSDoc wording. Whether a new L2 has a README usage
   example *at all* is a design signal you keep; grading its prose is outside your scope.
-
-## Output
-
-This dimension's `category` is one of: Feature placement & abstraction, Design Guidelines conformance,
-Clarity/simplicity/consistency, Misuse traps & extensibility.
