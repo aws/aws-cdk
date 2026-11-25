@@ -13,13 +13,8 @@ line gives when that line's condition holds.
 - **BLOCKING** — must be fixed before merge.
 - **RECOMMENDED** — should be fixed before merge.
 
-The `severity` field takes one of these two words.
-
-- **Confidence is not severity.** Keep the rule's tier even when you are unsure the path is
-  reached.
-- **Politeness is not severity.** Keep the tier however the comment is worded: a BLOCKING
-  finding raised as a gentle question — "Can we scope this to a specific ARN?" — is still
-  BLOCKING.
+The `severity` field takes one of these two words. Keep the rule's tier when you are unsure the
+path is reached, and however the comment is worded.
 
 ## When a defect is a finding
 
