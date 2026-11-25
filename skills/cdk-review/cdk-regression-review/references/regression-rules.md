@@ -2,10 +2,10 @@
 
 ## Input validation
 
-**[REG-VALIDATION-FALSE-POSITIVE] (BLOCKING)** — New validation must not reject a value CDK accepts
-today, meaning input that deploys successfully; an over-strict check turns a working stack into one that
-stops synthesizing. Confirm the real constraint against the authoritative AWS service docs before you
-raise it. See
+**[REG-VALIDATION-FALSE-POSITIVE] (BLOCKING)** — New validation in a stable module must not reject a value
+CDK accepts today, meaning input that deploys successfully; an over-strict check turns a working stack into
+one that stops synthesizing. Confirm the real constraint against the authoritative AWS service docs before
+you raise it. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for new validation on existing constructs.
 - **Detection:** for each new rejection, name one concrete input that deployed before
