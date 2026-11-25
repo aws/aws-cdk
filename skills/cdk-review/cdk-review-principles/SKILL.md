@@ -13,15 +13,17 @@ line gives when that line's condition holds.
 - **BLOCKING** — must be fixed before merge.
 - **RECOMMENDED** — should be fixed before merge.
 
-The `severity` field takes one of these two words. A Tier line's tier applies once you have
-confirmed its condition; until then the header's tier applies. The tier stays the same however the
-comment is worded.
+The `severity` field takes one of these two words. A finding that rests on a guide line alone is
+RECOMMENDED. A Tier line's tier applies once you have confirmed its condition; until then the header's
+tier applies. The tier stays the same however the comment is worded.
 
 ## When a defect is a finding
 
 A defect is a finding when all of these hold:
 
-- **A rule describes it** — one of your rules.
+- **A rule or a guide requires it** — one of your rules states this case, or a line in a guide under
+  "Sources" requires what the finding asks for, and the finding quotes that line. Cite a rule only for
+  the case it states.
 - **Impact** — you can state what goes wrong for a user or a maintainer if it ships: something
   fails, does the wrong thing, or costs later work. Judge the change by its effect.
 - **Introduced by this PR** — it is in what the diff adds or changes; code the PR only moved counts
@@ -63,3 +65,5 @@ Public aws/aws-cdk `main` guidance:
   and the agent-optimized
   [`docs/AGENTS_CONSTRUCT_DESIGN.md`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md)
   / [`docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md) — CDK API design conventions.
+- [`INTEGRATION_TESTS.md`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md) — when
+  integration tests are required and how to write them.
