@@ -37,11 +37,6 @@ import * as cfn from 'aws-cdk-lib/aws-cloudformation';
  *  - `CDK_INTEG_REGION` (or `CDK_DEFAULT_REGION`): the region of the stack that contains the StackSet
  *  - `INTEG_ASSET_TARGET_REGION` (default `us-west-2`): the region the StackSet deploys to, which
  *    must differ from the region of the stack that contains the StackSet
- *
- * The roles and stacks have other names than those of `integ.stack-set.ts`, so both tests can be
- * deployed into the same accounts.
- *
- * The snapshot must be recorded by a real deployment of this test.
  */
 
 const deploymentAccount = process.env.CDK_INTEG_ACCOUNT ?? process.env.INTEG_DEPLOYMENT_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT;

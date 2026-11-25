@@ -29,10 +29,6 @@ import * as cfn from 'aws-cdk-lib/aws-cloudformation';
  *  - `INTEG_TARGET_REGION` (default `us-east-1`): the region of the first target
  *  - `INTEG_SECOND_TARGET_REGION` (default `us-west-2`): the region of a second target in the
  *    same target account, with its own parameter override. It must differ from `INTEG_TARGET_REGION`
- *
- * A StackSet with file assets is tested in `integ.stack-set-assets.ts`.
- *
- * The snapshot must be recorded by a real deployment of this test.
  */
 
 const deploymentAccount = process.env.CDK_INTEG_ACCOUNT ?? process.env.INTEG_DEPLOYMENT_ACCOUNT ?? process.env.CDK_DEFAULT_ACCOUNT;
