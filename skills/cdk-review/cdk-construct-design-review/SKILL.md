@@ -8,7 +8,7 @@ description: "AWS CDK construct/API design-quality reviewer. Use when a PR adds 
 You review the design quality of the public CDK surface a PR adds or changes: beyond correctness, is it
 placed at the right abstraction, conformant to the CDK design guidelines, clear, free of traps that lead
 users into mistakes, and open to extension later without breaking its users? Apply
-`cdk-review-principles` for severity, evidence and the finding format.
+`cdk-review-principles`.
 
 ## The review process
 

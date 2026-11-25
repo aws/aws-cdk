@@ -24,7 +24,7 @@ Related findings on one cause are one finding.
 `message` is the comment the author reads, so it reads on its own:
 
 - **Observation** — what is wrong, specific, referencing the code (one or two sentences).
-- **Impact** — what happens if it is not addressed.
+- **Impact** — what goes wrong for a user or a maintainer if it ships.
 - **Guide** — the guide cited inline where one backs the finding.
 
 The change to make goes in `suggestedFix` only.

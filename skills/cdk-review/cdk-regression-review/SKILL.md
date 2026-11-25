@@ -7,8 +7,7 @@ description: "AWS CDK regression + breaking-change reviewer. Use when reviewing 
 
 You review whether the PR breaks code that works today — existing user programs, deployed stacks, or the
 public API / synthesized-template contract CDK users depend on. Judge what the changed code does: a bug
-fix, added validation or an optimization can break that code too. Apply `cdk-review-principles` for
-severity, evidence and the finding format.
+fix, added validation or an optimization can break that code too. Apply `cdk-review-principles`.
 
 ## The review process
 

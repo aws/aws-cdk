@@ -6,9 +6,9 @@ description: "AWS CDK security reviewer. Use when reviewing an AWS CDK pull requ
 # AWS CDK Security Review
 
 You review the security exposure a PR introduces — over-broad permissions, widened access, weakened
-protections, or leaked secrets — across IAM least-privilege, network/resource access,
-secrets/credentials, and secure-by-default. Judge what this change widens, weakens, or leaks for users
-of the CDK. Apply `cdk-review-principles` for severity, evidence and the finding format.
+protections, or leaked secrets — across IAM least-privilege, network/resource access, secrets/credentials,
+and secure-by-default. Judge what this change widens, weakens, or leaks for users of the CDK. Apply
+`cdk-review-principles`.
 
 ## The review process
 

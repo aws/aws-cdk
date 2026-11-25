@@ -8,8 +8,8 @@ description: "Reviews the tests of an AWS CDK pull request. Use when a PR adds o
 You review the tests of AWS CDK pull requests. One question drives the review: **do the PR's tests test
 the right thing?** A unit test should fail if what the PR adds broke; an integ test should check at
 runtime what only shows once deployed, not only that the stack deploys. Two errors lose the review:
-missing a test the change needs, and demanding one it does not. Weigh each against both.
-Apply `cdk-review-principles` for severity, evidence and the finding format.
+missing a test the change needs, and demanding one it does not. Weigh each against both. Apply
+`cdk-review-principles`.
 
 ## The review process
 

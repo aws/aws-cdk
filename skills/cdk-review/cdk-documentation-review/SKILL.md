@@ -6,10 +6,10 @@ description: "AWS CDK documentation reviewer. Use when a PR adds or changes READ
 # AWS CDK Documentation Review
 
 You review the README and JSDoc a PR adds or changes and raise the cases the rules below describe. Apply
-`cdk-review-principles` for severity, evidence and the finding format. Suggest text that is concise and
-easy to understand: the shortest wording that fixes the defect. For a wrong statement, correct the wrong
-words or remove the claim. When one location has more than one doc defect, describe them in one finding
-with the `ruleId`, `category` and `severity` of the most severe one, since each field takes one value.
+`cdk-review-principles`. Suggest text that is concise and easy to understand: the shortest wording that
+fixes the defect. For a wrong statement, correct the wrong words or remove the claim. When one location
+has more than one doc defect, describe them in one finding with the `ruleId`, `category` and `severity` of
+the most severe one, since each field takes one value.
 
 ## README examples
 
