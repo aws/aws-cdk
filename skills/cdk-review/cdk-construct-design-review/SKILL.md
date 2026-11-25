@@ -25,8 +25,8 @@ Work the changed surface in this order; adapt to what the diff touches.
 2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule
    check both directions: what is present and violating, and what the kind requires but the diff omits.
    Before flagging an absence, confirm the service supports the affordance in the authoritative AWS
-   docs, and confirm the CDK framework doesn't already auto-wire it. Rate a missing affordance exactly as a
-   declared defect.
+   docs, and confirm the CDK framework doesn't already auto-wire it. A missing affordance takes its rule's
+   tier, like a declared defect.
 
 3. **Take the tier from the rule and stop.** Give every finding the tier of the rule it cites, per
    `cdk-review-principles` "Severity", even when you are unsure it fires. When several defects share one

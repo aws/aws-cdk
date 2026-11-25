@@ -11,8 +11,8 @@ for new validation on existing constructs.
   the PR and is rejected after.
 
 **[REG-INPUT-VALIDATION] (RECOMMENDED)** — Missing input validation: the CDK never validates a
-configuration property, letting an invalid value through. *(conditional — BLOCKING when the unvalidated
-value flows into a working stack and breaks its update.)*
+configuration property, letting an invalid value through.
+- **Tier:** BLOCKING when the unvalidated value flows into a working stack and breaks its update.
 
 **[REG-CFN-TYPE-LEAK] (RECOMMENDED)** — A change to an existing public API that newly exposes an L1
 property type (`CfnFoo.BarProperty`) anywhere, or a `Cfn*` type in a method, a class member, or a struct
@@ -78,11 +78,11 @@ props-based shape, or for a written justification. See
 ## Undefined runtime behavior
 
 **[REG-UNDEFINED-BEHAVIOR] (RECOMMENDED)** — Any other runtime-behavior risk that fits no other family: a
-logic refactor that changes what the code does on an edge case, or a
-shared base-class/helper side effect (a spurious `CfnCondition`, a token-keyed cache) that flows into every
-consumer of that method. *(conditional — BLOCKING when it reaches every consumer or fails an existing
-stack's update.)* A change that only stops an input or configuration that never deployed or never worked is
-not this finding; one that also changes what working code does is.
+logic refactor that changes what the code does on an edge case, or a shared base-class/helper side effect
+(a spurious `CfnCondition`, a token-keyed cache) that flows into every consumer of that method. A change
+that only stops an input or configuration that never deployed or never worked is not this finding; one
+that also changes what working code does is.
+- **Tier:** BLOCKING when it reaches every consumer or fails an existing stack's update.
 
 ## Library stability & breaking changes
 
@@ -101,18 +101,19 @@ and
 **[REG-API-SURFACE-BREAK] (BLOCKING)** — A change that makes existing programs fail to compile: renaming or
 removing a public class/method/property, adding a required property (or changing optional→required /
 nullable→non-nullable on an input), or removing a return property (or changing non-nullable→nullable on a
-return), or removing an enum member. *(conditional — resolve the tier through [REG-STABILITY-GATE].)* See
+return), or removing an enum member. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation)
 for the no-break mandate; [`CONTRIBUTING.md § API surface changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#api-surface-changes)
 for the enumerated compile-break cases and the `allowed-breaking-changes.txt` exclusion mechanism.
+- **Tier:** resolve the tier through [REG-STABILITY-GATE].
 
 **[REG-BEHAVIOR-BREAK] (BLOCKING)** — A change that alters CloudFormation synthesis without a compile
 error: an update that cannot be applied, a change that causes service interruption or data loss
-(replacement of a stateful resource), or a change to the **logical ID of a stateful resource**.
-*(conditional — resolve the tier through [REG-STABILITY-GATE].)* See
+(replacement of a stateful resource), or a change to the **logical ID of a stateful resource**. See
 [`AGENTS.md § Anti-Patterns`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#anti-patterns--things-not-to-do)
 for the construct-ID/logical-ID→data-loss rule; [`CONTRIBUTING.md § Behavior changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#behavior-changes)
 for the definitional test of which template changes are breaking.
+- **Tier:** resolve the tier through [REG-STABILITY-GATE].
 
 **[REG-BEHAVIOR-CHANGE-NO-FLAG] (RECOMMENDED)** — A change to the observable behavior of an existing API in a
 stable module, such as a changed default, with no feature flag. See

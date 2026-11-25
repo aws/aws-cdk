@@ -94,7 +94,7 @@ structured finding fields and how to write each one before you generate findings
 Public aws/aws-cdk `main` guidance:
 
 - [`AGENTS.md`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md) — the agent-facing
-  repo guide; its rules name their own harm.
+  repo guide.
 - [`CONTRIBUTING.md`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) — PR
   conventions and breaking-change guidance.
 - [`docs/DESIGN_GUIDELINES.md`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md),

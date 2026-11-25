@@ -14,44 +14,45 @@ resource the code touches) where a scoped ARN exists. See
 on a scoped resource. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
-**[SEC-IAM-CONFUSED-DEPUTY-SERVICE] (BLOCKING)** *(conditional — RECOMMENDED when the path is not yet
-reachable)* — Missing confused-deputy condition (`aws:SourceAccount`/`aws:SourceArn`) on a
-cross-*service* trust policy (a trusted `ServicePrincipal`). See
+**[SEC-IAM-CONFUSED-DEPUTY-SERVICE] (BLOCKING)** — Missing confused-deputy condition
+(`aws:SourceAccount`/`aws:SourceArn`) on a cross-*service* trust policy (a trusted `ServicePrincipal`). See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
+- **Tier:** RECOMMENDED when the path is not yet reachable.
 
-**[SEC-IAM-REFACTOR-SCOPE-DROP] (BLOCKING)** *(conditional — RECOMMENDED when the dropped scoping
-guards a not-yet-reachable path)* — A refactor that drops scoping is a real exposure, not a no-op: when
-converting `PolicyStatement`s to grants you MUST preserve conditions, effect, and principals. See
+**[SEC-IAM-REFACTOR-SCOPE-DROP] (BLOCKING)** — A refactor that drops scoping is a real exposure, not a
+no-op: when converting `PolicyStatement`s to grants you MUST preserve conditions, effect, and principals. See
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants).
+- **Tier:** RECOMMENDED when the dropped scoping guards a not-yet-reachable path.
 
-**[SEC-IAM-DEFAULT-WILDCARD] (BLOCKING)** *(conditional — RECOMMENDED when bounded)* — An optional prop
-that defaults to a wildcard when omitted (an `iamResources?` defaulting to `['*']`, a default `'*'` id):
-the *default* is the exposure, because forgetting the prop silently grants broad access. Prefer
-requiring the prop. See
+**[SEC-IAM-DEFAULT-WILDCARD] (BLOCKING)** — An optional prop that defaults to a wildcard when omitted (an
+`iamResources?` defaulting to `['*']`, a default `'*'` id): the *default* is the exposure, because
+forgetting the prop silently grants broad access. Prefer requiring the prop. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules) and
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
+- **Tier:** RECOMMENDED when bounded.
 
 **[SEC-IAM-WILDCARD-ACTION-SERVICE] (RECOMMENDED)** — A full-service action wildcard (`service:*`) on an
 otherwise correctly-scoped resource grants more than the code needs but opens no security boundary.
 Suffix wildcards (`s3:GetObject*`) are acceptable. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
-**[SEC-IAM-HANDROLLED-POLICY] (RECOMMENDED)** *(conditional — BLOCKING when it grants a wildcard or a
-set broader than the helper)* — A hand-rolled `PolicyStatement`/`addToPolicy` where a `grant*` helper
-exists: the helper already computes the least-privilege action set (and matching KMS `keyActions` for
-encrypted resources). See
+**[SEC-IAM-HANDROLLED-POLICY] (RECOMMENDED)** — A hand-rolled `PolicyStatement`/`addToPolicy` where a
+`grant*` helper exists: the helper already computes the least-privilege action set (and matching KMS
+`keyActions` for encrypted resources). See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules)
 for the grant-helper MUST and
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § grants.json Auto-Generation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grantsjson-auto-generation)
 for the grant's field semantics.
+- **Tier:** BLOCKING when it grants a wildcard or a set broader than the helper.
 - **Over-broad grants:** a `grant*` helper or an AWS-managed policy that grants actions the code path does
   not use, where a narrower grant or a scoped `PolicyStatement` would serve, is also a finding.
 
-**[SEC-IAM-CONFUSED-DEPUTY-ACCOUNT] (RECOMMENDED)** *(conditional — BLOCKING when the path is currently
-reachable)* — Missing `sts:ExternalId` condition on cross-*account* trust to a customer/partner
-(external) account — an `assumedBy` `AccountPrincipal`/`ArnPrincipal` for an account outside your org.
-`ExternalId` is the third-party control. See
+**[SEC-IAM-CONFUSED-DEPUTY-ACCOUNT] (RECOMMENDED)** — Missing `sts:ExternalId` condition on
+cross-*account* trust to a customer/partner (external) account — an `assumedBy`
+`AccountPrincipal`/`ArnPrincipal` for an account outside your org. `ExternalId` is the third-party
+control. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
+- **Tier:** BLOCKING when the path is currently reachable.
 
 **[SEC-KMS-VIASERVICE] (RECOMMENDED)** — Missing `kms:ViaService` on an otherwise-scoped KMS grant
 (defense-in-depth gap). See
@@ -70,10 +71,10 @@ separation. When a `PolicyStatement` gates access on `aws:ResourceTag`/`aws:Prin
 rewrite the governing tag and self-grant. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
 
-**[SEC-IAM-OVERBROAD-PRINCIPAL] (RECOMMENDED)** *(conditional — BLOCKING when it opens a security boundary)*
-— A role `assumedBy` an `AccountRootPrincipal()` (or a cross-account root) where a specific
-`ServicePrincipal` suffices. See
+**[SEC-IAM-OVERBROAD-PRINCIPAL] (RECOMMENDED)** — A role `assumedBy` an `AccountRootPrincipal()` (or a
+cross-account root) where a specific `ServicePrincipal` suffices. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
+- **Tier:** BLOCKING when it opens a security boundary.
 
 ## Network & resource access
 
@@ -82,10 +83,10 @@ resource policy's principal/action set beyond what the feature requires) where t
 private is a concrete exposure. See
 [`AGENTS_CONSTRUCT_DESIGN.md § IAM Resource Policy Integration`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#iam-resource-policy-integration).
 
-**[SEC-NET-PUBLIC-NO-WARNING] (RECOMMENDED)** *(conditional — BLOCKING when it ships public access)* —
-Public access introduced without the mandated synthesis-time `Annotations.of(construct).addWarningV2()`
-warning. See
+**[SEC-NET-PUBLIC-NO-WARNING] (RECOMMENDED)** — Public access introduced without the mandated
+synthesis-time `Annotations.of(construct).addWarningV2()` warning. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
+- **Tier:** BLOCKING when it ships public access.
 
 ## Secrets & credentials
 
@@ -110,10 +111,10 @@ policy downgraded, a secure-private default now defaulting to public/open, or a 
 (security-signal logging, a validation, a block-public-access setting) disabled by default. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior).
 
-**[SEC-DEFAULT-FLAG-LOOSENS] (BLOCKING)** *(conditional — RECOMMENDED when the loosening is bounded)* — A
-new/changed feature flag whose enabled behavior *loosens* trust or permissions (widens a policy, opens
-access, weakens a default) is a *Secure defaults* finding here — even though the flag mechanism is
-otherwise a breaking-change concern outside this dimension. See
+**[SEC-DEFAULT-FLAG-LOOSENS] (BLOCKING)** — A new/changed feature flag whose enabled behavior *loosens*
+trust or permissions (widens a policy, opens access, weakens a default) is a *Secure defaults* finding
+here — even though the flag mechanism is otherwise a breaking-change concern outside this dimension. See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
+- **Tier:** RECOMMENDED when the loosening is bounded.
 - **Detection:** suspect a flag whose `unconfiguredBehavesLike`/`recommendedValue` defaults
   existing apps to the *looser* behavior rather than the old (tighter) one.
