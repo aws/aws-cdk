@@ -609,6 +609,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly HEALTHLAKE = new InterfaceVpcEndpointAwsService('healthlake');
   public static readonly IAM = new InterfaceVpcEndpointAwsService('iam', 'com.amazonaws', undefined, { global: true });
   public static readonly IAM_IDENTITY_CENTER = new InterfaceVpcEndpointAwsService('identitystore');
+  public static readonly IAM_IDENTITY_CENTER_SSO = new InterfaceVpcEndpointAwsService('sso');
+  public static readonly IAM_IDENTITY_CENTER_SSO_OAUTH = new InterfaceVpcEndpointAwsService('sso-oauth');
   public static readonly IAM_ROLES_ANYWHERE = new InterfaceVpcEndpointAwsService('rolesanywhere');
   public static readonly IMAGE_BUILDER = new InterfaceVpcEndpointAwsService('imagebuilder');
   public static readonly INSPECTOR = new InterfaceVpcEndpointAwsService('inspector2');
