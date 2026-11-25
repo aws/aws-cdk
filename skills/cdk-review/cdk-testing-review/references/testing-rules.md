@@ -105,3 +105,7 @@ whether or not the change's category needed an assertion. See
 for the cases that need an assertion and the `awsApiCall` → `ExpectedResult` API. Also assert the
 **negative/failure path**: when the PR adds behavior that should deny or reject, assert the denial (a
 `403`/error `ExpectedResult`).
+
+**[TEST-INTEG-REDUNDANT] (RECOMMENDED)** — An integ test that creates several resources only to exercise
+several values of one prop, where one resource shows the prop renders. See
+[`INTEGRATION_TESTS.md § New L2 Constructs`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#new-l2-constructs).
