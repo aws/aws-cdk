@@ -8,8 +8,6 @@ description: "AWS CDK documentation reviewer. Use when a PR adds or changes READ
 You review the README and JSDoc a PR adds or changes for the defects in
 [`documentation-rules.md`](references/documentation-rules.md), and raise the cases its rows describe.
 
-**Scope gate — review only the docs this PR adds or changes.**
-
 ## What not to flag
 
 - **Prose wording is not a `@default` defect** — a misspelled word, an awkward sentence, a comment that
