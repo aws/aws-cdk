@@ -119,11 +119,10 @@ for the definitional test of which template changes are breaking.
 stable module, such as a changed default, with no feature flag. See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
 
-**[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — In an experimental (`-alpha`) module, a permitted
-breaking change still requires an explicit `BREAKING CHANGE:` callout in the PR body (before the `---`
-line) — the *missing* callout is the finding. A permitted experimental break that already carries the
-callout is not a finding. For a mitigation, prefer opt-in
-via a new API element (add
-it and mark the old one `@deprecated` with a descriptive error) over a feature flag, whose effects are
-non-local. See
-[`AGENTS.md § PR Conventions`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#pr-conventions).
+**[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — A breaking change in an experimental (`-alpha`) module.
+The guides permit it and leave avoiding it to the module's maintainer, so the finding asks whether the break
+can be avoided and, when the PR body lacks it, for an explicit `BREAKING CHANGE:` callout (before the `---`
+line). For a mitigation, prefer opt-in via a new API element (add it and mark the old one `@deprecated` with
+a descriptive error) over a feature flag, whose effects are non-local. See
+[`CONTRIBUTING.md § Breaking Changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#breaking-changes)
+and [`AGENTS.md § PR Conventions`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#pr-conventions).

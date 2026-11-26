@@ -131,7 +131,8 @@ the future: API surface that cannot be removed and has no consumer today.
 **[CD-DEAD-CODE] (BLOCKING)** — Commented-out code, dead code or an `eslint-disable` directive in the
 public surface.
 
-**[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID changed in a stable module.
+**[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID changed.
+- **Tier:** RECOMMENDED in an experimental (`-alpha`) module.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
 capability lands additively. See
