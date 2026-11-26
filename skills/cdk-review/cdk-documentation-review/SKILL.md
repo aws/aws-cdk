@@ -37,7 +37,6 @@ for the default behavior the tag documents.
 changes, other than a `@default` tag, that a user who relies on it turns into code that fails to synthesize
 or deploy, or into a resource that behaves other than the text says; a true statement that leaves something
 out is not this rule.
-- **Tier:** BLOCKING when following it loses data or opens a security boundary.
 
 ## Public-API doc completeness
 
