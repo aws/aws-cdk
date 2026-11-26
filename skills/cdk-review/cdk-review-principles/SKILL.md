@@ -51,7 +51,8 @@ both.
 
 Offer a fix once you have checked that what it uses exists at the reviewed commit and that the
 code depending on what it changes still fits. Otherwise report the problem and leave
-`suggestedFix` null. A fix follows the same guides as the code under review.
+`suggestedFix` null. A fix follows the same guides as the code under review. Keep the fix to the smallest
+change that fixes the defect, and any text in it concise and easy to understand.
 
 ## Finding format
 

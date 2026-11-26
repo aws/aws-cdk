@@ -22,7 +22,7 @@ Related findings on one cause are one finding.
 
 ## `message`
 
-`message` is the comment the author reads, so it reads on its own:
+`message` is the comment the author reads, so it reads on its own, in concise, plain words:
 
 - **Observation** — what is wrong, specific, referencing the code (one or two sentences).
 - **Impact** — what goes wrong for a user or a maintainer if it ships.
