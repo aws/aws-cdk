@@ -246,7 +246,7 @@ These are design decisions about what interfaces and props every L2 construct MU
 
 ### IAM Role Integration
 
-- You MUST expose an optional `role?: iam.IRoleRef` prop (`iam.IRoleRef & iam.IGrantable` when the construct grants to the role) and a readonly `role?: iam.IRoleRef` property on the interface (undefined for imported constructs)
+- You MUST expose an optional `role?: iam.IRoleRef & iam.IGrantable` prop and a readonly `role?: iam.IRoleRef` property on the interface (undefined for imported constructs)
 - You MUST extend `iam.IGrantable` and provide `addToRolePolicy(statement)` on the interface
 
 ### IAM Resource Policy Integration
