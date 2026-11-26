@@ -1,0 +1,126 @@
+{
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "CallAwsServiceCrossRegionCrossAccountIntegDefaultTestDeployAssertF31294DD.template.json"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecution87457ebb1049ce87c92cb8b8ae6c59cb/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutiona4e2892fdbca5819f3b07145362be617/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutiona4e2892fdbca5819f3b07145362be617/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclientsfnDescribeExecutiona4e2892fdbca5819f3b07145362be617"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecution87457ebb1049ce87c92cb8b8ae6c59cb/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclientsfnStartExecution87457ebb1049ce87c92cb8b8ae6c59cb"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutiona4e2892fdbca5819f3b07145362be617/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclientsfnDescribeExecutiona4e2892fdbca5819f3b07145362be617"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutiona4e2892fdbca5819f3b07145362be617/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclientsfnDescribeExecutiona4e2892fdbca5819f3b07145362be617WaitForRoleA7DB2C5B"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutiona4e2892fdbca5819f3b07145362be617/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclientsfnDescribeExecutiona4e2892fdbca5819f3b07145362be617WaitFor55A012D9"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutiona4e2892fdbca5819f3b07145362be617/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclientsfnDescribeExecutiona4e2892fdbca5819f3b07145362be617WaitForIsCompleteProviderInvoke19C8D133"
+    }
+  ],
+  "/CallAwsServiceCrossRegionCrossAccountInteg/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutiona4e2892fdbca5819f3b07145362be617/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclientsfnDescribeExecutiona4e2892fdbca5819f3b07145362be617WaitForTimeoutProviderInvokeD8285DAB"
+    }
+  ]
+}
