@@ -56,7 +56,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     });
@@ -122,7 +122,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
@@ -916,7 +916,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1012,7 +1012,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -1077,7 +1077,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: 'nodejs24.x',
+      Runtime: 'nodejs26.x',
     });
   });
 
@@ -1316,7 +1316,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1376,7 +1376,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1437,7 +1437,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1497,7 +1497,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1533,7 +1533,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -4291,7 +4291,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs24.x',
+          Runtime: 'nodejs26.x',
           RecursiveLoop: 'Terminate',
         },
       });
@@ -4311,7 +4311,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs24.x',
+          Runtime: 'nodejs26.x',
           RecursiveLoop: 'Allow',
         },
       });
@@ -4330,7 +4330,7 @@ describe('function', () => {
         {
           Code: { ZipFile: 'foo' },
           Handler: 'bar',
-          Runtime: 'nodejs24.x',
+          Runtime: 'nodejs26.x',
           // for default, if the property is not set up in stack it doesn't show up in the template.
         },
       });
@@ -4625,7 +4625,7 @@ test('set ephemeral storage to desired size', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: 'nodejs24.x',
+      Runtime: 'nodejs26.x',
       EphemeralStorage: {
         Size: 1024,
       },
@@ -4662,7 +4662,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: 'nodejs24.x',
+      Runtime: 'nodejs26.x',
       Description: Match.stringLikeRegexp('my description version-hash'),
     },
   });
@@ -5026,7 +5026,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
     });
   });
@@ -5045,7 +5045,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
     });
   });
@@ -5064,7 +5064,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
     });
   });
@@ -5083,7 +5083,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
     });
   });
@@ -5102,7 +5102,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
     });
   });
@@ -5121,7 +5121,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
       },
     });
   });
@@ -5313,7 +5313,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: { 'Fn::GetAtt': ['myImportedKey10DE2890', 'Arn'] },
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
         Handler: 'index.handler',
       },
     });
@@ -5348,7 +5348,7 @@ describe('CMCMK', () => {
         Code: {
           SourceKMSKeyArn: Match.absent(),
         },
-        Runtime: 'nodejs24.x',
+        Runtime: 'nodejs26.x',
         Handler: 'index.handler',
       },
     });

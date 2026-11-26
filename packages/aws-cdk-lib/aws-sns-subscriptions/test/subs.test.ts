@@ -1295,7 +1295,7 @@ test('lambda subscription', () => {
               'Arn',
             ],
           },
-          'Runtime': 'nodejs24.x',
+          'Runtime': 'nodejs26.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1399,7 +1399,7 @@ test('lambda subscription, cross region env agnostic', () => {
             ],
           },
           'Handler': 'index.handler',
-          'Runtime': 'nodejs24.x',
+          'Runtime': 'nodejs26.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1862,7 +1862,7 @@ test('multiple subscriptions', () => {
               'Arn',
             ],
           },
-          'Runtime': 'nodejs24.x',
+          'Runtime': 'nodejs26.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',

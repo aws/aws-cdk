@@ -1187,7 +1187,7 @@ describe('reboot for Parameter Changes', () => {
           Type: 'AWS::Lambda::Function',
           Properties: {
             Handler: 'index.handler',
-            Runtime: 'nodejs24.x',
+            Runtime: 'nodejs26.x',
             Timeout: 900,
           },
         },

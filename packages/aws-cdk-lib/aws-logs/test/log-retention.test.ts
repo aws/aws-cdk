@@ -43,7 +43,7 @@ describe('log retention', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
-      Runtime: 'nodejs24.x',
+      Runtime: 'nodejs26.x',
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
