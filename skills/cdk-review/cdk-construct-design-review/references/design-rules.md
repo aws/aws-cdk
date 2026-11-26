@@ -121,5 +121,5 @@ public surface. See
 - **Tier:** RECOMMENDED in an experimental (`-alpha`) module.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
-capability can be added without changing what exists. See
+capability lands additively. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Factory Methods for Secondary Resources`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#factory-methods-for-secondary-resources).
