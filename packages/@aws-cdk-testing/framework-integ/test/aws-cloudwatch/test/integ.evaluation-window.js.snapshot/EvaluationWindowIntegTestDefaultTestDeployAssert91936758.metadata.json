@@ -1,0 +1,180 @@
+{
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/app.js:234:27)",
+        "process.<anonymous> (/local/home/leanguio/workplace/github/aws-cdk-warmup/packages/aws-cdk-lib/core/lib/app.js:181:51)",
+        "Object.onceWrapper (node:events:633:26)",
+        "process.emit (node:events:518:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "EvaluationWindowIntegTestDefaultTestDeployAssert91936758.template.json"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ae57fc3f44187a67e6292300f3a4f39/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ae57fc3f44187a67e6292300f3a4f39/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms4ae57fc3f44187a67e6292300f3a4f39"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsa8a00c6f8e31fa333f5fb71f53169769/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsa8a00c6f8e31fa333f5fb71f53169769/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarmsa8a00c6f8e31fa333f5fb71f53169769"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsbe102d7df1d36d152cc01d065f0c8342/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsbe102d7df1d36d152cc01d065f0c8342/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarmsbe102d7df1d36d152cc01d065f0c8342"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms3334060d14ab9116845ce44b2977f81b/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms3334060d14ab9116845ce44b2977f81b/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms3334060d14ab9116845ce44b2977f81b"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms91408af764289ce90135addce2988837/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms91408af764289ce90135addce2988837/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms91408af764289ce90135addce2988837"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ae57fc3f44187a67e6292300f3a4f39/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchdescribeAlarms4ae57fc3f44187a67e6292300f3a4f39"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsa8a00c6f8e31fa333f5fb71f53169769/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchdescribeAlarmsa8a00c6f8e31fa333f5fb71f53169769"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsbe102d7df1d36d152cc01d065f0c8342/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchdescribeAlarmsbe102d7df1d36d152cc01d065f0c8342"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms3334060d14ab9116845ce44b2977f81b/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchdescribeAlarms3334060d14ab9116845ce44b2977f81b"
+    }
+  ],
+  "/EvaluationWindowIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms91408af764289ce90135addce2988837/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchdescribeAlarms91408af764289ce90135addce2988837"
+    }
+  ]
+}

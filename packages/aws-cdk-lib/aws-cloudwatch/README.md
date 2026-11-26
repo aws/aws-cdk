@@ -393,6 +393,39 @@ Please note that it is **not possible** to:
   used to evaluate the Alarm doesn't have a `SampleCount` field anymore ("[When CloudWatch evaluates alarms, periods are aggregated into single data points](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create-alarm-on-metric-math-expression.html)"). The result is that the Alarm cannot evaluate at all.
 - Create a cross-Region alarm ([source](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html)).
 
+### Alarm warm-up periods
+
+A warm-up period delays alarm evaluation after an alarm is created. This reduces noise while a new
+resource or service starts to publish data: during warm-up the alarm stays in `INSUFFICIENT_DATA` and
+does not perform alarm actions. By default the warm-up ends early as soon as enough metric data is
+available to fill the evaluation window (`period` x `evaluationPeriods`); set
+`onlyStartEvaluatingAfterWarmUpPeriodEnds` to wait for the whole warm-up period instead.
+
+```ts
+declare const fn: lambda.Function;
+
+new cloudwatch.Alarm(this, 'Alarm', {
+  metric: fn.metricErrors(),
+  threshold: 100,
+  evaluationPeriods: 2,
+  warmUpConfiguration: {
+    warmUpPeriod: Duration.minutes(10),
+    onlyStartEvaluatingAfterWarmUpPeriodEnds: true,
+  },
+});
+```
+
+`warmUpPeriod` must be a whole number of minutes between 1 minute and 2 days (2880 minutes).
+
+Warm-up applies once, when the alarm is created. Updating an alarm that is still in its warm-up period
+changes or ends the warm-up; adding or changing `warmUpConfiguration` on an alarm whose warm-up has
+already ended updates the stored configuration but does not start a new warm-up period.
+
+Warm-up is available for metric alarms, including metric math, Metrics Insights queries (with or without
+`GROUP BY`) and `AnomalyDetectionAlarm`. It is not available for `PromQLAlarm` or `CompositeAlarm`.
+See [Alarm warm-up periods](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-warm-up.html)
+in the CloudWatch User Guide.
+
 ### Alarm Actions
 
 To add actions to an alarm, use the integration classes from the
@@ -489,6 +522,39 @@ myCompositeAlarm.addOkAction(onOkAction);
 
 In the provided example, if `actionsSuppressor` is in `ALARM` state, `onAlarmAction` won't be triggered even if `myCompositeAlarm` goes into `ALARM` state.
 Similar, if `actionsSuppressor` is in `ALARM` state and `myCompositeAlarm` goes from `ALARM` into `OK` state, `onOkAction` won't be triggered.
+
+### Wall clock evaluation windows
+
+By default, an alarm evaluates the most recent data points as they arrive (a *sliding window*).
+You can instead align the evaluated range to fixed clock boundaries that match the alarm's period,
+such as the top of the hour, midnight, or the start of the calendar week (a *wall clock window*).
+Choose a wall clock window when monitoring is tied to a business or calendar period; it also avoids
+false alarms that can occur when events span rolling window boundaries.
+
+```ts
+declare const metric: cloudwatch.Metric;
+
+new cloudwatch.Alarm(this, 'WallClockAlarm', {
+  metric: metric.with({ period: Duration.hours(1) }),
+  threshold: 100,
+  evaluationPeriods: 1,
+  evaluationWindow: cloudwatch.EvaluationWindow.wallClockWindow({ timeZone: TimeZone.AMERICA_NEW_YORK }),
+});
+```
+
+The optional `timeZone` determines where the clock boundaries fall. Use a predefined IANA zone such as
+`TimeZone.AMERICA_NEW_YORK` or `TimeZone.ASIA_KOLKATA`, or `TimeZone.of()` with a fixed UTC offset
+(`'+05:30'`, `'-08:00'`, `'Z'`) or an offset-prefixed identifier (`'UTC+05:30'`, `'GMT-08:00'`); the
+offset must be a multiple of 5 minutes. Only IANA zones follow daylight saving time transitions. If not
+specified, UTC is used. `EvaluationWindow.slidingWindow()` selects the default behavior explicitly.
+
+Wall clock windows work with single-metric alarms, metric math alarms, Metrics Insights alarms,
+and anomaly detection alarms. They are not available for high-resolution alarms, composite alarms,
+or PromQL alarms, and all metric periods must be one of 1 minute, 5 minutes, 1 hour, 1 day, or
+1 week. For Metrics Insights alarms, CloudWatch reserves one extra period to align a wall clock
+window, so `period x (evaluationPeriods + 1)` must be 3 hours or less (a 1-hour period allows at most
+2 evaluation periods). See [Alarm evaluation window](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-evaluation-window.html)
+in the CloudWatch User Guide.
 
 ### A note on units
 

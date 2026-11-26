@@ -1,0 +1,194 @@
+{
+ "Resources": {
+  "WallClockAlarm48C46CFE": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "EvaluationWindow": {
+     "WallClockWindow": {
+      "Timezone": "America/New_York"
+     }
+    },
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/EC2",
+    "Period": 3600,
+    "Statistic": "Average",
+    "Threshold": 80
+   }
+  },
+  "WallClockMathAlarmFA5B5750": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "EvaluationWindow": {
+     "WallClockWindow": {}
+    },
+    "Metrics": [
+     {
+      "Expression": "a * 2",
+      "Id": "expr_1",
+      "ReturnData": true
+     },
+     {
+      "Id": "a",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": false
+     }
+    ],
+    "Threshold": 160
+   }
+  },
+  "WallClockInsightsAlarmC4FA09A2": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "EvaluationWindow": {
+     "WallClockWindow": {}
+    },
+    "Metrics": [
+     {
+      "Expression": "SELECT AVG(CPUUtilization) FROM SCHEMA(\"AWS/EC2\", InstanceId)",
+      "Id": "expr_1",
+      "Period": 300,
+      "ReturnData": true
+     }
+    ],
+    "Threshold": 80
+   }
+  },
+  "WallClockAnomalyAlarmABAE2808": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "EvaluationPeriods": 1,
+    "EvaluationWindow": {
+     "WallClockWindow": {
+      "Timezone": "America/New_York"
+     }
+    },
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m0, 2)",
+      "Id": "expr_1",
+      "Label": "Anomaly Detection Band",
+      "ReturnData": true
+     },
+     {
+      "Id": "m0",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "CPUUtilization",
+        "Namespace": "AWS/EC2"
+       },
+       "Period": 3600,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1"
+   }
+  },
+  "SlidingWindowAlarm358A75E2": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "EvaluationWindow": {
+     "SlidingWindow": {}
+    },
+    "MetricName": "CPUUtilization",
+    "Namespace": "AWS/EC2",
+    "Period": 3600,
+    "Statistic": "Average",
+    "Threshold": 80
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefWallClockAlarm48C46CFEC7345EC6": {
+   "Value": {
+    "Ref": "WallClockAlarm48C46CFE"
+   },
+   "Export": {
+    "Name": "EvaluationWindowTestStack:ExportsOutputRefWallClockAlarm48C46CFEC7345EC6"
+   }
+  },
+  "ExportsOutputRefWallClockMathAlarmFA5B575019F3A6B6": {
+   "Value": {
+    "Ref": "WallClockMathAlarmFA5B5750"
+   },
+   "Export": {
+    "Name": "EvaluationWindowTestStack:ExportsOutputRefWallClockMathAlarmFA5B575019F3A6B6"
+   }
+  },
+  "ExportsOutputRefWallClockInsightsAlarmC4FA09A2C1C80516": {
+   "Value": {
+    "Ref": "WallClockInsightsAlarmC4FA09A2"
+   },
+   "Export": {
+    "Name": "EvaluationWindowTestStack:ExportsOutputRefWallClockInsightsAlarmC4FA09A2C1C80516"
+   }
+  },
+  "ExportsOutputRefWallClockAnomalyAlarmABAE28080F527D79": {
+   "Value": {
+    "Ref": "WallClockAnomalyAlarmABAE2808"
+   },
+   "Export": {
+    "Name": "EvaluationWindowTestStack:ExportsOutputRefWallClockAnomalyAlarmABAE28080F527D79"
+   }
+  },
+  "ExportsOutputRefSlidingWindowAlarm358A75E2E2E121BD": {
+   "Value": {
+    "Ref": "SlidingWindowAlarm358A75E2"
+   },
+   "Export": {
+    "Name": "EvaluationWindowTestStack:ExportsOutputRefSlidingWindowAlarm358A75E2E2E121BD"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

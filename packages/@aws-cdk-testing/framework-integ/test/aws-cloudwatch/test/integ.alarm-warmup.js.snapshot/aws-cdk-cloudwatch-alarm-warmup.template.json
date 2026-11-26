@@ -1,0 +1,169 @@
+{
+ "Resources": {
+  "Alarm7103F465": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 3,
+    "MetricName": "Metric",
+    "Namespace": "CDK/Test",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 100,
+    "WarmUpConfiguration": {
+     "OnlyStartEvaluatingAfterWarmUpPeriodEnds": true,
+     "WarmUpPeriodDurationInMinutes": 60
+    }
+   }
+  },
+  "MathAlarmC1B2E17F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 2,
+    "Metrics": [
+     {
+      "Expression": "m1 * 2",
+      "Id": "expr_1",
+      "ReturnData": true
+     },
+     {
+      "Id": "m1",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": false
+     }
+    ],
+    "Threshold": 200,
+    "WarmUpConfiguration": {
+     "WarmUpPeriodDurationInMinutes": 30
+    }
+   }
+  },
+  "InsightsGroupByAlarm393287E9": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Metrics": [
+     {
+      "Expression": "SELECT AVG(CPUUtilization) FROM SCHEMA(\"AWS/EC2\", InstanceId) GROUP BY InstanceId ORDER BY AVG() DESC LIMIT 10",
+      "Id": "expr_1",
+      "Period": 300,
+      "ReturnData": true
+     }
+    ],
+    "Threshold": 80,
+    "WarmUpConfiguration": {
+     "WarmUpPeriodDurationInMinutes": 15
+    }
+   }
+  },
+  "AnomalyAlarm4A93F8A2": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "LessThanLowerOrGreaterThanUpperThreshold",
+    "EvaluationPeriods": 2,
+    "Metrics": [
+     {
+      "Expression": "ANOMALY_DETECTION_BAND(m0, 2)",
+      "Id": "expr_1",
+      "Label": "Anomaly Detection Band",
+      "ReturnData": true
+     },
+     {
+      "Id": "m0",
+      "MetricStat": {
+       "Metric": {
+        "MetricName": "Metric",
+        "Namespace": "CDK/Test"
+       },
+       "Period": 300,
+       "Stat": "Average"
+      },
+      "ReturnData": true
+     }
+    ],
+    "ThresholdMetricId": "expr_1",
+    "WarmUpConfiguration": {
+     "OnlyStartEvaluatingAfterWarmUpPeriodEnds": true,
+     "WarmUpPeriodDurationInMinutes": 60
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefAlarm7103F465225BDD34": {
+   "Value": {
+    "Ref": "Alarm7103F465"
+   },
+   "Export": {
+    "Name": "aws-cdk-cloudwatch-alarm-warmup:ExportsOutputRefAlarm7103F465225BDD34"
+   }
+  },
+  "ExportsOutputRefMathAlarmC1B2E17F33F2E8A7": {
+   "Value": {
+    "Ref": "MathAlarmC1B2E17F"
+   },
+   "Export": {
+    "Name": "aws-cdk-cloudwatch-alarm-warmup:ExportsOutputRefMathAlarmC1B2E17F33F2E8A7"
+   }
+  },
+  "ExportsOutputRefInsightsGroupByAlarm393287E9FEB1C062": {
+   "Value": {
+    "Ref": "InsightsGroupByAlarm393287E9"
+   },
+   "Export": {
+    "Name": "aws-cdk-cloudwatch-alarm-warmup:ExportsOutputRefInsightsGroupByAlarm393287E9FEB1C062"
+   }
+  },
+  "ExportsOutputRefAnomalyAlarm4A93F8A2CE1CB3A6": {
+   "Value": {
+    "Ref": "AnomalyAlarm4A93F8A2"
+   },
+   "Export": {
+    "Name": "aws-cdk-cloudwatch-alarm-warmup:ExportsOutputRefAnomalyAlarm4A93F8A2CE1CB3A6"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,20 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "270ae063c25daf4a8400a0c71cd9de0a75c42e0b0f0d010e89a03a507bbc9639": {
+      "displayName": "aws-cdk-cloudwatch-alarm-warmup Template",
+      "source": {
+        "path": "aws-cdk-cloudwatch-alarm-warmup.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-82963843": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "270ae063c25daf4a8400a0c71cd9de0a75c42e0b0f0d010e89a03a507bbc9639.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

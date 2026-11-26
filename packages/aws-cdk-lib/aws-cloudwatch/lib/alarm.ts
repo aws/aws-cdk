@@ -9,6 +9,7 @@ import type { CreateAlarmOptions } from './metric';
 import { Metric } from './metric';
 import type { IMetric, MetricExpressionConfig, MetricStatConfig } from './metric-types';
 import type { CreateAlarmOptionsBase } from './private/alarm-options';
+import { renderAlarmWarmUpConfiguration } from './private/alarm-options';
 import { isAnomalyDetectionOperator } from './private/anomaly-detection';
 import { dispatchMetric, metricPeriod } from './private/metric-util';
 import { dropUndefined } from './private/object';
@@ -255,6 +256,8 @@ export class Alarm extends AlarmBase {
       threshold = props.threshold;
     }
 
+    const warmUpConfiguration = renderAlarmWarmUpConfiguration(this, props.warmUpConfiguration);
+
     // Render metric, process potential overrides from the alarm
     // (It would be preferable if the statistic etc. was worked into the metric,
     // but hey we're allowing overrides...)
@@ -273,6 +276,8 @@ export class Alarm extends AlarmBase {
       thresholdMetricId = rendered.primaryId;
     }
 
+    this.validateEvaluationWindow(props, metricProps);
+
     this.alarm = new CfnAlarm(this, 'Resource', {
       // Meta
       alarmDescription: props.alarmDescription,
@@ -286,6 +291,8 @@ export class Alarm extends AlarmBase {
       evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
       evaluationPeriods: props.evaluationPeriods,
       treatMissingData: props.treatMissingData,
+      warmUpConfiguration: warmUpConfiguration,
+      evaluationWindow: props.evaluationWindow?._render(),
 
       // Actions
       actionsEnabled: props.actionsEnabled,
@@ -593,6 +600,47 @@ export class Alarm extends AlarmBase {
     // it will still work).
     return stackAccount !== stat.account;
   }
+
+  /**
+   * Validate the evaluation window configuration
+   *
+   * When a wall clock window is used:
+   * - every concrete metric period must be one of the periods supported by wall clock evaluation;
+   * - for a Metrics Insights query, `period * (evaluationPeriods + 1)` must not exceed 3 hours,
+   *   because CloudWatch reserves one extra period to align the window.
+   *
+   * Unresolved tokens are skipped; the service validates them at deploy time.
+   */
+  private validateEvaluationWindow(props: CreateAlarmOptionsBase, metricProps: AlarmMetricFields) {
+    if (!props.evaluationWindow?._isWallClockWindow) {
+      return;
+    }
+
+    for (const period of collectMetricPeriods(metricProps)) {
+      if (!WALL_CLOCK_SUPPORTED_PERIODS.includes(period)) {
+        throw new ValidationError(
+          lit`WallClockWindowUnsupportedPeriod`,
+          `When a wall clock window is used, all metric periods must be one of ${WALL_CLOCK_SUPPORTED_PERIODS.join(', ')} seconds, got ${period}`,
+          this,
+        );
+      }
+    }
+
+    const evaluationPeriods = props.evaluationPeriods;
+    if (Token.isUnresolved(evaluationPeriods)) {
+      return;
+    }
+    for (const period of collectMetricsInsightsPeriods(metricProps)) {
+      const timeRange = period * (evaluationPeriods + 1);
+      if (timeRange > METRICS_INSIGHTS_MAX_TIME_RANGE_SECONDS) {
+        throw new ValidationError(
+          lit`WallClockWindowMetricsInsightsTimeRangeExceeded`,
+          `A Metrics Insights alarm with a wall clock window must have period * (evaluationPeriods + 1) of at most ${METRICS_INSIGHTS_MAX_TIME_RANGE_SECONDS} seconds (3 hours), got ${period} * (${evaluationPeriods} + 1) = ${timeRange}`,
+          this,
+        );
+      }
+    }
+  }
 }
 
 /**
@@ -603,6 +651,85 @@ export class Alarm extends AlarmBase {
  * and have more features, like metric math.
  */
 type AlarmMetricFields = Pick<CfnAlarmProps, 'dimensions' | 'namespace' | 'metricName' | 'period' | 'statistic' | 'extendedStatistic' | 'unit' | 'metrics'>;
+
+/**
+ * The metric periods (in seconds) supported by wall clock evaluation windows
+ *
+ * 1 minute, 5 minutes, 1 hour, 1 day, 1 week.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-evaluation-window.html
+ */
+const WALL_CLOCK_SUPPORTED_PERIODS = [60, 300, 3_600, 86_400, 604_800];
+
+/**
+ * The longest time range (period * evaluation periods) a Metrics Insights alarm may evaluate
+ *
+ * With a wall clock window the service reserves one extra period, so the check uses
+ * `period * (evaluationPeriods + 1)`.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-evaluation-window.html#wall-clock-supported-periods
+ */
+const METRICS_INSIGHTS_MAX_TIME_RANGE_SECONDS = 3 * 3_600;
+
+/**
+ * Collect all concrete (non-token) metric periods from the rendered alarm metric fields
+ *
+ * Covers both the legacy top-level `period` field and the modern `metrics[]` array,
+ * where a period can live on the metric stat or on a math expression entry.
+ */
+function collectMetricPeriods(metricProps: AlarmMetricFields): number[] {
+  const periods = new Array<number>();
+  const addIfConcrete = (period?: number) => {
+    if (period !== undefined && !Token.isUnresolved(period)) {
+      periods.push(period);
+    }
+  };
+
+  addIfConcrete(metricProps.period);
+
+  const metrics = metricProps.metrics;
+  if (metrics !== undefined && !Token.isUnresolved(metrics) && Array.isArray(metrics)) {
+    for (const entry of metrics) {
+      if (Token.isUnresolved(entry)) {
+        continue;
+      }
+      const query = entry as CfnAlarm.MetricDataQueryProperty;
+      addIfConcrete(query.period);
+      if (query.metricStat !== undefined && !Token.isUnresolved(query.metricStat)) {
+        addIfConcrete((query.metricStat as CfnAlarm.MetricStatProperty).period);
+      }
+    }
+  }
+
+  return periods;
+}
+
+/**
+ * Collect the concrete (non-token) periods of Metrics Insights queries in the rendered alarm metrics
+ *
+ * A Metrics Insights query is a `metrics[]` entry whose expression starts with `SELECT`;
+ * ordinary metric math expressions and metric stats are not included.
+ */
+function collectMetricsInsightsPeriods(metricProps: AlarmMetricFields): number[] {
+  const periods = new Array<number>();
+  const metrics = metricProps.metrics;
+  if (metrics === undefined || Token.isUnresolved(metrics) || !Array.isArray(metrics)) {
+    return periods;
+  }
+  for (const entry of metrics) {
+    if (Token.isUnresolved(entry)) {
+      continue;
+    }
+    const query = entry as CfnAlarm.MetricDataQueryProperty;
+    if (query.expression === undefined || Token.isUnresolved(query.expression) || !/^\s*SELECT\b/i.test(query.expression)) {
+      continue;
+    }
+    if (query.period !== undefined && !Token.isUnresolved(query.period)) {
+      periods.push(query.period);
+    }
+  }
+  return periods;
+}
 
 /**
  * Check if a metric is already an anomaly detection metric

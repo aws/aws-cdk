@@ -1,0 +1,151 @@
+{
+  "/aws-cdk-cloudwatch-alarm-warmup": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "aws-cdk-cloudwatch-alarm-warmup.template.json"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/Alarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "alarmName": "*",
+        "alarmDescription": "*",
+        "comparisonOperator": "*",
+        "datapointsToAlarm": "*",
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "evaluateLowSampleCountPercentile": "*",
+        "treatMissingData": "*",
+        "actionsEnabled": "*"
+      }
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/MathAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "alarmName": "*",
+        "alarmDescription": "*",
+        "comparisonOperator": "*",
+        "datapointsToAlarm": "*",
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "evaluateLowSampleCountPercentile": "*",
+        "treatMissingData": "*",
+        "actionsEnabled": "*"
+      }
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/InsightsGroupByAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "alarmName": "*",
+        "alarmDescription": "*",
+        "comparisonOperator": "*",
+        "datapointsToAlarm": "*",
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "evaluateLowSampleCountPercentile": "*",
+        "treatMissingData": "*",
+        "actionsEnabled": "*"
+      }
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/AnomalyAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*",
+        "comparisonOperator": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/Alarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm7103F465"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/MathAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MathAlarmC1B2E17F"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/InsightsGroupByAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InsightsGroupByAlarm393287E9"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/AnomalyAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AnomalyAlarm4A93F8A2"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/Exports/Output{\"Ref\":\"Alarm7103F465\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAlarm7103F465225BDD34"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/Exports/Output{\"Ref\":\"MathAlarmC1B2E17F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMathAlarmC1B2E17F33F2E8A7"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/Exports/Output{\"Ref\":\"InsightsGroupByAlarm393287E9\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefInsightsGroupByAlarm393287E9FEB1C062"
+    }
+  ],
+  "/aws-cdk-cloudwatch-alarm-warmup/Exports/Output{\"Ref\":\"AnomalyAlarm4A93F8A2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAnomalyAlarm4A93F8A2CE1CB3A6"
+    }
+  ]
+}

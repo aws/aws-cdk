@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "AlarmWarmUpIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-cloudwatch-alarm-warmup"
+      ],
+      "assertionStack": "AlarmWarmUpIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AlarmWarmUpIntegTestDefaultTestDeployAssertC03EFCB4"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1148.1"
+}

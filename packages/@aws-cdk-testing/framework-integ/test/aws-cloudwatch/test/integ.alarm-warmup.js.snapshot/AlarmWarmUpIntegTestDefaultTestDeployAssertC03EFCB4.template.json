@@ -1,0 +1,292 @@
+{
+ "Resources": {
+  "AwsApiCallCloudWatchdescribeAlarms8167044af649d7bc7dc04185e4215f09": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "describeAlarms",
+    "expected": "{\"$ObjectLike\":{\"MetricAlarms\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"StateValue\":\"INSUFFICIENT_DATA\",\"EvaluationState\":\"IN_WARM_UP\",\"StateReason\":\"Alarm is in Warm-Up\"}}]}}}",
+    "parameters": {
+     "AlarmNames": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-cloudwatch-alarm-warmup:ExportsOutputRefAlarm7103F465225BDD34"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795619578491"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "cloudwatch:DescribeAlarms"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs24.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "075de0d8a32f6637f1b2aa2be507ad953c5c33cdc9f6a688ac713160f08fda41.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
+    }
+   }
+  },
+  "AwsApiCallCloudWatchdescribeAlarms3237c0abf08b99976ae528c63123333c": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "describeAlarms",
+    "expected": "{\"$ObjectLike\":{\"MetricAlarms\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"StateValue\":\"INSUFFICIENT_DATA\",\"EvaluationState\":\"IN_WARM_UP\",\"StateReason\":\"Alarm is in Warm-Up\"}}]}}}",
+    "parameters": {
+     "AlarmNames": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-cloudwatch-alarm-warmup:ExportsOutputRefMathAlarmC1B2E17F33F2E8A7"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795619578496"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudWatchdescribeAlarmse0e6b1b561ac6b1eda67ee262da06938": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "describeAlarms",
+    "expected": "{\"$ObjectLike\":{\"MetricAlarms\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"StateValue\":\"INSUFFICIENT_DATA\",\"EvaluationState\":\"IN_WARM_UP\",\"StateReason\":\"Alarm is in Warm-Up\"}}]}}}",
+    "parameters": {
+     "AlarmNames": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-cloudwatch-alarm-warmup:ExportsOutputRefInsightsGroupByAlarm393287E9FEB1C062"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795619578498"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudWatchdescribeAlarms8efa5dc21589333afbc272865503ddfb": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchdescribeAlarms",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "describeAlarms",
+    "expected": "{\"$ObjectLike\":{\"MetricAlarms\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"ThresholdMetricId\":\"expr_1\",\"StateValue\":\"INSUFFICIENT_DATA\",\"EvaluationState\":\"IN_WARM_UP\",\"StateReason\":\"Alarm is in Warm-Up\"}}]}}}",
+    "parameters": {
+     "AlarmNames": {
+      "Fn::Join": [
+       "",
+       [
+        "[\"",
+        {
+         "Fn::ImportValue": "aws-cdk-cloudwatch-alarm-warmup:ExportsOutputRefAnomalyAlarm4A93F8A2CE1CB3A6"
+        },
+        "\"]"
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1795619578499"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarms8167044af649d7bc7dc04185e4215f09": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchdescribeAlarms8167044af649d7bc7dc04185e4215f09",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarms3237c0abf08b99976ae528c63123333c": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchdescribeAlarms3237c0abf08b99976ae528c63123333c",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarmse0e6b1b561ac6b1eda67ee262da06938": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchdescribeAlarmse0e6b1b561ac6b1eda67ee262da06938",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCloudWatchdescribeAlarms8efa5dc21589333afbc272865503ddfb": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCloudWatchdescribeAlarms8efa5dc21589333afbc272865503ddfb",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
