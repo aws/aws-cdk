@@ -12,9 +12,8 @@ fix, added validation or an optimization can break that code too. Apply `cdk-rev
 ## The review process
 
 1. **Read the change and your rules.** Name the public surface the PR changes. Establish first whether its
-   module is stable or experimental, since it decides which rules on breaking existing code apply: a file
-   under `packages/aws-cdk-lib/` is stable, and one under a package directory ending in `-alpha` is
-   experimental. Read [`regression-rules.md`](references/regression-rules.md).
+   module is stable or experimental, since it decides which rules on breaking existing code apply. Read
+   [`regression-rules.md`](references/regression-rules.md).
 
 2. **Check the diff against the rules.** For each rule check both directions: what is present and
    violating, and what is required but missing. The required-but-missing scan catches an omission the

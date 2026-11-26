@@ -1,6 +1,6 @@
 ---
 name: cdk-review-principles
-description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule or guide line it cites, including a rule's Tier line; when a defect is a finding; how to verify a fact before posting and which source to cite for it; when to offer a fix; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, taking a finding's tier from its rule or guide line, deciding whether something is a finding at all, or turning a finding into a posted comment."
+description: "Shared foundation every CDK review-dimension skill applies — how a finding takes BLOCKING or RECOMMENDED from the rule or guide line it cites, including a rule's Tier line; when a defect is a finding; which modules are stable or experimental; how to verify a fact before posting and which source to cite for it; when to offer a fix; and the fields each finding carries, including its rule ID and cited source. Apply whenever conducting a CDK PR review, taking a finding's tier from its rule or guide line, deciding whether something is a finding at all, or turning a finding into a posted comment."
 ---
 
 # Review Principles
@@ -33,6 +33,11 @@ A defect is a finding when all of these hold:
   [`CONTRIBUTING.md § awslint`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#awslint)).
 
 Raise every defect that meets these, and only those; a PR with nothing wrong gets no findings.
+
+## Module stability
+
+A file under `packages/aws-cdk-lib/` is in a stable module; one under a package directory ending in
+`-alpha` is in an experimental module.
 
 ## Verification
 
