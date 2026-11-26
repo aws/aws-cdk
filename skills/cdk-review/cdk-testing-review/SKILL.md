@@ -25,7 +25,7 @@ missing a test the change needs, and demanding one it does not. Weigh each again
 
 3. **When to stop.** When several gaps stem from one test, classify under the best-fitting rule and
    describe them together. When the tests would catch a break, or no test is needed, raise nothing. Stop
-   once you can name the gap and cite its rule.
+   once you can name the gap and cite its rule or guide line.
 
 ## What not to flag
 

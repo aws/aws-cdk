@@ -25,7 +25,7 @@ users into mistakes, and open to extension later without breaking its users? App
 
 3. **When to stop.** When several defects share one code cause, give one finding with the `ruleId`,
    `category` and `severity` of its most severe defect, since each field takes one value. Stop once you
-   can name the defect and cite its rule — file + section.
+   can name the defect and cite its rule or guide line — file + section.
 
 ## What not to flag
 

@@ -25,7 +25,7 @@ and secure-by-default. Judge what this change widens, weakens, or leaks for user
    its absence.
 
 3. **When to stop.** Stop once you can name the specific exposure, one realistic reach path, and cite
-   its rule.
+   its rule or guide line.
 
 ## What not to flag
 
