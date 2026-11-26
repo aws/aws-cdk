@@ -36,8 +36,8 @@ Raise every defect that meets these, and only those; a PR with nothing wrong get
 
 ## Module stability
 
-A package directory ending in `-alpha` or `-preview` is an experimental module; every other package,
-including `packages/aws-cdk-lib/`, is stable.
+A module is experimental when its package's `package.json` has `"stability": "experimental"`, and stable
+otherwise.
 
 ## Verification
 
