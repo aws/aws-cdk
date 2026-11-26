@@ -11,7 +11,8 @@ export abstract class StackSetAssetBuckets {
    * Uses one existing bucket per region
    *
    * The name of each bucket must be known at synth time, and its objects must be kept for as
-   * long as the StackSet uses them.
+   * long as the StackSet uses them. A bucket defined in the app must be in the region it is keyed
+   * by. A bucket for a region that the StackSet doesn't deploy to raises a warning.
    *
    * @param buckets the bucket of each region, keyed by region name (for example `us-east-1`)
    */
