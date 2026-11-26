@@ -77,8 +77,8 @@ for the breaking-change rule.
 
 **[TEST-INTEG-STALE-SNAPSHOT] (BLOCKING)** — The diff shows a changed `integ.*.ts` and its companion
 `*.snapshot/`, but the snapshot does not reflect the test change (or a brand-new `integ.*.ts` arrives with
-no `*.snapshot/` at all). The snapshot is the synthesized template, so a test change that alters synthesis
-changes the snapshot too; when it does not, the committed snapshot no longer proves the test deploys.
+no `*.snapshot/` at all). A test change that alters synthesis changes the snapshot too; when it does not,
+the committed snapshot no longer proves the test deploys.
 A `.ts` edit that cannot alter synthesis (a comment, rename, reorder, import or formatting change)
 correctly leaves the snapshot byte-identical and is not this finding. See
 [`INTEGRATION_TESTS.md § What are CDK Integration Tests`](https://github.com/aws/aws-cdk/blob/main/INTEGRATION_TESTS.md#what-are-cdk-integration-tests)

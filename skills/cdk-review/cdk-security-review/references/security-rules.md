@@ -1,9 +1,5 @@
 # Security rules
 
-The repo Security Rules these distill live at
-[`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules) —
-the primary security citation.
-
 ## IAM least-privilege
 
 **[SEC-IAM-WILDCARD-RESOURCE] (BLOCKING)** — A `Resource: "*"` (or an ARN far broader than the
