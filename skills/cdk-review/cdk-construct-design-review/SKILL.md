@@ -19,8 +19,8 @@ to extension later without breaking its users? Apply
 2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule
    check both directions: what is present and violating, and what the kind requires but the diff omits.
    Before flagging something as missing, confirm in the AWS documentation that the service supports it,
-   and that the CDK framework does not already provide it. A missing extension takes its rule's tier,
-   like a declared defect.
+   and that the CDK framework does not already provide it. What is missing takes its rule's tier, like a
+   defect that is present.
 
 3. **Write the finding.** Name the defect and its rule or guide line (file and section). When several
    defects share one code cause, give one finding with the `ruleId`, `category` and `severity` of its most

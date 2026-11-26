@@ -7,7 +7,7 @@ outcome that matters — or a test named for a behavior it never exercises. See
 [`AGENTS.md § Unit Tests`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#unit-tests) for the `Match`
 rules.
 - **Tier:** RECOMMENDED when the core outcome is asserted elsewhere
-  and only a detail is unasserted.
+  and only a detail is loosely asserted.
 
 **[TEST-UNIT-FLAG-STATE] (BLOCKING)** — A feature-flag-gated behavior tested in only one state, or a new
 optional prop that changes a default with no backward-compat test locking the old default in. Both
