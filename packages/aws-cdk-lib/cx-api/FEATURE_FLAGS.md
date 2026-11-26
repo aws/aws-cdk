@@ -123,6 +123,7 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 | [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | 2.278.0 | fix |
+| [@aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped](#aws-cdkaws-ec2flowlogscloudwatchlogspermissionsscoped) | Scope VPC Flow Logs CloudWatch Logs permissions to the required resource types | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -156,6 +157,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
     "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
+    "@aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped": true,
     "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
@@ -2688,6 +2690,27 @@ that stack is deployed too.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.278.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped
+
+*Scope VPC Flow Logs CloudWatch Logs permissions to the required resource types*
+
+Flag type: Backwards incompatible bugfix
+
+CloudWatch Logs authorizes `DescribeLogStreams` on log groups, and `CreateLogStream` and `PutLogEvents`
+on log streams. When enabled, this feature flag grants each permission on the corresponding resource type.
+
+When disabled, all three permissions are granted together on the log stream ARN pattern, preserving the
+previous behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this feature flag to keep the previous combined permission statement.
 
 
 <!-- END details -->

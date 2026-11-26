@@ -1,0 +1,174 @@
+{
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "No cross-stack-reference strength configured, defaulting to \"strong\". We recommend you set feature flag \"@aws-cdk/core:defaultCrossStackReferences\" to \"both\", then deploy everywhere, then set it to \"weak\". Alternatively, set it to \"strong\" explicitly to lock in the current producer-protecting behavior. (See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength) [ack: @aws-cdk/core:crossStackReferencesDefaultStrong]",
+      "trace": [
+        "Annotations.addMessage (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:279:29)",
+        "Annotations.addWarningV2 (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:145:18)",
+        "resolveValue (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:215:54)",
+        "resolveReferencesInElements (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:30)",
+        "resolveReferences (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:124:5)",
+        "prepareApp (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:35:36)",
+        "synthesize (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:72:36)",
+        "App.synth (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:230:96)",
+        "App.synth (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:234:27)",
+        "process.<anonymous> (/Users/yamahar/personal/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:181:51)",
+        "Object.onceWrapper (node:events:622:26)",
+        "process.emit (node:events:507:28)"
+      ]
+    },
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "FlowLogsScopedPermissionsDefaultTestDeployAssert3416EAB6.template.json"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8cWaitForRoleBA1DFC00"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8cWaitFor4106C5E8"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938WaitForRoleF2D10BC0"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938WaitFor042721B6"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8cWaitForIsCompleteProviderInvokeEAD4A01F"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8c/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallEC2describeFlowLogscd109a6b0b3b3f101a0339d91cfa1f8cWaitForTimeoutProviderInvokeF37E34EB"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938WaitForIsCompleteProviderInvoke00B7E2E2"
+    }
+  ],
+  "/FlowLogsScopedPermissions/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents7069c246941f6344e0a9feacb2211938WaitForTimeoutProviderInvokeE650182A"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "version": "55.0.0",
+  "files": {
+    "bd4e6dd70616f77e03bec336060476b268ab6e40898a3f35406af904ba79f07e": {
+      "source": {
+        "path": "asset.bd4e6dd70616f77e03bec336060476b268ab6e40898a3f35406af904ba79f07e.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-2a666e25": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bd4e6dd70616f77e03bec336060476b268ab6e40898a3f35406af904ba79f07e.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "9fa87206dcd4720e0967b014adba227411cb9f1b46d44f6cf76047f5c1111f53": {
+      "displayName": "FlowLogsScopedPermissionsDefaultTestDeployAssert3416EAB6 Template",
+      "source": {
+        "path": "FlowLogsScopedPermissionsDefaultTestDeployAssert3416EAB6.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-92ddd58d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9fa87206dcd4720e0967b014adba227411cb9f1b46d44f6cf76047f5c1111f53.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -721,6 +721,23 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped`
+
+When this feature flag is enabled, VPC Flow Logs grants `DescribeLogStreams` on the log group ARN without a trailing `:*`,
+and grants `CreateLogStream` and `PutLogEvents` on the log stream ARN pattern.
+
+When this feature flag is disabled, all three permissions remain together on the log stream ARN pattern.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:flowLogsCloudWatchLogsPermissionsScoped": true
+  }
+}
+```
+
 * `@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint`
 
 When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
