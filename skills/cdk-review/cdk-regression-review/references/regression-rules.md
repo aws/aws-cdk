@@ -87,9 +87,7 @@ that also changes what working code does is.
 
 ## Library stability & breaking changes
 
-**[REG-STABILITY-GATE] (BLOCKING)** — A breaking change to a stable library (`aws-cdk-lib`). In an
-**experimental** library (an `-alpha` suffix and `"stability": "experimental"` in
-`package.json`) a breaking change is permitted but needs an explicit `BREAKING CHANGE:` callout. The one
+**[REG-STABILITY-GATE] (BLOCKING)** — A breaking change to a stable library (`aws-cdk-lib`). The one
 legitimate stable break is an existing API that was a bug *blocking* the feature (nobody could use it),
 recorded in `allowed-breaking-changes.txt` at the repo root. A break with an entry there is not a finding
 when the API was unusable before the change; an entry the PR itself adds does not by itself exempt the
@@ -119,10 +117,10 @@ for the definitional test of which template changes are breaking.
 stable module, such as a changed default, with no feature flag. See
 [`AGENTS.md § Feature Flags`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#feature-flags).
 
-**[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — A breaking change in an experimental (`-alpha`) module.
-The guides permit it and leave avoiding it to the module's maintainer, so the finding asks whether the break
-can be avoided and, when the PR body lacks it, for an explicit `BREAKING CHANGE:` callout (before the `---`
-line). For a mitigation, prefer opt-in via a new API element (add it and mark the old one `@deprecated` with
+**[REG-BREAKING-CHANGE-CALLOUT] (RECOMMENDED)** — A breaking change in an experimental module (an `-alpha`
+suffix and `"stability": "experimental"` in `package.json`). The finding asks whether the break can be
+avoided and, when the PR body lacks it, for an explicit `BREAKING CHANGE:` callout (before the `---` line).
+For a mitigation, prefer opt-in via a new API element (add it and mark the old one `@deprecated` with
 a descriptive error) over a feature flag, whose effects are non-local. See
 [`CONTRIBUTING.md § Breaking Changes`](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#breaking-changes)
 and [`AGENTS.md § PR Conventions`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#pr-conventions).
