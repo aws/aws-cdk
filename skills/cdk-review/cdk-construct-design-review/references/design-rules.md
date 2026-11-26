@@ -58,8 +58,9 @@ is given. See
 - **Tier:** RECOMMENDED for a new L2 of a taggable resource with no `tags` prop, or one that does not pass
   `props.tags` to the L1.
 
-**[CD-BACKWARD-COMPAT] (BLOCKING)** — A later fix or extension that mutates the original in place of
-deprecate-and-add (`FooV2`). See
+**[CD-BACKWARD-COMPAT] (BLOCKING)** — Design the new surface so it won't force a future break: no
+`@deprecated` props in a newly introduced interface, keep detail types `@internal`, and correct later by
+deprecate-and-add (`FooV2`), not mutate. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
 - **Tier:** RECOMMENDED for an implementation-detail type left exported instead of `@internal`.
 - **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface.
