@@ -21,10 +21,6 @@ for the first-match-wins table and
 [`AGENTS.md § L2 Building Blocks`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#l2-building-blocks)
 for each block.
 
-**[CD-README-DRIVEN] (RECOMMENDED)** — A new or significantly-changed L2 shipping with no README usage
-example is a design miss. See
-[`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes).
-
 ## Design Guidelines conformance
 
 **[CD-PROPS-SHAPE] (BLOCKING)** — Props are flat by default, concise and strongly typed. See
@@ -32,10 +28,6 @@ example is a design miss. See
 - **Tier:** RECOMMENDED for props valid only together that are left as separate props (one nested object),
   and for props that exclude each other (factory methods or an enum-like class). See
   [`AGENTS_CONSTRUCT_DESIGN.md § Property Structure`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#property-structure-flat-vs-nested).
-
-**[CD-PROPS-DEFAULT] (BLOCKING)** — A `@default` that contradicts what the code does is a real
-behavioral surprise. See
-[`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior).
 
 **[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token or secret, is typed
 `SecretValue`, so a plaintext secret can't pass through the API. See

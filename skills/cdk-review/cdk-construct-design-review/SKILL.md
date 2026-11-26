@@ -35,5 +35,5 @@ users into mistakes, and open to extension later without breaking its users? App
   outside your scope.
 - **Security exposure** — over-broad IAM, public resources, leaked secrets. The design type-choice that a
   secret prop is typed `SecretValue` stays yours; whether a policy is over-broad is outside your scope.
-- **Test/doc prose quality** — test design and README/JSDoc wording. Whether a new L2 has a README usage
-  example *at all* is a design signal you keep; grading its prose is outside your scope.
+- **Tests and docs** — test design and README/JSDoc content, including whether a new L2 has a README
+  usage example — outside your scope.
