@@ -1,4 +1,10 @@
 {
+  "/sfn-sm-training-job-image": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "sfn-sm-training-job-image.template.json"
+    }
+  ],
   "/sfn-sm-training-job-image/Bucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -19,9 +25,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -49,9 +53,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -60,7 +62,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/sfn-sm-training-job-image/StateMachine": [
@@ -161,21 +163,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/sfn-sm-training-job-image/TrainSet/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/sfn-sm-training-job-image/TrainSet/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -412,12 +406,6 @@
       "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
     }
   ],
-  "/sfn-sm-training-job-image/TrainSet/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "TrainSetAwsCliLayer57B94C48"
-    }
-  ],
   "/sfn-sm-training-job-image/TrainSet/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -590,12 +578,6 @@
           {}
         ]
       }
-    }
-  ],
-  "/sfn-sm-training-job-image/TrainSet/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/sfn-sm-training-job-image/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [

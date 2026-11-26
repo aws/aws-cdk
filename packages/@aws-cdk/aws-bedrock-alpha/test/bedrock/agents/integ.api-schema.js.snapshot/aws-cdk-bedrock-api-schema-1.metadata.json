@@ -55,9 +55,7 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "timeout": "*",
         "role": "*",
@@ -85,9 +83,7 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": {
-        "addLayers": [
-          "*"
-        ]
+        "addLayers": []
       }
     },
     {
@@ -96,7 +92,7 @@
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-      "data": 2
+      "data": 0
     }
   ],
   "/aws-cdk-bedrock-api-schema-1/ApiSchemaAgent": [
@@ -283,21 +279,13 @@
       "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
     }
   ],
-  "/aws-cdk-bedrock-api-schema-1/DeploySchema/AwsCliLayer": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {}
-    }
-  ],
   "/aws-cdk-bedrock-api-schema-1/DeploySchema/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
         "uuid": "*",
         "architecture": "*",
-        "layers": [
-          "*"
-        ],
+        "layers": [],
         "environment": "*",
         "lambdaPurpose": "*",
         "timeout": "*",
@@ -555,12 +543,6 @@
       "data": "SchemaBucketAutoDeleteObjectsCustomResource0F518746"
     }
   ],
-  "/aws-cdk-bedrock-api-schema-1/DeploySchema/AwsCliLayer/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DeploySchemaAwsCliLayerD0D0BA6E"
-    }
-  ],
   "/aws-cdk-bedrock-api-schema-1/DeploySchema/Asset1/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -703,12 +685,6 @@
           {}
         ]
       }
-    }
-  ],
-  "/aws-cdk-bedrock-api-schema-1/DeploySchema/AwsCliLayer/Code/AssetBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
     }
   ],
   "/aws-cdk-bedrock-api-schema-1/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
