@@ -296,6 +296,11 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Command": [
+       "python3",
+       "-c",
+       "print(\"hello from scheduled task\")"
+      ],
       "Environment": [
        {
         "Name": "TRIGGER",
@@ -304,7 +309,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c6383dfbedce5f6f77406f7b2a28fc4bf86a22f45cb63047896d35e499ab9c09"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -537,6 +542,324 @@
     }
    }
   },
+  "CustomRole6D8E6809": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "CustomRoleDefaultPolicyC5C189DF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ecs:RunTask",
+       "Condition": {
+        "ArnEquals": {
+         "ecs:cluster": {
+          "Fn::GetAtt": [
+           "FargateCluster7CCD5F93",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ScheduledFargateTask3ScheduledTaskDef6108A0BC"
+       }
+      },
+      {
+       "Action": "ecs:TagResource",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":*:task/",
+          {
+           "Ref": "FargateCluster7CCD5F93"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ScheduledFargateTask3ScheduledTaskDefExecutionRole8289C53E",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ScheduledFargateTask3ScheduledTaskDefTaskRole83FC29C1",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomRoleDefaultPolicyC5C189DF",
+    "Roles": [
+     {
+      "Ref": "CustomRole6D8E6809"
+     }
+    ]
+   }
+  },
+  "ScheduledFargateTask3ScheduledEventRuleF06B35BB": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(2 minutes)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "FargateCluster7CCD5F93",
+        "Arn"
+       ]
+      },
+      "EcsParameters": {
+       "LaunchType": "FARGATE",
+       "NetworkConfiguration": {
+        "AwsVpcConfiguration": {
+         "AssignPublicIp": "DISABLED",
+         "SecurityGroups": [
+          {
+           "Fn::GetAtt": [
+            "ScheduledFargateTask3ScheduledTaskDefSecurityGroup6427AE7C",
+            "GroupId"
+           ]
+          }
+         ],
+         "Subnets": [
+          {
+           "Ref": "VpcPrivateSubnet1Subnet536B997A"
+          }
+         ]
+        }
+       },
+       "TaskCount": 2,
+       "TaskDefinitionArn": {
+        "Ref": "ScheduledFargateTask3ScheduledTaskDef6108A0BC"
+       }
+      },
+      "Id": "Target0",
+      "Input": "{}",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "CustomRole6D8E6809",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "ScheduledFargateTask3ScheduledTaskDefTaskRole83FC29C1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ScheduledFargateTask3ScheduledTaskDef6108A0BC": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Command": [
+       "python3",
+       "-c",
+       "print(\"hello from scheduled task\")"
+      ],
+      "Environment": [
+       {
+        "Name": "TRIGGER",
+        "Value": "CloudWatch Events"
+       }
+      ],
+      "Essential": true,
+      "Image": {
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c6383dfbedce5f6f77406f7b2a28fc4bf86a22f45cb63047896d35e499ab9c09"
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "ScheduledFargateTask3ScheduledTaskDefScheduledContainerLogGroupB7622065"
+        },
+        "awslogs-stream-prefix": "ScheduledFargateTask3",
+        "awslogs-region": {
+         "Ref": "AWS::Region"
+        }
+       }
+      },
+      "Name": "ScheduledContainer"
+     }
+    ],
+    "Cpu": "256",
+    "ExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "ScheduledFargateTask3ScheduledTaskDefExecutionRole8289C53E",
+      "Arn"
+     ]
+    },
+    "Family": "awsfargateintegScheduledFargateTask3ScheduledTaskDef5AAD73D6",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "ScheduledFargateTask3ScheduledTaskDefTaskRole83FC29C1",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ScheduledFargateTask3ScheduledTaskDefScheduledContainerLogGroupB7622065": {
+   "Type": "AWS::Logs::LogGroup",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ScheduledFargateTask3ScheduledTaskDefExecutionRole8289C53E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ScheduledFargateTask3ScheduledTaskDefExecutionRoleDefaultPolicy5EA42AA8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduledFargateTask3ScheduledTaskDefScheduledContainerLogGroupB7622065",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ScheduledFargateTask3ScheduledTaskDefExecutionRoleDefaultPolicy5EA42AA8",
+    "Roles": [
+     {
+      "Ref": "ScheduledFargateTask3ScheduledTaskDefExecutionRole8289C53E"
+     }
+    ]
+   }
+  },
+  "ScheduledFargateTask3ScheduledTaskDefSecurityGroup6427AE7C": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-fargate-integ/ScheduledFargateTask3/ScheduledTaskDef/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
   "ScheduledFargateTask2ScheduledEventRuleB28B6E89": {
    "Type": "AWS::Events::Rule",
    "Properties": {
@@ -616,6 +939,11 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Command": [
+       "python3",
+       "-c",
+       "print(\"hello from scheduled task\")"
+      ],
       "Environment": [
        {
         "Name": "TRIGGER",
@@ -624,7 +952,7 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:0a3355be12051c9984bf2b0b2bba4e6ea535968e5b6e7396449701732fe5ed14"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:c6383dfbedce5f6f77406f7b2a28fc4bf86a22f45cb63047896d35e499ab9c09"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -855,6 +1183,43 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FargateCluster7CCD5F93",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-fargate-integ:ExportsOutputFnGetAttFargateCluster7CCD5F93Arn6DE36182"
+   }
+  },
+  "ExportsOutputRefScheduledFargateTaskScheduledEventRule2B79E34F077F3C36": {
+   "Value": {
+    "Ref": "ScheduledFargateTaskScheduledEventRule2B79E34F"
+   },
+   "Export": {
+    "Name": "aws-fargate-integ:ExportsOutputRefScheduledFargateTaskScheduledEventRule2B79E34F077F3C36"
+   }
+  },
+  "ExportsOutputRefScheduledFargateTask3ScheduledEventRuleF06B35BBA80E8299": {
+   "Value": {
+    "Ref": "ScheduledFargateTask3ScheduledEventRuleF06B35BB"
+   },
+   "Export": {
+    "Name": "aws-fargate-integ:ExportsOutputRefScheduledFargateTask3ScheduledEventRuleF06B35BBA80E8299"
+   }
+  },
+  "ExportsOutputRefScheduledFargateTask2ScheduledEventRuleB28B6E8992AE7316": {
+   "Value": {
+    "Ref": "ScheduledFargateTask2ScheduledEventRuleB28B6E89"
+   },
+   "Export": {
+    "Name": "aws-fargate-integ:ExportsOutputRefScheduledFargateTask2ScheduledEventRuleB28B6E8992AE7316"
    }
   }
  },
