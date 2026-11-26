@@ -33,4 +33,4 @@ to extension later without breaking its users? Apply
   pre-existing API. Designing the *new* surface well is yours; classifying an existing-surface break is
   outside your scope.
 - **Security exposure** — over-broad IAM, public resources, leaked secrets — outside your scope.
-- **Tests and docs** — test design, README examples, `@default` text and doc wording — outside your scope.
+- **Tests and docs** — test design, README examples and `@default` text — outside your scope.
