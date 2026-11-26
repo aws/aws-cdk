@@ -1,18 +1,13 @@
 # Construct design rules
 
-Rows are grouped by defect family (feature placement & abstraction, Design Guidelines conformance,
-ages-well anti-patterns). See the `cdk-review-principles` skill for the shared
-lookup convention (the BLOCKING → RECOMMENDED → OPTIONAL sort within a family, the conditional-severity
-encoding, the `(doc-absent detail)` marker, and links referencing `main`).
-
 ## Feature placement & abstraction
 
-**[CD-IFOO-NO-FEATURE-METHODS] (BLOCKING)** — A feature method or config-mutation method added to the
-resource interface `IFoo` is a MUST violation; features belong on Facades. See
+**[CD-IFOO-NO-FEATURE-METHODS] (BLOCKING)** — A feature method or a config-mutation method added to the
+resource interface `IFoo`, other than a factory method that creates a new resource (`add{Bar}`) or a method
+[`AGENTS_CONSTRUCT_DESIGN.md § Standard Interface Extensions`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#standard-interface-extensions)
+requires on the interface; features belong on Facades. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Construct Interface (IFoo)`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#construct-interface-ifoo)
 and [`§ Configuration Mutation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#configuration-mutation).
-- **False-positive guard (doc-absent detail):** `grant*` methods, `from*` importers, and `add{Bar}`
-  factories SHOULD be on the interface; flagging one is a false BLOCKING against a conformant design.
 
 **[CD-LAYER-MODEL] (BLOCKING)** — An L2 MUST hide CloudFormation (no `Cfn*`/`Token` in its surface),
 provide an escape hatch to the L1, and expose the full service surface (no hard-coded choice the service
@@ -25,11 +20,6 @@ CfnPropsMixin / Facade / Trait) first, and only as an L2 method if none fits. Se
 for the first-match-wins table and
 [`AGENTS.md § L2 Building Blocks`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#l2-building-blocks)
 for each block.
-- **Tier (doc-absent detail):** the guide names no damage: a feature in L2 code still works for that L2's
-  users and only reuse is lost, so RECOMMENDED. A feature method on `IFoo` is `CD-IFOO-NO-FEATURE-METHODS`.
-- **Detection cue (doc-absent detail):** the "feature" to place is feature *logic* — input validation,
-  auxiliary-resource creation, or computed behavior — living in L2 glue code, or a grant/metric/event
-  helper implemented as a bare method rather than a building block.
 
 **[CD-README-DRIVEN] (RECOMMENDED)** — A new or significantly-changed L2 shipping with no README usage
 example is a design miss. See
@@ -37,34 +27,27 @@ example is a design miss. See
 
 ## Design Guidelines conformance
 
-**[CD-PROPS-SHAPE] (BLOCKING)** — Props must be `readonly`, flat, concise, and strongly typed (construct
+**[CD-PROPS-SHAPE] (BLOCKING)** — Props must be flat, concise, and strongly typed (construct
 interfaces not ARN strings, `Duration`/`Size` not raw numbers, no `Cfn*`/`Token`). See
 [`AGENTS.md § Props Design`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#props-design).
 
 **[CD-PROPS-DEFAULT] (BLOCKING)** — A `@default` that contradicts what the code does is a real
 behavioral surprise. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Default Behavior`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#default-behavior).
-- **Scope split (doc-absent detail):** the default *behavior* is yours; whether the tag is merely present
-  or reads well is outside your scope.
 
 **[CD-SECRET-VALUE] (BLOCKING)** — A prop named `password`, or carrying a token/secret, must be typed
 `SecretValue` so a plaintext secret can't pass through the API. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Secrets`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#secrets).
-- **Scope split (doc-absent detail):** the type choice is design (yours); whether a specific value leaks
-  is outside your scope.
 
 **[CD-NAMING] (BLOCKING)** — Name the resource and its props in official AWS/CloudFormation terminology,
-and derive related type names (`FooProps`, `IFoo`). See
+and derive its resource interface name (`IFoo`). See
 [`AGENTS_CONSTRUCT_DESIGN.md § Property Naming`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#property-naming).
 
-**[CD-ATTRIBUTES] (BLOCKING)** — Expose every CloudFormation attribute as a `readonly`,
-type-name-prefixed (`bucketArn`, not `arn`) opaque token. See
+**[CD-ATTRIBUTES] (BLOCKING)** — Expose every CloudFormation attribute as a type-name-prefixed
+(`bucketArn`, not `arn`) opaque token. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Resource Attributes`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#resource-attributes).
-- **Scope split (doc-absent detail):** the surface design is yours; grading the tag/`@returns` prose is
-  outside your scope.
 
-**[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Use the standard constructor and extend only
-`Resource`/`Construct`/`{Foo}Base`. See
+**[CD-CONSTRUCT-ANATOMY] (BLOCKING)** — Extend only `Resource`/`Construct`/`{Foo}Base`. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Base Classes & Inheritance`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#base-classes--inheritance).
 
 **[CD-FROM-METHODS] (BLOCKING)** — Give a resource at least one `from{Attribute}` importer (a resource
@@ -84,7 +67,8 @@ See [`AGENTS_CONSTRUCT_DESIGN.md § Tags`](https://github.com/aws/aws-cdk/blob/m
 `@deprecated` props in a newly introduced interface, keep detail types `@internal`, and correct later by
 deprecate-and-add (`FooV2`), not mutate. See
 [`AGENTS_CONSTRUCT_DESIGN.md § Backward Compatibility & Deprecation`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#backward-compatibility--deprecation).
-- **Scope split (doc-absent detail):** classifying an *existing-surface* break is outside construct-design's scope.
+- **Tier:** RECOMMENDED for an implementation-detail type left exported instead of `@internal`.
+- **Tier:** RECOMMENDED for a `@deprecated` prop in a newly introduced interface.
 
 **[CD-STATEFUL-REPLACEMENT-FOOTGUN] (RECOMMENDED)** — A new L2 prop mapping to a CloudFormation property whose
 `UpdateType` is `Immutable` (or `Conditional`) is a replacement footgun: setting it later triggers a
@@ -96,13 +80,7 @@ CloudFormation resource specification before you flag. See
 for the update-behavior classes and
 [`AGENTS_CONSTRUCT_DESIGN.md § Stateful/Stateless & Removal Policy`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#statefulstateless--removal-policy)
 for the stateful classification.
-- **Tier (doc-absent detail):** RECOMMENDED when the user sets the value, since only the user's own later
-  change replaces the resource. Up-tier BLOCKING when the L2 computes the value, so a change elsewhere
-  replaces a stateful resource. A stateless resource is not up-tiered: replacement costs downtime and a new
-  name, not data.
-- **Scope split (doc-absent detail):** flag only the *new* surface a future user mutates. A break in an
-  *existing* consumer's synthesis, and the committed snapshot diff of this PR's own synth, are outside
-  construct-design's scope.
+- **Tier:** BLOCKING when the L2 computes the value, so a change elsewhere replaces a stateful resource.
 
 **[CD-AWSLINT-SUPPRESSION] (RECOMMENDED)** — Flag every `awslint.exclude` entry the diff adds or broadens,
 and ask for a stated justification in the PR description or an adjacent comment. A suppression turns off an
@@ -112,8 +90,7 @@ guardrail. See
 build-time enforcement and
 [`awslint README § Saving State`](https://github.com/aws/aws-cdk/blob/main/packages/awslint/README.md#saving-state)
 for the `exclude` mechanism.
-- **Escalate to BLOCKING when the suppressed rule backs a MUST-level guideline (doc-absent detail):** the
-  suppression there silences the exact floor the design and regression lenses trust.
+- **Tier:** BLOCKING when the suppressed rule backs a MUST-level guideline.
 
 **[CD-ENUMS] (RECOMMENDED)** — Model a closed known set as an `enum`, an open set as an enum-like class.
 See
@@ -130,9 +107,6 @@ and prefer extending an existing method over adding a new one. See
 affordance where the service supports it. See
 [`AGENTS_CONSTRUCT_DESIGN.md § CloudWatch Metrics`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_DESIGN.md#cloudwatch-metrics)
 and the sections following it for the signatures.
-- **Auto-wired affordances (doc-absent detail):** before flagging an absence, confirm the framework
-  doesn't already provide it — tagging works through `Tags.of(x).add(...)` wherever the L1 is taggable, and
-  `removalPolicy`, dependencies, and metadata come from `cdk.Resource`.
 
 **[CD-POLYMORPHISM-OVER-BOOLEAN] (RECOMMENDED)** — Model behavioral variation through polymorphism, not a
 boolean flag. See
@@ -145,10 +119,6 @@ rather than declaring a parallel one. See
 **[CD-PREFER-DEFAULT] (RECOMMENDED)** — Prefer inferring a sensible default over raising an error: error
 only when no default exists or the user gave an explicitly contradictory config. See
 [`AGENTS.md § Error Handling`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#error-handling).
-- **Application (doc-absent detail):** when two or more props jointly control one behavior, trace every
-  combination (both / one / conflicting) against this ordering. Infer a value derivable from another prop
-  or the service rather than require it.
-- **Escalate to BLOCKING only when the same shape also breaks a cited codified mandate — cite it.**
 
 ## Ages-well anti-patterns
 
@@ -163,7 +133,6 @@ no consumer today.
 public surface.
 
 **[CD-CONSTRUCT-ID-CHANGE] (BLOCKING)** — A construct ID MUST NOT change.
-- **Scope split (doc-absent detail):** the resulting stack break is also outside construct-design's scope.
 
 **[CD-PREFER-ADDITIONS] (RECOMMENDED)** — Prefer additions over modification — design so the next
 capability lands additively. See
