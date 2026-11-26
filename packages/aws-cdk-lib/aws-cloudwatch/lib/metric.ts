@@ -816,7 +816,13 @@ export class MathExpression implements IMetric {
   public readonly visible?: boolean;
 
   /**
-   * Aggregation period of this metric
+   * The period over which the math expression's statistics are applied.
+   *
+   * This period overrides the periods of all metrics in `usingMetrics`.
+   * When an input metric has a non-default period that differs from this one,
+   * a `CloudWatch:Math:MetricsPeriodsOverridden` warning is reported when the
+   * expression is used in an alarm or dashboard. Defaults to
+   * `Duration.minutes(5)` when no period was given in the props.
    */
   public readonly period: cdk.Duration;
 
