@@ -202,6 +202,12 @@ export class FactName {
   public static readonly APPMESH_ECR_ACCOUNT = 'appMeshRepositoryAccount';
 
   /**
+   * The ID of the AWS account that owns the private ECR repositories that contain the
+   * Amazon EKS add-on images (such as the AWS Load Balancer Controller) in a given region.
+   */
+  public static readonly EKS_ADDON_ECR_ACCOUNT = 'eksAddonRepositoryAccount';
+
+  /**
    * The CIDR block used by Amazon Data Firehose servers.
    */
   public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';

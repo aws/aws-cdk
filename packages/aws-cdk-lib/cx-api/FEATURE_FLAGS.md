@@ -123,6 +123,7 @@ Flags come in three types:
 | [@aws-cdk/aws-apigateway:logGroupDestinationArnWithoutWildcard](#aws-cdkaws-apigatewayloggroupdestinationarnwithoutwildcard) | Render the API Gateway access log destination ARN without the trailing `:*` | 2.274.0 | fix |
 | [@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction](#aws-cdkaws-stepfunctions-tasksevaluateexpressiondedicatedfunction) | When enabled, each EvaluateExpression task gets its own Lambda function | 2.275.0 | fix |
 | [@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserandgroupstacksafedefaultpolicyname) | When enabled, the default policy of an imported user or group gets a name that includes the stack name | 2.278.0 | fix |
+| [@aws-cdk/aws-eks:albControllerRegionalImageRepository](#aws-cdkaws-eksalbcontrollerregionalimagerepository) | Use the Amazon EKS add-on image registry of the stack region as the default image repository of the AWS Load Balancer Controller | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -169,6 +170,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:removeEmptyLoadBalancers": true,
     "@aws-cdk/aws-efs:denyAnonymousAccess": true,
     "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+    "@aws-cdk/aws-eks:albControllerRegionalImageRepository": true,
     "@aws-cdk/aws-eks:defaultToAL2023": true,
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
     "@aws-cdk/aws-eks:useNativeOidcProvider": true,
@@ -2688,6 +2690,38 @@ that stack is deployed too.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.278.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-eks:albControllerRegionalImageRepository
+
+*Use the Amazon EKS add-on image registry of the stack region as the default image repository of the AWS Load Balancer Controller*
+
+Flag type: New default behavior
+
+When enabled, an `AlbController` that does not specify a `repository` pulls the AWS Load Balancer
+Controller image from the Amazon EKS add-on image registry of the region the stack is deployed to
+(for example `602401143452.dkr.ecr.us-east-2.amazonaws.com` or `918309763551.dkr.ecr.cn-north-1.amazonaws.com.cn`),
+instead of always pulling it from `us-west-2`.
+
+Pulling from the same region works in clusters that reach Amazon ECR only through VPC endpoints, which do
+not support cross-region requests, and in partitions other than `aws` (China, AWS GovCloud (US), AWS European
+Sovereign Cloud), which cannot pull from `us-west-2` at all.
+
+If the region of the stack is known at synthesis time and has no Amazon EKS add-on image registry known to
+the CDK, the controller keeps using the `us-west-2` repository. If the region is not known at synthesis time
+(the stack has no `env`), the repository is looked up with `Fn::FindInMap`, and the deployment fails in a region
+that is not in the mapping.
+
+Enabling this flag changes the Helm values of the controller, so the next deployment upgrades the Helm release
+and replaces the controller pods. The image itself is the same.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Explicitly set `repository` to `602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller` in the `AlbController` options.
 
 
 <!-- END details -->

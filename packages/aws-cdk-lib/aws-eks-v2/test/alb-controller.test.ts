@@ -2,8 +2,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture } from './util';
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
+import { App, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart, KubernetesManifest } from '../lib';
 
 const versions = Object.values(AlbControllerVersion);
@@ -229,5 +231,118 @@ test('should pass overwriteServiceAccount to service account', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties(KubernetesManifest.RESOURCE_TYPE, {
     Overwrite: true,
+  });
+});
+
+describe('default image repository with the albControllerRegionalImageRepository feature flag', () => {
+  const IMAGE_NAME = 'amazon/aws-load-balancer-controller';
+  const LEGACY_REPOSITORY = `602401143452.dkr.ecr.us-west-2.amazonaws.com/${IMAGE_NAME}`;
+
+  function createController(region: string | undefined, flag: boolean, repository?: string) {
+    return Template.fromStack(createStack(region, flag, repository));
+  }
+
+  function createStack(region: string | undefined, flag: boolean, repository?: string, context: Record<string, any> = {}) {
+    const app = new App({ context: { [cxapi.EKS_ALB_CONTROLLER_REGIONAL_IMAGE_REPOSITORY]: flag, ...context } });
+    const stack = new Stack(app, 'Stack', { env: region ? { region } : undefined });
+    const cluster = new Cluster(stack, 'Cluster', {
+      version: KubernetesVersion.V1_27,
+      kubectlProviderOptions: {
+        kubectlLayer: new KubectlV31Layer(stack, 'kubectlLayer'),
+      },
+    });
+    AlbController.create(stack, {
+      cluster,
+      version: AlbControllerVersion.V2_8_2,
+      repository,
+    });
+    return stack;
+  }
+
+  function expectValues(template: Template, ...parts: any[]) {
+    template.hasResourceProperties(HelmChart.RESOURCE_TYPE, {
+      Values: { 'Fn::Join': ['', Match.arrayWith(parts)] },
+    });
+  }
+
+  test('uses the us-west-2 repository when the flag is disabled', () => {
+    const template = createController('us-east-2', false);
+
+    expectValues(template, `","image":{"repository":"${LEGACY_REPOSITORY}","tag":"v2.8.2"}}`);
+  });
+
+  test.each([
+    ['us-east-2', '602401143452'],
+    ['af-south-1', '877085696533'],
+    ['cn-north-1', '918309763551'],
+    ['us-gov-west-1', '013241004608'],
+  ])('uses the repository of the stack region %s', (region, account) => {
+    const template = createController(region, true);
+
+    expectValues(template,
+      `","image":{"repository":"${account}.dkr.ecr.${region}.`,
+      { Ref: 'AWS::URLSuffix' },
+      `/${IMAGE_NAME}","tag":"v2.8.2"}}`,
+    );
+  });
+
+  test.each(['me-west-1', 'us-iso-east-1'])('uses the us-west-2 repository in region %s, which has no known registry', (region) => {
+    const template = createController(region, true);
+
+    expectValues(template, `","image":{"repository":"${LEGACY_REPOSITORY}","tag":"v2.8.2"}}`);
+  });
+
+  test('looks up the repository at deployment time when the stack region is a token', () => {
+    const template = createController(undefined, true);
+
+    expectValues(template,
+      '","image":{"repository":"',
+      { 'Fn::FindInMap': ['EksAddonRepositoryAccountMap', { Ref: 'AWS::Region' }, 'value'] },
+      '.dkr.ecr.',
+      { Ref: 'AWS::Region' },
+      '.',
+      { Ref: 'AWS::URLSuffix' },
+      `/${IMAGE_NAME}","tag":"v2.8.2"}}`,
+    );
+    template.hasMapping('EksAddonRepositoryAccountMap', {
+      'us-east-1': { value: '602401143452' },
+      'af-south-1': { value: '877085696533' },
+      'cn-north-1': { value: '918309763551' },
+    });
+  });
+
+  test('uses the specified repository when the flag is enabled', () => {
+    const template = createController('us-east-2', true, 'custom');
+
+    expectValues(template, '","image":{"repository":"custom","tag":"v2.8.2"}}');
+  });
+
+  test.each(['me-west-1', 'us-iso-east-1'])('warns that the us-west-2 repository is used in region %s, which has no known registry', (region) => {
+    const stack = createStack(region, true);
+
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(
+      `No Amazon EKS add-on image registry is known for ${region}.*\\[ack: @aws-cdk/aws-eks:albControllerRepositoryLegacyFallback\\]`));
+  });
+
+  test('warns that the repository is looked up at deployment time when the stack region is a token', () => {
+    const stack = createStack(undefined, true);
+
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(
+      'looked up at deployment time.*\\[ack: @aws-cdk/aws-eks:albControllerRepositoryDeployTimeLookup\\]'));
+  });
+
+  test.each([
+    ['the flag is disabled', undefined, false, undefined],
+    ['the stack region has a known registry', 'us-east-2', true, undefined],
+    ['the repository is specified', undefined, true, 'custom'],
+  ])('does not warn about the repository when %s', (_, region, flag, repository) => {
+    const stack = createStack(region, flag, repository);
+
+    Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('albControllerRepository'));
+  });
+
+  test('fails when the stack region is a token and the target partitions have no known registry', () => {
+    expect(() => createStack(undefined, true, undefined, { [cxapi.TARGET_PARTITIONS]: ['aws-iso'] }))
+      .toThrow(/don't have any information for eksAddonRepositoryAccount/);
   });
 });

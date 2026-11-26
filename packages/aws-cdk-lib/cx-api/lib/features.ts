@@ -163,6 +163,7 @@ export const ECS_REMOVE_EMPTY_LOAD_BALANCERS = '@aws-cdk/aws-ecs:removeEmptyLoad
 export const CLOUDFRONT_DEFAULT_VIEWER_PROTOCOL_POLICY_REDIRECT_TO_HTTPS = '@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps';
 export const STEPFUNCTIONS_TASKS_EVALUATE_EXPRESSION_DEDICATED_FUNCTION = '@aws-cdk/aws-stepfunctions-tasks:evaluateExpressionDedicatedFunction';
 export const IAM_IMPORTED_USER_AND_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName';
+export const EKS_ALB_CONTROLLER_REGIONAL_IMAGE_REPOSITORY = '@aws-cdk/aws-eks:albControllerRegionalImageRepository';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -2040,6 +2041,33 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.278.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_ALB_CONTROLLER_REGIONAL_IMAGE_REPOSITORY]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use the Amazon EKS add-on image registry of the stack region as the default image repository of the AWS Load Balancer Controller',
+    detailsMd: `
+      When enabled, an \`AlbController\` that does not specify a \`repository\` pulls the AWS Load Balancer
+      Controller image from the Amazon EKS add-on image registry of the region the stack is deployed to
+      (for example \`602401143452.dkr.ecr.us-east-2.amazonaws.com\` or \`918309763551.dkr.ecr.cn-north-1.amazonaws.com.cn\`),
+      instead of always pulling it from \`us-west-2\`.
+
+      Pulling from the same region works in clusters that reach Amazon ECR only through VPC endpoints, which do
+      not support cross-region requests, and in partitions other than \`aws\` (China, AWS GovCloud (US), AWS European
+      Sovereign Cloud), which cannot pull from \`us-west-2\` at all.
+
+      If the region of the stack is known at synthesis time and has no Amazon EKS add-on image registry known to
+      the CDK, the controller keeps using the \`us-west-2\` repository. If the region is not known at synthesis time
+      (the stack has no \`env\`), the repository is looked up with \`Fn::FindInMap\`, and the deployment fails in a region
+      that is not in the mapping.
+
+      Enabling this flag changes the Helm values of the controller, so the next deployment upgrades the Helm release
+      and replaces the controller pods. The image itself is the same.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Explicitly set `repository` to `602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller` in the `AlbController` options.',
   },
 };
 
