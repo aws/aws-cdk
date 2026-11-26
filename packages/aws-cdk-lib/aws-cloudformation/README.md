@@ -392,53 +392,73 @@ regardless of failures.
 #### Using File Assets
 
 A StackSet can use file assets, for example the code of a Lambda function, or the template of a
-`NestedStack` defined in the StackSet. Because the stack instances of a StackSet are deployed to
-other accounts and regions, they can't read these assets from the CDK bootstrap bucket. Instead:
+`NestedStack` defined in the StackSet. The stack instances of a StackSet are deployed to other
+accounts and regions, so they can't read these assets from the CDK bootstrap bucket. To use file assets:
 
-1. Create one bucket in each region that the StackSet deploys to, all named `${prefix}-${region}`.
-2. Allow the target accounts to read from these buckets, for example with an organization
-   principal for a service managed StackSet.
-3. Pass the buckets and the prefix as `assetBuckets` and `assetBucketPrefix`.
-
-The stack that contains the StackSet copies the assets to these buckets before the StackSet is
-deployed. Docker image assets (for example `lambda.DockerImageCode.fromImageAsset()`) are not supported.
+1. Create one bucket in each region that the StackSet deploys to, with an explicit `bucketName`.
+   A Lambda function can only read its code from a bucket in its own region.
+2. Pass the bucket of each region as `assetBuckets: StackSetAssetBuckets.fromRegionalBuckets({ ... })`,
+   keyed by region. Synthesis fails if a region that the StackSet deploys to has no bucket.
+3. Allow the target accounts to read the assets with `stackSet.grants.readAssets()`, for example with
+   an organization principal for a service managed StackSet, or an account principal for each
+   account of a self managed StackSet. `readAssets()` grants exactly the principal you pass: if only
+   the deployment reads the assets (for example Lambda code), you can limit an account principal to the
+   StackSet execution role with an `ArnEquals` condition on `aws:PrincipalArn`.
 
 Here's an example that creates the buckets in the same CDK app, with one stack per region:
 
 ```ts
 declare const app: App;
 
-const usEast1Stack = new Stack(app, 'StackSetAssets-us-east-1', { env: { account: '111111111111', region: 'us-east-1' } });
-const usEast1Bucket = new s3.Bucket(usEast1Stack, 'Assets', { bucketName: 'my-stackset-assets-us-east-1' });
-const usEast1Objects = usEast1Bucket.arnForObjects('*');
-usEast1Bucket.addToResourcePolicy(new iam.PolicyStatement({
-  actions: ['s3:GetObject'],
-  resources: [usEast1Objects],
-  principals: [new iam.OrganizationPrincipal('o-xyz')],
-}));
-
-const euWest1Stack = new Stack(app, 'StackSetAssets-eu-west-1', { env: { account: '111111111111', region: 'eu-west-1' } });
-const euWest1Bucket = new s3.Bucket(euWest1Stack, 'Assets', { bucketName: 'my-stackset-assets-eu-west-1' });
-const euWest1Objects = euWest1Bucket.arnForObjects('*');
-euWest1Bucket.addToResourcePolicy(new iam.PolicyStatement({
-  actions: ['s3:GetObject'],
-  resources: [euWest1Objects],
-  principals: [new iam.OrganizationPrincipal('o-xyz')],
-}));
+const regions = ['us-east-1', 'eu-west-1'];
+const buckets: { [region: string]: s3.IBucket } = {};
+for (const region of regions) {
+  const bucketStack = new Stack(app, `StackSetAssets-${region}`, { env: { account: '111111111111', region } });
+  buckets[region] = new s3.Bucket(bucketStack, 'Assets', {
+    bucketName: `my-stackset-assets-111111111111-${region}`,
+    encryption: s3.BucketEncryption.S3_MANAGED,
+  });
+}
 
 const stack = new Stack(app, 'Admin', { env: { account: '111111111111', region: 'us-east-1' } });
-new StackSet(stack, 'MyStackSet', {
-  assetBuckets: [usEast1Bucket, euWest1Bucket],
-  assetBucketPrefix: 'my-stackset-assets',
-  targets: [StackSetTarget.fromOrganizationalUnits({
-    regions: ['us-east-1', 'eu-west-1'],
-    organizationalUnits: ['ou-1111-11111111'],
-  })],
+const stackSet = new StackSet(stack, 'MyStackSet', {
+  assetBuckets: StackSetAssetBuckets.fromRegionalBuckets(buckets),
+  targets: [StackSetTarget.fromOrganizationalUnits({ regions, organizationalUnits: ['ou-1'] })],
   deploymentType: DeploymentType.serviceManaged(),
 });
+
+new lambda.Function(stackSet, 'Handler', {
+  runtime: lambda.Runtime.NODEJS_LATEST,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'handler')),
+});
+
+stackSet.grants.readAssets(new iam.OrganizationPrincipal('o-a1b2c3d4e5')); // the ID of your organization
 ```
 
-You can also pass existing buckets with `s3.Bucket.fromBucketName()` - make sure the target accounts can read from them.
+The stack that contains the StackSet depends on the stacks of the buckets, so `cdk deploy --all`
+deploys the buckets first. Stacks can't depend on stacks in another `Stage`, so if a bucket is defined
+in another `Stage`, deploy that `Stage` before the stack that contains the StackSet.
+
+Keep these points in mind:
+
+- **Bucket names**: the template looks up the bucket of its region by name, so the name of each bucket
+  must be known at synth time. Set `bucketName`, or use `PhysicalName.GENERATE_IF_NEEDED` for a
+  bucket in another account or region than the stack that contains the StackSet.
+- **Object keys**: the assets are stored under the key prefix `cdk-stackset-assets/`, and
+  `readAssets()` grants `s3:GetObject` on that prefix only. Don't expire or archive objects under that
+  prefix with lifecycle rules: accounts that join a target organizational unit later read the assets
+  when their stack instance is created.
+- **Encryption**: for a bucket encrypted with a customer managed key defined in the app,
+  `readAssets()` also allows `kms:Decrypt` in the key policy. For an imported key, allow the target
+  accounts to decrypt in its key policy yourself. Objects encrypted with the AWS managed key `aws/s3`
+  (`s3.BucketEncryption.KMS_MANAGED`) can't be read from other accounts, so use SSE-S3
+  (`s3.BucketEncryption.S3_MANAGED`) or a customer managed key.
+- **Existing buckets**: you can pass buckets you reference with `s3.Bucket.fromBucketName()`.
+  `readAssets()` doesn't change them and adds a warning, so allow the target accounts to read
+  `cdk-stackset-assets/*` in their bucket policies. For a bucket in another account, also allow the copy job of the stack that
+  contains the StackSet to write to it.
+- **Docker image assets** (for example `lambda.DockerImageCode.fromImageAsset()`) are not supported.
 
 ### Referencing an existing StackSet
 

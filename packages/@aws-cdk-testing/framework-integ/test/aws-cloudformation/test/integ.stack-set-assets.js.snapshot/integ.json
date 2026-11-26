@@ -1,0 +1,14 @@
+{
+  "version": "55.0.0",
+  "testCases": {
+    "integ-stackset-assets/DefaultTest": {
+      "stacks": [
+        "integ-stackset-assets-test"
+      ],
+      "assertionStack": "integ-stackset-assets-assertions",
+      "assertionStackName": "integ-stackset-assets-assertions"
+    }
+  },
+  "enableLookups": true,
+  "minimumCliVersion": "2.1145.0"
+}

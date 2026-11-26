@@ -1,9 +1,7 @@
-import * as path from 'path';
 import type { Construct } from 'constructs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import {
   App,
-  CfnCapabilities,
   CfnOutput,
   CfnParameter,
   Stack,
@@ -11,8 +9,6 @@ import {
 import type { CfnResource, StackProps } from 'aws-cdk-lib';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cfn from 'aws-cdk-lib/aws-cloudformation';
 
 /**
@@ -21,11 +17,15 @@ import * as cfn from 'aws-cdk-lib/aws-cloudformation';
  *
  * - 2 accounts:
  *  - A "deployment" account which will be the account that the test case runs in and
- *    deploys the stackset. It must have the asset s3 bucket named `asset-bucket-${deploymentAccount}-${targetRegion}`.
+ *    deploys the stackset.
  *  - A "target" account which is where the stackset will deploy into
  *
- * - The target account must be bootstrapped to trust the deployment account
+ * - The deployment account must be bootstrapped in its region
+ * - The target account must be bootstrapped in the target region to trust the deployment account
  * - The below environment variables must be set appropriately:
+ *  - `INTEG_DEPLOYMENT_ACCOUNT` and `INTEG_TARGET_ACCOUNT`: the accounts. `CDK_INTEG_ACCOUNT`
+ *    takes precedence over both, so it must be unset for a real deployment
+ *  - `CDK_INTEG_REGION` (or `CDK_DEFAULT_REGION`): the region of the stack that contains the StackSet
  *  - `INTEG_TARGET_REGION` (default `us-east-1`): the region of the first target
  *  - `INTEG_SECOND_TARGET_REGION` (default `us-west-2`): the region of a second target in the
  *    same target account, with its own parameter override. It must differ from `INTEG_TARGET_REGION`
@@ -38,9 +38,7 @@ const secondTargetRegion = process.env.INTEG_SECOND_TARGET_REGION ?? 'us-west-2'
 const topicDisplayName = 'integ-stackset-topic';
 const secondRegionTopicDisplayName = 'integ-stackset-topic-second-region';
 const executionRoleName = 'AWSCloudFormationStackSetExecutionRole-integ-test';
-const adminRoleName = 'AWSCloudFormationStackSetAdministrationRole-integ-test';
 const stackSetName = 'integ-stackset-test';
-const assetStackSetName = 'integ-stackset-asset-test';
 
 const app = new App({
   postCliContext: {
@@ -82,21 +80,6 @@ class MyStackSet extends cfn.StackSet {
   }
 }
 
-/**
- * Create a StackSet that has file assets
- */
-class LambdaStackSet extends cfn.StackSet {
-  constructor(scope: Construct, id: string, props: cfn.StackSetProps) {
-    super(scope, id, props);
-
-    new lambda.Function(this, 'Lambda', {
-      runtime: lambda.Runtime.NODEJS_16_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
-    });
-  }
-}
-
 interface TestCaseProps extends StackProps {
   executionRole: iam.IRole;
 }
@@ -107,23 +90,7 @@ interface TestCaseProps extends StackProps {
 class TestCase extends Stack {
   constructor(scope: Construct, id: string, props: TestCaseProps) {
     super(scope, id, props);
-    const adminRole = new iam.Role(this, 'AdminRole', {
-      roleName: adminRoleName,
-      assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
-      inlinePolicies: {
-        AssumeExecutionRole: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              effect: iam.Effect.ALLOW,
-              actions: ['sts:AssumeRole'],
-              resources: [
-                `arn:aws:iam::*:role/${executionRoleName}`,
-              ],
-            }),
-          ],
-        }),
-      },
-    });
+
     const stackSet = new MyStackSet(this, 'StackSet', {
       stackSetName,
       parameters: { TopicDisplayName: topicDisplayName },
@@ -141,7 +108,6 @@ class TestCase extends Stack {
       ],
       deploymentType: cfn.DeploymentType.selfManaged({
         executionRoleName: props.executionRole.roleName,
-        adminRole,
       }),
       operationPreferences: {
         failureTolerance: cfn.StackSetFailureTolerance.count(1),
@@ -150,33 +116,9 @@ class TestCase extends Stack {
       },
     });
 
-    // A value of this stack, passed to the template as a StackSet parameter
-    new CfnOutput(stackSet, 'AdminRoleId', { value: adminRole.roleId });
-    // Also passed to the template as a StackSet parameter, so no physical name is generated for the role
-    new CfnOutput(stackSet, 'AdminRoleArn', { value: adminRole.roleArn });
-  }
-}
-
-/**
- * Create the stack which will create the StackSet resource
- */
-class AssetTestCase extends Stack {
-  constructor(scope: Construct, id: string, props: TestCaseProps) {
-    super(scope, id);
-
-    new LambdaStackSet(this, 'StackSet', {
-      assetBuckets: [s3.Bucket.fromBucketName(this, 'AssetBucket', `asset-bucket-${deploymentAccount}-${targetRegion}`)],
-      assetBucketPrefix: `asset-bucket-${deploymentAccount}`,
-      stackSetName: assetStackSetName,
-      targets: [cfn.StackSetTarget.fromAccounts({
-        accounts: [targetAccount!],
-        regions: [targetRegion],
-      })],
-      deploymentType: cfn.DeploymentType.selfManaged({
-        executionRoleName: props.executionRole.roleName,
-      }),
-      capabilities: [CfnCapabilities.ANONYMOUS_IAM],
-    });
+    // Values of the admin role that the StackSet creates, passed to the template as StackSet parameters
+    new CfnOutput(stackSet, 'AdminRoleName', { value: stackSet.adminRole!.roleName });
+    new CfnOutput(stackSet, 'AdminRoleArn', { value: stackSet.adminRole!.roleArn });
   }
 }
 
@@ -197,14 +139,8 @@ const testCase = new TestCase(app, 'integ-stackset-test', {
 
 testCase.addStackDependency(supportStack);
 
-const assetTestCase = new AssetTestCase(app, 'integ-stackset-asset-test', {
-  executionRole: supportStack.executionRole,
-});
-
-assetTestCase.addStackDependency(supportStack);
-
 const integ = new IntegTest(app, 'integ-test', {
-  testCases: [testCase, assetTestCase],
+  testCases: [testCase],
   enableLookups: true,
 });
 
@@ -225,12 +161,4 @@ integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {
     Status: 'CURRENT',
     ParameterOverrides: [{ ParameterKey: 'TopicDisplayName', ParameterValue: secondRegionTopicDisplayName }],
   },
-}));
-
-integ.assertions.awsApiCall('CloudFormation', 'describeStackInstance', {
-  StackSetName: assetStackSetName,
-  StackInstanceAccount: targetAccount,
-  StackInstanceRegion: targetRegion,
-}).expect(ExpectedResult.objectLike({
-  StackInstance: { Status: 'CURRENT' },
 }));

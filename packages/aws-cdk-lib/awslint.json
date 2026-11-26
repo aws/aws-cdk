@@ -66,7 +66,6 @@
     "props-no-cfn-types:aws-cdk-lib.cloudformation_include.CfnIncludeProps.loadNestedStacks",
     "props-no-cfn-types:aws-cdk-lib.aws_cloudformation.StackSetProps.capabilities",
     "resource-class-extends-resource:aws-cdk-lib.aws_cloudformation.StackSet",
-    "prefer-ref-interface:aws-cdk-lib.aws_cloudformation.StackSetProps.assetBuckets",
     "construct-ctor-props-optional:aws-cdk-lib.custom_resources.AwsCustomResource",
     "props-physical-name:aws-cdk-lib.CustomResourceProps",
     "props-physical-name:aws-cdk-lib.aws_apigateway.BasePathMappingProps",

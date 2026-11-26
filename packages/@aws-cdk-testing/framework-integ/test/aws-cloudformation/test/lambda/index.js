@@ -1,3 +1,3 @@
-export async function handler(event) {
+exports.handler = async function (event) {
   return event;
-}
+};

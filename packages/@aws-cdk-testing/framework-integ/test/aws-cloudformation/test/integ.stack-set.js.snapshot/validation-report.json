@@ -36,18 +36,6 @@
           },
           "violatingConstructs": [
             {
-              "constructPath": "integ-stackset-asset-test/StackSet.Resource",
-              "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
-              "libraryVersion": "0.0.0",
-              "cloudFormationResource": {
-                "templatePath": "integ-stackset-asset-test.template.json",
-                "logicalId": "StackSetResource",
-                "propertyPaths": [
-                  "Properties.StackInstancesGroup.0.DeploymentTargets.Accounts.0"
-                ]
-              }
-            },
-            {
               "constructPath": "integ-stackset-test/StackSet.Resource",
               "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
               "libraryVersion": "0.0.0",

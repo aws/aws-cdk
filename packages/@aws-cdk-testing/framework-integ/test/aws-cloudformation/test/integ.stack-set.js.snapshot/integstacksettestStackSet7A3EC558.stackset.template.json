@@ -3,10 +3,10 @@
     "TopicDisplayName": {
       "Type": "String"
     },
-    "referencetointegstacksettestAdminRoleD699F605RoleId": {
+    "referencetointegstacksettestStackSetAdminRoleC0FA4E9ARef": {
       "Type": "String"
     },
-    "referencetointegstacksettestAdminRoleD699F605Arn": {
+    "referencetointegstacksettestStackSetAdminRoleC0FA4E9AArn": {
       "Type": "String"
     }
   },
@@ -21,14 +21,14 @@
     }
   },
   "Outputs": {
-    "AdminRoleId": {
+    "AdminRoleName": {
       "Value": {
-        "Ref": "referencetointegstacksettestAdminRoleD699F605RoleId"
+        "Ref": "referencetointegstacksettestStackSetAdminRoleC0FA4E9ARef"
       }
     },
     "AdminRoleArn": {
       "Value": {
-        "Ref": "referencetointegstacksettestAdminRoleD699F605Arn"
+        "Ref": "referencetointegstacksettestStackSetAdminRoleC0FA4E9AArn"
       }
     }
   }

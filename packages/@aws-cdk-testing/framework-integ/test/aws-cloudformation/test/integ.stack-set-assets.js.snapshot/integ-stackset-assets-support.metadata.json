@@ -1,0 +1,43 @@
+{
+  "/integ-stackset-assets-support": [
+    {
+      "type": "aws:cdk:templateFile",
+      "data": "integ-stackset-assets-support.template.json"
+    }
+  ],
+  "/integ-stackset-assets-support/CfnExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-stackset-assets-support/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-stackset-assets-support/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-stackset-assets-support/CfnExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CfnExecutionRole87CC388E"
+    }
+  ]
+}

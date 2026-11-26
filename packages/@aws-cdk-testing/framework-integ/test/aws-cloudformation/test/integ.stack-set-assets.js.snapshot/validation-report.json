@@ -1,0 +1,87 @@
+{
+  "version": "55.0.0",
+  "title": "Validation Report",
+  "pluginReports": [
+    {
+      "pluginName": "CloudFormation Validate",
+      "pluginVersion": "1.12.1",
+      "conclusion": "success",
+      "violations": [
+        {
+          "ruleName": "W9012",
+          "description": "Invalid pseudo-parameter override(s): AWS::AccountId override '12345678' is not a 12-digit AWS account ID",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Best Practice"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-stackset-assets-bucket",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            },
+            {
+              "constructPath": "integ-stackset-assets-support",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            },
+            {
+              "constructPath": "integ-stackset-assets-test",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            },
+            {
+              "constructPath": "integ-stackset-assets-assertions",
+              "constructFqn": "aws-cdk-lib.Stack",
+              "libraryVersion": "0.0.0"
+            }
+          ]
+        },
+        {
+          "ruleName": "F3031",
+          "description": "StackInstancesGroup.0.DeploymentTargets.Accounts.0: '12345678' does not match pattern '^[0-9]{12}$'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Schema"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-stackset-assets-test/StackSet.Resource",
+              "constructFqn": "aws-cdk-lib.aws_cloudformation.CfnStackSet",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-stackset-assets-test.template.json",
+                "logicalId": "StackSetResource",
+                "propertyPaths": [
+                  "Properties.StackInstancesGroup.0.DeploymentTargets.Accounts.0"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "ruleName": "E3510",
+          "description": "Policies.0.PolicyDocument.Statement.1.Resource.0: 'arn:aws:lambda:us-west-2:12345678:function:integ-stackset-assets-echo' does not match '^(arn:(aws[A-Za-z\\-]*?|[A-Za-z?*\\-]*[?*][A-Za-z?*\\-]*):[^:*?]+:[^:]*(:(?:\\d{12}|\\*|aws)?:.+|)|\\*)$'",
+          "severity": "warning",
+          "ruleMetadata": {
+            "category": "Resource"
+          },
+          "violatingConstructs": [
+            {
+              "constructPath": "integ-stackset-assets-assertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+              "constructFqn": "aws-cdk-lib.CfnResource",
+              "libraryVersion": "0.0.0",
+              "cloudFormationResource": {
+                "templatePath": "integ-stackset-assets-assertions.template.json",
+                "logicalId": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+                "propertyPaths": [
+                  "Properties.Policies.0.PolicyDocument.Statement.1.Resource.0"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
