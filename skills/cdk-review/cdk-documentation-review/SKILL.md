@@ -42,8 +42,7 @@ out is not this rule.
 
 ## Public-API doc completeness
 
-**[DOC-README-MISSING-EXAMPLE] (BLOCKING)** — A new L2 construct (or substantial new feature) with no
-README usage example. See
+**[DOC-README-MISSING-EXAMPLE] (BLOCKING)** — A new L2 construct with no README usage example. See
 [`AGENTS.md § Module READMEs`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#module-readmes).
 - **Tier:** RECOMMENDED for a new prop on an existing construct with no README mention, for a new use case
   the README does not show, and for a new mixin with no `## Mixins` README entry.
