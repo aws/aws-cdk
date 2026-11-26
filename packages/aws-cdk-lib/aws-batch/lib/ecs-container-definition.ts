@@ -670,21 +670,16 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
         obtainExecutionRole: () => this.executionRole,
       },
     });
-
-    if (this.imageConfig.repositoryCredentials && !this.imageConfig.repositoryCredentials.credentialsParameter) {
-      throw new ValidationError(lit`CredentialsParameterRequired`, 'credentialsParameter is required when repositoryCredentials is set', this);
-    }
   }
 
   /**
    * @internal
    */
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
+    const credentialsParameter = this.imageConfig.repositoryCredentials?.credentialsParameter;
     return {
       image: this.imageConfig.imageName,
-      repositoryCredentials: this.imageConfig.repositoryCredentials ? {
-        credentialsParameter: this.imageConfig.repositoryCredentials.credentialsParameter!,
-      } : undefined,
+      repositoryCredentials: credentialsParameter !== undefined ? { credentialsParameter } : undefined,
       command: this.command,
       environment: Object.keys(this.environment ?? {}).map((envKey) => ({
         name: envKey,

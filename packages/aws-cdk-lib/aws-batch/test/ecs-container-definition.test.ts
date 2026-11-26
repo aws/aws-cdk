@@ -863,7 +863,7 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
     });
   });
 
-  test('throws error when repository credentials are set without credentialsParameter', () => {
+  test('omits RepositoryCredentials when repository credentials are set without credentialsParameter', () => {
     // GIVEN
     const mockImage = {
       bind: () => ({
@@ -874,15 +874,21 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       }),
     } as any;
 
-    // WHEN / THEN
-    expect(() => {
-      new EcsJobDefinition(stack, 'ECSJobDefn', {
-        container: new ContainerDefinition(stack, 'EcsContainer', {
-          ...defaultContainerProps,
-          image: mockImage,
-        }),
-      });
-    }).toThrow(/credentialsParameter is required when repositoryCredentials is set/);
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        image: mockImage,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        Image: 'private.registry.com/my-image:tag',
+        RepositoryCredentials: Match.absent(),
+      },
+    });
   });
 });
 
