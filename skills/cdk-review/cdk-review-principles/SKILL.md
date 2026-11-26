@@ -17,7 +17,7 @@ A finding's tier comes from what backs it:
 - **A guide line alone** — BLOCKING for MUST or MUST NOT in capitals; RECOMMENDED otherwise. A line whose
   requirement one of your rules states as its case takes that rule's case, tier and conditions instead.
 
-## When a defect is a finding
+## Finding conditions
 
 A defect is a finding when all of these hold:
 
