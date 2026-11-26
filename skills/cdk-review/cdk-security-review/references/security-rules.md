@@ -14,12 +14,10 @@ on a scoped resource. See
 **[SEC-IAM-CONFUSED-DEPUTY-SERVICE] (BLOCKING)** — Missing confused-deputy condition
 (`aws:SourceAccount`/`aws:SourceArn`) on a cross-*service* trust policy (a trusted `ServicePrincipal`). See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
-- **Tier:** RECOMMENDED when the path is not yet reachable.
 
 **[SEC-IAM-REFACTOR-SCOPE-DROP] (BLOCKING)** — A refactor that drops scoping, such as a conversion from
 `PolicyStatement`s to grants that drops a condition, an effect or a principal. See
 [`AGENTS_CONSTRUCT_IMPLEMENTATION.md § Grants`](https://github.com/aws/aws-cdk/blob/main/docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md#grants).
-- **Tier:** RECOMMENDED when the dropped scoping guards a not-yet-reachable path.
 
 **[SEC-IAM-WILDCARD-ACTION-SERVICE] (RECOMMENDED)** — A full-service action wildcard (`service:*`) on an
 otherwise correctly-scoped resource grants more than the code needs but opens no security boundary.
@@ -42,7 +40,6 @@ cross-*account* trust to a customer/partner (external) account — an `assumedBy
 `AccountPrincipal`/`ArnPrincipal` for an account outside your org. `ExternalId` is the third-party
 control. See
 [`DESIGN_GUIDELINES.md § Roles`](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#roles).
-- **Tier:** BLOCKING when the path is currently reachable.
 
 **[SEC-KMS-VIASERVICE] (RECOMMENDED)** — Missing `kms:ViaService` on an otherwise-scoped KMS grant. See
 [`AGENTS.md § Security Rules`](https://github.com/aws/aws-cdk/blob/main/AGENTS.md#security-rules).
