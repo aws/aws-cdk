@@ -13,14 +13,14 @@ export enum RuntimeFamily {
   PYTHON,
 
   /**
-   * All Lambda runtimes that depend on Java.
-   */
-  JAVA,
-
-  /**
    * Any future runtime family.
    */
   OTHER,
+
+  /**
+   * All Lambda runtimes that depend on Java.
+   */
+  JAVA,
 }
 
 /**

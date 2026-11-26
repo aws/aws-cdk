@@ -114,7 +114,10 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 
 ### Active Tracing
 
-You can choose to enable active AWS X-Ray tracing on canaries that use the `syn-nodejs-2.0` or later runtime (excluding Playwright runtimes) or Java runtimes by setting `activeTracing` to `true`.
+You can choose to enable active AWS X-Ray tracing on canaries by setting `activeTracing` to `true`.
+
+Active tracing is supported on canaries that use the `syn-nodejs-2.0` or later runtime, and on canaries that use a Java runtime.
+Canaries that use a Playwright runtime or a Python runtime do not support active tracing.
 
 With tracing enabled, traces are sent for all calls made by the canary that use the browser, the AWS SDK, or HTTP or HTTPS modules.
 

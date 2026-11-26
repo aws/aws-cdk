@@ -319,7 +319,7 @@ test.each([true, false])('activeTracing can be set to %s', (activeTracing: boole
   });
 });
 
-test.each([true, false])('activeTracing can be set for Java runtime', (activeTracing: boolean) => {
+test.each([true, false])('activeTracing can be set to %s for Java runtime', (activeTracing: boolean) => {
   // GIVEN
   const stack = new Stack();
 
@@ -399,7 +399,7 @@ test.each([
     runtime,
     activeTracing: true,
   }))
-    .toThrow(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later (excluding Playwright runtimes) or Java runtimes, got ${runtime.name}.`);
+    .toThrow(`You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${runtime.name}.`);
 });
 
 test('environment variables can be specified', () => {
@@ -1024,7 +1024,7 @@ describe('handler validation', () => {
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
       });
-    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', 'folder\/fileName.functionName', or 'fully.qualified.ClassName::method' for Java runtimes/);
+    }).toThrow(/Canary Handler must be specified either as 'fileName.handler', 'fileName.functionName', or 'folder\/fileName.functionName', received/);
 
     expect(() => {
       new synthetics.Canary(stack, 'Canary1', {
@@ -1068,7 +1068,51 @@ describe('handler validation', () => {
         }),
         runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
       });
-    }).toThrow(/Canary Handler must be specified/);
+    }).toThrow(/Canary Handler must be specified as 'fully.qualified.ClassName::method' for Java runtimes/);
+  });
+
+  test.each([
+    'canarypackage.ExampleCanary.canaryCode',
+    'ExampleCanary::',
+    '::canaryCode',
+    'canarypackage.ExampleCanary::canary.Code',
+  ])('rejects malformed Java handler %s', (handler: string) => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler,
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_JAVA_1_0,
+      });
+    }).toThrow(/for Java runtimes/);
+  });
+
+  test('Java style handler is rejected for Node.js runtimes', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'canarypackage.ExampleCanary::canaryCode',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_0,
+      });
+    }).toThrow(/Canary Handler must be specified either as/);
+  });
+
+  test('invalid handler for Python runtime', () => {
+    const stack = new Stack();
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary1', {
+        test: synthetics.Test.custom({
+          handler: 'invalid_handler',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_7_0,
+      });
+    }).toThrow(/for Python runtimes/);
   });
 
   test('handler length', () => {
