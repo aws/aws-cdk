@@ -1819,13 +1819,16 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         'kms:GenerateDataKey',
       );
     }
-    // A key in another account must also allow the function account's identities in its key policy; IAM alone cannot.
-    const isCrossAccountKey = !Token.isUnresolved(key.env.account) && !Token.isUnresolved(stack.account) && key.env.account !== stack.account;
-    if (!isEditableKey || isCrossAccountKey) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyPolicyIncomplete',
-        'CDK cannot add every durableConfig.kmsKey statement to the key policy. Add the Lambda service principal statement if it is ' +
-        'missing, and, if the key is in another account, statements for the execution role, the identity that deploys the function, ' +
-        'and durable execution operators. ' +
+    if (!isEditableKey) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyPolicyNotEditable',
+        'CDK cannot edit the durableConfig.kmsKey key policy. Add the Lambda service principal statement to it. ' +
+        'See https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html.');
+    }
+    // IAM policies in the function's account cannot grant access to a key in another account on their own.
+    if (!Token.isUnresolved(key.env.account) && !Token.isUnresolved(stack.account) && key.env.account !== stack.account) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:durableConfigKmsKeyCrossAccount',
+        `durableConfig.kmsKey is in account ${key.env.account}. Its key policy must also allow the execution role, the identity ` +
+        'that deploys the function, and durable execution operators. ' +
         'See https://docs.aws.amazon.com/lambda/latest/dg/durable-encryption.html.');
     }
   }

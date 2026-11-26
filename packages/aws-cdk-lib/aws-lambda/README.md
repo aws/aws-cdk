@@ -1666,19 +1666,22 @@ in two places:
   `kms:GenerateDataKey`, conditioned on `aws:SourceAccount`, `aws:SourceArn` and the encryption context.
 
 If the key is imported, or is a `kms.CfnKey` whose `keyPolicy` is not a JSON object, CDK cannot edit the
-key policy and emits a warning. Add the Lambda service principal statement to the key policy yourself.
-If the key is in another account, CDK also emits the warning. The key policy must then also allow the
-execution role, the identity that deploys the function, and durable execution operators. Add those
-statements yourself.
+key policy and emits the `durableConfigKmsKeyPolicyNotEditable` warning. Add the Lambda service principal
+statement to the key policy yourself.
+
+If the key is in another account, CDK emits the `durableConfigKmsKeyCrossAccount` warning. The key policy
+must then also allow the execution role, the identity that deploys the function, and durable execution
+operators. Add those statements yourself.
 
 CDK adds no statements for the function author or for durable execution operators. With the default root
 statement, the identity that deploys the function needs `kms:DescribeKey`, `kms:Decrypt` and
 `kms:GenerateDataKey` in its IAM policies, and operators need `kms:Decrypt` in theirs.
 
 Set `functionName` to a literal string to scope the statements to the function. Without it, they match
-every function in the account and Region, and CDK emits a warning. Adding `durableConfig` to an existing function replaces it, so
-you can set a new literal `functionName` in the same deployment. Don't keep an existing custom name, as the
-note above describes. If the function already has `durableConfig`, setting `functionName` replaces it.
+every function in the account and Region, and CDK emits a warning. Adding `durableConfig` to an existing
+function replaces it, so you can set a new literal `functionName` in the same deployment. Don't keep an
+existing custom name, as the note above describes. If the function already has `durableConfig`, setting
+`functionName` replaces it.
 
 CDK adds these statements only for the key currently set in `durableConfig.kmsKey`. Removing or switching
 it removes them from the old key's policy and the role's policy on the next deployment, and running

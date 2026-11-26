@@ -373,17 +373,18 @@ describe('durable config', () => {
       }
       return new CustomKey(stack, 'DurableKey');
     }, { 'Fn::GetAtt': [Match.stringLikeRegexp('^DurableKey'), 'Arn'] }],
-  ])('DurableConfig with %s grants only the execution role and warns that the key policy is incomplete', (_, keyOf, keyArn) => {
+  ])('DurableConfig with %s grants only the execution role and warns that the key policy is not editable', (_, keyOf, keyArn) => {
     const stack = new cdk.Stack(new cdk.App(), 'stack');
     newDurableFunction(stack, { functionName: 'my-durable-fn', kmsKey: keyOf(stack) });
 
     expect(JSON.stringify(keyPolicyStatements(stack))).not.toContain('lambda.amazonaws.com');
     expectExecutionRoleStatement(stack, 'my-durable-fn', keyArn);
     Annotations.fromStack(stack).hasWarning('/stack/Lambda',
-      Match.stringLikeRegexp('CDK cannot add every durableConfig.kmsKey statement to the key policy.*durableConfigKmsKeyPolicyIncomplete'));
+      Match.stringLikeRegexp('CDK cannot edit the durableConfig.kmsKey key policy.*durableConfigKmsKeyPolicyNotEditable'));
+    Annotations.fromStack(stack).hasNoWarning('/stack/Lambda', Match.stringLikeRegexp('durableConfigKmsKeyCrossAccount'));
   });
 
-  test('DurableConfig with a kmsKey in another account adds the Lambda service principal statement and warns that the key policy is incomplete', () => {
+  test('DurableConfig with a kmsKey in another account adds the Lambda service principal statement and warns about the other account', () => {
     const app = new cdk.App();
     const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '222222222222', region: 'us-east-1' } });
     const fnStack = new cdk.Stack(app, 'FnStack', { env: { account: '111111111111', region: 'us-east-1' } });
@@ -409,7 +410,8 @@ describe('durable config', () => {
       },
     });
     Annotations.fromStack(fnStack).hasWarning('/FnStack/Lambda',
-      Match.stringLikeRegexp('CDK cannot add every durableConfig.kmsKey statement to the key policy.*durableConfigKmsKeyPolicyIncomplete'));
+      Match.stringLikeRegexp('durableConfig.kmsKey is in account 222222222222.*durableConfigKmsKeyCrossAccount'));
+    Annotations.fromStack(fnStack).hasNoWarning('/FnStack/Lambda', Match.stringLikeRegexp('durableConfigKmsKeyPolicyNotEditable'));
   });
 
   test('fails when the kmsKey is an alias', () => {

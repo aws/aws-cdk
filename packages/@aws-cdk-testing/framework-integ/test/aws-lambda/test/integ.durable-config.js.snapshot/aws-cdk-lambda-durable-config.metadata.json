@@ -44,7 +44,7 @@
         "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1308:43)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:45:1)",
+        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:55:1)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
         "Object..js (node:internal/modules/cjs/loader:2060:10)",
         "Module.load (node:internal/modules/cjs/loader:1651:32)",
@@ -84,7 +84,7 @@
         "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1308:43)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:53:26)",
+        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:63:26)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
         "Object..js (node:internal/modules/cjs/loader:2060:10)",
         "Module.load (node:internal/modules/cjs/loader:1651:32)",
@@ -104,7 +104,7 @@
         "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1320:22)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:53:26)",
+        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:63:26)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
         "Object..js (node:internal/modules/cjs/loader:2060:10)",
         "Module.load (node:internal/modules/cjs/loader:1651:32)",
@@ -145,7 +145,7 @@
         "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1308:43)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:62:24)",
+        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:71:24)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
         "Object..js (node:internal/modules/cjs/loader:2060:10)",
         "Module.load (node:internal/modules/cjs/loader:1651:32)",
@@ -220,7 +220,7 @@
         "PropertyInjectable.configureDurableConfig (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1308:43)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:788:59)",
         "new Function (/Volumes/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:84:28)",
+        "Object.<anonymous> (/Volumes/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.durable-config.js:86:28)",
         "Module._compile (node:internal/modules/cjs/loader:1929:14)",
         "Object..js (node:internal/modules/cjs/loader:2060:10)",
         "Module.load (node:internal/modules/cjs/loader:1651:32)",
@@ -330,6 +330,14 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
       }
     }
   ],
@@ -451,6 +459,14 @@
       }
     }
   ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCrossStackCmk/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
   "/aws-cdk-lambda-durable-config/Exports/Output{\"Fn::GetAtt\":[\"DurableKeyAD70383F\",\"Arn\"]}": [
     {
       "type": "aws:cdk:logicalId",
@@ -463,10 +479,22 @@
       "data": "ExportsOutputRefDurableFunctionWithCmk4AAC4848129EDE55"
     }
   ],
+  "/aws-cdk-lambda-durable-config/Exports/Output{\"Ref\":\"DurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226a\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226aC017A495"
+    }
+  ],
   "/aws-cdk-lambda-durable-config/Exports/Output{\"Ref\":\"DurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefDurableFunctionWithCmkAndNameCurrentVersionF292EABA5154a7c36db1862b02da62baa73d6982E2129BD7"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/Exports/Output{\"Ref\":\"DurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a76\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a7642B24277"
     }
   ],
   "/aws-cdk-lambda-durable-config/Exports/Output{\"Fn::GetAtt\":[\"ScopedKeyB82353F2\",\"Arn\"]}": [
@@ -541,6 +569,12 @@
       "data": "DurableFunctionWithCmkLogGroupD880A6E6"
     }
   ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunctionWithCmkCurrentVersion9D43471Bbe04c8a092de9b9872f548b5b6f1226a"
+    }
+  ],
   "/aws-cdk-lambda-durable-config/DurableFunctionWithCmkAndName/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -599,6 +633,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DurableFunctionWithCrossStackCmkLogGroupCFB40D79"
+    }
+  ],
+  "/aws-cdk-lambda-durable-config/DurableFunctionWithCrossStackCmk/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DurableFunctionWithCrossStackCmkCurrentVersion0EFBCB35f041c071b49423d303dc412b21988a76"
     }
   ],
   "/aws-cdk-lambda-durable-config/DurableFunctionWithCmk/ServiceRole/DefaultPolicy/Resource": [

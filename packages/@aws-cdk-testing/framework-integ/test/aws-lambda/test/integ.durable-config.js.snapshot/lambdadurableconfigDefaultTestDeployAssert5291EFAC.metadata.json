@@ -49,6 +49,32 @@
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
     }
   ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6Invoke39F38524"
+    }
+  ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6"
+    }
+  ],
   "/lambda-durable-config/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionConfigurationabb115b1552e96b23138311966204217/Default": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -67,26 +93,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AssertionResultsAwsApiCallLambdagetFunctionConfigurationabb115b1552e96b23138311966204217"
-    }
-  ],
-  "/lambda-durable-config/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7/Default": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    }
-  ],
-  "/lambda-durable-config/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7/AssertionResults": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "AssertionResultsAwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7"
     }
   ],
   "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvoke196a686eba30e2212e0fd4c079be8c8d/Default": [
@@ -115,10 +121,62 @@
       "data": "AssertionResultsLambdaInvoke196a686eba30e2212e0fd4c079be8c8d"
     }
   ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7"
+    }
+  ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvoke93b1daa4500ac0d15956e1e3dececb10/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvoke93b1daa4500ac0d15956e1e3dececb10/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke93b1daa4500ac0d15956e1e3dececb10InvokeD12CA57C"
+    }
+  ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvoke93b1daa4500ac0d15956e1e3dececb10/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke93b1daa4500ac0d15956e1e3dececb10"
+    }
+  ],
   "/lambda-durable-config/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionConfiguration8b6bce2c32a019b0e0ce6ec63f4d96b0/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallLambdagetFunctionConfiguration8b6bce2c32a019b0e0ce6ec63f4d96b0"
+    }
+  ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokea62b6de0c78c0d3658ba2d7e343ad4f6"
     }
   ],
   "/lambda-durable-config/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionConfigurationabb115b1552e96b23138311966204217/Default/Default": [
@@ -127,16 +185,22 @@
       "data": "AwsApiCallLambdagetFunctionConfigurationabb115b1552e96b23138311966204217"
     }
   ],
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvoke196a686eba30e2212e0fd4c079be8c8d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke196a686eba30e2212e0fd4c079be8c8d"
+    }
+  ],
   "/lambda-durable-config/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallLambdagetFunctionConfigurationaa758e879d0cd8d31c08d1ca19eb8cf7"
     }
   ],
-  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvoke196a686eba30e2212e0fd4c079be8c8d/Default/Default": [
+  "/lambda-durable-config/DefaultTest/DeployAssert/LambdaInvoke93b1daa4500ac0d15956e1e3dececb10/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "LambdaInvoke196a686eba30e2212e0fd4c079be8c8d"
+      "data": "LambdaInvoke93b1daa4500ac0d15956e1e3dececb10"
     }
   ]
 }
