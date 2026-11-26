@@ -14,8 +14,7 @@ to extension later without breaking its users? Apply
 
 1. **Orient and load your rules.** List the public API the diff adds or changes, and name its kind —
    grantable, stateful, connectable, attribute-bearing — because the kind sets both what the surface needs
-   and what to scan (step 2). Then read [`design-rules.md`](references/design-rules.md): its rows are your
-   checklist.
+   and what to scan (step 2). Then read [`design-rules.md`](references/design-rules.md).
 
 2. **Check the diff against the rules,** judging the shape the changed surface produces. For each rule
    check both directions: what is present and violating, and what the kind requires but the diff omits.

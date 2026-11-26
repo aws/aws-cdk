@@ -15,7 +15,7 @@ and secure-by-default. Judge what this change widens, weakens, or leaks for user
 1. **Orient and load your rules.** Name the security-sensitive surface the diff adds or changes — an
    IAM policy/grant, a trust policy, a KMS key policy, a resource/network policy, a default, a
    prop named like a secret — and its kind. The kind tells you which controls it needs and what to scan.
-   Then read [`security-rules.md`](references/security-rules.md): its rows are your checklist.
+   Then read [`security-rules.md`](references/security-rules.md).
 
 2. **Check the diff against the rules.** Walk the changed surface family by family — **IAM least-privilege**
    (including trust-policy confused-deputy), **Network & resource access**, **Secrets & credentials**,
