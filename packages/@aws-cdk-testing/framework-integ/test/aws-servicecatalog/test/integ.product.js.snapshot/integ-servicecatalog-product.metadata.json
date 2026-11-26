@@ -532,13 +532,13 @@
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product/TestProduct/Template5b4cf9f4fca4/AssetBucket": [
+  "/integ-servicecatalog-product/TestProduct/Template63fdf33b320c/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-servicecatalog-product/TestProduct/Template251eb866e106/AssetBucket": [
+  "/integ-servicecatalog-product/TestProduct/Templatec4a3d0c74010/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"

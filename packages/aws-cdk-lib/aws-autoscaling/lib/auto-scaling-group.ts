@@ -880,7 +880,7 @@ export abstract class Signals {
   /**
    * Wait for the desiredCapacity of the AutoScalingGroup amount of signals to have been received
    *
-   * If no desiredCapacity has been configured, wait for minCapacity signals intead.
+   * If no desiredCapacity has been configured, wait for minCapacity signals instead.
    *
    * This number is used during initial creation and during replacing updates.
    * During rolling updates, all updated instances must send a signal.

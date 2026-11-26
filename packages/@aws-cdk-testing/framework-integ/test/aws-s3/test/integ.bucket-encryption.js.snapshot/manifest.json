@@ -53,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5d1b544610b14336b04fd797b4a5070bf8235007b6a2d3398b160638621e4d96.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83d4556d3a01d04bdb8993dd5c341a9d70daf608a81432ec77a959789ff8cc7f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -631,10 +631,13 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-iam:importedUserAndGroupStackSafeDefaultPolicyName": {
+            "recommendedValue": true,
+            "explanation": "When enabled, the default policy of an imported user or group gets a name that includes the stack name"
           }
         }
       }
     }
-  },
-  "minimumCliVersion": "2.1146.1"
+  }
 }
