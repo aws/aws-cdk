@@ -58,7 +58,7 @@ A `StackSet` has a couple of special requirements and behaviors compared to a `S
   accounts and regions
 - The `description` is the description of the StackSet resource. Set the description of its template
   with `stackSet.templateOptions.description`
-- Tags of the StackSet (`Tags.of(stackSet).add(...)`) are tags of the StackSet resource, which
+- Tags of the StackSet (`Tags.of(stackSet).add(...)`) are applied to the StackSet resource, which
   CloudFormation propagates to every stack instance
 - Each `StackSet` has its own template. To deploy the same template with different StackSet settings,
   instantiate the `StackSet` class twice
@@ -109,10 +109,6 @@ new MyStackSet(stack, 'ManagementStackSet', {
 ### Defining the template of a StackSet
 
 StackSets allow you to deploy a single CloudFormation template across multiple AWS accounts and regions.
-Typically when creating a CDK Stack that will be deployed across multiple environments, the CDK will
-synthesize separate Stack templates for each environment. Because of the way that StackSets work,
-a single template is defined and synthesized for a StackSet. Any environmental differences must be
-encoded using Parameters.
 
 There are two ways to provide the template of a `StackSet`:
 
@@ -324,6 +320,10 @@ You can control this through the `deploymentType` parameter.
 When a StackSet is service managed, the permissions are managed by AWS Organizations. This allows the StackSet to deploy the Stack to _any_
 account within the organization. In addition, the StackSet will be able to create _any_ type of resource.
 
+By default a service managed StackSet is created from a delegated administrator account. Set
+`callAs` to `StackSetCallAs.SELF` if you deploy it from the AWS Organizations management
+account instead. For example:
+
 ```ts
 declare const stack: Stack;
 
@@ -347,10 +347,6 @@ are added to the specified organizational units. By default the Stack is retaine
 that are removed from them. Use `autoDeployment` to delete the Stack from removed accounts
 instead, or to turn automatic deployments off with `StackSetAutoDeployment.disabled()`.
 
-By default a service managed StackSet is created from a delegated administrator account. Set
-`callAs` to `StackSetCallAs.SELF` if you deploy it from the AWS Organizations management
-account instead.
-
 ```ts
 declare const stack: Stack;
 
@@ -373,9 +369,9 @@ new StackSet(stack, 'StackSet', {
 
 ##### Self Managed
 
-When a StackSet is self managed (the default), you create the IAM roles StackSets uses. The
-administration role is assumed by CloudFormation in the account the StackSet is deployed from,
-and it assumes an execution role that must already exist in each target account.
+When a StackSet is self managed (the default), each target account must have an execution
+role. CloudFormation assumes an administration role in the account the StackSet is deployed from, and
+that role assumes the execution role in each target account.
 
 If you don't pass an `adminRole`, the StackSet creates one in the stack that contains it. Its trust policy only allows
 CloudFormation to assume it on behalf of StackSets in the same account, using the
@@ -509,8 +505,8 @@ Keep these points in mind:
   (`s3.BucketEncryption.S3_MANAGED`) or a customer managed key.
 - **Existing buckets**: you can pass buckets you reference with `s3.Bucket.fromBucketName()`.
   `readAssets()` doesn't change them and adds a warning, so allow the target accounts to read
-  `cdk-stackset-assets/*` in their bucket policies. For a bucket in another account, also allow the copy job of the stack that
-  contains the StackSet to write to it.
+  `cdk-stackset-assets/*` in their bucket policies. For a bucket in another account, also allow the
+  copy job of the stack that contains the StackSet to write to it.
 - **Docker image assets** (for example `lambda.DockerImageCode.fromImageAsset()`) are not supported.
 
 ### Referencing an existing StackSet
@@ -544,9 +540,10 @@ The StackSet uses the CDK bootstrap template, which you can save with
 
 ```ts
 declare const app: App;
+declare const pipelineStack: Stack;
 interface BootstrapStageProps extends StageProps {
   readonly initialBootstrapTarget: StackSetTarget;
-  readonly stacksetName?: string;
+  readonly stackSetName?: string;
 }
 
 class BootstrapStage extends Stage {
@@ -559,10 +556,8 @@ class BootstrapStage extends Stage {
       template: StackSetTemplate.fromAsset(path.join(__dirname, 'bootstrap-template.yaml')),
       targets: [props.initialBootstrapTarget],
       capabilities: [CfnCapabilities.NAMED_IAM],
-      managedExecution: true,
-      stackSetName: props.stacksetName,
+      stackSetName: props.stackSetName,
       deploymentType: DeploymentType.serviceManaged({
-        callAs: StackSetCallAs.DELEGATED_ADMIN,
         autoDeployment: StackSetAutoDeployment.enabled({ retainStacksOnAccountRemoval: false }),
       }),
       operationPreferences: {
@@ -575,7 +570,7 @@ class BootstrapStage extends Stage {
 }
 
 
-const pipeline = new pipelines.CodePipeline(this, 'BootstrapPipeline', {
+const pipeline = new pipelines.CodePipeline(pipelineStack, 'BootstrapPipeline', {
   synth: new pipelines.ShellStep('Synth', {
     commands: [
       'yarn install --frozen-lockfile',
@@ -604,7 +599,7 @@ pipeline.addStage(
       region: 'us-east-1',
       account: '111111111111',
     },
-    stacksetName: 'CDKToolkit-dev',
+    stackSetName: 'CDKToolkit-dev',
     initialBootstrapTarget: StackSetTarget.fromOrganizationalUnits({
       regions,
       organizationalUnits: ['ou-hrza-ar333427'],
@@ -618,7 +613,7 @@ pipeline.addStage(
       region: 'us-east-1',
       account: '111111111111',
     },
-    stacksetName: 'CDKToolkit-prd',
+    stackSetName: 'CDKToolkit-prod',
     initialBootstrapTarget: StackSetTarget.fromOrganizationalUnits({
       regions,
       organizationalUnits: ['ou-hrza-bb999427', 'ou-hraa-ar111127'],
