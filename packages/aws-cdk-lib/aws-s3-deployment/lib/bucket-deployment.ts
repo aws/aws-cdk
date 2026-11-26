@@ -209,13 +209,18 @@ export interface BucketDeploymentProps {
   /**
    * System-defined content-encoding metadata to be set on all objects in the deployment.
    *
-   * The deployment does not compress anything, and this value is applied to every object
-   * alike. So the only correct use is a deployment in which every file was already
-   * compressed with this encoding before packaging, for example a dedicated deployment of
-   * gzipped assets. Anywhere else, it tells clients to decode bytes that are not encoded.
+   * This constrols the HTTP `Content-Encoding` header when S3 serves the file.
    *
-   * When the content type is guessed, a compression suffix matching this encoding is looked
-   * through: with `gzip`, `app.js.gz` is served as `text/javascript`.
+   * The only correct use is on a deployment where all the files are already
+   * compressed with the indicated encoding (`gzip`, `br`, `deflate`, `zstd`).
+   *
+   * If unset, `Content-Type` will be guessed from the second extension, so
+   * files uploaded as `app.js.gz` will be served with:
+   *
+   * ```
+   * Content-Type: text/javascript
+   * Content-Encoding: gzip
+   * ```
    *
    * @default - Not set.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
@@ -229,7 +234,10 @@ export interface BucketDeploymentProps {
   readonly contentLanguage?: string;
   /**
    * System-defined content-type metadata to be set on all objects in the deployment.
-   * @default - Not set.
+   *
+   * If not set, `Content-Type` will be guessed from the file extension.
+   *
+   * @default - Guessed from the file extension.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
    */
   readonly contentType?: string;

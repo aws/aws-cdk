@@ -1,18 +1,10 @@
 /**
  * The objects already present under a destination prefix.
  *
- * Built once from a single `ListObjectsV2`, and then asked two different questions:
- *
- * - *is the object at this key already up to date?*, which decides whether to upload; and
- * - *which objects did nothing claim?*, which decides what pruning removes.
- *
- * Keeping those separate matters. Marking a key as claimed must not change the answer to
- * the first question, or a path carried by several sources would stop being comparable
- * after the first one looked at it — and the later sources would upload needlessly.
+ * For every file, retains file attributes (time, size) and a "claim" status
+ * indicating whether it should be kept. Files are claimed as they are being uploaded,
+ * and at the end any "unclaimed" files are considered stale and can be pruned.
  */
-/** Timestamps before this are reset placeholders, not real modification times. */
-const PLACEHOLDER_TIMESTAMP_CUTOFF = Date.UTC(2000, 0, 1);
-
 export class S3ObjectSet {
   private readonly objects = new Map<string, { size: number; lastModified: Date }>();
   private readonly claimed = new Set<string>();
@@ -70,3 +62,6 @@ export class S3ObjectSet {
     return [...this.objects.keys()].filter((key) => !this.claimed.has(key));
   }
 }
+
+/** Timestamps before this are reset placeholders, not real modification times. */
+const PLACEHOLDER_TIMESTAMP_CUTOFF = Date.UTC(2000, 0, 1);
